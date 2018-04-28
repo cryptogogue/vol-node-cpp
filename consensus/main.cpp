@@ -6,10 +6,27 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include <iostream>
+#include "context.h"
+#include "player.h"
 
-int main(int argc, const char * argv[]) {
-	// insert code here...
-	std::cout << "Hello, World!\n";
+//================================================================//
+// main
+//================================================================//
+
+//----------------------------------------------------------------//
+int main ( int argc, const char* argv []) {
+
+	Context::InitPlayers ( 16 );
+	
+	for ( int i = 0; true; ++i ) {
+	
+		Context::Process ();
+		
+		printf ( "ROUND: %d\n", i );
+		//Context::PrintTree ();
+		Context::Print ();
+		printf ( "\n" );
+	}
+
 	return 0;
 }
