@@ -29,8 +29,8 @@ float Block::GetNextMerit ( int playerID ) const {
 	map < int, int > playersByScore;
 
 	for ( int i = 0; i < nPlayers; ++i ) {
-		const Player& player = Context::GetPlayer ( i );
-		playersByScore [ player.mID ^ this->mEntropy ] = player.mID;
+		int id = Context::GetPlayer ( i ).GetID ();
+		playersByScore [ id ^ this->mEntropy ] = id;
 	}
 
 	float merit = 0.0;
@@ -41,8 +41,8 @@ float Block::GetNextMerit ( int playerID ) const {
 		merit += 1.0;
 	}
 
-	merit = (( merit / ( float )nPlayers ) * 2.0 ) - 1;
-	//merit = merit * merit;
+	merit = merit / ( float )nPlayers;
+	merit = merit * merit;
 	
 	return this->mMerit + merit;
 }
@@ -73,15 +73,33 @@ float Chain::GetNextMerit ( int playerID, int& trimIndex ) const {
 	
 	if ( this->mBlocks.size ()) {
 		
+		int nPlayers = Context::CountPlayers ();
+		float penaltyStep = 1.0 / ( float )nPlayers;
+		vector < float > penalties;
+		penalties.resize ( nPlayers, 0.0 );
+		
 		list < Block >::const_iterator blockIt = this->mBlocks.begin ();
 		int bestBlockID = 0;
 		
 		for ( int i = 0; blockIt != this->mBlocks.end (); ++blockIt, ++i ) {
-		
-			float merit = blockIt->GetNextMerit ( playerID );
+			const Block& block = *blockIt;
+			
+			penalties [ block.mPlayerID ] = 1.0;
+			
+			float merit = block.GetNextMerit ( playerID ) - penalties [ playerID ];
 			if ( merit > bestMerit ) {
 				bestMerit = merit;
 				bestBlockID = i;
+			}
+			
+			for ( int j = 0; j < nPlayers; ++j ) {
+				float& penalty = penalties [ j ];
+				if ( penalty > 0.0 ) {
+					penalty -= penaltyStep;
+				}
+				if ( penalty < 0.0 ) {
+					penalty = 0.0;
+				}
 			}
 		}
 		
@@ -96,7 +114,7 @@ Chain::Chain () :
 }
 
 //----------------------------------------------------------------//
-void Chain::Print () {
+void Chain::Print () const {
 
 	int i = 0;
 	for ( list < Block >::const_iterator blockIt = this->mBlocks.begin (); blockIt != this->mBlocks.end (); ++i, ++blockIt ) {

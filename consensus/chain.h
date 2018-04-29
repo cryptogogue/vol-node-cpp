@@ -39,7 +39,7 @@ public:
 	void		CopyFrom			( const Chain& from );
 	float		GetNextMerit		( int playerID ) const;
 				Chain				();
-	void		Print				();
+	void		Print				() const;
 	void		PushBlock			( int playerID );
 	void		Update				( const list < Block >& blocks );
 };

@@ -12,6 +12,7 @@
 static int					sBlockCount = 0;
 static vector < Player >	sPlayers;
 static map < int, int >		sEntropy;
+float						sDropRate = 0.0;
 
 //----------------------------------------------------------------//
 void print_indent ( int indent ) {
@@ -99,9 +100,26 @@ public:
 //================================================================//
 
 //----------------------------------------------------------------//
+void Context::ApplyCohort ( Cohort& cohort, int basePlayer, int topPlayer ) {
+
+	cohort.mBasePlayer	= basePlayer;
+	cohort.mTopPlayer	= topPlayer;
+
+	for ( int i = basePlayer; i <= topPlayer; ++i ) {
+		sPlayers [ i ].mCohort = &cohort;
+	}
+}
+
+//----------------------------------------------------------------//
 int Context::CountPlayers () {
 
 	return ( int )sPlayers.size ();
+}
+
+//----------------------------------------------------------------//
+bool Context::Drop () {
+
+	return (( float )(( rand () % 1000) + 1 ) / 1000.0 ) < sDropRate;
 }
 
 //----------------------------------------------------------------//
@@ -155,7 +173,7 @@ void Context::PrintTree ( int maxDepth ) {
 	int nPlayers = Context::CountPlayers ();
 	for ( int i = 0; i < nPlayers; ++i ) {
 		Player& player = sPlayers [ i ];
-		tree.AddChain ( player.State ());
+		tree.AddChain ( player.GetChain ());
 	}
 	TreeSummary summary;
 	tree.Summarize ( summary );
@@ -163,13 +181,25 @@ void Context::PrintTree ( int maxDepth ) {
 }
 
 //----------------------------------------------------------------//
-void Context::Process () {
+void Context::Process ( int cycles ) {
 
 	int nPlayers = Context::CountPlayers ();
-	for ( int i = 0; i < ( nPlayers - 1 ); ++i ) {
+	for ( int i = 0; i < cycles; ++i ) {
 		for ( int j = 0; j < nPlayers; ++j ) {
 			Player& player = sPlayers [ j ];
 			player.Next ();
 		}
 	}
+}
+
+//----------------------------------------------------------------//
+const Player* Context::RequestPlayer ( Player& requestedBy, int playerID ) {
+
+	return &sPlayers [ playerID ];
+}
+
+//----------------------------------------------------------------//
+void Context::SetDropRate ( float percentage ) {
+
+	sDropRate = percentage;
 }

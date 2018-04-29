@@ -10,11 +10,40 @@
 #include "player.h"
 
 //================================================================//
+// Cohort
+//================================================================//
+
+//----------------------------------------------------------------//
+Cohort::Cohort () :
+	mBasePlayer ( -1 ),
+	mTopPlayer ( -1 ),
+	mPaused ( false ) {
+}
+
+//----------------------------------------------------------------//
+void Cohort::Pause ( bool paused ) {
+
+	this->mPaused = paused;
+}
+
+//================================================================//
 // Player
 //================================================================//
 
 //----------------------------------------------------------------//
-const Player& Player::GetNextPlayerInCycle () {
+const Chain& Player::GetChain () const {
+	
+	return this->mChain;
+}
+
+//----------------------------------------------------------------//
+int Player::GetID () const {
+	
+	return this->mID;
+}
+
+//----------------------------------------------------------------//
+const Player* Player::GetNextPlayerInCycle () {
 
 	int nPlayers = Context::CountPlayers ();
 	this->mPlayersCheckedMask.resize ( nPlayers, false );
@@ -33,28 +62,34 @@ const Player& Player::GetNextPlayerInCycle () {
 	this->mPlayersCheckedCount++;
 	this->mPlayersCheckedMask [ playerID ] = true;
 	
-	if ( this->mPlayersCheckedCount == nPlayers ) {
+	if ( this->mPlayersCheckedCount >= nPlayers ) {
 		this->mPlayersCheckedMask.clear ();
 		this->mPlayersCheckedCount = 0;
 	}
 	
-	return Context::GetPlayer ( playerID );
+	return Context::RequestPlayer ( *this, playerID );
 }
 
 //----------------------------------------------------------------//
 void Player::Init ( int playerID ) {
 
 	this->mID = playerID;
-	this->mState [ playerID ];
 }
 
 //----------------------------------------------------------------//
 void Player::Next () {
 
-	const Player& player = this->GetNextPlayerInCycle ();
+	if ( this->mCohort ) {
+		if ( this->mCohort->mPaused ) return;
+	}
+
+	if ( Context::Drop ()) return;
+
+	const Player* player = this->GetNextPlayerInCycle ();
+	if ( !player ) return;
 	
-	Chain* myChain = &this->mState [ this->mID ];
-	const Chain* otherChain = &player.State ();
+	Chain* myChain = &this->mChain;
+	const Chain* otherChain = &player->GetChain ();
 	
 	const Chain* bestChain = myChain;
 
@@ -68,61 +103,15 @@ void Player::Next () {
 	myChain->PushBlock ( this->mID );
 }
 
-////----------------------------------------------------------------//
-//void Player::Next () {
-//
-//	const Player& player = this->GetNextPlayerInCycle ();
-//	this->mState [ player.mID ].CopyFrom ( player.State ());
-//
-//	if ( this->mPlayersCheckedCount ) return; // should only be 0 if the cycle is up
-//
-//	Chain* chain = &this->mState [ this->mID ];
-//
-//	for ( map < int, Chain >::iterator headIt = this->mState.begin (); headIt != this->mState.end (); ++headIt ) {
-//		Chain* test = &headIt->second;
-//		if ( test->mBlocks.size () < chain->mBlocks.size ()) return;
-//	}
-//
-//	Chain* bestHead = chain;
-//	float bestMerit = chain->GetNextMerit ( this->mID );
-//
-//	for ( map < int, Chain >::iterator headIt = this->mState.begin (); headIt != this->mState.end (); ++headIt ) {
-//		Chain* test = &headIt->second;
-//
-//		if ( test != chain ) {
-//
-//			float testMerit = test->GetNextMerit ( this->mID );
-//
-//			//if (( testPenalty < bestPenalty ) || (( testPenalty == bestPenalty ) && ( test->mBlocks.size () > bestHead->mBlocks.size ()))) {
-//			if ( testMerit > bestMerit ) {
-//				bestHead		= test;
-//				bestMerit		= testMerit;
-//			}
-//		}
-//	}
-//
-//	if ( bestHead != chain ) {
-//		chain->CopyFrom ( *bestHead );
-//	}
-//	chain->PushBlock ( this->mID );
-//}
-
 //----------------------------------------------------------------//
 Player::Player () :
 	mPlayersCheckedCount ( 0 ),
-	mID ( -1 ) {
+	mID ( -1 ),
+	mCohort ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-void Player::Print () {
+void Player::Print () const {
 
-	this->mState [ this->mID ].Print ();
-}
-
-//----------------------------------------------------------------//
-const Chain& Player::State () const {
-	
-	map < int, Chain >::const_iterator stateIt = this->mState.find ( this->mID );
-	assert ( stateIt != this->mState.end ());
-	return stateIt->second;
+	this->mChain.Print ();
 }
