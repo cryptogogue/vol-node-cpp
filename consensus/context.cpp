@@ -13,6 +13,7 @@ static int					sBlockCount = 0;
 static vector < Player >	sPlayers;
 static map < int, int >		sEntropy;
 float						sDropRate = 0.0;
+int							sCyclesPerStep = 0;
 
 //----------------------------------------------------------------//
 void print_indent ( int indent ) {
@@ -146,9 +147,33 @@ const Player& Context::GetPlayer ( int playerID ) {
 }
 
 //----------------------------------------------------------------//
+float Context::GetPlayerMerit ( int entropy, int playerID ) {
+
+	int nPlayers = Context::CountPlayers ();
+	map < int, int > playersByScore;
+
+	for ( int i = 0; i < nPlayers; ++i ) {
+		int id = Context::GetPlayer ( i ).GetID ();
+		playersByScore [ id ^ entropy ] = id;
+	}
+
+	float merit = 0.0;
+	for ( map < int, int >::iterator playersByScoreIt = playersByScore.begin (); playersByScoreIt != playersByScore.end (); ++playersByScoreIt ) {
+		if ( playersByScoreIt->second == playerID ) {
+			break;
+		}
+		merit += 1.0;
+	}
+
+	merit = merit / ( float )nPlayers;
+	merit = merit * merit;
+	
+	return merit;
+}
+
+//----------------------------------------------------------------//
 void Context::InitPlayers ( int nPlayers ) {
 
-	sPlayers.clear ();
 	sPlayers.resize ( nPlayers );
 
 	for ( int i = 0; i < nPlayers; ++i ) {
@@ -181,9 +206,11 @@ void Context::PrintTree ( int maxDepth ) {
 }
 
 //----------------------------------------------------------------//
-void Context::Process ( int cycles ) {
+void Context::Process () {
 
 	int nPlayers = Context::CountPlayers ();
+	int cycles = sCyclesPerStep ? sCyclesPerStep : nPlayers;
+	
 	for ( int i = 0; i < cycles; ++i ) {
 		for ( int j = 0; j < nPlayers; ++j ) {
 			Player& player = sPlayers [ j ];
@@ -193,9 +220,19 @@ void Context::Process ( int cycles ) {
 }
 
 //----------------------------------------------------------------//
-const Player* Context::RequestPlayer ( Player& requestedBy, int playerID ) {
+void Context::Reset () {
 
-	return &sPlayers [ playerID ];
+	srand ( 1 );
+	sPlayers.clear ();
+	sEntropy.clear ();
+	sBlockCount = 0;
+	sCyclesPerStep = 0;
+}
+
+//----------------------------------------------------------------//
+void Context::SetCyclesPerStep ( int cycles ) {
+
+	sCyclesPerStep = cycles;
 }
 
 //----------------------------------------------------------------//

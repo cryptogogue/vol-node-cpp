@@ -19,11 +19,13 @@ public:
 	static int				Entropy					( int height );
 	static int				GetBlockID				();
 	static const Player&	GetPlayer				( int playerID );
+	static float			GetPlayerMerit			( int entropy, int playerID );
 	static void				InitPlayers				( int nPlayers );
 	static void				Print					();
 	static void				PrintTree				( int maxDepth = 0 );
-	static void				Process					( int cycles );
-	static const Player*	RequestPlayer			( Player& requestedBy, int playerID );
+	static void				Process					();
+	static void				Reset					();
+	static void				SetCyclesPerStep		( int cycles );
 	static void				SetDropRate				( float percentage );
 };
 

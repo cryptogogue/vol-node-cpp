@@ -36,6 +36,7 @@ public:
 	float				mMerit;
 
 	//----------------------------------------------------------------//
+	float		AverageSpan			() const;
 	void		CopyFrom			( const Chain& from );
 	float		GetNextMerit		( int playerID ) const;
 				Chain				();

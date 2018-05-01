@@ -12,16 +12,25 @@ private:
 	friend class Context;
 	friend class Player;
 
+	string	mName;
+
 	int		mBasePlayer;
 	int		mTopPlayer;
+
+	bool	mIsPaused;
 	
-	bool	mPaused;
+	int		mQueryFlags;
+	int		mRespondFlags;
+	int		mFrequency;
 
 public:
 
 	//----------------------------------------------------------------//
-					Cohort		();
-	void			Pause		( bool paused );
+					Cohort			();
+	void			Pause			( bool paused );
+	void			SetFlags		( int query, int respond );
+	void			SetFrequency	( int frequency );
+	void			SetName			( string name );
 };
 
 //================================================================//
@@ -41,6 +50,8 @@ private:
 
 	//----------------------------------------------------------------//
 	const Player*	GetNextPlayerInCycle	();
+	const Player*	RequestPlayer			();
+	void			Step					();
 
 public:
 	

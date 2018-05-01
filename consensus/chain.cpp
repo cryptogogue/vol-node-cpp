@@ -19,37 +19,61 @@ Block::Block () :
 	mHeight ( -1 ),
 	mPlayerID ( -1 ),
 	mBlockID ( -1 ),
-	mMerit ( 0.0 ) {
+	mMerit ( -1.0 ) {
 }
 
 //----------------------------------------------------------------//
-float Block::GetNextMerit ( int playerID ) const {
-
-	int nPlayers = Context::CountPlayers ();
-	map < int, int > playersByScore;
-
-	for ( int i = 0; i < nPlayers; ++i ) {
-		int id = Context::GetPlayer ( i ).GetID ();
-		playersByScore [ id ^ this->mEntropy ] = id;
-	}
-
-	float merit = 0.0;
-	for ( map < int, int >::iterator playersByScoreIt = playersByScore.begin (); playersByScoreIt != playersByScore.end (); ++playersByScoreIt ) {
-		if ( playersByScoreIt->second == playerID ) {
-			break;
-		}
-		merit += 1.0;
-	}
-
-	merit = merit / ( float )nPlayers;
-	merit = merit * merit;
-	
-	return this->mMerit + merit;
-}
+//float Block::GetNextMerit ( int playerID ) const {
+//
+//	int nPlayers = Context::CountPlayers ();
+//	map < int, int > playersByScore;
+//
+//	for ( int i = 0; i < nPlayers; ++i ) {
+//		int id = Context::GetPlayer ( i ).GetID ();
+//		playersByScore [ id ^ this->mEntropy ] = id;
+//	}
+//
+//	float merit = 0.0;
+//	for ( map < int, int >::iterator playersByScoreIt = playersByScore.begin (); playersByScoreIt != playersByScore.end (); ++playersByScoreIt ) {
+//		if ( playersByScoreIt->second == playerID ) {
+//			break;
+//		}
+//		merit += 1.0;
+//	}
+//
+//	merit = merit / ( float )nPlayers;
+//	merit = merit * merit;
+//
+//	return this->mMerit + merit;
+//}
 
 //================================================================//
 // Chain
 //================================================================//
+
+//----------------------------------------------------------------//
+float Chain::AverageSpan () const {
+
+	map < int, int > playerIdToBlockHeight;
+
+	int spanCount = 0;
+	int spanSum = 0;
+
+	int height = 0;
+	list < Block >::const_iterator blockIt = this->mBlocks.begin ();
+	for ( ; blockIt != this->mBlocks.end (); ++height, ++blockIt ) {
+		const Block& block = *blockIt;
+		
+		map < int, int >::iterator entry = playerIdToBlockHeight.find ( block.mPlayerID );
+		if ( entry != playerIdToBlockHeight.end ()) {
+		
+			spanSum += height - entry->second;
+			++spanCount;
+		}
+		playerIdToBlockHeight [ block.mPlayerID ] = height;
+	}
+	return spanCount ? (( float )spanSum / ( float )spanCount ) : 0.0;
+}
 
 //----------------------------------------------------------------//
 void Chain::CopyFrom ( const Chain& from ) {
@@ -68,44 +92,35 @@ float Chain::GetNextMerit ( int playerID ) const {
 //----------------------------------------------------------------//
 float Chain::GetNextMerit ( int playerID, int& trimIndex ) const {
 	
-	float bestMerit = 0.0;
-	trimIndex = 0;
+	int entropy		= 0;
+	float boost		= 1.0;
+	float merit		= 0.0;
+	
+	trimIndex = ( int )this->mBlocks.size ();
 	
 	if ( this->mBlocks.size ()) {
 		
-		int nPlayers = Context::CountPlayers ();
-		float penaltyStep = 1.0 / ( float )nPlayers;
-		vector < float > penalties;
-		penalties.resize ( nPlayers, 0.0 );
+		const Block& top = this->mBlocks.back ();
+		entropy = top.mEntropy;
+		merit = top.mMerit;
 		
-		list < Block >::const_iterator blockIt = this->mBlocks.begin ();
-		int bestBlockID = 0;
+		float thisBoost = 0.0;
+		float boostStep = 0.1;
 		
-		for ( int i = 0; blockIt != this->mBlocks.end (); ++blockIt, ++i ) {
-			const Block& block = *blockIt;
+		list < Block >::const_reverse_iterator blockRevIt = this->mBlocks.rbegin ();
+		for ( ; ( blockRevIt != this->mBlocks.rend ()) && ( thisBoost < 1.0 ); ++blockRevIt ) {
+			const Block& block = *blockRevIt;
 			
-			penalties [ block.mPlayerID ] = 1.0;
-			
-			float merit = block.GetNextMerit ( playerID ) - penalties [ playerID ];
-			if ( merit > bestMerit ) {
-				bestMerit = merit;
-				bestBlockID = i;
+			if ( block.mPlayerID == playerID ) {
+				boost = thisBoost;
+				break;
 			}
-			
-			for ( int j = 0; j < nPlayers; ++j ) {
-				float& penalty = penalties [ j ];
-				if ( penalty > 0.0 ) {
-					penalty -= penaltyStep;
-				}
-				if ( penalty < 0.0 ) {
-					penalty = 0.0;
-				}
-			}
+			thisBoost += boostStep;
 		}
-		
-		trimIndex = bestBlockID + 1;
+		boost = ( boost * boost );
 	}
-	return bestMerit;
+
+	return merit + ( Context::GetPlayerMerit ( entropy, playerID ) * boost );
 }
 
 //----------------------------------------------------------------//
