@@ -13,7 +13,7 @@ class Context {
 public:
 	
 	//----------------------------------------------------------------//
-	static void				ApplyCohort				( Cohort& cohort, int basePlayer, int topPlayer );
+	static void				ApplyCohort				( Cohort& cohort, string name, int basePlayer, int topPlayer );
 	static int				CountPlayers			();
 	static bool				Drop					();
 	static int				Entropy					( int height );

@@ -117,7 +117,7 @@ float Chain::GetNextMerit ( int playerID, int& trimIndex ) const {
 			}
 			thisBoost += boostStep;
 		}
-		boost = ( boost * boost );
+		//boost = ( boost * boost );
 	}
 
 	return merit + ( Context::GetPlayerMerit ( entropy, playerID ) * boost );

@@ -18,9 +18,9 @@ Cohort::Cohort () :
 	mBasePlayer ( -1 ),
 	mTopPlayer ( -1 ),
 	mIsPaused ( false ),
-	mQueryFlags ( -1 ),
-	mRespondFlags ( -1 ),
-	mFrequency ( 1 ) {
+	mGroupFlags ( -1 ),
+	mRequestFlags ( -1 ),
+	mRespondFlags ( -1 ) {
 }
 
 //----------------------------------------------------------------//
@@ -30,16 +30,29 @@ void Cohort::Pause ( bool paused ) {
 }
 
 //----------------------------------------------------------------//
-void Cohort::SetFlags ( int query, int respond ) {
+void Cohort::RandomizeFrequencies ( int max ) {
 
-	this->mQueryFlags = query;
-	this->mRespondFlags = respond;
+	list < Player* >::iterator playerIt = this->mPlayers.begin ();
+	for ( ; playerIt != this->mPlayers.end (); ++playerIt ) {
+		( *playerIt )->mFrequency = ( rand () % max ) + 1;
+	}
+}
+
+//----------------------------------------------------------------//
+void Cohort::SetFlags ( int group, int request, int respond ) {
+
+	this->mGroupFlags		= group;
+	this->mRequestFlags		= request;
+	this->mRespondFlags		= respond;
 }
 
 //----------------------------------------------------------------//
 void Cohort::SetFrequency ( int frequency ) {
 
-	this->mFrequency = frequency;
+	list < Player* >::iterator playerIt = this->mPlayers.begin ();
+	for ( ; playerIt != this->mPlayers.end (); ++playerIt ) {
+		( *playerIt )->mFrequency = frequency;
+	}
 }
 
 //----------------------------------------------------------------//
@@ -104,7 +117,7 @@ void Player::Next () {
 	if ( !this->mCohort ) return;
 	if ( this->mCohort->mIsPaused ) return;
 
-	for ( int i = 0; i < this->mCohort->mFrequency; ++i ) {
+	for ( int i = 0; i < this->mFrequency; ++i ) {
 		this->Step ();
 	}
 }
@@ -113,7 +126,8 @@ void Player::Next () {
 Player::Player () :
 	mPlayersCheckedCount ( 0 ),
 	mID ( -1 ),
-	mCohort ( 0 ) {
+	mCohort ( 0 ),
+	mFrequency ( 1 ) {
 }
 
 //----------------------------------------------------------------//
@@ -128,20 +142,10 @@ const Player* Player::RequestPlayer () {
 
 	const Player* player = 0;
 	
-	while ( !player ) {
-	
+	do {
 		player = this->GetNextPlayerInCycle ();
-		assert ( player );
-		
-		int queryFlags		= this->mCohort ? this->mCohort->mQueryFlags : -1;
-		int respondFlags	= player->mCohort ? player->mCohort->mRespondFlags : -1;
-		
-		// other player might refuse us
-		if ( !( queryFlags & respondFlags )) {
-			player = 0;
-			continue;
-		}
-	}
+	} while ( !(( this->mCohort->mRequestFlags & player->mCohort->mGroupFlags ) && ( player->mCohort->mRespondFlags & this->mCohort->mGroupFlags )));
+	
 	return player;
 }
 
@@ -161,24 +165,39 @@ void Player::Step () {
 	Chain* chain0				= &this->mChain;
 	const Chain* chain1			= &player->GetChain ();
 	
-	float lengthDiff = ( float )( chain1->mBlocks.size () - chain0->mBlocks.size ());
+	float lengthDiff = ( float )chain1->mBlocks.size () - ( float )chain0->mBlocks.size ();
 	lengthDiff = lengthDiff < 0 ? -lengthDiff : lengthDiff;
-	lengthDiff /= 100.0;
-		
+	lengthDiff = lengthDiff / 100.0;
+	lengthDiff = lengthDiff * lengthDiff;
+	
 	float diversity0			= lengthDiff > 0.0 ? ( chain0->AverageSpan () * lengthDiff ) : 0.0;
 	float diversity1			= lengthDiff > 0.0 ? ( chain1->AverageSpan () * lengthDiff ) : 0.0;
+	
+//	bestMerit = chain0->GetNextMerit ( this->mID ) + diversity0;
+//	bestChain = chain0;
+//
+//	testMerit = chain1->GetNextMerit ( this->mID ) + diversity1;
+//	if ( bestMerit < testMerit ) {
+//		bestMerit = testMerit;
+//		bestChain = chain1;
+//	}
+//
+//	if ( bestChain != &this->mChain ) {
+//		this->mChain.CopyFrom ( *bestChain );
+//	}
+//	this->mChain.PushBlock ( this->mID );
 	
 	// chain 0, as is
 	bestMerit = chain0->mMerit + diversity0;
 	bestChain = chain0;
-	
+
 	// chain 1, as is
 	testMerit = chain1->mMerit + diversity1;
 	if ( bestMerit < testMerit ) {
 		bestMerit = testMerit;
 		bestChain = chain1;
 	}
-	
+
 	// chain 0, with push
 	testMerit = chain0->GetNextMerit ( this->mID ) + diversity0;
 	if ( bestMerit < testMerit ) {
@@ -186,7 +205,7 @@ void Player::Step () {
 		bestChain = chain0;
 		push = true;
 	}
-	
+
 	// chain 1, with push
 	testMerit = chain1->GetNextMerit ( this->mID ) + diversity1;
 	if ( bestMerit < testMerit ) {
@@ -194,11 +213,11 @@ void Player::Step () {
 		bestChain = chain1;
 		push = true;
 	}
-	
+
 	if ( bestChain != &this->mChain ) {
 		this->mChain.CopyFrom ( *bestChain );
 	}
-	
+
 	if ( push ) {
 		this->mChain.PushBlock ( this->mID );
 	}

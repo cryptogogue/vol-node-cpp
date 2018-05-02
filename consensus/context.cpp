@@ -101,13 +101,16 @@ public:
 //================================================================//
 
 //----------------------------------------------------------------//
-void Context::ApplyCohort ( Cohort& cohort, int basePlayer, int topPlayer ) {
+void Context::ApplyCohort ( Cohort& cohort, string name, int basePlayer, int topPlayer ) {
 
+	cohort.mName		= name;
 	cohort.mBasePlayer	= basePlayer;
 	cohort.mTopPlayer	= topPlayer;
-
+	
+	cohort.mPlayers.clear ();
 	for ( int i = basePlayer; i <= topPlayer; ++i ) {
 		sPlayers [ i ].mCohort = &cohort;
+		cohort.mPlayers.push_back ( &sPlayers [ i ]);
 	}
 }
 
@@ -120,7 +123,7 @@ int Context::CountPlayers () {
 //----------------------------------------------------------------//
 bool Context::Drop () {
 
-	return (( float )(( rand () % 1000) + 1 ) / 1000.0 ) < sDropRate;
+	return (( float )( rand () % ( 1000 + 1 )) / 1000.0 ) < sDropRate;
 }
 
 //----------------------------------------------------------------//
@@ -165,8 +168,8 @@ float Context::GetPlayerMerit ( int entropy, int playerID ) {
 		merit += 1.0;
 	}
 
-	merit = merit / ( float )nPlayers;
-	merit = merit * merit;
+	merit = (( merit / ( float )nPlayers ) * 3.0 ) - 2.0;
+	//merit = merit * merit;
 	
 	return merit;
 }
@@ -212,9 +215,23 @@ void Context::Process () {
 	int cycles = sCyclesPerStep ? sCyclesPerStep : nPlayers;
 	
 	for ( int i = 0; i < cycles; ++i ) {
+	
+		map < Player*, int > schedule;
+		
 		for ( int j = 0; j < nPlayers; ++j ) {
 			Player& player = sPlayers [ j ];
-			player.Next ();
+			schedule [ &player ] = player.mFrequency;
+		}
+		
+		while ( schedule.size ()) {
+		
+			map < Player*, int >::iterator scheduleIt = next ( schedule.begin (), rand () % schedule.size ());
+			
+			scheduleIt->first->Next ();
+			scheduleIt->second -= 1;
+			if ( scheduleIt->second == 0 ) {
+				schedule.erase ( scheduleIt );
+			}
 		}
 	}
 }
@@ -226,6 +243,7 @@ void Context::Reset () {
 	sPlayers.clear ();
 	sEntropy.clear ();
 	sBlockCount = 0;
+	sDropRate = 0.0;
 	sCyclesPerStep = 0;
 }
 

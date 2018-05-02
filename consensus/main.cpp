@@ -34,28 +34,60 @@ public:
 };
 
 //================================================================//
-// SleepyScenario
+// FastGangScenario
 //================================================================//
-class SleepyScenario :
+class FastGangScenario :
 	public Scenario {
 
-	Cohort mSlpy;
-	Cohort mNorm;
+	Cohort mRogue;
+	Cohort mNormal;
 
 public:
 
 	//----------------------------------------------------------------//
-	SleepyScenario () {
+	FastGangScenario () {
+	
+		Context::Reset ();
+		Context::InitPlayers ( 16 );
+		
+		Context::ApplyCohort ( this->mRogue, "RGUE", 0, 3 );
+		this->mRogue.SetFlags ( 1, 1, 3 );
+		this->mRogue.SetFrequency ( 16 );
+		
+		Context::ApplyCohort ( this->mNormal, "NORM", 4, 15 );
+		this->mNormal.SetFlags ( 2, 3, 3 );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+		
+		return step < 64;
+	}
+};
+
+//================================================================//
+// RandFreqScenario
+//================================================================//
+class RandFreqScenario :
+	public Scenario {
+
+	Cohort mRandFreq;
+
+public:
+
+	//----------------------------------------------------------------//
+	RandFreqScenario () {
 	
 		Context::Reset ();
 		Context::InitPlayers ( 16 );
 		Context::SetDropRate ( 0.8 );
 		
-		this->mSlpy.SetName ( "SLPY" );
-		Context::ApplyCohort ( this->mSlpy, 0, 11 );
-		
-		this->mNorm.SetName ( "NORM" );
-		Context::ApplyCohort ( this->mNorm, 12, 15 );
+		Context::ApplyCohort ( this->mRandFreq, "RANDFREQ", 0, 15 );
+		this->mRandFreq.RandomizeFrequencies ( 10 );
 	}
 
 	//================================================================//
@@ -65,16 +97,7 @@ public:
 	//----------------------------------------------------------------//
 	bool Scenario_Control ( int step ) {
 	
-		switch ( step ) {
-			case 0:
-				this->mSlpy.Pause ( true );
-				break;
-			
-			case 16:
-				this->mSlpy.Pause ( false );
-				break;
-		}
-		return step < 32;
+		return step < 128;
 	}
 };
 
@@ -84,8 +107,8 @@ public:
 class RogueScenario :
 	public Scenario {
 
-	Cohort mRgue;
-	Cohort mNorm;
+	Cohort mRogue;
+	Cohort mNormal;
 
 public:
 
@@ -96,14 +119,12 @@ public:
 		Context::InitPlayers ( 16 );
 		Context::SetDropRate ( 0.8 );
 		
-		this->mRgue.SetName ( "RGUE" );
-		Context::ApplyCohort ( this->mRgue, 0, 3 );
-		this->mRgue.SetFlags ( 3, 3 );
-		this->mRgue.SetFrequency ( 16 );
+		Context::ApplyCohort ( this->mRogue, "RGUE", 0, 3 );
+		this->mRogue.SetFlags ( 1, 3, 3 );
+		this->mRogue.SetFrequency ( 16 );
 		
-		this->mNorm.SetName ( "NORM" );
-		Context::ApplyCohort ( this->mNorm, 4, 15 );
-		this->mNorm.SetFlags ( 3, 3 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 4, 15 );
+		this->mNormal.SetFlags ( 2, 3, 3 );
 	}
 
 	//================================================================//
@@ -115,16 +136,87 @@ public:
 	
 		switch ( step ) {
 			case 0:
-				this->mNorm.SetFlags ( 1, 1 );
-				this->mRgue.SetFlags ( 2, 2 );
+				this->mRogue.SetFlags ( 1, 1, 1 );
 				break;
 			
 			case 32:
-				this->mNorm.SetFlags ( 3, 3 );
-				this->mRgue.SetFlags ( 3, 3 );
+				this->mRogue.SetFlags ( 1, 3, 3 );
 				break;
 		}
 		return step < 64;
+	}
+};
+
+//================================================================//
+// SleepyScenario
+//================================================================//
+class SleepyScenario :
+	public Scenario {
+
+	Cohort mSleepy;
+	Cohort mNormal;
+
+public:
+
+	//----------------------------------------------------------------//
+	SleepyScenario () {
+	
+		Context::Reset ();
+		Context::InitPlayers ( 16 );
+		Context::SetDropRate ( 0.8 );
+		
+		Context::ApplyCohort ( this->mSleepy, "SLPY", 0, 11 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 12, 15 );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+	
+		switch ( step ) {
+			case 0:
+				this->mSleepy.Pause ( true );
+				break;
+			
+			case 16:
+				this->mSleepy.Pause ( false );
+				break;
+		}
+		return step < 32;
+	}
+};
+
+//================================================================//
+// SmallScenario
+//================================================================//
+class SmallScenario :
+	public Scenario {
+
+	Cohort mNormal;
+
+public:
+
+	//----------------------------------------------------------------//
+	SmallScenario () {
+	
+		Context::Reset ();
+		Context::InitPlayers ( 4 );
+		
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 3 );
+		this->mNormal.SetFrequency ( 1 );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+		
+		return step < 32;
 	}
 };
 
@@ -135,7 +227,7 @@ public:
 //----------------------------------------------------------------//
 int main ( int argc, const char* argv []) {
 
-	RogueScenario scenario;
+	FastGangScenario scenario;
 	scenario.Run ();
 
 	return 0;

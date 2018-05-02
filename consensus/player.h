@@ -3,6 +3,8 @@
 
 #include "chain.h"
 
+class Player;
+
 //================================================================//
 // Cohort
 //================================================================//
@@ -19,18 +21,21 @@ private:
 
 	bool	mIsPaused;
 	
-	int		mQueryFlags;
+	int		mGroupFlags;
+	int		mRequestFlags;
 	int		mRespondFlags;
-	int		mFrequency;
+
+	list < Player* > mPlayers;
 
 public:
 
 	//----------------------------------------------------------------//
-					Cohort			();
-	void			Pause			( bool paused );
-	void			SetFlags		( int query, int respond );
-	void			SetFrequency	( int frequency );
-	void			SetName			( string name );
+					Cohort					();
+	void			Pause					( bool paused );
+	void			RandomizeFrequencies	( int max );
+	void			SetFlags				( int group, int request, int respond );
+	void			SetFrequency			( int frequency );
+	void			SetName					( string name );
 };
 
 //================================================================//
@@ -39,6 +44,7 @@ public:
 class Player {
 private:
 
+	friend class Cohort;
 	friend class Context;
 
 	int					mID;
@@ -47,6 +53,7 @@ private:
 	Chain				mChain;
 
 	Cohort*				mCohort;
+	int					mFrequency;
 
 	//----------------------------------------------------------------//
 	const Player*	GetNextPlayerInCycle	();
@@ -56,12 +63,12 @@ private:
 public:
 	
 	//----------------------------------------------------------------//
-	const Chain&	GetChain	() const;
-	int				GetID		() const;
-	void			Init		( int playerID );
-	void			Next		();
-					Player		();
-	void			Print		() const;
+	const Chain&	GetChain		() const;
+	int				GetID			() const;
+	void			Init			( int playerID );
+	void			Next			();
+					Player			();
+	void			Print			() const;
 };
 
 #endif
