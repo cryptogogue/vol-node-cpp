@@ -300,7 +300,7 @@ public:
 //----------------------------------------------------------------//
 int main ( int argc, const char* argv []) {
 
-	TenKScenario scenario;
+	SimpleScenario scenario;
 	scenario.Run ();
 
 	return 0;

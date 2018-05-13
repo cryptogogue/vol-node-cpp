@@ -21,6 +21,18 @@ int Player::GetID () const {
 }
 
 //----------------------------------------------------------------//
+uint Player::GetScore ( int entropy ) {
+
+	return Player::GetScore ( this->mID, entropy );
+}
+
+//----------------------------------------------------------------//
+uint Player::GetScore ( int playerID, int entropy ) {
+
+	return ( unsigned int )( playerID ^ entropy );
+}
+
+//----------------------------------------------------------------//
 const Player* Player::GetNextPlayerInCycle () {
 
 	int nPlayers = Context::CountPlayers ();

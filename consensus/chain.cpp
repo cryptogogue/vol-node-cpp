@@ -8,6 +8,7 @@
 
 #include "chain.h"
 #include "context.h"
+#include "player.h"
 
 //================================================================//
 // Cycle
@@ -24,8 +25,8 @@ int	Cycle::Compare ( const Cycle& cycle0, const Cycle& cycle1 ) {
 	size_t minSize = size0 < size1 ? size0 : size1;
 	for ( size_t i = 0; i < minSize; ++i ) {
 		
-		unsigned int score0 = Context::GetPlayerScore ( cycle0.mPlayerList [ i ], cycle0.mEntropy );
-		unsigned int score1 = Context::GetPlayerScore ( cycle1.mPlayerList [ i ], cycle1.mEntropy );
+		unsigned int score0 = Player::GetScore ( cycle0.mPlayerList [ i ], cycle0.mEntropy );
+		unsigned int score1 = Player::GetScore ( cycle1.mPlayerList [ i ], cycle1.mEntropy );
 		
 		if ( score0 != score1 ) {
 			return score0 < score1 ? -1 : 1;
@@ -61,12 +62,12 @@ Cycle::Cycle ( int cycleCount ) :
 //----------------------------------------------------------------//
 int Cycle::FindPosition ( int playerID ) {
 
-	unsigned int score = Context::GetPlayerScore ( playerID, this->mEntropy );
+	unsigned int score = Player::GetScore ( playerID, this->mEntropy );
 
 	int position  = 0;
 	for ( size_t i = 0; i < this->mPlayerList.size (); ++i, ++position ) {
 	
-		unsigned int test = Context::GetPlayerScore ( this->mPlayerList [ i ], this->mEntropy );
+		unsigned int test = Player::GetScore ( this->mPlayerList [ i ], this->mEntropy );
 		if ( score < test ) break;
 	}
 	return position;

@@ -12,4 +12,6 @@
 
 using namespace std;
 
+typedef unsigned int uint;
+
 #endif

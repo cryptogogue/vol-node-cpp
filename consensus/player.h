@@ -34,6 +34,8 @@ public:
 	
 	//----------------------------------------------------------------//
 	int					GetID			() const;
+	uint				GetScore		( int entropy );
+	static uint			GetScore		( int playerID, int entropy );
 	void				Init			( int playerID );
 	void				Next			();
 						Player			();

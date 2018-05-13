@@ -167,36 +167,6 @@ const Player& Context::GetPlayer ( int playerID ) {
 }
 
 //----------------------------------------------------------------//
-float Context::GetPlayerMerit ( int entropy, int playerID ) {
-
-	int nPlayers = Context::CountPlayers ();
-	map < int, int > playersByScore;
-
-	for ( int i = 0; i < nPlayers; ++i ) {
-		int id = Context::GetPlayer ( i ).GetID ();
-		playersByScore [ id ^ entropy ] = id;
-	}
-
-	float merit = 0.0;
-	for ( map < int, int >::iterator playersByScoreIt = playersByScore.begin (); playersByScoreIt != playersByScore.end (); ++playersByScoreIt ) {
-		if ( playersByScoreIt->second == playerID ) {
-			break;
-		}
-		merit += 1.0;
-	}
-
-	merit = merit / ( float )nPlayers;
-	
-	return merit;
-}
-
-//----------------------------------------------------------------//
-int Context::GetPlayerScore ( int playerID, int entropy ) {
-
-	return playerID ^ entropy;
-}
-
-//----------------------------------------------------------------//
 void Context::InitPlayers ( int nPlayers ) {
 
 	sPlayers.resize ( nPlayers );

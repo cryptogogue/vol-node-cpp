@@ -19,8 +19,6 @@ public:
 	static int				Entropy					( int height );
 	static int				GetBlockID				();
 	static const Player&	GetPlayer				( int playerID );
-	static float			GetPlayerMerit			( int entropy, int playerID );
-	static int				GetPlayerScore			( int playerID, int entropy );
 	static void				InitPlayers				( int nPlayers );
 	static void				Print					();
 	static void				PrintTree				( bool verbose = false, int maxDepth = 0 );
