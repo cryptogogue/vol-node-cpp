@@ -29,7 +29,7 @@ void print_indent ( int indent ) {
 class TreeSummary {
 public:
 
-	vector < Block >		mBlocks;
+	vector < int >			mPlayers;
 	list < TreeSummary >	mChildren;
 	
 	//----------------------------------------------------------------//
@@ -38,7 +38,7 @@ public:
 		if (( maxDepth > 0 ) && ( depth >= maxDepth )) return;
 	
 		print_indent ( depth );
-		printf ( "[size: %d]\n", ( int )this->mBlocks.size ());
+		printf ( "[size: %d]\n", ( int )this->mPlayers.size ());
 		
 		++depth;
 		list < TreeSummary >::const_iterator childrenIt = this->mChildren.begin ();
@@ -54,20 +54,20 @@ public:
 class Tree {
 public:
 	
-	Block				mBlock;
+	int					mPlayer;
 	map < int, Tree >	mChildren;
 
 	//----------------------------------------------------------------//
-	void AddChain ( const Chain& chain ) {
-	
-		Tree* cursor = this;
-		
-		for ( int i = 0; i < ( int )chain.mBlocks.size (); ++i ) {
-			const Block& block	= chain.mBlocks [ i ];
-			cursor				= &cursor->mChildren [ block.mBlockID ];
-			cursor->mBlock		= block;
-		}
-	}
+//	void AddChain ( const Chain& chain ) {
+//
+//		Tree* cursor = this;
+//
+//		for ( int i = 0; i < ( int )chain.mBlocks.size (); ++i ) {
+//			const Block& block	= chain.mBlocks [ i ];
+//			cursor				= &cursor->mChildren [ block.mBlockID ];
+//			cursor->mBlock		= block;
+//		}
+//	}
 	
 	//----------------------------------------------------------------//
 	void Summarize ( TreeSummary& summary ) const {
@@ -79,7 +79,7 @@ public:
 			map < int, Tree >::const_iterator childrenIt = this->mChildren.begin ();
 			
 			if ( this->mChildren.size () == 1 ) {
-				summary.mBlocks.push_back ( childrenIt->second.mBlock );
+				summary.mPlayers.push_back ( childrenIt->second.mPlayer );
 				childrenIt->second.Summarize ( summary );
 			}
 			else {
@@ -87,7 +87,7 @@ public:
 				for ( ; childrenIt != this->mChildren.end (); ++childrenIt ) {
 					summary.mChildren.push_back ( TreeSummary ());
 					TreeSummary& childSummary = summary.mChildren.back ();
-					childSummary.mBlocks.push_back ( childrenIt->second.mBlock );
+					childSummary.mPlayers.push_back ( childrenIt->second.mPlayer );
 					childrenIt->second.Summarize ( childSummary );
 				}
 			}
@@ -202,11 +202,11 @@ void Context::Print () {
 void Context::PrintTree ( int maxDepth ) {
 
 	Tree tree;
-	int nPlayers = Context::CountPlayers ();
-	for ( int i = 0; i < nPlayers; ++i ) {
-		Player& player = sPlayers [ i ];
-		tree.AddChain ( player.GetChain ());
-	}
+//	int nPlayers = Context::CountPlayers ();
+//	for ( int i = 0; i < nPlayers; ++i ) {
+//		Player& player = sPlayers [ i ];
+//		tree.AddChain ( player.GetChain ());
+//	}
 	TreeSummary summary;
 	tree.Summarize ( summary );
 	summary.Print ( maxDepth );

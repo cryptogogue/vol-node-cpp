@@ -2,7 +2,6 @@
 #define PLAYER_H
 
 #include "analysis.h"
-#include "chain.h"
 
 class Player;
 
@@ -52,7 +51,6 @@ private:
 	int					mID;
 	int					mPlayersCheckedCount;
 	vector < bool > 	mPlayersCheckedMask; // playerID -> checked
-	Chain				mChain;
 	Analysis			mAnalysis;
 
 	Cohort*				mCohort;
@@ -61,22 +59,13 @@ private:
 	bool				mVerbose;
 
 	//----------------------------------------------------------------//
-	void			CopyChainFrom			( const Chain* chain );
 	const Player*	GetNextPlayerInCycle	();
-	void			PushBlock				( const Chain* chain );
 	const Player*	RequestPlayer			();
 	void			Step					();
-	void			StepCycles				( const Analysis* analysis0, const Analysis* analysis1 );
-	bool			StepMerit				( const Chain* chain0, const Chain* chain1 );
-	bool			StepMeritDelta			( const Chain* chain0, const Chain* chain1 );
-	bool			StepParticipation		( const Chain* chain0, const Chain* chain1 );
-	bool			StepScore				( const Chain* chain0, const Chain* chain1 );
-	bool			StepSimple				( const Chain* chain0, const Chain* chain1 );
 
 public:
 	
 	//----------------------------------------------------------------//
-	const Chain&	GetChain		() const;
 	int				GetID			() const;
 	void			Init			( int playerID );
 	void			Next			();

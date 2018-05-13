@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		CD9345C62093EB140077BAD4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345C52093EB140077BAD4 /* main.cpp */; };
-		CD9345D120944B260077BAD4 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345CD20944B260077BAD4 /* chain.cpp */; };
 		CD9345D220944B260077BAD4 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345CF20944B260077BAD4 /* player.cpp */; };
 		CD9345D520944B540077BAD4 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345D320944B540077BAD4 /* context.cpp */; };
 		CDADE3C9209E8B4700553B16 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDADE3C7209E8B4700553B16 /* analysis.cpp */; };
@@ -29,10 +28,8 @@
 /* Begin PBXFileReference section */
 		CD9345C22093EB140077BAD4 /* consensus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = consensus; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD9345C52093EB140077BAD4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		CD9345CD20944B260077BAD4 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chain.cpp; sourceTree = "<group>"; };
 		CD9345CE20944B260077BAD4 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = player.h; sourceTree = "<group>"; };
 		CD9345CF20944B260077BAD4 /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = player.cpp; sourceTree = "<group>"; };
-		CD9345D020944B260077BAD4 /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.h; sourceTree = "<group>"; };
 		CD9345D320944B540077BAD4 /* context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = context.cpp; sourceTree = "<group>"; };
 		CD9345D420944B540077BAD4 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = context.h; sourceTree = "<group>"; };
 		CD9345D620944BEE0077BAD4 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
@@ -72,8 +69,6 @@
 			children = (
 				CDADE3C7209E8B4700553B16 /* analysis.cpp */,
 				CDADE3C8209E8B4700553B16 /* analysis.h */,
-				CD9345CD20944B260077BAD4 /* chain.cpp */,
-				CD9345D020944B260077BAD4 /* chain.h */,
 				CD9345D620944BEE0077BAD4 /* common.h */,
 				CD9345D320944B540077BAD4 /* context.cpp */,
 				CD9345D420944B540077BAD4 /* context.h */,
@@ -110,7 +105,7 @@
 		CD9345BA2093EB140077BAD4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Patrick Meehan";
 				TargetAttributes = {
 					CD9345C12093EB140077BAD4 = {
@@ -144,7 +139,6 @@
 				CD9345C62093EB140077BAD4 /* main.cpp in Sources */,
 				CDADE3C9209E8B4700553B16 /* analysis.cpp in Sources */,
 				CD9345D520944B540077BAD4 /* context.cpp in Sources */,
-				CD9345D120944B260077BAD4 /* chain.cpp in Sources */,
 				CD9345D220944B260077BAD4 /* player.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -166,6 +160,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -173,6 +168,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -222,6 +218,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -229,6 +226,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

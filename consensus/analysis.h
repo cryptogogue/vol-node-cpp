@@ -1,7 +1,7 @@
 #ifndef ANALYSIS_H
 #define ANALYSIS_H
 
-#include "chain.h"
+#include "common.h"
 
 //================================================================//
 // Cycle

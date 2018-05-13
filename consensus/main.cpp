@@ -164,7 +164,7 @@ public:
 	
 		Context::Reset ();
 		Context::InitPlayers ( 16 );
-		Context::SetCyclesPerStep ( 16 );
+		//Context::SetCyclesPerStep ( 16 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 15 );
 		
 		//this->mNormal.SetVerbose ( true );
@@ -262,7 +262,7 @@ public:
 //----------------------------------------------------------------//
 int main ( int argc, const char* argv []) {
 
-	FastGangScenario scenario;
+	SimpleScenario scenario;
 	scenario.Run ();
 
 	return 0;
