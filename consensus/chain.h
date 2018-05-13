@@ -1,5 +1,5 @@
-#ifndef ANALYSIS_H
-#define ANALYSIS_H
+#ifndef CHAIN_H
+#define CHAIN_H
 
 #include "common.h"
 
@@ -9,7 +9,7 @@
 class Cycle {
 private:
 
-	friend class Analysis;
+	friend class Chain;
 
 	vector < int >	mPlayerList;
 
@@ -19,20 +19,20 @@ private:
 public:
 
 	//----------------------------------------------------------------//
-	static int	Compare			( const Cycle& cycle0, const Cycle& cycle1 );
-	bool		Contains		( int playerID ) const;
-				Cycle			();
-				Cycle			( int cycleCount );
-	int			FindPosition	( int playerID );
-	void		Insert			( int playerID );
-	void		Print			() const;
-	int			Size			() const;
+	static int		Compare				( const Cycle& cycle0, const Cycle& cycle1 );
+	bool			Contains			( int playerID ) const;
+					Cycle				();
+					Cycle				( int cycleCount );
+	int				FindPosition		( int playerID );
+	void			Insert				( int playerID );
+	void			Print				() const;
+	int				Size				() const;
 };
 
 //================================================================//
-// Analysis
+// Chain
 //================================================================//
-class Analysis {
+class Chain {
 private:
 
 	vector < Cycle >		mCycles;
@@ -44,12 +44,12 @@ private:
 public:
 
 	//----------------------------------------------------------------//
-								Analysis		();
-	static const Analysis&		Compare			( const Analysis& analysis0, const Analysis& analysis1 );
-	int							FindPosition	( int playerID ) const;
-	bool						InTopCycle		( int playerID ) const;
-	void						Print			( const char* pre = 0, const char* post = "\n" ) const;
-	void						Push			( int playerID );
+							Chain			();
+	static const Chain&		Compare			( const Chain& chain0, const Chain& chain1 );
+	int						FindPosition	( int playerID ) const;
+	bool					InTopCycle		( int playerID ) const;
+	void					Print			( const char* pre = 0, const char* post = "\n" ) const;
+	void					Push			( int playerID );
 };
 
 #endif

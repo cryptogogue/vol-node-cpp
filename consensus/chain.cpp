@@ -6,7 +6,7 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include "analysis.h"
+#include "chain.h"
 #include "context.h"
 
 //================================================================//
@@ -101,40 +101,40 @@ int Cycle::Size () const {
 }
 
 //================================================================//
-// Analysis
+// Chain
 //================================================================//
 
 //----------------------------------------------------------------//
-Analysis::Analysis () {
+Chain::Chain () {
 }
 
 //----------------------------------------------------------------//
-const Analysis& Analysis::Compare ( const Analysis& analysis0, const Analysis& analysis1 ) {
+const Chain& Chain::Compare ( const Chain& chain0, const Chain& chain1 ) {
 
-	size_t size0 = analysis0.mCycles.size ();
-	size_t size1 = analysis1.mCycles.size ();
+	size_t size0 = chain0.mCycles.size ();
+	size_t size1 = chain1.mCycles.size ();
 
 	size_t minSize = size0 < size1 ? size0 : size1;
 	for ( size_t i = 0; i < minSize; ++i ) {
-		const Cycle& cycle0 = analysis0.mCycles [ i ];
-		const Cycle& cycle1 = analysis1.mCycles [ i ];
+		const Cycle& cycle0 = chain0.mCycles [ i ];
+		const Cycle& cycle1 = chain1.mCycles [ i ];
 		
 		int compare = Cycle::Compare ( cycle0, cycle1 );
 		
 		// prefer the longer cycle
 		if ( compare != 0 ) {
-			return compare < 0 ? analysis0 : analysis1;
+			return compare < 0 ? chain0 : chain1;
 		}
 	}
 	
 	if ( size0 != size1 ) {
 	
-		const Analysis* shorter		= &analysis0;
-		const Analysis* longer		= &analysis1;
+		const Chain* shorter		= &chain0;
+		const Chain* longer		= &chain1;
 		
 		if ( size1 < size0 ) {
-			shorter		= &analysis1;
-			longer		= &analysis0;
+			shorter		= &chain1;
+			longer		= &chain0;
 		}
 		
 		if ( shorter->mCycles.size () == 0 ) return *longer;
@@ -144,29 +144,29 @@ const Analysis& Analysis::Compare ( const Analysis& analysis0, const Analysis& a
 		
 		return longerNext.Size () >= shorterTop.Size () ? *longer : *shorter;
 	}
-	return analysis0;
+	return chain0;
 }
 
 //----------------------------------------------------------------//
-bool Analysis::InTopCycle ( int playerID ) const {
+bool Chain::InTopCycle ( int playerID ) const {
 
 	return this->mCycles.size () ? this->mCycles.back ().Contains ( playerID ) : false;
 }
 
 //----------------------------------------------------------------//
-Cycle* Analysis::GetTop () {
+Cycle* Chain::GetTop () {
 
 	return this->mCycles.size () > 0 ? &this->mCycles.back () : 0;
 }
 
 //----------------------------------------------------------------//
-const Cycle* Analysis::GetTop () const {
+const Cycle* Chain::GetTop () const {
 
 	return this->mCycles.size () > 0 ? &this->mCycles.back () : 0;
 }
 
 //----------------------------------------------------------------//
-void Analysis::Print ( const char* pre, const char* post ) const {
+void Chain::Print ( const char* pre, const char* post ) const {
 
 	if ( pre ) {
 		printf ( "%s", pre );
@@ -182,7 +182,7 @@ void Analysis::Print ( const char* pre, const char* post ) const {
 }
 
 //----------------------------------------------------------------//
-void Analysis::Push ( int playerID ) {
+void Chain::Push ( int playerID ) {
 
 	for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
 		Cycle& cycle = this->mCycles [ i ];

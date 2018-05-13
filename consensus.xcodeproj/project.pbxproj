@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD5D0D3020A811A900F5B898 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5D0D2F20A811A900F5B898 /* cohort.cpp */; };
 		CD9345C62093EB140077BAD4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345C52093EB140077BAD4 /* main.cpp */; };
 		CD9345D220944B260077BAD4 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345CF20944B260077BAD4 /* player.cpp */; };
 		CD9345D520944B540077BAD4 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345D320944B540077BAD4 /* context.cpp */; };
-		CDADE3C9209E8B4700553B16 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDADE3C7209E8B4700553B16 /* analysis.cpp */; };
+		CDADE3C9209E8B4700553B16 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDADE3C7209E8B4700553B16 /* chain.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD5D0D2E20A811A900F5B898 /* cohort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cohort.h; sourceTree = "<group>"; };
+		CD5D0D2F20A811A900F5B898 /* cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cohort.cpp; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* consensus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = consensus; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD9345C52093EB140077BAD4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CD9345CE20944B260077BAD4 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = player.h; sourceTree = "<group>"; };
@@ -33,8 +36,8 @@
 		CD9345D320944B540077BAD4 /* context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = context.cpp; sourceTree = "<group>"; };
 		CD9345D420944B540077BAD4 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = context.h; sourceTree = "<group>"; };
 		CD9345D620944BEE0077BAD4 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		CDADE3C7209E8B4700553B16 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analysis.cpp; sourceTree = "<group>"; };
-		CDADE3C8209E8B4700553B16 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
+		CDADE3C7209E8B4700553B16 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chain.cpp; sourceTree = "<group>"; };
+		CDADE3C8209E8B4700553B16 /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,8 +70,10 @@
 		CD9345C42093EB140077BAD4 /* consensus */ = {
 			isa = PBXGroup;
 			children = (
-				CDADE3C7209E8B4700553B16 /* analysis.cpp */,
-				CDADE3C8209E8B4700553B16 /* analysis.h */,
+				CDADE3C7209E8B4700553B16 /* chain.cpp */,
+				CDADE3C8209E8B4700553B16 /* chain.h */,
+				CD5D0D2F20A811A900F5B898 /* cohort.cpp */,
+				CD5D0D2E20A811A900F5B898 /* cohort.h */,
 				CD9345D620944BEE0077BAD4 /* common.h */,
 				CD9345D320944B540077BAD4 /* context.cpp */,
 				CD9345D420944B540077BAD4 /* context.h */,
@@ -136,8 +141,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD5D0D3020A811A900F5B898 /* cohort.cpp in Sources */,
 				CD9345C62093EB140077BAD4 /* main.cpp in Sources */,
-				CDADE3C9209E8B4700553B16 /* analysis.cpp in Sources */,
+				CDADE3C9209E8B4700553B16 /* chain.cpp in Sources */,
 				CD9345D520944B540077BAD4 /* context.cpp in Sources */,
 				CD9345D220944B260077BAD4 /* player.cpp in Sources */,
 			);

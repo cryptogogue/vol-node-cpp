@@ -23,7 +23,7 @@ public:
 			Context::Process ();
 			
 			printf ( "ROUND: %d\n", i );
-			Context::PrintTree ( 2 );
+			//Context::PrintTree ( 2 );
 			Context::Print ();
 			printf ( "\n" );
 		}
