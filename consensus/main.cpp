@@ -21,12 +21,15 @@ public:
 		for ( int i = 0; this->Scenario_Control ( i ); ++i ) {
 	
 			Context::Process ();
-			
-			printf ( "ROUND: %d\n", i );
-			//Context::PrintTree ( 2 );
-			Context::Print ();
-			printf ( "\n" );
+			this->Scenario_Report ( i );
 		}
+	}
+	
+	//----------------------------------------------------------------//
+	virtual void Scenario_Report ( int i ) {
+		printf ( "ROUND: %d\n", i );
+		Context::Print ();
+		printf ( "\n" );
 	}
 	
 	//----------------------------------------------------------------//
@@ -256,13 +259,48 @@ public:
 };
 
 //================================================================//
+// TenKScenario
+//================================================================//
+class TenKScenario :
+	public Scenario {
+
+	Cohort mNormal;
+
+public:
+
+	//----------------------------------------------------------------//
+	TenKScenario () {
+	
+		Context::Reset ();
+		Context::InitPlayers ( 10000 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 9999 );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+		
+		return true;
+	}
+	
+	//----------------------------------------------------------------//
+	void Scenario_Report ( int i ) {
+		printf ( "ROUND: %d - ", i );
+		Context::PrintTree ( false, 1 );
+	}
+};
+
+//================================================================//
 // main
 //================================================================//
 
 //----------------------------------------------------------------//
 int main ( int argc, const char* argv []) {
 
-	SimpleScenario scenario;
+	TenKScenario scenario;
 	scenario.Run ();
 
 	return 0;

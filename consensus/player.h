@@ -26,19 +26,19 @@ private:
 	bool				mVerbose;
 
 	//----------------------------------------------------------------//
-	const Player*	GetNextPlayerInCycle	();
-	const Player*	RequestPlayer			();
-	void			Step					();
+	const Player*		GetNextPlayerInCycle	();
+	const Player*		RequestPlayer			();
+	void				Step					();
 
 public:
 	
 	//----------------------------------------------------------------//
-	int				GetID			() const;
-	void			Init			( int playerID );
-	void			Next			();
-					Player			();
-	void			Print			() const;
-	void			SetVerbose		( bool verbose );
+	int					GetID			() const;
+	void				Init			( int playerID );
+	void				Next			();
+						Player			();
+	void				Print			() const;
+	void				SetVerbose		( bool verbose );
 };
 
 #endif

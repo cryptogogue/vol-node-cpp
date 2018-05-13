@@ -23,7 +23,7 @@ public:
 	static int				GetPlayerScore			( int playerID, int entropy );
 	static void				InitPlayers				( int nPlayers );
 	static void				Print					();
-	static void				PrintTree				( int maxDepth = 0 );
+	static void				PrintTree				( bool verbose = false, int maxDepth = 0 );
 	static void				Process					();
 	static void				Reset					();
 	static void				SetCyclesPerStep		( int cycles );

@@ -10,6 +10,7 @@ class Cycle {
 private:
 
 	friend class Chain;
+	friend class Tree;
 
 	vector < int >	mPlayerList;
 
@@ -34,6 +35,8 @@ public:
 //================================================================//
 class Chain {
 private:
+
+	friend class Tree;
 
 	vector < Cycle >		mCycles;
 

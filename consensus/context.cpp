@@ -33,17 +33,30 @@ public:
 	list < TreeSummary >	mChildren;
 	
 	//----------------------------------------------------------------//
-	void Print ( int maxDepth = 0, int depth = 0 ) const {
+	void Print ( bool verbose, int maxDepth = 0, int depth = 0 ) const {
 	
 		if (( maxDepth > 0 ) && ( depth >= maxDepth )) return;
 	
+		size_t nPlayers = this->mPlayers.size ();
+	
 		print_indent ( depth );
-		printf ( "[size: %d]\n", ( int )this->mPlayers.size ());
+		printf ( "[size: %d]", ( int )nPlayers );
+		
+		if ( verbose && ( nPlayers > 0 )) {
+			printf ( " - " );
+			for ( size_t i = 0; i < nPlayers; ++i ) {
+				if ( i > 0 ) {
+					printf ( "," );
+				}
+				printf ( "%d", this->mPlayers [ i ]);
+			}
+		}
+		printf ( "\n" );
 		
 		++depth;
 		list < TreeSummary >::const_iterator childrenIt = this->mChildren.begin ();
 		for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
-			childrenIt->Print ( maxDepth, depth );
+			childrenIt->Print ( verbose, maxDepth, depth );
 		}
 	}
 };
@@ -58,16 +71,21 @@ public:
 	map < int, Tree >	mChildren;
 
 	//----------------------------------------------------------------//
-//	void AddChain ( const Chain& chain ) {
-//
-//		Tree* cursor = this;
-//
-//		for ( int i = 0; i < ( int )chain.mBlocks.size (); ++i ) {
-//			const Block& block	= chain.mBlocks [ i ];
-//			cursor				= &cursor->mChildren [ block.mBlockID ];
-//			cursor->mBlock		= block;
-//		}
-//	}
+	void AddChain ( const Chain& chain ) {
+
+		Tree* cursor = this;
+
+		for ( size_t i = 0; i < chain.mCycles.size (); ++i ) {
+			const Cycle& cycle = chain.mCycles [ i ];
+			
+			for ( size_t j = 0; j < cycle.mPlayerList.size (); ++j ) {
+				
+				int playerID		= cycle.mPlayerList [ j ];
+				cursor				= &cursor->mChildren [ playerID ];
+				cursor->mPlayer		= playerID;
+			}
+		}
+	}
 	
 	//----------------------------------------------------------------//
 	void Summarize ( TreeSummary& summary ) const {
@@ -199,17 +217,17 @@ void Context::Print () {
 }
 
 //----------------------------------------------------------------//
-void Context::PrintTree ( int maxDepth ) {
+void Context::PrintTree ( bool verbose, int maxDepth ) {
 
 	Tree tree;
-//	int nPlayers = Context::CountPlayers ();
-//	for ( int i = 0; i < nPlayers; ++i ) {
-//		Player& player = sPlayers [ i ];
-//		tree.AddChain ( player.GetChain ());
-//	}
+	int nPlayers = Context::CountPlayers ();
+	for ( int i = 0; i < nPlayers; ++i ) {
+		Player& player = sPlayers [ i ];
+		tree.AddChain ( player.mChain );
+	}
 	TreeSummary summary;
 	tree.Summarize ( summary );
-	summary.Print ( maxDepth );
+	summary.Print ( verbose, maxDepth );
 }
 
 //----------------------------------------------------------------//
