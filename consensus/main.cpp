@@ -23,7 +23,7 @@ public:
 			Context::Process ();
 			
 			printf ( "ROUND: %d\n", i );
-			//Context::PrintTree ( 2 );
+			Context::PrintTree ( 2 );
 			Context::Print ();
 			printf ( "\n" );
 		}
@@ -56,6 +56,8 @@ public:
 		
 		Context::ApplyCohort ( this->mNormal, "NORM", 4, 15 );
 		this->mNormal.SetFlags ( 2, 3, 3 );
+		
+		//Context::SetPlayerVerbose ( 8, true );
 	}
 
 	//================================================================//
@@ -65,7 +67,8 @@ public:
 	//----------------------------------------------------------------//
 	bool Scenario_Control ( int step ) {
 		
-		return step < 64;
+		//return step < 1024;
+		return true;
 	}
 };
 
@@ -83,10 +86,9 @@ public:
 	RandFreqScenario () {
 	
 		Context::Reset ();
-		Context::InitPlayers ( 16 );
-		Context::SetDropRate ( 0.8 );
+		Context::InitPlayers ( 32 );
 		
-		Context::ApplyCohort ( this->mRandFreq, "RANDFREQ", 0, 15 );
+		Context::ApplyCohort ( this->mRandFreq, "RANDFREQ", 0, 31 );
 		this->mRandFreq.RandomizeFrequencies ( 10 );
 	}
 
@@ -97,7 +99,7 @@ public:
 	//----------------------------------------------------------------//
 	bool Scenario_Control ( int step ) {
 	
-		return step < 128;
+		return step < 64;
 	}
 };
 
@@ -148,6 +150,39 @@ public:
 };
 
 //================================================================//
+// SimpleScenario
+//================================================================//
+class SimpleScenario :
+	public Scenario {
+
+	Cohort mNormal;
+
+public:
+
+	//----------------------------------------------------------------//
+	SimpleScenario () {
+	
+		Context::Reset ();
+		Context::InitPlayers ( 16 );
+		Context::SetCyclesPerStep ( 16 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 15 );
+		
+		//this->mNormal.SetVerbose ( true );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+		
+		//return step < 32;
+		return true;
+	}
+};
+
+//================================================================//
 // SleepyScenario
 //================================================================//
 class SleepyScenario :
@@ -163,7 +198,6 @@ public:
 	
 		Context::Reset ();
 		Context::InitPlayers ( 16 );
-		Context::SetDropRate ( 0.8 );
 		
 		Context::ApplyCohort ( this->mSleepy, "SLPY", 0, 11 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 12, 15 );
@@ -204,9 +238,9 @@ public:
 	
 		Context::Reset ();
 		Context::InitPlayers ( 4 );
-		
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 3 );
-		this->mNormal.SetFrequency ( 1 );
+		
+		this->mNormal.SetVerbose ( true );
 	}
 
 	//================================================================//
@@ -216,7 +250,8 @@ public:
 	//----------------------------------------------------------------//
 	bool Scenario_Control ( int step ) {
 		
-		return step < 32;
+		//return step < 32;
+		return true;
 	}
 };
 

@@ -20,6 +20,7 @@ public:
 	static int				GetBlockID				();
 	static const Player&	GetPlayer				( int playerID );
 	static float			GetPlayerMerit			( int entropy, int playerID );
+	static int				GetPlayerScore			( int playerID, int entropy );
 	static void				InitPlayers				( int nPlayers );
 	static void				Print					();
 	static void				PrintTree				( int maxDepth = 0 );
@@ -27,6 +28,7 @@ public:
 	static void				Reset					();
 	static void				SetCyclesPerStep		( int cycles );
 	static void				SetDropRate				( float percentage );
+	static void				SetPlayerVerbose		( int playerID, bool verbose );
 };
 
 #endif

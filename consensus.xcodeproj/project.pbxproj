@@ -11,6 +11,7 @@
 		CD9345D120944B260077BAD4 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345CD20944B260077BAD4 /* chain.cpp */; };
 		CD9345D220944B260077BAD4 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345CF20944B260077BAD4 /* player.cpp */; };
 		CD9345D520944B540077BAD4 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345D320944B540077BAD4 /* context.cpp */; };
+		CDADE3C9209E8B4700553B16 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDADE3C7209E8B4700553B16 /* analysis.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,8 @@
 		CD9345D320944B540077BAD4 /* context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = context.cpp; sourceTree = "<group>"; };
 		CD9345D420944B540077BAD4 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = context.h; sourceTree = "<group>"; };
 		CD9345D620944BEE0077BAD4 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		CDADE3C7209E8B4700553B16 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analysis.cpp; sourceTree = "<group>"; };
+		CDADE3C8209E8B4700553B16 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +70,8 @@
 		CD9345C42093EB140077BAD4 /* consensus */ = {
 			isa = PBXGroup;
 			children = (
+				CDADE3C7209E8B4700553B16 /* analysis.cpp */,
+				CDADE3C8209E8B4700553B16 /* analysis.h */,
 				CD9345CD20944B260077BAD4 /* chain.cpp */,
 				CD9345D020944B260077BAD4 /* chain.h */,
 				CD9345D620944BEE0077BAD4 /* common.h */,
@@ -137,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD9345C62093EB140077BAD4 /* main.cpp in Sources */,
+				CDADE3C9209E8B4700553B16 /* analysis.cpp in Sources */,
 				CD9345D520944B540077BAD4 /* context.cpp in Sources */,
 				CD9345D120944B260077BAD4 /* chain.cpp in Sources */,
 				CD9345D220944B260077BAD4 /* player.cpp in Sources */,

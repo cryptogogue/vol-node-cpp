@@ -27,22 +27,42 @@ public:
 //================================================================//
 class Chain {
 
+	friend class Analysis;
+
+	int					mSpanSum;
+	int					mSpanCount;
+
+	map < int, int >	mPlayerIdToBlockHeight;
+	map < int, int >	mHistogram;
+
 	//----------------------------------------------------------------//
-	float		GetNextMerit		( int playerID, int& trimIndex ) const;
+	float		GetNextDiversity	( int playerID, int& spanSum, int& spanCount ) const;
 
 public:
 
-	list < Block >		mBlocks;
+	vector < Block >	mBlocks;
+	float				mDiversity;
 	float				mMerit;
-
+	float				mWidth;
+	float				mPenalty;
+	float				mScore;
+	float				mParticipation;
+	
 	//----------------------------------------------------------------//
-	float		AverageSpan			() const;
-	void		CopyFrom			( const Chain& from );
-	float		GetNextMerit		( int playerID ) const;
-				Chain				();
-	void		Print				() const;
-	void		PushBlock			( int playerID );
-	void		Update				( const list < Block >& blocks );
+	float		AverageSpan					() const;
+				Chain						();
+	void		CopyFrom					( const Chain& from );
+	float		FindBestScore				( int playerID, int& position ) const;
+	float		GetNextDiversity			( int playerID ) const;
+	float		GetNextMerit				( int playerID ) const;
+	float		GetNextParticipation		( int playerID ) const;
+	float		GetNextPenalty				( int playerID ) const;
+	int			GetNextWidth				( int playerID ) const;
+	void		InsertBlock					( int playerID, int position, float score );
+	bool		IsTop						( int playerID ) const;
+	void		Print						( const char* pre = 0, const char* post = "\n" ) const;
+	void		PushBlock					( int playerID );
+	void		Update						( const list < Block >& blocks );
 };
 
 #endif

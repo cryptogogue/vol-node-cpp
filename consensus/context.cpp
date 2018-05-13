@@ -62,9 +62,8 @@ public:
 	
 		Tree* cursor = this;
 		
-		list < Block >::const_iterator blockIt = chain.mBlocks.begin ();
-		for ( ; blockIt != chain.mBlocks.end (); ++blockIt ) {
-			const Block& block	= *blockIt;
+		for ( int i = 0; i < ( int )chain.mBlocks.size (); ++i ) {
+			const Block& block	= chain.mBlocks [ i ];
 			cursor				= &cursor->mChildren [ block.mBlockID ];
 			cursor->mBlock		= block;
 		}
@@ -168,10 +167,15 @@ float Context::GetPlayerMerit ( int entropy, int playerID ) {
 		merit += 1.0;
 	}
 
-	merit = (( merit / ( float )nPlayers ) * 3.0 ) - 2.0;
-	//merit = merit * merit;
+	merit = merit / ( float )nPlayers;
 	
 	return merit;
+}
+
+//----------------------------------------------------------------//
+int Context::GetPlayerScore ( int playerID, int entropy ) {
+
+	return playerID ^ entropy;
 }
 
 //----------------------------------------------------------------//
@@ -244,7 +248,7 @@ void Context::Reset () {
 	sEntropy.clear ();
 	sBlockCount = 0;
 	sDropRate = 0.0;
-	sCyclesPerStep = 0;
+	sCyclesPerStep = 1;
 }
 
 //----------------------------------------------------------------//
@@ -257,4 +261,10 @@ void Context::SetCyclesPerStep ( int cycles ) {
 void Context::SetDropRate ( float percentage ) {
 
 	sDropRate = percentage;
+}
+
+//----------------------------------------------------------------//
+void Context::SetPlayerVerbose ( int playerID, bool verbose ) {
+
+	sPlayers [ playerID ].mVerbose = verbose;
 }
