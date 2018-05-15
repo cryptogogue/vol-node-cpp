@@ -14,8 +14,10 @@ private:
 
 	vector < int >	mPlayerList;
 
-	int				mCycleCount;
+	int				mCycleID;
 	int				mEntropy;
+
+	float			mNewPlayerRatio;
 
 public:
 
@@ -23,11 +25,12 @@ public:
 	static int		Compare				( const Cycle& cycle0, const Cycle& cycle1 );
 	bool			Contains			( int playerID ) const;
 					Cycle				();
-					Cycle				( int cycleCount );
+					Cycle				( int cycleID );
 	int				FindPosition		( int playerID );
 	void			Insert				( int playerID );
 	void			Print				() const;
 	int				Size				() const;
+	void			UpdatePlayerRatio	( size_t prevCount );
 };
 
 //================================================================//
@@ -41,8 +44,9 @@ private:
 	vector < Cycle >		mCycles;
 
 	//----------------------------------------------------------------//
-	Cycle*					GetTop			();
-	const Cycle*			GetTop			() const;
+	Cycle*					GetTopCycle		();
+	const Cycle*			GetTopCycle		() const;
+	void					Insert			( int cycleID, int playerID );
 
 public:
 
@@ -50,7 +54,7 @@ public:
 							Chain			();
 	static const Chain&		Compare			( const Chain& chain0, const Chain& chain1 );
 	int						FindPosition	( int playerID ) const;
-	bool					InTopCycle		( int playerID ) const;
+	//bool					InTopCycle		( int playerID ) const;
 	void					Print			( const char* pre = 0, const char* post = "\n" ) const;
 	void					Push			( int playerID );
 };

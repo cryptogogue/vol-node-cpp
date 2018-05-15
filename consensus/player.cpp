@@ -131,23 +131,23 @@ void Player::Step () {
 	Chain nextChain0 = *chain0;
 	Chain nextChain1 = *chain1;
 	
-	bool inTop0 = nextChain0.InTopCycle ( this->mID );
-	bool inTop1 = nextChain1.InTopCycle ( this->mID );
+//	bool inTop0 = nextChain0.InTopCycle ( this->mID );
+//	bool inTop1 = nextChain1.InTopCycle ( this->mID );
 	
-	if ( inTop0 == inTop1 ) {
+//	if ( inTop0 == inTop1 ) {
 
 		nextChain0.Push ( this->mID );
 		nextChain1.Push ( this->mID );
-	}
-	else {
-
-		if ( !inTop0 ) {
-			nextChain0.Push ( this->mID );
-		}
-		if ( !inTop1 ) {
-			nextChain1.Push ( this->mID );
-		}
-	}
+//	}
+//	else {
+//
+//		if ( !inTop0 ) {
+//			nextChain0.Push ( this->mID );
+//		}
+//		if ( !inTop1 ) {
+//			nextChain1.Push ( this->mID );
+//		}
+//	}
 
 	if ( this->mVerbose ) {
 		nextChain0.Print ( "    NEXT0: " );

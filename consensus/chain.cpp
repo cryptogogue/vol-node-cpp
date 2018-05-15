@@ -49,14 +49,16 @@ bool Cycle::Contains ( int playerID ) const {
 
 //----------------------------------------------------------------//
 Cycle::Cycle () :
-	mCycleCount ( 0 ),
-	mEntropy ( Context::Entropy ( 0 )) {
+	mCycleID ( 0 ),
+	mEntropy ( Context::Entropy ( 0 )),
+	mNewPlayerRatio ( 0.0 ) {
 }
 
 //----------------------------------------------------------------//
-Cycle::Cycle ( int cycleCount ) :
-	mCycleCount ( cycleCount ),
-	mEntropy ( Context::Entropy ( cycleCount )) {
+Cycle::Cycle ( int cycleID ) :
+	mCycleID ( cycleID ),
+	mEntropy ( Context::Entropy ( cycleID )),
+	mNewPlayerRatio ( 0.0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -92,13 +94,19 @@ void Cycle::Print () const {
 		}
 		printf ( "%d", this->mPlayerList [ i ]);
 	}
-	printf ( "]" );
+	printf ( ",(%g)]", this->mNewPlayerRatio );
 }
 
 //----------------------------------------------------------------//
 int Cycle::Size () const {
 
 	return ( int )this->mPlayerList.size ();
+}
+
+//----------------------------------------------------------------//
+void Cycle::UpdatePlayerRatio ( size_t prevCount ) {
+
+	this->mNewPlayerRatio = prevCount > 0 ? ( float )this->mPlayerList.size () / ( float )prevCount : 1.0;
 }
 
 //================================================================//
@@ -141,7 +149,7 @@ const Chain& Chain::Compare ( const Chain& chain0, const Chain& chain1 ) {
 		if ( shorter->mCycles.size () == 0 ) return *longer;
 	
 		const Cycle& shorterTop = shorter->mCycles.back ();
-		const Cycle& longerNext = longer->mCycles [ shorterTop.mCycleCount ];
+		const Cycle& longerNext = longer->mCycles [ shorterTop.mCycleID ];
 		
 		return longerNext.Size () >= shorterTop.Size () ? *longer : *shorter;
 	}
@@ -149,22 +157,33 @@ const Chain& Chain::Compare ( const Chain& chain0, const Chain& chain1 ) {
 }
 
 //----------------------------------------------------------------//
-bool Chain::InTopCycle ( int playerID ) const {
-
-	return this->mCycles.size () ? this->mCycles.back ().Contains ( playerID ) : false;
-}
-
-//----------------------------------------------------------------//
-Cycle* Chain::GetTop () {
+Cycle* Chain::GetTopCycle () {
 
 	return this->mCycles.size () > 0 ? &this->mCycles.back () : 0;
 }
 
 //----------------------------------------------------------------//
-const Cycle* Chain::GetTop () const {
+const Cycle* Chain::GetTopCycle () const {
 
 	return this->mCycles.size () > 0 ? &this->mCycles.back () : 0;
 }
+
+//----------------------------------------------------------------//
+void Chain::Insert ( int cycleID, int playerID ) {
+
+	this->mCycles.resize ( cycleID + 1 );
+	Cycle& cycle = this->mCycles [ cycleID ];
+	cycle.Insert ( playerID );
+
+	size_t prevCount = cycleID > 0 ? this->mCycles [ cycleID - 1 ].mPlayerList.size () : 0;
+	cycle.UpdatePlayerRatio ( prevCount);
+}
+
+//----------------------------------------------------------------//
+//bool Chain::InTopCycle ( int playerID ) const {
+//
+//	return this->mCycles.size () ? this->mCycles.back ().Contains ( playerID ) : false;
+//}
 
 //----------------------------------------------------------------//
 void Chain::Print ( const char* pre, const char* post ) const {
@@ -185,22 +204,25 @@ void Chain::Print ( const char* pre, const char* post ) const {
 //----------------------------------------------------------------//
 void Chain::Push ( int playerID ) {
 
+	// first, seek back to find earliest cycle where we could insert.
+	// stop if we find any cycle we've already been included in.
+	// only insert if the change in participation of the next cycle
+	// will drop below the threshold
 	for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
 		Cycle& cycle = this->mCycles [ i ];
 		if ( !cycle.Contains ( playerID )) {
-			this->mCycles.resize ( i + 1 );
-			cycle.Insert ( playerID );
+			this->Insert (( int )i, playerID );
 			return;
 		}
 	}
 
 	// get the top cycle
-	Cycle* cycle = this->GetTop ();
+	Cycle* cycle = this->GetTopCycle ();
 
 	// if no top or top contains block already, start a new cycle
 	if ( !cycle || cycle->Contains ( playerID )) {
 		this->mCycles.push_back ( Cycle (( int )this->mCycles.size ()));
 		cycle = &this->mCycles.back ();
 	}
-	cycle->Insert ( playerID );
+	this->Insert ( cycle->mCycleID, playerID );
 }
