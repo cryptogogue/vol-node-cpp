@@ -17,8 +17,6 @@ private:
 	string	mName;
 
 	int		mBasePlayer;
-	int		mTopPlayer;
-
 	bool	mIsPaused;
 	
 	int		mGroupFlags;

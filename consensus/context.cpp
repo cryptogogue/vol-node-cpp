@@ -9,11 +9,13 @@
 #include "context.h"
 #include "player.h"
 
-static int					sBlockCount = 0;
+static int					sBlockCount			= 0;
 static vector < Player >	sPlayers;
 static map < int, int >		sEntropy;
-float						sDropRate = 0.0;
-int							sCyclesPerStep = 0;
+float						sDropRate			= 0.0;
+int							sCyclesPerStep		= 0;
+bool						sRandomizeScore		= false;
+float						sThreshold			= 0.75;
 
 //----------------------------------------------------------------//
 void print_indent ( int indent ) {
@@ -24,13 +26,146 @@ void print_indent ( int indent ) {
 }
 
 //================================================================//
+// Tree
+//================================================================//
+class Tree {
+private:
+
+	friend class TreeSummary;
+
+	int					mPlayer;
+	map < int, Tree >	mChildren;
+
+public:
+
+	//----------------------------------------------------------------//
+	void AddChain ( const Chain& chain ) {
+
+		Tree* cursor = this;
+
+		for ( size_t i = 0; i < chain.mCycles.size (); ++i ) {
+			const Cycle& cycle = chain.mCycles [ i ];
+			
+			for ( size_t j = 0; j < cycle.mChain.size (); ++j ) {
+				
+				int playerID		= cycle.mChain [ j ];
+				cursor				= &cursor->mChildren [ playerID ];
+				cursor->mPlayer		= playerID;
+			}
+		}
+	}
+	
+	//----------------------------------------------------------------//
+	Tree () :
+		mPlayer ( -1 ) {
+	}
+};
+
+//================================================================//
+// TreeLevelStats
+//================================================================//
+class TreeLevelStats {
+public:
+
+	size_t		mBranches;
+	size_t		mContribution;
+	
+	//----------------------------------------------------------------//
+	TreeLevelStats () :
+		mBranches ( 0 ),
+		mContribution ( 0 ) {
+	}
+};
+
+//================================================================//
 // TreeSummary
 //================================================================//
 class TreeSummary {
-public:
+private:
 
 	vector < int >			mPlayers;
 	list < TreeSummary >	mChildren;
+	
+	size_t					mBranches;
+	size_t					mContribution;
+	size_t					mSubtreeSize;
+	float					mPercentOfTotal;
+
+	//----------------------------------------------------------------//
+	void ComputePercents ( size_t totalBlocks ) {
+	
+		this->mPercentOfTotal = totalBlocks > 0 ? (( float )this->mContribution / ( float )totalBlocks ) : 0.0;
+		
+		list < TreeSummary >::iterator childrenIt = this->mChildren.begin ();
+		for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
+			childrenIt->ComputePercents ( totalBlocks );
+		}
+	}
+	
+	//----------------------------------------------------------------//
+	size_t ComputeSize () {
+		
+		this->mBranches = 0;
+		this->mSubtreeSize = 0;
+		
+		if ( this->mChildren.size ()) {
+			list < TreeSummary >::iterator childrenIt = this->mChildren.begin ();
+			for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
+				TreeSummary& child = *childrenIt;
+				child.ComputeSize ();
+				this->mSubtreeSize += child.mSubtreeSize;
+				this->mBranches += child.mBranches;
+			}
+			this->mContribution = this->mPlayers.size () * this->mBranches;
+			this->mSubtreeSize += this->mContribution;
+		}
+		else {
+			this->mBranches = 1;
+			this->mSubtreeSize = this->mPlayers.size ();
+			this->mContribution = this->mSubtreeSize;
+		}
+		return this->mSubtreeSize;
+	}
+
+	//----------------------------------------------------------------//
+	void SummarizeRecurse ( const Tree& tree ) {
+	
+		size_t nChildren = tree.mChildren.size ();
+	
+		if ( nChildren ) {
+	
+			map < int, Tree >::const_iterator childrenIt = tree.mChildren.begin ();
+			
+			if ( nChildren == 1 ) {
+				this->mPlayers.push_back ( childrenIt->second.mPlayer );
+				this->SummarizeRecurse ( childrenIt->second );
+			}
+			else {
+
+				for ( ; childrenIt != tree.mChildren.end (); ++childrenIt ) {
+					this->mChildren.push_back ( TreeSummary ());
+					TreeSummary& childSummary = this->mChildren.back ();
+					childSummary.mPlayers.push_back ( childrenIt->second.mPlayer );
+					childSummary.SummarizeRecurse ( childrenIt->second );
+				}
+			}
+		}
+	}
+
+public:
+	
+	//----------------------------------------------------------------//
+	void AnalyzeLevels ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const {
+	
+		TreeLevelStats& stats = levels [ depth ];
+		stats.mBranches += this->mBranches;
+		stats.mContribution += this->mContribution;
+		
+		list < TreeSummary >::const_iterator childrenIt = this->mChildren.begin ();
+		for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
+			childrenIt->AnalyzeLevels ( levels, depth + 1 );
+		}
+	}
 	
 	//----------------------------------------------------------------//
 	void Print ( bool verbose, int maxDepth = 0, int depth = 0 ) const {
@@ -40,7 +175,7 @@ public:
 		size_t nPlayers = this->mPlayers.size ();
 	
 		print_indent ( depth );
-		printf ( "[size: %d]", ( int )nPlayers );
+		printf ( "[size: %d, branches: %d, percent: %g]", ( int )nPlayers, ( int )this->mBranches, this->mPercentOfTotal );
 		
 		if ( verbose && ( nPlayers > 0 )) {
 			printf ( " - " );
@@ -59,57 +194,40 @@ public:
 			childrenIt->Print ( verbose, maxDepth, depth );
 		}
 	}
-};
-
-//================================================================//
-// Tree
-//================================================================//
-class Tree {
-public:
 	
-	int					mPlayer;
-	map < int, Tree >	mChildren;
-
 	//----------------------------------------------------------------//
-	void AddChain ( const Chain& chain ) {
-
-		Tree* cursor = this;
-
-		for ( size_t i = 0; i < chain.mCycles.size (); ++i ) {
-			const Cycle& cycle = chain.mCycles [ i ];
-			
-			for ( size_t j = 0; j < cycle.mPlayerList.size (); ++j ) {
-				
-				int playerID		= cycle.mPlayerList [ j ];
-				cursor				= &cursor->mChildren [ playerID ];
-				cursor->mPlayer		= playerID;
-			}
+	void PrintLevels () const {
+	
+		size_t totalBlocks = this->mSubtreeSize;
+	
+		map < size_t, TreeLevelStats > levels;
+		this->AnalyzeLevels ( levels );
+		
+		size_t maxDepth = levels.size ();
+		for ( size_t i = 0; i < maxDepth; ++i ) {
+			TreeLevelStats& stats = levels [ i ];
+			float percent = ( totalBlocks > 0 ) ? (( float )stats.mContribution / ( float )totalBlocks ) : 0.0;
+			//printf ( "[branches: %d, percent: %g]", ( int )stats.mBranches, percent );
+			printf ( "[%g]", percent );
 		}
+		printf ( "\n" );
 	}
 	
 	//----------------------------------------------------------------//
-	void Summarize ( TreeSummary& summary ) const {
+	void Summarize ( const Tree& tree ) {
 	
-		int nChildren = ( int )this->mChildren.size ();
+		this->SummarizeRecurse ( tree );
+		
+		size_t totalBlocks = this->ComputeSize ();
+		this->ComputePercents ( totalBlocks );
+	}
 	
-		if ( nChildren ) {
-	
-			map < int, Tree >::const_iterator childrenIt = this->mChildren.begin ();
-			
-			if ( this->mChildren.size () == 1 ) {
-				summary.mPlayers.push_back ( childrenIt->second.mPlayer );
-				childrenIt->second.Summarize ( summary );
-			}
-			else {
-
-				for ( ; childrenIt != this->mChildren.end (); ++childrenIt ) {
-					summary.mChildren.push_back ( TreeSummary ());
-					TreeSummary& childSummary = summary.mChildren.back ();
-					childSummary.mPlayers.push_back ( childrenIt->second.mPlayer );
-					childrenIt->second.Summarize ( childSummary );
-				}
-			}
-		}
+	//----------------------------------------------------------------//
+	TreeSummary () :
+		mBranches ( 0 ),
+		mContribution ( 0 ),
+		mSubtreeSize ( 0 ),
+		mPercentOfTotal ( 0.0 ) {
 	}
 };
 
@@ -118,16 +236,16 @@ public:
 //================================================================//
 
 //----------------------------------------------------------------//
-void Context::ApplyCohort ( Cohort& cohort, string name, int basePlayer, int topPlayer ) {
+void Context::ApplyCohort ( Cohort& cohort, string name, int basePlayer, int size ) {
 
 	cohort.mName		= name;
 	cohort.mBasePlayer	= basePlayer;
-	cohort.mTopPlayer	= topPlayer;
 	
 	cohort.mPlayers.clear ();
-	for ( int i = basePlayer; i <= topPlayer; ++i ) {
-		sPlayers [ i ].mCohort = &cohort;
-		cohort.mPlayers.push_back ( &sPlayers [ i ]);
+	for ( int i = 0; i < size; ++i ) {
+		int idx = i + basePlayer;
+		sPlayers [ idx ].mCohort = &cohort;
+		cohort.mPlayers.push_back ( &sPlayers [ idx ]);
 	}
 }
 
@@ -167,6 +285,21 @@ const Player& Context::GetPlayer ( int playerID ) {
 }
 
 //----------------------------------------------------------------//
+uint Context::GetScore ( int playerID, int entropy ) {
+
+	if ( sRandomizeScore ) {
+		return ( unsigned int )( playerID ^ entropy );
+	}
+	return ( uint )playerID;
+}
+
+//----------------------------------------------------------------//
+float Context::GetThreshold () {
+
+	return sThreshold;
+}
+
+//----------------------------------------------------------------//
 void Context::InitPlayers ( int nPlayers ) {
 
 	sPlayers.resize ( nPlayers );
@@ -196,7 +329,9 @@ void Context::PrintTree ( bool verbose, int maxDepth ) {
 		tree.AddChain ( player.mChain );
 	}
 	TreeSummary summary;
-	tree.Summarize ( summary );
+	summary.Summarize ( tree );
+	
+	summary.PrintLevels ();
 	summary.Print ( verbose, maxDepth );
 }
 
@@ -234,9 +369,11 @@ void Context::Reset () {
 	srand ( 1 );
 	sPlayers.clear ();
 	sEntropy.clear ();
-	sBlockCount = 0;
-	sDropRate = 0.0;
-	sCyclesPerStep = 1;
+	sBlockCount			= 0;
+	sDropRate			= 0.0;
+	sCyclesPerStep		= 1;
+	sRandomizeScore		= false;
+	sThreshold			= 0.75;
 }
 
 //----------------------------------------------------------------//
@@ -255,4 +392,16 @@ void Context::SetDropRate ( float percentage ) {
 void Context::SetPlayerVerbose ( int playerID, bool verbose ) {
 
 	sPlayers [ playerID ].mVerbose = verbose;
+}
+
+//----------------------------------------------------------------//
+void Context::SetScoreRandomizer ( bool randomize ) {
+
+	sRandomizeScore = randomize;
+}
+
+//----------------------------------------------------------------//
+void Context::SetThreshold ( float threshold ) {
+
+	sThreshold = 1.0 - threshold;
 }

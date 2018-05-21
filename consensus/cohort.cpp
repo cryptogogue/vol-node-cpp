@@ -17,8 +17,7 @@
 
 //----------------------------------------------------------------//
 Cohort::Cohort () :
-	mBasePlayer ( -1 ),
-	mTopPlayer ( -1 ),
+	mBasePlayer ( 0 ),
 	mIsPaused ( false ),
 	mGroupFlags ( -1 ),
 	mRequestFlags ( -1 ),

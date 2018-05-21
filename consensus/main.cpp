@@ -28,7 +28,8 @@ public:
 	//----------------------------------------------------------------//
 	virtual void Scenario_Report ( int i ) {
 		printf ( "ROUND: %d\n", i );
-		Context::Print ();
+		//Context::Print ();
+		Context::PrintTree ( false, 1 );
 		printf ( "\n" );
 	}
 	
@@ -51,16 +52,17 @@ public:
 	FastGangScenario () {
 	
 		Context::Reset ();
+		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 16 );
 		
-		Context::ApplyCohort ( this->mRogue, "RGUE", 0, 3 );
+		Context::ApplyCohort ( this->mRogue, "RGUE", 0, 4 );
 		this->mRogue.SetFlags ( 1, 1, 3 );
 		this->mRogue.SetFrequency ( 16 );
 		
-		Context::ApplyCohort ( this->mNormal, "NORM", 4, 15 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 4, 12 );
 		this->mNormal.SetFlags ( 2, 3, 3 );
 		
-		//Context::SetPlayerVerbose ( 8, true );
+		//Context::SetPlayerVerbose ( 4, true );
 	}
 
 	//================================================================//
@@ -72,6 +74,84 @@ public:
 		
 		//return step < 1024;
 		return true;
+	}
+};
+
+//================================================================//
+// LateJoinPairScenario
+//================================================================//
+class LateJoinPairScenario :
+	public Scenario {
+
+	Cohort mNormal;
+	Cohort mLate;
+
+public:
+
+	//----------------------------------------------------------------//
+	LateJoinPairScenario () {
+	
+		Context::Reset ();
+		Context::SetScoreRandomizer ( false );
+		Context::InitPlayers ( 2 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 1 );
+		Context::ApplyCohort ( this->mLate, "LATE", 1, 1 );
+		
+		//this->mNormal.SetVerbose ( true );
+		//this->mLate.SetVerbose ( true );
+	
+		this->mLate.Pause ( true );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+		
+		if ( step == 16 ) {
+			this->mLate.Pause ( false );
+		}
+		return step < 32;
+	}
+};
+
+//================================================================//
+// LateJoinQuadScenario
+//================================================================//
+class LateJoinQuadScenario :
+	public Scenario {
+
+	Cohort mNormal;
+	Cohort mLate;
+
+public:
+
+	//----------------------------------------------------------------//
+	LateJoinQuadScenario () {
+	
+		Context::Reset ();
+		Context::SetScoreRandomizer ( false );
+		Context::SetThreshold ( 0.3 );
+		Context::InitPlayers ( 4 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 3 );
+		Context::ApplyCohort ( this->mLate, "LATE", 3, 1 );
+	
+		this->mLate.Pause ( true );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+		
+		if ( step == 64 ) {
+			this->mLate.Pause ( false );
+		}
+		return step < 128;
 	}
 };
 
@@ -91,7 +171,7 @@ public:
 		Context::Reset ();
 		Context::InitPlayers ( 32 );
 		
-		Context::ApplyCohort ( this->mRandFreq, "RANDFREQ", 0, 31 );
+		Context::ApplyCohort ( this->mRandFreq, "RANDFREQ", 0, 32 );
 		this->mRandFreq.RandomizeFrequencies ( 10 );
 	}
 
@@ -102,7 +182,8 @@ public:
 	//----------------------------------------------------------------//
 	bool Scenario_Control ( int step ) {
 	
-		return step < 64;
+		//return step < 64;
+		return true;
 	}
 };
 
@@ -124,11 +205,11 @@ public:
 		Context::InitPlayers ( 16 );
 		Context::SetDropRate ( 0.8 );
 		
-		Context::ApplyCohort ( this->mRogue, "RGUE", 0, 3 );
+		Context::ApplyCohort ( this->mRogue, "RGUE", 0, 4 );
 		this->mRogue.SetFlags ( 1, 3, 3 );
 		this->mRogue.SetFrequency ( 16 );
 		
-		Context::ApplyCohort ( this->mNormal, "NORM", 4, 15 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 4, 12 );
 		this->mNormal.SetFlags ( 2, 3, 3 );
 	}
 
@@ -166,9 +247,9 @@ public:
 	SimpleScenario () {
 	
 		Context::Reset ();
+		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 16 );
-		//Context::SetCyclesPerStep ( 16 );
-		Context::ApplyCohort ( this->mNormal, "NORM", 0, 15 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 16 );
 		
 		//this->mNormal.SetVerbose ( true );
 	}
@@ -202,8 +283,8 @@ public:
 		Context::Reset ();
 		Context::InitPlayers ( 16 );
 		
-		Context::ApplyCohort ( this->mSleepy, "SLPY", 0, 11 );
-		Context::ApplyCohort ( this->mNormal, "NORM", 12, 15 );
+		Context::ApplyCohort ( this->mSleepy, "SLPY", 0, 12 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 12, 4 );
 	}
 
 	//================================================================//
@@ -240,10 +321,11 @@ public:
 	SmallScenario () {
 	
 		Context::Reset ();
+		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 4 );
-		Context::ApplyCohort ( this->mNormal, "NORM", 0, 3 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 4 );
 		
-		this->mNormal.SetVerbose ( true );
+		//this->mNormal.SetVerbose ( true );
 	}
 
 	//================================================================//
@@ -272,8 +354,9 @@ public:
 	TenKScenario () {
 	
 		Context::Reset ();
+		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 10000 );
-		Context::ApplyCohort ( this->mNormal, "NORM", 0, 9999 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 10000 );
 	}
 
 	//================================================================//
@@ -300,7 +383,7 @@ public:
 //----------------------------------------------------------------//
 int main ( int argc, const char* argv []) {
 
-	SimpleScenario scenario;
+	RandFreqScenario scenario;
 	scenario.Run ();
 
 	return 0;

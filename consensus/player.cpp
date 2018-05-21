@@ -23,13 +23,7 @@ int Player::GetID () const {
 //----------------------------------------------------------------//
 uint Player::GetScore ( int entropy ) {
 
-	return Player::GetScore ( this->mID, entropy );
-}
-
-//----------------------------------------------------------------//
-uint Player::GetScore ( int playerID, int entropy ) {
-
-	return ( unsigned int )( playerID ^ entropy );
+	return Context::GetScore ( this->mID, entropy );
 }
 
 //----------------------------------------------------------------//
@@ -114,52 +108,45 @@ void Player::SetVerbose ( bool verbose ) {
 //----------------------------------------------------------------//
 void Player::Step () {
 
+	// start walking down both chains. if the cycles match, merge the
+	// participants.
+	// once we find a spot that doesn't match, we have to decide which chain
+	// is better.
+	// if one is locked and one is not, just pick the locked chain and go with that.
+	// but if they are both locked... then most participants wins?
+	// or do we need most participants by a margin?
+	// if both the same, keep the status quo...
+	// also: can we detect participants that should be in the chain but aren't? (seems like it)
+
 	if ( Context::Drop ()) return;
 
 	const Player* player = this->RequestPlayer ();
-	if ( !player ) return;
+	if ( !player ) {
+		this->mChain.Push ( this->mID );
+		return;
+	}
 	
-	const Chain* chain0 = &this->mChain;
-	const Chain* chain1 = &player->mChain;
+	Chain chain0 = this->mChain;
+	Chain chain1 = player->mChain;
 
 	if ( this->mVerbose ) {
 		printf ( " player: %d\n", this->mID );
-		chain0->Print ( "   CHAIN0: " );
-		chain1->Print ( "   CHAIN1: " );
+		chain0.Print ( "   CHAIN0: " );
+		chain1.Print ( "   CHAIN1: " );
 	}
 
-	Chain nextChain0 = *chain0;
-	Chain nextChain1 = *chain1;
-	
-//	bool inTop0 = nextChain0.InTopCycle ( this->mID );
-//	bool inTop1 = nextChain1.InTopCycle ( this->mID );
-	
-//	if ( inTop0 == inTop1 ) {
-
-		nextChain0.Push ( this->mID );
-		nextChain1.Push ( this->mID );
-//	}
-//	else {
-//
-//		if ( !inTop0 ) {
-//			nextChain0.Push ( this->mID );
-//		}
-//		if ( !inTop1 ) {
-//			nextChain1.Push ( this->mID );
-//		}
-//	}
+	chain0.Push ( this->mID );
+	chain1.Push ( this->mID );
 
 	if ( this->mVerbose ) {
-		nextChain0.Print ( "    NEXT0: " );
-		nextChain1.Print ( "    NEXT1: " );
+		chain0.Print ( "    NEXT0: " );
+		chain1.Print ( "    NEXT1: " );
 	}
 	
-	const Chain& best = Chain::Compare ( nextChain0, nextChain1 );
+	this->mChain = Chain::Choose ( chain0, chain1 );
 	
 	if ( this->mVerbose ) {
-		best.Print ( "     BEST: " );
+		this->mChain.Print ( "     BEST: " );
 		printf ( "\n" );
 	}
-	
-	this->mChain = best;
 }
