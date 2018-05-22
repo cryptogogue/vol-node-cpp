@@ -90,6 +90,7 @@ public:
 	void					MergeParticipants	( const Chain& chain );
 	void					Print				( const char* pre = 0, const char* post = "\n" ) const;
 	void					Push				( int playerID );
+	void					Push				( int playerID, bool force );
 };
 
 #endif

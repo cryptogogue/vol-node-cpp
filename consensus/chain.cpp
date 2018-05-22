@@ -512,3 +512,12 @@ void Chain::Push ( int playerID ) {
 	cycle->SetID ( cycleID );
 	cycle->Improve ( playerID ); // cycle is empty, so this is guaranteed.
 }
+
+//----------------------------------------------------------------//
+void Chain::Push ( int playerID, bool force ) {
+
+	Cycle* topCycle = this->GetTopCycle ();
+	if ( force || ( !( topCycle && topCycle->IsInChain ( playerID )))) {
+		this->Push ( playerID );
+	}
+}

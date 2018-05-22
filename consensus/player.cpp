@@ -7,6 +7,7 @@
 //
 
 #include "chain.h"
+#include "cohort.h"
 #include "context.h"
 #include "player.h"
 
@@ -28,6 +29,8 @@ uint Player::GetScore ( int entropy ) {
 
 //----------------------------------------------------------------//
 const Player* Player::GetNextPlayerInCycle () {
+
+	this->mNewBatch = this->mPlayersCheckedCount == 0;
 
 	int nPlayers = Context::CountPlayers ();
 	this->mPlayersCheckedMask.resize ( nPlayers, false );
@@ -61,23 +64,14 @@ void Player::Init ( int playerID ) {
 }
 
 //----------------------------------------------------------------//
-void Player::Next () {
-
-	if ( !this->mCohort ) return;
-	if ( this->mCohort->mIsPaused ) return;
-
-	for ( int i = 0; i < this->mFrequency; ++i ) {
-		this->Step ();
-	}
-}
-
-//----------------------------------------------------------------//
 Player::Player () :
 	mPlayersCheckedCount ( 0 ),
 	mID ( -1 ),
 	mCohort ( 0 ),
 	mFrequency ( 1 ),
-	mVerbose ( false ) {
+	mNewBatch ( false ),
+	mVerbose ( false ),
+	mStepStyle ( STEP_NORMAL ) {
 }
 
 //----------------------------------------------------------------//
@@ -100,6 +94,12 @@ const Player* Player::RequestPlayer () {
 }
 
 //----------------------------------------------------------------//
+void Player::SetStepStyle ( StepStyle stepStyle ) {
+
+	this->mStepStyle = stepStyle;
+}
+
+//----------------------------------------------------------------//
 void Player::SetVerbose ( bool verbose ) {
 
 	this->mVerbose = verbose;
@@ -107,6 +107,10 @@ void Player::SetVerbose ( bool verbose ) {
 
 //----------------------------------------------------------------//
 void Player::Step () {
+
+	if ( !this->mCohort ) return;
+	if ( this->mCohort->mIsPaused ) return;
+	if ( Context::Drop ()) return;
 
 	// start walking down both chains. if the cycles match, merge the
 	// participants.
@@ -118,11 +122,28 @@ void Player::Step () {
 	// if both the same, keep the status quo...
 	// also: can we detect participants that should be in the chain but aren't? (seems like it)
 
-	if ( Context::Drop ()) return;
+	switch ( this->mStepStyle ) {
+		case STEP_CAREFUL:
+		case STEP_NORMAL:
+			this->StepNormal ();
+			break;
+		case STEP_POLITE:
+			this->StepPolite ();
+			break;
+	}
+}
 
+//----------------------------------------------------------------//
+void Player::StepNormal () {
+
+	// only push ourselves if we're not in a new cycle OR if we've
+	// finished polling everyone.
+	
+	bool force = (( this->mStepStyle == STEP_NORMAL ) || this->mNewBatch );
+	
 	const Player* player = this->RequestPlayer ();
 	if ( !player ) {
-		this->mChain.Push ( this->mID );
+		this->mChain.Push ( this->mID, force );
 		return;
 	}
 	
@@ -135,15 +156,54 @@ void Player::Step () {
 		chain1.Print ( "   CHAIN1: " );
 	}
 
-	chain0.Push ( this->mID );
-	chain1.Push ( this->mID );
-
+	chain0.Push ( this->mID, force );
+	chain1.Push ( this->mID, force );
+	
 	if ( this->mVerbose ) {
 		chain0.Print ( "    NEXT0: " );
 		chain1.Print ( "    NEXT1: " );
 	}
 	
 	this->mChain = Chain::Choose ( chain0, chain1 );
+	
+	if ( this->mVerbose ) {
+		this->mChain.Print ( "     BEST: " );
+		printf ( "\n" );
+	}
+}
+
+//----------------------------------------------------------------//
+void Player::StepPolite () {
+
+	// only change our chain once we've polled everyone. only push
+	// ourselves once we've polled everyone.
+	
+	if ( this->mNewBatch ) {
+		this->mNextChain.Push ( this->mID );
+		this->mChain = this->mNextChain;
+	}
+
+	const Player* player = this->RequestPlayer ();
+	if ( !player ) return;
+	
+	Chain chain0 = this->mNextChain;
+	Chain chain1 = player->mChain;
+	
+	if ( this->mVerbose ) {
+		printf ( " player: %d\n", this->mID );
+		chain0.Print ( "   CHAIN0: " );
+		chain1.Print ( "   CHAIN1: " );
+	}
+	
+	chain0.Push ( this->mID, false );
+	chain1.Push ( this->mID, false );
+	
+	if ( this->mVerbose ) {
+		chain0.Print ( "    NEXT0: " );
+		chain1.Print ( "    NEXT1: " );
+	}
+	
+	this->mNextChain = Chain::Choose ( chain0, chain1 );
 	
 	if ( this->mVerbose ) {
 		this->mChain.Print ( "     BEST: " );

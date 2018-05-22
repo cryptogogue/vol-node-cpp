@@ -5,6 +5,7 @@
 
 class Cohort;
 class Player;
+class TreeSummary;
 
 //================================================================//
 // Context
@@ -31,6 +32,7 @@ public:
 	static void				SetPlayerVerbose		( int playerID, bool verbose );
 	static void				SetScoreRandomizer		( bool randomize );
 	static void				SetThreshold			( float threshold );
+	static void				Summarize				( TreeSummary& summary );
 };
 
 #endif

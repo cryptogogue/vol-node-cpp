@@ -63,6 +63,15 @@ void Cohort::SetName ( string name ) {
 }
 
 //----------------------------------------------------------------//
+void Cohort::SetStepStyle ( Player::StepStyle stepStyle ) {
+
+	list < Player* >::iterator playerIt = this->mPlayers.begin ();
+	for ( ; playerIt != this->mPlayers.end (); ++playerIt ) {
+		( *playerIt )->SetStepStyle ( stepStyle );
+	}
+}
+
+//----------------------------------------------------------------//
 void Cohort::SetVerbose ( bool verbose ) {
 
 	list < Player* >::iterator playerIt = this->mPlayers.begin ();

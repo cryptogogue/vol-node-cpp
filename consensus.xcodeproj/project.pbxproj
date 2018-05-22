@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD3412BA20B3A871002BC6A4 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3412B820B3A871002BC6A4 /* analysis.cpp */; };
 		CD5D0D3020A811A900F5B898 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5D0D2F20A811A900F5B898 /* cohort.cpp */; };
 		CD9345C62093EB140077BAD4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345C52093EB140077BAD4 /* main.cpp */; };
 		CD9345D220944B260077BAD4 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345CF20944B260077BAD4 /* player.cpp */; };
@@ -27,6 +28,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD3412B820B3A871002BC6A4 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analysis.cpp; sourceTree = "<group>"; };
+		CD3412B920B3A871002BC6A4 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
 		CD5D0D2E20A811A900F5B898 /* cohort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cohort.h; sourceTree = "<group>"; };
 		CD5D0D2F20A811A900F5B898 /* cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cohort.cpp; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* consensus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = consensus; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,6 +73,8 @@
 		CD9345C42093EB140077BAD4 /* consensus */ = {
 			isa = PBXGroup;
 			children = (
+				CD3412B820B3A871002BC6A4 /* analysis.cpp */,
+				CD3412B920B3A871002BC6A4 /* analysis.h */,
 				CDADE3C7209E8B4700553B16 /* chain.cpp */,
 				CDADE3C8209E8B4700553B16 /* chain.h */,
 				CD5D0D2F20A811A900F5B898 /* cohort.cpp */,
@@ -144,6 +149,7 @@
 				CD5D0D3020A811A900F5B898 /* cohort.cpp in Sources */,
 				CD9345C62093EB140077BAD4 /* main.cpp in Sources */,
 				CDADE3C9209E8B4700553B16 /* chain.cpp in Sources */,
+				CD3412BA20B3A871002BC6A4 /* analysis.cpp in Sources */,
 				CD9345D520944B540077BAD4 /* context.cpp in Sources */,
 				CD9345D220944B260077BAD4 /* player.cpp in Sources */,
 			);

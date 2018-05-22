@@ -1,9 +1,7 @@
 #ifndef COHORT_H
 #define COHORT_H
 
-#include "common.h"
-
-class Player;
+#include "player.h"
 
 //================================================================//
 // Cohort
@@ -34,6 +32,7 @@ public:
 	void			SetFlags				( int group, int request, int respond );
 	void			SetFrequency			( int frequency );
 	void			SetName					( string name );
+	void			SetStepStyle			( Player::StepStyle stepStyle );
 	void			SetVerbose				( bool verbose );
 };
 

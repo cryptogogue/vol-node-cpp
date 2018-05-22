@@ -6,8 +6,9 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
+#include "analysis.h"
 #include "context.h"
-#include "player.h"
+#include "cohort.h"
 
 //================================================================//
 // Scenario
@@ -28,13 +29,56 @@ public:
 	//----------------------------------------------------------------//
 	virtual void Scenario_Report ( int i ) {
 		printf ( "ROUND: %d\n", i );
-		//Context::Print ();
-		Context::PrintTree ( false, 1 );
+		Context::Print ();
+		//Context::PrintTree ( false, 1 );
 		printf ( "\n" );
 	}
 	
 	//----------------------------------------------------------------//
 	virtual bool	Scenario_Control						( int step ) = 0;
+};
+
+//================================================================//
+// CarefulScenario
+//================================================================//
+class CarefulScenario :
+	public Scenario {
+
+	Analysis	mAnalysis;
+	Cohort		mNormal;
+
+public:
+
+	//----------------------------------------------------------------//
+	CarefulScenario () {
+	
+		Context::Reset ();
+		Context::SetScoreRandomizer ( false );
+		Context::InitPlayers ( 32 );
+		Context::ApplyCohort ( this->mNormal, "NORM", 0, 32 );
+		
+		this->mNormal.SetStepStyle ( Player::STEP_CAREFUL );
+	}
+
+	//================================================================//
+	// Scenario
+	//================================================================//
+
+	//----------------------------------------------------------------//
+	bool Scenario_Control ( int step ) {
+		
+		//return step < 32;
+		return true;
+	}
+	
+	//----------------------------------------------------------------//
+	void Scenario_Report ( int i ) {
+		printf ( "ROUND: %d - ", i );
+		this->mAnalysis.Update ();
+		this->mAnalysis.Print ( false, 1 );
+		//Context::Print ();
+		printf ( "\n" );
+	}
 };
 
 //================================================================//
@@ -383,7 +427,7 @@ public:
 //----------------------------------------------------------------//
 int main ( int argc, const char* argv []) {
 
-	RandFreqScenario scenario;
+	CarefulScenario scenario;
 	scenario.Run ();
 
 	return 0;

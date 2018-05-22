@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <assert.h>
+#include <cmath>
 #include <list>
 #include <map>
 #include <set>
