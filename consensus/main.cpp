@@ -14,6 +14,9 @@
 // Scenario
 //================================================================//
 class Scenario {
+
+	Analysis	mAnalysis;
+
 public:
 
 	//----------------------------------------------------------------//
@@ -22,15 +25,16 @@ public:
 		for ( int i = 0; this->Scenario_Control ( i ); ++i ) {
 	
 			Context::Process ();
+			this->mAnalysis.Update ();
 			this->Scenario_Report ( i );
 		}
 	}
 	
 	//----------------------------------------------------------------//
 	virtual void Scenario_Report ( int i ) {
-		printf ( "ROUND: %d\n", i );
+		printf ( "ROUND: %d - ", i );
+		this->mAnalysis.Print ( false, 1 );
 		Context::Print ();
-		//Context::PrintTree ( false, 1 );
 		printf ( "\n" );
 	}
 	
@@ -44,7 +48,6 @@ public:
 class CarefulScenario :
 	public Scenario {
 
-	Analysis	mAnalysis;
 	Cohort		mNormal;
 
 public:
@@ -53,7 +56,6 @@ public:
 	CarefulScenario () {
 	
 		Context::Reset ();
-		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 32 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 32 );
 		
@@ -69,15 +71,6 @@ public:
 		
 		//return step < 32;
 		return true;
-	}
-	
-	//----------------------------------------------------------------//
-	void Scenario_Report ( int i ) {
-		printf ( "ROUND: %d - ", i );
-		this->mAnalysis.Update ();
-		this->mAnalysis.Print ( false, 1 );
-		//Context::Print ();
-		printf ( "\n" );
 	}
 };
 
@@ -96,7 +89,7 @@ public:
 	FastGangScenario () {
 	
 		Context::Reset ();
-		Context::SetScoreRandomizer ( false );
+		Context::SetScoreRandomizer ( true );
 		Context::InitPlayers ( 16 );
 		
 		Context::ApplyCohort ( this->mRogue, "RGUE", 0, 4 );
@@ -136,7 +129,6 @@ public:
 	LateJoinPairScenario () {
 	
 		Context::Reset ();
-		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 2 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 1 );
 		Context::ApplyCohort ( this->mLate, "LATE", 1, 1 );
@@ -176,7 +168,6 @@ public:
 	LateJoinQuadScenario () {
 	
 		Context::Reset ();
-		Context::SetScoreRandomizer ( false );
 		Context::SetThreshold ( 0.3 );
 		Context::InitPlayers ( 4 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 3 );
@@ -291,7 +282,6 @@ public:
 	SimpleScenario () {
 	
 		Context::Reset ();
-		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 16 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 16 );
 		
@@ -365,7 +355,6 @@ public:
 	SmallScenario () {
 	
 		Context::Reset ();
-		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 4 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 4 );
 		
@@ -398,7 +387,6 @@ public:
 	TenKScenario () {
 	
 		Context::Reset ();
-		Context::SetScoreRandomizer ( false );
 		Context::InitPlayers ( 10000 );
 		Context::ApplyCohort ( this->mNormal, "NORM", 0, 10000 );
 	}
@@ -427,7 +415,7 @@ public:
 //----------------------------------------------------------------//
 int main ( int argc, const char* argv []) {
 
-	CarefulScenario scenario;
+	FastGangScenario scenario;
 	scenario.Run ();
 
 	return 0;

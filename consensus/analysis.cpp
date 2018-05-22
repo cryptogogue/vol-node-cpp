@@ -129,7 +129,7 @@ size_t TreeSummary::MeasureChain ( float threshold ) const {
 			}
 		}
 		
-		float ratio = bestChain ? ( float )bestChain->mChains / ( float )cursor->mChains : 0.0;
+		float ratio = bestChain ? ( float )bestChain->mChains / ( float )this->mChains : 0.0;
 		if ( ratio < threshold ) break;
 		
 		cursor = bestChain;
@@ -233,13 +233,14 @@ TreeSummary::TreeSummary () :
 //----------------------------------------------------------------//
 Analysis::Analysis () :
 	mPasses ( 0 ),
+	mChainLength ( 0 ),
 	mAverageIncrease ( 0.0 ) {
 }
 
 //----------------------------------------------------------------//
 void Analysis::Print ( bool verbose, int maxDepth ) {
 
-	printf ( "PASS: %d, AVG: %g\n", ( int )this->mPasses, this->mAverageIncrease );
+	printf ( "PASS: %d, AVG: %g LEN: %d\n", ( int )this->mPasses, this->mAverageIncrease, ( int )this->mChainLength );
 	this->mSummary.PrintLevels ();
 	this->mSummary.Print ( verbose, maxDepth );
 }
@@ -250,11 +251,12 @@ void Analysis::Update () {
 	this->mSummary = TreeSummary ();
 	Context::Summarize ( this->mSummary );
 	
-	this->mPassesToLength [ this->mPasses ] = this->mSummary.MeasureChain ( 0.65 );
+	this->mChainLength = this->mSummary.MeasureChain ( 0.65 );
+	this->mPassesToLength [ this->mPasses ] = this->mChainLength;
 	
 	if ( this->mPasses > 0 ) {
 		
-		int increase = this->mPassesToLength [ this->mPasses ] - ( float )this->mPassesToLength [ this->mPasses - 1 ];
+		int increase = this->mChainLength - ( float )this->mPassesToLength [ this->mPasses - 1 ];
 		size_t nextPasses = this->mPasses + 1;
 		this->mAverageIncrease = ( this->mAverageIncrease * (( float )this->mPasses / ( float )nextPasses )) + (( float )increase / ( float )nextPasses );
 	}

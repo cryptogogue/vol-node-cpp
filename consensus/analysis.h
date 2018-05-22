@@ -79,6 +79,7 @@ private:
 	size_t					mPasses;
 	TreeSummary				mSummary;
 	
+	size_t					mChainLength;
 	float					mAverageIncrease;
 
 public:
