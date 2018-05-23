@@ -25,7 +25,7 @@
 		CD5C631D20B4F7BC0038EE98 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */; };
 		CD5C631E20B4F7BC0038EE98 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631120B4F7BC0038EE98 /* libPocoXML.a */; };
 		CD5C631F20B4F7BC0038EE98 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631220B4F7BC0038EE98 /* libPocoZip.a */; };
-		CD5C632120B4FA2B0038EE98 /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632020B4FA2B0038EE98 /* application.cpp */; };
+		CD5C632620B524A30038EE98 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -65,7 +65,9 @@
 		CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoUtil.a; path = poco/lib/libPocoUtil.a; sourceTree = "<group>"; };
 		CD5C631120B4F7BC0038EE98 /* libPocoXML.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoXML.a; path = poco/lib/libPocoXML.a; sourceTree = "<group>"; };
 		CD5C631220B4F7BC0038EE98 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
-		CD5C632020B4FA2B0038EE98 /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = application.cpp; path = src/application.cpp; sourceTree = "<group>"; };
+		CD5C632220B524220038EE98 /* scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scenario.h; path = src/scenario.h; sourceTree = "<group>"; };
+		CD5C632320B524A30038EE98 /* main-scenario.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-scenario.cpp"; path = "src/main-scenario.cpp"; sourceTree = "<group>"; };
+		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/main-server.cpp"; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* consensus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = consensus; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -118,7 +120,6 @@
 			children = (
 				CD5C62F420B4F7B10038EE98 /* analysis.cpp */,
 				CD5C62F520B4F7B10038EE98 /* analysis.h */,
-				CD5C632020B4FA2B0038EE98 /* application.cpp */,
 				CD5C62F620B4F7B10038EE98 /* chain.cpp */,
 				CD5C62F720B4F7B10038EE98 /* chain.h */,
 				CD5C62F820B4F7B10038EE98 /* cohort.cpp */,
@@ -126,8 +127,11 @@
 				CD5C62FA20B4F7B10038EE98 /* common.h */,
 				CD5C62FB20B4F7B10038EE98 /* context.cpp */,
 				CD5C62FC20B4F7B10038EE98 /* context.h */,
+				CD5C632320B524A30038EE98 /* main-scenario.cpp */,
+				CD5C632420B524A30038EE98 /* main-server.cpp */,
 				CD5C62FE20B4F7B10038EE98 /* player.cpp */,
 				CD5C62FF20B4F7B10038EE98 /* player.h */,
+				CD5C632220B524220038EE98 /* scenario.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -207,10 +211,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */,
+				CD5C632620B524A30038EE98 /* main-server.cpp in Sources */,
 				CD5C630320B4F7B10038EE98 /* context.cpp in Sources */,
 				CD5C630520B4F7B10038EE98 /* player.cpp in Sources */,
 				CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */,
-				CD5C632120B4FA2B0038EE98 /* application.cpp in Sources */,
 				CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -273,6 +277,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-Wno-documentation-deprecated-sync",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -325,6 +333,10 @@
 				LIBRARY_SEARCH_PATHS = poco/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-Wno-documentation-deprecated-sync",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
