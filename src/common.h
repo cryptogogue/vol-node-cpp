@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+#include <Poco/Poco.h>
+#include <Poco/Util/Application.h>
+
 using namespace std;
 
 typedef unsigned int uint;

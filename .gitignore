@@ -1,4 +1,5 @@
 build/
+poco/
 xcuserdata/
 *.pbxuser
 *.perspectivev3

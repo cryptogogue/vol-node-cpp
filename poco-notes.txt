@@ -1,0 +1,11 @@
+from project root:
+
+mkdir build/build-poco
+cd buid/build-poco
+cmake ../../3rd-party/poco -DPOCO_STATIC=1
+make -s -j
+make package
+
+decrompress *.tar.gz into ../../poco
+
+A WINNER IS YOU

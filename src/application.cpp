@@ -409,14 +409,20 @@ public:
 };
 
 //================================================================//
-// main
+// ConsensusApp
 //================================================================//
 
 //----------------------------------------------------------------//
-int main ( int argc, const char* argv []) {
+class ConsensusApp :
+	public Poco::Util::Application {
+public:
 
-	FastGangScenario scenario;
-	scenario.Run ();
+	//----------------------------------------------------------------//
+	int main ( const vector < string > &args ) {
+		FastGangScenario scenario;
+		scenario.Run ();
+		return EXIT_OK;
+	}
+};
 
-	return 0;
-}
+POCO_APP_MAIN ( ConsensusApp );

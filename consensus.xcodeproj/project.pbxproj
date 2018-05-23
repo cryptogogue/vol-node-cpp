@@ -7,20 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CD3412BA20B3A871002BC6A4 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD3412B820B3A871002BC6A4 /* analysis.cpp */; };
-		CD5D0D3020A811A900F5B898 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5D0D2F20A811A900F5B898 /* cohort.cpp */; };
-		CD9345C62093EB140077BAD4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345C52093EB140077BAD4 /* main.cpp */; };
-		CD9345D220944B260077BAD4 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345CF20944B260077BAD4 /* player.cpp */; };
-		CD9345D520944B540077BAD4 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9345D320944B540077BAD4 /* context.cpp */; };
-		CDADE3C9209E8B4700553B16 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDADE3C7209E8B4700553B16 /* chain.cpp */; };
+		CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F420B4F7B10038EE98 /* analysis.cpp */; };
+		CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F620B4F7B10038EE98 /* chain.cpp */; };
+		CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F820B4F7B10038EE98 /* cohort.cpp */; };
+		CD5C630320B4F7B10038EE98 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FB20B4F7B10038EE98 /* context.cpp */; };
+		CD5C630520B4F7B10038EE98 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FE20B4F7B10038EE98 /* player.cpp */; };
+		CD5C631320B4F7BC0038EE98 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630620B4F7BC0038EE98 /* libPocoCrypto.a */; };
+		CD5C631420B4F7BC0038EE98 /* libPocoData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630720B4F7BC0038EE98 /* libPocoData.a */; };
+		CD5C631520B4F7BC0038EE98 /* libPocoDataSQLite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630820B4F7BC0038EE98 /* libPocoDataSQLite.a */; };
+		CD5C631620B4F7BC0038EE98 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630920B4F7BC0038EE98 /* libPocoEncodings.a */; };
+		CD5C631720B4F7BC0038EE98 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630A20B4F7BC0038EE98 /* libPocoFoundation.a */; };
+		CD5C631820B4F7BC0038EE98 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630B20B4F7BC0038EE98 /* libPocoJSON.a */; };
+		CD5C631920B4F7BC0038EE98 /* libPocoMongoDB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630C20B4F7BC0038EE98 /* libPocoMongoDB.a */; };
+		CD5C631A20B4F7BC0038EE98 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630D20B4F7BC0038EE98 /* libPocoNet.a */; };
+		CD5C631B20B4F7BC0038EE98 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630E20B4F7BC0038EE98 /* libPocoNetSSL.a */; };
+		CD5C631C20B4F7BC0038EE98 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630F20B4F7BC0038EE98 /* libPocoRedis.a */; };
+		CD5C631D20B4F7BC0038EE98 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */; };
+		CD5C631E20B4F7BC0038EE98 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631120B4F7BC0038EE98 /* libPocoXML.a */; };
+		CD5C631F20B4F7BC0038EE98 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631220B4F7BC0038EE98 /* libPocoZip.a */; };
+		CD5C632120B4FA2B0038EE98 /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632020B4FA2B0038EE98 /* application.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		CD9345C02093EB140077BAD4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			dstPath = usr/share/man/man1;
+			dstSubfolderSpec = 6;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
@@ -28,19 +41,32 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CD3412B820B3A871002BC6A4 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analysis.cpp; sourceTree = "<group>"; };
-		CD3412B920B3A871002BC6A4 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analysis.h; sourceTree = "<group>"; };
-		CD5D0D2E20A811A900F5B898 /* cohort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cohort.h; sourceTree = "<group>"; };
-		CD5D0D2F20A811A900F5B898 /* cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cohort.cpp; sourceTree = "<group>"; };
+		CD5C62F420B4F7B10038EE98 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analysis.cpp; path = src/analysis.cpp; sourceTree = "<group>"; };
+		CD5C62F520B4F7B10038EE98 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analysis.h; path = src/analysis.h; sourceTree = "<group>"; };
+		CD5C62F620B4F7B10038EE98 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chain.cpp; path = src/chain.cpp; sourceTree = "<group>"; };
+		CD5C62F720B4F7B10038EE98 /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chain.h; path = src/chain.h; sourceTree = "<group>"; };
+		CD5C62F820B4F7B10038EE98 /* cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cohort.cpp; path = src/cohort.cpp; sourceTree = "<group>"; };
+		CD5C62F920B4F7B10038EE98 /* cohort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cohort.h; path = src/cohort.h; sourceTree = "<group>"; };
+		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/common.h; sourceTree = "<group>"; };
+		CD5C62FB20B4F7B10038EE98 /* context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = context.cpp; path = src/context.cpp; sourceTree = "<group>"; };
+		CD5C62FC20B4F7B10038EE98 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = context.h; path = src/context.h; sourceTree = "<group>"; };
+		CD5C62FE20B4F7B10038EE98 /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = player.cpp; path = src/player.cpp; sourceTree = "<group>"; };
+		CD5C62FF20B4F7B10038EE98 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = player.h; path = src/player.h; sourceTree = "<group>"; };
+		CD5C630620B4F7BC0038EE98 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
+		CD5C630720B4F7BC0038EE98 /* libPocoData.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoData.a; path = poco/lib/libPocoData.a; sourceTree = "<group>"; };
+		CD5C630820B4F7BC0038EE98 /* libPocoDataSQLite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoDataSQLite.a; path = poco/lib/libPocoDataSQLite.a; sourceTree = "<group>"; };
+		CD5C630920B4F7BC0038EE98 /* libPocoEncodings.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoEncodings.a; path = poco/lib/libPocoEncodings.a; sourceTree = "<group>"; };
+		CD5C630A20B4F7BC0038EE98 /* libPocoFoundation.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoFoundation.a; path = poco/lib/libPocoFoundation.a; sourceTree = "<group>"; };
+		CD5C630B20B4F7BC0038EE98 /* libPocoJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoJSON.a; path = poco/lib/libPocoJSON.a; sourceTree = "<group>"; };
+		CD5C630C20B4F7BC0038EE98 /* libPocoMongoDB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoMongoDB.a; path = poco/lib/libPocoMongoDB.a; sourceTree = "<group>"; };
+		CD5C630D20B4F7BC0038EE98 /* libPocoNet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNet.a; path = poco/lib/libPocoNet.a; sourceTree = "<group>"; };
+		CD5C630E20B4F7BC0038EE98 /* libPocoNetSSL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNetSSL.a; path = poco/lib/libPocoNetSSL.a; sourceTree = "<group>"; };
+		CD5C630F20B4F7BC0038EE98 /* libPocoRedis.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoRedis.a; path = poco/lib/libPocoRedis.a; sourceTree = "<group>"; };
+		CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoUtil.a; path = poco/lib/libPocoUtil.a; sourceTree = "<group>"; };
+		CD5C631120B4F7BC0038EE98 /* libPocoXML.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoXML.a; path = poco/lib/libPocoXML.a; sourceTree = "<group>"; };
+		CD5C631220B4F7BC0038EE98 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
+		CD5C632020B4FA2B0038EE98 /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = application.cpp; path = src/application.cpp; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* consensus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = consensus; sourceTree = BUILT_PRODUCTS_DIR; };
-		CD9345C52093EB140077BAD4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		CD9345CE20944B260077BAD4 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = player.h; sourceTree = "<group>"; };
-		CD9345CF20944B260077BAD4 /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = player.cpp; sourceTree = "<group>"; };
-		CD9345D320944B540077BAD4 /* context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = context.cpp; sourceTree = "<group>"; };
-		CD9345D420944B540077BAD4 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = context.h; sourceTree = "<group>"; };
-		CD9345D620944BEE0077BAD4 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		CDADE3C7209E8B4700553B16 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chain.cpp; sourceTree = "<group>"; };
-		CDADE3C8209E8B4700553B16 /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,16 +74,69 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD5C631D20B4F7BC0038EE98 /* libPocoUtil.a in Frameworks */,
+				CD5C631820B4F7BC0038EE98 /* libPocoJSON.a in Frameworks */,
+				CD5C631520B4F7BC0038EE98 /* libPocoDataSQLite.a in Frameworks */,
+				CD5C631A20B4F7BC0038EE98 /* libPocoNet.a in Frameworks */,
+				CD5C631720B4F7BC0038EE98 /* libPocoFoundation.a in Frameworks */,
+				CD5C631B20B4F7BC0038EE98 /* libPocoNetSSL.a in Frameworks */,
+				CD5C631420B4F7BC0038EE98 /* libPocoData.a in Frameworks */,
+				CD5C631320B4F7BC0038EE98 /* libPocoCrypto.a in Frameworks */,
+				CD5C631F20B4F7BC0038EE98 /* libPocoZip.a in Frameworks */,
+				CD5C631E20B4F7BC0038EE98 /* libPocoXML.a in Frameworks */,
+				CD5C631920B4F7BC0038EE98 /* libPocoMongoDB.a in Frameworks */,
+				CD5C631C20B4F7BC0038EE98 /* libPocoRedis.a in Frameworks */,
+				CD5C631620B4F7BC0038EE98 /* libPocoEncodings.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CD5C62F220B4F7930038EE98 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				CD5C630620B4F7BC0038EE98 /* libPocoCrypto.a */,
+				CD5C630720B4F7BC0038EE98 /* libPocoData.a */,
+				CD5C630820B4F7BC0038EE98 /* libPocoDataSQLite.a */,
+				CD5C630920B4F7BC0038EE98 /* libPocoEncodings.a */,
+				CD5C630A20B4F7BC0038EE98 /* libPocoFoundation.a */,
+				CD5C630B20B4F7BC0038EE98 /* libPocoJSON.a */,
+				CD5C630C20B4F7BC0038EE98 /* libPocoMongoDB.a */,
+				CD5C630D20B4F7BC0038EE98 /* libPocoNet.a */,
+				CD5C630E20B4F7BC0038EE98 /* libPocoNetSSL.a */,
+				CD5C630F20B4F7BC0038EE98 /* libPocoRedis.a */,
+				CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */,
+				CD5C631120B4F7BC0038EE98 /* libPocoXML.a */,
+				CD5C631220B4F7BC0038EE98 /* libPocoZip.a */,
+			);
+			name = lib;
+			sourceTree = "<group>";
+		};
+		CD5C62F320B4F7A70038EE98 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				CD5C62F420B4F7B10038EE98 /* analysis.cpp */,
+				CD5C62F520B4F7B10038EE98 /* analysis.h */,
+				CD5C632020B4FA2B0038EE98 /* application.cpp */,
+				CD5C62F620B4F7B10038EE98 /* chain.cpp */,
+				CD5C62F720B4F7B10038EE98 /* chain.h */,
+				CD5C62F820B4F7B10038EE98 /* cohort.cpp */,
+				CD5C62F920B4F7B10038EE98 /* cohort.h */,
+				CD5C62FA20B4F7B10038EE98 /* common.h */,
+				CD5C62FB20B4F7B10038EE98 /* context.cpp */,
+				CD5C62FC20B4F7B10038EE98 /* context.h */,
+				CD5C62FE20B4F7B10038EE98 /* player.cpp */,
+				CD5C62FF20B4F7B10038EE98 /* player.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
 		CD9345B92093EB140077BAD4 = {
 			isa = PBXGroup;
 			children = (
-				CD9345C42093EB140077BAD4 /* consensus */,
+				CD5C62F320B4F7A70038EE98 /* src */,
+				CD5C62F220B4F7930038EE98 /* lib */,
 				CD9345C32093EB140077BAD4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,25 +147,6 @@
 				CD9345C22093EB140077BAD4 /* consensus */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CD9345C42093EB140077BAD4 /* consensus */ = {
-			isa = PBXGroup;
-			children = (
-				CD3412B820B3A871002BC6A4 /* analysis.cpp */,
-				CD3412B920B3A871002BC6A4 /* analysis.h */,
-				CDADE3C7209E8B4700553B16 /* chain.cpp */,
-				CDADE3C8209E8B4700553B16 /* chain.h */,
-				CD5D0D2F20A811A900F5B898 /* cohort.cpp */,
-				CD5D0D2E20A811A900F5B898 /* cohort.h */,
-				CD9345D620944BEE0077BAD4 /* common.h */,
-				CD9345D320944B540077BAD4 /* context.cpp */,
-				CD9345D420944B540077BAD4 /* context.h */,
-				CD9345C52093EB140077BAD4 /* main.cpp */,
-				CD9345CF20944B260077BAD4 /* player.cpp */,
-				CD9345CE20944B260077BAD4 /* player.h */,
-			);
-			path = consensus;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,12 +206,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD5D0D3020A811A900F5B898 /* cohort.cpp in Sources */,
-				CD9345C62093EB140077BAD4 /* main.cpp in Sources */,
-				CDADE3C9209E8B4700553B16 /* chain.cpp in Sources */,
-				CD3412BA20B3A871002BC6A4 /* analysis.cpp in Sources */,
-				CD9345D520944B540077BAD4 /* context.cpp in Sources */,
-				CD9345D220944B260077BAD4 /* player.cpp in Sources */,
+				CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */,
+				CD5C630320B4F7B10038EE98 /* context.cpp in Sources */,
+				CD5C630520B4F7B10038EE98 /* player.cpp in Sources */,
+				CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */,
+				CD5C632120B4FA2B0038EE98 /* application.cpp in Sources */,
+				CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,7 +221,6 @@
 		CD9345C72093EB140077BAD4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -209,6 +268,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = poco/include;
+				LIBRARY_SEARCH_PATHS = poco/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -219,7 +280,6 @@
 		CD9345C82093EB140077BAD4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -261,6 +321,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = poco/include;
+				LIBRARY_SEARCH_PATHS = poco/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -270,7 +332,11 @@
 		CD9345CA2093EB140077BAD4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/poco/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -279,7 +345,11 @@
 		CD9345CB2093EB140077BAD4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/poco/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
