@@ -1,3 +1,6 @@
 [submodule "3rd-party/poco"]
 	path = 3rd-party/poco
 	url = git@github.com:pocoproject/poco.git
+[submodule "3rd-party/simple-cpp-router"]
+	path = 3rd-party/simple-cpp-router
+	url = git@github.com:qoollo/simple-cpp-router.git
