@@ -20,12 +20,16 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/ServerSocket.h>
+#include <Poco/ThreadLocal.h>
 #include <Poco/Util/Application.h>
 #include <Poco/Util/ServerApplication.h>
 
+#include <Routing/Exceptions.h>
+#include <Routing/Router.h>
+
 using namespace Poco::Net;
 using namespace Poco::Util;
-
+using namespace Routing;
 using namespace std;
 
 typedef unsigned int uint;

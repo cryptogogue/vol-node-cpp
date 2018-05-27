@@ -2,7 +2,7 @@ from project root:
 
 mkdir build/build-poco
 cd buid/build-poco
-cmake ../../3rd-party/poco -DPOCO_STATIC=1
+cmake ../../3rd-party/poco -DPOCO_STATIC=1 -DCMAKE_BUILD_TYPE=Debug
 make -s -j
 make package
 

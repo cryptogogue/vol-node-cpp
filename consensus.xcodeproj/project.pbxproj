@@ -12,21 +12,43 @@
 		CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F820B4F7B10038EE98 /* cohort.cpp */; };
 		CD5C630320B4F7B10038EE98 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FB20B4F7B10038EE98 /* context.cpp */; };
 		CD5C630520B4F7B10038EE98 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FE20B4F7B10038EE98 /* player.cpp */; };
-		CD5C631320B4F7BC0038EE98 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630620B4F7BC0038EE98 /* libPocoCrypto.a */; };
-		CD5C631420B4F7BC0038EE98 /* libPocoData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630720B4F7BC0038EE98 /* libPocoData.a */; };
-		CD5C631520B4F7BC0038EE98 /* libPocoDataSQLite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630820B4F7BC0038EE98 /* libPocoDataSQLite.a */; };
-		CD5C631620B4F7BC0038EE98 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630920B4F7BC0038EE98 /* libPocoEncodings.a */; };
-		CD5C631720B4F7BC0038EE98 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630A20B4F7BC0038EE98 /* libPocoFoundation.a */; };
-		CD5C631820B4F7BC0038EE98 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630B20B4F7BC0038EE98 /* libPocoJSON.a */; };
-		CD5C631920B4F7BC0038EE98 /* libPocoMongoDB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630C20B4F7BC0038EE98 /* libPocoMongoDB.a */; };
-		CD5C631A20B4F7BC0038EE98 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630D20B4F7BC0038EE98 /* libPocoNet.a */; };
-		CD5C631B20B4F7BC0038EE98 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630E20B4F7BC0038EE98 /* libPocoNetSSL.a */; };
-		CD5C631C20B4F7BC0038EE98 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C630F20B4F7BC0038EE98 /* libPocoRedis.a */; };
-		CD5C631D20B4F7BC0038EE98 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */; };
-		CD5C631E20B4F7BC0038EE98 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631120B4F7BC0038EE98 /* libPocoXML.a */; };
-		CD5C631F20B4F7BC0038EE98 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5C631220B4F7BC0038EE98 /* libPocoZip.a */; };
 		CD5C632620B524A30038EE98 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
+		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
+		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
+		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
+		CDED583420BA1FD6003A2969 /* Router.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581820BA1F38003A2969 /* Router.cpp */; };
+		CDED583520BA1FD6003A2969 /* Router.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581920BA1F38003A2969 /* Router.h */; };
+		CDED583620BA1FE0003A2969 /* PathTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581D20BA1F4E003A2969 /* PathTemplate.cpp */; };
+		CDED583720BA1FE0003A2969 /* PathTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581E20BA1F4E003A2969 /* PathTemplate.h */; };
+		CDED583820BA1FE0003A2969 /* PathTemplateParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581F20BA1F4E003A2969 /* PathTemplateParser.cpp */; };
+		CDED583920BA1FE0003A2969 /* PathTemplateParser.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582020BA1F4E003A2969 /* PathTemplateParser.h */; };
+		CDED583A20BA1FE0003A2969 /* RegexConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED582120BA1F4E003A2969 /* RegexConverter.cpp */; };
+		CDED583B20BA1FE0003A2969 /* RegexConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582220BA1F4E003A2969 /* RegexConverter.h */; };
+		CDED583C20BA1FE0003A2969 /* StringTokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */; };
+		CDED583D20BA1FE0003A2969 /* StringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582420BA1F4E003A2969 /* StringTokenizer.h */; };
+		CDED584120BA2008003A2969 /* liblib-simple-cpp-router.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */; };
+		CDED584420BA2131003A2969 /* VLRouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* VLRouteTable.cpp */; };
+		CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
+		CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
+		CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
+		CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
+		CDED586720BA3981003A2969 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
+		CDED586820BA3981003A2969 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
+		CDED586920BA3981003A2969 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585F20BA3981003A2969 /* libPocoRedis.a */; };
+		CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
+		CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
+		CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CDED583E20BA2001003A2969 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDED582C20BA1FCE003A2969;
+			remoteInfo = "lib-simple-cpp-router";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		CD9345C02093EB140077BAD4 /* CopyFiles */ = {
@@ -52,23 +74,36 @@
 		CD5C62FC20B4F7B10038EE98 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = context.h; path = src/context.h; sourceTree = "<group>"; };
 		CD5C62FE20B4F7B10038EE98 /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = player.cpp; path = src/player.cpp; sourceTree = "<group>"; };
 		CD5C62FF20B4F7B10038EE98 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = player.h; path = src/player.h; sourceTree = "<group>"; };
-		CD5C630620B4F7BC0038EE98 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
-		CD5C630720B4F7BC0038EE98 /* libPocoData.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoData.a; path = poco/lib/libPocoData.a; sourceTree = "<group>"; };
-		CD5C630820B4F7BC0038EE98 /* libPocoDataSQLite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoDataSQLite.a; path = poco/lib/libPocoDataSQLite.a; sourceTree = "<group>"; };
-		CD5C630920B4F7BC0038EE98 /* libPocoEncodings.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoEncodings.a; path = poco/lib/libPocoEncodings.a; sourceTree = "<group>"; };
-		CD5C630A20B4F7BC0038EE98 /* libPocoFoundation.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoFoundation.a; path = poco/lib/libPocoFoundation.a; sourceTree = "<group>"; };
-		CD5C630B20B4F7BC0038EE98 /* libPocoJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoJSON.a; path = poco/lib/libPocoJSON.a; sourceTree = "<group>"; };
-		CD5C630C20B4F7BC0038EE98 /* libPocoMongoDB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoMongoDB.a; path = poco/lib/libPocoMongoDB.a; sourceTree = "<group>"; };
-		CD5C630D20B4F7BC0038EE98 /* libPocoNet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNet.a; path = poco/lib/libPocoNet.a; sourceTree = "<group>"; };
-		CD5C630E20B4F7BC0038EE98 /* libPocoNetSSL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNetSSL.a; path = poco/lib/libPocoNetSSL.a; sourceTree = "<group>"; };
-		CD5C630F20B4F7BC0038EE98 /* libPocoRedis.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoRedis.a; path = poco/lib/libPocoRedis.a; sourceTree = "<group>"; };
-		CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoUtil.a; path = poco/lib/libPocoUtil.a; sourceTree = "<group>"; };
-		CD5C631120B4F7BC0038EE98 /* libPocoXML.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoXML.a; path = poco/lib/libPocoXML.a; sourceTree = "<group>"; };
-		CD5C631220B4F7BC0038EE98 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
 		CD5C632220B524220038EE98 /* scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scenario.h; path = src/scenario.h; sourceTree = "<group>"; };
 		CD5C632320B524A30038EE98 /* main-scenario.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-scenario.cpp"; path = "src/main-scenario.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/main-server.cpp"; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* consensus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = consensus; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
+		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
+		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
+		CDED581820BA1F38003A2969 /* Router.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Router.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Router.cpp"; sourceTree = "<group>"; };
+		CDED581920BA1F38003A2969 /* Router.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Router.h; path = "3rd-party/simple-cpp-router/src/Routing/Router.h"; sourceTree = "<group>"; };
+		CDED581D20BA1F4E003A2969 /* PathTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathTemplate.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/PathTemplate.cpp"; sourceTree = "<group>"; };
+		CDED581E20BA1F4E003A2969 /* PathTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathTemplate.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/PathTemplate.h"; sourceTree = "<group>"; };
+		CDED581F20BA1F4E003A2969 /* PathTemplateParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathTemplateParser.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/PathTemplateParser.cpp"; sourceTree = "<group>"; };
+		CDED582020BA1F4E003A2969 /* PathTemplateParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathTemplateParser.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/PathTemplateParser.h"; sourceTree = "<group>"; };
+		CDED582120BA1F4E003A2969 /* RegexConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegexConverter.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/RegexConverter.cpp"; sourceTree = "<group>"; };
+		CDED582220BA1F4E003A2969 /* RegexConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegexConverter.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/RegexConverter.h"; sourceTree = "<group>"; };
+		CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringTokenizer.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.cpp"; sourceTree = "<group>"; };
+		CDED582420BA1F4E003A2969 /* StringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringTokenizer.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.h"; sourceTree = "<group>"; };
+		CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblib-simple-cpp-router.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDED584220BA2131003A2969 /* VLRouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VLRouteTable.cpp; path = src/VLRouteTable.cpp; sourceTree = "<group>"; };
+		CDED584320BA2131003A2969 /* VLRouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLRouteTable.h; path = src/VLRouteTable.h; sourceTree = "<group>"; };
+		CDED585920BA3981003A2969 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
+		CDED585A20BA3981003A2969 /* libPocoEncodings.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoEncodings.a; path = poco/lib/libPocoEncodings.a; sourceTree = "<group>"; };
+		CDED585B20BA3981003A2969 /* libPocoFoundation.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoFoundation.a; path = poco/lib/libPocoFoundation.a; sourceTree = "<group>"; };
+		CDED585C20BA3981003A2969 /* libPocoJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoJSON.a; path = poco/lib/libPocoJSON.a; sourceTree = "<group>"; };
+		CDED585D20BA3981003A2969 /* libPocoNet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNet.a; path = poco/lib/libPocoNet.a; sourceTree = "<group>"; };
+		CDED585E20BA3981003A2969 /* libPocoNetSSL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNetSSL.a; path = poco/lib/libPocoNetSSL.a; sourceTree = "<group>"; };
+		CDED585F20BA3981003A2969 /* libPocoRedis.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoRedis.a; path = poco/lib/libPocoRedis.a; sourceTree = "<group>"; };
+		CDED586020BA3981003A2969 /* libPocoUtil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoUtil.a; path = poco/lib/libPocoUtil.a; sourceTree = "<group>"; };
+		CDED586120BA3981003A2969 /* libPocoXML.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoXML.a; path = poco/lib/libPocoXML.a; sourceTree = "<group>"; };
+		CDED586220BA3981003A2969 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,19 +111,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD5C631D20B4F7BC0038EE98 /* libPocoUtil.a in Frameworks */,
-				CD5C631820B4F7BC0038EE98 /* libPocoJSON.a in Frameworks */,
-				CD5C631520B4F7BC0038EE98 /* libPocoDataSQLite.a in Frameworks */,
-				CD5C631A20B4F7BC0038EE98 /* libPocoNet.a in Frameworks */,
-				CD5C631720B4F7BC0038EE98 /* libPocoFoundation.a in Frameworks */,
-				CD5C631B20B4F7BC0038EE98 /* libPocoNetSSL.a in Frameworks */,
-				CD5C631420B4F7BC0038EE98 /* libPocoData.a in Frameworks */,
-				CD5C631320B4F7BC0038EE98 /* libPocoCrypto.a in Frameworks */,
-				CD5C631F20B4F7BC0038EE98 /* libPocoZip.a in Frameworks */,
-				CD5C631E20B4F7BC0038EE98 /* libPocoXML.a in Frameworks */,
-				CD5C631920B4F7BC0038EE98 /* libPocoMongoDB.a in Frameworks */,
-				CD5C631C20B4F7BC0038EE98 /* libPocoRedis.a in Frameworks */,
-				CD5C631620B4F7BC0038EE98 /* libPocoEncodings.a in Frameworks */,
+				CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */,
+				CDED584120BA2008003A2969 /* liblib-simple-cpp-router.a in Frameworks */,
+				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
+				CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */,
+				CDED586820BA3981003A2969 /* libPocoNetSSL.a in Frameworks */,
+				CDED586920BA3981003A2969 /* libPocoRedis.a in Frameworks */,
+				CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */,
+				CDED586720BA3981003A2969 /* libPocoNet.a in Frameworks */,
+				CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */,
+				CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */,
+				CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CDED582A20BA1FCE003A2969 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,19 +138,16 @@
 		CD5C62F220B4F7930038EE98 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				CD5C630620B4F7BC0038EE98 /* libPocoCrypto.a */,
-				CD5C630720B4F7BC0038EE98 /* libPocoData.a */,
-				CD5C630820B4F7BC0038EE98 /* libPocoDataSQLite.a */,
-				CD5C630920B4F7BC0038EE98 /* libPocoEncodings.a */,
-				CD5C630A20B4F7BC0038EE98 /* libPocoFoundation.a */,
-				CD5C630B20B4F7BC0038EE98 /* libPocoJSON.a */,
-				CD5C630C20B4F7BC0038EE98 /* libPocoMongoDB.a */,
-				CD5C630D20B4F7BC0038EE98 /* libPocoNet.a */,
-				CD5C630E20B4F7BC0038EE98 /* libPocoNetSSL.a */,
-				CD5C630F20B4F7BC0038EE98 /* libPocoRedis.a */,
-				CD5C631020B4F7BC0038EE98 /* libPocoUtil.a */,
-				CD5C631120B4F7BC0038EE98 /* libPocoXML.a */,
-				CD5C631220B4F7BC0038EE98 /* libPocoZip.a */,
+				CDED585920BA3981003A2969 /* libPocoCrypto.a */,
+				CDED585A20BA3981003A2969 /* libPocoEncodings.a */,
+				CDED585B20BA3981003A2969 /* libPocoFoundation.a */,
+				CDED585C20BA3981003A2969 /* libPocoJSON.a */,
+				CDED585D20BA3981003A2969 /* libPocoNet.a */,
+				CDED585E20BA3981003A2969 /* libPocoNetSSL.a */,
+				CDED585F20BA3981003A2969 /* libPocoRedis.a */,
+				CDED586020BA3981003A2969 /* libPocoUtil.a */,
+				CDED586120BA3981003A2969 /* libPocoXML.a */,
+				CDED586220BA3981003A2969 /* libPocoZip.a */,
 			);
 			name = lib;
 			sourceTree = "<group>";
@@ -131,6 +168,8 @@
 				CD5C632420B524A30038EE98 /* main-server.cpp */,
 				CD5C62FE20B4F7B10038EE98 /* player.cpp */,
 				CD5C62FF20B4F7B10038EE98 /* player.h */,
+				CDED584220BA2131003A2969 /* VLRouteTable.cpp */,
+				CDED584320BA2131003A2969 /* VLRouteTable.h */,
 				CD5C632220B524220038EE98 /* scenario.h */,
 			);
 			name = src;
@@ -139,9 +178,11 @@
 		CD9345B92093EB140077BAD4 = {
 			isa = PBXGroup;
 			children = (
+				CDED581320BA1EF7003A2969 /* 3rd-party */,
 				CD5C62F320B4F7A70038EE98 /* src */,
 				CD5C62F220B4F7930038EE98 /* lib */,
 				CD9345C32093EB140077BAD4 /* Products */,
+				CDED584020BA2008003A2969 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -149,11 +190,72 @@
 			isa = PBXGroup;
 			children = (
 				CD9345C22093EB140077BAD4 /* consensus */,
+				CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CDED581320BA1EF7003A2969 /* 3rd-party */ = {
+			isa = PBXGroup;
+			children = (
+				CDED581420BA1F02003A2969 /* simple-cpp-router */,
+			);
+			name = "3rd-party";
+			sourceTree = "<group>";
+		};
+		CDED581420BA1F02003A2969 /* simple-cpp-router */ = {
+			isa = PBXGroup;
+			children = (
+				CDED581C20BA1F40003A2969 /* Details */,
+				CDED581520BA1F38003A2969 /* Exceptions.h */,
+				CDED581620BA1F38003A2969 /* PathMatch.cpp */,
+				CDED581720BA1F38003A2969 /* PathMatch.h */,
+				CDED581820BA1F38003A2969 /* Router.cpp */,
+				CDED581920BA1F38003A2969 /* Router.h */,
+			);
+			name = "simple-cpp-router";
+			sourceTree = "<group>";
+		};
+		CDED581C20BA1F40003A2969 /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				CDED581D20BA1F4E003A2969 /* PathTemplate.cpp */,
+				CDED581E20BA1F4E003A2969 /* PathTemplate.h */,
+				CDED581F20BA1F4E003A2969 /* PathTemplateParser.cpp */,
+				CDED582020BA1F4E003A2969 /* PathTemplateParser.h */,
+				CDED582120BA1F4E003A2969 /* RegexConverter.cpp */,
+				CDED582220BA1F4E003A2969 /* RegexConverter.h */,
+				CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */,
+				CDED582420BA1F4E003A2969 /* StringTokenizer.h */,
+			);
+			name = Details;
+			sourceTree = "<group>";
+		};
+		CDED584020BA2008003A2969 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		CDED582B20BA1FCE003A2969 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDED583920BA1FE0003A2969 /* PathTemplateParser.h in Headers */,
+				CDED583B20BA1FE0003A2969 /* RegexConverter.h in Headers */,
+				CDED583D20BA1FE0003A2969 /* StringTokenizer.h in Headers */,
+				CDED583520BA1FD6003A2969 /* Router.h in Headers */,
+				CDED583720BA1FE0003A2969 /* PathTemplate.h in Headers */,
+				CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */,
+				CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		CD9345C12093EB140077BAD4 /* consensus */ = {
@@ -167,11 +269,29 @@
 			buildRules = (
 			);
 			dependencies = (
+				CDED583F20BA2001003A2969 /* PBXTargetDependency */,
 			);
 			name = consensus;
 			productName = consensus;
 			productReference = CD9345C22093EB140077BAD4 /* consensus */;
 			productType = "com.apple.product-type.tool";
+		};
+		CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CDED582E20BA1FCE003A2969 /* Build configuration list for PBXNativeTarget "lib-simple-cpp-router" */;
+			buildPhases = (
+				CDED582920BA1FCE003A2969 /* Sources */,
+				CDED582A20BA1FCE003A2969 /* Frameworks */,
+				CDED582B20BA1FCE003A2969 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "lib-simple-cpp-router";
+			productName = "lib-simple-cpp-router";
+			productReference = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -185,6 +305,10 @@
 					CD9345C12093EB140077BAD4 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Manual;
+					};
+					CDED582C20BA1FCE003A2969 = {
+						CreatedOnToolsVersion = 9.3.1;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -201,6 +325,7 @@
 			projectRoot = "";
 			targets = (
 				CD9345C12093EB140077BAD4 /* consensus */,
+				CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */,
 			);
 		};
 /* End PBXProject section */
@@ -213,13 +338,35 @@
 				CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */,
 				CD5C632620B524A30038EE98 /* main-server.cpp in Sources */,
 				CD5C630320B4F7B10038EE98 /* context.cpp in Sources */,
+				CDED584420BA2131003A2969 /* VLRouteTable.cpp in Sources */,
 				CD5C630520B4F7B10038EE98 /* player.cpp in Sources */,
 				CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */,
 				CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDED582920BA1FCE003A2969 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDED583C20BA1FE0003A2969 /* StringTokenizer.cpp in Sources */,
+				CDED583620BA1FE0003A2969 /* PathTemplate.cpp in Sources */,
+				CDED583A20BA1FE0003A2969 /* RegexConverter.cpp in Sources */,
+				CDED583820BA1FE0003A2969 /* PathTemplateParser.cpp in Sources */,
+				CDED583420BA1FD6003A2969 /* Router.cpp in Sources */,
+				CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CDED583F20BA2001003A2969 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
+			targetProxy = CDED583E20BA2001003A2969 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		CD9345C72093EB140077BAD4 /* Debug */ = {
@@ -237,7 +384,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
@@ -264,6 +411,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					"_DEBUG=1",
 					"$(inherited)",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -272,7 +420,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = poco/include;
+				HEADER_SEARCH_PATHS = (
+					poco/include,
+					"3rd-party/simple-cpp-router/src",
+				);
 				LIBRARY_SEARCH_PATHS = poco/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -300,7 +451,7 @@
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
@@ -329,7 +480,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = poco/include;
+				HEADER_SEARCH_PATHS = (
+					poco/include,
+					"3rd-party/simple-cpp-router/src",
+				);
 				LIBRARY_SEARCH_PATHS = poco/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -367,6 +521,42 @@
 			};
 			name = Release;
 		};
+		CDED582F20BA1FCE003A2969 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BUD786NAA6;
+				EXECUTABLE_PREFIX = lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(INHERITED)",
+					"-w",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CDED583020BA1FCE003A2969 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BUD786NAA6;
+				EXECUTABLE_PREFIX = lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(INHERITED)",
+					"-w",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -384,6 +574,15 @@
 			buildConfigurations = (
 				CD9345CA2093EB140077BAD4 /* Debug */,
 				CD9345CB2093EB140077BAD4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CDED582E20BA1FCE003A2969 /* Build configuration list for PBXNativeTarget "lib-simple-cpp-router" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CDED582F20BA1FCE003A2969 /* Debug */,
+				CDED583020BA1FCE003A2969 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

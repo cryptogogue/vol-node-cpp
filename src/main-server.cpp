@@ -11,6 +11,8 @@
 #include "cohort.h"
 #include "scenario.h"
 
+#include "VLRouteTable.h"
+
 //================================================================//
 // MyRequestHandler
 //================================================================//
@@ -23,36 +25,136 @@ private:
 public:
 
 	//----------------------------------------------------------------//
-	void handleRequest ( HTTPServerRequest &req, HTTPServerResponse &resp ) override {
-		resp.setStatus ( HTTPResponse::HTTP_OK );
-		resp.setContentType ( "text/html" );
+	void handleRequest ( HTTPServerRequest &request, HTTPServerResponse &response ) override {
+		response.setStatus ( HTTPResponse::HTTP_OK );
+		response.setContentType ( "text/html" );
 
-		ostream& out = resp.send ();
+		ostream& out = response.send ();
 		out << "<h1>Hello world!</h1>"
-		<< "<p>Count: "		<< ++count				<< "</p>"
-		<< "<p>Host: "		<< req.getHost ()		<< "</p>"
-		<< "<p>Method: "	<< req.getMethod ()		<< "</p>"
-		<< "<p>URI: "		<< req.getURI ()		<< "</p>";
+		<< "<p>Count: "		<< ++count					<< "</p>"
+		<< "<p>Host: "		<< request.getHost ()		<< "</p>"
+		<< "<p>Method: "	<< request.getMethod ()		<< "</p>"
+		<< "<p>URI: "		<< request.getURI ()		<< "</p>";
 		out.flush ();
 
 		cout << endl
 		<< "Response sent for count=" << count
-		<< " and URI=" << req.getURI () << endl;
+		<< " and URI=" << request.getURI () << endl;
 	}
 };
 
 int MyRequestHandler::count = 0;
 
 //================================================================//
+// FooHandler
+//================================================================//
+class FooHandler :
+	public VLAbstractRequestHandlerWithMatch {
+protected:
+
+	//----------------------------------------------------------------//
+	void VLRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) override {
+		response.setStatus ( HTTPResponse::HTTP_OK );
+		response.setContentType ( "text/html" );
+
+		ostream& out = response.send ();
+		out << "<h1>FOO HANDLER!</h1>";
+		out.flush ();
+	}
+
+public:
+
+	//----------------------------------------------------------------//
+	FooHandler ( const PathMatch& match ) :
+		VLAbstractRequestHandlerWithMatch ( match ) {
+	}
+};
+
+//================================================================//
+// FooBarHandler
+//================================================================//
+class FooBarHandler :
+	public VLAbstractRequestHandlerWithMatch {
+protected:
+
+	//----------------------------------------------------------------//
+	void VLRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) override {
+		response.setStatus ( HTTPResponse::HTTP_OK );
+		response.setContentType ( "text/html" );
+
+		ostream& out = response.send ();
+		out << "<h1>FOOBAR HANDLER!</h1>";
+		out.flush ();
+	}
+	
+public:
+
+	//----------------------------------------------------------------//
+	FooBarHandler ( const PathMatch& match ) :
+		VLAbstractRequestHandlerWithMatch ( match ) {
+	}
+};
+
+//================================================================//
+// FooBarBazHandler
+//================================================================//
+class FooBarBazHandler :
+	public VLAbstractRequestHandlerWithMatch {
+protected:
+
+	//----------------------------------------------------------------//
+	void VLRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) override {
+		response.setStatus ( HTTPResponse::HTTP_OK );
+		response.setContentType ( "text/html" );
+
+		ostream& out = response.send ();
+		out << "<h1>" << match [ "baz" ] << "</h1>";
+		out.flush ();
+	}
+
+public:
+
+	//----------------------------------------------------------------//
+	FooBarBazHandler ( const PathMatch& match ) :
+		VLAbstractRequestHandlerWithMatch ( match ) {
+	}
+};
+
+//================================================================//
 // MyRequestHandler
 //================================================================//
 class MyRequestHandlerFactory :
 	public HTTPRequestHandlerFactory {
+private:
+
+	// thread local over mutex; trade a little memory for speed.
+	Poco::ThreadLocal < VLRouteTable > mRouteTable;
+
 public:
 
 	//----------------------------------------------------------------//
-	HTTPRequestHandler* createRequestHandler ( const HTTPServerRequest & ) override {
-		return new MyRequestHandler;
+	void AffirmRouteTable () {
+	
+		if ( this->mRouteTable->Size () > 0 ) return;
+		
+		this->mRouteTable->AddEndpoint < FooHandler >			( "/foo/?" );
+		this->mRouteTable->AddEndpoint < FooBarHandler >		( "/foo/bar/?" );
+		this->mRouteTable->AddEndpoint < FooBarBazHandler >		( "/foo/bar/:baz/?" );
+	}
+
+	//----------------------------------------------------------------//
+	MyRequestHandlerFactory () {
+	}
+
+	//----------------------------------------------------------------//
+	HTTPRequestHandler* createRequestHandler ( const HTTPServerRequest& request ) override {
+		
+		this->AffirmRouteTable ();
+		
+		printf ( "ROUTE TABLE: %p\n", &( *this->mRouteTable ));
+		
+		printf ( "createRequestHandler" );
+		return this->mRouteTable->Match ( request.getURI ());
 	}
 };
 
@@ -71,7 +173,14 @@ protected:
 		server.start ();
 		printf ( "Server started\n" );
 
-		waitForTerminationRequest ();  // wait for CTRL-C or kill
+		// nasty little hack. POCO considers the set breakpoint signal to be a termination event.
+		// need to find out how to stop POCO from doing this. in the meantime, this hack.
+		#ifdef _DEBUG
+			Poco::Event dummy;
+			dummy.wait ();
+		#else
+			waitForTerminationRequest ();  // wait for CTRL-C or kill
+		#endif
 
 		printf ( "Shutting down...\n" );
 		server.stop ();
