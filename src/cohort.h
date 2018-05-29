@@ -9,31 +9,31 @@
 class Cohort {
 private:
 
-	friend class Context;
-	friend class Player;
+    friend class Context;
+    friend class Player;
 
-	string	mName;
+    string  mName;
 
-	int		mBasePlayer;
-	bool	mIsPaused;
-	
-	int		mGroupFlags;
-	int		mRequestFlags;
-	int		mRespondFlags;
+    int     mBasePlayer;
+    bool    mIsPaused;
+    
+    int     mGroupFlags;
+    int     mRequestFlags;
+    int     mRespondFlags;
 
-	list < Player* > mPlayers;
+    list < Player* > mPlayers;
 
 public:
 
-	//----------------------------------------------------------------//
-					Cohort					();
-	void			Pause					( bool paused );
-	void			RandomizeFrequencies	( int max );
-	void			SetFlags				( int group, int request, int respond );
-	void			SetFrequency			( int frequency );
-	void			SetName					( string name );
-	void			SetStepStyle			( Player::StepStyle stepStyle );
-	void			SetVerbose				( bool verbose );
+    //----------------------------------------------------------------//
+                    Cohort                  ();
+    void            Pause                   ( bool paused );
+    void            RandomizeFrequencies    ( int max );
+    void            SetFlags                ( int group, int request, int respond );
+    void            SetFrequency            ( int frequency );
+    void            SetName                 ( string name );
+    void            SetStepStyle            ( Player::StepStyle stepStyle );
+    void            SetVerbose              ( bool verbose );
 };
 
 #endif

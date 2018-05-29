@@ -15,15 +15,15 @@
 // ConsensusApp
 //================================================================//
 class ConsensusApp :
-	public Poco::Util::Application {
+    public Poco::Util::Application {
 public:
 
-	//----------------------------------------------------------------//
-	int main ( const vector < string > &args ) {
-		FastGangScenario scenario;
-		scenario.Run ();
-		return EXIT_OK;
-	}
+    //----------------------------------------------------------------//
+    int main ( const vector < string > &args ) {
+        FastGangScenario scenario;
+        scenario.Run ();
+        return EXIT_OK;
+    }
 };
 
 POCO_APP_MAIN ( ConsensusApp );

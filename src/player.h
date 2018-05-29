@@ -12,47 +12,47 @@ class Player;
 class Player {
 public:
 
-	enum StepStyle {
-		STEP_CAREFUL,
-		STEP_NORMAL,
-		STEP_POLITE,
-	};
+    enum StepStyle {
+        STEP_CAREFUL,
+        STEP_NORMAL,
+        STEP_POLITE,
+    };
 
 private:
 
-	friend class Cohort;
-	friend class Context;
+    friend class Cohort;
+    friend class Context;
 
-	int					mID;
-	int					mPlayersCheckedCount;
-	vector < bool > 	mPlayersCheckedMask; // playerID -> checked
-	Chain				mChain;
-	Chain				mNextChain;
+    int                 mID;
+    int                 mPlayersCheckedCount;
+    vector < bool >     mPlayersCheckedMask; // playerID -> checked
+    Chain               mChain;
+    Chain               mNextChain;
 
-	Cohort*				mCohort;
-	int					mFrequency;
+    Cohort*             mCohort;
+    int                 mFrequency;
 
-	bool				mNewBatch;
-	bool				mVerbose;
-	StepStyle			mStepStyle;
+    bool                mNewBatch;
+    bool                mVerbose;
+    StepStyle           mStepStyle;
 
-	//----------------------------------------------------------------//
-	const Player*		GetNextPlayerInCycle	();
-	const Player*		RequestPlayer			();
-	void				Step					();
-	void				StepNormal				();
-	void				StepPolite				();
+    //----------------------------------------------------------------//
+    const Player*       GetNextPlayerInCycle    ();
+    const Player*       RequestPlayer           ();
+    void                Step                    ();
+    void                StepNormal              ();
+    void                StepPolite              ();
 
 public:
 
-	//----------------------------------------------------------------//
-	int					GetID			() const;
-	uint				GetScore		( int entropy );
-	void				Init			( int playerID );
-						Player			();
-	void				Print			() const;
-	void				SetStepStyle	( StepStyle stepStyle );
-	void				SetVerbose		( bool verbose );
+    //----------------------------------------------------------------//
+    int                 GetID           () const;
+    uint                GetScore        ( int entropy );
+    void                Init            ( int playerID );
+                        Player          ();
+    void                Print           () const;
+    void                SetStepStyle    ( StepStyle stepStyle );
+    void                SetVerbose      ( bool verbose );
 };
 
 #endif

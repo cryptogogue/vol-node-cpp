@@ -7,27 +7,27 @@
 // VLAbstractRequestHandler
 //================================================================//
 class VLAbstractRequestHandler :
-	public HTTPRequestHandler {
+    public HTTPRequestHandler {
 private:
 
-	friend class VLAbstractEndpoint;
-	template < typename TYPE > friend class VLEndpoint;
+    friend class VLAbstractEndpoint;
+    template < typename TYPE > friend class VLEndpoint;
 
-	PathMatch		mMatch;
+    PathMatch       mMatch;
 
-	//----------------------------------------------------------------//
-	void			handleRequest								( HTTPServerRequest &request, HTTPServerResponse &response ) override;
+    //----------------------------------------------------------------//
+    void            handleRequest                               ( HTTPServerRequest &request, HTTPServerResponse &response ) override;
 
 protected:
 
-	//----------------------------------------------------------------//
-	virtual void	VLAbstractRequestHandler_HandleRequest		( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const = 0;
+    //----------------------------------------------------------------//
+    virtual void    VLAbstractRequestHandler_HandleRequest      ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const = 0;
 
 public:
 
-	//----------------------------------------------------------------//
-					VLAbstractRequestHandler			( const PathMatch& match );
-					~VLAbstractRequestHandler			();
+    //----------------------------------------------------------------//
+                    VLAbstractRequestHandler            ( const PathMatch& match );
+                    ~VLAbstractRequestHandler           ();
 };
 
 #endif

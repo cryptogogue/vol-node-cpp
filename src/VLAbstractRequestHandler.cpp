@@ -14,7 +14,7 @@
 
 //----------------------------------------------------------------//
 VLAbstractRequestHandler::VLAbstractRequestHandler ( const PathMatch& match ) :
-	mMatch ( match ) {
+    mMatch ( match ) {
 }
 
 //----------------------------------------------------------------//
@@ -28,6 +28,6 @@ VLAbstractRequestHandler::~VLAbstractRequestHandler () {
 //----------------------------------------------------------------//
 void VLAbstractRequestHandler::handleRequest ( HTTPServerRequest &request, HTTPServerResponse &response ) {
 
-	this->VLAbstractRequestHandler_HandleRequest ( this->mMatch, request, response );
+    this->VLAbstractRequestHandler_HandleRequest ( this->mMatch, request, response );
 }
 

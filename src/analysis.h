@@ -11,16 +11,16 @@ class Chain;
 class Tree {
 private:
 
-	friend class TreeSummary;
+    friend class TreeSummary;
 
-	int					mPlayer;
-	map < int, Tree >	mChildren;
+    int                 mPlayer;
+    map < int, Tree >   mChildren;
 
 public:
 
-	//----------------------------------------------------------------//
-	void		AddChain		( const Chain& chain );
-				Tree			();
+    //----------------------------------------------------------------//
+    void        AddChain        ( const Chain& chain );
+                Tree            ();
 };
 
 //================================================================//
@@ -29,11 +29,11 @@ public:
 class TreeLevelStats {
 public:
 
-	size_t		mChains;
-	size_t		mContribution;
-	
-	//----------------------------------------------------------------//
-				TreeLevelStats		();
+    size_t      mChains;
+    size_t      mContribution;
+    
+    //----------------------------------------------------------------//
+                TreeLevelStats      ();
 };
 
 //================================================================//
@@ -42,28 +42,28 @@ public:
 class TreeSummary {
 private:
 
-	vector < int >			mPlayers;
-	list < TreeSummary >	mChildren;
-	
-	size_t					mChains;
-	size_t					mContribution;
-	size_t					mSubtreeSize;
-	float					mPercentOfTotal;
+    vector < int >          mPlayers;
+    list < TreeSummary >    mChildren;
+    
+    size_t                  mChains;
+    size_t                  mContribution;
+    size_t                  mSubtreeSize;
+    float                   mPercentOfTotal;
 
-	//----------------------------------------------------------------//
-	void		ComputePercents		( size_t totalBlocks );
-	size_t		ComputeSize			();
-	void		SummarizeRecurse	( const Tree& tree );
+    //----------------------------------------------------------------//
+    void        ComputePercents     ( size_t totalBlocks );
+    size_t      ComputeSize         ();
+    void        SummarizeRecurse    ( const Tree& tree );
 
 public:
-	
-	//----------------------------------------------------------------//
-	void		AnalyzeLevels		( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
-	size_t		MeasureChain		( float threshold ) const;
-	void		Print				( bool verbose, int maxDepth = 0, int depth = 0 ) const;
-	void		PrintLevels			() const;
-	void		Summarize			( const Tree& tree );
-				TreeSummary			();
+    
+    //----------------------------------------------------------------//
+    void        AnalyzeLevels       ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
+    size_t      MeasureChain        ( float threshold ) const;
+    void        Print               ( bool verbose, int maxDepth = 0, int depth = 0 ) const;
+    void        PrintLevels         () const;
+    void        Summarize           ( const Tree& tree );
+                TreeSummary         ();
 };
 
 //================================================================//
@@ -72,22 +72,22 @@ public:
 class Analysis {
 private:
 
-	friend class Context;
+    friend class Context;
 
-	map < size_t, size_t >	mPassesToLength;
+    map < size_t, size_t >  mPassesToLength;
 
-	size_t					mPasses;
-	TreeSummary				mSummary;
-	
-	size_t					mChainLength;
-	float					mAverageIncrease;
+    size_t                  mPasses;
+    TreeSummary             mSummary;
+    
+    size_t                  mChainLength;
+    float                   mAverageIncrease;
 
 public:
 
-	//----------------------------------------------------------------//
-				Analysis			();
-	void		Print				( bool verbose = false, int maxDepth = 0 );
-	void		Update				();
+    //----------------------------------------------------------------//
+                Analysis            ();
+    void        Print               ( bool verbose = false, int maxDepth = 0 );
+    void        Update              ();
 };
 
 #endif
