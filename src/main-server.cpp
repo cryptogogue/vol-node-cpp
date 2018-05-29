@@ -14,9 +14,9 @@
 #include "VLRouteTable.h"
 
 //================================================================//
-// MyRequestHandler
+// DefaultHandler
 //================================================================//
-class MyRequestHandler :
+class DefaultHandler :
 	public HTTPRequestHandler {
 private:
 
@@ -43,17 +43,17 @@ public:
 	}
 };
 
-int MyRequestHandler::count = 0;
+int DefaultHandler::count = 0;
 
 //================================================================//
 // FooHandler
 //================================================================//
 class FooHandler :
-	public VLAbstractRequestHandlerWithMatch {
+	public VLAbstractRequestHandler {
 protected:
 
 	//----------------------------------------------------------------//
-	void VLRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) override {
+	void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
 		response.setStatus ( HTTPResponse::HTTP_OK );
 		response.setContentType ( "text/html" );
 
@@ -66,7 +66,7 @@ public:
 
 	//----------------------------------------------------------------//
 	FooHandler ( const PathMatch& match ) :
-		VLAbstractRequestHandlerWithMatch ( match ) {
+		VLAbstractRequestHandler ( match ) {
 	}
 };
 
@@ -74,11 +74,11 @@ public:
 // FooBarHandler
 //================================================================//
 class FooBarHandler :
-	public VLAbstractRequestHandlerWithMatch {
+	public VLAbstractRequestHandler {
 protected:
 
 	//----------------------------------------------------------------//
-	void VLRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) override {
+	void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
 		response.setStatus ( HTTPResponse::HTTP_OK );
 		response.setContentType ( "text/html" );
 
@@ -91,7 +91,7 @@ public:
 
 	//----------------------------------------------------------------//
 	FooBarHandler ( const PathMatch& match ) :
-		VLAbstractRequestHandlerWithMatch ( match ) {
+		VLAbstractRequestHandler ( match ) {
 	}
 };
 
@@ -99,11 +99,11 @@ public:
 // FooBarBazHandler
 //================================================================//
 class FooBarBazHandler :
-	public VLAbstractRequestHandlerWithMatch {
+	public VLAbstractRequestHandler {
 protected:
 
 	//----------------------------------------------------------------//
-	void VLRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) override {
+	void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
 		response.setStatus ( HTTPResponse::HTTP_OK );
 		response.setContentType ( "text/html" );
 
@@ -116,7 +116,7 @@ public:
 
 	//----------------------------------------------------------------//
 	FooBarBazHandler ( const PathMatch& match ) :
-		VLAbstractRequestHandlerWithMatch ( match ) {
+		VLAbstractRequestHandler ( match ) {
 	}
 };
 
@@ -150,11 +150,8 @@ public:
 	HTTPRequestHandler* createRequestHandler ( const HTTPServerRequest& request ) override {
 		
 		this->AffirmRouteTable ();
-		
-		printf ( "ROUTE TABLE: %p\n", &( *this->mRouteTable ));
-		
-		printf ( "createRequestHandler" );
-		return this->mRouteTable->Match ( request.getURI ());
+		HTTPRequestHandler* handler = this->mRouteTable->Match ( request.getURI ());
+		return handler ? handler : new DefaultHandler ();
 	}
 };
 
