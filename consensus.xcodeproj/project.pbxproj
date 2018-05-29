@@ -214,7 +214,7 @@
 			children = (
 				CDED589120BD1CAC003A2969 /* server */,
 				CDED589220BD1CB2003A2969 /* simulator */,
-				CDED587020BCDBD7003A2969 /* rest */,
+				CDED587020BCDBD7003A2969 /* router */,
 				CD5C62F420B4F7B10038EE98 /* analysis.cpp */,
 				CD5C62F520B4F7B10038EE98 /* analysis.h */,
 				CD5C62F620B4F7B10038EE98 /* chain.cpp */,
@@ -295,7 +295,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		CDED587020BCDBD7003A2969 /* rest */ = {
+		CDED587020BCDBD7003A2969 /* router */ = {
 			isa = PBXGroup;
 			children = (
 				CDED586D20BCDB38003A2969 /* VLAbstractRequestHandler.cpp */,
@@ -303,7 +303,7 @@
 				CDED584220BA2131003A2969 /* VLRouteTable.cpp */,
 				CDED584320BA2131003A2969 /* VLRouteTable.h */,
 			);
-			name = rest;
+			name = router;
 			sourceTree = "<group>";
 		};
 		CDED589120BD1CAC003A2969 /* server */ = {

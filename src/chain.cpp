@@ -84,17 +84,6 @@ Cycle::Cycle () :
 }
 
 //----------------------------------------------------------------//
-//Block* Cycle::FindBestParent ( Block& block ) {
-//
-//	Block* cursor = this->mBestBlock;
-//	for ( ; cursor; cursor = cursor->mParent ) {
-//		if ( cursor->mScore > block.mScore ) return cursor;
-//		if ( cursor == &block ) return block.mParent;
-//	}
-//	return 0;
-//}
-
-//----------------------------------------------------------------//
 int Cycle::FindPosition ( int playerID ) const {
 
 	unsigned int score = Context::GetScore ( playerID, this->mEntropy );
@@ -179,44 +168,6 @@ void Cycle::SetID ( int cycleID ) {
 	this->mCycleID = cycleID;
 	this->mEntropy = Context::Entropy ( cycleID );
 }
-
-//----------------------------------------------------------------//
-//void Cycle::PrintRecurse ( const Block* block ) const {
-//
-//	if ( block ) {
-//		if ( block->mParent ) {
-//			this->PrintRecurse ( block->mParent );
-//			printf ( "," );
-//		}
-//		printf ( "%d", block->mPlayerID );
-//	}
-//}
-
-//----------------------------------------------------------------//
-//void Cycle::Update () {
-//
-//	this->mBestBlock = 0;
-//	this->mBestLength = 0;
-//	
-//	Block* bestChild = 0;
-//	do {
-//		
-//		map < int, Block >::iterator blockIt = this->mBlocks.begin ();
-//		for ( ; blockIt != this->mBlocks.end (); ++blockIt ) {
-//			Block& child = blockIt->second;
-//			if ( child.mParent == this->mBestBlock ) {
-//				if ( !bestChild || ( child.mScore > bestChild->mScore )) {
-//					bestChild = &child;
-//				}
-//			}
-//		}
-//		if ( bestChild ) {
-//			this->mBestBlock = bestChild;
-//			this->mBestLength++;
-//		}
-//	}
-//	while ( bestChild );
-//}
 
 //----------------------------------------------------------------//
 void Cycle::UpdatePlayerRatio ( size_t prevCount ) {
@@ -329,45 +280,6 @@ const Chain& Chain::Choose ( size_t cycleID, const Chain& prefer, const Chain& o
 }
 
 //----------------------------------------------------------------//
-//const Chain& Chain::Compare ( const Chain& chain0, const Chain& chain1 ) {
-//
-//	size_t size0 = chain0.mCycles.size ();
-//	size_t size1 = chain1.mCycles.size ();
-//
-//	size_t minSize = size0 < size1 ? size0 : size1;
-//	for ( size_t i = 0; i < minSize; ++i ) {
-//		const Cycle& cycle0 = chain0.mCycles [ i ];
-//		const Cycle& cycle1 = chain1.mCycles [ i ];
-//
-//		int compare = Cycle::Compare ( cycle0, cycle1 );
-//
-//		// prefer the longer cycle
-//		if ( compare != 0 ) {
-//			return compare < 0 ? chain0 : chain1;
-//		}
-//	}
-//
-//	if ( size0 != size1 ) {
-//
-//		const Chain* shorter		= &chain0;
-//		const Chain* longer		= &chain1;
-//
-//		if ( size1 < size0 ) {
-//			shorter		= &chain1;
-//			longer		= &chain0;
-//		}
-//
-//		if ( shorter->mCycles.size () == 0 ) return *longer;
-//
-//		const Cycle& shorterTop = shorter->mCycles.back ();
-//		const Cycle& longerNext = longer->mCycles [ shorterTop.mCycleID ];
-//
-//		return longerNext.Size () >= shorterTop.Size () ? *longer : *shorter;
-//	}
-//	return chain0;
-//}
-
-//----------------------------------------------------------------//
 size_t Chain::FindMax ( size_t cycleID ) const {
 
 	size_t max = this->mCycles [ cycleID ].mPlayers.size ();
@@ -393,58 +305,6 @@ Cycle* Chain::GetTopCycle () {
 const Cycle* Chain::GetTopCycle () const {
 
 	return this->mCycles.size () > 0 ? &this->mCycles.back () : 0;
-}
-
-//----------------------------------------------------------------//
-//void Chain::Insert ( int cycleID, int playerID ) {
-//
-//	this->mCycles.resize ( cycleID + 1 );
-//	Cycle& cycle = this->mCycles [ cycleID ];
-//	cycle.Insert ( playerID );
-//
-//	size_t prevCount = cycleID > 0 ? this->mCycles [ cycleID - 1 ].mChain.size () : 0;
-//	cycle.UpdatePlayerRatio ( prevCount);
-//}
-
-//----------------------------------------------------------------//
-void Chain::Knit ( const Chain& chain ) {
-
-
-	size_t size0 = this->mCycles.size ();
-	size_t size1 = chain.mCycles.size ();
-
-	size_t minSize = size0 < size1 ? size0 : size1;
-	for ( size_t i = 0; i < minSize; ++i ) {
-	
-		Cycle& cycle0			= this->mCycles [ i ];
-		const Cycle& cycle1		= chain.mCycles [ i ];
-
-		int compare = Cycle::Compare ( cycle0, cycle1 );
-
-		// merge participants *after* compare
-		cycle0.MergeParticipants ( cycle1 );
-
-		// if cycle0 is better
-		if (( compare == -1 ) && chain.CanEdit ( i, *this )) {
-			size1 = i + 1; // truncate chain1 (not really)
-			break;
-		}
-		
-		// if cycle1 is better
-		if (( compare == 1 ) && this->CanEdit ( i, chain )) {
-			size0 = i + 1; // truncate chain0
-			this->mCycles.resize ( size0 ); // (really!)
-			cycle0.CopyChain ( cycle1 ); // copy over the better chain
-			cycle0.mPlayers = cycle1.mPlayers;
-			break;
-		}
-	}
-	
-	// if size1 is longer, then all the cycles were equal, *or* we found a better cycle in
-	// chain1 and truncated chain0. either way, copy the rest of chain1 over to chain0.
-	for ( size_t i = size0; i < size1; ++i ) {
-		this->mCycles.push_back ( chain.mCycles [ i ]);
-	}
 }
 
 //----------------------------------------------------------------//

@@ -77,16 +77,14 @@ private:
 	size_t					FindMax				( size_t cycleID ) const;
 	Cycle*					GetTopCycle			();
 	const Cycle*			GetTopCycle			() const;
-	//void					Insert				( int cycleID, int playerID );
 
 public:
 
 	//----------------------------------------------------------------//
 							Chain				();
-	//static const Chain&		Compare			( const Chain& chain0, const Chain& chain1 );
 	static const Chain&		Choose				( const Chain& chain0, const Chain& chain1 );
 	int						FindPosition		( int playerID ) const;
-	void					Knit				( const Chain& chain );
+	//void					Knit				( const Chain& chain );
 	void					MergeParticipants	( const Chain& chain );
 	void					Print				( const char* pre = 0, const char* post = "\n" ) const;
 	void					Push				( int playerID );
