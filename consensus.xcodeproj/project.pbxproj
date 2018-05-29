@@ -12,7 +12,6 @@
 		CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F820B4F7B10038EE98 /* cohort.cpp */; };
 		CD5C630320B4F7B10038EE98 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FB20B4F7B10038EE98 /* context.cpp */; };
 		CD5C630520B4F7B10038EE98 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FE20B4F7B10038EE98 /* player.cpp */; };
-		CD5C632620B524A30038EE98 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -39,6 +38,26 @@
 		CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
 		CDED586F20BCDB38003A2969 /* VLAbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED586D20BCDB38003A2969 /* VLAbstractRequestHandler.cpp */; };
+		CDED587820BD1C5F003A2969 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F420B4F7B10038EE98 /* analysis.cpp */; };
+		CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
+		CDED587A20BD1C5F003A2969 /* VLAbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED586D20BCDB38003A2969 /* VLAbstractRequestHandler.cpp */; };
+		CDED587B20BD1C5F003A2969 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FB20B4F7B10038EE98 /* context.cpp */; };
+		CDED587C20BD1C5F003A2969 /* VLRouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* VLRouteTable.cpp */; };
+		CDED587D20BD1C5F003A2969 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FE20B4F7B10038EE98 /* player.cpp */; };
+		CDED587E20BD1C5F003A2969 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F620B4F7B10038EE98 /* chain.cpp */; };
+		CDED587F20BD1C5F003A2969 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F820B4F7B10038EE98 /* cohort.cpp */; };
+		CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
+		CDED588220BD1C5F003A2969 /* liblib-simple-cpp-router.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */; };
+		CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
+		CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
+		CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
+		CDED588620BD1C5F003A2969 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585F20BA3981003A2969 /* libPocoRedis.a */; };
+		CDED588720BD1C5F003A2969 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
+		CDED588820BD1C5F003A2969 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
+		CDED588920BD1C5F003A2969 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
+		CDED588A20BD1C5F003A2969 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
+		CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
+		CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632320B524A30038EE98 /* main-simulator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,10 +68,26 @@
 			remoteGlobalIDString = CDED582C20BA1FCE003A2969;
 			remoteInfo = "lib-simple-cpp-router";
 		};
+		CDED587620BD1C5F003A2969 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDED582C20BA1FCE003A2969;
+			remoteInfo = "lib-simple-cpp-router";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		CD9345C02093EB140077BAD4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = usr/share/man/man1;
+			dstSubfolderSpec = 6;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		CDED588C20BD1C5F003A2969 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = usr/share/man/man1;
@@ -76,9 +111,9 @@
 		CD5C62FE20B4F7B10038EE98 /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = player.cpp; path = src/player.cpp; sourceTree = "<group>"; };
 		CD5C62FF20B4F7B10038EE98 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = player.h; path = src/player.h; sourceTree = "<group>"; };
 		CD5C632220B524220038EE98 /* scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scenario.h; path = src/scenario.h; sourceTree = "<group>"; };
-		CD5C632320B524A30038EE98 /* main-scenario.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-scenario.cpp"; path = "src/main-scenario.cpp"; sourceTree = "<group>"; };
+		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/main-simulator.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/main-server.cpp"; sourceTree = "<group>"; };
-		CD9345C22093EB140077BAD4 /* consensus */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = consensus; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -107,6 +142,7 @@
 		CDED586220BA3981003A2969 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
 		CDED586D20BCDB38003A2969 /* VLAbstractRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VLAbstractRequestHandler.cpp; path = src/VLAbstractRequestHandler.cpp; sourceTree = "<group>"; };
 		CDED586E20BCDB38003A2969 /* VLAbstractRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLAbstractRequestHandler.h; path = src/VLAbstractRequestHandler.h; sourceTree = "<group>"; };
+		CDED589020BD1C5F003A2969 /* server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = server; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +171,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDED588020BD1C5F003A2969 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */,
+				CDED588220BD1C5F003A2969 /* liblib-simple-cpp-router.a in Frameworks */,
+				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
+				CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */,
+				CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */,
+				CDED588620BD1C5F003A2969 /* libPocoRedis.a in Frameworks */,
+				CDED588720BD1C5F003A2969 /* libPocoEncodings.a in Frameworks */,
+				CDED588820BD1C5F003A2969 /* libPocoNet.a in Frameworks */,
+				CDED588920BD1C5F003A2969 /* libPocoZip.a in Frameworks */,
+				CDED588A20BD1C5F003A2969 /* libPocoXML.a in Frameworks */,
+				CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -158,6 +212,8 @@
 		CD5C62F320B4F7A70038EE98 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CDED589120BD1CAC003A2969 /* server */,
+				CDED589220BD1CB2003A2969 /* simulator */,
 				CDED587020BCDBD7003A2969 /* rest */,
 				CD5C62F420B4F7B10038EE98 /* analysis.cpp */,
 				CD5C62F520B4F7B10038EE98 /* analysis.h */,
@@ -168,8 +224,6 @@
 				CD5C62FA20B4F7B10038EE98 /* common.h */,
 				CD5C62FB20B4F7B10038EE98 /* context.cpp */,
 				CD5C62FC20B4F7B10038EE98 /* context.h */,
-				CD5C632320B524A30038EE98 /* main-scenario.cpp */,
-				CD5C632420B524A30038EE98 /* main-server.cpp */,
 				CD5C62FE20B4F7B10038EE98 /* player.cpp */,
 				CD5C62FF20B4F7B10038EE98 /* player.h */,
 				CD5C632220B524220038EE98 /* scenario.h */,
@@ -191,8 +245,9 @@
 		CD9345C32093EB140077BAD4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CD9345C22093EB140077BAD4 /* consensus */,
+				CD9345C22093EB140077BAD4 /* simulator */,
 				CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */,
+				CDED589020BD1C5F003A2969 /* server */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -251,6 +306,22 @@
 			name = rest;
 			sourceTree = "<group>";
 		};
+		CDED589120BD1CAC003A2969 /* server */ = {
+			isa = PBXGroup;
+			children = (
+				CD5C632420B524A30038EE98 /* main-server.cpp */,
+			);
+			name = server;
+			sourceTree = "<group>";
+		};
+		CDED589220BD1CB2003A2969 /* simulator */ = {
+			isa = PBXGroup;
+			children = (
+				CD5C632320B524A30038EE98 /* main-simulator.cpp */,
+			);
+			name = simulator;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -271,9 +342,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		CD9345C12093EB140077BAD4 /* consensus */ = {
+		CD9345C12093EB140077BAD4 /* simulator */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CD9345C92093EB140077BAD4 /* Build configuration list for PBXNativeTarget "consensus" */;
+			buildConfigurationList = CD9345C92093EB140077BAD4 /* Build configuration list for PBXNativeTarget "simulator" */;
 			buildPhases = (
 				CD9345BE2093EB140077BAD4 /* Sources */,
 				CD9345BF2093EB140077BAD4 /* Frameworks */,
@@ -284,9 +355,9 @@
 			dependencies = (
 				CDED583F20BA2001003A2969 /* PBXTargetDependency */,
 			);
-			name = consensus;
+			name = simulator;
 			productName = consensus;
-			productReference = CD9345C22093EB140077BAD4 /* consensus */;
+			productReference = CD9345C22093EB140077BAD4 /* simulator */;
 			productType = "com.apple.product-type.tool";
 		};
 		CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */ = {
@@ -306,6 +377,24 @@
 			productReference = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		CDED587420BD1C5F003A2969 /* server */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CDED588D20BD1C5F003A2969 /* Build configuration list for PBXNativeTarget "server" */;
+			buildPhases = (
+				CDED587720BD1C5F003A2969 /* Sources */,
+				CDED588020BD1C5F003A2969 /* Frameworks */,
+				CDED588C20BD1C5F003A2969 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CDED587520BD1C5F003A2969 /* PBXTargetDependency */,
+			);
+			name = server;
+			productName = consensus;
+			productReference = CDED589020BD1C5F003A2969 /* server */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -323,6 +412,9 @@
 						CreatedOnToolsVersion = 9.3.1;
 						ProvisioningStyle = Automatic;
 					};
+					CDED587420BD1C5F003A2969 = {
+						ProvisioningStyle = Manual;
+					};
 				};
 			};
 			buildConfigurationList = CD9345BD2093EB140077BAD4 /* Build configuration list for PBXProject "consensus" */;
@@ -337,7 +429,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CD9345C12093EB140077BAD4 /* consensus */,
+				CDED587420BD1C5F003A2969 /* server */,
+				CD9345C12093EB140077BAD4 /* simulator */,
 				CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */,
 			);
 		};
@@ -349,12 +442,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */,
-				CD5C632620B524A30038EE98 /* main-server.cpp in Sources */,
 				CDED586F20BCDB38003A2969 /* VLAbstractRequestHandler.cpp in Sources */,
 				CD5C630320B4F7B10038EE98 /* context.cpp in Sources */,
 				CDED584420BA2131003A2969 /* VLRouteTable.cpp in Sources */,
 				CD5C630520B4F7B10038EE98 /* player.cpp in Sources */,
 				CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */,
+				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
 				CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -372,6 +465,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDED587720BD1C5F003A2969 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDED587820BD1C5F003A2969 /* analysis.cpp in Sources */,
+				CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */,
+				CDED587A20BD1C5F003A2969 /* VLAbstractRequestHandler.cpp in Sources */,
+				CDED587B20BD1C5F003A2969 /* context.cpp in Sources */,
+				CDED587C20BD1C5F003A2969 /* VLRouteTable.cpp in Sources */,
+				CDED587D20BD1C5F003A2969 /* player.cpp in Sources */,
+				CDED587E20BD1C5F003A2969 /* chain.cpp in Sources */,
+				CDED587F20BD1C5F003A2969 /* cohort.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -379,6 +487,11 @@
 			isa = PBXTargetDependency;
 			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
 			targetProxy = CDED583E20BA2001003A2969 /* PBXContainerItemProxy */;
+		};
+		CDED587520BD1C5F003A2969 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
+			targetProxy = CDED587620BD1C5F003A2969 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -571,6 +684,32 @@
 			};
 			name = Release;
 		};
+		CDED588E20BD1C5F003A2969 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/poco/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		CDED588F20BD1C5F003A2969 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/poco/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -583,7 +722,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CD9345C92093EB140077BAD4 /* Build configuration list for PBXNativeTarget "consensus" */ = {
+		CD9345C92093EB140077BAD4 /* Build configuration list for PBXNativeTarget "simulator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CD9345CA2093EB140077BAD4 /* Debug */,
@@ -597,6 +736,15 @@
 			buildConfigurations = (
 				CDED582F20BA1FCE003A2969 /* Debug */,
 				CDED583020BA1FCE003A2969 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CDED588D20BD1C5F003A2969 /* Build configuration list for PBXNativeTarget "server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CDED588E20BD1C5F003A2969 /* Debug */,
+				CDED588F20BD1C5F003A2969 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
