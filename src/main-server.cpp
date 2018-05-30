@@ -25,7 +25,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( HTTPServerRequest& request, HTTPServerResponse& response ) const override {
+    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest& request, HTTPServerResponse& response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -49,11 +49,11 @@ int DefaultHandler::count = 0;
 // FooHandler
 //================================================================//
 class FooHandler :
-    public VLAbstractRequestHandlerWithMatch {
+    public VLAbstractRequestHandler {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandlerWithMatch_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
+    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -67,11 +67,11 @@ protected:
 // FooBarHandler
 //================================================================//
 class FooBarHandler :
-    public VLAbstractRequestHandlerWithMatch {
+    public VLAbstractRequestHandler {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandlerWithMatch_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
+    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -85,11 +85,11 @@ protected:
 // FooBarBazHandler
 //================================================================//
 class FooBarBazHandler :
-    public VLAbstractRequestHandlerWithMatch {
+    public VLAbstractRequestHandler {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandlerWithMatch_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
+    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 

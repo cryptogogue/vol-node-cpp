@@ -13,15 +13,9 @@
 //================================================================//
 
 //----------------------------------------------------------------//
-VLAbstractRequestHandler* VLAbstractEndpoint::CreateRequestHandler () const {
-
-    return this->VLEndpointBase_CreateRequestHandler ();
-}
-
-//----------------------------------------------------------------//
 VLAbstractRequestHandler* VLAbstractEndpoint::CreateRequestHandler ( const PathMatch& match ) const {
 
-    VLAbstractRequestHandler* handler = this->CreateRequestHandler ();
+    VLAbstractRequestHandler* handler = this->VLEndpointBase_CreateRequestHandler ();
     handler->SetMatch ( match );
     return handler;
 }
@@ -50,8 +44,15 @@ VLAbstractRequestHandler* VLRouteTable::Match ( string uri ) {
         }
     }
     catch ( PathNotFoundException ) {
+    
+        try {
+            PathMatch match = this->mDefaultRouter.matchPath ( "" );
+            return this->mDefaultEndpoint->CreateRequestHandler ( match );
+        }
+        catch ( PathNotFoundException ) {
+        }
     }
-    return this->mDefaultEndpoint ? this->mDefaultEndpoint->CreateRequestHandler () : 0;
+    return 0;
 }
 
 //----------------------------------------------------------------//

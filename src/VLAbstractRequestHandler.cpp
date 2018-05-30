@@ -9,13 +9,13 @@
 #include "VLAbstractRequestHandler.h"
 
 //================================================================//
-// VLAbstractRequestHandler
+// VLAbstractRequestHandlerWithMatch
 //================================================================//
 
 //----------------------------------------------------------------//
 void VLAbstractRequestHandler::SetMatch ( const PathMatch& match ) {
 
-    this->VLAbstractRequestHandler_SetMatch ( match );
+    this->mMatch = make_unique < PathMatch >( match );
 }
 
 //----------------------------------------------------------------//
@@ -26,11 +26,6 @@ VLAbstractRequestHandler::VLAbstractRequestHandler () {
 VLAbstractRequestHandler::~VLAbstractRequestHandler () {
 }
 
-//----------------------------------------------------------------//
-void VLAbstractRequestHandler::VLAbstractRequestHandler_SetMatch ( const PathMatch& match ) {
-    assert ( false );
-}
-
 //================================================================//
 // overrides
 //================================================================//
@@ -38,6 +33,5 @@ void VLAbstractRequestHandler::VLAbstractRequestHandler_SetMatch ( const PathMat
 //----------------------------------------------------------------//
 void VLAbstractRequestHandler::handleRequest ( HTTPServerRequest& request, HTTPServerResponse& response ) {
 
-    this->VLAbstractRequestHandler_HandleRequest ( request, response );
+    this->VLAbstractRequestHandler_HandleRequest ( *this->mMatch, request, response );
 }
-

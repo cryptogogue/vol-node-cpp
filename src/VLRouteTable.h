@@ -2,7 +2,7 @@
 #define VLROUTETABLE_H
 
 #include "common.h"
-#include "VLAbstractRequestHandlerWithMatch.h"
+#include "VLAbstractRequestHandler.h"
 
 //================================================================//
 // VLAbstractEndpoint
@@ -16,7 +16,6 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    VLAbstractRequestHandler*               CreateRequestHandler            () const;
     VLAbstractRequestHandler*               CreateRequestHandler            ( const PathMatch& match ) const;
                                             VLAbstractEndpoint              ();
     virtual                                 ~VLAbstractEndpoint             ();
@@ -43,6 +42,7 @@ class VLRouteTable {
 private:
 
     Router                                                  mRouter;
+    Router                                                  mDefaultRouter;
     map < string, unique_ptr < VLAbstractEndpoint > >       mPatternsToEndpoints;
     unique_ptr < VLAbstractEndpoint >                       mDefaultEndpoint;
 
@@ -65,6 +65,7 @@ public:
     template < typename TYPE >
     void SetDefault () {
         this->mDefaultEndpoint = make_unique < VLEndpoint < TYPE > > ();
+        this->mDefaultRouter.registerPath ( "/?" );
     }
 };
 
