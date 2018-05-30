@@ -17,7 +17,7 @@
 // DefaultHandler
 //================================================================//
 class DefaultHandler :
-    public HTTPRequestHandler {
+    public VLAbstractRequestHandler {
 private:
 
     static int count;
@@ -25,7 +25,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void handleRequest ( HTTPServerRequest &request, HTTPServerResponse &response ) override {
+    void VLAbstractRequestHandler_HandleRequest ( HTTPServerRequest& request, HTTPServerResponse& response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -49,11 +49,11 @@ int DefaultHandler::count = 0;
 // FooHandler
 //================================================================//
 class FooHandler :
-    public VLAbstractRequestHandler {
+    public VLAbstractRequestHandlerWithMatch {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
+    void VLAbstractRequestHandlerWithMatch_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -61,24 +61,17 @@ protected:
         out << "<h1>FOO HANDLER!</h1>";
         out.flush ();
     }
-
-public:
-
-    //----------------------------------------------------------------//
-    FooHandler ( const PathMatch& match ) :
-        VLAbstractRequestHandler ( match ) {
-    }
 };
 
 //================================================================//
 // FooBarHandler
 //================================================================//
 class FooBarHandler :
-    public VLAbstractRequestHandler {
+    public VLAbstractRequestHandlerWithMatch {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
+    void VLAbstractRequestHandlerWithMatch_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -86,24 +79,17 @@ protected:
         out << "<h1>FOOBAR HANDLER!</h1>";
         out.flush ();
     }
-    
-public:
-
-    //----------------------------------------------------------------//
-    FooBarHandler ( const PathMatch& match ) :
-        VLAbstractRequestHandler ( match ) {
-    }
 };
 
 //================================================================//
 // FooBarBazHandler
 //================================================================//
 class FooBarBazHandler :
-    public VLAbstractRequestHandler {
+    public VLAbstractRequestHandlerWithMatch {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
+    void VLAbstractRequestHandlerWithMatch_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
         response.setStatus ( HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -111,17 +97,10 @@ protected:
         out << "<h1>" << match [ "baz" ] << "</h1>";
         out.flush ();
     }
-
-public:
-
-    //----------------------------------------------------------------//
-    FooBarBazHandler ( const PathMatch& match ) :
-        VLAbstractRequestHandler ( match ) {
-    }
 };
 
 //================================================================//
-// MyRequestHandler
+// MyRequestHandlerFactory
 //================================================================//
 class MyRequestHandlerFactory :
     public HTTPRequestHandlerFactory {
@@ -140,6 +119,7 @@ public:
         this->mRouteTable->AddEndpoint < FooHandler >           ( "/foo/?" );
         this->mRouteTable->AddEndpoint < FooBarHandler >        ( "/foo/bar/?" );
         this->mRouteTable->AddEndpoint < FooBarBazHandler >     ( "/foo/bar/:baz/?" );
+        this->mRouteTable->SetDefault < DefaultHandler >        ();
     }
 
     //----------------------------------------------------------------//
@@ -150,8 +130,7 @@ public:
     HTTPRequestHandler* createRequestHandler ( const HTTPServerRequest& request ) override {
         
         this->AffirmRouteTable ();
-        HTTPRequestHandler* handler = this->mRouteTable->Match ( request.getURI ());
-        return handler ? handler : new DefaultHandler ();
+        return this->mRouteTable->Match ( request.getURI ());
     }
 };
 

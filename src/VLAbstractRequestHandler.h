@@ -13,20 +13,20 @@ private:
     friend class VLAbstractEndpoint;
     template < typename TYPE > friend class VLEndpoint;
 
-    PathMatch       mMatch;
-
     //----------------------------------------------------------------//
-    void            handleRequest                               ( HTTPServerRequest &request, HTTPServerResponse &response ) override;
+    void            handleRequest                               ( HTTPServerRequest& request, HTTPServerResponse& response ) override;
 
 protected:
 
     //----------------------------------------------------------------//
-    virtual void    VLAbstractRequestHandler_HandleRequest      ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const = 0;
+    virtual void    VLAbstractRequestHandler_HandleRequest      ( HTTPServerRequest& request, HTTPServerResponse& response ) const = 0;
+    virtual void    VLAbstractRequestHandler_SetMatch           ( const PathMatch& match );
 
 public:
 
     //----------------------------------------------------------------//
-                    VLAbstractRequestHandler            ( const PathMatch& match );
+    void            SetMatch                            ( const PathMatch& match );
+                    VLAbstractRequestHandler            ();
                     ~VLAbstractRequestHandler           ();
 };
 

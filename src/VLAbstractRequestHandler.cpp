@@ -13,12 +13,22 @@
 //================================================================//
 
 //----------------------------------------------------------------//
-VLAbstractRequestHandler::VLAbstractRequestHandler ( const PathMatch& match ) :
-    mMatch ( match ) {
+void VLAbstractRequestHandler::SetMatch ( const PathMatch& match ) {
+
+    this->VLAbstractRequestHandler_SetMatch ( match );
+}
+
+//----------------------------------------------------------------//
+VLAbstractRequestHandler::VLAbstractRequestHandler () {
 }
 
 //----------------------------------------------------------------//
 VLAbstractRequestHandler::~VLAbstractRequestHandler () {
+}
+
+//----------------------------------------------------------------//
+void VLAbstractRequestHandler::VLAbstractRequestHandler_SetMatch ( const PathMatch& match ) {
+    assert ( false );
 }
 
 //================================================================//
@@ -26,8 +36,8 @@ VLAbstractRequestHandler::~VLAbstractRequestHandler () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void VLAbstractRequestHandler::handleRequest ( HTTPServerRequest &request, HTTPServerResponse &response ) {
+void VLAbstractRequestHandler::handleRequest ( HTTPServerRequest& request, HTTPServerResponse& response ) {
 
-    this->VLAbstractRequestHandler_HandleRequest ( this->mMatch, request, response );
+    this->VLAbstractRequestHandler_HandleRequest ( request, response );
 }
 

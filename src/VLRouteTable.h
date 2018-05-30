@@ -2,7 +2,7 @@
 #define VLROUTETABLE_H
 
 #include "common.h"
-#include "VLAbstractRequestHandler.h"
+#include "VLAbstractRequestHandlerWithMatch.h"
 
 //================================================================//
 // VLAbstractEndpoint
@@ -11,11 +11,12 @@ class VLAbstractEndpoint {
 protected:
 
     //----------------------------------------------------------------//
-    virtual VLAbstractRequestHandler*       VLEndpointBase_CreateRequestHandler         ( const PathMatch& match ) const = 0;
+    virtual VLAbstractRequestHandler*       VLEndpointBase_CreateRequestHandler         () const = 0;
 
 public:
 
     //----------------------------------------------------------------//
+    VLAbstractRequestHandler*               CreateRequestHandler            () const;
     VLAbstractRequestHandler*               CreateRequestHandler            ( const PathMatch& match ) const;
                                             VLAbstractEndpoint              ();
     virtual                                 ~VLAbstractEndpoint             ();
@@ -30,9 +31,8 @@ class VLEndpoint :
 private:
 
     //----------------------------------------------------------------//
-    VLAbstractRequestHandler* VLEndpointBase_CreateRequestHandler ( const PathMatch& match ) const override {
-        VLAbstractRequestHandler* handler = new TYPE ( match );
-        return handler;
+    VLAbstractRequestHandler* VLEndpointBase_CreateRequestHandler () const override {
+        return new TYPE ();
     }
 };
 
@@ -44,6 +44,7 @@ private:
 
     Router                                                  mRouter;
     map < string, unique_ptr < VLAbstractEndpoint > >       mPatternsToEndpoints;
+    unique_ptr < VLAbstractEndpoint >                       mDefaultEndpoint;
 
 public:
 
@@ -58,6 +59,12 @@ public:
     void AddEndpoint ( string pattern ) {
         this->mPatternsToEndpoints [ pattern ] = make_unique < VLEndpoint < TYPE > > ();
         this->mRouter.registerPath ( pattern );
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    void SetDefault () {
+        this->mDefaultEndpoint = make_unique < VLEndpoint < TYPE > > ();
     }
 };
 

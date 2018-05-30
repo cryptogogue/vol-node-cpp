@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD46659E20BE908300A02D55 /* VLBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* VLBlock.cpp */; };
+		CD46659F20BE908300A02D55 /* VLBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* VLBlock.cpp */; };
+		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
+		CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
+		CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
+		CD4665A520BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
+		CD4665A820BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp */; };
+		CD4665A920BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp */; };
 		CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F420B4F7B10038EE98 /* analysis.cpp */; };
 		CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F620B4F7B10038EE98 /* chain.cpp */; };
 		CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F820B4F7B10038EE98 /* cohort.cpp */; };
@@ -99,6 +107,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD46659C20BE908300A02D55 /* VLBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VLBlock.cpp; path = src/VLBlock.cpp; sourceTree = "<group>"; };
+		CD46659D20BE908300A02D55 /* VLBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLBlock.h; path = src/VLBlock.h; sourceTree = "<group>"; };
+		CD4665A020BE9CE000A02D55 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libcrypto.a; sourceTree = "<group>"; };
+		CD4665A120BE9CE000A02D55 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libssl.a; sourceTree = "<group>"; };
+		CD4665A620BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VLAbstractRequestHandlerWithMatch.cpp; path = src/VLAbstractRequestHandlerWithMatch.cpp; sourceTree = "<group>"; };
+		CD4665A720BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLAbstractRequestHandlerWithMatch.h; path = src/VLAbstractRequestHandlerWithMatch.h; sourceTree = "<group>"; };
 		CD5C62F420B4F7B10038EE98 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analysis.cpp; path = src/analysis.cpp; sourceTree = "<group>"; };
 		CD5C62F520B4F7B10038EE98 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analysis.h; path = src/analysis.h; sourceTree = "<group>"; };
 		CD5C62F620B4F7B10038EE98 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chain.cpp; path = src/chain.cpp; sourceTree = "<group>"; };
@@ -152,6 +166,7 @@
 			files = (
 				CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */,
 				CDED584120BA2008003A2969 /* liblib-simple-cpp-router.a in Frameworks */,
+				CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */,
 				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED586820BA3981003A2969 /* libPocoNetSSL.a in Frameworks */,
@@ -160,6 +175,7 @@
 				CDED586720BA3981003A2969 /* libPocoNet.a in Frameworks */,
 				CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */,
 				CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */,
+				CD4665A520BE9CE000A02D55 /* libssl.a in Frameworks */,
 				CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -177,6 +193,7 @@
 			files = (
 				CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */,
 				CDED588220BD1C5F003A2969 /* liblib-simple-cpp-router.a in Frameworks */,
+				CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */,
 				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */,
@@ -185,6 +202,7 @@
 				CDED588820BD1C5F003A2969 /* libPocoNet.a in Frameworks */,
 				CDED588920BD1C5F003A2969 /* libPocoZip.a in Frameworks */,
 				CDED588A20BD1C5F003A2969 /* libPocoXML.a in Frameworks */,
+				CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */,
 				CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,6 +213,8 @@
 		CD5C62F220B4F7930038EE98 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				CD4665A020BE9CE000A02D55 /* libcrypto.a */,
+				CD4665A120BE9CE000A02D55 /* libssl.a */,
 				CDED585920BA3981003A2969 /* libPocoCrypto.a */,
 				CDED585A20BA3981003A2969 /* libPocoEncodings.a */,
 				CDED585B20BA3981003A2969 /* libPocoFoundation.a */,
@@ -227,6 +247,8 @@
 				CD5C62FE20B4F7B10038EE98 /* player.cpp */,
 				CD5C62FF20B4F7B10038EE98 /* player.h */,
 				CD5C632220B524220038EE98 /* scenario.h */,
+				CD46659C20BE908300A02D55 /* VLBlock.cpp */,
+				CD46659D20BE908300A02D55 /* VLBlock.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -300,6 +322,8 @@
 			children = (
 				CDED586D20BCDB38003A2969 /* VLAbstractRequestHandler.cpp */,
 				CDED586E20BCDB38003A2969 /* VLAbstractRequestHandler.h */,
+				CD4665A620BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp */,
+				CD4665A720BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.h */,
 				CDED584220BA2131003A2969 /* VLRouteTable.cpp */,
 				CDED584320BA2131003A2969 /* VLRouteTable.h */,
 			);
@@ -444,10 +468,12 @@
 				CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */,
 				CDED586F20BCDB38003A2969 /* VLAbstractRequestHandler.cpp in Sources */,
 				CD5C630320B4F7B10038EE98 /* context.cpp in Sources */,
+				CD46659F20BE908300A02D55 /* VLBlock.cpp in Sources */,
 				CDED584420BA2131003A2969 /* VLRouteTable.cpp in Sources */,
 				CD5C630520B4F7B10038EE98 /* player.cpp in Sources */,
 				CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */,
 				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
+				CD4665A920BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp in Sources */,
 				CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -472,10 +498,12 @@
 				CDED587820BD1C5F003A2969 /* analysis.cpp in Sources */,
 				CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */,
 				CDED587A20BD1C5F003A2969 /* VLAbstractRequestHandler.cpp in Sources */,
+				CD46659E20BE908300A02D55 /* VLBlock.cpp in Sources */,
 				CDED587B20BD1C5F003A2969 /* context.cpp in Sources */,
 				CDED587C20BD1C5F003A2969 /* VLRouteTable.cpp in Sources */,
 				CDED587D20BD1C5F003A2969 /* player.cpp in Sources */,
 				CDED587E20BD1C5F003A2969 /* chain.cpp in Sources */,
+				CD4665A820BEABE100A02D55 /* VLAbstractRequestHandlerWithMatch.cpp in Sources */,
 				CDED587F20BD1C5F003A2969 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -550,8 +578,12 @@
 				HEADER_SEARCH_PATHS = (
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
+					/usr/local/opt/openssl/include,
 				);
-				LIBRARY_SEARCH_PATHS = poco/lib;
+				LIBRARY_SEARCH_PATHS = (
+					poco/lib,
+					/usr/local/opt/openssl/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -610,8 +642,12 @@
 				HEADER_SEARCH_PATHS = (
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
+					/usr/local/opt/openssl/include,
 				);
-				LIBRARY_SEARCH_PATHS = poco/lib;
+				LIBRARY_SEARCH_PATHS = (
+					poco/lib,
+					/usr/local/opt/openssl/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -627,7 +663,7 @@
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/poco/lib",
+					/usr/local/Cellar/openssl/1.0.2o_1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -640,7 +676,7 @@
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/poco/lib",
+					/usr/local/Cellar/openssl/1.0.2o_1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -689,7 +725,7 @@
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/poco/lib",
+					/usr/local/Cellar/openssl/1.0.2o_1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -702,7 +738,7 @@
 			buildSettings = {
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/poco/lib",
+					/usr/local/Cellar/openssl/1.0.2o_1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
