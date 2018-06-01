@@ -12,7 +12,14 @@
 #include <string>
 #include <vector>
 
-#include <Poco/Poco.h>
+#include <Poco/Crypto/DigestEngine.h>
+#include <Poco/Crypto/ECKey.h>
+#include <Poco/Crypto/ECKeyImpl.h>
+#include <Poco/Crypto/ECDSADigestEngine.h>
+#include <Poco/DigestEngine.h>
+#include <Poco/DigestStream.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/MD5Engine.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
 #include <Poco/Net/HTTPResponse.h>
@@ -20,6 +27,7 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/ServerSocket.h>
+#include <Poco/SingletonHolder.h>
 #include <Poco/ThreadLocal.h>
 #include <Poco/Util/Application.h>
 #include <Poco/Util/ServerApplication.h>
@@ -27,9 +35,6 @@
 #include <Routing/Exceptions.h>
 #include <Routing/Router.h>
 
-using namespace Poco::Net;
-using namespace Poco::Util;
-using namespace Routing;
 using namespace std;
 
 typedef unsigned int uint;

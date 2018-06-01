@@ -11,7 +11,7 @@
 #include "cohort.h"
 #include "scenario.h"
 
-#include "VLBlock.h"
+#include "Block.h"
 
 //================================================================//
 // ConsensusApp
@@ -23,8 +23,8 @@ public:
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) {
     
-        VLBlock block;
-        block.Sign ();
+        Block block;
+        block.sign ();
     
         FastGangScenario scenario;
         scenario.Run ();

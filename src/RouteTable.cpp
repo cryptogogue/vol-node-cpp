@@ -6,65 +6,70 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include "VLRouteTable.h"
+#include "RouteTable.h"
+
+namespace Volition {
 
 //================================================================//
-// VLAbstractEndpoint
+// AbstractEndpoint
 //================================================================//
 
 //----------------------------------------------------------------//
-VLAbstractRequestHandler* VLAbstractEndpoint::CreateRequestHandler ( const PathMatch& match ) const {
+AbstractEndpoint::AbstractEndpoint () {
+}
 
-    VLAbstractRequestHandler* handler = this->VLEndpointBase_CreateRequestHandler ();
-    handler->SetMatch ( match );
+//----------------------------------------------------------------//
+AbstractEndpoint::~AbstractEndpoint () {
+}
+
+//----------------------------------------------------------------//
+AbstractRequestHandler* AbstractEndpoint::createRequestHandler ( const Routing::PathMatch& match ) const {
+
+    AbstractRequestHandler* handler = this->AbstractEndpoint_createRequestHandler ();
+    handler->setMatch ( match );
     return handler;
 }
 
-//----------------------------------------------------------------//
-VLAbstractEndpoint::VLAbstractEndpoint () {
-}
-
-//----------------------------------------------------------------//
-VLAbstractEndpoint::~VLAbstractEndpoint () {
-}
-
 //================================================================//
-// VLRouteTable
+// RouteTable
 //================================================================//
 
 //----------------------------------------------------------------//
-VLAbstractRequestHandler* VLRouteTable::Match ( string uri ) {
+AbstractRequestHandler* RouteTable::match ( string uri ) {
 
     try {
-        PathMatch match = this->mRouter.matchPath ( uri );
+        Routing::PathMatch match = this->mRouter.matchPath ( uri );
         const string& pattern = match.pathTemplate ();
 
         if ( this->mPatternsToEndpoints.find ( pattern ) != this->mPatternsToEndpoints.end ()) {
-            return this->mPatternsToEndpoints [ pattern ]->CreateRequestHandler ( match );
+            return this->mPatternsToEndpoints [ pattern ]->createRequestHandler ( match );
         }
     }
-    catch ( PathNotFoundException ) {
+    catch ( Routing::PathNotFoundException ) {
     
         try {
-            PathMatch match = this->mDefaultRouter.matchPath ( "" );
-            return this->mDefaultEndpoint->CreateRequestHandler ( match );
+            Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
+            return this->mDefaultEndpoint->createRequestHandler ( match );
         }
-        catch ( PathNotFoundException ) {
+        catch ( Routing::PathNotFoundException ) {
         }
     }
     return 0;
 }
 
 //----------------------------------------------------------------//
-size_t VLRouteTable::Size () {
+RouteTable::RouteTable () {
+}
+
+//----------------------------------------------------------------//
+RouteTable::~RouteTable () {
+}
+
+//----------------------------------------------------------------//
+size_t RouteTable::size () {
 
     return this->mPatternsToEndpoints.size ();
 }
 
-//----------------------------------------------------------------//
-VLRouteTable::VLRouteTable () {
-}
+} // namespace Volition
 
-//----------------------------------------------------------------//
-VLRouteTable::~VLRouteTable () {
-}

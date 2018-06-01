@@ -6,28 +6,28 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include "VLBlock.h"
+#include "Block.h"
 
-#include <Poco/DigestEngine.h>
-#include <Poco/DigestStream.h>
-#include <Poco/MD5Engine.h>
-#include <Poco/Crypto/DigestEngine.h>
-#include <Poco/Crypto/ECKey.h>
-#include <Poco/Crypto/ECKeyImpl.h>
-#include <Poco/Crypto/ECDSADigestEngine.h>
+namespace Volition {
 
 //================================================================//
-// VLBlock
+// Block
 //================================================================//
 
 //----------------------------------------------------------------//
-void VLBlock::Sign () {
+Block::Block () {
+}
+
+//----------------------------------------------------------------//
+Block::~Block () {
+}
+
+//----------------------------------------------------------------//
+void Block::sign () {
 
     Poco::Crypto::DigestEngine sha256 ( "SHA256" );
     Poco::DigestOutputStream digestStream ( sha256 );
-    //digestStream << this->mBlockID;
-    //digestStream << this->mPrevBlockHash;
-    digestStream << "A";
+    this->hash ( digestStream );
     digestStream.close ();
     
     this->mBlockHash = Poco::DigestEngine::digestToHex ( sha256.digest ());
@@ -36,7 +36,7 @@ void VLBlock::Sign () {
     Poco::Crypto::ECKey key ( "secp256k1" );
     Poco::Crypto::ECDSADigestEngine signature ( key, "SHA256" );
     Poco::DigestOutputStream signatureStream ( signature );
-    signatureStream << "A";
+    this->hash ( signatureStream );
     signatureStream.close ();
     
     string hash = Poco::DigestEngine::digestToHex ( signature.digest ());
@@ -46,12 +46,23 @@ void VLBlock::Sign () {
     printf ( "SIG: %s\n", sig.c_str ());
 }
 
+//================================================================//
+// overrides
+//================================================================//
+
 //----------------------------------------------------------------//
-VLBlock::VLBlock () :
-    mBlockID ( 0 ) {
+void Block::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
+
+    digestStream << "A";
 }
 
 //----------------------------------------------------------------//
-VLBlock::~VLBlock () {
+void Block::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
 }
 
+//----------------------------------------------------------------//
+void Block::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
+}
+
+
+} // namespace Volition

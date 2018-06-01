@@ -11,13 +11,15 @@
 #include "cohort.h"
 #include "scenario.h"
 
-#include "VLRouteTable.h"
+#include "Block.h"
+#include "TheMiner.h"
+#include "RouteTable.h"
 
 //================================================================//
 // DefaultHandler
 //================================================================//
 class DefaultHandler :
-    public VLAbstractRequestHandler {
+    public Volition::AbstractRequestHandler {
 private:
 
     static int count;
@@ -25,8 +27,8 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest& request, HTTPServerResponse& response ) const override {
-        response.setStatus ( HTTPResponse::HTTP_OK );
+    void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const override {
+        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
         ostream& out = response.send ();
@@ -49,12 +51,12 @@ int DefaultHandler::count = 0;
 // FooHandler
 //================================================================//
 class FooHandler :
-    public VLAbstractRequestHandler {
+    public Volition::AbstractRequestHandler {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
-        response.setStatus ( HTTPResponse::HTTP_OK );
+    void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
+        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
         ostream& out = response.send ();
@@ -67,12 +69,12 @@ protected:
 // FooBarHandler
 //================================================================//
 class FooBarHandler :
-    public VLAbstractRequestHandler {
+    public Volition::AbstractRequestHandler {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
-        response.setStatus ( HTTPResponse::HTTP_OK );
+    void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
+        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
         ostream& out = response.send ();
@@ -85,12 +87,12 @@ protected:
 // FooBarBazHandler
 //================================================================//
 class FooBarBazHandler :
-    public VLAbstractRequestHandler {
+    public Volition::AbstractRequestHandler {
 protected:
 
     //----------------------------------------------------------------//
-    void VLAbstractRequestHandler_HandleRequest ( const PathMatch& match, HTTPServerRequest &request, HTTPServerResponse &response ) const override {
-        response.setStatus ( HTTPResponse::HTTP_OK );
+    void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
+        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
         ostream& out = response.send ();
@@ -103,23 +105,24 @@ protected:
 // MyRequestHandlerFactory
 //================================================================//
 class MyRequestHandlerFactory :
-    public HTTPRequestHandlerFactory {
+    public Poco::Net::HTTPRequestHandlerFactory {
 private:
 
     // thread local over mutex; trade a little memory for speed.
-    Poco::ThreadLocal < VLRouteTable > mRouteTable;
+    // (though not sure we need a ThreadLocal here...)
+    Poco::ThreadLocal < Volition::RouteTable > mRouteTable;
 
 public:
 
     //----------------------------------------------------------------//
     void AffirmRouteTable () {
     
-        if ( this->mRouteTable->Size () > 0 ) return;
+        if ( this->mRouteTable->size () > 0 ) return;
         
-        this->mRouteTable->AddEndpoint < FooHandler >           ( "/foo/?" );
-        this->mRouteTable->AddEndpoint < FooBarHandler >        ( "/foo/bar/?" );
-        this->mRouteTable->AddEndpoint < FooBarBazHandler >     ( "/foo/bar/:baz/?" );
-        this->mRouteTable->SetDefault < DefaultHandler >        ();
+        this->mRouteTable->addEndpoint < FooHandler >           ( "/foo/?" );
+        this->mRouteTable->addEndpoint < FooBarHandler >        ( "/foo/bar/?" );
+        this->mRouteTable->addEndpoint < FooBarBazHandler >     ( "/foo/bar/:baz/?" );
+        this->mRouteTable->setDefault < DefaultHandler >        ();
     }
 
     //----------------------------------------------------------------//
@@ -127,10 +130,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    HTTPRequestHandler* createRequestHandler ( const HTTPServerRequest& request ) override {
+    Poco::Net::HTTPRequestHandler* createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) override {
         
         this->AffirmRouteTable ();
-        return this->mRouteTable->Match ( request.getURI ());
+        return this->mRouteTable->match ( request.getURI ());
     }
 };
 
@@ -138,16 +141,81 @@ public:
 // ServerApp
 //================================================================//
 class ServerApp :
-public ServerApplication {
+public Poco::Util::ServerApplication {
 protected:
+
+    //----------------------------------------------------------------//
+    void defineOptions ( Poco::Util::OptionSet& options ) override {
+        Application::defineOptions ( options );
+        
+        options.addOption (
+            Poco::Util::Option ( "keyfile", "k", "path to key file" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "keyfile" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "port", "p", "set port to serve from" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "port" )
+        );
+    }
 
     //----------------------------------------------------------------//
     int main ( const vector < string >& ) override {
     
-        HTTPServer server ( new MyRequestHandlerFactory, ServerSocket ( 9090 ), new HTTPServerParams );
-
+        this->printProperties ();
+    
+        Poco::Util::AbstractConfiguration& configuration = this->config ();
+        
+        string keyfile  = configuration.getString ( "keyfile" );
+        int port        = configuration.getInt ( "port", 8888 );
+    
+        printf ( "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+    
+        Volition::TheMiner::get ().load ( keyfile );
+    
+        Volition::Block block;
+        Poco::DigestEngine::Digest signature = Volition::TheMiner::get ().sign ( block );
+        string sigString = Poco::DigestEngine::digestToHex ( signature );
+        printf ( "SIG: %s\n", sigString.c_str ());
+        
+        //this->serve ( port );
+        return Application::EXIT_OK;
+    }
+    
+    //----------------------------------------------------------------//
+    void printProperties ( const std::string& base = "" ) {
+    
+        Poco::Util::AbstractConfiguration::Keys keys;
+        config ().keys ( base, keys );
+    
+        if ( keys.empty ()) {
+            if ( config ().hasProperty ( base )) {
+                std::string msg;
+                msg.append ( base );
+                msg.append ( " = " );
+                msg.append ( config ().getString ( base ));
+                logger ().information ( msg );
+            }
+        }
+        else {
+            for ( Poco::Util::AbstractConfiguration::Keys::const_iterator it = keys.begin (); it != keys.end (); ++it ) {
+                std::string fullKey = base;
+                if ( !fullKey.empty ()) fullKey += '.';
+                fullKey.append ( *it );
+                printProperties ( fullKey );
+            }
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    void serve ( int port ) {
+    
+        Poco::Net::HTTPServer server ( new MyRequestHandlerFactory, Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams );
         server.start ();
-        printf ( "Server started\n" );
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
         // need to find out how to stop POCO from doing this. in the meantime, this hack.
@@ -155,13 +223,10 @@ protected:
             Poco::Event dummy;
             dummy.wait ();
         #else
-            waitForTerminationRequest ();  // wait for CTRL-C or kill
+            this->waitForTerminationRequest ();  // wait for CTRL-C or kill
         #endif
 
-        printf ( "Shutting down...\n" );
         server.stop ();
-
-        return Application::EXIT_OK;
     }
 };
 

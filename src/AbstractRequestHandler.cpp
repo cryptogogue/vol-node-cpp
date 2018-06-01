@@ -6,24 +6,26 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include "VLAbstractRequestHandler.h"
+#include "AbstractRequestHandler.h"
+
+namespace Volition {
 
 //================================================================//
-// VLAbstractRequestHandlerWithMatch
+// AbstractRequestHandlerWithMatch
 //================================================================//
 
 //----------------------------------------------------------------//
-void VLAbstractRequestHandler::SetMatch ( const PathMatch& match ) {
-
-    this->mMatch = make_unique < PathMatch >( match );
+AbstractRequestHandler::AbstractRequestHandler () {
 }
 
 //----------------------------------------------------------------//
-VLAbstractRequestHandler::VLAbstractRequestHandler () {
+AbstractRequestHandler::~AbstractRequestHandler () {
 }
 
 //----------------------------------------------------------------//
-VLAbstractRequestHandler::~VLAbstractRequestHandler () {
+void AbstractRequestHandler::setMatch ( const Routing::PathMatch& match ) {
+
+    this->mMatch = make_unique < Routing::PathMatch >( match );
 }
 
 //================================================================//
@@ -31,7 +33,10 @@ VLAbstractRequestHandler::~VLAbstractRequestHandler () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void VLAbstractRequestHandler::handleRequest ( HTTPServerRequest& request, HTTPServerResponse& response ) {
+void AbstractRequestHandler::handleRequest ( Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) {
 
-    this->VLAbstractRequestHandler_HandleRequest ( *this->mMatch, request, response );
+    this->AbstractRequestHandler_handleRequest ( *this->mMatch, request, response );
 }
+
+} // namespace Volition
+

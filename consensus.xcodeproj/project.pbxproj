@@ -7,14 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CD46659E20BE908300A02D55 /* VLBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* VLBlock.cpp */; };
-		CD46659F20BE908300A02D55 /* VLBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* VLBlock.cpp */; };
+		CD0C3E1220C14460006E3B1C /* TheMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* TheMiner.cpp */; };
+		CD0C3E1320C14460006E3B1C /* TheMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* TheMiner.cpp */; };
+		CD46659E20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
+		CD46659F20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
 		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
 		CD4665A520BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
-		CD4665A820BEABE100A02D55 /* VLAbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* VLAbstractRequestHandler.cpp */; };
-		CD4665A920BEABE100A02D55 /* VLAbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* VLAbstractRequestHandler.cpp */; };
+		CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
+		CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
+		CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
+		CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
 		CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F420B4F7B10038EE98 /* analysis.cpp */; };
 		CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F620B4F7B10038EE98 /* chain.cpp */; };
 		CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F820B4F7B10038EE98 /* cohort.cpp */; };
@@ -34,7 +38,7 @@
 		CDED583C20BA1FE0003A2969 /* StringTokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */; };
 		CDED583D20BA1FE0003A2969 /* StringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582420BA1F4E003A2969 /* StringTokenizer.h */; };
 		CDED584120BA2008003A2969 /* liblib-simple-cpp-router.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */; };
-		CDED584420BA2131003A2969 /* VLRouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* VLRouteTable.cpp */; };
+		CDED584420BA2131003A2969 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
 		CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
@@ -48,7 +52,7 @@
 		CDED587820BD1C5F003A2969 /* analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F420B4F7B10038EE98 /* analysis.cpp */; };
 		CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
 		CDED587B20BD1C5F003A2969 /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FB20B4F7B10038EE98 /* context.cpp */; };
-		CDED587C20BD1C5F003A2969 /* VLRouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* VLRouteTable.cpp */; };
+		CDED587C20BD1C5F003A2969 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CDED587D20BD1C5F003A2969 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62FE20B4F7B10038EE98 /* player.cpp */; };
 		CDED587E20BD1C5F003A2969 /* chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F620B4F7B10038EE98 /* chain.cpp */; };
 		CDED587F20BD1C5F003A2969 /* cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C62F820B4F7B10038EE98 /* cohort.cpp */; };
@@ -105,12 +109,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CD46659C20BE908300A02D55 /* VLBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VLBlock.cpp; path = src/VLBlock.cpp; sourceTree = "<group>"; };
-		CD46659D20BE908300A02D55 /* VLBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLBlock.h; path = src/VLBlock.h; sourceTree = "<group>"; };
+		CD0C3E1020C14460006E3B1C /* TheMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheMiner.cpp; path = src/TheMiner.cpp; sourceTree = "<group>"; };
+		CD0C3E1120C14460006E3B1C /* TheMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheMiner.h; path = src/TheMiner.h; sourceTree = "<group>"; };
+		CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheTransactionFactory.cpp; path = src/TheTransactionFactory.cpp; sourceTree = "<group>"; };
+		CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheTransactionFactory.h; path = src/TheTransactionFactory.h; sourceTree = "<group>"; };
+		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/Block.cpp; sourceTree = "<group>"; };
+		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/Block.h; sourceTree = "<group>"; };
 		CD4665A020BE9CE000A02D55 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libcrypto.a; sourceTree = "<group>"; };
 		CD4665A120BE9CE000A02D55 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libssl.a; sourceTree = "<group>"; };
-		CD4665A620BEABE100A02D55 /* VLAbstractRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VLAbstractRequestHandler.cpp; path = src/VLAbstractRequestHandler.cpp; sourceTree = "<group>"; };
-		CD4665A720BEABE100A02D55 /* VLAbstractRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLAbstractRequestHandler.h; path = src/VLAbstractRequestHandler.h; sourceTree = "<group>"; };
+		CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractRequestHandler.cpp; path = src/AbstractRequestHandler.cpp; sourceTree = "<group>"; };
+		CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractRequestHandler.h; path = src/AbstractRequestHandler.h; sourceTree = "<group>"; };
+		CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractTransaction.cpp; path = src/AbstractTransaction.cpp; sourceTree = "<group>"; };
+		CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractTransaction.h; path = src/AbstractTransaction.h; sourceTree = "<group>"; };
+		CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializable.h; path = src/AbstractSerializable.h; sourceTree = "<group>"; };
+		CD4665B420BFF70F00A02D55 /* AbstractHashable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractHashable.h; path = src/AbstractHashable.h; sourceTree = "<group>"; };
 		CD5C62F420B4F7B10038EE98 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analysis.cpp; path = src/analysis.cpp; sourceTree = "<group>"; };
 		CD5C62F520B4F7B10038EE98 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analysis.h; path = src/analysis.h; sourceTree = "<group>"; };
 		CD5C62F620B4F7B10038EE98 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chain.cpp; path = src/chain.cpp; sourceTree = "<group>"; };
@@ -140,8 +152,8 @@
 		CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringTokenizer.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.cpp"; sourceTree = "<group>"; };
 		CDED582420BA1F4E003A2969 /* StringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringTokenizer.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.h"; sourceTree = "<group>"; };
 		CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblib-simple-cpp-router.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CDED584220BA2131003A2969 /* VLRouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VLRouteTable.cpp; path = src/VLRouteTable.cpp; sourceTree = "<group>"; };
-		CDED584320BA2131003A2969 /* VLRouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLRouteTable.h; path = src/VLRouteTable.h; sourceTree = "<group>"; };
+		CDED584220BA2131003A2969 /* RouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RouteTable.cpp; path = src/RouteTable.cpp; sourceTree = "<group>"; };
+		CDED584320BA2131003A2969 /* RouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RouteTable.h; path = src/RouteTable.h; sourceTree = "<group>"; };
 		CDED585920BA3981003A2969 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
 		CDED585A20BA3981003A2969 /* libPocoEncodings.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoEncodings.a; path = poco/lib/libPocoEncodings.a; sourceTree = "<group>"; };
 		CDED585B20BA3981003A2969 /* libPocoFoundation.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoFoundation.a; path = poco/lib/libPocoFoundation.a; sourceTree = "<group>"; };
@@ -206,6 +218,37 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CD0C3E0F20C14410006E3B1C /* miner */ = {
+			isa = PBXGroup;
+			children = (
+				CD0C3E1020C14460006E3B1C /* TheMiner.cpp */,
+				CD0C3E1120C14460006E3B1C /* TheMiner.h */,
+			);
+			name = miner;
+			sourceTree = "<group>";
+		};
+		CD4665AA20BFE49000A02D55 /* block */ = {
+			isa = PBXGroup;
+			children = (
+				CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */,
+				CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */,
+				CD46659C20BE908300A02D55 /* Block.cpp */,
+				CD46659D20BE908300A02D55 /* Block.h */,
+				CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */,
+				CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */,
+			);
+			name = block;
+			sourceTree = "<group>";
+		};
+		CD4665AF20BFF62600A02D55 /* serialize */ = {
+			isa = PBXGroup;
+			children = (
+				CD4665B420BFF70F00A02D55 /* AbstractHashable.h */,
+				CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */,
+			);
+			name = serialize;
+			sourceTree = "<group>";
+		};
 		CD5C62F220B4F7930038EE98 /* lib */ = {
 			isa = PBXGroup;
 			children = (
@@ -228,9 +271,12 @@
 		CD5C62F320B4F7A70038EE98 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CD4665AA20BFE49000A02D55 /* block */,
+				CD0C3E0F20C14410006E3B1C /* miner */,
+				CDED587020BCDBD7003A2969 /* router */,
+				CD4665AF20BFF62600A02D55 /* serialize */,
 				CDED589120BD1CAC003A2969 /* server */,
 				CDED589220BD1CB2003A2969 /* simulator */,
-				CDED587020BCDBD7003A2969 /* router */,
 				CD5C62F420B4F7B10038EE98 /* analysis.cpp */,
 				CD5C62F520B4F7B10038EE98 /* analysis.h */,
 				CD5C62F620B4F7B10038EE98 /* chain.cpp */,
@@ -243,8 +289,6 @@
 				CD5C62FE20B4F7B10038EE98 /* player.cpp */,
 				CD5C62FF20B4F7B10038EE98 /* player.h */,
 				CD5C632220B524220038EE98 /* scenario.h */,
-				CD46659C20BE908300A02D55 /* VLBlock.cpp */,
-				CD46659D20BE908300A02D55 /* VLBlock.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -316,10 +360,10 @@
 		CDED587020BCDBD7003A2969 /* router */ = {
 			isa = PBXGroup;
 			children = (
-				CD4665A620BEABE100A02D55 /* VLAbstractRequestHandler.cpp */,
-				CD4665A720BEABE100A02D55 /* VLAbstractRequestHandler.h */,
-				CDED584220BA2131003A2969 /* VLRouteTable.cpp */,
-				CDED584320BA2131003A2969 /* VLRouteTable.h */,
+				CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */,
+				CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */,
+				CDED584220BA2131003A2969 /* RouteTable.cpp */,
+				CDED584320BA2131003A2969 /* RouteTable.h */,
 			);
 			name = router;
 			sourceTree = "<group>";
@@ -461,12 +505,14 @@
 			files = (
 				CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */,
 				CD5C630320B4F7B10038EE98 /* context.cpp in Sources */,
-				CD46659F20BE908300A02D55 /* VLBlock.cpp in Sources */,
-				CDED584420BA2131003A2969 /* VLRouteTable.cpp in Sources */,
+				CD46659F20BE908300A02D55 /* Block.cpp in Sources */,
+				CDED584420BA2131003A2969 /* RouteTable.cpp in Sources */,
 				CD5C630520B4F7B10038EE98 /* player.cpp in Sources */,
 				CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */,
+				CD0C3E1320C14460006E3B1C /* TheMiner.cpp in Sources */,
 				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
-				CD4665A920BEABE100A02D55 /* VLAbstractRequestHandler.cpp in Sources */,
+				CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
+				CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -490,12 +536,14 @@
 			files = (
 				CDED587820BD1C5F003A2969 /* analysis.cpp in Sources */,
 				CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */,
-				CD46659E20BE908300A02D55 /* VLBlock.cpp in Sources */,
+				CD46659E20BE908300A02D55 /* Block.cpp in Sources */,
 				CDED587B20BD1C5F003A2969 /* context.cpp in Sources */,
-				CDED587C20BD1C5F003A2969 /* VLRouteTable.cpp in Sources */,
+				CDED587C20BD1C5F003A2969 /* RouteTable.cpp in Sources */,
 				CDED587D20BD1C5F003A2969 /* player.cpp in Sources */,
+				CD0C3E1220C14460006E3B1C /* TheMiner.cpp in Sources */,
 				CDED587E20BD1C5F003A2969 /* chain.cpp in Sources */,
-				CD4665A820BEABE100A02D55 /* VLAbstractRequestHandler.cpp in Sources */,
+				CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
+				CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CDED587F20BD1C5F003A2969 /* cohort.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
