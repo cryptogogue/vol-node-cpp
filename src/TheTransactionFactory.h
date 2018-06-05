@@ -1,3 +1,6 @@
+// Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
+// http://cryptogogue.com
+
 #ifndef VOLITION_MINERSINGLETON_H
 #define VOLITION_MINERSINGLETON_H
 

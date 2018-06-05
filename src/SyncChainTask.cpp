@@ -1,10 +1,5 @@
-//
-//  main.cpp
-//  consensus
-//
-//  Created by Patrick Meehan on 4/27/18.
-//  Copyright © 2018 Patrick Meehan. All rights reserved.
-//
+// Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
+// http://cryptogogue.com
 
 #include "AbstractHashable.h"
 #include "SyncChainTask.h"
