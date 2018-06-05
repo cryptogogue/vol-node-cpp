@@ -1,5 +1,5 @@
-#ifndef VLABSTRACTREQUESTHANDLER_H
-#define VLABSTRACTREQUESTHANDLER_H
+#ifndef VOLITION_ABSTRACTREQUESTHANDLER_H
+#define VOLITION_ABSTRACTREQUESTHANDLER_H
 
 #include "common.h"
 
@@ -25,9 +25,10 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-                    AbstractRequestHandler                      ();
-                    ~AbstractRequestHandler                     ();
-    void            setMatch                                    ( const Routing::PathMatch& match );
+                                        AbstractRequestHandler          ();
+                                        ~AbstractRequestHandler         ();
+    static Poco::JSON::Object::Ptr      parseJSON                       ( Poco::Net::HTTPServerRequest &request );
+    void                                setMatch                        ( const Routing::PathMatch& match );
 };
 
 } // namespace Volition

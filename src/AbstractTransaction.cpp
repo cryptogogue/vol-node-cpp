@@ -15,11 +15,23 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractTransaction::AbstractTransaction () {
+AbstractTransaction::AbstractTransaction () :
+    mTransactionID ( 0 ),
+    mGratuity ( 0 ) {
 }
 
 //----------------------------------------------------------------//
 AbstractTransaction::~AbstractTransaction () {
+}
+
+//----------------------------------------------------------------//
+string AbstractTransaction::typeString () {
+    return this->AbstractTransaction_typeString ();
+}
+
+//----------------------------------------------------------------//
+size_t AbstractTransaction::weight () {
+    return this->AbstractTransaction_weight ();
 }
 
 //================================================================//
@@ -32,6 +44,8 @@ void AbstractTransaction::AbstractHashable_hash ( Poco::DigestOutputStream& dige
 
 //----------------------------------------------------------------//
 void AbstractTransaction::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
+
+    assert ( this->typeString () == object.getValue < string >( "type" ));
 }
 
 //----------------------------------------------------------------//

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include <Poco/Activity.h>
 #include <Poco/Crypto/DigestEngine.h>
 #include <Poco/Crypto/ECKey.h>
 #include <Poco/Crypto/ECKeyImpl.h>
@@ -19,7 +20,9 @@
 #include <Poco/DigestEngine.h>
 #include <Poco/DigestStream.h>
 #include <Poco/JSON/Object.h>
+#include <Poco/JSON/Parser.h>
 #include <Poco/MD5Engine.h>
+#include <Poco/Net/HTTPClientSession.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
 #include <Poco/Net/HTTPResponse.h>
@@ -27,8 +30,13 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/ServerSocket.h>
+#include <Poco/Observer.h>
 #include <Poco/SingletonHolder.h>
+#include <Poco/Task.h>
+#include <Poco/TaskManager.h>
+#include <Poco/TaskNotification.h>
 #include <Poco/ThreadLocal.h>
+#include <Poco/URI.h>
 #include <Poco/Util/Application.h>
 #include <Poco/Util/ServerApplication.h>
 

@@ -1,11 +1,11 @@
-#ifndef VLBLOCK_H
-#define VLBLOCK_H
+#ifndef VOLITION_BLOCK_H
+#define VOLITION_BLOCK_H
 
 #include "common.h"
 
-#include "AbstractHashable.h"
 #include "AbstractSerializable.h"
 #include "AbstractTransaction.h"
+#include "Signable.h"
 
 namespace Volition {
 
@@ -13,8 +13,8 @@ namespace Volition {
 // Block
 //================================================================//
 class Block :
-    public AbstractHashable,
-    public AbstractSerializable {
+    public AbstractSerializable,
+    public Signable {
 private:
 
     friend class Context;
@@ -35,7 +35,6 @@ public:
     //----------------------------------------------------------------//
                 Block               ();
                 ~Block              ();
-    void        sign                ();
 };
 
 } // namespace Volition

@@ -1,28 +1,31 @@
-#ifndef VLMINERSINGLETON_H
-#define VLMINERSINGLETON_H
+#ifndef VOLITION_MINERSINGLETON_H
+#define VOLITION_MINERSINGLETON_H
 
 #include "common.h"
+#include "AbstractTransaction.h"
+#include "Factory.h"
+#include "Singleton.h"
 
 namespace Volition {
 
-class AbstractHashable;
-
 //================================================================//
-// TheMiner
+// TheTransactionFactory
 //================================================================//
-class TheMiner {
-private:
-
-    unique_ptr < Poco::Crypto::ECKey >  mKey;
-
+class TheTransactionFactory :
+    public Singleton < TheTransactionFactory >,
+    public Factory < AbstractTransaction > {
 public:
 
     //----------------------------------------------------------------//
-    static TheMiner&                get                     ();
-    void                            load                    ( string keyfile, string password = "" );
-    Poco::DigestEngine::Digest      sign    ( const AbstractHashable& hashable ) const;
-                                    TheMiner        ();
-                                    ~TheMiner       ();
+    AbstractTransaction*    create                      ( const Poco::JSON::Object& object ) const;
+                            TheTransactionFactory       ();
+                            ~TheTransactionFactory      ();
+    
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    void registerTransaction () {
+        this->addFactoryAllocator < TYPE >( TYPE::TYPE_STRING );
+    }
 };
 
 } // namespace Volition

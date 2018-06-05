@@ -1,52 +1,21 @@
-#ifndef VLROUTETABLE_H
-#define VLROUTETABLE_H
+#ifndef VOLITION_ROUTETABLE_H
+#define VOLITION_ROUTETABLE_H
 
 #include "common.h"
 #include "AbstractRequestHandler.h"
+#include "Factory.h"
 
 namespace Volition {
 
 //================================================================//
-// AbstractEndpoint
-//================================================================//
-class AbstractEndpoint {
-protected:
-
-    //----------------------------------------------------------------//
-    virtual AbstractRequestHandler*         AbstractEndpoint_createRequestHandler       () const = 0;
-
-public:
-
-    //----------------------------------------------------------------//
-    AbstractRequestHandler*                 createRequestHandler            ( const Routing::PathMatch& match ) const;
-                                            AbstractEndpoint                ();
-    virtual                                 ~AbstractEndpoint               ();
-};
-
-//================================================================//
-// Endpoint
-//================================================================//
-template < typename TYPE >
-class Endpoint :
-    public AbstractEndpoint {
-private:
-
-    //----------------------------------------------------------------//
-    AbstractRequestHandler* AbstractEndpoint_createRequestHandler () const override {
-        return new TYPE ();
-    }
-};
-
-//================================================================//
 // RouteTable
 //================================================================//
-class RouteTable {
+class RouteTable :
+    public Factory < AbstractRequestHandler > {
 private:
 
-    Routing::Router                                         mRouter;
-    Routing::Router                                         mDefaultRouter;
-    map < string, unique_ptr < AbstractEndpoint >>          mPatternsToEndpoints;
-    unique_ptr < AbstractEndpoint >                         mDefaultEndpoint;
+    Routing::Router     mRouter;
+    Routing::Router     mDefaultRouter;
 
 public:
 
@@ -59,14 +28,14 @@ public:
     //----------------------------------------------------------------//
     template < typename TYPE >
     void addEndpoint ( string pattern ) {
-        this->mPatternsToEndpoints [ pattern ] = make_unique < Endpoint < TYPE >> ();
+        this->addFactoryAllocator < TYPE >( pattern );
         this->mRouter.registerPath ( pattern );
     }
-    
+
     //----------------------------------------------------------------//
     template < typename TYPE >
     void setDefault () {
-        this->mDefaultEndpoint = make_unique < Endpoint < TYPE >> ();
+        this->setDefaultFactoryAllocator < TYPE >();
         this->mDefaultRouter.registerPath ( "/?" );
     }
 };

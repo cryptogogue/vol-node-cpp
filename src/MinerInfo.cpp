@@ -6,20 +6,21 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include "Block.h"
+#include "AbstractHashable.h"
+#include "MinerInfo.h"
 
 namespace Volition {
 
 //================================================================//
-// Block
+// MinerInfo
 //================================================================//
 
 //----------------------------------------------------------------//
-Block::Block () {
+MinerInfo::MinerInfo () {
 }
 
 //----------------------------------------------------------------//
-Block::~Block () {
+MinerInfo::~MinerInfo () {
 }
 
 //================================================================//
@@ -27,18 +28,5 @@ Block::~Block () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Block::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
-
-    digestStream << "A";
-}
-
-//----------------------------------------------------------------//
-void Block::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
-}
-
-//----------------------------------------------------------------//
-void Block::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
-}
-
 
 } // namespace Volition

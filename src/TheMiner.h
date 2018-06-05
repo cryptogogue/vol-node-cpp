@@ -1,28 +1,42 @@
-#ifndef VLMINERSINGLETON_H
-#define VLMINERSINGLETON_H
+#ifndef VOLITION_THEMINER_H
+#define VOLITION_THEMINER_H
 
 #include "common.h"
+#include "AbstractTransaction.h"
+#include "Singleton.h"
 
 namespace Volition {
 
 class AbstractHashable;
+class Signable;
 
 //================================================================//
 // TheMiner
 //================================================================//
-class TheMiner {
+class TheMiner :
+    public Singleton < TheMiner >,
+    public Poco::Activity < TheMiner >  {
 private:
 
-    unique_ptr < Poco::Crypto::ECKey >  mKey;
+    unique_ptr < Poco::Crypto::ECKey >              mKey;
+    list < unique_ptr < AbstractTransaction >>      mPendingTransactions;
+
+    Poco::TaskManager                               mTaskManager;
+
+    //----------------------------------------------------------------//
+    void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
+    void            run                         () override;
 
 public:
 
     //----------------------------------------------------------------//
-    static TheMiner&                get             ();
-    void                            load            ( string keyfile, string password = "" );
-    Poco::DigestEngine::Digest      sign            ( const AbstractHashable& hashable ) const;
-                                    TheMiner        ();
-                                    ~TheMiner       ();
+    void            loadKey                 ( string keyfile, string password = "" );
+    string          getPublicKey            ();
+    void            pushTransaction         ( unique_ptr < AbstractTransaction >& transaction );
+    void            sign                    ( Signable& signable ) const;
+    void            shutdown                ();
+                    TheMiner                ();
+                    ~TheMiner               ();
 };
 
 } // namespace Volition

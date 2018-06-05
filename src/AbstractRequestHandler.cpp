@@ -23,6 +23,14 @@ AbstractRequestHandler::~AbstractRequestHandler () {
 }
 
 //----------------------------------------------------------------//
+Poco::JSON::Object::Ptr AbstractRequestHandler::parseJSON ( Poco::Net::HTTPServerRequest &request ) {
+
+    Poco::JSON::Parser parser;
+    Poco::Dynamic::Var result = parser.parse ( request.stream ());
+    return result.extract < Poco::JSON::Object::Ptr >();
+}
+
+//----------------------------------------------------------------//
 void AbstractRequestHandler::setMatch ( const Routing::PathMatch& match ) {
 
     this->mMatch = make_unique < Routing::PathMatch >( match );

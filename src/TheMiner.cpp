@@ -7,6 +7,7 @@
 //
 
 #include "AbstractHashable.h"
+#include "SyncChainTask.h"
 #include "TheMiner.h"
 
 namespace Volition {
@@ -16,32 +17,53 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TheMiner& TheMiner::get () {
-    static Poco::SingletonHolder < TheMiner > single;
-    return *single.get ();
-}
-
-//----------------------------------------------------------------//
-void TheMiner::load ( string keyfile, string password ) {
+void TheMiner::loadKey ( string keyfile, string password ) {
 
     this->mKey = make_unique < Poco::Crypto::ECKey >( "", keyfile, password );
 }
 
 //----------------------------------------------------------------//
-Poco::DigestEngine::Digest TheMiner::sign ( const AbstractHashable& hashable ) const {
+string TheMiner::getPublicKey () {
 
-    assert ( this->mKey );
-
-    Poco::Crypto::ECDSADigestEngine signature ( *this->mKey, "SHA256" );
-    Poco::DigestOutputStream signatureStream ( signature );
-    hashable.hash ( signatureStream );
-    signatureStream.close ();
-    
-    return signature.signature ();
+    stringstream strStream;
+    this->mKey->save ( &strStream );
+    return strStream.str ();
 }
 
 //----------------------------------------------------------------//
-TheMiner::TheMiner () {
+void TheMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
+    std::cout << pNf->task ()->name () << " finished." << std::endl;
+    pNf->release ();
+}
+
+//----------------------------------------------------------------//
+void TheMiner::pushTransaction ( unique_ptr < AbstractTransaction >& transaction ) {
+
+    this->mPendingTransactions.push_back ( move ( transaction ));
+}
+
+//----------------------------------------------------------------//
+void TheMiner::sign ( Signable& signable ) const {
+
+    assert ( this->mKey );
+    signable.sign ( *this->mKey, "SHA256" );
+}
+
+//----------------------------------------------------------------//
+void TheMiner::shutdown () {
+
+    this->stop ();
+    this->mTaskManager.joinAll ();
+    this->wait ();
+}
+
+//----------------------------------------------------------------//
+TheMiner::TheMiner () :
+    Poco::Activity < TheMiner >( this, &TheMiner::run ) {
+    
+    this->mTaskManager.addObserver (
+        Poco::Observer < TheMiner, Poco::TaskFinishedNotification > ( *this, &TheMiner::onSyncChainNotification )
+    );
 }
 
 //----------------------------------------------------------------//
@@ -53,5 +75,14 @@ TheMiner::~TheMiner () {
 //================================================================//
 
 //----------------------------------------------------------------//
+void TheMiner::run () {
+
+    size_t size = 0;
+    while ( !this->isStopped ()) {
+        std::cout << size++ << std::endl;
+        this->mTaskManager.start ( new SyncChainTask ());
+        Poco::Thread::sleep ( 200 );
+    }
+}
 
 } // namespace Volition

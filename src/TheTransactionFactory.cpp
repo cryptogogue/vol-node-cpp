@@ -6,46 +6,32 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include "AbstractHashable.h"
-#include "TheMiner.h"
+#include "TheTransactionFactory.h"
 
 namespace Volition {
 
 //================================================================//
-// TheMiner
+// TheTransactionFactory
 //================================================================//
 
 //----------------------------------------------------------------//
-TheMiner& TheMiner::get () {
-    static Poco::SingletonHolder < TheMiner > single;
-    return *single.get ();
+AbstractTransaction* TheTransactionFactory::create ( const Poco::JSON::Object& object ) const {
+
+    string typeString = object.optValue < string >( "type", "" );
+
+    AbstractTransaction* transaction = this->Factory::create ( typeString );
+    if ( transaction ) {
+        transaction->fromJSON ( object );
+    }
+    return transaction;
 }
 
 //----------------------------------------------------------------//
-void TheMiner::load ( string keyfile, string password ) {
-
-    this->mKey = make_unique < Poco::Crypto::ECKey >( "", keyfile, password );
+TheTransactionFactory::TheTransactionFactory () {
 }
 
 //----------------------------------------------------------------//
-Poco::DigestEngine::Digest TheMiner::sign ( const AbstractHashable& hashable ) const {
-
-    assert ( this->mKey );
-
-    Poco::Crypto::ECDSADigestEngine signature ( *this->mKey, "SHA256" );
-    Poco::DigestOutputStream signatureStream ( signature );
-    hashable.Hash ( signatureStream );
-    signatureStream.close ();
-    
-    return signature.signature ();
-}
-
-//----------------------------------------------------------------//
-TheMiner::TheMiner () {
-}
-
-//----------------------------------------------------------------//
-TheMiner::~TheMiner () {
+TheTransactionFactory::~TheTransactionFactory () {
 }
 
 //================================================================//
@@ -55,4 +41,3 @@ TheMiner::~TheMiner () {
 //----------------------------------------------------------------//
 
 } // namespace Volition
-

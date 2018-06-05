@@ -9,6 +9,16 @@
 /* Begin PBXBuildFile section */
 		CD0C3E1220C14460006E3B1C /* TheMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* TheMiner.cpp */; };
 		CD0C3E1320C14460006E3B1C /* TheMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* TheMiner.cpp */; };
+		CD0C3E1A20C25A00006E3B1C /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
+		CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
+		CD0C3E2420C25C8B006E3B1C /* RegisterMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */; };
+		CD0C3E2520C25C8B006E3B1C /* RegisterMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */; };
+		CD0C3E2920C28F27006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
+		CD0C3E2A20C28F28006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
+		CD0C3E2D20C2967E006E3B1C /* Signable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2C20C2967E006E3B1C /* Signable.cpp */; };
+		CD0C3E2E20C2967E006E3B1C /* Signable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2C20C2967E006E3B1C /* Signable.cpp */; };
+		CD0C3E3520C65D7C006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
+		CD0C3E3620C65D7C006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
 		CD46659E20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
 		CD46659F20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
 		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
@@ -97,15 +107,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
-		CDED588C20BD1C5F003A2969 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = usr/share/man/man1;
-			dstSubfolderSpec = 6;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -113,6 +114,16 @@
 		CD0C3E1120C14460006E3B1C /* TheMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheMiner.h; path = src/TheMiner.h; sourceTree = "<group>"; };
 		CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheTransactionFactory.cpp; path = src/TheTransactionFactory.cpp; sourceTree = "<group>"; };
 		CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheTransactionFactory.h; path = src/TheTransactionFactory.h; sourceTree = "<group>"; };
+		CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinerInfo.cpp; path = src/MinerInfo.cpp; sourceTree = "<group>"; };
+		CD0C3E1920C25A00006E3B1C /* MinerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerInfo.h; path = src/MinerInfo.h; sourceTree = "<group>"; };
+		CD0C3E2020C25AF5006E3B1C /* Singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Singleton.h; path = src/Singleton.h; sourceTree = "<group>"; };
+		CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegisterMiner.cpp; path = src/transactions/RegisterMiner.cpp; sourceTree = "<group>"; };
+		CD0C3E2320C25C8B006E3B1C /* RegisterMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegisterMiner.h; path = src/transactions/RegisterMiner.h; sourceTree = "<group>"; };
+		CD0C3E2820C279FB006E3B1C /* Factory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = src/Factory.h; sourceTree = "<group>"; };
+		CD0C3E2B20C295B5006E3B1C /* Signable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Signable.h; path = src/Signable.h; sourceTree = "<group>"; };
+		CD0C3E2C20C2967E006E3B1C /* Signable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signable.cpp; path = src/Signable.cpp; sourceTree = "<group>"; };
+		CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncChainTask.cpp; path = src/SyncChainTask.cpp; sourceTree = "<group>"; };
+		CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncChainTask.h; path = src/SyncChainTask.h; sourceTree = "<group>"; };
 		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/Block.cpp; sourceTree = "<group>"; };
 		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/Block.h; sourceTree = "<group>"; };
 		CD4665A020BE9CE000A02D55 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libcrypto.a; sourceTree = "<group>"; };
@@ -221,15 +232,29 @@
 		CD0C3E0F20C14410006E3B1C /* miner */ = {
 			isa = PBXGroup;
 			children = (
+				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
+				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
+				CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */,
+				CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */,
 				CD0C3E1020C14460006E3B1C /* TheMiner.cpp */,
 				CD0C3E1120C14460006E3B1C /* TheMiner.h */,
 			);
 			name = miner;
 			sourceTree = "<group>";
 		};
+		CD0C3E2120C25C21006E3B1C /* transactions */ = {
+			isa = PBXGroup;
+			children = (
+				CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */,
+				CD0C3E2320C25C8B006E3B1C /* RegisterMiner.h */,
+			);
+			name = transactions;
+			sourceTree = "<group>";
+		};
 		CD4665AA20BFE49000A02D55 /* block */ = {
 			isa = PBXGroup;
 			children = (
+				CD0C3E2120C25C21006E3B1C /* transactions */,
 				CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */,
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
@@ -240,13 +265,17 @@
 			name = block;
 			sourceTree = "<group>";
 		};
-		CD4665AF20BFF62600A02D55 /* serialize */ = {
+		CD4665AF20BFF62600A02D55 /* util */ = {
 			isa = PBXGroup;
 			children = (
 				CD4665B420BFF70F00A02D55 /* AbstractHashable.h */,
 				CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */,
+				CD0C3E2820C279FB006E3B1C /* Factory.h */,
+				CD0C3E2C20C2967E006E3B1C /* Signable.cpp */,
+				CD0C3E2B20C295B5006E3B1C /* Signable.h */,
+				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
 			);
-			name = serialize;
+			name = util;
 			sourceTree = "<group>";
 		};
 		CD5C62F220B4F7930038EE98 /* lib */ = {
@@ -274,9 +303,9 @@
 				CD4665AA20BFE49000A02D55 /* block */,
 				CD0C3E0F20C14410006E3B1C /* miner */,
 				CDED587020BCDBD7003A2969 /* router */,
-				CD4665AF20BFF62600A02D55 /* serialize */,
 				CDED589120BD1CAC003A2969 /* server */,
 				CDED589220BD1CB2003A2969 /* simulator */,
+				CD4665AF20BFF62600A02D55 /* util */,
 				CD5C62F420B4F7B10038EE98 /* analysis.cpp */,
 				CD5C62F520B4F7B10038EE98 /* analysis.h */,
 				CD5C62F620B4F7B10038EE98 /* chain.cpp */,
@@ -445,7 +474,7 @@
 			buildPhases = (
 				CDED587720BD1C5F003A2969 /* Sources */,
 				CDED588020BD1C5F003A2969 /* Frameworks */,
-				CDED588C20BD1C5F003A2969 /* CopyFiles */,
+				CD0C3E2720C26097006E3B1C /* Copy Binaries */,
 			);
 			buildRules = (
 			);
@@ -498,6 +527,23 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		CD0C3E2720C26097006E3B1C /* Copy Binaries */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Binaries";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "OSX_BIN=bin\nmkdir -p $OSX_BIN\ncp -a \"${TARGET_BUILD_DIR}/${TARGET_NAME}\" $OSX_BIN";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		CD9345BE2093EB140077BAD4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -505,15 +551,20 @@
 			files = (
 				CD5C630020B4F7B10038EE98 /* analysis.cpp in Sources */,
 				CD5C630320B4F7B10038EE98 /* context.cpp in Sources */,
+				CD0C3E2E20C2967E006E3B1C /* Signable.cpp in Sources */,
 				CD46659F20BE908300A02D55 /* Block.cpp in Sources */,
 				CDED584420BA2131003A2969 /* RouteTable.cpp in Sources */,
+				CD0C3E3620C65D7C006E3B1C /* SyncChainTask.cpp in Sources */,
 				CD5C630520B4F7B10038EE98 /* player.cpp in Sources */,
 				CD5C630120B4F7B10038EE98 /* chain.cpp in Sources */,
 				CD0C3E1320C14460006E3B1C /* TheMiner.cpp in Sources */,
 				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
 				CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
+				CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
 				CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD5C630220B4F7B10038EE98 /* cohort.cpp in Sources */,
+				CD0C3E2520C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,
+				CD0C3E2A20C28F28006E3B1C /* TheTransactionFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,15 +587,20 @@
 			files = (
 				CDED587820BD1C5F003A2969 /* analysis.cpp in Sources */,
 				CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */,
+				CD0C3E2D20C2967E006E3B1C /* Signable.cpp in Sources */,
 				CD46659E20BE908300A02D55 /* Block.cpp in Sources */,
 				CDED587B20BD1C5F003A2969 /* context.cpp in Sources */,
+				CD0C3E3520C65D7C006E3B1C /* SyncChainTask.cpp in Sources */,
 				CDED587C20BD1C5F003A2969 /* RouteTable.cpp in Sources */,
 				CDED587D20BD1C5F003A2969 /* player.cpp in Sources */,
 				CD0C3E1220C14460006E3B1C /* TheMiner.cpp in Sources */,
 				CDED587E20BD1C5F003A2969 /* chain.cpp in Sources */,
 				CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
+				CD0C3E1A20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
 				CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CDED587F20BD1C5F003A2969 /* cohort.cpp in Sources */,
+				CD0C3E2420C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,
+				CD0C3E2920C28F27006E3B1C /* TheTransactionFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

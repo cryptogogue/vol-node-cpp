@@ -13,6 +13,8 @@
 
 #include "Block.h"
 #include "TheMiner.h"
+#include "TheTransactionFactory.h"
+#include "RegisterMiner.h"
 #include "RouteTable.h"
 
 //================================================================//
@@ -102,6 +104,30 @@ protected:
 };
 
 //================================================================//
+// TransactionHandler
+//================================================================//
+class TransactionHandler :
+    public Volition::AbstractRequestHandler {
+protected:
+
+    //----------------------------------------------------------------//
+    void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
+        
+        Poco::JSON::Object::Ptr object = AbstractRequestHandler::parseJSON ( request );
+        
+        unique_ptr < Volition::AbstractTransaction > transaction ( Volition::TheTransactionFactory::get ().create ( *object ));
+        Volition::TheMiner::get ().pushTransaction ( transaction );
+
+        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
+        response.setContentType ( "application/json" );
+
+        ostream& out = response.send ();
+        out << "{\"foo\":\"bar\"}";
+        out.flush ();
+    }
+};
+
+//================================================================//
 // MyRequestHandlerFactory
 //================================================================//
 class MyRequestHandlerFactory :
@@ -122,6 +148,7 @@ public:
         this->mRouteTable->addEndpoint < FooHandler >           ( "/foo/?" );
         this->mRouteTable->addEndpoint < FooBarHandler >        ( "/foo/bar/?" );
         this->mRouteTable->addEndpoint < FooBarBazHandler >     ( "/foo/bar/:baz/?" );
+        this->mRouteTable->addEndpoint < TransactionHandler >   ( "/transaction/?" );
         this->mRouteTable->setDefault < DefaultHandler >        ();
     }
 
@@ -161,28 +188,47 @@ protected:
                 .argument ( "value", true )
                 .binding ( "port" )
         );
+        
+        options.addOption (
+            Poco::Util::Option ( "nodelist", "n", "path to nodelist file" )
+                .required ( false )
+                .argument ( "value" )
+                .binding ( "nodelist" )
+        );
     }
 
     //----------------------------------------------------------------//
     int main ( const vector < string >& ) override {
+        
+        Volition::TheTransactionFactory& transactionFactory = Volition::TheTransactionFactory::get ();
+    
+        transactionFactory.registerTransaction < Volition::Transaction::RegisterMiner >();
     
         this->printProperties ();
     
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
-        string keyfile  = configuration.getString ( "keyfile" );
-        int port        = configuration.getInt ( "port", 8888 );
+        string keyfile      = configuration.getString ( "keyfile" );
+        int port            = configuration.getInt ( "port", 9090 );
+        string nodelist     = configuration.getString ( "nodelist", "" );
     
-        printf ( "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+//        printf ( "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
     
-        Volition::TheMiner::get ().load ( keyfile );
+        Volition::TheMiner::get ().loadKey ( keyfile );
+    
+        string pubKey = Volition::TheMiner::get ().getPublicKey ();
+        printf ( "%s\n", pubKey.c_str ());
     
         Volition::Block block;
-        Poco::DigestEngine::Digest signature = Volition::TheMiner::get ().sign ( block );
-        string sigString = Poco::DigestEngine::digestToHex ( signature );
-        printf ( "SIG: %s\n", sigString.c_str ());
+        Volition::TheMiner::get ().sign ( block );
+        printf ( "DIGEST: %s\n", Volition::Signable::toHex ( block.getDigest ()).c_str ());
+        printf ( "SIGNATURE: %s\n", Volition::Signable::toHex ( block.getSignature ()).c_str ());
         
-        //this->serve ( port );
+        Volition::TheMiner::get ().start ();
+        
+        this->serve ( port );
+        
+        Volition::TheMiner::get ().shutdown ();
         return Application::EXIT_OK;
     }
     
@@ -198,7 +244,8 @@ protected:
                 msg.append ( base );
                 msg.append ( " = " );
                 msg.append ( config ().getString ( base ));
-                logger ().information ( msg );
+                //logger ().information ( msg );
+                printf ( "%s\n", msg.c_str ());
             }
         }
         else {

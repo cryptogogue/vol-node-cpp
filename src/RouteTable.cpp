@@ -11,50 +11,34 @@
 namespace Volition {
 
 //================================================================//
-// AbstractEndpoint
-//================================================================//
-
-//----------------------------------------------------------------//
-AbstractEndpoint::AbstractEndpoint () {
-}
-
-//----------------------------------------------------------------//
-AbstractEndpoint::~AbstractEndpoint () {
-}
-
-//----------------------------------------------------------------//
-AbstractRequestHandler* AbstractEndpoint::createRequestHandler ( const Routing::PathMatch& match ) const {
-
-    AbstractRequestHandler* handler = this->AbstractEndpoint_createRequestHandler ();
-    handler->setMatch ( match );
-    return handler;
-}
-
-//================================================================//
 // RouteTable
 //================================================================//
 
 //----------------------------------------------------------------//
 AbstractRequestHandler* RouteTable::match ( string uri ) {
 
+    AbstractRequestHandler* handler = NULL;
+
     try {
         Routing::PathMatch match = this->mRouter.matchPath ( uri );
         const string& pattern = match.pathTemplate ();
-
-        if ( this->mPatternsToEndpoints.find ( pattern ) != this->mPatternsToEndpoints.end ()) {
-            return this->mPatternsToEndpoints [ pattern ]->createRequestHandler ( match );
-        }
+        
+        handler = this->create ( pattern );
+        assert ( handler );
+        handler->setMatch ( match );
     }
     catch ( Routing::PathNotFoundException ) {
     
         try {
             Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
-            return this->mDefaultEndpoint->createRequestHandler ( match );
+            handler = this->create ();
+            assert ( handler );
+            handler->setMatch ( match );
         }
         catch ( Routing::PathNotFoundException ) {
         }
     }
-    return 0;
+    return handler;
 }
 
 //----------------------------------------------------------------//
@@ -68,7 +52,7 @@ RouteTable::~RouteTable () {
 //----------------------------------------------------------------//
 size_t RouteTable::size () {
 
-    return this->mPatternsToEndpoints.size ();
+    return this->getFactorySize ();
 }
 
 } // namespace Volition

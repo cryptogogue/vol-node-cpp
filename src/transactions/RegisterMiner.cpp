@@ -6,20 +6,21 @@
 //  Copyright © 2018 Patrick Meehan. All rights reserved.
 //
 
-#include "Block.h"
+#include "RegisterMiner.h"
 
 namespace Volition {
+namespace Transaction {
 
 //================================================================//
-// Block
+// RegisterMiner
 //================================================================//
 
 //----------------------------------------------------------------//
-Block::Block () {
+RegisterMiner::RegisterMiner () {
 }
 
 //----------------------------------------------------------------//
-Block::~Block () {
+RegisterMiner::~RegisterMiner () {
 }
 
 //================================================================//
@@ -27,18 +28,22 @@ Block::~Block () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Block::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
-
-    digestStream << "A";
+void RegisterMiner::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
 }
 
 //----------------------------------------------------------------//
-void Block::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
+void RegisterMiner::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
+
+    AbstractTransaction::AbstractSerializable_fromJSON ( object );
+    string foo  = object.getValue < string >( "foo" );
+    int bar     = object.getValue < int >( "bar" );
+    
+    printf ( "%s: %s %d\n", RegisterMiner::TYPE_STRING, foo.c_str (), bar );
 }
 
 //----------------------------------------------------------------//
-void Block::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
+void RegisterMiner::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
 }
 
-
+} // namespace Transaction
 } // namespace Volition
