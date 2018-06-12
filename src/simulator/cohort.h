@@ -4,7 +4,7 @@
 #ifndef COHORT_H
 #define COHORT_H
 
-#include "player.h"
+#include <simulator/player.h>
 
 //================================================================//
 // Cohort

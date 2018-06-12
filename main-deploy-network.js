@@ -16,5 +16,5 @@ function spawnWithArgs ( prefix, command, args ) {
 	});
 }
 
-//spawnWithArgs ( '9090: ', 'bin/server', '-p 9090 -k pkey0.pem' );
-spawnWithArgs ( '9091: ', 'bin-back/server', '-p 9091 -k pkey0.pem' );
+//spawnWithArgs ( '9090: ', 'bin/server', '-p 9090 -k pkey0.pem -g genesis.signed' );
+spawnWithArgs ( '9091: ', 'bin/server', '-p 9091 -k pkey0.pem -g genesis.signed' );

@@ -4,7 +4,7 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#include "common.h"
+#include <common.h>
 
 class Cohort;
 class Player;

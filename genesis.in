@@ -1,0 +1,16 @@
+{
+    "minerID" : "9090",
+
+    "transactions" : [
+        {
+            "type" :        "REGISTER_MINER",
+            "minerID" :     "9090",
+            "url" :         "http://127.0.0.1:9090/"
+        },
+        {
+            "type" :        "REGISTER_MINER",
+            "minerID" :     "9091",
+            "url" :         "http://127.0.0.1:9091/"
+        }
+    ]
+}

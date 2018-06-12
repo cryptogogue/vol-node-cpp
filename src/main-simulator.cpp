@@ -1,12 +1,10 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "analysis.h"
-#include "context.h"
-#include "cohort.h"
-#include "scenario.h"
-
-#include "Block.h"
+#include <simulator/analysis.h>
+#include <simulator/context.h>
+#include <simulator/cohort.h>
+#include <simulator/scenario.h>
 
 //================================================================//
 // ConsensusApp
@@ -16,12 +14,9 @@ class ConsensusApp :
 public:
 
     //----------------------------------------------------------------//
-    int main ( const vector < string > &args ) {
+    int main ( const vector < string > &args ) override {
     
-        Block block;
-        block.sign ();
-    
-        FastGangScenario scenario;
+        SimpleScenario scenario;
         scenario.Run ();
         return EXIT_OK;
     }

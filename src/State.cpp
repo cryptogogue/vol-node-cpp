@@ -1,35 +1,42 @@
+//
+//  main.cpp
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "TheTransactionFactory.h"
-#include "transactions/RegisterMiner.h"
+#include "State.h"
 
 namespace Volition {
 
 //================================================================//
-// TheTransactionFactory
+// State
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractTransaction* TheTransactionFactory::create ( const Poco::JSON::Object& object ) const {
+map < string, string > State::getMinerURLs () const {
 
-    string typeString = object.optValue < string >( "type", "" );
-
-    AbstractTransaction* transaction = this->Factory::create ( typeString );
-    if ( transaction ) {
-        transaction->fromJSON ( object );
-    }
-    return transaction;
+    return this->mMinerInfo;
 }
 
 //----------------------------------------------------------------//
-TheTransactionFactory::TheTransactionFactory () {
+void State::registerMiner ( string minerID, string url ) {
 
-    this->registerTransaction < Volition::Transaction::RegisterMiner >();
+    this->mMinerInfo [ minerID ] = url;
 }
 
 //----------------------------------------------------------------//
-TheTransactionFactory::~TheTransactionFactory () {
+State::State () {
+}
+
+//----------------------------------------------------------------//
+//State::State ( const State* prevState ) {
+//
+//    if ( prevState ) {
+//        *this = *prevState;
+//    }
+//}
+
+//----------------------------------------------------------------//
+State::~State () {
 }
 
 //================================================================//

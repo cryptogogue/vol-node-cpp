@@ -5,9 +5,9 @@
 #define SCENARIO_H
 
 
-#include "analysis.h"
-#include "context.h"
-#include "cohort.h"
+#include <simulator/analysis.h>
+#include <simulator/context.h>
+#include <simulator/cohort.h>
 
 //================================================================//
 // Scenario

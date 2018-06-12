@@ -10,6 +10,8 @@
 
 namespace Volition {
 
+class Chain;
+
 //================================================================//
 // SyncChainTask
 //================================================================//
@@ -17,14 +19,22 @@ class SyncChainTask :
     public Poco::Task {
 private:
 
+    string      mMinerID;
+    string      mURL;
+
+    unique_ptr < Chain >    mChain;
+
     //----------------------------------------------------------------//
-    void        runTask             () override;
+    void            runTask             () override;
 
 public:
 
     //----------------------------------------------------------------//
-                SyncChainTask       ();
-                ~SyncChainTask      ();
+    string                  getMinerID          () const;
+    string                  getURL              () const;
+    unique_ptr < Chain >    moveChain           ();
+                            SyncChainTask       ( string minerID, string url );
+                            ~SyncChainTask      ();
 };
 
 } // namespace Volition

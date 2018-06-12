@@ -1,10 +1,10 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "analysis.h"
-#include "cohort.h"
-#include "context.h"
-#include "player.h"
+#include <simulator/analysis.h>
+#include <simulator/cohort.h>
+#include <simulator/context.h>
+#include <simulator/player.h>
 
 static int                  sBlockCount         = 0;
 static vector < Player >    sPlayers;

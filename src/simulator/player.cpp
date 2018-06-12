@@ -1,10 +1,10 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "chain.h"
-#include "cohort.h"
-#include "context.h"
-#include "player.h"
+#include <simulator/chain.h>
+#include <simulator/cohort.h>
+#include <simulator/context.h>
+#include <simulator/player.h>
 
 //================================================================//
 // Player
@@ -66,7 +66,7 @@ Player::Player () :
     mFrequency ( 1 ),
     mNewBatch ( false ),
     mVerbose ( false ),
-    mStepStyle ( STEP_NORMAL ) {
+    mStepStyle ( STEP_MINIMAL ) {
 }
 
 //----------------------------------------------------------------//
@@ -119,12 +119,50 @@ void Player::Step () {
 
     switch ( this->mStepStyle ) {
         case STEP_CAREFUL:
+            this->StepNormal ();
+            break;
+        case STEP_MINIMAL:
+            this->StepMinimal ();
+            break;
         case STEP_NORMAL:
             this->StepNormal ();
             break;
         case STEP_POLITE:
             this->StepPolite ();
             break;
+    }
+}
+
+//----------------------------------------------------------------//
+void Player::StepMinimal () {
+    
+    if ( this->mNewBatch ) {
+        this->mChain.Push ( this->mID, true );
+    }
+    
+    const Player* player = this->RequestPlayer ();
+    if ( !player ) return;
+    
+    Chain chain0 = this->mChain;
+    Chain chain1 = player->mChain;
+
+    if ( this->mVerbose ) {
+        printf ( " player: %d\n", this->mID );
+        chain0.Print ( "   CHAIN0: " );
+        chain1.Print ( "   CHAIN1: " );
+    }
+
+    chain1.Push ( this->mID, false );
+    
+    if ( this->mVerbose ) {
+        chain1.Print ( "    NEXT1: " );
+    }
+    
+    this->mChain = Chain::Choose ( chain0, chain1 );
+    
+    if ( this->mVerbose ) {
+        this->mChain.Print ( "     BEST: " );
+        printf ( "\n" );
     }
 }
 

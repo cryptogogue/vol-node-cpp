@@ -1,78 +1,45 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef CHAIN_H
-#define CHAIN_H
+#ifndef VOLITION_CHAIN_H
+#define VOLITION_CHAIN_H
 
-#include "common.h"
+#include <Cycle.h>
 
-//================================================================//
-// Cycle
-//================================================================//
-class Cycle {
-private:
-
-    friend class Chain;
-    friend class Tree;
-
-    set < int >     mPlayers;
-    vector < int >  mChain;
-
-    int             mCycleID;
-    int             mEntropy;
-
-    float           mNewPlayerRatio;
-
-    //----------------------------------------------------------------//
-    int             FindPosition        ( int playerID ) const;
-    bool            IsInChain           ( int playerID ) const;
-
-public:
-
-    //----------------------------------------------------------------//
-    static int              Compare                 ( const Cycle& cycle0, const Cycle& cycle1 );
-    bool                    Contains                ( int playerID ) const;
-    void                    CopyChain               ( const Cycle& cycle );
-    size_t                  CountParticipants       ( int playerID = -1 ) const;
-                            Cycle                   ();
-    size_t                  GetLength               ();
-    bool                    Improve                 ( int playerID );
-    void                    MergeParticipants       ( const Cycle& cycle );
-    void                    Print                   () const;
-    void                    SetID                   ( int cycleID );
-    void                    UpdatePlayerRatio       ( size_t prevCount );
-};
+namespace Volition {
 
 //================================================================//
 // Chain
 //================================================================//
-class Chain {
+class Chain :
+    public AbstractSerializable {
 private:
 
-    friend class Tree;
-
-    vector < Cycle >        mCycles;
+    vector < unique_ptr < Cycle >>  mCycles;
 
     //----------------------------------------------------------------//
-    bool                    CanEdit             ( size_t cycleID, int playerID = -1 ) const;
-    bool                    CanEdit             ( size_t cycleID, const Chain& chain ) const;
-    static const Chain&     Choose              ( size_t cycleID, const Chain& prefer, const Chain& other );
-    size_t                  FindMax             ( size_t cycleID ) const;
-    Cycle*                  GetTopCycle         ();
-    const Cycle*            GetTopCycle         () const;
+    bool                    canEdit             ( size_t cycleID, string minerID = "" ) const;
+    bool                    canEdit             ( size_t cycleID, const Chain& chain ) const;
+    static const Chain*     choose              ( size_t cycleID, const Chain& prefer, const Chain& other );
+    size_t                  findMax             ( size_t cycleID ) const;
+    Cycle*                  getTopCycle         ();
+    const Cycle*            getTopCycle         () const;
+
+    //----------------------------------------------------------------//
+    void                    AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
+    void                    AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
 
 public:
 
     //----------------------------------------------------------------//
+    void                    apply               ( State& state ) const;
                             Chain               ();
-    static const Chain&     Choose              ( const Chain& chain0, const Chain& chain1 );
-    int                     FindPosition        ( int playerID ) const;
-    //void                  Knit                ( const Chain& chain );
-    void                    MergeParticipants   ( const Chain& chain );
-    void                    Print               ( const char* pre = 0, const char* post = "\n" ) const;
-    void                    Push                ( int playerID );
-    void                    Push                ( int playerID, bool force );
+                            ~Chain              ();
+    static const Chain*     choose              ( const Chain& chain0, const Chain& chain1 );
+    Cycle*                  nextCycle           ( string minerID, bool force );
+    void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
 };
 
+} // namespace Volition
 #endif
 

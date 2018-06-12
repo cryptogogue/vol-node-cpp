@@ -4,7 +4,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "chain.h"
+#include <simulator/chain.h>
 
 class Cohort;
 class Player;
@@ -17,6 +17,7 @@ public:
 
     enum StepStyle {
         STEP_CAREFUL,
+        STEP_MINIMAL,
         STEP_NORMAL,
         STEP_POLITE,
     };
@@ -43,6 +44,7 @@ private:
     const Player*       GetNextPlayerInCycle    ();
     const Player*       RequestPlayer           ();
     void                Step                    ();
+    void                StepMinimal             ();
     void                StepNormal              ();
     void                StepPolite              ();
 

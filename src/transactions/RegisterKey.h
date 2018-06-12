@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTION_REGISTERMINER_H
-#define VOLITION_TRANSACTION_REGISTERMINER_H
+#ifndef VOLITION_TRANSACTION_REGISTERKEY_H
+#define VOLITION_TRANSACTION_REGISTERKEY_H
 
 #include "common.h"
 
@@ -12,14 +12,14 @@ namespace Volition {
 namespace Transaction {
 
 //================================================================//
-// RegisterMiner
+// RegisterKey
 //================================================================//
-class RegisterMiner :
+class RegisterKey :
     public AbstractTransaction {
 private:
 
-    string                  mMinerID;
-    string                  mURL;
+    unique_ptr < Poco::Crypto::ECKey >      mPublicKey;
+    string                                  mKeyName;
 
     //----------------------------------------------------------------//
     void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
@@ -29,12 +29,12 @@ private:
 
 public:
 
-    TRANSACTION_TYPE ( "REGISTER_MINER" )
+    TRANSACTION_TYPE ( "REGISTER_KEY" )
     TRANSACTION_WEIGHT ( 1 )
 
     //----------------------------------------------------------------//
-                            RegisterMiner            ();
-                            ~RegisterMiner           ();
+                            RegisterKey             ();
+                            ~RegisterKey            ();
 };
 
 } // namespace Transaction

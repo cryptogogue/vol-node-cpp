@@ -1,0 +1,71 @@
+// Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
+// http://cryptogogue.com
+
+#ifndef CHAIN_H
+#define CHAIN_H
+
+#include <common.h>
+
+//================================================================//
+// Cycle
+//================================================================//
+class Cycle {
+private:
+
+    friend class Chain;
+    friend class Tree;
+
+    set < int >     mPlayers;
+    vector < int >  mChain;
+
+    int             mCycleID;
+    int             mEntropy;
+
+    //----------------------------------------------------------------//
+    int             FindPosition        ( int playerID ) const;
+    bool            IsInChain           ( int playerID ) const;
+
+public:
+
+    //----------------------------------------------------------------//
+    static int              Compare                 ( const Cycle& cycle0, const Cycle& cycle1 );
+    bool                    Contains                ( int playerID ) const;
+    void                    CopyChain               ( const Cycle& cycle );
+    size_t                  CountParticipants       ( int playerID = -1 ) const;
+                            Cycle                   ();
+    size_t                  GetLength               ();
+    bool                    Improve                 ( int playerID );
+    void                    Print                   () const;
+    void                    SetID                   ( int cycleID );
+};
+
+//================================================================//
+// Chain
+//================================================================//
+class Chain {
+private:
+
+    friend class Tree;
+
+    vector < Cycle >        mCycles;
+
+    //----------------------------------------------------------------//
+    bool                    CanEdit             ( size_t cycleID, int playerID = -1 ) const;
+    bool                    CanEdit             ( size_t cycleID, const Chain& chain ) const;
+    static const Chain&     Choose              ( size_t cycleID, const Chain& prefer, const Chain& other );
+    size_t                  FindMax             ( size_t cycleID ) const;
+    Cycle*                  GetTopCycle         ();
+    const Cycle*            GetTopCycle         () const;
+
+public:
+
+    //----------------------------------------------------------------//
+                            Chain               ();
+    static const Chain&     Choose              ( const Chain& chain0, const Chain& chain1 );
+    void                    Print               ( const char* pre = 0, const char* post = "\n" ) const;
+    void                    Push                ( int playerID );
+    void                    Push                ( int playerID, bool force );
+};
+
+#endif
+

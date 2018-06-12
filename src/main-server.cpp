@@ -25,20 +25,29 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const override {
+
+//        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
+//        response.setContentType ( "text/html" );
+//
+//        ostream& out = response.send ();
+//        out << "<h1>Hello world!</h1>"
+//        << "<p>Count: "     << ++count                  << "</p>"
+//        << "<p>Host: "      << request.getHost ()       << "</p>"
+//        << "<p>Method: "    << request.getMethod ()     << "</p>"
+//        << "<p>URI: "       << request.getURI ()        << "</p>";
+//        out.flush ();
+
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
-        response.setContentType ( "text/html" );
+        response.setContentType ( "application/json" );
 
         ostream& out = response.send ();
-        out << "<h1>Hello world!</h1>"
-        << "<p>Count: "     << ++count                  << "</p>"
-        << "<p>Host: "      << request.getHost ()       << "</p>"
-        << "<p>Method: "    << request.getMethod ()     << "</p>"
-        << "<p>URI: "       << request.getURI ()        << "</p>";
+        
+        const Volition::Chain* chain = Volition::TheMiner::get ().getChain ();
+        if ( chain ) {
+            chain->toJSON ( out );
+        }
+        
         out.flush ();
-
-        cout << endl
-        << "Response sent for count=" << count
-        << " and URI=" << request.getURI () << endl;
     }
 };
 
@@ -171,11 +180,25 @@ protected:
         Application::defineOptions ( options );
         
         options.addOption (
+            Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "genesis" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "keyfile", "k", "path to key file" )
                 .required ( true )
                 .argument ( "value", true )
                 .binding ( "keyfile" )
         );
+        
+//        options.addOption (
+//            Poco::Util::Option ( "name", "n", "mining node name" )
+//                .required ( false )
+//                .argument ( "value", true )
+//                .binding ( "name" )
+//        );
         
         options.addOption (
             Poco::Util::Option ( "port", "p", "set port to serve from" )
@@ -195,34 +218,31 @@ protected:
     //----------------------------------------------------------------//
     int main ( const vector < string >& ) override {
         
-        Volition::TheTransactionFactory& transactionFactory = Volition::TheTransactionFactory::get ();
-    
-        transactionFactory.registerTransaction < Volition::Transaction::RegisterMiner >();
-    
-        this->printProperties ();
-    
+        // force line buffering even when running as a spawned process
+        setvbuf ( stdout, NULL, _IOLBF, 0 );
+        
+        //this->printProperties ();
+        
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
+        string genesis      = configuration.getString ( "genesis" );
         string keyfile      = configuration.getString ( "keyfile" );
         int port            = configuration.getInt ( "port", 9090 );
         string nodelist     = configuration.getString ( "nodelist", "" );
     
-//        printf ( "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+        printf ( "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+    
+        string minerID      = to_string ( port );
     
         Volition::TheMiner::get ().loadKey ( keyfile );
-    
-        string pubKey = Volition::TheMiner::get ().getPublicKey ();
-        printf ( "%s\n", pubKey.c_str ());
-    
-        Volition::Block block;
-        Volition::TheMiner::get ().sign ( block );
-        printf ( "DIGEST: %s\n", Volition::Signable::toHex ( block.getDigest ()).c_str ());
-        printf ( "SIGNATURE: %s\n", Volition::Signable::toHex ( block.getSignature ()).c_str ());
+        Volition::TheMiner::get ().loadGenesis ( genesis );
+        Volition::TheMiner::get ().setMinerID ( minerID );
         
         Volition::TheMiner::get ().start ();
-        
+
         this->serve ( port );
-        
+        this->waitForTerminationRequest ();
+
         Volition::TheMiner::get ().shutdown ();
         return Application::EXIT_OK;
     }

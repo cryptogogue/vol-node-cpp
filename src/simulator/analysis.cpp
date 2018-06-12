@@ -1,10 +1,10 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "analysis.h"
-#include "chain.h"
-#include "context.h"
-#include "player.h"
+#include <simulator/analysis.h>
+#include <simulator/chain.h>
+#include <simulator/context.h>
+#include <simulator/player.h>
 
 //----------------------------------------------------------------//
 void print_indent ( int indent ) {

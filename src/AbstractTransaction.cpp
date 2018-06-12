@@ -20,12 +20,17 @@ AbstractTransaction::~AbstractTransaction () {
 }
 
 //----------------------------------------------------------------//
-string AbstractTransaction::typeString () {
+void AbstractTransaction::apply ( State& state ) const {
+    this->AbstractTransaction_apply ( state );
+}
+
+//----------------------------------------------------------------//
+string AbstractTransaction::typeString () const {
     return this->AbstractTransaction_typeString ();
 }
 
 //----------------------------------------------------------------//
-size_t AbstractTransaction::weight () {
+size_t AbstractTransaction::weight () const {
     return this->AbstractTransaction_weight ();
 }
 
@@ -45,6 +50,8 @@ void AbstractTransaction::AbstractSerializable_fromJSON ( const Poco::JSON::Obje
 
 //----------------------------------------------------------------//
 void AbstractTransaction::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
+
+    object.set ( "type", this->typeString ().c_str ());
 }
 
 } // namespace Volition

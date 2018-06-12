@@ -9,6 +9,7 @@
 #include "AbstractSerializable.h"
 #include "AbstractTransaction.h"
 #include "Signable.h"
+#include "State.h"
 
 namespace Volition {
 
@@ -16,28 +17,35 @@ namespace Volition {
 // Block
 //================================================================//
 class Block :
-    public AbstractSerializable,
     public Signable {
 private:
 
     friend class Context;
 
-    size_t      mBlockID;
-    string      mBlockHash;
-    string      mPrevBlockHash;
+    size_t                          mCycleID;
+    string                          mMinerID;
+    Poco::DigestEngine::Digest      mPrevDigest;
+    Poco::DigestEngine::Digest      mAllure; // digital signature of the hash of mCycleID
 
     vector < unique_ptr < AbstractTransaction >>  mTransactions;
 
     //----------------------------------------------------------------//
-    void        AbstractHashable_hash             ( Poco::DigestOutputStream& digestStream ) const override;
-    void        AbstractSerializable_fromJSON     ( const Poco::JSON::Object& object ) override;
-    void        AbstractSerializable_toJSON       ( Poco::JSON::Object& object ) const override;
+    void                                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
+    void                                    AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
+    void                                    AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
+    const Poco::DigestEngine::Digest&       Signable_sign                       ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) override;
+    bool                                    Signable_verify                     ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) const override;
 
 public:
 
     //----------------------------------------------------------------//
-                Block               ();
-                ~Block              ();
+    void                apply               ( State& state ) const;
+                        Block               ();
+                        ~Block              ();
+    string              getMinerID          () const;
+    size_t              getScore            () const;
+    void                setCycleID          ( size_t cycleID );
+    void                setMinerID          ( string minerID );
 };
 
 } // namespace Volition

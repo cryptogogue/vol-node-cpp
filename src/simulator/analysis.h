@@ -4,7 +4,7 @@
 #ifndef ANALYSIS_H
 #define ANALYSIS_H
 
-#include "common.h"
+#include <common.h>
 
 class Chain;
 
