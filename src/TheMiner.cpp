@@ -3,6 +3,7 @@
 
 #include "AbstractHashable.h"
 #include "Block.h"
+#include "Genesis.h"
 #include "SyncChainTask.h"
 #include "TheMiner.h"
 
@@ -34,6 +35,14 @@ void TheMiner::loadGenesis ( string genesis ) {
     
     unique_ptr < Block > block = make_unique < Block >();
     block->fromJSON ( inStream );
+    
+    // make sure this is the expected genesis block
+    if ( Signable::toHex ( block->getDigest ()) != Genesis::DIGEST_STRING ) return;
+    
+    // verify the genesis block was signed by the genesis key
+    stringstream genesisKeyStream ( Genesis::PUBLIC_KEY_STRING );
+    Poco::Crypto::ECKey genesisKey ( &genesisKeyStream );
+    if ( !block->verify ( genesisKey )) return;
     
     this->mChain = make_unique < Chain >();
     Cycle* cycle = this->mChain->nextCycle ( this->mMinerID, true );
@@ -71,6 +80,8 @@ void TheMiner::onSyncChainNotification ( SyncChainTask& task ) {
     
     unique_ptr < Chain > chain = task.moveChain ();
     if ( chain ) {
+        
+        chain->verify ( this->mState ); // TODO: move to task thread; use snapshot of state when task created
         
         this->pushBlock ( *chain, false );
         

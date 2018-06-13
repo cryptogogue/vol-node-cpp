@@ -12,15 +12,26 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-map < string, string > State::getMinerURLs () const {
+const MinerInfo* State::getMinerInfo ( string minerID ) const {
 
-    return this->mMinerInfo;
+    map < string, MinerInfo >::const_iterator minerInfoIt = this->mMinerInfo.find ( minerID );
+    if ( minerInfoIt != this->mMinerInfo.end ()) {
+        return &minerInfoIt->second;
+    }
+    return NULL;
 }
 
 //----------------------------------------------------------------//
-void State::registerMiner ( string minerID, string url ) {
+map < string, string > State::getMinerURLs () const {
 
-    this->mMinerInfo [ minerID ] = url;
+    return this->mMinerURLs;
+}
+
+//----------------------------------------------------------------//
+void State::registerMiner ( const MinerInfo& minerInfo ) {
+
+    this->mMinerInfo.insert ( pair < string, MinerInfo >( minerInfo.getMinerID (), minerInfo ));
+    this->mMinerURLs [ minerInfo.getMinerID ()] = minerInfo.getURL ();
 }
 
 //----------------------------------------------------------------//

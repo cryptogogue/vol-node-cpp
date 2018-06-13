@@ -11,7 +11,32 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-MinerInfo::MinerInfo () {
+string MinerInfo::getMinerID () const {
+    return this->mMinerID;
+}
+
+//----------------------------------------------------------------//
+const Poco::Crypto::ECKey& MinerInfo::getPublicKey () const {
+    return this->mPublicKey;
+}
+
+//----------------------------------------------------------------//
+string MinerInfo::getURL () const {
+    return this->mURL;
+}
+
+//----------------------------------------------------------------//
+MinerInfo::MinerInfo ( string minerID, string url, const Poco::Crypto::ECKey& publicKey ) :
+    mMinerID ( minerID ),
+    mURL ( url ),
+    mPublicKey ( publicKey ) {
+}
+
+//----------------------------------------------------------------//
+MinerInfo::MinerInfo ( const MinerInfo& minerInfo ) :
+    mMinerID ( minerInfo.getMinerID ()),
+    mURL ( minerInfo.getURL ()),
+    mPublicKey ( minerInfo.getPublicKey ()) {
 }
 
 //----------------------------------------------------------------//

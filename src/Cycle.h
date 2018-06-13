@@ -8,6 +8,8 @@
 
 namespace Volition {
 
+class State;
+
 //================================================================//
 // Cycle
 //================================================================//
@@ -42,6 +44,7 @@ public:
     void                    push                    ( unique_ptr < const Block > block );
     void                    print                   () const;
     void                    setID                   ( size_t cycleID );
+    bool                    verify                  ( const State& state ) const;
     bool                    willImprove             ( string minerID );
 };
 

@@ -47,7 +47,14 @@ public:
         string keyfile      = configuration.getString ( "keyfile" );
         string password     = configuration.getString ( "password", "" );
         
-        Poco::Crypto::ECKey keyPair = Poco::Crypto::ECKey ( "", keyfile, password );
+        unique_ptr < Poco::Crypto::ECKey > keyPair;
+        
+        if ( Poco::File ( keyfile ).exists ()) {
+            keyPair = make_unique < Poco::Crypto::ECKey >( "", keyfile, password );
+        }
+        else {
+            keyPair = make_unique < Poco::Crypto::ECKey >( "secp256k1" );
+        }
         
         // dump to pem
         
@@ -57,7 +64,7 @@ public:
         fstream privKeyOutStream;
         privKeyOutStream.open ( keyfile + ".priv", ios_base::out );
         
-        keyPair.save ( &pubKeyOutStream, &privKeyOutStream, password );
+        keyPair->save ( &pubKeyOutStream, &privKeyOutStream, password );
         
         pubKeyOutStream.close ();
         privKeyOutStream.close ();
@@ -69,7 +76,7 @@ public:
         stringstream pubKeyStringStream;
         stringstream privKeyStringStream;
         
-        keyPair.save ( &pubKeyStringStream, &privKeyStringStream, password );
+        keyPair->save ( &pubKeyStringStream, &privKeyStringStream, password );
         
         object->set ( "publicKey", pubKeyStringStream.str ().c_str ());
         object->set ( "privateKey", privKeyStringStream.str ().c_str ());

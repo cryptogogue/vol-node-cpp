@@ -8,6 +8,8 @@
 
 namespace Volition {
 
+class State;
+
 //================================================================//
 // Chain
 //================================================================//
@@ -38,6 +40,7 @@ public:
     static const Chain*     choose              ( const Chain& chain0, const Chain& chain1 );
     Cycle*                  nextCycle           ( string minerID, bool force );
     void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
+    bool                    verify              ( const State& state ) const;
 };
 
 } // namespace Volition

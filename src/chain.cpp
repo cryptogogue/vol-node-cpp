@@ -206,6 +206,17 @@ void Chain::print ( const char* pre, const char* post ) const {
     }
 }
 
+//----------------------------------------------------------------//
+bool Chain::verify ( const State& state ) const {
+
+    // TODO: verify chain structure (order, participants, etc.)
+
+    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
+        if ( !this->mCycles [ i ]->verify ( state )) return false;
+    }
+    return true;
+}
+
 //================================================================//
 // overrides
 //================================================================//

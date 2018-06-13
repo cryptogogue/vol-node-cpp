@@ -17,4 +17,4 @@ function spawnWithArgs ( prefix, command, args ) {
 }
 
 //spawnWithArgs ( '9090: ', 'bin/server', '-p 9090 -k pkey0.pem -g genesis.signed' );
-spawnWithArgs ( '9091: ', 'bin/server', '-p 9091 -k pkey0.pem -g genesis.signed' );
+spawnWithArgs ( '9091: ', 'bin/server', '-p 9091 -k keys/pkey1.pem -g genesis.signed' );

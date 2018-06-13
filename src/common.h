@@ -24,6 +24,7 @@
 #include <Poco/Crypto/ECDSADigestEngine.h>
 #include <Poco/DigestEngine.h>
 #include <Poco/DigestStream.h>
+#include <Poco/File.h>
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/MD5Engine.h>

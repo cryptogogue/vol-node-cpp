@@ -141,6 +141,19 @@ void Cycle::setID ( size_t cycleID ) {
 }
 
 //----------------------------------------------------------------//
+bool Cycle::verify ( const State& state ) const {
+
+    // TODO: every transaction also needs to be verified
+
+    for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
+        const Block& block = *this->mBlocks [ i ];
+        const MinerInfo* minerInfo = state.getMinerInfo ( block.getMinerID ());
+        if ( !( minerInfo && block.verify ( minerInfo->getPublicKey ()))) return false;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
 bool Cycle::willImprove ( string minerID ) {
 
     // cycle will improve if miner is missing from either the participant set or the chain itself

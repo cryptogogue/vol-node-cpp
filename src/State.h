@@ -5,6 +5,7 @@
 #define VOLITION_STATE_H
 
 #include "common.h"
+#include "MinerInfo.h"
 
 namespace Volition {
 
@@ -14,13 +15,15 @@ namespace Volition {
 class State {
 private:
 
-    map < string, string >      mMinerInfo;
+    map < string, MinerInfo >   mMinerInfo;
+    map < string, string >      mMinerURLs;
 
 public:
 
     //----------------------------------------------------------------//
+    const MinerInfo*            getMinerInfo            ( string minerID ) const;
     map < string, string >      getMinerURLs            () const;
-    void                        registerMiner           ( string minerID, string url );
+    void                        registerMiner           ( const MinerInfo& minerInfo );
                                 State                   ();
                                 //State                   ( const State* prevState );
                                 ~State                  ();

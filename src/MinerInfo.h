@@ -14,13 +14,19 @@ namespace Volition {
 class MinerInfo {
 private:
 
-    string      mURI;
+    string                  mMinerID;
+    string                  mURL;
+    Poco::Crypto::ECKey     mPublicKey;
 
 public:
 
     //----------------------------------------------------------------//
-            MinerInfo       ();
-            ~MinerInfo      ();
+    string                          getMinerID      () const;
+    const Poco::Crypto::ECKey&      getPublicKey    () const;
+    string                          getURL          () const;
+                                    MinerInfo       ( string minerID, string url, const Poco::Crypto::ECKey& publicKey );
+                                    MinerInfo       ( const MinerInfo& minerInfo );
+                                    ~MinerInfo      ();
 };
 
 } // namespace Volition

@@ -18,8 +18,9 @@ class RegisterMiner :
     public AbstractTransaction {
 private:
 
-    string                  mMinerID;
-    string                  mURL;
+    string                                  mMinerID;
+    string                                  mURL;
+    unique_ptr < Poco::Crypto::ECKey >      mPublicKey;
 
     //----------------------------------------------------------------//
     void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
