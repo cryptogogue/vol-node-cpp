@@ -15,11 +15,8 @@
 		CD0C3E2520C25C8B006E3B1C /* RegisterMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */; };
 		CD0C3E2920C28F27006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
 		CD0C3E2A20C28F28006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
-		CD0C3E2D20C2967E006E3B1C /* Signable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2C20C2967E006E3B1C /* Signable.cpp */; };
-		CD0C3E2E20C2967E006E3B1C /* Signable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2C20C2967E006E3B1C /* Signable.cpp */; };
 		CD0C3E3520C65D7C006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
 		CD0C3E3620C65D7C006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
-		CD0C3E4520C86D88006E3B1C /* Signable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E2C20C2967E006E3B1C /* Signable.cpp */; };
 		CD0C3E4620C86D88006E3B1C /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
 		CD0C3E4720C86D88006E3B1C /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CD0C3E4820C86D88006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
@@ -53,9 +50,36 @@
 		CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
 		CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
 		CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
-		CDC2B31120CC99D800300A96 /* RegisterKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3720C7BAE2006E3B1C /* RegisterKey.cpp */; };
-		CDC2B31220CC99D900300A96 /* RegisterKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3720C7BAE2006E3B1C /* RegisterKey.cpp */; };
-		CDC2B31320CC99D900300A96 /* RegisterKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3720C7BAE2006E3B1C /* RegisterKey.cpp */; };
+		CD59F3AE20E6FF8000705AEB /* TransferFunds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3AC20E6FF8000705AEB /* TransferFunds.cpp */; };
+		CD59F3AF20E6FF8000705AEB /* TransferFunds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3AC20E6FF8000705AEB /* TransferFunds.cpp */; };
+		CD59F3B020E6FF8000705AEB /* TransferFunds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3AC20E6FF8000705AEB /* TransferFunds.cpp */; };
+		CD59F3B320E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
+		CD59F3B420E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
+		CD59F3B520E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
+		CD59F3B820E8931D00705AEB /* AccountPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B620E8931D00705AEB /* AccountPolicy.cpp */; };
+		CD59F3B920E8931D00705AEB /* AccountPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B620E8931D00705AEB /* AccountPolicy.cpp */; };
+		CD59F3BA20E8931D00705AEB /* AccountPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B620E8931D00705AEB /* AccountPolicy.cpp */; };
+		CD59F3BD20E8950100705AEB /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
+		CD59F3BE20E8950100705AEB /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
+		CD59F3BF20E8950100705AEB /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
+		CD59F3CC20E8A22C00705AEB /* OpenAccount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3CA20E8A22C00705AEB /* OpenAccount.cpp */; };
+		CD59F3CD20E8A22C00705AEB /* OpenAccount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3CA20E8A22C00705AEB /* OpenAccount.cpp */; };
+		CD59F3CE20E8A22C00705AEB /* OpenAccount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3CA20E8A22C00705AEB /* OpenAccount.cpp */; };
+		CD59F3D220E9AAB500705AEB /* Serialize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D120E9AAB500705AEB /* Serialize.cpp */; };
+		CD59F3D320E9AAB500705AEB /* Serialize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D120E9AAB500705AEB /* Serialize.cpp */; };
+		CD59F3D420E9AAB500705AEB /* Serialize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D120E9AAB500705AEB /* Serialize.cpp */; };
+		CD59F3D620E9AAC500705AEB /* Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D520E9AAC500705AEB /* Hash.cpp */; };
+		CD59F3D720E9AAC500705AEB /* Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D520E9AAC500705AEB /* Hash.cpp */; };
+		CD59F3D820E9AAC500705AEB /* Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D520E9AAC500705AEB /* Hash.cpp */; };
+		CD59F3DB20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */; };
+		CD59F3DC20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */; };
+		CD59F3DD20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */; };
+		CD59F3E020EB045400705AEB /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
+		CD59F3E120EB045400705AEB /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
+		CD59F3E220EB045400705AEB /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
+		CDC2B31120CC99D800300A96 /* KeyPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3720C7BAE2006E3B1C /* KeyPolicy.cpp */; };
+		CDC2B31220CC99D900300A96 /* KeyPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3720C7BAE2006E3B1C /* KeyPolicy.cpp */; };
+		CDC2B31320CC99D900300A96 /* KeyPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3720C7BAE2006E3B1C /* KeyPolicy.cpp */; };
 		CDC2B31620CCAD2400300A96 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
 		CDC2B31720CCAD2400300A96 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
 		CDC2B31820CCAD2400300A96 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
@@ -171,12 +195,10 @@
 		CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegisterMiner.cpp; path = src/transactions/RegisterMiner.cpp; sourceTree = "<group>"; };
 		CD0C3E2320C25C8B006E3B1C /* RegisterMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegisterMiner.h; path = src/transactions/RegisterMiner.h; sourceTree = "<group>"; };
 		CD0C3E2820C279FB006E3B1C /* Factory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = src/Factory.h; sourceTree = "<group>"; };
-		CD0C3E2B20C295B5006E3B1C /* Signable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Signable.h; path = src/Signable.h; sourceTree = "<group>"; };
-		CD0C3E2C20C2967E006E3B1C /* Signable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signable.cpp; path = src/Signable.cpp; sourceTree = "<group>"; };
 		CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncChainTask.cpp; path = src/SyncChainTask.cpp; sourceTree = "<group>"; };
 		CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncChainTask.h; path = src/SyncChainTask.h; sourceTree = "<group>"; };
-		CD0C3E3720C7BAE2006E3B1C /* RegisterKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegisterKey.cpp; path = src/transactions/RegisterKey.cpp; sourceTree = "<group>"; };
-		CD0C3E3820C7BAE2006E3B1C /* RegisterKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegisterKey.h; path = src/transactions/RegisterKey.h; sourceTree = "<group>"; };
+		CD0C3E3720C7BAE2006E3B1C /* KeyPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyPolicy.cpp; path = src/transactions/KeyPolicy.cpp; sourceTree = "<group>"; };
+		CD0C3E3820C7BAE2006E3B1C /* KeyPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyPolicy.h; path = src/transactions/KeyPolicy.h; sourceTree = "<group>"; };
 		CD0C3E6720C86D88006E3B1C /* util */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = util; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD0C3E6820C86FBA006E3B1C /* main-util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-util.cpp"; path = "src/main-util.cpp"; sourceTree = "<group>"; };
 		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/Block.cpp; sourceTree = "<group>"; };
@@ -189,6 +211,24 @@
 		CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractTransaction.h; path = src/AbstractTransaction.h; sourceTree = "<group>"; };
 		CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializable.h; path = src/AbstractSerializable.h; sourceTree = "<group>"; };
 		CD4665B420BFF70F00A02D55 /* AbstractHashable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractHashable.h; path = src/AbstractHashable.h; sourceTree = "<group>"; };
+		CD59F3AC20E6FF8000705AEB /* TransferFunds.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransferFunds.cpp; path = src/transactions/TransferFunds.cpp; sourceTree = "<group>"; };
+		CD59F3AD20E6FF8000705AEB /* TransferFunds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransferFunds.h; path = src/transactions/TransferFunds.h; sourceTree = "<group>"; };
+		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/Signature.cpp; sourceTree = "<group>"; };
+		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/Signature.h; sourceTree = "<group>"; };
+		CD59F3B620E8931D00705AEB /* AccountPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AccountPolicy.cpp; path = src/transactions/AccountPolicy.cpp; sourceTree = "<group>"; };
+		CD59F3B720E8931D00705AEB /* AccountPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountPolicy.h; path = src/transactions/AccountPolicy.h; sourceTree = "<group>"; };
+		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/Policy.cpp; sourceTree = "<group>"; };
+		CD59F3BC20E8950100705AEB /* Policy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Policy.h; path = src/Policy.h; sourceTree = "<group>"; };
+		CD59F3CA20E8A22C00705AEB /* OpenAccount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpenAccount.cpp; path = src/transactions/OpenAccount.cpp; sourceTree = "<group>"; };
+		CD59F3CB20E8A22C00705AEB /* OpenAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenAccount.h; path = src/transactions/OpenAccount.h; sourceTree = "<group>"; };
+		CD59F3CF20E990D300705AEB /* Serialize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Serialize.h; path = src/Serialize.h; sourceTree = "<group>"; };
+		CD59F3D020E998DC00705AEB /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Hash.h; path = src/Hash.h; sourceTree = "<group>"; };
+		CD59F3D120E9AAB500705AEB /* Serialize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Serialize.cpp; path = src/Serialize.cpp; sourceTree = "<group>"; };
+		CD59F3D520E9AAC500705AEB /* Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Hash.cpp; path = src/Hash.cpp; sourceTree = "<group>"; };
+		CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMakerSignature.cpp; path = src/TransactionMakerSignature.cpp; sourceTree = "<group>"; };
+		CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionMakerSignature.h; path = src/TransactionMakerSignature.h; sourceTree = "<group>"; };
+		CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChainPlacement.cpp; path = src/ChainPlacement.cpp; sourceTree = "<group>"; };
+		CD59F3DF20EB045400705AEB /* ChainPlacement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChainPlacement.h; path = src/ChainPlacement.h; sourceTree = "<group>"; };
 		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/common.h; sourceTree = "<group>"; };
 		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/main-simulator.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/main-server.cpp"; sourceTree = "<group>"; };
@@ -326,10 +366,16 @@
 		CD0C3E2120C25C21006E3B1C /* transactions */ = {
 			isa = PBXGroup;
 			children = (
-				CD0C3E3720C7BAE2006E3B1C /* RegisterKey.cpp */,
-				CD0C3E3820C7BAE2006E3B1C /* RegisterKey.h */,
+				CD59F3B620E8931D00705AEB /* AccountPolicy.cpp */,
+				CD59F3B720E8931D00705AEB /* AccountPolicy.h */,
+				CD0C3E3720C7BAE2006E3B1C /* KeyPolicy.cpp */,
+				CD0C3E3820C7BAE2006E3B1C /* KeyPolicy.h */,
+				CD59F3CA20E8A22C00705AEB /* OpenAccount.cpp */,
+				CD59F3CB20E8A22C00705AEB /* OpenAccount.h */,
 				CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */,
 				CD0C3E2320C25C8B006E3B1C /* RegisterMiner.h */,
+				CD59F3AC20E6FF8000705AEB /* TransferFunds.cpp */,
+				CD59F3AD20E6FF8000705AEB /* TransferFunds.h */,
 			);
 			name = transactions;
 			sourceTree = "<group>";
@@ -337,16 +383,19 @@
 		CD4665AA20BFE49000A02D55 /* ledger */ = {
 			isa = PBXGroup;
 			children = (
+				CDC2B31920CE0F0100300A96 /* chain */,
 				CDC2B33F20CF8E9600300A96 /* state */,
 				CD0C3E2120C25C21006E3B1C /* transactions */,
 				CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */,
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */,
-				CD46659C20BE908300A02D55 /* Block.cpp */,
-				CD46659D20BE908300A02D55 /* Block.h */,
 				CDC2B34220D1196900300A96 /* Genesis.cpp */,
 				CDC2B34120D1182400300A96 /* Genesis.h */,
+				CD59F3BB20E8950100705AEB /* Policy.cpp */,
+				CD59F3BC20E8950100705AEB /* Policy.h */,
 				CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */,
 				CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */,
+				CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */,
+				CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */,
 			);
 			name = ledger;
 			sourceTree = "<group>";
@@ -357,8 +406,12 @@
 				CD4665B420BFF70F00A02D55 /* AbstractHashable.h */,
 				CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */,
 				CD0C3E2820C279FB006E3B1C /* Factory.h */,
-				CD0C3E2C20C2967E006E3B1C /* Signable.cpp */,
-				CD0C3E2B20C295B5006E3B1C /* Signable.h */,
+				CD59F3D520E9AAC500705AEB /* Hash.cpp */,
+				CD59F3D020E998DC00705AEB /* Hash.h */,
+				CD59F3D120E9AAB500705AEB /* Serialize.cpp */,
+				CD59F3CF20E990D300705AEB /* Serialize.h */,
+				CD59F3B120E889A000705AEB /* Signature.cpp */,
+				CD59F3B220E889A000705AEB /* Signature.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
 			);
 			name = util;
@@ -386,7 +439,6 @@
 		CD5C62F320B4F7A70038EE98 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				CDC2B31920CE0F0100300A96 /* chain */,
 				CD4665AA20BFE49000A02D55 /* ledger */,
 				CDED589120BD1CAC003A2969 /* main */,
 				CD0C3E0F20C14410006E3B1C /* miner */,
@@ -423,8 +475,12 @@
 		CDC2B31920CE0F0100300A96 /* chain */ = {
 			isa = PBXGroup;
 			children = (
+				CD46659C20BE908300A02D55 /* Block.cpp */,
+				CD46659D20BE908300A02D55 /* Block.h */,
 				CDC2B33520CE112F00300A96 /* Chain.cpp */,
 				CDC2B33620CE112F00300A96 /* Chain.h */,
+				CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */,
+				CD59F3DF20EB045400705AEB /* ChainPlacement.h */,
 				CDC2B33720CE112F00300A96 /* Cycle.cpp */,
 				CDC2B33820CE112F00300A96 /* Cycle.h */,
 			);
@@ -696,26 +752,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD59F3E220EB045400705AEB /* ChainPlacement.cpp in Sources */,
+				CD59F3D820E9AAC500705AEB /* Hash.cpp in Sources */,
 				CDC2B32E20CE0FA100300A96 /* cohort.cpp in Sources */,
-				CD0C3E4520C86D88006E3B1C /* Signable.cpp in Sources */,
 				CD0C3E4620C86D88006E3B1C /* Block.cpp in Sources */,
+				CD59F3D420E9AAB500705AEB /* Serialize.cpp in Sources */,
 				CDC2B33420CE0FA100300A96 /* player.cpp in Sources */,
+				CD59F3B520E889A000705AEB /* Signature.cpp in Sources */,
 				CD0C3E4720C86D88006E3B1C /* RouteTable.cpp in Sources */,
+				CD59F3BA20E8931D00705AEB /* AccountPolicy.cpp in Sources */,
 				CD0C3E4820C86D88006E3B1C /* SyncChainTask.cpp in Sources */,
-				CDC2B31320CC99D900300A96 /* RegisterKey.cpp in Sources */,
+				CDC2B31320CC99D900300A96 /* KeyPolicy.cpp in Sources */,
+				CD59F3B020E6FF8000705AEB /* TransferFunds.cpp in Sources */,
 				CD0C3E6920C86FBA006E3B1C /* main-util.cpp in Sources */,
 				CDC2B33120CE0FA100300A96 /* context.cpp in Sources */,
 				CD0C3E4C20C86D88006E3B1C /* TheMiner.cpp in Sources */,
 				CD0C3E4E20C86D88006E3B1C /* AbstractTransaction.cpp in Sources */,
 				CD0C3E4F20C86D88006E3B1C /* MinerInfo.cpp in Sources */,
+				CD59F3CE20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
 				CDC2B32B20CE0FA100300A96 /* chain.cpp in Sources */,
 				CDC2B34520D1196900300A96 /* Genesis.cpp in Sources */,
 				CDC2B32820CE0FA100300A96 /* analysis.cpp in Sources */,
 				CD0C3E5020C86D88006E3B1C /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E5320C86D88006E3B1C /* RegisterMiner.cpp in Sources */,
+				CD59F3BF20E8950100705AEB /* Policy.cpp in Sources */,
 				CD0C3E5420C86D88006E3B1C /* TheTransactionFactory.cpp in Sources */,
 				CDC2B31820CCAD2400300A96 /* State.cpp in Sources */,
 				CDC2B33E20CE112F00300A96 /* Cycle.cpp in Sources */,
+				CD59F3DD20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */,
 				CDC2B33B20CE112F00300A96 /* Chain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -724,26 +788,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD59F3E120EB045400705AEB /* ChainPlacement.cpp in Sources */,
+				CD59F3D720E9AAC500705AEB /* Hash.cpp in Sources */,
 				CDC2B32D20CE0FA100300A96 /* cohort.cpp in Sources */,
-				CD0C3E2E20C2967E006E3B1C /* Signable.cpp in Sources */,
 				CD46659F20BE908300A02D55 /* Block.cpp in Sources */,
+				CD59F3D320E9AAB500705AEB /* Serialize.cpp in Sources */,
 				CDC2B33320CE0FA100300A96 /* player.cpp in Sources */,
+				CD59F3B420E889A000705AEB /* Signature.cpp in Sources */,
 				CDED584420BA2131003A2969 /* RouteTable.cpp in Sources */,
+				CD59F3B920E8931D00705AEB /* AccountPolicy.cpp in Sources */,
 				CD0C3E3620C65D7C006E3B1C /* SyncChainTask.cpp in Sources */,
-				CDC2B31220CC99D900300A96 /* RegisterKey.cpp in Sources */,
+				CDC2B31220CC99D900300A96 /* KeyPolicy.cpp in Sources */,
+				CD59F3AF20E6FF8000705AEB /* TransferFunds.cpp in Sources */,
 				CD0C3E1320C14460006E3B1C /* TheMiner.cpp in Sources */,
 				CDC2B33020CE0FA100300A96 /* context.cpp in Sources */,
 				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
 				CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
 				CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
+				CD59F3CD20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
 				CDC2B32A20CE0FA100300A96 /* chain.cpp in Sources */,
 				CDC2B34420D1196900300A96 /* Genesis.cpp in Sources */,
 				CDC2B32720CE0FA100300A96 /* analysis.cpp in Sources */,
 				CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E2520C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,
+				CD59F3BE20E8950100705AEB /* Policy.cpp in Sources */,
 				CD0C3E2A20C28F28006E3B1C /* TheTransactionFactory.cpp in Sources */,
 				CDC2B31720CCAD2400300A96 /* State.cpp in Sources */,
 				CDC2B33D20CE112F00300A96 /* Cycle.cpp in Sources */,
+				CD59F3DC20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */,
 				CDC2B33A20CE112F00300A96 /* Chain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -765,26 +837,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD59F3E020EB045400705AEB /* ChainPlacement.cpp in Sources */,
+				CD59F3D620E9AAC500705AEB /* Hash.cpp in Sources */,
 				CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */,
 				CDC2B32C20CE0FA100300A96 /* cohort.cpp in Sources */,
-				CD0C3E2D20C2967E006E3B1C /* Signable.cpp in Sources */,
+				CD59F3D220E9AAB500705AEB /* Serialize.cpp in Sources */,
 				CD46659E20BE908300A02D55 /* Block.cpp in Sources */,
+				CD59F3B320E889A000705AEB /* Signature.cpp in Sources */,
 				CDC2B33220CE0FA100300A96 /* player.cpp in Sources */,
+				CD59F3B820E8931D00705AEB /* AccountPolicy.cpp in Sources */,
 				CD0C3E3520C65D7C006E3B1C /* SyncChainTask.cpp in Sources */,
 				CDED587C20BD1C5F003A2969 /* RouteTable.cpp in Sources */,
-				CDC2B31120CC99D800300A96 /* RegisterKey.cpp in Sources */,
+				CD59F3AE20E6FF8000705AEB /* TransferFunds.cpp in Sources */,
+				CDC2B31120CC99D800300A96 /* KeyPolicy.cpp in Sources */,
 				CD0C3E1220C14460006E3B1C /* TheMiner.cpp in Sources */,
 				CDC2B32F20CE0FA100300A96 /* context.cpp in Sources */,
 				CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
 				CD0C3E1A20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
+				CD59F3CC20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
 				CDC2B32920CE0FA100300A96 /* chain.cpp in Sources */,
 				CDC2B34320D1196900300A96 /* Genesis.cpp in Sources */,
 				CDC2B32620CE0FA100300A96 /* analysis.cpp in Sources */,
 				CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E2420C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,
+				CD59F3BD20E8950100705AEB /* Policy.cpp in Sources */,
 				CD0C3E2920C28F27006E3B1C /* TheTransactionFactory.cpp in Sources */,
 				CDC2B31620CCAD2400300A96 /* State.cpp in Sources */,
 				CDC2B33C20CE112F00300A96 /* Cycle.cpp in Sources */,
+				CD59F3DB20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */,
 				CDC2B33920CE112F00300A96 /* Chain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

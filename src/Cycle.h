@@ -17,13 +17,27 @@ class Cycle :
     public AbstractSerializable {
 private:
 
-    size_t                                  mCycleID;
+    friend class Chain;
+
+    u64                                     mCycleID;
 
     set < string >                          mMiners;
     vector < unique_ptr < const Block >>    mBlocks;
 
     //----------------------------------------------------------------//
-    int                     findPosition            ( size_t score ) const;
+    void                    apply                   ( State& state ) const;
+    static int              compare                 ( const Cycle& cycle0, const Cycle& cycle1 );
+    bool                    containsMiner           ( string minerID ) const;
+    size_t                  countMiners             ( string minerID = "" ) const;
+    u64                     findPosition            ( size_t score ) const;
+    size_t                  getID                   () const;
+    size_t                  getLength               () const;
+    bool                    isInChain               ( string minerID ) const;
+    void                    print                   () const;
+    void                    setID                   ( u64 cycleID );
+    bool                    verify                  ( const State& state ) const;
+    bool                    willImprove             ( string minerID ) const;
+    
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
@@ -32,20 +46,8 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void                    apply                   ( State& state ) const;
-    static int              compare                 ( const Cycle& cycle0, const Cycle& cycle1 );
-    bool                    containsMiner           ( string minerID ) const;
-    size_t                  countMiners             ( string minerID = "" ) const;
                             Cycle                   ();
                             ~Cycle                  ();
-    size_t                  getID                   () const;
-    size_t                  getLength               () const;
-    bool                    isInChain               ( string minerID ) const;
-    void                    push                    ( unique_ptr < const Block > block );
-    void                    print                   () const;
-    void                    setID                   ( size_t cycleID );
-    bool                    verify                  ( const State& state ) const;
-    bool                    willImprove             ( string minerID );
 };
 
 } // namespace Volition

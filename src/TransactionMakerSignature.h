@@ -1,43 +1,37 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTION_REGISTERMINER_H
-#define VOLITION_TRANSACTION_REGISTERMINER_H
+#ifndef VOLITION_TRANSACTIONMAKERSIGNATURE_H
+#define VOLITION_TRANSACTIONMAKERSIGNATURE_H
 
-#include "common.h"
-
-#include "AbstractTransaction.h"
+#include <common.h>
+#include <Signature.h>
 
 namespace Volition {
-namespace Transaction {
 
 //================================================================//
-// RegisterMiner
+// TransactionMakerSignature
 //================================================================//
-class RegisterMiner :
-    public AbstractTransaction {
-private:
+class TransactionMakerSignature :
+    public AbstractHashable,
+    public Signature {
+protected:
 
-    string                                  mMinerID;
-    string                                  mURL;    
-    string                                  mKeyName;
+    u64                     mGratuity;
+    string                  mKeyName; // will identify a key to an account that can pay
+    u64                     mNonce;
 
     //----------------------------------------------------------------//
     void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
     void                    AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
     void                    AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
-    void                    AbstractTransaction_apply           ( State& state ) const override;
 
 public:
 
-    TRANSACTION_TYPE ( "REGISTER_MINER" )
-    TRANSACTION_WEIGHT ( 1 )
-
     //----------------------------------------------------------------//
-                            RegisterMiner            ();
-                            ~RegisterMiner           ();
+                            TransactionMakerSignature           ();
+                            ~TransactionMakerSignature          ();
 };
 
-} // namespace Transaction
 } // namespace Volition
 #endif

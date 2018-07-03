@@ -25,7 +25,7 @@ private:
     unique_ptr < Chain >    mChain;
 
     //----------------------------------------------------------------//
-    void            runTask             () override;
+    void                    runTask             () override;
 
 public:
 

@@ -22,7 +22,12 @@ void Chain::apply ( State& state ) const {
 bool Chain::canEdit ( size_t cycleID, string minerID ) const {
 
     assert ( cycleID < this->mCycles.size ());
-    if ( cycleID == this->mCycles.back ()->getID ()) return true;
+    
+    if ( cycleID == 0 ) return false; // cannot change genesis cycle
+    if ( cycleID == this->mCycles.back ()->getID ()) return true; // can always change last cycle
+    
+    // cycle is neither last nor genesis; can change if majority of miners have not yet
+    // agreed on next cycle
     
     const Cycle& cycle0     = *this->mCycles [ cycleID ];
     const Cycle& cycle1     = *this->mCycles [ cycleID + 1 ];
@@ -64,6 +69,14 @@ bool Chain::canEdit ( size_t cycleID, const Chain& chain ) const {
 
 //----------------------------------------------------------------//
 Chain::Chain () {
+}
+
+//----------------------------------------------------------------//
+Chain::Chain ( unique_ptr < Block > genesisBlock ) {
+
+    this->mCycles.push_back ( make_unique < Cycle >());
+    Cycle* cycle = this->getTopCycle ();
+    cycle->mBlocks.push_back ( move ( genesisBlock ));
 }
 
 //----------------------------------------------------------------//
@@ -151,17 +164,19 @@ const Cycle* Chain::getTopCycle () const {
 }
 
 //----------------------------------------------------------------//
-Cycle* Chain::nextCycle ( string minerID, bool force ) {
+ChainPlacement Chain::findPlacement ( string minerID, bool force ) const {
 
-    Cycle* topCycle = this->getTopCycle ();
-    if (( topCycle && topCycle->isInChain ( minerID )) && !force ) return 0;
+    const Cycle* topCycle = this->getTopCycle ();
+    if (( topCycle && topCycle->isInChain ( minerID )) && !force ) return ChainPlacement (); // genesis block has no miner ID; cannot push
 
     // first, seek back to find the earliest cycle we could change.
     // we're only allowed change if next cycle ratio is below the threshold.
     // important to measure the threshold *after* the proposed change.
     size_t nCycles = this->mCycles.size ();
-    if ( nCycles > 0 ) {
     
+    // ignore case where only genesis cycle exists
+    if ( nCycles > 2 ) {
+        
         // start at the last cycle and count backward until we find a cycle we
         // aren't allowed to change. we want the cycle after that (which may be
         // the last cycle in the chain).
@@ -173,21 +188,16 @@ Cycle* Chain::nextCycle ( string minerID, bool force ) {
         // now count forward from the base until we find a cycle that we'd want to change.
         // again, base may be the last cycle in the chain.
         // we may not find one, in which case we need to add a new cycle.
-        for ( size_t i = baseCycleID; i < nCycles; ++i ) {
-            Cycle* cycle = this->mCycles [ i ].get ();
+        for ( size_t i = baseCycleID + 1; i < nCycles; ++i ) {
+            const Cycle* cycle = this->mCycles [ i ].get ();
             if ( cycle->willImprove ( minerID )) {
-                this->mCycles.resize ( i + 1 );
-                return cycle;
+                return ChainPlacement ( cycle );
             }
         }
     }
 
-    // add a new cycle.
-    int cycleID = ( int )this->mCycles.size ();
-    this->mCycles.push_back ( make_unique < Cycle >());
-    Cycle* cycle = this->getTopCycle ();
-    cycle->setID ( cycleID );
-    return cycle;
+    // top cycle may be NULL
+    return ChainPlacement ( topCycle );
 }
 
 //----------------------------------------------------------------//
@@ -203,6 +213,58 @@ void Chain::print ( const char* pre, const char* post ) const {
     
     if ( post ) {
         printf ( "%s", post );
+    }
+}
+
+//----------------------------------------------------------------//
+void Chain::pushAndSign ( const ChainPlacement& placement, unique_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+
+    assert ( block );
+    if ( !placement.canPush ()) return;
+    
+    Cycle* cycle = NULL;
+    u64 cycleID = 0;
+    
+    if ( placement.mCycle ) {
+        cycleID = placement.mCycle->mCycleID;
+        assert ( cycleID < this->mCycles.size ());
+        cycle = this->mCycles [ cycleID ].get ();
+        assert ( cycle == placement.mCycle );
+    }
+    
+    this->mCycles.resize ( cycleID );
+    
+    if ( !cycle ) {
+        this->mCycles.push_back ( make_unique < Cycle >());
+        cycle = this->getTopCycle ();
+        cycle->setID ( cycleID );
+    }
+    
+    Cycle* prevCycle = cycleID > 0 ? this->mCycles [ cycleID - 1 ].get () : NULL;
+    
+    string minerID = block->getMinerID ();
+    assert ( !cycle->isInChain ( minerID )); // cycle should only be a candidate for push if block isn't already in the chain
+    
+    u64 position = cycle->findPosition ( block->getScore ());
+    cycle->mBlocks.resize ( position );
+    
+    const Block* prevBlock = 0;
+    
+    if ( position > 0 ) {
+        prevBlock = cycle->mBlocks.back ().get ();
+    }
+    else if ( prevCycle ) {
+        prevBlock = prevCycle->mBlocks.back ().get ();
+    }
+    
+    block->setCycleID ( cycleID );
+    block->setPreviousBlock ( prevBlock );
+    block->sign ( key );
+    
+    cycle->mBlocks.push_back ( move ( block ));
+    
+    if ( !cycle->containsMiner ( minerID )) {
+        cycle->mMiners.insert ( minerID );
     }
 }
 

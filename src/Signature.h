@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_ABSTRACTSIGNABLE_H
-#define VOLITION_ABSTRACTSIGNABLE_H
+#ifndef VOLITION_SIGNATURE_H
+#define VOLITION_SIGNATURE_H
 
 #include "common.h"
 #include "AbstractHashable.h"
@@ -11,10 +11,9 @@
 namespace Volition {
 
 //================================================================//
-// Signable
+// Signature
 //================================================================//
-class Signable :
-    public AbstractHashable,
+class Signature :
     public AbstractSerializable {
 private:
 
@@ -25,8 +24,8 @@ private:
 protected:
 
     //----------------------------------------------------------------//
-    virtual const Poco::DigestEngine::Digest&       Signable_sign               ( const Poco::Crypto::ECKey& key, string hashAlgorithm );
-    virtual bool                                    Signable_verify             ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) const;
+    static void                             digest              ( string str, Poco::Crypto::ECDSADigestEngine& digestEngine );
+    static void                             digest              ( const AbstractHashable& hashable, Poco::Crypto::ECDSADigestEngine& digestEngine );
 
     //----------------------------------------------------------------//
     void        AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
@@ -40,11 +39,13 @@ public:
     const Poco::DigestEngine::Digest&       getDigest           () const;
     string                                  getHashAlgorithm    () const;
     const Poco::DigestEngine::Digest&       getSignature        () const;
-    const Poco::DigestEngine::Digest&       sign                ( const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
-                                            Signable            ();
-                                            ~Signable           ();
+    const Poco::DigestEngine::Digest&       sign                ( string str, const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
+    const Poco::DigestEngine::Digest&       sign                ( const AbstractHashable& hashable, const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
+                                            Signature           ();
+                                            ~Signature          ();
     static string                           toHex               ( const Poco::DigestEngine::Digest& digest );
-    bool                                    verify              ( const Poco::Crypto::ECKey& key ) const;
+    bool                                    verify              ( string str, const Poco::Crypto::ECKey& key ) const;
+    bool                                    verify              ( const AbstractHashable& hashable, const Poco::Crypto::ECKey& key ) const;
 };
 
 } // namespace Volition

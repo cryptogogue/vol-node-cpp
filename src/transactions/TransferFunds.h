@@ -18,14 +18,14 @@ class TransferFunds :
     public AbstractTransaction {
 private:
 
-    string                  mFromKey;
-    string                  mToKey;
+    string                  mAccountName;
     u64                     mAmount;
 
     //----------------------------------------------------------------//
     void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
     void                    AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
     void                    AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
+    void                    AbstractTransaction_apply           ( State& state ) const override;
 
 public:
 

@@ -1,25 +1,26 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTION_REGISTERKEY_H
-#define VOLITION_TRANSACTION_REGISTERKEY_H
+#ifndef VOLITION_TRANSACTION_OPENACCOUNT_H
+#define VOLITION_TRANSACTION_OPENACCOUNT_H
 
-#include "common.h"
-
-#include "AbstractTransaction.h"
+#include <common.h>
+#include <AbstractTransaction.h>
 
 namespace Volition {
 namespace Transaction {
 
 //================================================================//
-// RegisterKey
+// OpenAccount
 //================================================================//
-class RegisterKey :
+class OpenAccount :
     public AbstractTransaction {
 private:
 
-    unique_ptr < Poco::Crypto::ECKey >      mPublicKey;
+    string                                  mAccountName;
     string                                  mKeyName;
+    unique_ptr < Poco::Crypto::ECKey >      mKey;
+    u64                                     mAmount;
 
     //----------------------------------------------------------------//
     void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
@@ -29,12 +30,12 @@ private:
 
 public:
 
-    TRANSACTION_TYPE ( "REGISTER_KEY" )
+    TRANSACTION_TYPE ( "OPEN_ACCOUNT" )
     TRANSACTION_WEIGHT ( 1 )
 
     //----------------------------------------------------------------//
-                            RegisterKey             ();
-                            ~RegisterKey            ();
+                            OpenAccount               ();
+                            ~OpenAccount              ();
 };
 
 } // namespace Transaction

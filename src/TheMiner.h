@@ -51,7 +51,6 @@ public:
     string          getPublicKey            ();
     void            pushTransaction         ( unique_ptr < AbstractTransaction >& transaction );
     void            setMinerID              ( string minerID );
-    void            sign                    ( Signable& signable ) const;
     void            shutdown                ();
                     TheMiner                ();
                     ~TheMiner               ();

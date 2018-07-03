@@ -45,7 +45,7 @@ public:
     
     //----------------------------------------------------------------//
     void fromJSON ( string json ) {
-    
+        
         Poco::JSON::Parser parser;
         Poco::Dynamic::Var result = parser.parse ( json );
         Poco::JSON::Object::Ptr object = result.extract < Poco::JSON::Object::Ptr >();

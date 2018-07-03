@@ -8,5 +8,52 @@ Register a mining account
 Provision a wallet
 Transfer VOL
 Mining reward
+command line wallet
+
+users have accounts
+users can be individuals or legal entities
+accounts have keys
+key have permissions
+keys are unique to accounts
+accounts hold currency and assets
+
+if a user identity is stolen
+    - freeze all accounts
+    - re-establish identity (multiple trusted parties)
+
+- open and fund account (user, account, account key)
+
+- new account (and user)
+    - must be funded by sponsor
+
+- identify user (notary)
+- attach signing keys
+- make proclamation (revokable within time limit)
+
+- create account (with owner)
+- account policy (overflow, keepalive, demurrage, etc.)
+- account user policy
+    - user groups
+    - add/remove keys
+- transfer VOL
+    - transfer immediately
+    - schedule transfer
+    - cancel transfer
+
+- publish proclamation
+- publish schema
+
+- anyone can publish a schema
+- must be adopted by at least one miner
+- reward schedule: time and signature
+- miners select what schema they want to mine
+- schema should have methods to indicate what assets are eligible for transformation
+- assets may be transformed in sets
+
+OPEN_ACCOUNT
+    master key
+
+IDENTIFY_KEY
+    identity key
 
 

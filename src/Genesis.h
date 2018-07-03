@@ -6,16 +6,14 @@
 
 #include "common.h"
 
-#include "AbstractSerializable.h"
-#include "AbstractTransaction.h"
-#include "Signable.h"
-#include "State.h"
-
 namespace Volition {
 namespace Genesis {
 
 extern const char* PUBLIC_KEY_STRING;
 extern const char* DIGEST_STRING;
+
+//----------------------------------------------------------------//
+Poco::Crypto::ECKey     getGenesisKey       ();
 
 } // namespace Genesis
 } // namespace Volition

@@ -1,55 +1,55 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "Signable.h"
+#include "Signature.h"
 
 namespace Volition {
 
 //================================================================//
-// Signable
+// Signature
 //================================================================//
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signable::getDigest () const {
+void Signature::digest ( string str, Poco::Crypto::ECDSADigestEngine& digestEngine ) {
+
+    Poco::DigestOutputStream signatureStream ( digestEngine );
+    signatureStream << str;
+    signatureStream.close ();
+}
+
+//----------------------------------------------------------------//
+void Signature::digest ( const AbstractHashable& hashable, Poco::Crypto::ECDSADigestEngine& digestEngine ) {
+
+    Poco::DigestOutputStream signatureStream ( digestEngine );
+    hashable.hash ( signatureStream );
+    signatureStream.close ();
+}
+
+//----------------------------------------------------------------//
+const Poco::DigestEngine::Digest& Signature::getDigest () const {
 
     return this->mDigest;
 }
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signable::getSignature () const {
+const Poco::DigestEngine::Digest& Signature::getSignature () const {
 
     return this->mSignature;
 }
 
 //----------------------------------------------------------------//
-string Signable::getHashAlgorithm () const {
+string Signature::getHashAlgorithm () const {
 
     return this->mHashAlgorithm;
 }
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signable::sign ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
-
-    return this->Signable_sign ( key, hashAlgorithm );
-}
-
-//----------------------------------------------------------------//
-Signable::Signable () {
-}
-
-//----------------------------------------------------------------//
-Signable::~Signable () {
-}
-
-//----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signable::Signable_sign ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+const Poco::DigestEngine::Digest& Signature::sign ( string str, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
 
     this->mHashAlgorithm = hashAlgorithm;
 
     Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
-    Poco::DigestOutputStream signatureStream ( signature );
-    this->hash ( signatureStream );
-    signatureStream.close ();
+    this->digest ( str, signature );
     
     this->mDigest = signature.digest ();
     this->mSignature = signature.signature ();
@@ -57,26 +57,48 @@ const Poco::DigestEngine::Digest& Signable::Signable_sign ( const Poco::Crypto::
 }
 
 //----------------------------------------------------------------//
-bool Signable::Signable_verify ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) const {
+const Poco::DigestEngine::Digest& Signature::sign ( const AbstractHashable& hashable, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
 
-    Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-    Poco::DigestOutputStream signatureStream ( signature );
-    this->hash ( signatureStream );
-    signatureStream.close ();
+    this->mHashAlgorithm = hashAlgorithm;
+
+    Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
+    this->digest ( hashable, signature );
     
-    return signature.verify ( this->mSignature );
+    this->mDigest = signature.digest ();
+    this->mSignature = signature.signature ();
+    return this->mSignature;
 }
 
 //----------------------------------------------------------------//
-string Signable::toHex ( const Poco::DigestEngine::Digest& digest ) {
+Signature::Signature () {
+}
+
+//----------------------------------------------------------------//
+Signature::~Signature () {
+}
+
+//----------------------------------------------------------------//
+string Signature::toHex ( const Poco::DigestEngine::Digest& digest ) {
 
     return Poco::DigestEngine::digestToHex ( digest );
 }
 
 //----------------------------------------------------------------//
-bool Signable::verify ( const Poco::Crypto::ECKey& key ) const {
+bool Signature::verify ( string str, const Poco::Crypto::ECKey& key ) const {
 
-    return this->Signable_verify ( key, this->mHashAlgorithm );
+    Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
+    this->digest ( str, signature );
+    
+    return signature.verify ( this->mSignature );
+}
+
+//----------------------------------------------------------------//
+bool Signature::verify ( const AbstractHashable& hashable, const Poco::Crypto::ECKey& key ) const {
+
+    Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
+    this->digest ( hashable, signature );
+    
+    return signature.verify ( this->mSignature );
 }
 
 //================================================================//
@@ -84,7 +106,7 @@ bool Signable::verify ( const Poco::Crypto::ECKey& key ) const {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Signable::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
+void Signature::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
 
     string digestString             = object.optValue < string >( "digest", "" );
     string signatureString          = object.optValue < string >( "signature", "" );
@@ -95,7 +117,7 @@ void Signable::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object 
 }
 
 //----------------------------------------------------------------//
-void Signable::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
+void Signature::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
     
     object.set ( "digest",          Poco::DigestEngine::digestToHex ( this->mDigest ).c_str ());
     object.set ( "signature",       Poco::DigestEngine::digestToHex ( this->mSignature ).c_str ());

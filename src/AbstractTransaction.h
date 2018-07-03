@@ -4,11 +4,11 @@
 #ifndef VOLITION_ABSTRACTTRANSACTION_H
 #define VOLITION_ABSTRACTTRANSACTION_H
 
-#include "common.h"
-
-#include "AbstractSerializable.h"
-#include "Signable.h"
-#include "State.h"
+#include <common.h>
+#include <AbstractHashable.h>
+#include <AbstractSerializable.h>
+#include <State.h>
+#include <TransactionMakerSignature.h>
 
 namespace Volition {
 
@@ -28,11 +28,11 @@ namespace Volition {
 // AbstractTransaction
 //================================================================//
 class AbstractTransaction :
-    public Signable {
+    public AbstractHashable,
+    public AbstractSerializable {
 protected:
 
-    size_t                  mTransactionID;
-    size_t                  mGratuity;
+    unique_ptr < TransactionMakerSignature >    mMakerSignature;
 
     //----------------------------------------------------------------//
     void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;

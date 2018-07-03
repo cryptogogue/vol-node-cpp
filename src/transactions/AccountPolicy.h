@@ -1,26 +1,26 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTION_REGISTERMINER_H
-#define VOLITION_TRANSACTION_REGISTERMINER_H
+#ifndef VOLITION_TRANSACTION_ACCOUNTPOLICY_H
+#define VOLITION_TRANSACTION_ACCOUNTPOLICY_H
 
-#include "common.h"
-
-#include "AbstractTransaction.h"
+#include <common.h>
+#include <AbstractTransaction.h>
+#include <Policy.h>
 
 namespace Volition {
 namespace Transaction {
 
 //================================================================//
-// RegisterMiner
+// AccountPolicy
 //================================================================//
-class RegisterMiner :
+class AccountPolicy :
     public AbstractTransaction {
 private:
 
-    string                                  mMinerID;
-    string                                  mURL;    
-    string                                  mKeyName;
+    string                                  mAccountName;
+    string                                  mPolicyName;
+    unique_ptr < Policy >                   mPolicy;
 
     //----------------------------------------------------------------//
     void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
@@ -30,12 +30,12 @@ private:
 
 public:
 
-    TRANSACTION_TYPE ( "REGISTER_MINER" )
+    TRANSACTION_TYPE ( "ACCOUNT_POLICY" )
     TRANSACTION_WEIGHT ( 1 )
 
     //----------------------------------------------------------------//
-                            RegisterMiner            ();
-                            ~RegisterMiner           ();
+                            AccountPolicy           ();
+                            ~AccountPolicy          ();
 };
 
 } // namespace Transaction

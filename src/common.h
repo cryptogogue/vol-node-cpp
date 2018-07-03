@@ -8,9 +8,11 @@
 #include <cmath>
 #include <fstream>
 #include <functional>
+#include <inttypes.h>
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
 #include <stdio.h>
 #include <stdlib.h>

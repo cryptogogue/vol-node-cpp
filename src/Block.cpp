@@ -4,6 +4,8 @@
 // http://cryptogogue.com
 
 #include "Block.h"
+#include "Genesis.h"
+#include "Serialize.h"
 #include "TheTransactionFactory.h"
 
 namespace Volition {
@@ -23,11 +25,18 @@ void Block::apply ( State& state ) const {
 
 //----------------------------------------------------------------//
 Block::Block () :
-    mCycleID ( 0 ) {
+    mCycleID ( 0 ),
+    mHeight ( 0 ) {
 }
 
 //----------------------------------------------------------------//
 Block::~Block () {
+}
+
+//----------------------------------------------------------------//
+const Signature& Block::getSignature () const {
+
+    return this->mSignature;
 }
 
 //----------------------------------------------------------------//
@@ -55,6 +64,71 @@ void Block::setMinerID ( string minerID ) {
     this->mMinerID = minerID;
 }
 
+//----------------------------------------------------------------//
+void Block::setPreviousBlock ( const Block* prevBlock ) {
+
+    if ( prevBlock ) {
+        this->mHeight = prevBlock->mHeight + 1;
+        this->mPrevDigest = prevBlock->mSignature.getDigest ();
+    }
+}
+
+//----------------------------------------------------------------//
+const Poco::DigestEngine::Digest& Block::sign ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+
+    // no need to compute allure for the genesis block
+    if ( this->mHeight ) {
+
+        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
+        Poco::DigestOutputStream signatureStream ( signature );
+        signatureStream << this->mCycleID;
+        signatureStream.close ();
+        
+        this->mAllure = signature.signature ();
+    }
+
+    return this->mSignature.sign ( *this, key, hashAlgorithm );
+}
+
+//----------------------------------------------------------------//
+bool Block::verify ( const State& state ) const {
+
+    const MinerInfo* minerInfo = state.getMinerInfo ( this->mMinerID );
+    
+    if ( minerInfo ) {
+        return this->verify ( state, minerInfo->getPublicKey ());
+    }
+    
+    // no miner info; must be the genesis block
+    
+    if ( this->mHeight > 0 ) return false; // genesis block must be height 0
+    if ( Signature::toHex ( this->getSignature ().getDigest ()) != Genesis::DIGEST_STRING ) return false; // better be the genesis block we expect
+
+    return this->verify ( state, Genesis::getGenesisKey ());
+}
+
+//----------------------------------------------------------------//
+bool Block::verify ( const State& state, const Poco::Crypto::ECKey& key ) const {
+
+    if ( this->mHeight > 0 ) {
+    
+        string hashAlgorithm = this->mSignature.getHashAlgorithm ();
+
+        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
+        Poco::DigestOutputStream signatureStream ( signature );
+        signatureStream << this->mCycleID;
+        signatureStream.close ();
+        
+        if ( !signature.verify ( this->mAllure )) {
+            return false;
+        }
+    }
+
+    // TODO: verify transactions, too!
+
+    return this->mSignature.verify ( *this, key );
+}
+
 //================================================================//
 // overrides
 //================================================================//
@@ -62,6 +136,7 @@ void Block::setMinerID ( string minerID ) {
 //----------------------------------------------------------------//
 void Block::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
 
+    digestStream << this->mHeight;
     digestStream << this->mCycleID;
     digestStream << this->mMinerID;
     digestStream << Poco::DigestEngine::digestToHex ( this->mPrevDigest );
@@ -74,16 +149,15 @@ void Block::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) con
 
 //----------------------------------------------------------------//
 void Block::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
-
-    Signable::AbstractSerializable_fromJSON ( object );
     
-    string prevDigestString         = object.optValue < string >( "prevDigest", "" );
-    string allureString             = object.optValue < string >( "allure", "" );
-    
-    this->mCycleID                  = object.optValue < int >( "cycleID", 0 );
     this->mMinerID                  = object.optValue < string >( "minerID", "" );
-    this->mPrevDigest               = prevDigestString.size () ? Poco::DigestEngine::digestFromHex ( prevDigestString ) : Poco::DigestEngine::Digest ();
-    this->mAllure                   = allureString.size () ? Poco::DigestEngine::digestFromHex ( allureString ) : Poco::DigestEngine::Digest ();
+    
+    this->mHeight                   = Serialize::getU64FromJSON ( object, "height", 0 );
+    this->mCycleID                  = Serialize::getU64FromJSON ( object, "cycleID", 0 );
+    
+    Serialize::getSerializableFromJSON ( object, "prevDigest", this->mPrevDigest );
+    Serialize::getSerializableFromJSON ( object, "allure", this->mAllure );
+    Serialize::getSerializableFromJSON ( object, "signature", this->mSignature );
     
     const Poco::JSON::Array::Ptr transactions = object.getArray ( "transactions" );
     this->mTransactions.resize ( transactions->size ());
@@ -96,13 +170,19 @@ void Block::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
 
 //----------------------------------------------------------------//
 void Block::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
-
-    Signable::AbstractSerializable_toJSON ( object );
     
-    object.set ( "cycleID",             this->mCycleID );
-    object.set ( "minerID",             this->mMinerID.c_str ());
-    object.set ( "prevDigest",          Poco::DigestEngine::digestToHex ( this->mPrevDigest ).c_str ());
-    object.set ( "allure",              Poco::DigestEngine::digestToHex ( this->mAllure ).c_str ());
+    Serialize::setU64ToJSON ( object, "height",     this->mHeight );
+    Serialize::setU64ToJSON ( object, "cycleID",    this->mCycleID );
+    
+    if ( this->mHeight > 0 ) {
+    
+        object.set ( "minerID",             this->mMinerID.c_str ());
+
+        Serialize::setSerializableToJSON ( object, "prevDigest",    this->mPrevDigest );
+        Serialize::setSerializableToJSON ( object, "allure",        this->mAllure );
+    }
+    
+    Serialize::setSerializableToJSON ( object, "signature",     this->mSignature );
     
     Poco::JSON::Array::Ptr transactions = new Poco::JSON::Array ();
     object.set ( "transactions", transactions );
@@ -111,30 +191,6 @@ void Block::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
         const AbstractTransaction& transaction = *this->mTransactions [ i ];
         transactions->set (( unsigned int )i, transaction.toJSON ());
     }
-}
-
-//----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Block::Signable_sign ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
-
-    Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-    Poco::DigestOutputStream signatureStream ( signature );
-    signatureStream << this->mCycleID;
-    signatureStream.close ();
-    
-    this->mAllure = signature.signature ();
-
-    return Signable::Signable_sign ( key, hashAlgorithm );
-}
-
-//----------------------------------------------------------------//
-bool Block::Signable_verify ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) const {
-
-    Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-    Poco::DigestOutputStream signatureStream ( signature );
-    signatureStream << this->mCycleID;
-    signatureStream.close ();
-
-    return signature.verify ( this->mAllure ) && Signable::Signable_verify ( key, hashAlgorithm );
 }
 
 } // namespace Volition

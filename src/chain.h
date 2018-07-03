@@ -4,11 +4,13 @@
 #ifndef VOLITION_CHAIN_H
 #define VOLITION_CHAIN_H
 
+#include <ChainPlacement.h>
 #include <Cycle.h>
 
 namespace Volition {
 
 class State;
+class ChainPlacement;
 
 //================================================================//
 // Chain
@@ -36,13 +38,14 @@ public:
     //----------------------------------------------------------------//
     void                    apply               ( State& state ) const;
                             Chain               ();
+                            Chain               ( unique_ptr < Block > block );
                             ~Chain              ();
     static const Chain*     choose              ( const Chain& chain0, const Chain& chain1 );
-    Cycle*                  nextCycle           ( string minerID, bool force );
+    ChainPlacement          findPlacement       ( string minerID, bool force ) const;
+    void                    pushAndSign         ( const ChainPlacement& placement, unique_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
     void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
     bool                    verify              ( const State& state ) const;
 };
 
 } // namespace Volition
 #endif
-

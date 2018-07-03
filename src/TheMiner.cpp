@@ -35,22 +35,16 @@ void TheMiner::loadGenesis ( string genesis ) {
     
     unique_ptr < Block > block = make_unique < Block >();
     block->fromJSON ( inStream );
-    
-    // make sure this is the expected genesis block
-    if ( Signable::toHex ( block->getDigest ()) != Genesis::DIGEST_STRING ) return;
-    
-    // verify the genesis block was signed by the genesis key
-    stringstream genesisKeyStream ( Genesis::PUBLIC_KEY_STRING );
-    Poco::Crypto::ECKey genesisKey ( &genesisKeyStream );
-    if ( !block->verify ( genesisKey )) return;
-    
-    this->mChain = make_unique < Chain >();
-    Cycle* cycle = this->mChain->nextCycle ( this->mMinerID, true );
-    assert ( cycle );
-    cycle->push ( move ( block ));
-    
+
     this->mState = State ();
-    this->mChain->apply ( this->mState );
+    
+    unique_ptr < Chain > chain = make_unique < Chain >( move ( block ));
+    
+    if ( chain->verify ( this->mState )) {
+    
+        this->mChain = move ( chain );
+        this->mChain->apply ( this->mState );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -95,16 +89,10 @@ void TheMiner::onSyncChainNotification ( SyncChainTask& task ) {
 //----------------------------------------------------------------//
 void TheMiner::pushBlock ( Chain& chain, bool force ) {
 
-    Cycle* cycle = chain.nextCycle ( this->mMinerID, force );
-    if ( cycle ) {
-    
+    ChainPlacement placement = chain.findPlacement ( this->mMinerID, force );
+    if ( placement.canPush ()) {
         unique_ptr < Block > block = make_unique < Block >();
-        
-        block->setCycleID ( cycle->getID ());
-        block->setMinerID ( this->mMinerID );
-        block->sign ( *this->mKeyPair );
-        
-        cycle->push ( move ( block ));
+        chain.pushAndSign ( placement, move ( block ), *this->mKeyPair );
     }
 }
 
@@ -118,13 +106,6 @@ void TheMiner::pushTransaction ( unique_ptr < AbstractTransaction >& transaction
 void TheMiner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
-}
-
-//----------------------------------------------------------------//
-void TheMiner::sign ( Signable& signable ) const {
-
-    assert ( this->mKeyPair );
-    signable.sign ( *this->mKeyPair );
 }
 
 //----------------------------------------------------------------//

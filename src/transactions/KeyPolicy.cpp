@@ -1,22 +1,23 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "MinerInfo.h"
-#include "RegisterMiner.h"
+#include <KeyPolicy.h>
+#include <Hash.h>
+#include <Serialize.h>
 
 namespace Volition {
 namespace Transaction {
 
 //================================================================//
-// RegisterMiner
+// KeyPolicy
 //================================================================//
 
 //----------------------------------------------------------------//
-RegisterMiner::RegisterMiner () {
+KeyPolicy::KeyPolicy () {
 }
 
 //----------------------------------------------------------------//
-RegisterMiner::~RegisterMiner () {
+KeyPolicy::~KeyPolicy () {
 }
 
 //================================================================//
@@ -24,37 +25,40 @@ RegisterMiner::~RegisterMiner () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void RegisterMiner::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
+void KeyPolicy::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
+    AbstractTransaction::AbstractHashable_hash ( digestStream );
 
-    digestStream << this->mMinerID;
-    digestStream << this->mURL;
     digestStream << this->mKeyName;
+    digestStream << this->mPolicyName;
+
+    Hash::hashOrNull ( digestStream, this->mKey.get ());
+    Hash::hashOrNull ( digestStream, this->mPolicy.get ());
 }
 
 //----------------------------------------------------------------//
-void RegisterMiner::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
+void KeyPolicy::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
     AbstractTransaction::AbstractSerializable_fromJSON ( object );
-    
-    this->mMinerID                  = object.optValue < string >( "minerID", "" );
-    this->mURL                      = object.optValue < string >( "url", "" );
+   
     this->mKeyName                  = object.optValue < string >( "keyName", "" );
-}
-
-//----------------------------------------------------------------//
-void RegisterMiner::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
-    AbstractTransaction::AbstractSerializable_toJSON ( object );
+    this->mPolicyName               = object.optValue < string >( "policyName", "" );
     
-    object.set ( "minerID",         this->mMinerID.c_str ());
-    object.set ( "url",             this->mURL.c_str ());
-    object.set ( "keyName",         this->mKeyName.c_str ());
+    this->mKey                      = Serialize::getSerializableFromJSON < Poco::Crypto::ECKey >( object, "key" );
+    this->mPolicy                   = Serialize::getSerializableFromJSON < Policy >( object, "policy" );
 }
 
 //----------------------------------------------------------------//
-void RegisterMiner::AbstractTransaction_apply ( State& state ) const {
+void KeyPolicy::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
+    AbstractTransaction::AbstractSerializable_toJSON ( object );
 
-    // TODO: make sure we've verified
+    object.set ( "keyName",         this->mKeyName.c_str ());
+    object.set ( "policyName",      this->mPolicyName.c_str ());
 
-    //state.registerMiner ( MinerInfo ( this->mMinerID, this->mURL, *this->mPublicKey ));
+    Serialize::setSerializableToJSON ( object, "key", this->mKey.get ());
+    Serialize::setSerializableToJSON ( object, "policy", this->mPolicy.get ());
+}
+
+//----------------------------------------------------------------//
+void KeyPolicy::AbstractTransaction_apply ( State& state ) const {
 }
 
 } // namespace Transaction

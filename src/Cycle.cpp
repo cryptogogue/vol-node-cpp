@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <Cycle.h>
+#include <Genesis.h>
 
 namespace Volition {
 
@@ -70,16 +71,14 @@ Cycle::~Cycle () {
 }
 
 //----------------------------------------------------------------//
-int Cycle::findPosition ( size_t score ) const {
+u64 Cycle::findPosition ( size_t score ) const {
 
-    int position  = 0;
-    for ( size_t i = 0; i < this->mBlocks.size (); ++i, ++position ) {
-
+    u64 position = 0;
+    for ( u64 i = 0; i < this->mBlocks.size (); ++i, ++position ) {
        size_t test = this->mBlocks [ i ]->getScore ();
         if ( score < test ) break;
     }
     return position;
-    return 0;
 }
 
 //----------------------------------------------------------------//
@@ -104,22 +103,6 @@ bool Cycle::isInChain ( string minerID ) const {
 }
 
 //----------------------------------------------------------------//
-void Cycle::push ( unique_ptr < const Block > block ) {
-
-    assert ( block );
-    string minerID = block->getMinerID ();
-    assert ( !this->isInChain ( minerID )); // cycle should only be a candidate for push if block isn't already in the chain
-
-    int position = this->findPosition ( block->getScore ());
-    this->mBlocks.resize ( position );
-    this->mBlocks.push_back ( move ( block ));
-    
-    if ( !this->containsMiner ( minerID )) {
-        this->mMiners.insert ( minerID );
-    }
-}
-
-//----------------------------------------------------------------//
 void Cycle::print () const {
 
     printf ( "[" );
@@ -135,7 +118,7 @@ void Cycle::print () const {
 }
 
 //----------------------------------------------------------------//
-void Cycle::setID ( size_t cycleID ) {
+void Cycle::setID ( u64 cycleID ) {
 
     this->mCycleID = cycleID;
 }
@@ -143,21 +126,17 @@ void Cycle::setID ( size_t cycleID ) {
 //----------------------------------------------------------------//
 bool Cycle::verify ( const State& state ) const {
 
-    // TODO: every transaction also needs to be verified
-
     for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
-        const Block& block = *this->mBlocks [ i ];
-        const MinerInfo* minerInfo = state.getMinerInfo ( block.getMinerID ());
-        if ( !( minerInfo && block.verify ( minerInfo->getPublicKey ()))) return false;
+        if ( !this->mBlocks [ i ]->verify ( state )) return false;
     }
     return true;
 }
 
 //----------------------------------------------------------------//
-bool Cycle::willImprove ( string minerID ) {
+bool Cycle::willImprove ( string minerID ) const {
 
     // cycle will improve if miner is missing from either the participant set or the chain itself
-    return (( this->containsMiner ( minerID ) && this->isInChain ( minerID )) == false );
+    return ((( this->mCycleID > 0 ) && this->containsMiner ( minerID ) && !this->isInChain ( minerID )));
 }
 
 //================================================================//

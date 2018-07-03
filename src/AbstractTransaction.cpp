@@ -1,7 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "AbstractTransaction.h"
+#include <AbstractTransaction.h>
+#include <Hash.h>
+#include <Serialize.h>
 
 namespace Volition {
 
@@ -10,9 +12,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractTransaction::AbstractTransaction () :
-    mTransactionID ( 0 ),
-    mGratuity ( 0 ) {
+AbstractTransaction::AbstractTransaction () {
 }
 
 //----------------------------------------------------------------//
@@ -40,18 +40,25 @@ size_t AbstractTransaction::weight () const {
 
 //----------------------------------------------------------------//
 void AbstractTransaction::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
+
+    digestStream << this->typeString ();
+    Hash::hashOrNull ( digestStream, this->mMakerSignature.get ());
 }
 
 //----------------------------------------------------------------//
 void AbstractTransaction::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
 
     assert ( this->typeString () == object.getValue < string >( "type" ));
+    
+    this->mMakerSignature = Serialize::getSerializableFromJSON < TransactionMakerSignature >( object, "makerSignature" );
 }
 
 //----------------------------------------------------------------//
 void AbstractTransaction::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
 
-    object.set ( "type", this->typeString ().c_str ());
+    object.set ( "type",            this->typeString ().c_str ());
+    
+    Serialize::setSerializableToJSON ( object, "makerSignature", this->mMakerSignature.get ());
 }
 
 } // namespace Volition
