@@ -7,10 +7,19 @@
 #include "scenario.h"
 
 #include "Block.h"
-#include "TheMiner.h"
 #include "TheTransactionFactory.h"
 #include "RegisterMiner.h"
 #include "RouteTable.h"
+#include "Singleton.h"
+#include "WebMiner.h"
+
+//================================================================//
+// TheMiner
+//================================================================//
+class TheMiner :
+    public Volition::Singleton < Volition::WebMiner > {
+public:
+};
 
 //================================================================//
 // DefaultHandler
@@ -42,7 +51,7 @@ public:
 
         ostream& out = response.send ();
         
-        const Volition::Chain* chain = Volition::TheMiner::get ().getChain ();
+        const Volition::Chain* chain = TheMiner::get ().getChain ();
         if ( chain ) {
             chain->toJSON ( out );
         }
@@ -120,7 +129,7 @@ protected:
         Poco::JSON::Object::Ptr object = AbstractRequestHandler::parseJSON ( request );
         
         unique_ptr < Volition::AbstractTransaction > transaction ( Volition::TheTransactionFactory::get ().create ( *object ));
-        Volition::TheMiner::get ().pushTransaction ( transaction );
+        TheMiner::get ().pushTransaction ( transaction );
 
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "application/json" );
@@ -234,16 +243,17 @@ protected:
     
         string minerID      = to_string ( port );
     
-        Volition::TheMiner::get ().loadKey ( keyfile );
-        Volition::TheMiner::get ().loadGenesis ( genesis );
-        Volition::TheMiner::get ().setMinerID ( minerID );
-        
-        Volition::TheMiner::get ().start ();
+        Volition::WebMiner& theMiner = TheMiner::get ();
+    
+        theMiner.loadKey ( keyfile );
+        theMiner.loadGenesis ( genesis );
+        theMiner.setMinerID ( minerID );
+        theMiner.start ();
 
         this->serve ( port );
         this->waitForTerminationRequest ();
 
-        Volition::TheMiner::get ().shutdown ();
+        theMiner.shutdown ();
         return Application::EXIT_OK;
     }
     

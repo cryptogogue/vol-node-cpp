@@ -5,16 +5,16 @@
 #include "Block.h"
 #include "Genesis.h"
 #include "SyncChainTask.h"
-#include "TheMiner.h"
+#include "WebMiner.h"
 
 namespace Volition {
 
 //================================================================//
-// TheMiner
+// WebMiner
 //================================================================//
 
 //----------------------------------------------------------------//
-void TheMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
+void WebMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
 
     SyncChainTask* task = dynamic_cast < SyncChainTask* >( pNf->task ());
     if ( task ) {
@@ -31,7 +31,7 @@ void TheMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
 }
 
 //----------------------------------------------------------------//
-void TheMiner::shutdown () {
+void WebMiner::shutdown () {
 
     this->stop ();
     this->mTaskManager.joinAll ();
@@ -39,16 +39,16 @@ void TheMiner::shutdown () {
 }
 
 //----------------------------------------------------------------//
-TheMiner::TheMiner () :
-    Poco::Activity < TheMiner >( this, &TheMiner::run ) {
+WebMiner::WebMiner () :
+    Poco::Activity < WebMiner >( this, &WebMiner::run ) {
     
     this->mTaskManager.addObserver (
-        Poco::Observer < TheMiner, Poco::TaskFinishedNotification > ( *this, &TheMiner::onSyncChainNotification )
+        Poco::Observer < WebMiner, Poco::TaskFinishedNotification > ( *this, &WebMiner::onSyncChainNotification )
     );
 }
 
 //----------------------------------------------------------------//
-TheMiner::~TheMiner () {
+WebMiner::~WebMiner () {
 }
 
 //================================================================//
@@ -56,7 +56,7 @@ TheMiner::~TheMiner () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void TheMiner::run () {
+void WebMiner::run () {
 
     size_t count = 0;
     while ( !this->isStopped ()) {

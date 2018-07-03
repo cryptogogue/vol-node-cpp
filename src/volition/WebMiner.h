@@ -1,14 +1,13 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_THEMINER_H
-#define VOLITION_THEMINER_H
+#ifndef VOLITION_WEBMINER_H
+#define VOLITION_WEBMINER_H
 
 #include "common.h"
 #include "AbstractTransaction.h"
 #include "Chain.h"
 #include "Miner.h"
-#include "Singleton.h"
 #include "State.h"
 
 namespace Volition {
@@ -18,12 +17,11 @@ class Signable;
 class SyncChainTask;
 
 //================================================================//
-// TheMiner
+// WebMiner
 //================================================================//
-class TheMiner :
+class WebMiner :
     public Miner,
-    public Singleton < TheMiner >,
-    public Poco::Activity < TheMiner > {
+    public Poco::Activity < WebMiner > {
 private:
 
     Poco::TaskManager                           mTaskManager;
@@ -37,8 +35,8 @@ public:
 
     //----------------------------------------------------------------//
     void            shutdown                ();
-                    TheMiner                ();
-                    ~TheMiner               ();
+                    WebMiner                ();
+                    ~WebMiner               ();
 };
 
 } // namespace Volition
