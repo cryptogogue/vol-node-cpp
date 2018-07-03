@@ -17,7 +17,7 @@
                BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
                BuildableName = "util"
                BlueprintName = "util"
-               ReferencedContainer = "container:consensus.xcodeproj">
+               ReferencedContainer = "container:volition.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
             BuildableName = "util"
             BlueprintName = "util"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -59,7 +59,7 @@
             BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
             BuildableName = "util"
             BlueprintName = "util"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -96,7 +96,7 @@
             BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
             BuildableName = "util"
             BlueprintName = "util"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

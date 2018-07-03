@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:consensus.xcodeproj">
+      location = "self:/Users/patrick/git/cryptogogue/consensus/volition.xcodeproj">
    </FileRef>
 </Workspace>

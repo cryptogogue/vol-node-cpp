@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0940"
+   LastUpgradeVersion = "0930"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
-               BuildableName = "util"
-               BlueprintName = "util"
-               ReferencedContainer = "container:consensus.xcodeproj">
+               BlueprintIdentifier = "CDED587420BD1C5F003A2969"
+               BuildableName = "server"
+               BlueprintName = "server"
+               ReferencedContainer = "container:volition.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
-            BuildableName = "util"
-            BlueprintName = "util"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            BlueprintIdentifier = "CDED587420BD1C5F003A2969"
+            BuildableName = "server"
+            BlueprintName = "server"
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,19 +56,23 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
-            BuildableName = "util"
-            BlueprintName = "util"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            BlueprintIdentifier = "CDED587420BD1C5F003A2969"
+            BuildableName = "server"
+            BlueprintName = "server"
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "dump-key"
+            argument = "-p 9090"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-k pkey0.pem"
+            argument = "-k keys/pkey0.pem"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-g genesis.signed"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -85,10 +89,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
-            BuildableName = "util"
-            BlueprintName = "util"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            BlueprintIdentifier = "CDED587420BD1C5F003A2969"
+            BuildableName = "server"
+            BlueprintName = "server"
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

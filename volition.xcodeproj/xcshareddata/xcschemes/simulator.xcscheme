@@ -17,7 +17,7 @@
                BlueprintIdentifier = "CD9345C12093EB140077BAD4"
                BuildableName = "simulator"
                BlueprintName = "simulator"
-               ReferencedContainer = "container:consensus.xcodeproj">
+               ReferencedContainer = "container:volition.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "CD9345C12093EB140077BAD4"
             BuildableName = "simulator"
             BlueprintName = "simulator"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,7 +58,7 @@
             BlueprintIdentifier = "CD9345C12093EB140077BAD4"
             BuildableName = "simulator"
             BlueprintName = "simulator"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -77,7 +77,7 @@
             BlueprintIdentifier = "CD9345C12093EB140077BAD4"
             BuildableName = "simulator"
             BlueprintName = "simulator"
-            ReferencedContainer = "container:consensus.xcodeproj">
+            ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

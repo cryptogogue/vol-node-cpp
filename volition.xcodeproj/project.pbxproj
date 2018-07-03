@@ -696,7 +696,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CD9345BD2093EB140077BAD4 /* Build configuration list for PBXProject "consensus" */;
+			buildConfigurationList = CD9345BD2093EB140077BAD4 /* Build configuration list for PBXProject "volition" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1152,7 +1152,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CD9345BD2093EB140077BAD4 /* Build configuration list for PBXProject "consensus" */ = {
+		CD9345BD2093EB140077BAD4 /* Build configuration list for PBXProject "volition" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CD9345C72093EB140077BAD4 /* Debug */,
