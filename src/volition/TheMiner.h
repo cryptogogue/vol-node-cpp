@@ -7,6 +7,7 @@
 #include "common.h"
 #include "AbstractTransaction.h"
 #include "Chain.h"
+#include "Miner.h"
 #include "Singleton.h"
 #include "State.h"
 
@@ -20,37 +21,21 @@ class SyncChainTask;
 // TheMiner
 //================================================================//
 class TheMiner :
+    public Miner,
     public Singleton < TheMiner >,
-    public Poco::Activity < TheMiner >  {
+    public Poco::Activity < TheMiner > {
 private:
 
-    string                                          mMinerID;
-
-    unique_ptr < Poco::Crypto::ECKey >              mKeyPair;
-    list < unique_ptr < AbstractTransaction >>      mPendingTransactions;
-
-    Poco::TaskManager                               mTaskManager;
-
-    unique_ptr < Chain >                            mChain;
-    State                                           mState;
-    
-    map < string, string >                          mMinerURLs;
+    Poco::TaskManager                           mTaskManager;
+    map < string, string >                      mMinerURLs;
 
     //----------------------------------------------------------------//
     void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
-    void            onSyncChainNotification     ( SyncChainTask& task );
-    void            pushBlock                   ( Chain& chain, bool force );
     void            run                         () override;
 
 public:
 
     //----------------------------------------------------------------//
-    void            loadGenesis             ( string genesis );
-    void            loadKey                 ( string keyfile, string password = "" );
-    const Chain*    getChain                () const;
-    string          getPublicKey            ();
-    void            pushTransaction         ( unique_ptr < AbstractTransaction >& transaction );
-    void            setMinerID              ( string minerID );
     void            shutdown                ();
                     TheMiner                ();
                     ~TheMiner               ();
