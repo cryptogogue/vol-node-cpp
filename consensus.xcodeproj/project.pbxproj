@@ -185,73 +185,73 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CD0C3E1020C14460006E3B1C /* TheMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheMiner.cpp; path = src/TheMiner.cpp; sourceTree = "<group>"; };
-		CD0C3E1120C14460006E3B1C /* TheMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheMiner.h; path = src/TheMiner.h; sourceTree = "<group>"; };
-		CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheTransactionFactory.cpp; path = src/TheTransactionFactory.cpp; sourceTree = "<group>"; };
-		CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheTransactionFactory.h; path = src/TheTransactionFactory.h; sourceTree = "<group>"; };
-		CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinerInfo.cpp; path = src/MinerInfo.cpp; sourceTree = "<group>"; };
-		CD0C3E1920C25A00006E3B1C /* MinerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerInfo.h; path = src/MinerInfo.h; sourceTree = "<group>"; };
-		CD0C3E2020C25AF5006E3B1C /* Singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Singleton.h; path = src/Singleton.h; sourceTree = "<group>"; };
-		CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegisterMiner.cpp; path = src/transactions/RegisterMiner.cpp; sourceTree = "<group>"; };
-		CD0C3E2320C25C8B006E3B1C /* RegisterMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegisterMiner.h; path = src/transactions/RegisterMiner.h; sourceTree = "<group>"; };
-		CD0C3E2820C279FB006E3B1C /* Factory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = src/Factory.h; sourceTree = "<group>"; };
-		CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncChainTask.cpp; path = src/SyncChainTask.cpp; sourceTree = "<group>"; };
-		CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncChainTask.h; path = src/SyncChainTask.h; sourceTree = "<group>"; };
-		CD0C3E3720C7BAE2006E3B1C /* KeyPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyPolicy.cpp; path = src/transactions/KeyPolicy.cpp; sourceTree = "<group>"; };
-		CD0C3E3820C7BAE2006E3B1C /* KeyPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyPolicy.h; path = src/transactions/KeyPolicy.h; sourceTree = "<group>"; };
+		CD0C3E1020C14460006E3B1C /* TheMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheMiner.cpp; path = src/volition/TheMiner.cpp; sourceTree = "<group>"; };
+		CD0C3E1120C14460006E3B1C /* TheMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheMiner.h; path = src/volition/TheMiner.h; sourceTree = "<group>"; };
+		CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheTransactionFactory.cpp; path = src/volition/TheTransactionFactory.cpp; sourceTree = "<group>"; };
+		CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheTransactionFactory.h; path = src/volition/TheTransactionFactory.h; sourceTree = "<group>"; };
+		CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinerInfo.cpp; path = src/volition/MinerInfo.cpp; sourceTree = "<group>"; };
+		CD0C3E1920C25A00006E3B1C /* MinerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerInfo.h; path = src/volition/MinerInfo.h; sourceTree = "<group>"; };
+		CD0C3E2020C25AF5006E3B1C /* Singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Singleton.h; path = src/volition/Singleton.h; sourceTree = "<group>"; };
+		CD0C3E2220C25C8B006E3B1C /* RegisterMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegisterMiner.cpp; path = src/volition/transactions/RegisterMiner.cpp; sourceTree = "<group>"; };
+		CD0C3E2320C25C8B006E3B1C /* RegisterMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegisterMiner.h; path = src/volition/transactions/RegisterMiner.h; sourceTree = "<group>"; };
+		CD0C3E2820C279FB006E3B1C /* Factory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Factory.h; path = src/volition/Factory.h; sourceTree = "<group>"; };
+		CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncChainTask.cpp; path = src/volition/SyncChainTask.cpp; sourceTree = "<group>"; };
+		CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncChainTask.h; path = src/volition/SyncChainTask.h; sourceTree = "<group>"; };
+		CD0C3E3720C7BAE2006E3B1C /* KeyPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyPolicy.cpp; path = src/volition/transactions/KeyPolicy.cpp; sourceTree = "<group>"; };
+		CD0C3E3820C7BAE2006E3B1C /* KeyPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyPolicy.h; path = src/volition/transactions/KeyPolicy.h; sourceTree = "<group>"; };
 		CD0C3E6720C86D88006E3B1C /* util */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = util; sourceTree = BUILT_PRODUCTS_DIR; };
-		CD0C3E6820C86FBA006E3B1C /* main-util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-util.cpp"; path = "src/main-util.cpp"; sourceTree = "<group>"; };
-		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/Block.cpp; sourceTree = "<group>"; };
-		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/Block.h; sourceTree = "<group>"; };
+		CD0C3E6820C86FBA006E3B1C /* main-util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-util.cpp"; path = "src/volition/main-util.cpp"; sourceTree = "<group>"; };
+		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/volition/Block.cpp; sourceTree = "<group>"; };
+		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/volition/Block.h; sourceTree = "<group>"; };
 		CD4665A020BE9CE000A02D55 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libcrypto.a; sourceTree = "<group>"; };
 		CD4665A120BE9CE000A02D55 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libssl.a; sourceTree = "<group>"; };
-		CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractRequestHandler.cpp; path = src/AbstractRequestHandler.cpp; sourceTree = "<group>"; };
-		CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractRequestHandler.h; path = src/AbstractRequestHandler.h; sourceTree = "<group>"; };
-		CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractTransaction.cpp; path = src/AbstractTransaction.cpp; sourceTree = "<group>"; };
-		CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractTransaction.h; path = src/AbstractTransaction.h; sourceTree = "<group>"; };
-		CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializable.h; path = src/AbstractSerializable.h; sourceTree = "<group>"; };
-		CD4665B420BFF70F00A02D55 /* AbstractHashable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractHashable.h; path = src/AbstractHashable.h; sourceTree = "<group>"; };
-		CD59F3AC20E6FF8000705AEB /* TransferFunds.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransferFunds.cpp; path = src/transactions/TransferFunds.cpp; sourceTree = "<group>"; };
-		CD59F3AD20E6FF8000705AEB /* TransferFunds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransferFunds.h; path = src/transactions/TransferFunds.h; sourceTree = "<group>"; };
-		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/Signature.cpp; sourceTree = "<group>"; };
-		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/Signature.h; sourceTree = "<group>"; };
-		CD59F3B620E8931D00705AEB /* AccountPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AccountPolicy.cpp; path = src/transactions/AccountPolicy.cpp; sourceTree = "<group>"; };
-		CD59F3B720E8931D00705AEB /* AccountPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountPolicy.h; path = src/transactions/AccountPolicy.h; sourceTree = "<group>"; };
-		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/Policy.cpp; sourceTree = "<group>"; };
-		CD59F3BC20E8950100705AEB /* Policy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Policy.h; path = src/Policy.h; sourceTree = "<group>"; };
-		CD59F3CA20E8A22C00705AEB /* OpenAccount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpenAccount.cpp; path = src/transactions/OpenAccount.cpp; sourceTree = "<group>"; };
-		CD59F3CB20E8A22C00705AEB /* OpenAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenAccount.h; path = src/transactions/OpenAccount.h; sourceTree = "<group>"; };
-		CD59F3CF20E990D300705AEB /* Serialize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Serialize.h; path = src/Serialize.h; sourceTree = "<group>"; };
-		CD59F3D020E998DC00705AEB /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Hash.h; path = src/Hash.h; sourceTree = "<group>"; };
-		CD59F3D120E9AAB500705AEB /* Serialize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Serialize.cpp; path = src/Serialize.cpp; sourceTree = "<group>"; };
-		CD59F3D520E9AAC500705AEB /* Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Hash.cpp; path = src/Hash.cpp; sourceTree = "<group>"; };
-		CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMakerSignature.cpp; path = src/TransactionMakerSignature.cpp; sourceTree = "<group>"; };
-		CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionMakerSignature.h; path = src/TransactionMakerSignature.h; sourceTree = "<group>"; };
-		CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChainPlacement.cpp; path = src/ChainPlacement.cpp; sourceTree = "<group>"; };
-		CD59F3DF20EB045400705AEB /* ChainPlacement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChainPlacement.h; path = src/ChainPlacement.h; sourceTree = "<group>"; };
-		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/common.h; sourceTree = "<group>"; };
-		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/main-simulator.cpp"; sourceTree = "<group>"; };
-		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/main-server.cpp"; sourceTree = "<group>"; };
+		CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractRequestHandler.cpp; path = src/volition/AbstractRequestHandler.cpp; sourceTree = "<group>"; };
+		CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractRequestHandler.h; path = src/volition/AbstractRequestHandler.h; sourceTree = "<group>"; };
+		CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractTransaction.cpp; path = src/volition/AbstractTransaction.cpp; sourceTree = "<group>"; };
+		CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractTransaction.h; path = src/volition/AbstractTransaction.h; sourceTree = "<group>"; };
+		CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializable.h; path = src/volition/AbstractSerializable.h; sourceTree = "<group>"; };
+		CD4665B420BFF70F00A02D55 /* AbstractHashable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractHashable.h; path = src/volition/AbstractHashable.h; sourceTree = "<group>"; };
+		CD59F3AC20E6FF8000705AEB /* TransferFunds.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransferFunds.cpp; path = src/volition/transactions/TransferFunds.cpp; sourceTree = "<group>"; };
+		CD59F3AD20E6FF8000705AEB /* TransferFunds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransferFunds.h; path = src/volition/transactions/TransferFunds.h; sourceTree = "<group>"; };
+		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/volition/Signature.cpp; sourceTree = "<group>"; };
+		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/volition/Signature.h; sourceTree = "<group>"; };
+		CD59F3B620E8931D00705AEB /* AccountPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AccountPolicy.cpp; path = src/volition/transactions/AccountPolicy.cpp; sourceTree = "<group>"; };
+		CD59F3B720E8931D00705AEB /* AccountPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountPolicy.h; path = src/volition/transactions/AccountPolicy.h; sourceTree = "<group>"; };
+		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/volition/Policy.cpp; sourceTree = "<group>"; };
+		CD59F3BC20E8950100705AEB /* Policy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Policy.h; path = src/volition/Policy.h; sourceTree = "<group>"; };
+		CD59F3CA20E8A22C00705AEB /* OpenAccount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpenAccount.cpp; path = src/volition/transactions/OpenAccount.cpp; sourceTree = "<group>"; };
+		CD59F3CB20E8A22C00705AEB /* OpenAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenAccount.h; path = src/volition/transactions/OpenAccount.h; sourceTree = "<group>"; };
+		CD59F3CF20E990D300705AEB /* Serialize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Serialize.h; path = src/volition/Serialize.h; sourceTree = "<group>"; };
+		CD59F3D020E998DC00705AEB /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Hash.h; path = src/volition/Hash.h; sourceTree = "<group>"; };
+		CD59F3D120E9AAB500705AEB /* Serialize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Serialize.cpp; path = src/volition/Serialize.cpp; sourceTree = "<group>"; };
+		CD59F3D520E9AAC500705AEB /* Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Hash.cpp; path = src/volition/Hash.cpp; sourceTree = "<group>"; };
+		CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMakerSignature.cpp; path = src/volition/TransactionMakerSignature.cpp; sourceTree = "<group>"; };
+		CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionMakerSignature.h; path = src/volition/TransactionMakerSignature.h; sourceTree = "<group>"; };
+		CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChainPlacement.cpp; path = src/volition/ChainPlacement.cpp; sourceTree = "<group>"; };
+		CD59F3DF20EB045400705AEB /* ChainPlacement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChainPlacement.h; path = src/volition/ChainPlacement.h; sourceTree = "<group>"; };
+		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/volition/common.h; sourceTree = "<group>"; };
+		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/volition/main-simulator.cpp"; sourceTree = "<group>"; };
+		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/volition/main-server.cpp"; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
-		CDC2B31420CCAD2400300A96 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = State.cpp; path = src/State.cpp; sourceTree = "<group>"; };
-		CDC2B31520CCAD2400300A96 /* State.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = State.h; path = src/State.h; sourceTree = "<group>"; };
-		CDC2B31B20CE0FA100300A96 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analysis.cpp; path = src/simulator/analysis.cpp; sourceTree = "<group>"; };
-		CDC2B31C20CE0FA100300A96 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analysis.h; path = src/simulator/analysis.h; sourceTree = "<group>"; };
-		CDC2B31D20CE0FA100300A96 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chain.cpp; path = src/simulator/chain.cpp; sourceTree = "<group>"; };
-		CDC2B31E20CE0FA100300A96 /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chain.h; path = src/simulator/chain.h; sourceTree = "<group>"; };
-		CDC2B31F20CE0FA100300A96 /* cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cohort.cpp; path = src/simulator/cohort.cpp; sourceTree = "<group>"; };
-		CDC2B32020CE0FA100300A96 /* cohort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cohort.h; path = src/simulator/cohort.h; sourceTree = "<group>"; };
-		CDC2B32120CE0FA100300A96 /* context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = context.cpp; path = src/simulator/context.cpp; sourceTree = "<group>"; };
-		CDC2B32220CE0FA100300A96 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = context.h; path = src/simulator/context.h; sourceTree = "<group>"; };
-		CDC2B32320CE0FA100300A96 /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = player.cpp; path = src/simulator/player.cpp; sourceTree = "<group>"; };
-		CDC2B32420CE0FA100300A96 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = player.h; path = src/simulator/player.h; sourceTree = "<group>"; };
-		CDC2B32520CE0FA100300A96 /* scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scenario.h; path = src/simulator/scenario.h; sourceTree = "<group>"; };
-		CDC2B33520CE112F00300A96 /* Chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chain.cpp; path = src/Chain.cpp; sourceTree = "<group>"; };
-		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/Chain.h; sourceTree = "<group>"; };
-		CDC2B33720CE112F00300A96 /* Cycle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cycle.cpp; path = src/Cycle.cpp; sourceTree = "<group>"; };
-		CDC2B33820CE112F00300A96 /* Cycle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cycle.h; path = src/Cycle.h; sourceTree = "<group>"; };
-		CDC2B34120D1182400300A96 /* Genesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Genesis.h; path = src/Genesis.h; sourceTree = "<group>"; };
-		CDC2B34220D1196900300A96 /* Genesis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Genesis.cpp; path = src/Genesis.cpp; sourceTree = "<group>"; };
+		CDC2B31420CCAD2400300A96 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = State.cpp; path = src/volition/State.cpp; sourceTree = "<group>"; };
+		CDC2B31520CCAD2400300A96 /* State.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = State.h; path = src/volition/State.h; sourceTree = "<group>"; };
+		CDC2B31B20CE0FA100300A96 /* analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analysis.cpp; path = src/volition/simulator/analysis.cpp; sourceTree = "<group>"; };
+		CDC2B31C20CE0FA100300A96 /* analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = analysis.h; path = src/volition/simulator/analysis.h; sourceTree = "<group>"; };
+		CDC2B31D20CE0FA100300A96 /* chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = chain.cpp; path = src/volition/simulator/chain.cpp; sourceTree = "<group>"; };
+		CDC2B31E20CE0FA100300A96 /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chain.h; path = src/volition/simulator/chain.h; sourceTree = "<group>"; };
+		CDC2B31F20CE0FA100300A96 /* cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cohort.cpp; path = src/volition/simulator/cohort.cpp; sourceTree = "<group>"; };
+		CDC2B32020CE0FA100300A96 /* cohort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cohort.h; path = src/volition/simulator/cohort.h; sourceTree = "<group>"; };
+		CDC2B32120CE0FA100300A96 /* context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = context.cpp; path = src/volition/simulator/context.cpp; sourceTree = "<group>"; };
+		CDC2B32220CE0FA100300A96 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = context.h; path = src/volition/simulator/context.h; sourceTree = "<group>"; };
+		CDC2B32320CE0FA100300A96 /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = player.cpp; path = src/volition/simulator/player.cpp; sourceTree = "<group>"; };
+		CDC2B32420CE0FA100300A96 /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = player.h; path = src/volition/simulator/player.h; sourceTree = "<group>"; };
+		CDC2B32520CE0FA100300A96 /* scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scenario.h; path = src/volition/simulator/scenario.h; sourceTree = "<group>"; };
+		CDC2B33520CE112F00300A96 /* Chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chain.cpp; path = src/volition/Chain.cpp; sourceTree = "<group>"; };
+		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/volition/Chain.h; sourceTree = "<group>"; };
+		CDC2B33720CE112F00300A96 /* Cycle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cycle.cpp; path = src/volition/Cycle.cpp; sourceTree = "<group>"; };
+		CDC2B33820CE112F00300A96 /* Cycle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cycle.h; path = src/volition/Cycle.h; sourceTree = "<group>"; };
+		CDC2B34120D1182400300A96 /* Genesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Genesis.h; path = src/volition/Genesis.h; sourceTree = "<group>"; };
+		CDC2B34220D1196900300A96 /* Genesis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Genesis.cpp; path = src/volition/Genesis.cpp; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -266,8 +266,8 @@
 		CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringTokenizer.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.cpp"; sourceTree = "<group>"; };
 		CDED582420BA1F4E003A2969 /* StringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringTokenizer.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.h"; sourceTree = "<group>"; };
 		CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblib-simple-cpp-router.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CDED584220BA2131003A2969 /* RouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RouteTable.cpp; path = src/RouteTable.cpp; sourceTree = "<group>"; };
-		CDED584320BA2131003A2969 /* RouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RouteTable.h; path = src/RouteTable.h; sourceTree = "<group>"; };
+		CDED584220BA2131003A2969 /* RouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RouteTable.cpp; path = src/volition/RouteTable.cpp; sourceTree = "<group>"; };
+		CDED584320BA2131003A2969 /* RouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RouteTable.h; path = src/volition/RouteTable.h; sourceTree = "<group>"; };
 		CDED585920BA3981003A2969 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
 		CDED585A20BA3981003A2969 /* libPocoEncodings.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoEncodings.a; path = poco/lib/libPocoEncodings.a; sourceTree = "<group>"; };
 		CDED585B20BA3981003A2969 /* libPocoFoundation.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoFoundation.a; path = poco/lib/libPocoFoundation.a; sourceTree = "<group>"; };
@@ -968,7 +968,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src,
+					src/volition,
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
 					/usr/local/opt/openssl/include,
@@ -1033,7 +1033,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src,
+					src/volition,
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
 					/usr/local/opt/openssl/include,
