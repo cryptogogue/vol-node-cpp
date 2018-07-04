@@ -1,12 +1,14 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef ANALYSIS_H
-#define ANALYSIS_H
+#ifndef VOLITION_SIMULATOR_ANALYSIS_H
+#define VOLITION_SIMULATOR_ANALYSIS_H
 
 #include <common.h>
+#include <Chain.h>
 
-class Chain;
+namespace Volition {
+namespace Simulator {
 
 //================================================================//
 // Tree
@@ -16,13 +18,13 @@ private:
 
     friend class TreeSummary;
 
-    int                 mPlayer;
-    map < int, Tree >   mChildren;
+    string                  mMinerID;
+    map < string, Tree >    mChildren;
 
 public:
 
     //----------------------------------------------------------------//
-    void        AddChain        ( const Chain& chain );
+    void        addChain        ( const Chain& chain );
                 Tree            ();
 };
 
@@ -45,7 +47,7 @@ public:
 class TreeSummary {
 private:
 
-    vector < int >          mPlayers;
+    vector < string >       mMiners;
     list < TreeSummary >    mChildren;
     
     size_t                  mChains;
@@ -54,18 +56,18 @@ private:
     float                   mPercentOfTotal;
 
     //----------------------------------------------------------------//
-    void        ComputePercents     ( size_t totalBlocks );
-    size_t      ComputeSize         ();
-    void        SummarizeRecurse    ( const Tree& tree );
+    void        computePercents     ( size_t totalBlocks );
+    size_t      computeSize         ();
+    void        summarizeRecurse    ( const Tree& tree );
 
 public:
     
     //----------------------------------------------------------------//
-    void        AnalyzeLevels       ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
-    size_t      MeasureChain        ( float threshold ) const;
-    void        Print               ( bool verbose, int maxDepth = 0, int depth = 0 ) const;
-    void        PrintLevels         () const;
-    void        Summarize           ( const Tree& tree );
+    void        analyzeLevels       ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
+    size_t      measureChain        ( float threshold ) const;
+    void        print               ( bool verbose, int maxDepth = 0, int depth = 0 ) const;
+    void        printLevels         () const;
+    void        summarize           ( const Tree& tree );
                 TreeSummary         ();
 };
 
@@ -89,8 +91,10 @@ public:
 
     //----------------------------------------------------------------//
                 Analysis            ();
-    void        Print               ( bool verbose = false, int maxDepth = 0 );
-    void        Update              ();
+    void        print               ( bool verbose = false, int maxDepth = 0 );
+    void        update              ();
 };
 
+} // namespace Simulator
+} // namespace Volition
 #endif

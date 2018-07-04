@@ -56,6 +56,12 @@ bool Cycle::containsMiner ( string minerID ) const {
 }
 
 //----------------------------------------------------------------//
+size_t Cycle::countBlocks () const {
+
+    return this->mBlocks.size ();
+}
+
+//----------------------------------------------------------------//
 size_t Cycle::countMiners ( string minerID ) const {
 
     return this->mMiners.size () + ( minerID.size () > 0 ? ( this->containsMiner ( minerID ) ? 0 : 1 ) : 0 );
@@ -79,6 +85,13 @@ u64 Cycle::findPosition ( size_t score ) const {
         if ( score < test ) break;
     }
     return position;
+}
+
+//----------------------------------------------------------------//
+const Block& Cycle::getBlock ( size_t idx ) const {
+
+    assert (( idx < this->mBlocks.size () ) && ( this->mBlocks [ idx ]));
+    return *this->mBlocks [ idx ];
 }
 
 //----------------------------------------------------------------//

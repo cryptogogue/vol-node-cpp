@@ -1,10 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <simulator/analysis.h>
-#include <simulator/context.h>
-#include <simulator/cohort.h>
-#include <simulator/scenario.h>
+#include <simulator/Scenario.h>
 
 //================================================================//
 // ConsensusApp
@@ -16,7 +13,7 @@ public:
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) override {
     
-        SimpleScenario scenario;
+        Volition::Simulator::SimpleScenario scenario;
         scenario.Run ();
         return EXIT_OK;
     }

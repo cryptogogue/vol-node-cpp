@@ -1,12 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "analysis.h"
-#include "context.h"
-#include "cohort.h"
-#include "scenario.h"
-
 #include "Block.h"
+#include "Genesis.h"
 
 //----------------------------------------------------------------//
 void defineKeyFileOptions ( Poco::Util::OptionSet& options ) {
@@ -53,7 +49,7 @@ public:
             keyPair = make_unique < Poco::Crypto::ECKey >( "", keyfile, password );
         }
         else {
-            keyPair = make_unique < Poco::Crypto::ECKey >( "secp256k1" );
+            keyPair = make_unique < Poco::Crypto::ECKey >( Volition::Genesis::EC_CURVE );
         }
         
         // dump to pem

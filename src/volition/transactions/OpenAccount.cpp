@@ -17,6 +17,14 @@ OpenAccount::OpenAccount () {
 }
 
 //----------------------------------------------------------------//
+OpenAccount::OpenAccount ( string accountName, string keyName, const Poco::Crypto::ECKey& key, u64 amount ) :
+    mAccountName ( accountName ),
+    mKeyName ( keyName ),
+    mKey ( make_unique < Poco::Crypto::ECKey >( key )),
+    mAmount ( amount ) {
+}
+
+//----------------------------------------------------------------//
 OpenAccount::~OpenAccount () {
 }
 

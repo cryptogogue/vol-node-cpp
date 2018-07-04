@@ -13,8 +13,7 @@
 namespace Volition {
 
 class AbstractHashable;
-class Signable;
-class SyncChainTask;
+class Block;
 
 //================================================================//
 // Miner
@@ -36,14 +35,15 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    void            loadGenesis             ( string genesis );
+    void            loadGenesis             ( string path );
     void            loadKey                 ( string keyfile, string password = "" );
     const Chain*    getChain                () const;
-    string          getPublicKey            ();
+    //string          getPublicKey            ();
     void            pushTransaction         ( unique_ptr < AbstractTransaction >& transaction );
+    void            setGenesis              ( shared_ptr < Block > block );
     void            setMinerID              ( string minerID );
                     Miner                   ();
-                    ~Miner                  ();
+    virtual         ~Miner                  ();
     void            updateChain             ( unique_ptr < Chain > proposedChain );
 };
 

@@ -34,8 +34,9 @@ public:
     TRANSACTION_WEIGHT ( 1 )
 
     //----------------------------------------------------------------//
-                            RegisterMiner            ();
-                            ~RegisterMiner           ();
+                            RegisterMiner           ();
+                            RegisterMiner           ( string minerID, string url, string keyName );
+                            ~RegisterMiner          ();
 };
 
 } // namespace Transaction

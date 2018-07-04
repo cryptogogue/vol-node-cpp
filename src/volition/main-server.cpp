@@ -1,11 +1,6 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "analysis.h"
-#include "context.h"
-#include "cohort.h"
-#include "scenario.h"
-
 #include "Block.h"
 #include "TheTransactionFactory.h"
 #include "RegisterMiner.h"

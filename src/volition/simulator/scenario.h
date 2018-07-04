@@ -1,13 +1,15 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef SCENARIO_H
-#define SCENARIO_H
+#ifndef VOLITION_SIMULATOR_SCENARIO_H
+#define VOLITION_SIMULATOR_SCENARIO_H
 
+#include <simulator/Analysis.h>
+#include <simulator/Cohort.h>
+#include <simulator/TheSimulator.h>
 
-#include <simulator/analysis.h>
-#include <simulator/context.h>
-#include <simulator/cohort.h>
+namespace Volition {
+namespace Simulator {
 
 //================================================================//
 // Scenario
@@ -23,8 +25,8 @@ public:
     
         for ( int i = 0; this->Scenario_Control ( i ); ++i ) {
     
-            Context::Process ();
-            this->mAnalysis.Update ();
+            TheSimulator::get ().process ();
+            this->mAnalysis.update ();
             this->Scenario_Report ( i );
         }
     }
@@ -32,45 +34,13 @@ public:
     //----------------------------------------------------------------//
     virtual void Scenario_Report ( int i ) {
         printf ( "ROUND: %d - ", i );
-        this->mAnalysis.Print ( false, 1 );
-        Context::Print ();
+        this->mAnalysis.print ( false, 1 );
+        TheSimulator::get ().print ();
         printf ( "\n" );
     }
     
     //----------------------------------------------------------------//
     virtual bool    Scenario_Control                        ( int step ) = 0;
-};
-
-//================================================================//
-// CarefulScenario
-//================================================================//
-class CarefulScenario :
-    public Scenario {
-
-    Cohort      mNormal;
-
-public:
-
-    //----------------------------------------------------------------//
-    CarefulScenario () {
-    
-        Context::Reset ();
-        Context::InitPlayers ( 32 );
-        Context::ApplyCohort ( this->mNormal, "NORM", 0, 32 );
-        
-        this->mNormal.SetStepStyle ( Player::STEP_CAREFUL );
-    }
-
-    //================================================================//
-    // Scenario
-    //================================================================//
-
-    //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
-        
-        //return step < 32;
-        return true;
-    }
 };
 
 //================================================================//
@@ -87,18 +57,18 @@ public:
     //----------------------------------------------------------------//
     FastGangScenario () {
     
-        Context::Reset ();
-        Context::SetScoreRandomizer ( true );
-        Context::InitPlayers ( 16 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().setScoreRandomizer ( true );
+        TheSimulator::get ().initMiners ( 16 );
         
-        Context::ApplyCohort ( this->mRogue, "RGUE", 0, 4 );
-        this->mRogue.SetFlags ( 1, 1, 3 );
-        this->mRogue.SetFrequency ( 16 );
+        TheSimulator::get ().applyCohort ( this->mRogue, "RGUE", 0, 4 );
+        this->mRogue.setFlags ( 1, 1, 3 );
+        this->mRogue.setFrequency ( 16 );
         
-        Context::ApplyCohort ( this->mNormal, "NORM", 4, 12 );
-        this->mNormal.SetFlags ( 2, 3, 3 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 4, 12 );
+        this->mNormal.setFlags ( 2, 3, 3 );
         
-        //Context::SetPlayerVerbose ( 4, true );
+        //TheSimulator::get ().SetPlayerVerbose ( 4, true );
     }
 
     //================================================================//
@@ -127,15 +97,15 @@ public:
     //----------------------------------------------------------------//
     LateJoinPairScenario () {
     
-        Context::Reset ();
-        Context::InitPlayers ( 2 );
-        Context::ApplyCohort ( this->mNormal, "NORM", 0, 1 );
-        Context::ApplyCohort ( this->mLate, "LATE", 1, 1 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().initMiners ( 2 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 1 );
+        TheSimulator::get ().applyCohort ( this->mLate, "LATE", 1, 1 );
         
         //this->mNormal.SetVerbose ( true );
         //this->mLate.SetVerbose ( true );
     
-        this->mLate.Pause ( true );
+        this->mLate.pause ( true );
     }
 
     //================================================================//
@@ -146,7 +116,7 @@ public:
     bool Scenario_Control ( int step ) {
         
         if ( step == 16 ) {
-            this->mLate.Pause ( false );
+            this->mLate.pause ( false );
         }
         return step < 32;
     }
@@ -166,13 +136,13 @@ public:
     //----------------------------------------------------------------//
     LateJoinQuadScenario () {
     
-        Context::Reset ();
-        Context::SetThreshold ( 0.3 );
-        Context::InitPlayers ( 4 );
-        Context::ApplyCohort ( this->mNormal, "NORM", 0, 3 );
-        Context::ApplyCohort ( this->mLate, "LATE", 3, 1 );
+        TheSimulator::get ().reset ();
+        //TheSimulator::get ().setThreshold ( 0.3 );
+        TheSimulator::get ().initMiners ( 4 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 3 );
+        TheSimulator::get ().applyCohort ( this->mLate, "LATE", 3, 1 );
     
-        this->mLate.Pause ( true );
+        this->mLate.pause ( true );
     }
 
     //================================================================//
@@ -183,7 +153,7 @@ public:
     bool Scenario_Control ( int step ) {
         
         if ( step == 64 ) {
-            this->mLate.Pause ( false );
+            this->mLate.pause ( false );
         }
         return step < 128;
     }
@@ -202,11 +172,11 @@ public:
     //----------------------------------------------------------------//
     RandFreqScenario () {
     
-        Context::Reset ();
-        Context::InitPlayers ( 32 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().initMiners ( 32 );
         
-        Context::ApplyCohort ( this->mRandFreq, "RANDFREQ", 0, 32 );
-        this->mRandFreq.RandomizeFrequencies ( 10 );
+        TheSimulator::get ().applyCohort ( this->mRandFreq, "RANDFREQ", 0, 32 );
+        this->mRandFreq.randomizeFrequencies ( 10 );
     }
 
     //================================================================//
@@ -235,16 +205,16 @@ public:
     //----------------------------------------------------------------//
     RogueScenario () {
     
-        Context::Reset ();
-        Context::InitPlayers ( 16 );
-        Context::SetDropRate ( 0.8 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().initMiners ( 16 );
+        TheSimulator::get ().setDropRate ( 0.8 );
         
-        Context::ApplyCohort ( this->mRogue, "RGUE", 0, 4 );
-        this->mRogue.SetFlags ( 1, 3, 3 );
-        this->mRogue.SetFrequency ( 16 );
+        TheSimulator::get ().applyCohort ( this->mRogue, "RGUE", 0, 4 );
+        this->mRogue.setFlags ( 1, 3, 3 );
+        this->mRogue.setFrequency ( 16 );
         
-        Context::ApplyCohort ( this->mNormal, "NORM", 4, 12 );
-        this->mNormal.SetFlags ( 2, 3, 3 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 4, 12 );
+        this->mNormal.setFlags ( 2, 3, 3 );
     }
 
     //================================================================//
@@ -256,11 +226,11 @@ public:
     
         switch ( step ) {
             case 0:
-                this->mRogue.SetFlags ( 1, 1, 1 );
+                this->mRogue.setFlags ( 1, 1, 1 );
                 break;
             
             case 32:
-                this->mRogue.SetFlags ( 1, 3, 3 );
+                this->mRogue.setFlags ( 1, 3, 3 );
                 break;
         }
         return step < 64;
@@ -280,9 +250,9 @@ public:
     //----------------------------------------------------------------//
     SimpleScenario () {
     
-        Context::Reset ();
-        Context::InitPlayers ( 16 );
-        Context::ApplyCohort ( this->mNormal, "NORM", 0, 16 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().initMiners ( 16 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 16 );
         
         //this->mNormal.SetVerbose ( true );
     }
@@ -313,11 +283,11 @@ public:
     //----------------------------------------------------------------//
     SleepyScenario () {
     
-        Context::Reset ();
-        Context::InitPlayers ( 16 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().initMiners ( 16 );
         
-        Context::ApplyCohort ( this->mSleepy, "SLPY", 0, 12 );
-        Context::ApplyCohort ( this->mNormal, "NORM", 12, 4 );
+        TheSimulator::get ().applyCohort ( this->mSleepy, "SLPY", 0, 12 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 12, 4 );
     }
 
     //================================================================//
@@ -329,11 +299,11 @@ public:
     
         switch ( step ) {
             case 0:
-                this->mSleepy.Pause ( true );
+                this->mSleepy.pause ( true );
                 break;
             
             case 16:
-                this->mSleepy.Pause ( false );
+                this->mSleepy.pause ( false );
                 break;
         }
         return step < 32;
@@ -353,9 +323,9 @@ public:
     //----------------------------------------------------------------//
     SmallScenario () {
     
-        Context::Reset ();
-        Context::InitPlayers ( 4 );
-        Context::ApplyCohort ( this->mNormal, "NORM", 0, 4 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().initMiners ( 4 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 4 );
         
         //this->mNormal.SetVerbose ( true );
     }
@@ -385,9 +355,9 @@ public:
     //----------------------------------------------------------------//
     TenKScenario () {
     
-        Context::Reset ();
-        Context::InitPlayers ( 10000 );
-        Context::ApplyCohort ( this->mNormal, "NORM", 0, 10000 );
+        TheSimulator::get ().reset ();
+        TheSimulator::get ().initMiners ( 10000 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 10000 );
     }
 
     //================================================================//
@@ -403,8 +373,10 @@ public:
     //----------------------------------------------------------------//
     void Scenario_Report ( int i ) {
         printf ( "ROUND: %d - ", i );
-        Context::PrintTree ( false, 1 );
+        TheSimulator::get ().printTree ( false, 1 );
     }
 };
 
+} // namespace Simulator
+} // namespace Volition
 #endif

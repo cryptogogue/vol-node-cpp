@@ -34,8 +34,9 @@ public:
     TRANSACTION_WEIGHT ( 1 )
 
     //----------------------------------------------------------------//
-                            OpenAccount               ();
-                            ~OpenAccount              ();
+                            OpenAccount             ();
+                            OpenAccount             ( string accountName, string keyName, const Poco::Crypto::ECKey& key, u64 amount );
+                            ~OpenAccount            ();
 };
 
 } // namespace Transaction

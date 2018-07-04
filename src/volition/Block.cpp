@@ -53,6 +53,12 @@ size_t Block::getScore () const {
 }
 
 //----------------------------------------------------------------//
+void Block::pushTransaction ( shared_ptr < AbstractTransaction > transaction ) {
+
+    this->mTransactions.push_back ( transaction );
+}
+
+//----------------------------------------------------------------//
 void Block::setCycleID ( size_t cycleID ) {
 
     this->mCycleID = cycleID;
@@ -102,9 +108,11 @@ bool Block::verify ( const State& state ) const {
     // no miner info; must be the genesis block
     
     if ( this->mHeight > 0 ) return false; // genesis block must be height 0
-    if ( Signature::toHex ( this->getSignature ().getDigest ()) != Genesis::DIGEST_STRING ) return false; // better be the genesis block we expect
 
-    return this->verify ( state, Genesis::getGenesisKey ());
+    // check that it's the expected genesis block
+    if ( !Poco::DigestEngine::constantTimeEquals ( Genesis::get ().getDigest (), this->getSignature ().getDigest ())) return false;
+
+    return this->verify ( state, Genesis::get ().getKey ());
 }
 
 //----------------------------------------------------------------//

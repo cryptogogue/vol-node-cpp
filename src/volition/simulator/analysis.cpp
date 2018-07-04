@@ -1,10 +1,12 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <simulator/analysis.h>
-#include <simulator/chain.h>
-#include <simulator/context.h>
-#include <simulator/player.h>
+#include <simulator/Analysis.h>
+#include <simulator/SimMiner.h>
+#include <simulator/TheSimulator.h>
+
+namespace Volition {
+namespace Simulator {
 
 //----------------------------------------------------------------//
 void print_indent ( int indent ) {
@@ -19,25 +21,27 @@ void print_indent ( int indent ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Tree::AddChain ( const Chain& chain ) {
+void Tree::addChain ( const Chain& chain ) {
 
     Tree* cursor = this;
 
-    for ( size_t i = 0; i < chain.mCycles.size (); ++i ) {
-        const Cycle& cycle = chain.mCycles [ i ];
+    size_t nCycles = chain.countCycles ();
+    for ( size_t i = 0; i < nCycles; ++i ) {
         
-        for ( size_t j = 0; j < cycle.mChain.size (); ++j ) {
+        size_t nBlocks = chain.countBlocks ( i );
+        for ( size_t j = 0; j < nBlocks; ++j ) {
             
-            int playerID        = cycle.mChain [ j ];
-            cursor              = &cursor->mChildren [ playerID ];
-            cursor->mPlayer     = playerID;
+            const Block& block = chain.getBlock ( i, j );
+            
+            string minerID      = block.getMinerID ();
+            cursor              = &cursor->mChildren [ minerID ];
+            cursor->mMinerID    = minerID;
         }
     }
 }
 
 //----------------------------------------------------------------//
-Tree::Tree () :
-    mPlayer ( -1 ) {
+Tree::Tree () {
 }
 
 //================================================================//
@@ -55,7 +59,7 @@ TreeLevelStats::TreeLevelStats () :
 //================================================================//
     
 //----------------------------------------------------------------//
-void TreeSummary::AnalyzeLevels ( map < size_t, TreeLevelStats >& levels, size_t depth ) const {
+void TreeSummary::analyzeLevels ( map < size_t, TreeLevelStats >& levels, size_t depth ) const {
 
     TreeLevelStats& stats = levels [ depth ];
     stats.mChains += this->mChains;
@@ -63,23 +67,23 @@ void TreeSummary::AnalyzeLevels ( map < size_t, TreeLevelStats >& levels, size_t
     
     list < TreeSummary >::const_iterator childrenIt = this->mChildren.begin ();
     for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
-        childrenIt->AnalyzeLevels ( levels, depth + 1 );
+        childrenIt->analyzeLevels ( levels, depth + 1 );
     }
 }
 
 //----------------------------------------------------------------//
-void TreeSummary::ComputePercents ( size_t totalBlocks ) {
+void TreeSummary::computePercents ( size_t totalBlocks ) {
 
     this->mPercentOfTotal = totalBlocks > 0 ? (( float )this->mContribution / ( float )totalBlocks ) : 0.0;
     
     list < TreeSummary >::iterator childrenIt = this->mChildren.begin ();
     for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
-        childrenIt->ComputePercents ( totalBlocks );
+        childrenIt->computePercents ( totalBlocks );
     }
 }
 
 //----------------------------------------------------------------//
-size_t TreeSummary::ComputeSize () {
+size_t TreeSummary::computeSize () {
     
     this->mChains = 0;
     this->mSubtreeSize = 0;
@@ -88,23 +92,23 @@ size_t TreeSummary::ComputeSize () {
         list < TreeSummary >::iterator childrenIt = this->mChildren.begin ();
         for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
             TreeSummary& child = *childrenIt;
-            child.ComputeSize ();
+            child.computeSize ();
             this->mSubtreeSize += child.mSubtreeSize;
             this->mChains += child.mChains;
         }
-        this->mContribution = this->mPlayers.size () * this->mChains;
+        this->mContribution = this->mMiners.size () * this->mChains;
         this->mSubtreeSize += this->mContribution;
     }
     else {
         this->mChains = 1;
-        this->mSubtreeSize = this->mPlayers.size ();
+        this->mSubtreeSize = this->mMiners.size ();
         this->mContribution = this->mSubtreeSize;
     }
     return this->mSubtreeSize;
 }
 
 //----------------------------------------------------------------//
-size_t TreeSummary::MeasureChain ( float threshold ) const {
+size_t TreeSummary::measureChain ( float threshold ) const {
 
     assert ( threshold > 0.5 );
 
@@ -113,7 +117,7 @@ size_t TreeSummary::MeasureChain ( float threshold ) const {
     const TreeSummary* cursor = this;
     while ( cursor ) {
     
-        size += cursor->mPlayers.size ();
+        size += cursor->mMiners.size ();
         
         const TreeSummary* bestChain = 0;
         list < TreeSummary >::const_iterator childrenIt = cursor->mChildren.begin ();
@@ -134,22 +138,22 @@ size_t TreeSummary::MeasureChain ( float threshold ) const {
 }
 
 //----------------------------------------------------------------//
-void TreeSummary::Print ( bool verbose, int maxDepth, int depth ) const {
+void TreeSummary::print ( bool verbose, int maxDepth, int depth ) const {
 
     if (( maxDepth > 0 ) && ( depth >= maxDepth )) return;
 
-    size_t nPlayers = this->mPlayers.size ();
+    size_t nMiners = this->mMiners.size ();
 
     print_indent ( depth );
-    printf ( "[size: %d, branches: %d, percent: %g]", ( int )nPlayers, ( int )this->mChains, this->mPercentOfTotal );
+    printf ( "[size: %d, branches: %d, percent: %g]", ( int )nMiners, ( int )this->mChains, this->mPercentOfTotal );
     
-    if ( verbose && ( nPlayers > 0 )) {
+    if ( verbose && ( nMiners > 0 )) {
         printf ( " - " );
-        for ( size_t i = 0; i < nPlayers; ++i ) {
+        for ( size_t i = 0; i < nMiners; ++i ) {
             if ( i > 0 ) {
                 printf ( "," );
             }
-            printf ( "%d", this->mPlayers [ i ]);
+            printf ( "%s", this->mMiners [ i ].c_str ());
         }
     }
     printf ( "\n" );
@@ -157,17 +161,17 @@ void TreeSummary::Print ( bool verbose, int maxDepth, int depth ) const {
     ++depth;
     list < TreeSummary >::const_iterator childrenIt = this->mChildren.begin ();
     for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
-        childrenIt->Print ( verbose, maxDepth, depth );
+        childrenIt->print ( verbose, maxDepth, depth );
     }
 }
 
 //----------------------------------------------------------------//
-void TreeSummary::PrintLevels () const {
+void TreeSummary::printLevels () const {
 
     size_t totalBlocks = this->mSubtreeSize;
 
     map < size_t, TreeLevelStats > levels;
-    this->AnalyzeLevels ( levels );
+    this->analyzeLevels ( levels );
     
     size_t maxDepth = levels.size ();
     for ( size_t i = 0; i < maxDepth; ++i ) {
@@ -180,34 +184,34 @@ void TreeSummary::PrintLevels () const {
 }
 
 //----------------------------------------------------------------//
-void TreeSummary::Summarize ( const Tree& tree ) {
+void TreeSummary::summarize ( const Tree& tree ) {
 
-    this->SummarizeRecurse ( tree );
+    this->summarizeRecurse ( tree );
     
-    size_t totalBlocks = this->ComputeSize ();
-    this->ComputePercents ( totalBlocks );
+    size_t totalBlocks = this->computeSize ();
+    this->computePercents ( totalBlocks );
 }
 
 //----------------------------------------------------------------//
-void TreeSummary::SummarizeRecurse ( const Tree& tree ) {
+void TreeSummary::summarizeRecurse ( const Tree& tree ) {
 
     size_t nChildren = tree.mChildren.size ();
 
     if ( nChildren ) {
 
-        map < int, Tree >::const_iterator childrenIt = tree.mChildren.begin ();
+        map < string, Tree >::const_iterator childrenIt = tree.mChildren.begin ();
         
         if ( nChildren == 1 ) {
-            this->mPlayers.push_back ( childrenIt->second.mPlayer );
-            this->SummarizeRecurse ( childrenIt->second );
+            this->mMiners.push_back ( childrenIt->second.mMinerID );
+            this->summarizeRecurse ( childrenIt->second );
         }
         else {
 
             for ( ; childrenIt != tree.mChildren.end (); ++childrenIt ) {
                 this->mChildren.push_back ( TreeSummary ());
                 TreeSummary& childSummary = this->mChildren.back ();
-                childSummary.mPlayers.push_back ( childrenIt->second.mPlayer );
-                childSummary.SummarizeRecurse ( childrenIt->second );
+                childSummary.mMiners.push_back ( childrenIt->second.mMinerID );
+                childSummary.summarizeRecurse ( childrenIt->second );
             }
         }
     }
@@ -233,20 +237,20 @@ Analysis::Analysis () :
 }
 
 //----------------------------------------------------------------//
-void Analysis::Print ( bool verbose, int maxDepth ) {
+void Analysis::print ( bool verbose, int maxDepth ) {
 
     printf ( "PASS: %d, AVG: %g LEN: %d\n", ( int )this->mPasses, this->mAverageIncrease, ( int )this->mChainLength );
-    this->mSummary.PrintLevels ();
-    this->mSummary.Print ( verbose, maxDepth );
+    this->mSummary.printLevels ();
+    this->mSummary.print ( verbose, maxDepth );
 }
 
 //----------------------------------------------------------------//
-void Analysis::Update () {
+void Analysis::update () {
 
     this->mSummary = TreeSummary ();
-    Context::Summarize ( this->mSummary );
+    TheSimulator::get ().summarize ( this->mSummary );
     
-    this->mChainLength = this->mSummary.MeasureChain ( 0.65 );
+    this->mChainLength = this->mSummary.measureChain ( 0.65 );
     this->mPassesToLength [ this->mPasses ] = this->mChainLength;
     
     if ( this->mPasses > 0 ) {
@@ -258,3 +262,6 @@ void Analysis::Update () {
     
     this->mPasses++;
 }
+
+} // namespace Simulator
+} // namespace Volition

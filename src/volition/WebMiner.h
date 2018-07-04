@@ -12,8 +12,6 @@
 
 namespace Volition {
 
-class AbstractHashable;
-class Signable;
 class SyncChainTask;
 
 //================================================================//

@@ -31,7 +31,7 @@ private:
     Poco::DigestEngine::Digest      mAllure; // digital signature of the hash of mCycleID
     Signature                       mSignature;
 
-    vector < unique_ptr < AbstractTransaction >>  mTransactions;
+    vector < shared_ptr < const AbstractTransaction >>  mTransactions;
 
     //----------------------------------------------------------------//
     void                                setCycleID                          ( size_t cycleID );
@@ -52,6 +52,7 @@ public:
     string                              getMinerID                          () const;
     size_t                              getScore                            () const;
     const Signature&                    getSignature                        () const;
+    void                                pushTransaction                     ( shared_ptr < AbstractTransaction > transaction );
     void                                setMinerID                          ( string minerID );
     const Poco::DigestEngine::Digest&   sign                                ( const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
     bool                                verify                              ( const State& state ) const;

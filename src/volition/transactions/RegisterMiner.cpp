@@ -16,6 +16,13 @@ RegisterMiner::RegisterMiner () {
 }
 
 //----------------------------------------------------------------//
+RegisterMiner::RegisterMiner ( string minerID, string url, string keyName ) :
+    mMinerID ( minerID ),
+    mURL ( url ),
+    mKeyName ( keyName ) {
+}
+
+//----------------------------------------------------------------//
 RegisterMiner::~RegisterMiner () {
 }
 

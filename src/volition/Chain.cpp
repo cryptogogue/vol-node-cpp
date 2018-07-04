@@ -2,9 +2,10 @@
 // http://cryptogogue.com
 
 #include <Chain.h>
-#include <simulator/context.h>
 
 namespace Volition {
+
+static const double THRESHOLD = 0.75;
 
 //================================================================//
 // Chain
@@ -37,7 +38,7 @@ bool Chain::canEdit ( size_t cycleID, string minerID ) const {
 
     float ratio             = ( float )size1 / ( float )size0;
 
-    return ratio <= Context::GetThreshold ();
+    return ratio <= THRESHOLD;
 }
 
 //----------------------------------------------------------------//
@@ -51,7 +52,7 @@ bool Chain::canEdit ( size_t cycleID, const Chain& chain ) const {
     if ( participants0 < participants1 ) {
     
         float ratio = ( float )participants0 / ( float )participants1;
-        if ( ratio <= Context::GetThreshold ()) return true;
+        if ( ratio <= THRESHOLD ) return true;
     }
     
     size_t size0 = this->mCycles.size ();
@@ -72,11 +73,22 @@ Chain::Chain () {
 }
 
 //----------------------------------------------------------------//
-Chain::Chain ( unique_ptr < Block > genesisBlock ) {
+Chain::Chain ( shared_ptr < Block > genesisBlock ) {
 
     this->mCycles.push_back ( make_unique < Cycle >());
     Cycle* cycle = this->getTopCycle ();
-    cycle->mBlocks.push_back ( move ( genesisBlock ));
+    cycle->mBlocks.push_back ( genesisBlock );
+}
+
+//----------------------------------------------------------------//
+Chain::Chain ( const Chain& chain ) {
+
+    size_t nCycles = chain.mCycles.size ();
+
+    this->mCycles.reserve ( nCycles );
+    for ( size_t i = 0; i < nCycles; ++nCycles ) {
+        this->mCycles [ i ] = make_unique < Cycle >( *chain.mCycles [ i ]);
+    }
 }
 
 //----------------------------------------------------------------//
@@ -128,11 +140,23 @@ const Chain* Chain::choose ( size_t cycleID, const Chain& prefer, const Chain& o
 
     if ( max1 < max0 ) {
         float ratio = ( float )max1 / ( float )max0;
-        if ( ratio <= Context::GetThreshold ()) return &prefer;
+        if ( ratio <= THRESHOLD ) return &prefer;
     }
 
     // other chain wins it.
     return &other;
+}
+
+//----------------------------------------------------------------//
+size_t Chain::countBlocks ( size_t cycleIdx ) const {
+
+    return this->getCycle ( cycleIdx ).countBlocks ();
+}
+
+//----------------------------------------------------------------//
+size_t Chain::countCycles () const {
+
+    return this->mCycles.size ();
 }
 
 //----------------------------------------------------------------//
@@ -149,6 +173,19 @@ size_t Chain::findMax ( size_t cycleID ) const {
         }
     }
     return max;
+}
+
+//----------------------------------------------------------------//
+const Block& Chain::getBlock ( size_t cycleIdx, size_t blockIdx ) const {
+
+    return this->getCycle ( cycleIdx ).getBlock ( blockIdx );
+}
+
+//----------------------------------------------------------------//
+const Cycle& Chain::getCycle ( size_t idx ) const {
+
+    assert (( idx < this->mCycles.size () ) && ( this->mCycles [ idx ]));
+    return *this->mCycles [ idx ];
 }
 
 //----------------------------------------------------------------//
@@ -217,7 +254,7 @@ void Chain::print ( const char* pre, const char* post ) const {
 }
 
 //----------------------------------------------------------------//
-void Chain::pushAndSign ( const ChainPlacement& placement, unique_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+void Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
 
     assert ( block );
     if ( !placement.canPush ()) return;
@@ -261,7 +298,7 @@ void Chain::pushAndSign ( const ChainPlacement& placement, unique_ptr < Block > 
     block->setPreviousBlock ( prevBlock );
     block->sign ( key );
     
-    cycle->mBlocks.push_back ( move ( block ));
+    cycle->mBlocks.push_back ( block );
     
     if ( !cycle->containsMiner ( minerID )) {
         cycle->mMiners.insert ( minerID );

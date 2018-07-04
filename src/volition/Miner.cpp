@@ -20,31 +20,23 @@ const Chain* Miner::getChain () const {
 }
 
 //----------------------------------------------------------------//
-string Miner::getPublicKey () {
-
-    stringstream strStream;
-    this->mKeyPair->save ( &strStream );
-    return strStream.str ();
-}
+//string Miner::getPublicKey () {
+//
+//    stringstream strStream;
+//    this->mKeyPair->save ( &strStream );
+//    return strStream.str ();
+//}
 
 //----------------------------------------------------------------//
-void Miner::loadGenesis ( string genesis ) {
+void Miner::loadGenesis ( string path ) {
     
     fstream inStream;
-    inStream.open ( genesis, ios_base::in );
+    inStream.open ( path, ios_base::in );
     
     unique_ptr < Block > block = make_unique < Block >();
     block->fromJSON ( inStream );
-
-    this->mState = State ();
     
-    unique_ptr < Chain > chain = make_unique < Chain >( move ( block ));
-    
-    if ( chain->verify ( this->mState )) {
-    
-        this->mChain = move ( chain );
-        this->mChain->apply ( this->mState );
-    }
+    this->setGenesis ( move ( block ));
 }
 
 //----------------------------------------------------------------//
@@ -81,6 +73,20 @@ Miner::Miner () {
 
 //----------------------------------------------------------------//
 Miner::~Miner () {
+}
+
+//----------------------------------------------------------------//
+void Miner::setGenesis ( shared_ptr < Block > block ) {
+
+    this->mState = State ();
+    
+    unique_ptr < Chain > chain = make_unique < Chain >( block );
+    
+    if ( chain->verify ( this->mState )) {
+    
+        this->mChain = move ( chain );
+        this->mChain->apply ( this->mState );
+    }
 }
 
 //----------------------------------------------------------------//
