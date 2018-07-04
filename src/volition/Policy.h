@@ -4,10 +4,10 @@
 #ifndef VOLITION_POLICY_H
 #define VOLITION_POLICY_H
 
-#include "common.h"
+#include <volition/common.h>
 
-#include "AbstractHashable.h"
-#include "AbstractSerializable.h"
+#include <volition/AbstractHashable.h>
+#include <volition/AbstractSerializable.h>
 
 namespace Volition {
 

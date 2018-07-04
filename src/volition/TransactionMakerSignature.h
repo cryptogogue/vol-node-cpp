@@ -4,8 +4,8 @@
 #ifndef VOLITION_TRANSACTIONMAKERSIGNATURE_H
 #define VOLITION_TRANSACTIONMAKERSIGNATURE_H
 
-#include <common.h>
-#include <Signature.h>
+#include <volition/common.h>
+#include <volition/Signature.h>
 
 namespace Volition {
 

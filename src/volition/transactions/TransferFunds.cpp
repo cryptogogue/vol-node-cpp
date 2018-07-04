@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "TransferFunds.h"
-#include "Serialize.h"
+#include <volition/Serialize.h>
+#include <volition/transactions/TransferFunds.h>
 
 namespace Volition {
 namespace Transaction {

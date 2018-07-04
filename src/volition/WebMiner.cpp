@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "AbstractHashable.h"
-#include "Block.h"
-#include "Genesis.h"
-#include "SyncChainTask.h"
-#include "WebMiner.h"
+#include <volition/AbstractHashable.h>
+#include <volition/Block.h>
+#include <volition/Genesis.h>
+#include <volition/SyncChainTask.h>
+#include <volition/WebMiner.h>
 
 namespace Volition {
 

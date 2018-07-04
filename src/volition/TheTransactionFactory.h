@@ -4,10 +4,10 @@
 #ifndef VOLITION_MINERSINGLETON_H
 #define VOLITION_MINERSINGLETON_H
 
-#include "common.h"
-#include "AbstractTransaction.h"
-#include "Factory.h"
-#include "Singleton.h"
+#include <volition/common.h>
+#include <volition/AbstractTransaction.h>
+#include <volition/Factory.h>
+#include <volition/Singleton.h>
 
 namespace Volition {
 

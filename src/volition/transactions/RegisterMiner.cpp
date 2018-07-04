@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "MinerInfo.h"
-#include "RegisterMiner.h"
+#include <volition/MinerInfo.h>
+#include <volition/transactions/RegisterMiner.h>
 
 namespace Volition {
 namespace Transaction {

@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "Signature.h"
+#include <volition/Signature.h>
 
 namespace Volition {
 

@@ -4,9 +4,8 @@
 #ifndef VOLITION_TRANSACTION_TRANSFERFUNDS_H
 #define VOLITION_TRANSACTION_TRANSFERFUNDS_H
 
-#include "common.h"
-
-#include "AbstractTransaction.h"
+#include <volition/common.h>
+#include <volition/AbstractTransaction.h>
 
 namespace Volition {
 namespace Transaction {

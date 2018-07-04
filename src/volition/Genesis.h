@@ -4,8 +4,8 @@
 #ifndef VOLITION_GENESIS_H
 #define VOLITION_GENESIS_H
 
-#include <common.h>
-#include <Singleton.h>
+#include <volition/common.h>
+#include <volition/Singleton.h>
 
 namespace Volition {
 

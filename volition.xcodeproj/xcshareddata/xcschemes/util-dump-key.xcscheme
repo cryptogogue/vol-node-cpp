@@ -68,7 +68,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-k pkey0.pem"
+            argument = "-k keys/pkey0.pem"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

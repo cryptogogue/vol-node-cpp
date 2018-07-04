@@ -1,9 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <OpenAccount.h>
-#include <Hash.h>
-#include <Serialize.h>
+#include <volition/Hash.h>
+#include <volition/Serialize.h>
+#include <volition/transactions/OpenAccount.h>
 
 namespace Volition {
 namespace Transaction {

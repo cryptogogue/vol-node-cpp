@@ -4,8 +4,8 @@
 #ifndef VOLITION_STATE_H
 #define VOLITION_STATE_H
 
-#include "common.h"
-#include "MinerInfo.h"
+#include <volition/common.h>
+#include <volition/MinerInfo.h>
 
 namespace Volition {
 

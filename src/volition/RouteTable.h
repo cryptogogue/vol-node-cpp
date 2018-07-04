@@ -4,9 +4,9 @@
 #ifndef VOLITION_ROUTETABLE_H
 #define VOLITION_ROUTETABLE_H
 
-#include "common.h"
-#include "AbstractRequestHandler.h"
-#include "Factory.h"
+#include <volition/common.h>
+#include <volition/AbstractRequestHandler.h>
+#include <volition/Factory.h>
 
 namespace Volition {
 

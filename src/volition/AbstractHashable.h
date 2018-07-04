@@ -4,7 +4,7 @@
 #ifndef VOLITION_ABSTRACTHASHABLE_H
 #define VOLITION_ABSTRACTHASHABLE_H
 
-#include "common.h"
+#include <volition/common.h>
 
 namespace Volition {
 

@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <Serialize.h>
-#include <TransactionMakerSignature.h>
+#include <volition/Serialize.h>
+#include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
 

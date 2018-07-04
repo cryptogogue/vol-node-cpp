@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <Genesis.h>
-#include <simulator/Analysis.h>
-#include <simulator/Cohort.h>
-#include <simulator/SimMiner.h>
-#include <simulator/TheSimulator.h>
+#include <volition/Genesis.h>
+#include <volition/simulator/Analysis.h>
+#include <volition/simulator/Cohort.h>
+#include <volition/simulator/SimMiner.h>
+#include <volition/simulator/TheSimulator.h>
 
 namespace Volition {
 namespace Simulator {

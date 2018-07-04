@@ -4,8 +4,8 @@
 #ifndef VOLITION_SIMULATOR_ANALYSIS_H
 #define VOLITION_SIMULATOR_ANALYSIS_H
 
-#include <common.h>
-#include <Chain.h>
+#include <volition/common.h>
+#include <volition/Chain.h>
 
 namespace Volition {
 namespace Simulator {

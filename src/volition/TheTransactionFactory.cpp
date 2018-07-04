@@ -1,13 +1,13 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "TheTransactionFactory.h"
+#include <volition/TheTransactionFactory.h>
 
-#include "transactions/AccountPolicy.h"
-#include "transactions/KeyPolicy.h"
-#include "transactions/OpenAccount.h"
-#include "transactions/RegisterMiner.h"
-#include "transactions/TransferFunds.h"
+#include <volition/transactions/AccountPolicy.h>
+#include <volition/transactions/KeyPolicy.h>
+#include <volition/transactions/OpenAccount.h>
+#include <volition/transactions/RegisterMiner.h>
+#include <volition/transactions/TransferFunds.h>
 
 namespace Volition {
 

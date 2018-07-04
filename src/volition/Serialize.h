@@ -4,8 +4,8 @@
 #ifndef VOLITION_SERIALIZE_H
 #define VOLITION_SERIALIZE_H
 
-#include <common.h>
-#include <AbstractSerializable.h>
+#include <volition/common.h>
+#include <volition/AbstractSerializable.h>
 
 namespace Volition {
 namespace Serialize {

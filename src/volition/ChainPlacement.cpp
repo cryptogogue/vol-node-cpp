@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <ChainPlacement.h>
-#include <Cycle.h>
+#include <volition/ChainPlacement.h>
+#include <volition/Cycle.h>
 
 namespace Volition {
 

@@ -4,8 +4,8 @@
 #ifndef VOLITION_CHAIN_H
 #define VOLITION_CHAIN_H
 
-#include <ChainPlacement.h>
-#include <Cycle.h>
+#include <volition/ChainPlacement.h>
+#include <volition/Cycle.h>
 
 namespace Volition {
 

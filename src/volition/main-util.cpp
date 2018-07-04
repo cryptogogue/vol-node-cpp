@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "Block.h"
-#include "Genesis.h"
+#include <volition/Block.h>
+#include <volition/Genesis.h>
 
 //----------------------------------------------------------------//
 void defineKeyFileOptions ( Poco::Util::OptionSet& options ) {

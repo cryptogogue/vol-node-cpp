@@ -4,9 +4,9 @@
 #ifndef VOLITION_SIGNATURE_H
 #define VOLITION_SIGNATURE_H
 
-#include "common.h"
-#include "AbstractHashable.h"
-#include "AbstractSerializable.h"
+#include <volition/common.h>
+#include <volition/AbstractHashable.h>
+#include <volition/AbstractSerializable.h>
 
 namespace Volition {
 

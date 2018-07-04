@@ -4,9 +4,9 @@
 #ifndef VOLITION_SYNCCHAINTASK_H
 #define VOLITION_SYNCCHAINTASK_H
 
-#include "common.h"
-#include "MinerInfo.h"
-#include "Singleton.h"
+#include <volition/common.h>
+#include <volition/MinerInfo.h>
+#include <volition/Singleton.h>
 
 namespace Volition {
 

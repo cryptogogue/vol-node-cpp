@@ -1,9 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <KeyPolicy.h>
-#include <Hash.h>
-#include <Serialize.h>
+#include <volition/Hash.h>
+#include <volition/Serialize.h>
+#include <volition/transactions/KeyPolicy.h>
 
 namespace Volition {
 namespace Transaction {

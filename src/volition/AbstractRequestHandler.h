@@ -4,7 +4,7 @@
 #ifndef VOLITION_ABSTRACTREQUESTHANDLER_H
 #define VOLITION_ABSTRACTREQUESTHANDLER_H
 
-#include "common.h"
+#include <volition/common.h>
 
 namespace Volition {
 

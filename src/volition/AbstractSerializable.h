@@ -4,7 +4,7 @@
 #ifndef VOLITION_ABSTRACTSERIALIZABLE_H
 #define VOLITION_ABSTRACTSERIALIZABLE_H
 
-#include "common.h"
+#include <volition/common.h>
 
 namespace Volition {
 

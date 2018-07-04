@@ -1,9 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "AbstractHashable.h"
-#include "Chain.h"
-#include "SyncChainTask.h"
+#include <volition/AbstractHashable.h>
+#include <volition/Chain.h>
+#include <volition/SyncChainTask.h>
 
 namespace Volition {
 

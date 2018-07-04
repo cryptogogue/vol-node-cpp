@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "AbstractHashable.h"
-#include "MinerInfo.h"
+#include <volition/AbstractHashable.h>
+#include <volition/MinerInfo.h>
 
 namespace Volition {
 

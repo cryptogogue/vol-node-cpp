@@ -4,7 +4,7 @@
 #ifndef VOLITION_SIMULATOR_COHORT_H
 #define VOLITION_SIMULATOR_COHORT_H
 
-#include <common.h>
+#include <volition/common.h>
 
 namespace Volition {
 namespace Simulator {

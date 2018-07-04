@@ -4,11 +4,11 @@
 #ifndef VOLITION_WEBMINER_H
 #define VOLITION_WEBMINER_H
 
-#include "common.h"
-#include "AbstractTransaction.h"
-#include "Chain.h"
-#include "Miner.h"
-#include "State.h"
+#include <volition/common.h>
+#include <volition/AbstractTransaction.h>
+#include <volition/Chain.h>
+#include <volition/Miner.h>
+#include <volition/State.h>
 
 namespace Volition {
 

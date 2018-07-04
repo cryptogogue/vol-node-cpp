@@ -4,7 +4,7 @@
 #ifndef VOLITION_CYCLE_H
 #define VOLITION_CYCLE_H
 
-#include <Block.h>
+#include <volition/Block.h>
 
 namespace Volition {
 

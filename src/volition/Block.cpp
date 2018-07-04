@@ -3,10 +3,10 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "Block.h"
-#include "Genesis.h"
-#include "Serialize.h"
-#include "TheTransactionFactory.h"
+#include <volition/Block.h>
+#include <volition/Genesis.h>
+#include <volition/Serialize.h>
+#include <volition/TheTransactionFactory.h>
 
 namespace Volition {
 

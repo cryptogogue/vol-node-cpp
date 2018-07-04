@@ -968,7 +968,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/volition,
+					src,
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
 					/usr/local/opt/openssl/include,
@@ -1033,7 +1033,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/volition,
+					src,
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
 					/usr/local/opt/openssl/include,

@@ -4,8 +4,8 @@
 #ifndef VOLITION_HASH_H
 #define VOLITION_HASH_H
 
-#include <common.h>
-#include <AbstractHashable.h>
+#include <volition/common.h>
+#include <volition/AbstractHashable.h>
 
 namespace Volition {
 namespace Hash {

@@ -4,7 +4,7 @@
 #ifndef VOLITION_FACTORY_H
 #define VOLITION_FACTORY_H
 
-#include "common.h"
+#include <volition/common.h>
 
 namespace Volition {
 

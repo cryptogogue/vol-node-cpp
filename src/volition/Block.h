@@ -4,12 +4,12 @@
 #ifndef VOLITION_BLOCK_H
 #define VOLITION_BLOCK_H
 
-#include "common.h"
+#include <volition/common.h>
 
-#include "AbstractSerializable.h"
-#include "AbstractTransaction.h"
-#include "Signature.h"
-#include "State.h"
+#include <volition/AbstractSerializable.h>
+#include <volition/AbstractTransaction.h>
+#include <volition/Signature.h>
+#include <volition/State.h>
 
 namespace Volition {
 

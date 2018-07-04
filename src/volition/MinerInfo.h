@@ -4,7 +4,7 @@
 #ifndef VOLITION_MINERINFO_H
 #define VOLITION_MINERINFO_H
 
-#include "common.h"
+#include <volition/common.h>
 
 namespace Volition {
 

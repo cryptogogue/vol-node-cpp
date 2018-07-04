@@ -4,9 +4,9 @@
 #ifndef VOLITION_TRANSACTION_KEYPOLICY_H
 #define VOLITION_TRANSACTION_KEYPOLICY_H
 
-#include <common.h>
-#include <AbstractTransaction.h>
-#include <Policy.h>
+#include <volition/common.h>
+#include <volition/AbstractTransaction.h>
+#include <volition/Policy.h>
 
 namespace Volition {
 namespace Transaction {

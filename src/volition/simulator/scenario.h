@@ -4,9 +4,9 @@
 #ifndef VOLITION_SIMULATOR_SCENARIO_H
 #define VOLITION_SIMULATOR_SCENARIO_H
 
-#include <simulator/Analysis.h>
-#include <simulator/Cohort.h>
-#include <simulator/TheSimulator.h>
+#include <volition/simulator/Analysis.h>
+#include <volition/simulator/Cohort.h>
+#include <volition/simulator/TheSimulator.h>
 
 namespace Volition {
 namespace Simulator {

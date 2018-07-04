@@ -4,11 +4,11 @@
 #ifndef VOLITION_ABSTRACTTRANSACTION_H
 #define VOLITION_ABSTRACTTRANSACTION_H
 
-#include <common.h>
-#include <AbstractHashable.h>
-#include <AbstractSerializable.h>
-#include <State.h>
-#include <TransactionMakerSignature.h>
+#include <volition/common.h>
+#include <volition/AbstractHashable.h>
+#include <volition/AbstractSerializable.h>
+#include <volition/State.h>
+#include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
 

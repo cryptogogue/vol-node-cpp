@@ -1,12 +1,12 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include "Block.h"
-#include "TheTransactionFactory.h"
-#include "RegisterMiner.h"
-#include "RouteTable.h"
-#include "Singleton.h"
-#include "WebMiner.h"
+#include <volition/Block.h>
+#include <volition/TheTransactionFactory.h>
+#include <volition/RouteTable.h>
+#include <volition/Singleton.h>
+#include <volition/WebMiner.h>
+#include <volition/transactions/RegisterMiner.h>
 
 //================================================================//
 // TheMiner

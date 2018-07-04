@@ -4,7 +4,7 @@
 #ifndef VOLITION_SINGLETON_H
 #define VOLITION_SINGLETON_H
 
-#include "common.h"
+#include <volition/common.h>
 
 namespace Volition {
 

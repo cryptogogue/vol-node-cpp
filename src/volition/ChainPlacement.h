@@ -4,7 +4,7 @@
 #ifndef VOLITION_CHAINPLACEMENT_H
 #define VOLITION_CHAINPLACEMENT_H
 
-#include <common.h>
+#include <volition/common.h>
 
 namespace Volition {
 

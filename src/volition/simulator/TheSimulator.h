@@ -4,9 +4,9 @@
 #ifndef VOLITION_SIMULATOR_THESIMULATOR_H
 #define VOLITION_SIMULATOR_THESIMULATOR_H
 
-#include <common.h>
-#include <Singleton.h>
-#include <simulator/SimMiner.h>
+#include <volition/common.h>
+#include <volition/Singleton.h>
+#include <volition/simulator/SimMiner.h>
 
 namespace Volition {
 namespace Simulator {

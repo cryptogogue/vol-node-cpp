@@ -1,9 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <AbstractTransaction.h>
-#include <Hash.h>
-#include <Serialize.h>
+#include <volition/AbstractTransaction.h>
+#include <volition/Hash.h>
+#include <volition/Serialize.h>
 
 namespace Volition {
 
