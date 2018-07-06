@@ -51,6 +51,7 @@ void Miner::pushBlock ( Chain& chain, bool force ) {
     ChainPlacement placement = chain.findPlacement ( this->mMinerID, force );
     if ( placement.canPush ()) {
         unique_ptr < Block > block = make_unique < Block >();
+        block->setMinerID ( this->mMinerID );
         chain.pushAndSign ( placement, move ( block ), *this->mKeyPair );
     }
 }
@@ -93,15 +94,13 @@ void Miner::setGenesis ( shared_ptr < Block > block ) {
 void Miner::updateChain ( unique_ptr < Chain > proposedChain ) {
 
     if ( !proposedChain ) return;
-    
-    proposedChain->verify ( this->mState ); // TODO: move to task thread; use snapshot of state when task created
+    //if ( !proposedChain->verify ( this->mState )) return; // TODO: move to task thread; use snapshot of state when task created
     
     this->pushBlock ( *proposedChain, false );
     
     if ( this->mChain.get () != Chain::choose ( *this->mChain, *proposedChain )) {
         this->mChain = move ( proposedChain );
     }
-    this->mChain->print ();
 }
 
 } // namespace Volition

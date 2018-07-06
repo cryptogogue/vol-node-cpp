@@ -20,7 +20,8 @@ const SimMiner* SimMiner::nextMiner () {
     if ( this->mMinerCursor < this->mMinerQueue.size ()) {
     
         int minerIdx = this->mMinerQueue [ this->mMinerCursor++ ];
-        return &TheSimulator::get ().getMiner ( minerIdx );
+        const SimMiner* miner = &TheSimulator::get ().getMiner ( minerIdx );
+        return ( this == miner ) ? this->nextMiner () : miner;
     }
     return 0;
 }
@@ -90,7 +91,7 @@ void SimMiner::step () {
 //----------------------------------------------------------------//
 SimMiner::SimMiner () :
     mCohort ( 0 ),
-    mFrequency ( 0 ),
+    mFrequency ( 1 ),
     mVerbose ( false ),
     mMinerCursor ( 0 ) {
     

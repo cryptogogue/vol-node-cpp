@@ -118,6 +118,16 @@ bool Cycle::isInChain ( string minerID ) const {
 //----------------------------------------------------------------//
 void Cycle::print () const {
 
+    if ( this->mCycleID == 0 ) {
+        if ( this->mBlocks.size () > 0 ) {
+            printf ( "[.]" );
+        }
+        else {
+            printf ( "[]" );
+        }
+        return;
+    }
+
     printf ( "[" );
     for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
         const Block& block = *this->mBlocks [ i ];
@@ -149,7 +159,7 @@ bool Cycle::verify ( const State& state ) const {
 bool Cycle::willImprove ( string minerID ) const {
 
     // cycle will improve if miner is missing from either the participant set or the chain itself
-    return ((( this->mCycleID > 0 ) && this->containsMiner ( minerID ) && !this->isInChain ( minerID )));
+    return (( this->mCycleID > 0 ) && (( this->containsMiner ( minerID ) && this->isInChain ( minerID )) == false ));
 }
 
 //================================================================//

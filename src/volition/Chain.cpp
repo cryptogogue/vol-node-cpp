@@ -86,8 +86,8 @@ Chain::Chain ( const Chain& chain ) {
     size_t nCycles = chain.mCycles.size ();
 
     this->mCycles.reserve ( nCycles );
-    for ( size_t i = 0; i < nCycles; ++nCycles ) {
-        this->mCycles [ i ] = make_unique < Cycle >( *chain.mCycles [ i ]);
+    for ( size_t i = 0; i < nCycles; ++i ) {
+        this->mCycles.push_back ( make_unique < Cycle >( *chain.mCycles [ i ]));
     }
 }
 
@@ -211,15 +211,14 @@ ChainPlacement Chain::findPlacement ( string minerID, bool force ) const {
     // important to measure the threshold *after* the proposed change.
     size_t nCycles = this->mCycles.size ();
     
-    // ignore case where only genesis cycle exists
-    if ( nCycles > 2 ) {
-        
+    if ( nCycles > 1 ) {
+    
         // start at the last cycle and count backward until we find a cycle we
         // aren't allowed to change. we want the cycle after that (which may be
         // the last cycle in the chain).
         size_t baseCycleID = nCycles - 1;
         for ( ; baseCycleID > 0; --baseCycleID ) {
-            if ( !this->canEdit ( baseCycleID - 1, minerID )) break;
+            if ( !this->canEdit ( baseCycleID, minerID )) break;
         }
         
         // now count forward from the base until we find a cycle that we'd want to change.
@@ -233,8 +232,8 @@ ChainPlacement Chain::findPlacement ( string minerID, bool force ) const {
         }
     }
 
-    // top cycle may be NULL
-    return ChainPlacement ( topCycle );
+    // start a new cycle
+    return ChainPlacement ( NULL );
 }
 
 //----------------------------------------------------------------//
@@ -263,21 +262,22 @@ void Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > 
     u64 cycleID = 0;
     
     if ( placement.mCycle ) {
+    
         cycleID = placement.mCycle->mCycleID;
         assert ( cycleID < this->mCycles.size ());
-        cycle = this->mCycles [ cycleID ].get ();
+        this->mCycles.resize ( cycleID + 1 );
+        cycle = this->getTopCycle ();
         assert ( cycle == placement.mCycle );
     }
-    
-    this->mCycles.resize ( cycleID );
-    
-    if ( !cycle ) {
+    else {
+        
+        cycleID = this->mCycles.size ();
         this->mCycles.push_back ( make_unique < Cycle >());
         cycle = this->getTopCycle ();
         cycle->setID ( cycleID );
     }
     
-    Cycle* prevCycle = cycleID > 0 ? this->mCycles [ cycleID - 1 ].get () : NULL;
+    assert (( cycleID > 0 ) || ( cycle->mBlocks.size () == 0 ));
     
     string minerID = block->getMinerID ();
     assert ( !cycle->isInChain ( minerID )); // cycle should only be a candidate for push if block isn't already in the chain
@@ -290,8 +290,8 @@ void Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > 
     if ( position > 0 ) {
         prevBlock = cycle->mBlocks.back ().get ();
     }
-    else if ( prevCycle ) {
-        prevBlock = prevCycle->mBlocks.back ().get ();
+    else if ( cycleID > 0 ) {
+        prevBlock = this->mCycles [ cycleID - 1 ]->mBlocks.back ().get ();
     }
     
     block->setCycleID ( cycleID );

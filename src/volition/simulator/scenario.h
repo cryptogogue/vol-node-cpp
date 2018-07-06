@@ -21,18 +21,18 @@ class Scenario {
 public:
 
     //----------------------------------------------------------------//
-    void Run () {
+    void run () {
     
-        for ( int i = 0; this->Scenario_Control ( i ); ++i ) {
+        for ( int i = 0; this->Scenario_control ( i ); ++i ) {
     
             TheSimulator::get ().process ();
             this->mAnalysis.update ();
-            this->Scenario_Report ( i );
+            this->Scenario_report ( i );
         }
     }
     
     //----------------------------------------------------------------//
-    virtual void Scenario_Report ( int i ) {
+    virtual void Scenario_report ( int i ) {
         printf ( "ROUND: %d - ", i );
         this->mAnalysis.print ( false, 1 );
         TheSimulator::get ().print ();
@@ -40,7 +40,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    virtual bool    Scenario_Control                        ( int step ) = 0;
+    virtual bool    Scenario_control                        ( int step ) = 0;
 };
 
 //================================================================//
@@ -68,7 +68,7 @@ public:
         TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 4, 12 );
         this->mNormal.setFlags ( 2, 3, 3 );
         
-        //TheSimulator::get ().SetPlayerVerbose ( 4, true );
+        //TheSimulator::get ().setPlayerVerbose ( 4, true );
     }
 
     //================================================================//
@@ -76,7 +76,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
         
         //return step < 1024;
         return true;
@@ -102,8 +102,8 @@ public:
         TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 1 );
         TheSimulator::get ().applyCohort ( this->mLate, "LATE", 1, 1 );
         
-        //this->mNormal.SetVerbose ( true );
-        //this->mLate.SetVerbose ( true );
+        //this->mNormal.setVerbose ( true );
+        //this->mLate.setVerbose ( true );
     
         this->mLate.pause ( true );
     }
@@ -113,7 +113,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
         
         if ( step == 16 ) {
             this->mLate.pause ( false );
@@ -150,7 +150,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
         
         if ( step == 64 ) {
             this->mLate.pause ( false );
@@ -184,7 +184,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
     
         //return step < 64;
         return true;
@@ -222,7 +222,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
     
         switch ( step ) {
             case 0:
@@ -254,7 +254,7 @@ public:
         TheSimulator::get ().initMiners ( 16 );
         TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 16 );
         
-        //this->mNormal.SetVerbose ( true );
+        //this->mNormal.setVerbose ( true );
     }
 
     //================================================================//
@@ -262,7 +262,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
         
         //return step < 32;
         return true;
@@ -295,7 +295,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
     
         switch ( step ) {
             case 0:
@@ -327,7 +327,7 @@ public:
         TheSimulator::get ().initMiners ( 4 );
         TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 4 );
         
-        //this->mNormal.SetVerbose ( true );
+        //this->mNormal.setVerbose ( true );
     }
 
     //================================================================//
@@ -335,7 +335,7 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
         
         //return step < 32;
         return true;
@@ -365,13 +365,13 @@ public:
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_Control ( int step ) {
+    bool Scenario_control ( int step ) {
         
         return true;
     }
     
     //----------------------------------------------------------------//
-    void Scenario_Report ( int i ) {
+    void Scenario_report ( int i ) {
         printf ( "ROUND: %d - ", i );
         TheSimulator::get ().printTree ( false, 1 );
     }
