@@ -4,8 +4,8 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
-#include <volition/Genesis.h>
 #include <volition/Serialize.h>
+#include <volition/TheContext.h>
 #include <volition/TheTransactionFactory.h>
 
 namespace Volition {
@@ -110,9 +110,9 @@ bool Block::verify ( const State& state ) const {
     if ( this->mHeight > 0 ) return false; // genesis block must be height 0
 
     // check that it's the expected genesis block
-    if ( !Poco::DigestEngine::constantTimeEquals ( Genesis::get ().getDigest (), this->getSignature ().getDigest ())) return false;
+    if ( !Poco::DigestEngine::constantTimeEquals ( TheContext::get ().getGenesisBlockDigest (), this->getSignature ().getDigest ())) return false;
 
-    return this->verify ( state, Genesis::get ().getKey ());
+    return this->verify ( state, TheContext::get ().getGenesisBlockKey ());
 }
 
 //----------------------------------------------------------------//

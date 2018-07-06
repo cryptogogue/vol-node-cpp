@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/Genesis.h>
+#include <volition/TheContext.h>
 #include <volition/simulator/SimMiner.h>
 #include <volition/simulator/TheSimulator.h>
 #include <volition/transactions/OpenAccount.h>
@@ -95,7 +95,7 @@ SimMiner::SimMiner () :
     mVerbose ( false ),
     mMinerCursor ( 0 ) {
     
-    this->mKeyPair = make_unique < Poco::Crypto::ECKey >( Genesis::EC_CURVE );
+    this->mKeyPair = make_unique < Poco::Crypto::ECKey >( TheContext::EC_CURVE );
 }
 
 //----------------------------------------------------------------//

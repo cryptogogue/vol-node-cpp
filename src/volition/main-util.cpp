@@ -2,7 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
-#include <volition/Genesis.h>
+#include <volition/TheContext.h>
 
 //----------------------------------------------------------------//
 void defineKeyFileOptions ( Poco::Util::OptionSet& options ) {
@@ -49,7 +49,7 @@ public:
             keyPair = make_unique < Poco::Crypto::ECKey >( "", keyfile, password );
         }
         else {
-            keyPair = make_unique < Poco::Crypto::ECKey >( Volition::Genesis::EC_CURVE );
+            keyPair = make_unique < Poco::Crypto::ECKey >( Volition::TheContext::EC_CURVE );
         }
         
         // dump to pem

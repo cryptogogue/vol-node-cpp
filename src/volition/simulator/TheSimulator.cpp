@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/Genesis.h>
+#include <volition/TheContext.h>
 #include <volition/simulator/Analysis.h>
 #include <volition/simulator/Cohort.h>
 #include <volition/simulator/SimMiner.h>
@@ -50,8 +50,8 @@ const SimMiner& TheSimulator::getMiner ( int minerID ) {
 void TheSimulator::initMiners ( int nMiners ) {
 
     if ( !this->mGenesisKey ) {
-        this->mGenesisKey = make_unique < Poco::Crypto::ECKey >( Genesis::EC_CURVE );
-        Genesis::get ().setKey ( *this->mGenesisKey );
+        this->mGenesisKey = make_unique < Poco::Crypto::ECKey >( TheContext::EC_CURVE );
+        TheContext::get ().setGenesisBlockKey ( *this->mGenesisKey );
     }
 
     shared_ptr < Block > genesisBlock = make_shared < Block >();
@@ -71,7 +71,7 @@ void TheSimulator::initMiners ( int nMiners ) {
     }
     
     genesisBlock->sign ( *this->mGenesisKey );
-    Genesis::get ().setDigest ( genesisBlock->getSignature ().getDigest ());
+    TheContext::get ().setGenesisBlockDigest ( genesisBlock->getSignature ().getDigest ());
     
     for ( int i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ]->setGenesis ( genesisBlock );

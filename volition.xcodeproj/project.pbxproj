@@ -104,9 +104,9 @@
 		CDC2B33C20CE112F00300A96 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
 		CDC2B33D20CE112F00300A96 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
 		CDC2B33E20CE112F00300A96 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
-		CDC2B34320D1196900300A96 /* Genesis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* Genesis.cpp */; };
-		CDC2B34420D1196900300A96 /* Genesis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* Genesis.cpp */; };
-		CDC2B34520D1196900300A96 /* Genesis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* Genesis.cpp */; };
+		CDC2B34320D1196900300A96 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
+		CDC2B34420D1196900300A96 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
+		CDC2B34520D1196900300A96 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -250,8 +250,8 @@
 		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/volition/Chain.h; sourceTree = "<group>"; };
 		CDC2B33720CE112F00300A96 /* Cycle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cycle.cpp; path = src/volition/Cycle.cpp; sourceTree = "<group>"; };
 		CDC2B33820CE112F00300A96 /* Cycle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cycle.h; path = src/volition/Cycle.h; sourceTree = "<group>"; };
-		CDC2B34120D1182400300A96 /* Genesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Genesis.h; path = src/volition/Genesis.h; sourceTree = "<group>"; };
-		CDC2B34220D1196900300A96 /* Genesis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Genesis.cpp; path = src/volition/Genesis.cpp; sourceTree = "<group>"; };
+		CDC2B34120D1182400300A96 /* TheContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheContext.h; path = src/volition/TheContext.h; sourceTree = "<group>"; };
+		CDC2B34220D1196900300A96 /* TheContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheContext.cpp; path = src/volition/TheContext.cpp; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -390,8 +390,8 @@
 				CD0C3E2120C25C21006E3B1C /* transactions */,
 				CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */,
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */,
-				CDC2B34220D1196900300A96 /* Genesis.cpp */,
-				CDC2B34120D1182400300A96 /* Genesis.h */,
+				CDC2B34220D1196900300A96 /* TheContext.cpp */,
+				CDC2B34120D1182400300A96 /* TheContext.h */,
 				CD59F3BB20E8950100705AEB /* Policy.cpp */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
 				CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */,
@@ -771,7 +771,7 @@
 				CD0C3E4E20C86D88006E3B1C /* AbstractTransaction.cpp in Sources */,
 				CD0C3E4F20C86D88006E3B1C /* MinerInfo.cpp in Sources */,
 				CD59F3CE20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
-				CDC2B34520D1196900300A96 /* Genesis.cpp in Sources */,
+				CDC2B34520D1196900300A96 /* TheContext.cpp in Sources */,
 				CDC2B32820CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD0C3E5020C86D88006E3B1C /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E5320C86D88006E3B1C /* RegisterMiner.cpp in Sources */,
@@ -807,7 +807,7 @@
 				CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
 				CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
 				CD59F3CD20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
-				CDC2B34420D1196900300A96 /* Genesis.cpp in Sources */,
+				CDC2B34420D1196900300A96 /* TheContext.cpp in Sources */,
 				CDC2B32720CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E2520C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,
@@ -856,7 +856,7 @@
 				CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
 				CD0C3E1A20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
 				CD59F3CC20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
-				CDC2B34320D1196900300A96 /* Genesis.cpp in Sources */,
+				CDC2B34320D1196900300A96 /* TheContext.cpp in Sources */,
 				CDC2B32620CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E2420C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,

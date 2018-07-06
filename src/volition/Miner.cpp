@@ -3,8 +3,8 @@
 
 #include <volition/AbstractHashable.h>
 #include <volition/Block.h>
-#include <volition/Genesis.h>
 #include <volition/Miner.h>
+#include <volition/TheContext.h>
 #include <volition/SyncChainTask.h>
 
 namespace Volition {
