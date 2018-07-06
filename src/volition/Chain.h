@@ -37,7 +37,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void                    apply               ( State& state ) const;
+    bool                    apply               ( State& state ) const;
                             Chain               ();
                             Chain               ( shared_ptr < Block > block );
                             Chain               ( const Chain& chain );
@@ -49,7 +49,7 @@ public:
     const Block&            getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
     void                    pushAndSign         ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
     void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
-    bool                    verify              ( const State& state ) const;
+    bool                    verify              () const;
 };
 
 } // namespace Volition

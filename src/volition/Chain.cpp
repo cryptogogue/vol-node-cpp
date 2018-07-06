@@ -12,11 +12,13 @@ static const double THRESHOLD = 0.75;
 //================================================================//
 
 //----------------------------------------------------------------//
-void Chain::apply ( State& state ) const {
+bool Chain::apply ( State& state ) const {
 
     for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
+        if ( !this->mCycles [ i ]->verify ( state )) return false;
         this->mCycles [ i ]->apply ( state );
     }
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -306,14 +308,10 @@ void Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > 
 }
 
 //----------------------------------------------------------------//
-bool Chain::verify ( const State& state ) const {
+bool Chain::verify () const {
 
-    // TODO: verify chain structure (order, participants, etc.)
-
-    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
-        if ( !this->mCycles [ i ]->verify ( state )) return false;
-    }
-    return true;
+    State state;
+    return this->apply ( state );
 }
 
 //================================================================//

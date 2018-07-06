@@ -83,7 +83,7 @@ void Miner::setGenesis ( shared_ptr < Block > block ) {
     
     unique_ptr < Chain > chain = make_unique < Chain >( block );
     
-    if ( chain->verify ( this->mState )) {
+    if ( chain->verify ()) {
     
         this->mChain = move ( chain );
         this->mChain->apply ( this->mState );
