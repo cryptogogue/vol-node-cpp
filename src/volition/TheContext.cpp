@@ -3,6 +3,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/Block.h>
 #include <volition/TheContext.h>
 
 namespace Volition {
@@ -31,7 +32,14 @@ const Poco::Crypto::ECKey& TheContext::getGenesisBlockKey () const {
 }
 
 //----------------------------------------------------------------//
-TheContext::TheContext () {
+TheContext::ScoringMode TheContext::getScoringMode () const {
+
+    return this->mScoringMode;
+}
+
+//----------------------------------------------------------------//
+TheContext::TheContext () :
+    mScoringMode ( ScoringMode::ALLURE ) {
 
     stringstream genesisKeyStream ( PUBLIC_KEY_STRING );
     this->mKey = make_unique < Poco::Crypto::ECKey >( &genesisKeyStream );
@@ -48,6 +56,12 @@ void TheContext::setGenesisBlockDigest ( const Poco::DigestEngine::Digest& diges
 void TheContext::setGenesisBlockKey ( const Poco::Crypto::ECKey& key ) {
 
     this->mKey = make_unique < Poco::Crypto::ECKey >( key );
+}
+
+//----------------------------------------------------------------//
+void TheContext::setScoringMode ( ScoringMode scoringMode ) {
+
+    this->mScoringMode = scoringMode;
 }
 
 } // namespace Volition

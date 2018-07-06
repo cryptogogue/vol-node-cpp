@@ -4,6 +4,7 @@
 #ifndef VOLITION_SIMULATOR_SCENARIO_H
 #define VOLITION_SIMULATOR_SCENARIO_H
 
+#include <volition/TheContext.h>
 #include <volition/simulator/Analysis.h>
 #include <volition/simulator/Cohort.h>
 #include <volition/simulator/TheSimulator.h>
@@ -249,6 +250,8 @@ public:
 
     //----------------------------------------------------------------//
     SimpleScenario () {
+    
+        TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
     
         TheSimulator::get ().reset ();
         TheSimulator::get ().initMiners ( 16 );

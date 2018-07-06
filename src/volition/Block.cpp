@@ -48,8 +48,11 @@ string Block::getMinerID () const {
 //----------------------------------------------------------------//
 size_t Block::getScore () const {
 
-    string allureString = Poco::DigestEngine::digestToHex ( this->mAllure );
-    return std::hash < string >{}( allureString );
+    if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
+        string allureString = Poco::DigestEngine::digestToHex ( this->mAllure );
+        return std::hash < string >{}( allureString );
+    }
+    return strtol ( this->mMinerID.c_str (), 0, 10 );
 }
 
 //----------------------------------------------------------------//
