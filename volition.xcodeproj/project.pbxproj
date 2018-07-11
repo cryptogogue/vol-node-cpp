@@ -46,6 +46,12 @@
 		CD36659520EC40E4000E0B43 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
 		CD36659620EC40E4000E0B43 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
 		CD36659720EC40E4000E0B43 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
+		CD36662E20F56D9A000E0B43 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
+		CD36663120F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
+		CD36663220F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
+		CD36663320F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
+		CD36663420F585E2000E0B43 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
+		CD36663520F585E3000E0B43 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
 		CD46659E20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
 		CD46659F20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
 		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
@@ -205,6 +211,11 @@
 		CD36658A20EB3BE0000E0B43 /* Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.h; path = src/volition/Miner.h; sourceTree = "<group>"; };
 		CD36659320EC40E4000E0B43 /* SimMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimMiner.cpp; path = src/volition/simulator/SimMiner.cpp; sourceTree = "<group>"; };
 		CD36659420EC40E4000E0B43 /* SimMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimMiner.h; path = src/volition/simulator/SimMiner.h; sourceTree = "<group>"; };
+		CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheWebMiner.cpp; path = src/volition/TheWebMiner.cpp; sourceTree = "<group>"; };
+		CD36662D20F56D9A000E0B43 /* TheWebMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheWebMiner.h; path = src/volition/TheWebMiner.h; sourceTree = "<group>"; };
+		CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractAPIRequestHandler.cpp; path = src/volition/AbstractAPIRequestHandler.cpp; sourceTree = "<group>"; };
+		CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractAPIRequestHandler.h; path = src/volition/AbstractAPIRequestHandler.h; sourceTree = "<group>"; };
+		CD36663720F595B2000E0B43 /* FNV1a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FNV1a.h; path = src/volition/FNV1a.h; sourceTree = "<group>"; };
 		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/volition/Block.cpp; sourceTree = "<group>"; };
 		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/volition/Block.h; sourceTree = "<group>"; };
 		CD4665A020BE9CE000A02D55 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libcrypto.a; sourceTree = "<group>"; };
@@ -359,6 +370,8 @@
 				CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */,
 				CD36658920EB3BE0000E0B43 /* Miner.cpp */,
 				CD36658A20EB3BE0000E0B43 /* Miner.h */,
+				CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */,
+				CD36662D20F56D9A000E0B43 /* TheWebMiner.h */,
 				CD0C3E1020C14460006E3B1C /* WebMiner.cpp */,
 				CD0C3E1120C14460006E3B1C /* WebMiner.h */,
 			);
@@ -408,6 +421,7 @@
 				CD4665B420BFF70F00A02D55 /* AbstractHashable.h */,
 				CD4665B120BFF63A00A02D55 /* AbstractSerializable.h */,
 				CD0C3E2820C279FB006E3B1C /* Factory.h */,
+				CD36663720F595B2000E0B43 /* FNV1a.h */,
 				CD59F3D520E9AAC500705AEB /* Hash.cpp */,
 				CD59F3D020E998DC00705AEB /* Hash.h */,
 				CD59F3D120E9AAB500705AEB /* Serialize.cpp */,
@@ -562,6 +576,8 @@
 		CDED587020BCDBD7003A2969 /* router */ = {
 			isa = PBXGroup;
 			children = (
+				CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */,
+				CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */,
 				CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */,
 				CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */,
 				CDED584220BA2131003A2969 /* RouteTable.cpp */,
@@ -768,10 +784,12 @@
 				CDC2B33120CE0FA100300A96 /* TheSimulator.cpp in Sources */,
 				CD0C3E4C20C86D88006E3B1C /* WebMiner.cpp in Sources */,
 				CD36658D20EB3BE0000E0B43 /* Miner.cpp in Sources */,
+				CD36663320F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD0C3E4E20C86D88006E3B1C /* AbstractTransaction.cpp in Sources */,
 				CD0C3E4F20C86D88006E3B1C /* MinerInfo.cpp in Sources */,
 				CD59F3CE20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
 				CDC2B34520D1196900300A96 /* TheContext.cpp in Sources */,
+				CD36663520F585E3000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32820CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD0C3E5020C86D88006E3B1C /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E5320C86D88006E3B1C /* RegisterMiner.cpp in Sources */,
@@ -804,10 +822,12 @@
 				CDC2B33020CE0FA100300A96 /* TheSimulator.cpp in Sources */,
 				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
 				CD36658C20EB3BE0000E0B43 /* Miner.cpp in Sources */,
+				CD36663220F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
 				CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
 				CD59F3CD20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
 				CDC2B34420D1196900300A96 /* TheContext.cpp in Sources */,
+				CD36663420F585E2000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32720CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E2520C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,
@@ -843,6 +863,7 @@
 				CDC2B32C20CE0FA100300A96 /* Cohort.cpp in Sources */,
 				CD59F3D220E9AAB500705AEB /* Serialize.cpp in Sources */,
 				CD46659E20BE908300A02D55 /* Block.cpp in Sources */,
+				CD36663120F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD59F3B320E889A000705AEB /* Signature.cpp in Sources */,
 				CD59F3B820E8931D00705AEB /* AccountPolicy.cpp in Sources */,
 				CD36659520EC40E4000E0B43 /* SimMiner.cpp in Sources */,
@@ -857,6 +878,7 @@
 				CD0C3E1A20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
 				CD59F3CC20E8A22C00705AEB /* OpenAccount.cpp in Sources */,
 				CDC2B34320D1196900300A96 /* TheContext.cpp in Sources */,
+				CD36662E20F56D9A000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32620CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
 				CD0C3E2420C25C8B006E3B1C /* RegisterMiner.cpp in Sources */,

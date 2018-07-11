@@ -5,16 +5,8 @@
 #include <volition/TheTransactionFactory.h>
 #include <volition/RouteTable.h>
 #include <volition/Singleton.h>
-#include <volition/WebMiner.h>
+#include <volition/TheWebMiner.h>
 #include <volition/transactions/RegisterMiner.h>
-
-//================================================================//
-// TheMiner
-//================================================================//
-class TheMiner :
-    public Volition::Singleton < Volition::WebMiner > {
-public:
-};
 
 //================================================================//
 // DefaultHandler
@@ -30,27 +22,15 @@ public:
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const override {
 
-//        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
-//        response.setContentType ( "text/html" );
-//
-//        ostream& out = response.send ();
-//        out << "<h1>Hello world!</h1>"
-//        << "<p>Count: "     << ++count                  << "</p>"
-//        << "<p>Host: "      << request.getHost ()       << "</p>"
-//        << "<p>Method: "    << request.getMethod ()     << "</p>"
-//        << "<p>URI: "       << request.getURI ()        << "</p>";
-//        out.flush ();
-
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
-        response.setContentType ( "application/json" );
+        response.setContentType ( "text/html" );
 
         ostream& out = response.send ();
-        
-        const Volition::Chain* chain = TheMiner::get ().getChain ();
-        if ( chain ) {
-            chain->toJSON ( out );
-        }
-        
+        out << "<h1>Hello world!</h1>"
+        << "<p>Count: "     << ++count                  << "</p>"
+        << "<p>Host: "      << request.getHost ()       << "</p>"
+        << "<p>Method: "    << request.getMethod ()     << "</p>"
+        << "<p>URI: "       << request.getURI ()        << "</p>";
         out.flush ();
     }
 };
@@ -121,17 +101,17 @@ protected:
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
         
-        Poco::JSON::Object::Ptr object = AbstractRequestHandler::parseJSON ( request );
-        
-        unique_ptr < Volition::AbstractTransaction > transaction ( Volition::TheTransactionFactory::get ().create ( *object ));
-        TheMiner::get ().pushTransaction ( transaction );
-
-        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
-        response.setContentType ( "application/json" );
-
-        ostream& out = response.send ();
-        out << "{\"foo\":\"bar\"}";
-        out.flush ();
+//        Poco::JSON::Object::Ptr object = AbstractRequestHandler::parseJSON ( request );
+//        
+//        unique_ptr < Volition::AbstractTransaction > transaction ( Volition::TheTransactionFactory::get ().create ( *object ));
+//        TheMiner::get ().pushTransaction ( transaction );
+//
+//        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
+//        response.setContentType ( "application/json" );
+//
+//        ostream& out = response.send ();
+//        out << "{\"foo\":\"bar\"}";
+//        out.flush ();
     }
 };
 
@@ -158,6 +138,16 @@ public:
         this->mRouteTable->addEndpoint < FooBarBazHandler >     ( "/foo/bar/:baz/?" );
         this->mRouteTable->addEndpoint < TransactionHandler >   ( "/transaction/?" );
         this->mRouteTable->setDefault < DefaultHandler >        ();
+        
+        // "/accounts/:accountName/?"           GET
+        // "/accounts/:accountName/balance/?"   GET
+        // "/accounts/:accountName/keys/?"      GET
+        // "/blocks/?"                          GET
+        // "/blocks/:blockID/?"                 GET
+        // "/ledger/?"                          GET
+        // "/transactions/?"                    POST
+        // "/miners/?"                          GET
+        // "/miners/:minerID/?"                 GET
     }
 
     //----------------------------------------------------------------//
@@ -238,7 +228,7 @@ protected:
     
         string minerID      = to_string ( port );
     
-        Volition::WebMiner& theMiner = TheMiner::get ();
+        Volition::TheWebMiner& theMiner = Volition::TheWebMiner::get ();
     
         theMiner.loadKey ( keyfile );
         theMiner.loadGenesis ( genesis );
@@ -281,7 +271,7 @@ protected:
     //----------------------------------------------------------------//
     void serve ( int port ) {
     
-        Poco::Net::HTTPServer server ( new MyRequestHandlerFactory, Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams );
+        Poco::Net::HTTPServer server ( &Volition::TheWebMiner::get (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams );
         server.start ();
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
