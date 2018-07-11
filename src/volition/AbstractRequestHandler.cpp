@@ -18,11 +18,44 @@ AbstractRequestHandler::~AbstractRequestHandler () {
 }
 
 //----------------------------------------------------------------//
-Poco::JSON::Object::Ptr AbstractRequestHandler::parseJSON ( Poco::Net::HTTPServerRequest &request ) {
+string AbstractRequestHandler::getMatchString ( string key ) const {
 
-    Poco::JSON::Parser parser;
-    Poco::Dynamic::Var result = parser.parse ( request.stream ());
-    return result.extract < Poco::JSON::Object::Ptr >();
+    if ( this->mMatch ) {
+        return ( *this->mMatch )[ key ];
+    }
+    throw Routing::NoSuchElementException ( "" );
+}
+
+//----------------------------------------------------------------//
+u64 AbstractRequestHandler::getMatchU64 ( string key ) const {
+
+    return stoll ( this->getMatchString ( key ));
+}
+
+//----------------------------------------------------------------//
+u64 AbstractRequestHandler::optMatch ( string key, u64 fallback ) const {
+
+    if ( this->mMatch ) {
+        try {
+           return this->getMatchU64 ( key );
+        }
+        catch ( ... ) {
+        }
+    }
+    return fallback;
+}
+
+//----------------------------------------------------------------//
+string AbstractRequestHandler::optMatch ( string key, string fallback ) const {
+
+    if ( this->mMatch ) {
+        try {
+            return this->getMatchString ( key );
+        }
+        catch ( ... ) {
+        }
+    }
+    return fallback;
 }
 
 //----------------------------------------------------------------//

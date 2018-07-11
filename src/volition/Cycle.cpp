@@ -77,6 +77,20 @@ Cycle::~Cycle () {
 }
 
 //----------------------------------------------------------------//
+const Block* Cycle::findBlock ( u64 height ) const {
+
+    if (( this->mBlocks.size () > 0 ) && ( this->mBlocks.front ()->mHeight <= height ) && ( this->mBlocks.back ()->mHeight >= height )) {
+
+        // TODO: replace with something more efficient
+        for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
+            const Block* block = this->mBlocks [ i ].get ();
+            if ( block->mHeight == height ) return block;
+        }
+    }
+    return NULL;
+}
+
+//----------------------------------------------------------------//
 u64 Cycle::findPosition ( size_t score ) const {
 
     u64 position = 0;

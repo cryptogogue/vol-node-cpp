@@ -17,7 +17,6 @@ TheWebMiner::TheWebMiner () {
     this->mRouteTable.addEndpoint < TheWebMinerAPI::AccountKeysHandler >        ( "/accounts/:accountName/keys/?" );    // GET
     this->mRouteTable.addEndpoint < TheWebMinerAPI::BlockDetailsHandler >       ( "/blocks/:blockID/?" );               // GET
     this->mRouteTable.addEndpoint < TheWebMinerAPI::BlockListHandler >          ( "/blocks/?" );                        // GET
-    this->mRouteTable.addEndpoint < TheWebMinerAPI::MinerDetailsHandler >       ( "/miners/:minerID/?" );               // GET
     this->mRouteTable.addEndpoint < TheWebMinerAPI::MinerListHandler >          ( "/miners/?" );                        // GET
     this->mRouteTable.addEndpoint < TheWebMinerAPI::TransactionHandler >        ( "/transactions/?" );                  // POST
 

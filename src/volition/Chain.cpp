@@ -162,6 +162,19 @@ size_t Chain::countCycles () const {
 }
 
 //----------------------------------------------------------------//
+const Block* Chain::findBlock ( u64 height ) const {
+
+    const Block* block = NULL;
+
+    // TODO: replace with something more efficient
+    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
+        block = this->mCycles [ i ]->findBlock ( height );
+        if ( block ) break;
+    }
+    return block;
+}
+
+//----------------------------------------------------------------//
 size_t Chain::findMax ( size_t cycleID ) const {
 
     size_t max = this->mCycles [ cycleID ]->countMiners ();
@@ -175,31 +188,6 @@ size_t Chain::findMax ( size_t cycleID ) const {
         }
     }
     return max;
-}
-
-//----------------------------------------------------------------//
-const Block& Chain::getBlock ( size_t cycleIdx, size_t blockIdx ) const {
-
-    return this->getCycle ( cycleIdx ).getBlock ( blockIdx );
-}
-
-//----------------------------------------------------------------//
-const Cycle& Chain::getCycle ( size_t idx ) const {
-
-    assert (( idx < this->mCycles.size () ) && ( this->mCycles [ idx ]));
-    return *this->mCycles [ idx ];
-}
-
-//----------------------------------------------------------------//
-Cycle* Chain::getTopCycle () {
-
-    return this->mCycles.size () > 0 ? this->mCycles.back ().get () : 0;
-}
-
-//----------------------------------------------------------------//
-const Cycle* Chain::getTopCycle () const {
-
-    return this->mCycles.size () > 0 ? this->mCycles.back ().get () : 0;
 }
 
 //----------------------------------------------------------------//
@@ -236,6 +224,31 @@ ChainPlacement Chain::findPlacement ( string minerID, bool force ) const {
 
     // start a new cycle
     return ChainPlacement ( NULL );
+}
+
+//----------------------------------------------------------------//
+const Block& Chain::getBlock ( size_t cycleIdx, size_t blockIdx ) const {
+
+    return this->getCycle ( cycleIdx ).getBlock ( blockIdx );
+}
+
+//----------------------------------------------------------------//
+const Cycle& Chain::getCycle ( size_t idx ) const {
+
+    assert (( idx < this->mCycles.size () ) && ( this->mCycles [ idx ]));
+    return *this->mCycles [ idx ];
+}
+
+//----------------------------------------------------------------//
+Cycle* Chain::getTopCycle () {
+
+    return this->mCycles.size () > 0 ? this->mCycles.back ().get () : 0;
+}
+
+//----------------------------------------------------------------//
+const Cycle* Chain::getTopCycle () const {
+
+    return this->mCycles.size () > 0 ? this->mCycles.back ().get () : 0;
 }
 
 //----------------------------------------------------------------//

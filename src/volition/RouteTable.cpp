@@ -24,6 +24,7 @@ AbstractRequestHandler* RouteTable::match ( string uri ) {
     }
     catch ( Routing::PathNotFoundException ) {
     
+        // default handler
         try {
             Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
             handler = this->create ();

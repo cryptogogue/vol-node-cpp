@@ -45,6 +45,7 @@ public:
     static const Chain*     choose              ( const Chain& chain0, const Chain& chain1 );
     size_t                  countBlocks         ( size_t cycleIdx ) const;
     size_t                  countCycles         () const;
+    const Block*            findBlock           ( u64 height ) const;
     ChainPlacement          findPlacement       ( string minerID, bool force ) const;
     const Block&            getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
     void                    pushAndSign         ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );

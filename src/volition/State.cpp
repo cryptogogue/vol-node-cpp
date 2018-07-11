@@ -12,6 +12,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+const map < string, MinerInfo >& State::getMinerInfo () const {
+
+    return this->mMinerInfo;
+}
+
+//----------------------------------------------------------------//
 const MinerInfo* State::getMinerInfo ( string minerID ) const {
 
     map < string, MinerInfo >::const_iterator minerInfoIt = this->mMinerInfo.find ( minerID );
@@ -22,7 +28,7 @@ const MinerInfo* State::getMinerInfo ( string minerID ) const {
 }
 
 //----------------------------------------------------------------//
-map < string, string > State::getMinerURLs () const {
+const map < string, string >& State::getMinerURLs () const {
 
     return this->mMinerURLs;
 }

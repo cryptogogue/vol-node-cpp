@@ -18,20 +18,23 @@ private:
     unique_ptr < Routing::PathMatch > mMatch;
 
     //----------------------------------------------------------------//
-    void            handleRequest                               ( Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) override;
+    void            handleRequest                           ( Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) override;
 
 protected:
 
     //----------------------------------------------------------------//
-    virtual void    AbstractRequestHandler_handleRequest        ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const = 0;
+    virtual void    AbstractRequestHandler_handleRequest    ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const = 0;
 
 public:
 
     //----------------------------------------------------------------//
-                                        AbstractRequestHandler          ();
-                                        ~AbstractRequestHandler         ();
-    static Poco::JSON::Object::Ptr      parseJSON                       ( Poco::Net::HTTPServerRequest &request );
-    void                                setMatch                        ( const Routing::PathMatch& match );
+                    AbstractRequestHandler                  ();
+                    ~AbstractRequestHandler                 ();
+    string          getMatchString                          ( string key ) const;
+    u64             getMatchU64                             ( string key ) const;
+    u64             optMatch                                ( string key, u64 fallback ) const;
+    string          optMatch                                ( string key, string fallback ) const;
+    void            setMatch                                ( const Routing::PathMatch& match );
 };
 
 } // namespace Volition

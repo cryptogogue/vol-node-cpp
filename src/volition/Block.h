@@ -23,6 +23,7 @@ private:
 
     friend class Context;
     friend class Chain;
+    friend class Cycle;
 
     u64                             mHeight;
     u64                             mCycleID;

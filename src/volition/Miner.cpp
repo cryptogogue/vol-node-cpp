@@ -20,12 +20,24 @@ const Chain* Miner::getChain () const {
 }
 
 //----------------------------------------------------------------//
+string Miner::getMinerID () const {
+
+    return this->mMinerID;
+}
+
+//----------------------------------------------------------------//
 //string Miner::getPublicKey () {
 //
 //    stringstream strStream;
 //    this->mKeyPair->save ( &strStream );
 //    return strStream.str ();
 //}
+
+//----------------------------------------------------------------//
+const State& Miner::getState () const {
+
+    return this->mState;
+}
 
 //----------------------------------------------------------------//
 void Miner::loadGenesis ( string path ) {

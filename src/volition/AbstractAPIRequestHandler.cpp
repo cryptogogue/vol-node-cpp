@@ -51,14 +51,18 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     Poco::JSON::Object::Ptr jsonOut = NULL;
     
     if ( method & ( HTTP_POST | HTTP_PUT )) {
-        jsonIn = AbstractRequestHandler::parseJSON ( request );
+    
+        Poco::JSON::Parser parser;
+        Poco::Dynamic::Var result = parser.parse ( request.stream ());
+        jsonIn = result.extract < Poco::JSON::Object::Ptr >();
+    
         if ( !jsonIn ) {
             response.setStatus ( Poco::Net::HTTPResponse::HTTP_BAD_REQUEST );
             return;
         }
     }
 
-    HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, match, jsonIn, jsonOut );
+    HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, jsonIn, jsonOut );
 
     response.setStatus ( status );
     

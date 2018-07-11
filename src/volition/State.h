@@ -21,12 +21,13 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    const MinerInfo*            getMinerInfo            ( string minerID ) const;
-    map < string, string >      getMinerURLs            () const;
-    void                        registerMiner           ( const MinerInfo& minerInfo );
-                                State                   ();
-                                //State                   ( const State* prevState );
-                                ~State                  ();
+    const map < string, MinerInfo >&    getMinerInfo            () const;
+    const MinerInfo*                    getMinerInfo            ( string minerID ) const;
+    const map < string, string >&       getMinerURLs            () const;
+    void                                registerMiner           ( const MinerInfo& minerInfo );
+                                        State                   ();
+                                        //State                   ( const State* prevState );
+                                        ~State                  ();
 };
 
 } // namespace Volition

@@ -30,6 +30,7 @@ private:
     bool                    containsMiner           ( string minerID ) const;
     size_t                  countBlocks             () const;
     size_t                  countMiners             ( string minerID = "" ) const;
+    const Block*            findBlock               ( u64 height ) const;
     u64                     findPosition            ( size_t score ) const;
     const Block&            getBlock                ( size_t idx ) const;
     size_t                  getID                   () const;
