@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_H
-#define VOLITION_WEBMINERAPI_H
+#ifndef VOLITION_THEWEBMINERAPI_H
+#define VOLITION_THEWEBMINERAPI_H
 
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionFactory.h>
