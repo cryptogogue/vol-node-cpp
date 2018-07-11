@@ -216,6 +216,7 @@
 		CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractAPIRequestHandler.cpp; path = src/volition/AbstractAPIRequestHandler.cpp; sourceTree = "<group>"; };
 		CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractAPIRequestHandler.h; path = src/volition/AbstractAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD36663720F595B2000E0B43 /* FNV1a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FNV1a.h; path = src/volition/FNV1a.h; sourceTree = "<group>"; };
+		CD36663B20F5A5F3000E0B43 /* TheWebMinerAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheWebMinerAPI.h; path = src/volition/TheWebMinerAPI.h; sourceTree = "<group>"; };
 		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/volition/Block.cpp; sourceTree = "<group>"; };
 		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/volition/Block.h; sourceTree = "<group>"; };
 		CD4665A020BE9CE000A02D55 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../../../../../usr/local/Cellar/openssl/1.0.2o_1/lib/libcrypto.a; sourceTree = "<group>"; };
@@ -372,6 +373,7 @@
 				CD36658A20EB3BE0000E0B43 /* Miner.h */,
 				CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */,
 				CD36662D20F56D9A000E0B43 /* TheWebMiner.h */,
+				CD36663B20F5A5F3000E0B43 /* TheWebMinerAPI.h */,
 				CD0C3E1020C14460006E3B1C /* WebMiner.cpp */,
 				CD0C3E1120C14460006E3B1C /* WebMiner.h */,
 			);
