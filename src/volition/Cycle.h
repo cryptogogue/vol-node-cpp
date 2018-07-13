@@ -19,10 +19,10 @@ private:
 
     friend class Chain;
 
-    u64                                     mCycleID;
+    u64                                                         mCycleID;
 
-    set < string >                          mMiners;
-    vector < shared_ptr < const Block >>    mBlocks;
+    SerializableSet < string >                                  mMiners;
+    SerializableVector < SerializableSharedPtr < Block >>       mBlocks;
 
     //----------------------------------------------------------------//
     void                    apply                   ( State& state ) const;
@@ -30,9 +30,9 @@ private:
     bool                    containsMiner           ( string minerID ) const;
     size_t                  countBlocks             () const;
     size_t                  countMiners             ( string minerID = "" ) const;
-    const Block*            findBlock               ( u64 height ) const;
+    Block*                  findBlock               ( u64 height );
     u64                     findPosition            ( size_t score ) const;
-    const Block&            getBlock                ( size_t idx ) const;
+    Block&                  getBlock                ( size_t idx );
     size_t                  getID                   () const;
     size_t                  getLength               () const;
     bool                    isInChain               ( string minerID ) const;
@@ -43,8 +43,7 @@ private:
     
 
     //----------------------------------------------------------------//
-    void                    AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
-    void                    AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
+    void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
 public:
     

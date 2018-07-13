@@ -1,7 +1,6 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractHashable.h>
 #include <volition/Block.h>
 #include <volition/Miner.h>
 #include <volition/TheContext.h>
@@ -14,7 +13,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-const Chain* Miner::getChain () const {
+Chain* Miner::getChain () const {
 
     return this->mChain ? this->mChain.get () : 0;
 }
@@ -26,14 +25,6 @@ string Miner::getMinerID () const {
 }
 
 //----------------------------------------------------------------//
-//string Miner::getPublicKey () {
-//
-//    stringstream strStream;
-//    this->mKeyPair->save ( &strStream );
-//    return strStream.str ();
-//}
-
-//----------------------------------------------------------------//
 const State& Miner::getState () const {
 
     return this->mState;
@@ -41,13 +32,13 @@ const State& Miner::getState () const {
 
 //----------------------------------------------------------------//
 void Miner::loadGenesis ( string path ) {
-    
+
     fstream inStream;
     inStream.open ( path, ios_base::in );
-    
+
     unique_ptr < Block > block = make_unique < Block >();
-    block->fromJSON ( inStream );
-    
+    FromJSONSerializer::fromJSON ( *block, inStream );
+
     this->setGenesis ( move ( block ));
 }
 

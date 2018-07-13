@@ -16,12 +16,12 @@ class AbstractFactoryAllocator {
 protected:
 
     //----------------------------------------------------------------//
-    virtual FACTORY_TYPE*   AbstractFactoryAllocator_create     () const = 0;
+    virtual unique_ptr < FACTORY_TYPE >     AbstractFactoryAllocator_create     () const = 0;
 
 public:
 
     //----------------------------------------------------------------//
-    FACTORY_TYPE* create () const {
+    unique_ptr < FACTORY_TYPE > create () const {
     
         return this->AbstractFactoryAllocator_create ();
     }
@@ -36,8 +36,8 @@ class FactoryAllocator :
 private:
 
     //----------------------------------------------------------------//
-    FACTORY_TYPE* AbstractFactoryAllocator_create () const override {
-        return new PRODUCT_TYPE ();
+    unique_ptr < FACTORY_TYPE > AbstractFactoryAllocator_create () const override {
+        return make_unique < PRODUCT_TYPE >();
     }
 };
 
@@ -60,13 +60,13 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    virtual FACTORY_TYPE* create () const {
+    virtual unique_ptr < FACTORY_TYPE > create () const {
 
         return this->mDefaultAllocator ? this->mDefaultAllocator->create () : NULL;
     }
 
     //----------------------------------------------------------------//
-    virtual FACTORY_TYPE* create ( KEY_TYPE key ) const {
+    virtual unique_ptr < FACTORY_TYPE > create ( KEY_TYPE key ) const {
         
         typename map < KEY_TYPE, unique_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>>::const_iterator allocatorIt = this->mKeysToAllocators.find ( key );
 

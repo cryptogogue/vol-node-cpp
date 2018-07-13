@@ -5,8 +5,7 @@
 #define VOLITION_SIGNATURE_H
 
 #include <volition/common.h>
-#include <volition/AbstractHashable.h>
-#include <volition/AbstractSerializable.h>
+#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
@@ -25,11 +24,10 @@ protected:
 
     //----------------------------------------------------------------//
     static void                             digest              ( string str, Poco::Crypto::ECDSADigestEngine& digestEngine );
-    static void                             digest              ( const AbstractHashable& hashable, Poco::Crypto::ECDSADigestEngine& digestEngine );
+    static void                             digest              ( AbstractSerializable& serializable, Poco::Crypto::ECDSADigestEngine& digestEngine );
 
     //----------------------------------------------------------------//
-    void        AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
-    void        AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
+    void                                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
 public:
 
@@ -40,12 +38,12 @@ public:
     string                                  getHashAlgorithm    () const;
     const Poco::DigestEngine::Digest&       getSignature        () const;
     const Poco::DigestEngine::Digest&       sign                ( string str, const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
-    const Poco::DigestEngine::Digest&       sign                ( const AbstractHashable& hashable, const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
+    const Poco::DigestEngine::Digest&       sign                ( AbstractSerializable& serializable, const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
                                             Signature           ();
                                             ~Signature          ();
     static string                           toHex               ( const Poco::DigestEngine::Digest& digest );
     bool                                    verify              ( string str, const Poco::Crypto::ECKey& key ) const;
-    bool                                    verify              ( const AbstractHashable& hashable, const Poco::Crypto::ECKey& key ) const;
+    bool                                    verify              ( AbstractSerializable& serializable, const Poco::Crypto::ECKey& key ) const;
 };
 
 } // namespace Volition

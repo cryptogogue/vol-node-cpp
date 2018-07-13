@@ -2,12 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/TheTransactionFactory.h>
-
-#include <volition/transactions/AccountPolicy.h>
-#include <volition/transactions/KeyPolicy.h>
-#include <volition/transactions/OpenAccount.h>
-#include <volition/transactions/RegisterMiner.h>
-#include <volition/transactions/TransferFunds.h>
+#include <volition/Transactions.h>
 
 namespace Volition {
 
@@ -16,26 +11,20 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractTransaction* TheTransactionFactory::create ( const Poco::JSON::Object& object ) const {
+unique_ptr < AbstractTransaction > TheTransactionFactory::create ( string typeString ) const {
 
-    string typeString = object.optValue < string >( "type", "" );
-
-    AbstractTransaction* transaction = this->Factory::create ( typeString );
-    assert ( transaction );
-    if ( transaction ) {
-        transaction->fromJSON ( object );
-    }
-    return transaction;
+    return this->Factory::create ( typeString );
 }
 
 //----------------------------------------------------------------//
 TheTransactionFactory::TheTransactionFactory () {
 
     this->registerTransaction < Volition::Transaction::AccountPolicy >();
+    this->registerTransaction < Volition::Transaction::GenesisMiner >();
     this->registerTransaction < Volition::Transaction::KeyPolicy >();
     this->registerTransaction < Volition::Transaction::OpenAccount >();
     this->registerTransaction < Volition::Transaction::RegisterMiner >();
-    this->registerTransaction < Volition::Transaction::TransferFunds >();
+    this->registerTransaction < Volition::Transaction::SendVOL >();
 }
 
 //----------------------------------------------------------------//

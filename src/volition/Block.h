@@ -6,10 +6,11 @@
 
 #include <volition/common.h>
 
-#include <volition/AbstractSerializable.h>
 #include <volition/AbstractTransaction.h>
 #include <volition/Signature.h>
 #include <volition/State.h>
+#include <volition/TheTransactionFactory.h>
+#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
@@ -17,7 +18,6 @@ namespace Volition {
 // Block
 //================================================================//
 class Block :
-    public AbstractHashable,
     public AbstractSerializable {
 private:
 
@@ -32,17 +32,15 @@ private:
     Poco::DigestEngine::Digest      mAllure; // digital signature of the hash of mCycleID
     Signature                       mSignature;
 
-    vector < shared_ptr < const AbstractTransaction >>  mTransactions;
+    SerializableVector < SerializableSharedPtr < AbstractTransaction, TransactionFactory >>     mTransactions;
 
     //----------------------------------------------------------------//
     void                                setCycleID                          ( size_t cycleID );
     void                                setPreviousBlock                    ( const Block* prevBlock );
-    bool                                verify                              ( const State& state, const Poco::Crypto::ECKey& key ) const;
+    bool                                verify                              ( const State& state, const Poco::Crypto::ECKey& key );
 
     //----------------------------------------------------------------//
-    void                                AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
-    void                                AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
-    void                                AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
+    void                                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
 public:
 
@@ -56,7 +54,7 @@ public:
     void                                pushTransaction                     ( shared_ptr < AbstractTransaction > transaction );
     void                                setMinerID                          ( string minerID );
     const Poco::DigestEngine::Digest&   sign                                ( const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
-    bool                                verify                              ( const State& state ) const;
+    bool                                verify                              ( const State& state );
 };
 
 } // namespace Volition

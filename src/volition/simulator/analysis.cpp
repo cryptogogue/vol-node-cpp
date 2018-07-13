@@ -21,7 +21,7 @@ void print_indent ( int indent ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Tree::addChain ( const Chain& chain ) {
+void Tree::addChain ( Chain& chain ) {
 
     Tree* cursor = this;
 

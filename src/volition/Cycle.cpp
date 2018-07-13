@@ -77,13 +77,13 @@ Cycle::~Cycle () {
 }
 
 //----------------------------------------------------------------//
-const Block* Cycle::findBlock ( u64 height ) const {
+Block* Cycle::findBlock ( u64 height ) {
 
     if (( this->mBlocks.size () > 0 ) && ( this->mBlocks.front ()->mHeight <= height ) && ( this->mBlocks.back ()->mHeight >= height )) {
 
         // TODO: replace with something more efficient
         for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
-            const Block* block = this->mBlocks [ i ].get ();
+            Block* block = this->mBlocks [ i ].get ();
             if ( block->mHeight == height ) return block;
         }
     }
@@ -102,7 +102,7 @@ u64 Cycle::findPosition ( size_t score ) const {
 }
 
 //----------------------------------------------------------------//
-const Block& Cycle::getBlock ( size_t idx ) const {
+Block& Cycle::getBlock ( size_t idx ) {
 
     assert (( idx < this->mBlocks.size () ) && ( this->mBlocks [ idx ]));
     return *this->mBlocks [ idx ];
@@ -181,49 +181,17 @@ bool Cycle::willImprove ( string minerID ) const {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Cycle::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
+void Cycle::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
+
+    serializer.serialize ( "cycleID",       this->mCycleID );
+    serializer.serialize ( "blocks",        this->mBlocks );
     
-    this->mCycleID = object.getValue < int >( "cycleID" );
-    
-    const Poco::JSON::Array::Ptr miners = object.getArray ( "miners" );
-    
-    for ( size_t i = 0; i < miners->size (); ++i ) {
-        string minerID = miners->getElement < string >(( unsigned int )i );
-        this->mMiners.insert ( minerID );
-    }
-    
-    const Poco::JSON::Array::Ptr blocks = object.getArray ( "blocks" );
-    this->mBlocks.resize ( blocks->size ());
-    
-    for ( size_t i = 0; i < blocks->size (); ++i ) {
-        
-        const Poco::JSON::Object::Ptr blockJSON = blocks->getObject (( unsigned int )i );
-        assert ( blockJSON );
-        
-        unique_ptr < Block > block = make_unique < Block >();
-        block->fromJSON ( *blockJSON );
-        this->mBlocks [ i ] = move ( block );
-    }
-}
-
-//----------------------------------------------------------------//
-void Cycle::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
-
-    object.set ( "cycleID",             this->mCycleID );
-
-    Poco::JSON::Array::Ptr miners = new Poco::JSON::Array ();
-    object.set ( "miners", miners );
-
-    set < string >::const_iterator minersIt = this->mMiners.cbegin ();
-    for ( size_t i = 0; minersIt != this->mMiners.cend (); ++minersIt, ++i ) {
-        miners->set (( unsigned int )i, ( *minersIt ).c_str ());
-    }
-
-    Poco::JSON::Array::Ptr blocks = new Poco::JSON::Array ();
-    object.set ( "blocks", blocks );
-
-    for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
-        blocks->set (( unsigned int )i, this->mBlocks [ i ]->toJSON ());
+    if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
+        for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
+            string minerID = this->mBlocks [ i ]->getMinerID ();
+            assert ( this->mMiners.find ( minerID ) == this->mMiners.end ());
+            this->mMiners.insert ( minerID );
+        }
     }
 }
 

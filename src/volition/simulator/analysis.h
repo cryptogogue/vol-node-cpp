@@ -24,7 +24,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void        addChain        ( const Chain& chain );
+    void        addChain        ( Chain& chain );
                 Tree            ();
 };
 

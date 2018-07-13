@@ -6,7 +6,6 @@
 #include <volition/RouteTable.h>
 #include <volition/Singleton.h>
 #include <volition/TheWebMiner.h>
-#include <volition/transactions/RegisterMiner.h>
 
 //================================================================//
 // DefaultHandler
@@ -102,7 +101,7 @@ protected:
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
         
 //        Poco::JSON::Object::Ptr object = AbstractRequestHandler::parseJSON ( request );
-//        
+//
 //        unique_ptr < Volition::AbstractTransaction > transaction ( Volition::TheTransactionFactory::get ().create ( *object ));
 //        TheMiner::get ().pushTransaction ( transaction );
 //

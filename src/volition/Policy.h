@@ -5,9 +5,7 @@
 #define VOLITION_POLICY_H
 
 #include <volition/common.h>
-
-#include <volition/AbstractHashable.h>
-#include <volition/AbstractSerializable.h>
+#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
@@ -15,14 +13,11 @@ namespace Volition {
 // Policy
 //================================================================//
 class Policy :
-    public AbstractHashable,
     public AbstractSerializable {
 private:
 
     //----------------------------------------------------------------//
-    void                AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
-    void                AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
-    void                AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
+    void                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
 public:
 

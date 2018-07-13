@@ -2,8 +2,6 @@
 // http://cryptogogue.com
 
 #include <volition/AbstractTransaction.h>
-#include <volition/Hash.h>
-#include <volition/Serialize.h>
 
 namespace Volition {
 
@@ -39,26 +37,14 @@ size_t AbstractTransaction::weight () const {
 //================================================================//
 
 //----------------------------------------------------------------//
-void AbstractTransaction::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
+void AbstractTransaction::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
-    digestStream << this->typeString ();
-    Hash::hashOrNull ( digestStream, this->mMakerSignature.get ());
-}
-
-//----------------------------------------------------------------//
-void AbstractTransaction::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
-
-    assert ( this->typeString () == object.getValue < string >( "type" ));
+    string type = this->typeString ();
     
-    this->mMakerSignature = Serialize::getSerializableFromJSON < TransactionMakerSignature >( object, "makerSignature" );
-}
-
-//----------------------------------------------------------------//
-void AbstractTransaction::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
-
-    object.set ( "type",            this->typeString ().c_str ());
+    serializer.serialize ( "type",      type );
+    serializer.serialize ( "maker",     this->mMakerSignature );
     
-    Serialize::setSerializableToJSON ( object, "makerSignature", this->mMakerSignature.get ());
+    assert ( type == this->typeString ());
 }
 
 } // namespace Volition

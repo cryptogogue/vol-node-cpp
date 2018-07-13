@@ -54,15 +54,15 @@ public:
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
-    
+
         try {
             u64 height = this->getMatchU64 ( "blockID" );
-            
-            const Chain* chain = TheWebMiner::get ().getChain ();
+
+            Chain* chain = TheWebMiner::get ().getChain ();
             if ( chain ) {
-                const Block* block = chain->findBlock ( height );
+                Block* block = chain->findBlock ( height );
                 if ( block ) {
-                    jsonOut = block->toJSON ();
+                    jsonOut = ToJSONSerializer::toJSON ( *block );
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
             }
@@ -85,10 +85,10 @@ public:
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
-        
-        const Chain* chain = TheWebMiner::get ().getChain ();
+
+        Chain* chain = TheWebMiner::get ().getChain ();
         if ( chain ) {
-            jsonOut = chain->toJSON ();
+            jsonOut = ToJSONSerializer::toJSON ( *chain );
         }
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
@@ -158,9 +158,14 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
 
-        unique_ptr < AbstractTransaction > transaction ( TheTransactionFactory::get ().create ( *jsonIn ));
-        TheWebMiner::get ().pushTransaction ( transaction );
-        
+        if ( jsonIn ) {
+            JSONSerializableTypeInfo typeInfo ( *jsonIn );
+            TransactionFactory factory;
+            unique_ptr < AbstractTransaction > transaction ( factory.make ( typeInfo ));
+            if ( transaction ) {
+                TheWebMiner::get ().pushTransaction ( transaction );
+            }
+        }
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

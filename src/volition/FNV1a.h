@@ -5,7 +5,6 @@
 #define VOLITION_FNV1A_H
 
 #include <volition/common.h>
-#include <volition/AbstractHashable.h>
 
 namespace Volition {
 namespace FNV1a {
@@ -25,7 +24,7 @@ constexpr uint32_t const_hash_32 ( const char* str, uint32_t hash = FNV1A_VAL_32
 }
 
 //----------------------------------------------------------------//
-constexpr uint64_t const_hash_64 ( const char* str, uint64_t hash = 0 ) {
+constexpr uint64_t const_hash_64 ( const char* str, uint64_t hash = FNV1A_VAL_64 ) {
     return *str ? const_hash_64 ( &str [ 1 ], ( hash ^ ( uint64_t )*str ) * FNV1A_PRIME_64 ) : hash;
 }
 

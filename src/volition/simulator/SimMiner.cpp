@@ -4,8 +4,7 @@
 #include <volition/TheContext.h>
 #include <volition/simulator/SimMiner.h>
 #include <volition/simulator/TheSimulator.h>
-#include <volition/transactions/OpenAccount.h>
-#include <volition/transactions/RegisterMiner.h>
+#include <volition/Transactions.h>
 
 namespace Volition {
 namespace Simulator {
@@ -29,22 +28,22 @@ const SimMiner* SimMiner::nextMiner () {
 //----------------------------------------------------------------//
 void SimMiner::pushGenesis ( Block& block ) {
 
-    block.pushTransaction (
-        make_unique < Transaction::OpenAccount >(
-            this->mMinerID,
-            "master",
-            *this->mKeyPair,
-            0
-        )
-    );
-    
-    block.pushTransaction (
-        make_unique < Transaction::RegisterMiner >(
-            this->mMinerID,
-            "",
-            this->mMinerID + ".master"
-        )
-    );
+//    block.pushTransaction (
+//        make_unique < Transaction::OpenAccount >(
+//            this->mMinerID,
+//            "master",
+//            *this->mKeyPair,
+//            0
+//        )
+//    );
+//    
+//    block.pushTransaction (
+//        make_unique < Transaction::RegisterMiner >(
+//            this->mMinerID,
+//            "",
+//            this->mMinerID + ".master"
+//        )
+//    );
 }
 
 //----------------------------------------------------------------//

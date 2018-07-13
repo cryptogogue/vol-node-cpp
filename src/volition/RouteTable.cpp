@@ -12,7 +12,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 AbstractRequestHandler* RouteTable::match ( string uri ) {
 
-    AbstractRequestHandler* handler = NULL;
+    unique_ptr < AbstractRequestHandler > handler;
 
     try {
         Routing::PathMatch match = this->mRouter.matchPath ( uri );
@@ -24,7 +24,6 @@ AbstractRequestHandler* RouteTable::match ( string uri ) {
     }
     catch ( Routing::PathNotFoundException ) {
     
-        // default handler
         try {
             Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
             handler = this->create ();
@@ -34,7 +33,7 @@ AbstractRequestHandler* RouteTable::match ( string uri ) {
         catch ( Routing::PathNotFoundException ) {
         }
     }
-    return handler;
+    return handler.release ();
 }
 
 //----------------------------------------------------------------//

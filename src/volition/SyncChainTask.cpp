@@ -1,7 +1,6 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractHashable.h>
 #include <volition/Chain.h>
 #include <volition/SyncChainTask.h>
 
@@ -58,7 +57,7 @@ void SyncChainTask::runTask () {
     
     if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
         this->mChain = make_unique < Chain >();
-        this->mChain->fromJSON ( rs );
+        FromJSONSerializer::fromJSON ( *this->mChain, rs );
     }
 }
 

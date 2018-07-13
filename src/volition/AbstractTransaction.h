@@ -5,10 +5,9 @@
 #define VOLITION_ABSTRACTTRANSACTION_H
 
 #include <volition/common.h>
-#include <volition/AbstractHashable.h>
-#include <volition/AbstractSerializable.h>
 #include <volition/State.h>
 #include <volition/TransactionMakerSignature.h>
+#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
@@ -28,16 +27,13 @@ namespace Volition {
 // AbstractTransaction
 //================================================================//
 class AbstractTransaction :
-    public AbstractHashable,
     public AbstractSerializable {
 protected:
 
-    unique_ptr < TransactionMakerSignature >    mMakerSignature;
+    SerializableUniquePtr < TransactionMakerSignature >     mMakerSignature;
 
     //----------------------------------------------------------------//
-    void                    AbstractHashable_hash               ( Poco::DigestOutputStream& digestStream ) const override;
-    void                    AbstractSerializable_fromJSON       ( const Poco::JSON::Object& object ) override;
-    void                    AbstractSerializable_toJSON         ( Poco::JSON::Object& object ) const override;
+    void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
     //----------------------------------------------------------------//
     virtual void            AbstractTransaction_apply           ( State& state ) const = 0;

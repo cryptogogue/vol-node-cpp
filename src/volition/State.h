@@ -26,7 +26,6 @@ public:
     const map < string, string >&       getMinerURLs            () const;
     void                                registerMiner           ( const MinerInfo& minerInfo );
                                         State                   ();
-                                        //State                   ( const State* prevState );
                                         ~State                  ();
 };
 

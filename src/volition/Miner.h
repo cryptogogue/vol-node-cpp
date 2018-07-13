@@ -37,9 +37,8 @@ public:
     //----------------------------------------------------------------//
     void            loadGenesis             ( string path );
     void            loadKey                 ( string keyfile, string password = "" );
-    const Chain*    getChain                () const;
+    Chain*          getChain                () const;
     string          getMinerID              () const;
-    //string          getPublicKey            ();
     const State&    getState                () const;
     void            pushTransaction         ( unique_ptr < AbstractTransaction >& transaction );
     void            setGenesis              ( shared_ptr < Block > block );

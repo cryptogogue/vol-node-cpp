@@ -1,7 +1,6 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractHashable.h>
 #include <volition/Block.h>
 #include <volition/SyncChainTask.h>
 #include <volition/TheContext.h>
@@ -74,7 +73,8 @@ void WebMiner::run () {
             
             map < string, string >::iterator urlIt = this->mMinerURLs.begin ();
             for ( ; urlIt != this->mMinerURLs.end (); ++urlIt ) {
-                this->mTaskManager.start ( new SyncChainTask ( urlIt->first, urlIt->second ));
+                string url = urlIt->second + ( "blocks/" );
+                this->mTaskManager.start ( new SyncChainTask ( urlIt->first, url ));
             }
         }
         printf ( "%d\n", ( unsigned int )count++ );

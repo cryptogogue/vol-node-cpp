@@ -150,7 +150,7 @@ const Chain* Chain::choose ( size_t cycleID, const Chain& prefer, const Chain& o
 }
 
 //----------------------------------------------------------------//
-size_t Chain::countBlocks ( size_t cycleIdx ) const {
+size_t Chain::countBlocks ( size_t cycleIdx ) {
 
     return this->getCycle ( cycleIdx ).countBlocks ();
 }
@@ -162,9 +162,9 @@ size_t Chain::countCycles () const {
 }
 
 //----------------------------------------------------------------//
-const Block* Chain::findBlock ( u64 height ) const {
+Block* Chain::findBlock ( u64 height ) {
 
-    const Block* block = NULL;
+    Block* block = NULL;
 
     // TODO: replace with something more efficient
     for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
@@ -227,13 +227,13 @@ ChainPlacement Chain::findPlacement ( string minerID, bool force ) const {
 }
 
 //----------------------------------------------------------------//
-const Block& Chain::getBlock ( size_t cycleIdx, size_t blockIdx ) const {
+Block& Chain::getBlock ( size_t cycleIdx, size_t blockIdx ) {
 
     return this->getCycle ( cycleIdx ).getBlock ( blockIdx );
 }
 
 //----------------------------------------------------------------//
-const Cycle& Chain::getCycle ( size_t idx ) const {
+Cycle& Chain::getCycle ( size_t idx ) {
 
     assert (( idx < this->mCycles.size () ) && ( this->mCycles [ idx ]));
     return *this->mCycles [ idx ];
@@ -332,30 +332,9 @@ bool Chain::verify () const {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Chain::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
-    
-    const Poco::JSON::Array::Ptr cycles = object.getArray ( "cycles" );
-    this->mCycles.resize ( cycles->size ());
+void Chain::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
-    for ( size_t i = 0; i < cycles->size (); ++i ) {
-
-        const Poco::JSON::Object::Ptr cycleJSON = cycles->getObject (( unsigned int )i );
-        assert ( cycleJSON );
-
-        this->mCycles [ i ] = make_unique < Cycle >();
-        this->mCycles [ i ]->fromJSON ( *cycleJSON );
-    }
-}
-
-//----------------------------------------------------------------//
-void Chain::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
-    
-    Poco::JSON::Array::Ptr cycles = new Poco::JSON::Array ();
-    object.set ( "cycles", cycles );
-    
-    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
-        cycles->set (( unsigned int )i, this->mCycles [ i ]->toJSON ());
-    }
+    serializer.serialize ( "cycles",        this->mCycles );
 }
 
 } // namespace Volition

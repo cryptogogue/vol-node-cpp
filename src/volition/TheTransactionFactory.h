@@ -20,14 +20,27 @@ class TheTransactionFactory :
 public:
 
     //----------------------------------------------------------------//
-    AbstractTransaction*    create                      ( const Poco::JSON::Object& object ) const;
-                            TheTransactionFactory       ();
-                            ~TheTransactionFactory      ();
+    unique_ptr < AbstractTransaction >      create                      ( string typeString ) const;
+                                            TheTransactionFactory       ();
+                                            ~TheTransactionFactory      ();
     
     //----------------------------------------------------------------//
     template < typename TYPE >
     void registerTransaction () {
         this->addFactoryAllocator < TYPE >( TYPE::TYPE_STRING );
+    }
+};
+
+//================================================================//
+// TransactionFactory
+//================================================================//
+class TransactionFactory :
+    public AbstractSerializablePtrFactory < AbstractTransaction > {
+public:
+
+    //----------------------------------------------------------------//
+    unique_ptr < AbstractTransaction > SerializablePtrFactory_make ( const AbstractSerializableTypeInfo& typeInfo ) override {
+        return TheTransactionFactory::get ().create ( typeInfo.get ( "type" ));
     }
 };
 

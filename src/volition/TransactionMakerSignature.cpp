@@ -1,7 +1,6 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/Serialize.h>
 #include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
@@ -25,31 +24,12 @@ TransactionMakerSignature::~TransactionMakerSignature () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void TransactionMakerSignature::AbstractHashable_hash ( Poco::DigestOutputStream& digestStream ) const {
+void TransactionMakerSignature::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
-    digestStream << this->mGratuity;
-    digestStream << this->mKeyName;
-    digestStream << this->mNonce;
-}
-
-//----------------------------------------------------------------//
-void TransactionMakerSignature::AbstractSerializable_fromJSON ( const Poco::JSON::Object& object ) {
-    Signature::AbstractSerializable_fromJSON ( object );
-
-    this->mKeyName      = object.optValue < string >( "keyName", "" );
-    
-    this->mGratuity     = Serialize::getU64FromJSON ( object, "gratuity", 0 );
-    this->mNonce        = Serialize::getU64FromJSON ( object, "nonce", 0 );
-}
-
-//----------------------------------------------------------------//
-void TransactionMakerSignature::AbstractSerializable_toJSON ( Poco::JSON::Object& object ) const {
-    Signature::AbstractSerializable_toJSON ( object );
-
-    object.set ( "keyName",       this->mKeyName.c_str ());
-    
-    Serialize::setU64ToJSON ( object, "gratuity",   this->mGratuity );
-    Serialize::setU64ToJSON ( object, "nonce",     this->mNonce );
+    serializer.serialize ( "gratuity",      this->mGratuity );
+    serializer.serialize ( "accountName",   this->mAccountName );
+    serializer.serialize ( "keyName",       this->mKeyName );
+    serializer.serialize ( "nonce",         this->mNonce );
 }
 
 } // namespace Volition

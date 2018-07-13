@@ -129,12 +129,12 @@ public:
         inStream.open ( inpath, ios_base::in );
         
         Volition::Block block;
-        block.fromJSON ( inStream );
+        Volition::FromJSONSerializer::fromJSON ( block, inStream );
         block.sign ( keyPair );
-        
+
         fstream outStream;
         outStream.open ( outpath, ios_base::out );
-        block.toJSON ( outStream );
+        Volition::ToJSONSerializer::toJSON ( block, outStream );
         
         return EXIT_OK;
     }
