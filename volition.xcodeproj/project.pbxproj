@@ -374,14 +374,26 @@
 		CD4665AA20BFE49000A02D55 /* ledger */ = {
 			isa = PBXGroup;
 			children = (
-				CDC2B31920CE0F0100300A96 /* chain */,
-				CDC2B33F20CF8E9600300A96 /* state */,
 				CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */,
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */,
+				CD46659C20BE908300A02D55 /* Block.cpp */,
+				CD46659D20BE908300A02D55 /* Block.h */,
+				CDC2B33520CE112F00300A96 /* Chain.cpp */,
+				CDC2B33620CE112F00300A96 /* Chain.h */,
+				CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */,
+				CD59F3DF20EB045400705AEB /* ChainPlacement.h */,
+				CDC2B33720CE112F00300A96 /* Cycle.cpp */,
+				CDC2B33820CE112F00300A96 /* Cycle.h */,
+				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
+				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
 				CDC2B34120D1182400300A96 /* TheContext.h */,
 				CD59F3BB20E8950100705AEB /* Policy.cpp */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
+				CD59F3B120E889A000705AEB /* Signature.cpp */,
+				CD59F3B220E889A000705AEB /* Signature.h */,
+				CDC2B31420CCAD2400300A96 /* State.cpp */,
+				CDC2B31520CCAD2400300A96 /* State.h */,
 				CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */,
 				CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */,
 				CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */,
@@ -396,8 +408,6 @@
 			children = (
 				CD0C3E2820C279FB006E3B1C /* Factory.h */,
 				CD36663720F595B2000E0B43 /* FNV1a.h */,
-				CD59F3B120E889A000705AEB /* Signature.cpp */,
-				CD59F3B220E889A000705AEB /* Signature.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
 			);
 			name = util;
@@ -459,21 +469,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CDC2B31920CE0F0100300A96 /* chain */ = {
-			isa = PBXGroup;
-			children = (
-				CD46659C20BE908300A02D55 /* Block.cpp */,
-				CD46659D20BE908300A02D55 /* Block.h */,
-				CDC2B33520CE112F00300A96 /* Chain.cpp */,
-				CDC2B33620CE112F00300A96 /* Chain.h */,
-				CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */,
-				CD59F3DF20EB045400705AEB /* ChainPlacement.h */,
-				CDC2B33720CE112F00300A96 /* Cycle.cpp */,
-				CDC2B33820CE112F00300A96 /* Cycle.h */,
-			);
-			name = chain;
-			sourceTree = "<group>";
-		};
 		CDC2B31A20CE0F8400300A96 /* simulator */ = {
 			isa = PBXGroup;
 			children = (
@@ -488,17 +483,6 @@
 				CDC2B32220CE0FA100300A96 /* TheSimulator.h */,
 			);
 			name = simulator;
-			sourceTree = "<group>";
-		};
-		CDC2B33F20CF8E9600300A96 /* state */ = {
-			isa = PBXGroup;
-			children = (
-				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
-				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
-				CDC2B31420CCAD2400300A96 /* State.cpp */,
-				CDC2B31520CCAD2400300A96 /* State.h */,
-			);
-			name = state;
 			sourceTree = "<group>";
 		};
 		CDED581320BA1EF7003A2969 /* 3rd-party */ = {

@@ -24,6 +24,30 @@ TransactionMakerSignature::~TransactionMakerSignature () {
 //================================================================//
 
 //----------------------------------------------------------------//
+string TransactionMakerSignature::getAccountName () const {
+
+    return this->mAccountName;
+}
+
+//----------------------------------------------------------------//
+u64 TransactionMakerSignature::getGratuity () const {
+
+    return this->mGratuity;
+}
+
+//----------------------------------------------------------------//
+string TransactionMakerSignature::getKeyName () const {
+
+    return this->mKeyName;
+}
+
+//----------------------------------------------------------------//
+u64 TransactionMakerSignature::getNonce () const {
+
+    return this->mNonce;
+}
+
+//----------------------------------------------------------------//
 void TransactionMakerSignature::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
     serializer.serialize ( "gratuity",      this->mGratuity );

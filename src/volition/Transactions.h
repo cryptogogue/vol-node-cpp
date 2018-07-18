@@ -71,6 +71,8 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractTransaction_apply ( State& state ) const override {
+    
+        state.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey.get (), this->mPolicyName );
     }
 };
 
@@ -104,7 +106,8 @@ public:
     //----------------------------------------------------------------//
     void AbstractTransaction_apply ( State& state ) const override {
     
-        state.registerMiner ( MinerInfo ( this->mAccountName, this->mURL, *this->mKey ));
+        assert ( this->mKey );
+        state.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, *this->mKey, this->mURL );
     }
 };
 
@@ -161,6 +164,9 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractTransaction_apply ( State& state ) const override {
+        
+        assert ( this->mKey );
+        state.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, *this->mKey );
     }
 };
 
@@ -185,6 +191,8 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractTransaction_apply ( State& state ) const override {
+    
+        state.registerMiner ( this->mMakerSignature->getAccountName (), this->mMakerSignature->getKeyName (), this->mURL );
     }
 };
 
@@ -211,6 +219,8 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractTransaction_apply ( State& state ) const override {
+        
+        state.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
     }
 };
 

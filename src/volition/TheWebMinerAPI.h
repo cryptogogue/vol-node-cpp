@@ -23,14 +23,25 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
     
+        string accountName = this->getMatchString ( "accountName" );
+        const State& state = TheWebMiner::get ().getState ();
+        
+        const Account* account = state.getAccount ( accountName );
+        if ( account ) {
+            jsonOut = new Poco::JSON::Object ();
+            jsonOut->set ( "accountName", accountName.c_str ());
+            jsonOut->set ( "balance", ( int )account->getBalance ());
+            
+            return Poco::Net::HTTPResponse::HTTP_OK;
+        }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };
 
 //================================================================//
-// AccountKeysHandler
+// AccountKeyListHandler
 //================================================================//
-class AccountKeysHandler :
+class AccountKeyListHandler :
     public AbstractAPIRequestHandler {
 public:
 
@@ -39,6 +50,26 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
     
+        string accountName = this->getMatchString ( "accountName" );
+        const State& state = TheWebMiner::get ().getState ();
+        
+        const Account* account = state.getAccount ( accountName );
+        if ( account ) {
+    
+            map < string, Poco::Crypto::ECKey > keys;
+            account->getKeys ( keys );
+    
+            jsonOut = new Poco::JSON::Object ();
+    
+            map < string, Poco::Crypto::ECKey >::iterator keyIt = keys.begin ();
+            for ( ; keyIt != keys.end (); ++keyIt ) {
+                stringstream keyString;
+                keyIt->second.save ( &keyString );
+                jsonOut->set ( keyIt->first, keyString.str ().c_str ());
+            }
+        
+            return Poco::Net::HTTPResponse::HTTP_OK;
+        }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };

@@ -21,6 +21,10 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+    virtual ~AbstractFactoryAllocator () {
+    }
+
+    //----------------------------------------------------------------//
     unique_ptr < FACTORY_TYPE > create () const {
     
         return this->AbstractFactoryAllocator_create ();

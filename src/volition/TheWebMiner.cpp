@@ -13,12 +13,12 @@ namespace Volition {
 //----------------------------------------------------------------//
 TheWebMiner::TheWebMiner () {
     
-    this->mRouteTable.addEndpoint < TheWebMinerAPI::AccountDetailsHandler >     ( "/accounts/:accountName/?" );         // GET
-    this->mRouteTable.addEndpoint < TheWebMinerAPI::AccountKeysHandler >        ( "/accounts/:accountName/keys/?" );    // GET
-    this->mRouteTable.addEndpoint < TheWebMinerAPI::BlockDetailsHandler >       ( "/blocks/:blockID/?" );               // GET
-    this->mRouteTable.addEndpoint < TheWebMinerAPI::BlockListHandler >          ( "/blocks/?" );                        // GET
-    this->mRouteTable.addEndpoint < TheWebMinerAPI::MinerListHandler >          ( "/miners/?" );                        // GET
-    this->mRouteTable.addEndpoint < TheWebMinerAPI::TransactionHandler >        ( "/transactions/?" );                  // POST
+    this->mRouteTable.addEndpoint < TheWebMinerAPI::AccountDetailsHandler >     ( "/accounts/:accountName/?" );                 // GET
+    this->mRouteTable.addEndpoint < TheWebMinerAPI::AccountKeyListHandler >     ( "/accounts/:accountName/keys/?" );            // GET
+    this->mRouteTable.addEndpoint < TheWebMinerAPI::BlockDetailsHandler >       ( "/blocks/:blockID/?" );                       // GET
+    this->mRouteTable.addEndpoint < TheWebMinerAPI::BlockListHandler >          ( "/blocks/?" );                                // GET
+    this->mRouteTable.addEndpoint < TheWebMinerAPI::MinerListHandler >          ( "/miners/?" );                                // GET
+    this->mRouteTable.addEndpoint < TheWebMinerAPI::TransactionHandler >        ( "/transactions/?" );                          // POST
 
     this->mRouteTable.setDefault < TheWebMinerAPI::DefaultHandler >             ();
 }

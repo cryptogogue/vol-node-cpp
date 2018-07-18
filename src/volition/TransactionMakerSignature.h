@@ -27,6 +27,10 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+    string                  getAccountName                      () const;
+    u64                     getGratuity                         () const;
+    string                  getKeyName                          () const;
+    u64                     getNonce                            () const;
                             TransactionMakerSignature           ();
                             ~TransactionMakerSignature          ();
 };
