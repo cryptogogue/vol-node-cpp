@@ -194,6 +194,7 @@ public:
             TransactionFactory factory;
             unique_ptr < AbstractTransaction > transaction ( factory.make ( typeInfo ));
             if ( transaction ) {
+                FromJSONSerializer::fromJSON ( *transaction, *jsonIn );
                 TheWebMiner::get ().pushTransaction ( transaction );
             }
         }

@@ -1,10 +1,20 @@
+make sure OpenSSL is installed and the path to it is set in your environment (via ~/.bashrc):
+
+export OPENSSL_ROOT_DIR=/usr/local/opt/openssl/
+
+dependencies:
+
+brew install cmake
+
 from project root:
 
-mkdir build/build-poco
-cd buid/build-poco
-cmake ../../3rd-party/poco -DPOCO_STATIC=1 -DCMAKE_BUILD_TYPE=Debug
-make -s -j
+mkdir -p build/build-poco
+cd build/build-poco
+cmake ../../3rd-party/poco -DPOCO_STATIC=1
+make -s
 make package
+
+and then:
 
 decrompress *.tar.gz into ../../poco
 
