@@ -56,7 +56,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void getKeys ( map < string, Poco::Crypto::ECKey > keys ) const {
+    void getKeys ( map < string, Poco::Crypto::ECKey >& keys ) const {
     
         map < string, KeyAndPolicy >::const_iterator keyIt = this->mKeys.cbegin ();
         for ( ; keyIt != this->mKeys.end (); ++keyIt ) {

@@ -48,7 +48,7 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     }
 
     Poco::JSON::Object::Ptr jsonIn  = NULL;
-    Poco::JSON::Object::Ptr jsonOut = NULL;
+    Poco::JSON::Object::Ptr jsonOut = new Poco::JSON::Object ();
     
     if ( method & ( HTTP_POST | HTTP_PUT )) {
     
@@ -65,7 +65,7 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, jsonIn, jsonOut );
 
     response.setStatus ( status );
-    
+        
     if ( jsonOut ) {
         ostream& out = response.send ();
         jsonOut->stringify ( out, 4, -1 );

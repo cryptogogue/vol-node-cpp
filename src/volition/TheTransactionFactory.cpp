@@ -20,6 +20,7 @@ unique_ptr < AbstractTransaction > TheTransactionFactory::create ( string typeSt
 TheTransactionFactory::TheTransactionFactory () {
 
     this->registerTransaction < Volition::Transaction::AccountPolicy >();
+    this->registerTransaction < Volition::Transaction::AffirmKey >();
     this->registerTransaction < Volition::Transaction::GenesisMiner >();
     this->registerTransaction < Volition::Transaction::KeyPolicy >();
     this->registerTransaction < Volition::Transaction::OpenAccount >();

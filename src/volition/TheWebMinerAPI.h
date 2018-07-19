@@ -28,10 +28,11 @@ public:
         
         const Account* account = state.getAccount ( accountName );
         if ( account ) {
-            jsonOut = new Poco::JSON::Object ();
-            jsonOut->set ( "accountName", accountName.c_str ());
-            jsonOut->set ( "balance", ( int )account->getBalance ());
+            Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
+            accountJSON->set ( "accountName", accountName.c_str ());
+            accountJSON->set ( "balance", ( int )account->getBalance ());
             
+            jsonOut->set ( "account", accountJSON );
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
@@ -58,16 +59,17 @@ public:
     
             map < string, Poco::Crypto::ECKey > keys;
             account->getKeys ( keys );
-    
-            jsonOut = new Poco::JSON::Object ();
+            
+            Poco::JSON::Object::Ptr keysJSON = new Poco::JSON::Object ();
     
             map < string, Poco::Crypto::ECKey >::iterator keyIt = keys.begin ();
             for ( ; keyIt != keys.end (); ++keyIt ) {
                 stringstream keyString;
                 keyIt->second.save ( &keyString );
-                jsonOut->set ( keyIt->first, keyString.str ().c_str ());
+                keysJSON->set ( keyIt->first, keyString.str ().c_str ());
             }
-        
+            
+            jsonOut->set ( "accountKeys", keysJSON );
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
@@ -93,7 +95,7 @@ public:
             if ( chain ) {
                 Block* block = chain->findBlock ( height );
                 if ( block ) {
-                    jsonOut = ToJSONSerializer::toJSON ( *block );
+                    jsonOut->set ( "block", ToJSONSerializer::toJSON ( *block ));
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
             }
@@ -119,7 +121,7 @@ public:
 
         Chain* chain = TheWebMiner::get ().getChain ();
         if ( chain ) {
-            jsonOut = ToJSONSerializer::toJSON ( *chain );
+            jsonOut->set ( "blocks", ToJSONSerializer::toJSON ( *chain ));
         }
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
@@ -139,9 +141,8 @@ public:
         
         const TheWebMiner& theMiner = TheWebMiner::get ();
         
-        jsonOut = new Poco::JSON::Object ();
         jsonOut->set ( "minerID", theMiner.getMinerID ().c_str ());
-        
+
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
@@ -162,17 +163,18 @@ public:
         const State& state                              = theMiner.getState ();
         const map < string, MinerInfo >& minerInfo      = state.getMinerInfo ();
         
-        jsonOut = new Poco::JSON::Object ();
-    
+        Poco::JSON::Object::Ptr minersJSON = new Poco::JSON::Object ();
+        
         map < string, MinerInfo >::const_iterator minerInfoIt = minerInfo.cbegin ();
         for ( unsigned int i = 0; minerInfoIt != minerInfo.cend (); ++minerInfoIt, ++i ) {
             const MinerInfo& minerInfo = minerInfoIt->second;
             
             Poco::JSON::Object::Ptr minerInfoJSON = new Poco::JSON::Object ();
             minerInfoJSON->set ( "url",         minerInfo.getURL ().c_str ());
-            jsonOut->set ( minerInfo.getMinerID (), minerInfoJSON );
+            minersJSON->set ( minerInfo.getMinerID (), minerInfoJSON );
         }
         
+        jsonOut->set ( "miners", minersJSON );
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
@@ -196,9 +198,10 @@ public:
             if ( transaction ) {
                 FromJSONSerializer::fromJSON ( *transaction, *jsonIn );
                 TheWebMiner::get ().pushTransaction ( move ( transaction ));
+                return Poco::Net::HTTPResponse::HTTP_OK;
             }
         }
-        return Poco::Net::HTTPResponse::HTTP_OK;
+        return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
     }
 };
 

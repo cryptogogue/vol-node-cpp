@@ -26,6 +26,7 @@ bool State::affirmKey ( string accountName, string keyName, const Poco::Crypto::
 
         if ( key ) {
             account->mKeys.insert ( pair < string, KeyAndPolicy >( keyName, KeyAndPolicy ( *key ))); // because KeyAndPolicy has no empty constructor
+            return true;
         }
     }
     return false;
