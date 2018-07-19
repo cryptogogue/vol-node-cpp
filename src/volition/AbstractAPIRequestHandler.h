@@ -36,7 +36,7 @@ protected:
 
     //----------------------------------------------------------------//
     virtual int             AbstractAPIRequestHandler_getSupportedHTTPMethods       () const = 0;
-    virtual HTTPStatus      AbstractAPIRequestHandler_handleRequest                 ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const = 0;
+    virtual HTTPStatus      AbstractAPIRequestHandler_handleRequest                 ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
 
 public:
 

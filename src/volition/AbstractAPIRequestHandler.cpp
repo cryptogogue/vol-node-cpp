@@ -61,16 +61,17 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
             return;
         }
     }
+    else {
+        jsonIn = new Poco::JSON::Object ();
+    }
 
-    HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, jsonIn, jsonOut );
+    HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, *jsonIn, *jsonOut );
 
     response.setStatus ( status );
-        
-    if ( jsonOut ) {
-        ostream& out = response.send ();
-        jsonOut->stringify ( out, 4, -1 );
-        out.flush ();
-    }
+    
+    ostream& out = response.send ();
+    jsonOut->stringify ( out, 4, -1 );
+    out.flush ();
 }
 
 } // namespace Volition

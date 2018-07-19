@@ -21,7 +21,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP_GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         string accountName = this->getMatchString ( "accountName" );
         const State& state = TheWebMiner::get ().getState ();
@@ -32,7 +32,7 @@ public:
             accountJSON->set ( "accountName", accountName.c_str ());
             accountJSON->set ( "balance", ( int )account->getBalance ());
             
-            jsonOut->set ( "account", accountJSON );
+            jsonOut.set ( "account", accountJSON );
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
@@ -49,7 +49,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP_GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         string accountName = this->getMatchString ( "accountName" );
         const State& state = TheWebMiner::get ().getState ();
@@ -69,7 +69,7 @@ public:
                 keysJSON->set ( keyIt->first, keyString.str ().c_str ());
             }
             
-            jsonOut->set ( "accountKeys", keysJSON );
+            jsonOut.set ( "accountKeys", keysJSON );
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
@@ -86,7 +86,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP_GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
         try {
             u64 height = this->getMatchU64 ( "blockID" );
@@ -95,7 +95,7 @@ public:
             if ( chain ) {
                 Block* block = chain->findBlock ( height );
                 if ( block ) {
-                    jsonOut->set ( "block", ToJSONSerializer::toJSON ( *block ));
+                    jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
             }
@@ -117,11 +117,11 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP_GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
         Chain* chain = TheWebMiner::get ().getChain ();
         if ( chain ) {
-            jsonOut->set ( "blocks", ToJSONSerializer::toJSON ( *chain ));
+            jsonOut.set ( "blocks", ToJSONSerializer::toJSON ( *chain ));
         }
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
@@ -137,11 +137,11 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP_GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         
         const TheWebMiner& theMiner = TheWebMiner::get ();
         
-        jsonOut->set ( "minerID", theMiner.getMinerID ().c_str ());
+        jsonOut.set ( "minerID", theMiner.getMinerID ().c_str ());
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
@@ -157,7 +157,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP_GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         const TheWebMiner& theMiner                     = TheWebMiner::get ();
         const State& state                              = theMiner.getState ();
@@ -174,7 +174,7 @@ public:
             minersJSON->set ( minerInfo.getMinerID (), minerInfoJSON );
         }
         
-        jsonOut->set ( "miners", minersJSON );
+        jsonOut.set ( "miners", minersJSON );
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
@@ -189,17 +189,15 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP_POST )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object::Ptr jsonIn, Poco::JSON::Object::Ptr& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-        if ( jsonIn ) {
-            JSONSerializableTypeInfo typeInfo ( *jsonIn );
-            TransactionFactory factory;
-            unique_ptr < AbstractTransaction > transaction = factory.make ( typeInfo );
-            if ( transaction ) {
-                FromJSONSerializer::fromJSON ( *transaction, *jsonIn );
-                TheWebMiner::get ().pushTransaction ( move ( transaction ));
-                return Poco::Net::HTTPResponse::HTTP_OK;
-            }
+        JSONSerializableTypeInfo typeInfo ( jsonIn );
+        TransactionFactory factory;
+        unique_ptr < AbstractTransaction > transaction = factory.make ( typeInfo );
+        if ( transaction ) {
+            FromJSONSerializer::fromJSON ( *transaction, jsonIn );
+            TheWebMiner::get ().pushTransaction ( move ( transaction ));
+            return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
     }
