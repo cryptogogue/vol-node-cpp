@@ -55,10 +55,10 @@ public:
     //----------------------------------------------------------------//
     void getKeys ( map < string, Poco::Crypto::ECKey > keys ) const {
     
-//        map < string, KeyAndPolicy >::const_iterator keyIt = this->mKeys.cbegin ();
-//        for ( ; keyIt != this->mKeys.end (); ++keyIt ) {
-//            keys [ keyIt->first ] = Poco::Crypto::ECKey ( keyIt->second.mKey );
-//        }
+        map < string, KeyAndPolicy >::const_iterator keyIt = this->mKeys.cbegin ();
+        for ( ; keyIt != this->mKeys.end (); ++keyIt ) {
+            keys.insert ( pair < string, Poco::Crypto::ECKey >( keyIt->first, keyIt->second.mKey )); // because Poco::Crypto::ECKey has no empty constructor
+        }
     }
 };
 
