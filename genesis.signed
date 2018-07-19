@@ -1,0 +1,27 @@
+{
+    "cycleID" : 0,
+    "height" : 0,
+    "signature" : {
+        "digest" : "9ec61f3245d657536923fc88b526cbda3b280612b7113087b0f18894b69039f4",
+        "hashAlgorithm" : "SHA256",
+        "signature" : "3045022100d98730d940d43b37de8283fa1facfd43a8dc5cae45b3a557dd1dfaea7ff6a5a502207f0824c3be7ba80deceaf036c49892f40e9fbba2be3de4cd6fa8579d6caeb102"
+    },
+    "transactions" : [
+        {
+            "accountName" : "9090",
+            "amount" : 1000000,
+            "key" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbeoS+2ToK5C92wKnkuSI4gKFfXDdqbQI\nkC507t01tdxyLoal4hSKOCcgapeMVT8d9BkEDDkYyu2iOffJ40K7kQ==\n-----END PUBLIC KEY-----\n",
+            "keyName" : "master",
+            "type" : "GENESIS_MINER",
+            "url" : "http:\/\/127.0.0.1:9090\/"
+        },
+        {
+            "accountName" : "9091",
+            "amount" : 1000000,
+            "key" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n",
+            "keyName" : "master",
+            "type" : "GENESIS_MINER",
+            "url" : "http:\/\/127.0.0.1:9091\/"
+        }
+    ]
+}

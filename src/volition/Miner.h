@@ -24,28 +24,29 @@ protected:
     string                                          mMinerID;
 
     unique_ptr < Poco::Crypto::ECKey >              mKeyPair;
-    list < unique_ptr < AbstractTransaction >>      mPendingTransactions;
+    list < shared_ptr < AbstractTransaction >>      mPendingTransactions;
+    bool                                            mLazy;
 
     unique_ptr < Chain >                            mChain;
-    State                                           mState;
     
     //----------------------------------------------------------------//
-    void            pushBlock               ( Chain& chain, bool force );
+    unique_ptr < Block >    makeBlock               ( const Chain& chain );
+    void                    pushBlock               ( Chain& chain, bool force );
 
 public:
 
     //----------------------------------------------------------------//
-    void            loadGenesis             ( string path );
-    void            loadKey                 ( string keyfile, string password = "" );
-    Chain*          getChain                () const;
-    string          getMinerID              () const;
-    const State&    getState                () const;
-    void            pushTransaction         ( unique_ptr < AbstractTransaction >& transaction );
-    void            setGenesis              ( shared_ptr < Block > block );
-    void            setMinerID              ( string minerID );
-                    Miner                   ();
-    virtual         ~Miner                  ();
-    void            updateChain             ( unique_ptr < Chain > proposedChain );
+    void                    loadGenesis             ( string path );
+    void                    loadKey                 ( string keyfile, string password = "" );
+    Chain*                  getChain                () const;
+    string                  getMinerID              () const;
+    const State&            getState                () const;
+    void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
+    void                    setGenesis              ( shared_ptr < Block > block );
+    void                    setMinerID              ( string minerID );
+                            Miner                   ();
+    virtual                 ~Miner                  ();
+    void                    updateChain             ( unique_ptr < Chain > proposedChain );
 };
 
 } // namespace Volition

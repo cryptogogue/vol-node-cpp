@@ -57,15 +57,16 @@ WebMiner::~WebMiner () {
 //----------------------------------------------------------------//
 void WebMiner::run () {
 
-    size_t count = 0;
+    //size_t count = 0;
+    size_t height = 0;
     while ( !this->isStopped ()) {
     
         if ( this->mChain && ( this->mMinerURLs.size () == 0 )) {
             
             this->pushBlock ( *this->mChain, true );
-            this->mChain->print ();
+            //this->mChain->print ();
             
-            this->mMinerURLs = this->mState.getMinerURLs ();
+            this->mMinerURLs = this->mChain->getState ().getMinerURLs ();
             
             if ( this->mMinerURLs.find ( this->mMinerID ) != this->mMinerURLs.end ()) {
                 this->mMinerURLs.erase ( this->mMinerID );
@@ -76,8 +77,15 @@ void WebMiner::run () {
                 string url = urlIt->second + ( "blocks/" );
                 this->mTaskManager.start ( new SyncChainTask ( urlIt->first, url ));
             }
+            
+            size_t nextHeight = this->mChain->getState ().getHeight ();
+            if ( nextHeight != height ) {
+                printf ( "height: %d\n", ( int )nextHeight );
+                this->mChain->print ();
+                height = nextHeight;
+            }
         }
-        printf ( "%d\n", ( unsigned int )count++ );
+        //printf ( "%d\n", ( unsigned int )count++ );
         Poco::Thread::sleep ( 200 );
     }
 }

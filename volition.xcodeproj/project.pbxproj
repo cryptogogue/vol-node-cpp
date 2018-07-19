@@ -374,8 +374,6 @@
 		CD4665AA20BFE49000A02D55 /* ledger */ = {
 			isa = PBXGroup;
 			children = (
-				CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */,
-				CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
 				CD46659D20BE908300A02D55 /* Block.h */,
 				CDC2B33520CE112F00300A96 /* Chain.cpp */,
@@ -394,11 +392,6 @@
 				CD59F3B220E889A000705AEB /* Signature.h */,
 				CDC2B31420CCAD2400300A96 /* State.cpp */,
 				CDC2B31520CCAD2400300A96 /* State.h */,
-				CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */,
-				CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */,
-				CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */,
-				CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */,
-				CD36664120F6B404000E0B43 /* Transactions.h */,
 			);
 			name = ledger;
 			sourceTree = "<group>";
@@ -441,10 +434,25 @@
 				CDED587020BCDBD7003A2969 /* router */,
 				CD36664720F72F94000E0B43 /* serialization */,
 				CDC2B31A20CE0F8400300A96 /* simulator */,
+				CD6D7CCF21006C9F0005446F /* transaction */,
 				CD4665AF20BFF62600A02D55 /* util */,
 				CD5C62FA20B4F7B10038EE98 /* common.h */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		CD6D7CCF21006C9F0005446F /* transaction */ = {
+			isa = PBXGroup;
+			children = (
+				CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */,
+				CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */,
+				CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */,
+				CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */,
+				CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */,
+				CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */,
+				CD36664120F6B404000E0B43 /* Transactions.h */,
+			);
+			name = transaction;
 			sourceTree = "<group>";
 		};
 		CD9345B92093EB140077BAD4 = {

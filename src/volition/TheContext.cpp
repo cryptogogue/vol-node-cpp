@@ -9,7 +9,7 @@
 namespace Volition {
 
 static const char* PUBLIC_KEY_STRING    = "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEzfUD/qtmfa4H2NJ+vriC8SNm0bUe8dMx\nBlOig2FzzOZE1iVu3u1Tgvvr4MsYmY2KYxOt+zHWcT5DlSKmrmaQqw==\n-----END PUBLIC KEY-----\n";
-static const char* DIGEST_STRING        = "9afac1c83885b387b51fadbc5a9374cfe3b3e341d43eb6ed2ca8ee3bd40deb87";
+static const char* DIGEST_STRING        = "9ec61f3245d657536923fc88b526cbda3b280612b7113087b0f18894b69039f4";
 
 //================================================================//
 // TheContext

@@ -36,7 +36,7 @@ protected:
     void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
     //----------------------------------------------------------------//
-    virtual void            AbstractTransaction_apply           ( State& state ) const = 0;
+    virtual bool            AbstractTransaction_apply           ( State& state ) const = 0;
     virtual string          AbstractTransaction_typeString      () const = 0;
     virtual size_t          AbstractTransaction_weight          () const = 0;
 
@@ -45,7 +45,7 @@ public:
     //----------------------------------------------------------------//
                             AbstractTransaction                 ();
                             ~AbstractTransaction                ();
-    void                    apply                               ( State& state ) const;
+    bool                    apply                               ( State& state ) const;
     string                  typeString                          () const;
     size_t                  weight                              () const;
 };

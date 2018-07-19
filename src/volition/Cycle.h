@@ -25,7 +25,7 @@ private:
     SerializableVector < SerializableSharedPtr < Block >>       mBlocks;
 
     //----------------------------------------------------------------//
-    void                    apply                   ( State& state ) const;
+    bool                    apply                   ( State& state );
     static int              compare                 ( const Cycle& cycle0, const Cycle& cycle1 );
     bool                    containsMiner           ( string minerID ) const;
     size_t                  countBlocks             () const;
@@ -37,8 +37,8 @@ private:
     size_t                  getLength               () const;
     bool                    isInChain               ( string minerID ) const;
     void                    print                   () const;
+    void                    rebuildMinerSet         ();
     void                    setID                   ( u64 cycleID );
-    bool                    verify                  ( const State& state ) const;
     bool                    willImprove             ( string minerID ) const;
     
 

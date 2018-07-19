@@ -50,8 +50,8 @@ u64 TransactionMakerSignature::getNonce () const {
 //----------------------------------------------------------------//
 void TransactionMakerSignature::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
-    serializer.serialize ( "gratuity",      this->mGratuity );
     serializer.serialize ( "accountName",   this->mAccountName );
+    serializer.serialize ( "gratuity",      this->mGratuity );
     serializer.serialize ( "keyName",       this->mKeyName );
     serializer.serialize ( "nonce",         this->mNonce );
 }

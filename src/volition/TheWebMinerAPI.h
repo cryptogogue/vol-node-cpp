@@ -192,10 +192,10 @@ public:
         if ( jsonIn ) {
             JSONSerializableTypeInfo typeInfo ( *jsonIn );
             TransactionFactory factory;
-            unique_ptr < AbstractTransaction > transaction ( factory.make ( typeInfo ));
+            unique_ptr < AbstractTransaction > transaction = factory.make ( typeInfo );
             if ( transaction ) {
                 FromJSONSerializer::fromJSON ( *transaction, *jsonIn );
-                TheWebMiner::get ().pushTransaction ( transaction );
+                TheWebMiner::get ().pushTransaction ( move ( transaction ));
             }
         }
         return Poco::Net::HTTPResponse::HTTP_OK;

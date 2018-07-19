@@ -10,6 +10,7 @@
 namespace Volition {
 
 class Policy;
+class TransactionMakerSignature;
 
 //================================================================//
 // KeyAndPolicy
@@ -37,6 +38,7 @@ private:
     friend class State;
     
     u64         mBalance;
+    u64         mNonce;
 
     map < string, KeyAndPolicy >  mKeys;
 
@@ -44,7 +46,8 @@ public:
 
     //----------------------------------------------------------------//
     Account () :
-        mBalance ( 0 ) {
+        mBalance ( 0 ),
+        mNonce ( 0 ) {
     }
 
     //----------------------------------------------------------------//
@@ -85,6 +88,8 @@ private:
 class State {
 private:
 
+    u64                         mHeight;
+
     map < string, MinerInfo >   mMinerInfo;
     map < string, string >      mMinerURLs;
     map < string, Account >     mAccounts;
@@ -98,9 +103,12 @@ public:
     //----------------------------------------------------------------//
     bool                                accountPolicy           ( string accountName, const Policy* policy );
     bool                                affirmKey               ( string accountName, string keyName, const Poco::Crypto::ECKey* key, string policyName );
+    bool                                checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
+    void                                consumeMakerSignature   ( const TransactionMakerSignature* makerSignature );
     bool                                deleteKey               ( string accountName, string keyName );
     bool                                genesisMiner            ( string accountName, u64 amount, string keyName, const Poco::Crypto::ECKey& key, string url );
     const Account*                      getAccount              ( string accountName ) const;
+    u64                                 getHeight               () const;
     const map < string, MinerInfo >&    getMinerInfo            () const;
     const MinerInfo*                    getMinerInfo            ( string minerID ) const;
     const map < string, string >&       getMinerURLs            () const;
@@ -108,6 +116,7 @@ public:
     bool                                openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const Poco::Crypto::ECKey& key );
     bool                                registerMiner           ( string accountName, string keyName, string url );
     bool                                sendVOL                 ( string accountName, string recipientName, u64 amount );
+    void                                setHeight               ( u64 height );
                                         State                   ();
                                         ~State                  ();
 };

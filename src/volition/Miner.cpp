@@ -27,7 +27,8 @@ string Miner::getMinerID () const {
 //----------------------------------------------------------------//
 const State& Miner::getState () const {
 
-    return this->mState;
+    assert ( this->mChain );
+    return this->mChain->getState ();
 }
 
 //----------------------------------------------------------------//
@@ -49,20 +50,41 @@ void Miner::loadKey ( string keyfile, string password ) {
 }
 
 //----------------------------------------------------------------//
+unique_ptr < Block > Miner::makeBlock ( const Chain& chain ) {
+    unique_ptr < Block > block = make_unique < Block >();
+
+    State state = chain.getState ();
+
+    list < shared_ptr < AbstractTransaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
+    for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {
+        shared_ptr < AbstractTransaction > transaction = *transactionIt;
+        if ( transaction->apply ( state )) {
+            block->pushTransaction ( transaction );
+        }
+    }
+    return block;
+}
+
+//----------------------------------------------------------------//
 void Miner::pushBlock ( Chain& chain, bool force ) {
 
     ChainPlacement placement = chain.findPlacement ( this->mMinerID, force );
     if ( placement.canPush ()) {
-        unique_ptr < Block > block = make_unique < Block >();
-        block->setMinerID ( this->mMinerID );
-        chain.pushAndSign ( placement, move ( block ), *this->mKeyPair );
+        unique_ptr < Block > block = this->makeBlock ( chain );
+        
+        if ( !( this->mLazy && ( block->countTransactions () == 0 ))) {
+        
+            block->setMinerID ( this->mMinerID );
+            bool result = chain.pushAndSign ( placement, move ( block ), *this->mKeyPair );
+            assert ( result );
+        }
     }
 }
 
 //----------------------------------------------------------------//
-void Miner::pushTransaction ( unique_ptr < AbstractTransaction >& transaction ) {
+void Miner::pushTransaction ( shared_ptr < AbstractTransaction > transaction ) {
 
-    this->mPendingTransactions.push_back ( move ( transaction ));
+    this->mPendingTransactions.push_back ( transaction );
 }
 
 //----------------------------------------------------------------//
@@ -72,7 +94,8 @@ void Miner::setMinerID ( string minerID ) {
 }
 
 //----------------------------------------------------------------//
-Miner::Miner () {
+Miner::Miner () :
+    mLazy ( true ) {
 }
 
 //----------------------------------------------------------------//
@@ -81,15 +104,11 @@ Miner::~Miner () {
 
 //----------------------------------------------------------------//
 void Miner::setGenesis ( shared_ptr < Block > block ) {
-
-    this->mState = State ();
     
     unique_ptr < Chain > chain = make_unique < Chain >( block );
     
-    if ( chain->verify ()) {
-    
+    if ( chain->countCycles () > 0 ) {
         this->mChain = move ( chain );
-        this->mChain->apply ( this->mState );
     }
 }
 
@@ -97,7 +116,6 @@ void Miner::setGenesis ( shared_ptr < Block > block ) {
 void Miner::updateChain ( unique_ptr < Chain > proposedChain ) {
 
     if ( !proposedChain ) return;
-    //if ( !proposedChain->verify ( this->mState )) return; // TODO: move to task thread; use snapshot of state when task created
     
     this->pushBlock ( *proposedChain, false );
     

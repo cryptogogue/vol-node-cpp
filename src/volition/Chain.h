@@ -19,7 +19,8 @@ class Chain :
     public AbstractSerializable {
 private:
 
-    SerializableVector < SerializableUniquePtr < Cycle >>  mCycles;
+    State                                                   mState;
+    SerializableVector < SerializableUniquePtr < Cycle >>   mCycles;
 
     //----------------------------------------------------------------//
     bool                    canEdit             ( size_t cycleID, string minerID = "" ) const;
@@ -29,6 +30,7 @@ private:
     Cycle&                  getCycle            ( size_t idx );
     Cycle*                  getTopCycle         ();
     const Cycle*            getTopCycle         () const;
+    void                    rebuildState        ();
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
@@ -36,7 +38,6 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    bool                    apply               ( State& state ) const;
                             Chain               ();
                             Chain               ( shared_ptr < Block > block );
                             Chain               ( const Chain& chain );
@@ -47,9 +48,9 @@ public:
     Block*                  findBlock           ( u64 height );
     ChainPlacement          findPlacement       ( string minerID, bool force ) const;
     Block&                  getBlock            ( size_t cycleIdx, size_t blockIdx );
-    void                    pushAndSign         ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    const State&            getState            () const;
+    bool                    pushAndSign         ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
     void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
-    bool                    verify              () const;
 };
 
 } // namespace Volition

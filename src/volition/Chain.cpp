@@ -12,16 +12,6 @@ static const double THRESHOLD = 0.75;
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Chain::apply ( State& state ) const {
-
-    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
-        if ( !this->mCycles [ i ]->verify ( state )) return false;
-        this->mCycles [ i ]->apply ( state );
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
 bool Chain::canEdit ( size_t cycleID, string minerID ) const {
 
     assert ( cycleID < this->mCycles.size ());
@@ -80,6 +70,7 @@ Chain::Chain ( shared_ptr < Block > genesisBlock ) {
     this->mCycles.push_back ( make_unique < Cycle >());
     Cycle* cycle = this->getTopCycle ();
     cycle->mBlocks.push_back ( genesisBlock );
+    this->rebuildState ();
 }
 
 //----------------------------------------------------------------//
@@ -91,6 +82,7 @@ Chain::Chain ( const Chain& chain ) {
     for ( size_t i = 0; i < nCycles; ++i ) {
         this->mCycles.push_back ( make_unique < Cycle >( *chain.mCycles [ i ]));
     }
+    this->mState = chain.mState;
 }
 
 //----------------------------------------------------------------//
@@ -240,6 +232,12 @@ Cycle& Chain::getCycle ( size_t idx ) {
 }
 
 //----------------------------------------------------------------//
+const State& Chain::getState () const {
+
+    return this->mState;
+}
+
+//----------------------------------------------------------------//
 Cycle* Chain::getTopCycle () {
 
     return this->mCycles.size () > 0 ? this->mCycles.back ().get () : 0;
@@ -268,10 +266,10 @@ void Chain::print ( const char* pre, const char* post ) const {
 }
 
 //----------------------------------------------------------------//
-void Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+bool Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
 
     assert ( block );
-    if ( !placement.canPush ()) return;
+    assert ( placement.canPush ());
     
     Cycle* cycle = NULL;
     u64 cycleID = 0;
@@ -318,13 +316,20 @@ void Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > 
     if ( !cycle->containsMiner ( minerID )) {
         cycle->mMiners.insert ( minerID );
     }
+    
+    return block->apply ( this->mState );
 }
 
 //----------------------------------------------------------------//
-bool Chain::verify () const {
+void Chain::rebuildState () {
 
-    State state;
-    return this->apply ( state );
+    this->mState = State ();
+    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
+        if ( !this->mCycles [ i ]->apply ( this->mState )) {
+            this->mCycles.resize ( i + 1 );
+            break;
+        }
+    }
 }
 
 //================================================================//
@@ -335,6 +340,10 @@ bool Chain::verify () const {
 void Chain::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
     serializer.serialize ( "cycles",        this->mCycles );
+    
+    if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
+        this->rebuildState ();
+    }
 }
 
 } // namespace Volition

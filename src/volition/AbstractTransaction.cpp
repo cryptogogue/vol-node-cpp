@@ -18,8 +18,17 @@ AbstractTransaction::~AbstractTransaction () {
 }
 
 //----------------------------------------------------------------//
-void AbstractTransaction::apply ( State& state ) const {
-    this->AbstractTransaction_apply ( state );
+bool AbstractTransaction::apply ( State& state ) const {
+
+    const TransactionMakerSignature* makerSignature = this->mMakerSignature.get ();
+
+    if (( state.getHeight () == 0 ) || ( makerSignature && state.checkMakerSignature ( makerSignature ))) {
+        if ( this->AbstractTransaction_apply ( state )) {
+            state.consumeMakerSignature ( makerSignature );
+            return true;
+        }
+    }
+    return false;
 }
 
 //----------------------------------------------------------------//

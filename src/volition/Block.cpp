@@ -14,12 +14,19 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Block::apply ( State& state ) const {
+bool Block::apply ( State& state ) {
+
+    if ( state.getHeight () != this->mHeight ) return false;
+    if ( !this->verify ( state )) return false;
 
     for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
         const AbstractTransaction& transaction = *this->mTransactions [ i ];
-        transaction.apply ( state );
+        if ( !transaction.apply ( state )) {
+            return false;
+        }
     }
+    state.setHeight ( this->mHeight + 1 );
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -30,6 +37,12 @@ Block::Block () :
 
 //----------------------------------------------------------------//
 Block::~Block () {
+}
+
+//----------------------------------------------------------------//
+size_t Block::countTransactions () const {
+
+    return this->mTransactions.size ();
 }
 
 //----------------------------------------------------------------//
@@ -102,13 +115,12 @@ const Poco::DigestEngine::Digest& Block::sign ( const Poco::Crypto::ECKey& key, 
 bool Block::verify ( const State& state ) {
 
     const MinerInfo* minerInfo = state.getMinerInfo ( this->mMinerID );
-    
+
     if ( minerInfo ) {
         return this->verify ( state, minerInfo->getPublicKey ());
     }
-    
+
     // no miner info; must be the genesis block
-    
     if ( this->mHeight > 0 ) return false; // genesis block must be height 0
 
     // check that it's the expected genesis block

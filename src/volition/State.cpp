@@ -4,6 +4,7 @@
 // http://cryptogogue.com
 
 #include <volition/State.h>
+#include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
 
@@ -28,6 +29,32 @@ bool State::affirmKey ( string accountName, string keyName, const Poco::Crypto::
         }
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+bool State::checkMakerSignature ( const TransactionMakerSignature* makerSignature ) const {
+
+    if ( makerSignature ) {
+        const Account* account = this->getAccount ( makerSignature->getAccountName ());
+        if ( account ) {
+            return ( account->mNonce == makerSignature->getNonce ());
+        }
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
+void State::consumeMakerSignature ( const TransactionMakerSignature* makerSignature ) {
+
+    if ( makerSignature ) {
+    
+        u64 nonce = makerSignature->getNonce ();
+    
+        Account* account = this->getAccount ( makerSignature->getAccountName ());
+        if ( account && ( account->mNonce <= nonce )) {
+            account->mNonce = nonce + 1;
+        }
+    }
 }
 
 //----------------------------------------------------------------//
@@ -81,12 +108,18 @@ AccountKey State::getAccountKey ( string accountName, string keyName ) {
 
     accountKey.mAccount = this->getAccount ( accountName );
     if ( accountKey.mAccount ) {
-        map < string, KeyAndPolicy >::iterator keyAndPolicyIt = accountKey.mAccount->mKeys.find ( accountName );
+        map < string, KeyAndPolicy >::iterator keyAndPolicyIt = accountKey.mAccount->mKeys.find ( keyName );
         if ( keyAndPolicyIt != accountKey.mAccount->mKeys.end ()) {
             accountKey.mKeyAndPolicy = &keyAndPolicyIt->second;
         }
     }
     return accountKey;
+}
+
+//----------------------------------------------------------------//
+u64 State::getHeight () const {
+
+    return this->mHeight;
 }
 
 //----------------------------------------------------------------//
@@ -165,7 +198,14 @@ bool State::sendVOL ( string accountName, string recipientName, u64 amount ) {
 }
 
 //----------------------------------------------------------------//
-State::State () {
+void State::setHeight ( u64 height ) {
+
+    this->mHeight = height;
+}
+
+//----------------------------------------------------------------//
+State::State () :
+    mHeight ( 0 ) {
 }
 
 //----------------------------------------------------------------//

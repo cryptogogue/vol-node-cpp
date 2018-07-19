@@ -11,11 +11,16 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Cycle::apply ( State& state ) const {
+bool Cycle::apply ( State& state ) {
 
     for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
-        this->mBlocks [ i ]->apply ( state );
+        if ( !this->mBlocks [ i ]->apply ( state )) {
+            this->mBlocks.resize ( i + 1 );
+            this->rebuildMinerSet ();
+            return false;
+        }
     }
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -155,18 +160,21 @@ void Cycle::print () const {
 }
 
 //----------------------------------------------------------------//
-void Cycle::setID ( u64 cycleID ) {
+void Cycle::rebuildMinerSet () {
 
-    this->mCycleID = cycleID;
+    this->mMiners.clear ();
+
+    for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
+        string minerID = this->mBlocks [ i ]->getMinerID ();
+        assert ( this->mMiners.find ( minerID ) == this->mMiners.end ());
+        this->mMiners.insert ( minerID );
+    }
 }
 
 //----------------------------------------------------------------//
-bool Cycle::verify ( const State& state ) const {
+void Cycle::setID ( u64 cycleID ) {
 
-    for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
-        if ( !this->mBlocks [ i ]->verify ( state )) return false;
-    }
-    return true;
+    this->mCycleID = cycleID;
 }
 
 //----------------------------------------------------------------//
@@ -187,11 +195,7 @@ void Cycle::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
     serializer.serialize ( "blocks",        this->mBlocks );
     
     if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
-        for ( size_t i = 0; i < this->mBlocks.size (); ++i ) {
-            string minerID = this->mBlocks [ i ]->getMinerID ();
-            assert ( this->mMiners.find ( minerID ) == this->mMiners.end ());
-            this->mMiners.insert ( minerID );
-        }
+        this->rebuildMinerSet ();
     }
 }
 

@@ -37,12 +37,13 @@ public:
     void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
         AbstractTransaction::AbstractSerializable_serialize ( serializer );
         
-        serializer.serialize ( "policyName",    this->mPolicyName );
         serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "policyName",    this->mPolicyName );
     }
 
     //----------------------------------------------------------------//
-    void AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( State& state ) const override {
+        return true;
     }
 };
 
@@ -64,15 +65,15 @@ public:
     void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
         AbstractTransaction::AbstractSerializable_serialize ( serializer );
         
+        serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
         serializer.serialize ( "policyName",    this->mPolicyName );
-        serializer.serialize ( "key",           this->mKey );
     }
 
     //----------------------------------------------------------------//
-    void AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( State& state ) const override {
     
-        state.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey.get (), this->mPolicyName );
+        return state.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey.get (), this->mPolicyName );
     }
 };
 
@@ -97,17 +98,17 @@ public:
         AbstractTransaction::AbstractSerializable_serialize ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
-        serializer.serialize ( "keyName",       this->mKeyName );
         serializer.serialize ( "amount",        this->mAmount  );
         serializer.serialize ( "key",           this->mKey );
+        serializer.serialize ( "keyName",       this->mKeyName );
         serializer.serialize ( "url",           this->mURL );
     }
 
     //----------------------------------------------------------------//
-    void AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( State& state ) const override {
     
         assert ( this->mKey );
-        state.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, *this->mKey, this->mURL );
+        return state.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, *this->mKey, this->mURL );
     }
 };
 
@@ -128,12 +129,13 @@ public:
     void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
         AbstractTransaction::AbstractSerializable_serialize ( serializer );
         
-        serializer.serialize ( "policyName",    this->mPolicyName );
         serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "policyName",    this->mPolicyName );
     }
 
     //----------------------------------------------------------------//
-    void AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( State& state ) const override {
+        return true;
     }
 };
 
@@ -157,16 +159,16 @@ public:
         AbstractTransaction::AbstractSerializable_serialize ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
-        serializer.serialize ( "keyName",       this->mKeyName );
         serializer.serialize ( "amount",        this->mAmount  );
         serializer.serialize ( "key",           this->mKey );
+        serializer.serialize ( "keyName",       this->mKeyName );
     }
 
     //----------------------------------------------------------------//
-    void AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( State& state ) const override {
         
         assert ( this->mKey );
-        state.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, *this->mKey );
+        return state.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, *this->mKey );
     }
 };
 
@@ -190,9 +192,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( State& state ) const override {
     
-        state.registerMiner ( this->mMakerSignature->getAccountName (), this->mMakerSignature->getKeyName (), this->mURL );
+        return state.registerMiner ( this->mMakerSignature->getAccountName (), this->mMakerSignature->getKeyName (), this->mURL );
     }
 };
 
@@ -218,9 +220,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( State& state ) const override {
         
-        state.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
+        return state.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
     }
 };
 
