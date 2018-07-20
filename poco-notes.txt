@@ -11,7 +11,7 @@ from project root:
 mkdir -p build/build-poco
 cd build/build-poco
 cmake ../../3rd-party/poco -DPOCO_STATIC=1
-make -s
+make -s -j4
 make package
 
 and then:
