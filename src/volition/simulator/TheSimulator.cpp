@@ -67,7 +67,7 @@ void TheSimulator::initMiners ( int nMiners ) {
         minerIDStream << i;
         miner.setMinerID ( minerIDStream.str ());
         
-        miner.pushGenesis ( *genesisBlock );
+        miner.pushGenesisTransaction ( *genesisBlock );
     }
     
     genesisBlock->sign ( this->mGenesisKey );

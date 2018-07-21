@@ -311,12 +311,16 @@ bool Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > 
     block->setPreviousBlock ( prevBlock );
     block->sign ( key );
     
+    // TODO: if we're backtracking; fix this later
+    if ( block->mHeight < this->mState.getHeight ()) {
+        this->rebuildState ();
+    }
+    
     cycle->mBlocks.push_back ( block );
     
     if ( !cycle->containsMiner ( minerID )) {
         cycle->mMiners.insert ( minerID );
     }
-    
     return block->apply ( this->mState );
 }
 

@@ -26,24 +26,18 @@ const SimMiner* SimMiner::nextMiner () {
 }
 
 //----------------------------------------------------------------//
-void SimMiner::pushGenesis ( Block& block ) {
+void SimMiner::pushGenesisTransaction ( Block& block ) const {
 
-//    block.pushTransaction (
-//        make_unique < Transaction::OpenAccount >(
-//            this->mMinerID,
-//            "master",
-//            *this->mKeyPair,
-//            0
-//        )
-//    );
-//    
-//    block.pushTransaction (
-//        make_unique < Transaction::RegisterMiner >(
-//            this->mMinerID,
-//            "",
-//            this->mMinerID + ".master"
-//        )
-//    );
+    unique_ptr < Transaction::GenesisMiner > genesisMinerTransaction = make_unique < Transaction::GenesisMiner >();
+    
+    genesisMinerTransaction->mAccountName = this->mMinerID;
+    genesisMinerTransaction->mKey = this->mKeyPair;
+    genesisMinerTransaction->mKeyName = "master";
+    genesisMinerTransaction->mAmount = 0;
+    genesisMinerTransaction->mURL = "";
+
+    block.pushTransaction ( move ( genesisMinerTransaction ));
+
 }
 
 //----------------------------------------------------------------//

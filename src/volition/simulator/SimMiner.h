@@ -30,7 +30,7 @@ private:
     vector < int >          mMinerQueue; // miner ID's to check
 
     //----------------------------------------------------------------//
-    void                pushGenesis                 ( Block& block );
+    void                pushGenesisTransaction      ( Block& block ) const;
     const SimMiner*     nextMiner                   ();
     void                resetMinerQueue             ();
 
