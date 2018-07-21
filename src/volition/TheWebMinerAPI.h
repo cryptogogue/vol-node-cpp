@@ -57,16 +57,15 @@ public:
         const Account* account = state.getAccount ( accountName );
         if ( account ) {
     
-            map < string, Poco::Crypto::ECKey > keys;
+            map < string, CryptoKey > keys;
             account->getKeys ( keys );
             
             Poco::JSON::Object::Ptr keysJSON = new Poco::JSON::Object ();
     
-            map < string, Poco::Crypto::ECKey >::iterator keyIt = keys.begin ();
+            map < string, CryptoKey >::iterator keyIt = keys.begin ();
             for ( ; keyIt != keys.end (); ++keyIt ) {
-                stringstream keyString;
-                keyIt->second.save ( &keyString );
-                keysJSON->set ( keyIt->first, keyString.str ().c_str ());
+                Poco::JSON::Object::Ptr keyJSON = ToJSONSerializer::toJSON ( keyIt->second );
+                keysJSON->set ( keyIt->first, keyJSON );
             }
             
             jsonOut.set ( "accountKeys", keysJSON );

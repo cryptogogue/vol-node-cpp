@@ -94,7 +94,7 @@ SimMiner::SimMiner () :
     mVerbose ( false ),
     mMinerCursor ( 0 ) {
     
-    this->mKeyPair = make_unique < Poco::Crypto::ECKey >( CryptoKey::DEFAULT_EC_GROUP_NAME );
+    this->mKeyPair.elliptic ( CryptoKey::DEFAULT_EC_GROUP_NAME );
 }
 
 //----------------------------------------------------------------//

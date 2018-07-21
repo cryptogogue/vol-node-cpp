@@ -70,6 +70,8 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
 
     if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
     
+        this->mKeyPair = NULL;
+    
         string type = serializer.serializeIn < string >( "type", "" );
         
         switch ( FNV1a::hash_64 ( type.c_str ())) {
@@ -81,29 +83,32 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
                 EC_GROUP* ecGroup = EC_GROUP_new_by_curve_name ( CryptoKey::getNIDFromGroupName ( groupName ));
                 assert ( ecGroup );
                 
-                string ecPubKeyHexStr = serializer.serializeIn < string >( "publicKeyHex", ecPubKeyHexStr );
+                string ecPubKeyHexStr = serializer.serializeIn < string >( "publicKey", ecPubKeyHexStr );
                 assert ( ecPubKeyHexStr.size ());
                 
                 EC_POINT* ecPoint = EC_POINT_hex2point ( ecGroup, ecPubKeyHexStr.c_str (), NULL, NULL );
                 assert ( ecPoint );
                 
                 EC_KEY* ecKey = EC_KEY_new ();
+                EC_KEY_set_group ( ecKey, ecGroup );
                 EC_KEY_set_public_key ( ecKey, ecPoint );
                 
-                EC_GROUP_free ( ecGroup );
                 EC_POINT_free ( ecPoint );
+                EC_GROUP_free ( ecGroup );
                 
                 // load the private key
                 
-                string ecPrivKeyHexStr = serializer.serializeIn < string >( "privateKeyHex", ecPrivKeyHexStr );
+                string ecPrivKeyHexStr = serializer.serializeIn < string >( "privateKey", ecPrivKeyHexStr );
                 
                 if ( ecPrivKeyHexStr.size ()) {
-                    
+                   
                     BIGNUM* ecPrivKey = NULL;
+                   
                     BN_hex2bn( &ecPrivKey, ecPrivKeyHexStr.c_str ());
                     assert ( ecPrivKey );
                     
                     EC_KEY_set_private_key ( ecKey, ecPrivKey );
+                    
                     BN_free ( ecPrivKey );
                 }
                 
@@ -111,19 +116,29 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
                 
                 EVP_PKEY* pkey = EVP_PKEY_new ();
                 EVP_PKEY_set1_EC_KEY ( pkey, ecKey );
+                EC_KEY_free ( ecKey );
 
                 this->mKeyPair = make_shared < Poco::Crypto::ECKey >( Poco::Crypto::EVPPKey { pkey }); // prevent the 'most vexing parse'
                 
-                EC_KEY_free ( ecKey );
                 EVP_PKEY_free ( pkey );
                 
                 break;
             }
             case FNV1a::const_hash_64 ( "EC_PEM" ): {
             
-                string pem = serializer.serializeIn < string >( "pem", "" );
-                stringstream keyStream ( pem );
-                this->mKeyPair = pem.size () ? make_shared < Poco::Crypto::ECKey >( &keyStream ) : NULL;
+                string publicKey = serializer.serializeIn < string >( "publicKey", "" );
+                string privateKey = serializer.serializeIn < string >( "privateKey", "" );
+   
+                if ( publicKey.size () || privateKey.size ()) {
+                
+                    stringstream publicKeyStream ( publicKey );
+                    stringstream privateKeyStream ( privateKey );
+                
+                    this->mKeyPair = make_shared < Poco::Crypto::ECKey >(
+                        publicKey.size () ? &publicKeyStream : NULL,
+                        privateKey.size () ? &privateKeyStream : NULL
+                    );
+                }
                 
                 break;
             }
@@ -138,10 +153,10 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
             
             case Poco::Crypto::KeyPair::KT_EC: {
             
-                Poco::Crypto::ECKey* pocoECKey = dynamic_cast < Poco::Crypto::ECKey* >( this->mKeyPair.get ());
-                assert ( pocoECKey &&  pocoECKey->impl ());
+                const Poco::Crypto::ECKey& pocoECKey = *this;
+                assert ( pocoECKey.impl ());
                 
-                EC_KEY* ecKey = pocoECKey->impl ()->getECKey ();
+                EC_KEY* ecKey = pocoECKey.impl ()->getECKey ();
                 
                 serializer.serializeOut < string >( "type", "EC_HEX" );
                 
@@ -156,7 +171,7 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
                 string ecPubKeyHexStr = ecPubKeyHex;
                 OPENSSL_free ( ecPubKeyHex );
                 
-                serializer.serializeOut < string >( "publicKeyHex", ecPubKeyHexStr );
+                serializer.serializeOut < string >( "publicKey", ecPubKeyHexStr );
                 
                 const BIGNUM* ecPrivKey = EC_KEY_get0_private_key ( ecKey );
                 if ( ecPrivKey ) {
@@ -164,7 +179,7 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
                     string ecPrivKeyHexStr = ecPrivKeyHex;
                     OPENSSL_free ( ecPrivKeyHex );
                     
-                    serializer.serializeOut < string >( "privateKeyHex", ecPrivKeyHexStr );
+                    serializer.serializeOut < string >( "privateKey", ecPrivKeyHexStr );
                 }
                 
                 break;

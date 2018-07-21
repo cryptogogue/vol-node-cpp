@@ -8,8 +8,8 @@
 
 namespace Volition {
 
-static const char* PUBLIC_KEY_STRING    = "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEzfUD/qtmfa4H2NJ+vriC8SNm0bUe8dMx\nBlOig2FzzOZE1iVu3u1Tgvvr4MsYmY2KYxOt+zHWcT5DlSKmrmaQqw==\n-----END PUBLIC KEY-----\n";
-static const char* DIGEST_STRING        = "9ec61f3245d657536923fc88b526cbda3b280612b7113087b0f18894b69039f4";
+static const char* PUBLIC_KEY_PEM       = "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEzfUD/qtmfa4H2NJ+vriC8SNm0bUe8dMx\nBlOig2FzzOZE1iVu3u1Tgvvr4MsYmY2KYxOt+zHWcT5DlSKmrmaQqw==\n-----END PUBLIC KEY-----\n";
+static const char* DIGEST_STRING        = "21502265b201586201e75ed45828b748187c2a370a10dca772692f5656564273";
 
 //================================================================//
 // TheContext
@@ -23,10 +23,10 @@ const Poco::DigestEngine::Digest& TheContext::getGenesisBlockDigest () const {
 }
 
 //----------------------------------------------------------------//
-const Poco::Crypto::ECKey& TheContext::getGenesisBlockKey () const {
+const CryptoKey& TheContext::getGenesisBlockKey () const {
 
     assert ( this->mKey );
-    return *this->mKey;
+    return this->mKey;
 }
 
 //----------------------------------------------------------------//
@@ -39,8 +39,12 @@ TheContext::ScoringMode TheContext::getScoringMode () const {
 TheContext::TheContext () :
     mScoringMode ( ScoringMode::ALLURE ) {
 
-    stringstream genesisKeyStream ( PUBLIC_KEY_STRING );
-    this->mKey = make_unique < Poco::Crypto::ECKey >( &genesisKeyStream );
+    Poco::JSON::Object::Ptr object = new Poco::JSON::Object ();
+    object->set ( "type", "EC_PEM" );
+    object->set ( "publicKey", PUBLIC_KEY_PEM );
+
+    FromJSONSerializer::fromJSON ( this->mKey, *object );
+    
     this->mDigest = make_unique < Poco::DigestEngine::Digest >( Poco::DigestEngine::digestFromHex ( DIGEST_STRING ));
 }
 
@@ -51,9 +55,9 @@ void TheContext::setGenesisBlockDigest ( const Poco::DigestEngine::Digest& diges
 }
 
 //----------------------------------------------------------------//
-void TheContext::setGenesisBlockKey ( const Poco::Crypto::ECKey& key ) {
+void TheContext::setGenesisBlockKey ( const CryptoKey& key ) {
 
-    this->mKey = make_unique < Poco::Crypto::ECKey >( key );
+    this->mKey = key;
 }
 
 //----------------------------------------------------------------//

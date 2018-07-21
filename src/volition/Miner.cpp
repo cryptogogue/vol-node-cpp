@@ -46,7 +46,11 @@ void Miner::loadGenesis ( string path ) {
 //----------------------------------------------------------------//
 void Miner::loadKey ( string keyfile, string password ) {
 
-    this->mKeyPair = make_unique < Poco::Crypto::ECKey >( "", keyfile, password );
+    // TODO: password
+
+    fstream inStream;
+    inStream.open ( keyfile, ios_base::in );
+    Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
 }
 
 //----------------------------------------------------------------//
@@ -75,7 +79,7 @@ void Miner::pushBlock ( Chain& chain, bool force ) {
         if ( !( this->mLazy && ( block->countTransactions () == 0 ))) {
         
             block->setMinerID ( this->mMinerID );
-            bool result = chain.pushAndSign ( placement, move ( block ), *this->mKeyPair );
+            bool result = chain.pushAndSign ( placement, move ( block ), this->mKeyPair );
             assert ( result );
         }
     }
@@ -88,6 +92,12 @@ void Miner::pushTransaction ( shared_ptr < AbstractTransaction > transaction ) {
 }
 
 //----------------------------------------------------------------//
+void Miner::setLazy ( bool lazy ) {
+
+    this->mLazy = lazy;
+}
+
+//----------------------------------------------------------------//
 void Miner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
@@ -95,7 +105,7 @@ void Miner::setMinerID ( string minerID ) {
 
 //----------------------------------------------------------------//
 Miner::Miner () :
-    mLazy ( true ) {
+    mLazy ( false ) {
 }
 
 //----------------------------------------------------------------//

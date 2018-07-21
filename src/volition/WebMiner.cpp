@@ -30,6 +30,12 @@ void WebMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
 }
 
 //----------------------------------------------------------------//
+void WebMiner::setSolo ( bool solo ) {
+
+    this->mSolo = solo;
+}
+
+//----------------------------------------------------------------//
 void WebMiner::shutdown () {
 
     this->stop ();
@@ -39,7 +45,8 @@ void WebMiner::shutdown () {
 
 //----------------------------------------------------------------//
 WebMiner::WebMiner () :
-    Poco::Activity < WebMiner >( this, &WebMiner::run ) {
+    Poco::Activity < WebMiner >( this, &WebMiner::run ),
+    mSolo ( false ) {
     
     this->mTaskManager.addObserver (
         Poco::Observer < WebMiner, Poco::TaskFinishedNotification > ( *this, &WebMiner::onSyncChainNotification )
@@ -66,7 +73,9 @@ void WebMiner::run () {
             this->pushBlock ( *this->mChain, true );
             //this->mChain->print ();
             
-            this->mMinerURLs = this->mChain->getState ().getMinerURLs ();
+            if ( !this->mSolo ) {
+                this->mMinerURLs = this->mChain->getState ().getMinerURLs ();
+            }
             
             if ( this->mMinerURLs.find ( this->mMinerID ) != this->mMinerURLs.end ()) {
                 this->mMinerURLs.erase ( this->mMinerID );

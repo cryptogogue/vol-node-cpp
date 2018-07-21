@@ -38,7 +38,7 @@ private:
     void                                setCycleID                          ( size_t cycleID );
     void                                setPreviousBlock                    ( const Block* prevBlock );
     bool                                verify                              ( const State& state );
-    bool                                verify                              ( const State& state, const Poco::Crypto::ECKey& key );
+    bool                                verify                              ( const State& state, const CryptoKey& key );
 
     //----------------------------------------------------------------//
     void                                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
@@ -55,7 +55,7 @@ public:
     const Signature&                    getSignature                        () const;
     void                                pushTransaction                     ( shared_ptr < AbstractTransaction > transaction );
     void                                setMinerID                          ( string minerID );
-    const Poco::DigestEngine::Digest&   sign                                ( const Poco::Crypto::ECKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    const Poco::DigestEngine::Digest&   sign                                ( const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
 };
 
 } // namespace Volition

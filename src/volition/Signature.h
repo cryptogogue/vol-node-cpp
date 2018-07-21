@@ -5,6 +5,7 @@
 #define VOLITION_SIGNATURE_H
 
 #include <volition/common.h>
+#include <volition/CryptoKey.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -37,13 +38,13 @@ public:
     const Poco::DigestEngine::Digest&       getDigest           () const;
     string                                  getHashAlgorithm    () const;
     const Poco::DigestEngine::Digest&       getSignature        () const;
-    const Poco::DigestEngine::Digest&       sign                ( string str, const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
-    const Poco::DigestEngine::Digest&       sign                ( AbstractSerializable& serializable, const Poco::Crypto::ECKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
+    const Poco::DigestEngine::Digest&       sign                ( string str, const CryptoKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
+    const Poco::DigestEngine::Digest&       sign                ( AbstractSerializable& serializable, const CryptoKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
                                             Signature           ();
                                             ~Signature          ();
     static string                           toHex               ( const Poco::DigestEngine::Digest& digest );
-    bool                                    verify              ( string str, const Poco::Crypto::ECKey& key ) const;
-    bool                                    verify              ( AbstractSerializable& serializable, const Poco::Crypto::ECKey& key ) const;
+    bool                                    verify              ( string str, const CryptoKey& key ) const;
+    bool                                    verify              ( AbstractSerializable& serializable, const CryptoKey& key ) const;
 };
 
 } // namespace Volition

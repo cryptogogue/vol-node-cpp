@@ -76,7 +76,6 @@ protected:
     virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, AbstractSerializable& value ) = 0;
     virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, AbstractSerializableArray& value ) = 0;
     virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, AbstractSerializablePointer& value ) = 0;
-    virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, unique_ptr < Poco::Crypto::ECKey >& key ) = 0;
     virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, Poco::DigestEngine::Digest& value ) = 0;
 
 public:

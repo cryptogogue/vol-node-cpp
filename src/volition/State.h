@@ -21,10 +21,16 @@ private:
     friend class State;
     friend class Account;
     
-    Poco::Crypto::ECKey mKey;
+    CryptoKey mKey;
+
+public:
+
+    //----------------------------------------------------------------//
+    KeyAndPolicy () {
+    }
     
     //----------------------------------------------------------------//
-    KeyAndPolicy ( const Poco::Crypto::ECKey& key ) :
+    KeyAndPolicy ( const CryptoKey& key ) :
         mKey ( key ) {
     }
 };
@@ -56,11 +62,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void getKeys ( map < string, Poco::Crypto::ECKey >& keys ) const {
+    void getKeys ( map < string, CryptoKey >& keys ) const {
     
         map < string, KeyAndPolicy >::const_iterator keyIt = this->mKeys.cbegin ();
         for ( ; keyIt != this->mKeys.end (); ++keyIt ) {
-            keys.insert ( pair < string, Poco::Crypto::ECKey >( keyIt->first, keyIt->second.mKey )); // because Poco::Crypto::ECKey has no empty constructor
+            keys [ keyIt->first ] = keyIt->second.mKey;
         }
     }
 };
@@ -102,18 +108,18 @@ public:
 
     //----------------------------------------------------------------//
     bool                                accountPolicy           ( string accountName, const Policy* policy );
-    bool                                affirmKey               ( string accountName, string keyName, const Poco::Crypto::ECKey* key, string policyName );
+    bool                                affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
     bool                                checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
     void                                consumeMakerSignature   ( const TransactionMakerSignature* makerSignature );
     bool                                deleteKey               ( string accountName, string keyName );
-    bool                                genesisMiner            ( string accountName, u64 amount, string keyName, const Poco::Crypto::ECKey& key, string url );
+    bool                                genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     const Account*                      getAccount              ( string accountName ) const;
     u64                                 getHeight               () const;
     const map < string, MinerInfo >&    getMinerInfo            () const;
     const MinerInfo*                    getMinerInfo            ( string minerID ) const;
     const map < string, string >&       getMinerURLs            () const;
     bool                                keyPolicy               ( string accountName, string policyName, const Policy* policy );
-    bool                                openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const Poco::Crypto::ECKey& key );
+    bool                                openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
     bool                                registerMiner           ( string accountName, string keyName, string url );
     bool                                sendVOL                 ( string accountName, string recipientName, u64 amount );
     void                                setHeight               ( u64 height );

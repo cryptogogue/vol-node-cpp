@@ -2,15 +2,19 @@
     "cycleID" : 0,
     "height" : 0,
     "signature" : {
-        "digest" : "9ec61f3245d657536923fc88b526cbda3b280612b7113087b0f18894b69039f4",
+        "digest" : "21502265b201586201e75ed45828b748187c2a370a10dca772692f5656564273",
         "hashAlgorithm" : "SHA256",
-        "signature" : "3045022100d98730d940d43b37de8283fa1facfd43a8dc5cae45b3a557dd1dfaea7ff6a5a502207f0824c3be7ba80deceaf036c49892f40e9fbba2be3de4cd6fa8579d6caeb102"
+        "signature" : "30440220541b65a69e75d5e211491e764303df9b1662e27d9c6281246ffa5510a475f9d80220767ee537ca5999cccba2d5819d0ef6a197238632a39581a7c72aa587060d9ffd"
     },
     "transactions" : [
         {
             "accountName" : "9090",
             "amount" : 1000000,
-            "key" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbeoS+2ToK5C92wKnkuSI4gKFfXDdqbQI\nkC507t01tdxyLoal4hSKOCcgapeMVT8d9BkEDDkYyu2iOffJ40K7kQ==\n-----END PUBLIC KEY-----\n",
+            "key" : {
+                "groupName" : "secp256k1",
+                "publicKey" : "036DEA12FB64E82B90BDDB02A792E488E202857D70DDA9B408902E74EEDD35B5DC",
+                "type" : "EC_HEX"
+            },
             "keyName" : "master",
             "type" : "GENESIS_MINER",
             "url" : "http:\/\/127.0.0.1:9090\/"
@@ -18,7 +22,11 @@
         {
             "accountName" : "9091",
             "amount" : 1000000,
-            "key" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n",
+            "key" : {
+                "groupName" : "secp256k1",
+                "publicKey" : "02024798B73C8AE88F4136307930E05F6CEEFF1002B5A2B1A3CE270DB00598E6DF",
+                "type" : "EC_HEX"
+            },
             "keyName" : "master",
             "type" : "GENESIS_MINER",
             "url" : "http:\/\/127.0.0.1:9091\/"

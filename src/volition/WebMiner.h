@@ -25,6 +25,8 @@ private:
     Poco::TaskManager                           mTaskManager;
     map < string, string >                      mMinerURLs;
 
+    bool                                        mSolo;
+
     //----------------------------------------------------------------//
     void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
     void            run                         () override;
@@ -32,6 +34,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
+    void            setSolo                 ( bool solo );
     void            shutdown                ();
                     WebMiner                ();
                     ~WebMiner               ();

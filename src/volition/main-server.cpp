@@ -206,6 +206,13 @@ protected:
                 .argument ( "value" )
                 .binding ( "nodelist" )
         );
+        
+        options.addOption (
+            Poco::Util::Option ( "solo", "s", "operate in solo mode" )
+                .required ( false )
+                .argument ( "value" )
+                .binding ( "solo" )
+        );
     }
 
     //----------------------------------------------------------------//
@@ -222,13 +229,19 @@ protected:
         string keyfile      = configuration.getString ( "keyfile" );
         int port            = configuration.getInt ( "port", 9090 );
         string nodelist     = configuration.getString ( "nodelist", "" );
+        bool solo           = configuration.getBool ( "solo", false );
     
         printf ( "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
     
         string minerID      = to_string ( port );
     
         Volition::TheWebMiner& theMiner = Volition::TheWebMiner::get ();
-    
+        
+        if ( solo ) {
+            theMiner.setLazy ( true );
+            theMiner.setSolo ( true );
+        }
+        
         theMiner.loadKey ( keyfile );
         theMiner.loadGenesis ( genesis );
         theMiner.setMinerID ( minerID );

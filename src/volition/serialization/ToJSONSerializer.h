@@ -74,15 +74,6 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, unique_ptr < Poco::Crypto::ECKey >& key ) override {
-        if ( key ) {
-            stringstream keyString;
-            key->save ( &keyString );
-            this->set ( name, keyString.str ().c_str ());
-        }
-    }
-    
-    //----------------------------------------------------------------//
     void AbstractSerializer_serialize ( SerializerPropertyName name, Poco::DigestEngine::Digest& value ) override {
         this->set ( name, Poco::DigestEngine::digestToHex ( value ).c_str ());
     }

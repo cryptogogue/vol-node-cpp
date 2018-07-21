@@ -91,14 +91,6 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, unique_ptr < Poco::Crypto::ECKey >& key ) override {
-    
-        string keyString = this->optValue < string >( name, "" );
-        stringstream keyStream ( keyString );
-        key = keyString.size () ? make_unique < Poco::Crypto::ECKey >( &keyStream ) : NULL;
-    }
-    
-    //----------------------------------------------------------------//
     void AbstractSerializer_serialize ( SerializerPropertyName name, Poco::DigestEngine::Digest& value ) override {
     
         string digestString = this->optValue < string >( name, "" );

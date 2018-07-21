@@ -45,7 +45,7 @@ string Signature::getHashAlgorithm () const {
 }
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signature::sign ( string str, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+const Poco::DigestEngine::Digest& Signature::sign ( string str, const CryptoKey& key, string hashAlgorithm ) {
 
     this->mHashAlgorithm = hashAlgorithm;
 
@@ -58,7 +58,7 @@ const Poco::DigestEngine::Digest& Signature::sign ( string str, const Poco::Cryp
 }
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signature::sign ( AbstractSerializable& serializable, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+const Poco::DigestEngine::Digest& Signature::sign ( AbstractSerializable& serializable, const CryptoKey& key, string hashAlgorithm ) {
 
     this->mHashAlgorithm = hashAlgorithm;
 
@@ -86,7 +86,7 @@ string Signature::toHex ( const Poco::DigestEngine::Digest& digest ) {
 }
 
 //----------------------------------------------------------------//
-bool Signature::verify ( string str, const Poco::Crypto::ECKey& key ) const {
+bool Signature::verify ( string str, const CryptoKey& key ) const {
 
     Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
     this->digest ( str, signature );
@@ -95,7 +95,7 @@ bool Signature::verify ( string str, const Poco::Crypto::ECKey& key ) const {
 }
 
 //----------------------------------------------------------------//
-bool Signature::verify ( AbstractSerializable& serializable, const Poco::Crypto::ECKey& key ) const {
+bool Signature::verify ( AbstractSerializable& serializable, const CryptoKey& key ) const {
 
     Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
     this->digest ( serializable, signature );

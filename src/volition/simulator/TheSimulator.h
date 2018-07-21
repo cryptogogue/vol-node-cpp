@@ -25,7 +25,7 @@ private:
     
     friend class SimMiner;
     
-    unique_ptr < Poco::Crypto::ECKey >      mGenesisKey;
+    CryptoKey                               mGenesisKey;
     
     vector < unique_ptr < SimMiner >>       mMiners;
     float                                   mDropRate;

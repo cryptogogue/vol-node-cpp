@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/CryptoKey.h>
 #include <volition/TheContext.h>
 
 //----------------------------------------------------------------//
@@ -43,39 +44,18 @@ public:
         string keyfile      = configuration.getString ( "keyfile" );
         string password     = configuration.getString ( "password", "" );
         
-        unique_ptr < Poco::Crypto::ECKey > keyPair;
+        Volition::CryptoKey keyPair;
         
         if ( Poco::File ( keyfile ).exists ()) {
-            keyPair = make_unique < Poco::Crypto::ECKey >( "", keyfile, password );
+            fstream inStream;
+            inStream.open ( keyfile, ios_base::in );
+            Volition::FromJSONSerializer::fromJSON ( keyPair, inStream );
         }
         else {
-            keyPair = make_unique < Poco::Crypto::ECKey >( Volition::TheContext::EC_CURVE );
+            keyPair.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
         }
-        
-        // dump to pem
-        
-        fstream pubKeyOutStream;
-        pubKeyOutStream.open ( keyfile + ".pub", ios_base::out );
-        
-        fstream privKeyOutStream;
-        privKeyOutStream.open ( keyfile + ".priv", ios_base::out );
-        
-        keyPair->save ( &pubKeyOutStream, &privKeyOutStream, password );
-        
-        pubKeyOutStream.close ();
-        privKeyOutStream.close ();
-        
-        // dump to json
-        
-        Poco::JSON::Object::Ptr object = new Poco::JSON::Object ();
-        
-        stringstream pubKeyStringStream;
-        stringstream privKeyStringStream;
-        
-        keyPair->save ( &pubKeyStringStream, &privKeyStringStream, password );
-        
-        object->set ( "publicKey", pubKeyStringStream.str ().c_str ());
-        object->set ( "privateKey", privKeyStringStream.str ().c_str ());
+                
+        Poco::JSON::Object::Ptr object = Volition::ToJSONSerializer::toJSON ( keyPair );
         
         fstream jsonOutStream;
         jsonOutStream.open ( keyfile + ".json", ios_base::out );
@@ -119,11 +99,15 @@ public:
         Poco::Util::AbstractConfiguration& configuration = this->config ();
     
         string keyfile      = configuration.getString ( "keyfile" );
-        string password     = configuration.getString ( "password", "" );
+        string password     = configuration.getString ( "password", "" ); // TODO: password
         string inpath       = configuration.getString ( "inpath" );
         string outpath      = configuration.getString ( "outpath", "" );
         
-        Poco::Crypto::ECKey keyPair = Poco::Crypto::ECKey ( "", keyfile, password );
+        Volition::CryptoKey keyPair;
+        
+        fstream keyStream;
+        keyStream.open ( keyfile, ios_base::in );
+        Volition::FromJSONSerializer::fromJSON ( keyPair, keyStream );
         
         fstream inStream;
         inStream.open ( inpath, ios_base::in );

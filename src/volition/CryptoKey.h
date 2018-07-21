@@ -42,8 +42,16 @@ public:
     }
     
     //----------------------------------------------------------------//
-    operator const Poco::Crypto::KeyPair* () const {
-        return this->mKeyPair.get ();
+    operator const Poco::Crypto::ECKey* () const {
+        Poco::Crypto::ECKey* ecKey = dynamic_cast < Poco::Crypto::ECKey* >( this->mKeyPair.get ());
+        return ecKey;
+    }
+    
+    //----------------------------------------------------------------//
+    operator const Poco::Crypto::ECKey& () const {
+        const Poco::Crypto::ECKey* ecKey = *this;
+        assert ( ecKey );
+        return *ecKey;
     }
 };
 

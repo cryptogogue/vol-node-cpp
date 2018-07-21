@@ -5,6 +5,7 @@
 #define VOLITION_THECONTEXT_H
 
 #include <volition/common.h>
+#include <volition/CryptoKey.h>
 #include <volition/Singleton.h>
 
 namespace Volition {
@@ -25,7 +26,7 @@ public:
 
 private:
 
-    unique_ptr < Poco::Crypto::ECKey >              mKey;
+    CryptoKey                                       mKey;
     unique_ptr < Poco::DigestEngine::Digest >       mDigest;
 
     ScoringMode                                     mScoringMode;
@@ -36,11 +37,11 @@ public:
     int                                     compare                         ( const Block& block0, const Block& block1 );
     string                                  getCurve                        () const;
     const Poco::DigestEngine::Digest&       getGenesisBlockDigest           () const;
-    const Poco::Crypto::ECKey&              getGenesisBlockKey              () const;
+    const CryptoKey&                        getGenesisBlockKey              () const;
     ScoringMode                             getScoringMode                  () const;
                                             TheContext                      ();
     void                                    setGenesisBlockDigest           ( const Poco::DigestEngine::Digest& digest );
-    void                                    setGenesisBlockKey              ( const Poco::Crypto::ECKey& key );
+    void                                    setGenesisBlockKey              ( const CryptoKey& key );
     void                                    setScoringMode                  ( ScoringMode scoringMode );
 };
 

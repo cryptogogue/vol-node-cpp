@@ -50,8 +50,8 @@ const SimMiner& TheSimulator::getMiner ( int minerID ) {
 void TheSimulator::initMiners ( int nMiners ) {
 
     if ( !this->mGenesisKey ) {
-        this->mGenesisKey = make_unique < Poco::Crypto::ECKey >( CryptoKey::DEFAULT_EC_GROUP_NAME );
-        TheContext::get ().setGenesisBlockKey ( *this->mGenesisKey );
+        this->mGenesisKey.elliptic ( CryptoKey::DEFAULT_EC_GROUP_NAME );
+        TheContext::get ().setGenesisBlockKey ( this->mGenesisKey );
     }
 
     shared_ptr < Block > genesisBlock = make_shared < Block >();
@@ -70,7 +70,7 @@ void TheSimulator::initMiners ( int nMiners ) {
         miner.pushGenesis ( *genesisBlock );
     }
     
-    genesisBlock->sign ( *this->mGenesisKey );
+    genesisBlock->sign ( this->mGenesisKey );
     TheContext::get ().setGenesisBlockDigest ( genesisBlock->getSignature ().getDigest ());
     
     for ( int i = 0; i < nMiners; ++i ) {

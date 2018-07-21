@@ -5,6 +5,7 @@
 #define VOLITION_MINERINFO_H
 
 #include <volition/common.h>
+#include <volition/CryptoKey.h>
 
 namespace Volition {
 
@@ -16,17 +17,18 @@ private:
 
     string                  mMinerID;
     string                  mURL;
-    Poco::Crypto::ECKey     mPublicKey;
+    CryptoKey               mPublicKey;
 
 public:
 
     //----------------------------------------------------------------//
-    string                          getMinerID      () const;
-    const Poco::Crypto::ECKey&      getPublicKey    () const;
-    string                          getURL          () const;
-                                    MinerInfo       ( string minerID, string url, const Poco::Crypto::ECKey& publicKey );
-                                    MinerInfo       ( const MinerInfo& minerInfo );
-                                    ~MinerInfo      ();
+    string                  getMinerID          () const;
+    const CryptoKey&        getPublicKey        () const;
+    string                  getURL              () const;
+                            MinerInfo           ();
+                            MinerInfo           ( string minerID, string url, const CryptoKey& publicKey );
+                            MinerInfo           ( const MinerInfo& minerInfo );
+                            ~MinerInfo          ();
 };
 
 } // namespace Volition

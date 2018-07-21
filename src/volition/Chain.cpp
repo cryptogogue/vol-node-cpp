@@ -266,7 +266,7 @@ void Chain::print ( const char* pre, const char* post ) const {
 }
 
 //----------------------------------------------------------------//
-bool Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > block, const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+bool Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > block, const CryptoKey& key, string hashAlgorithm ) {
 
     assert ( block );
     assert ( placement.canPush ());

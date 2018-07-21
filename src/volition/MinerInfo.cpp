@@ -15,7 +15,7 @@ string MinerInfo::getMinerID () const {
 }
 
 //----------------------------------------------------------------//
-const Poco::Crypto::ECKey& MinerInfo::getPublicKey () const {
+const CryptoKey& MinerInfo::getPublicKey () const {
     return this->mPublicKey;
 }
 
@@ -25,7 +25,11 @@ string MinerInfo::getURL () const {
 }
 
 //----------------------------------------------------------------//
-MinerInfo::MinerInfo ( string minerID, string url, const Poco::Crypto::ECKey& publicKey ) :
+MinerInfo::MinerInfo () {
+}
+
+//----------------------------------------------------------------//
+MinerInfo::MinerInfo ( string minerID, string url, const CryptoKey& publicKey ) :
     mMinerID ( minerID ),
     mURL ( url ),
     mPublicKey ( publicKey ) {

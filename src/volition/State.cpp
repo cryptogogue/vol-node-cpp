@@ -19,13 +19,13 @@ bool State::accountPolicy ( string accountName, const Policy* policy ) {
 }
 
 //----------------------------------------------------------------//
-bool State::affirmKey ( string accountName, string keyName, const Poco::Crypto::ECKey* key, string policyName ) {
+bool State::affirmKey ( string accountName, string keyName, const CryptoKey& key, string policyName ) {
 
     Account* account = this->getAccount ( accountName );
     if ( account ) {
 
         if ( key ) {
-            account->mKeys.insert ( pair < string, KeyAndPolicy >( keyName, KeyAndPolicy ( *key ))); // because KeyAndPolicy has no empty constructor
+            account->mKeys [ keyName ] = KeyAndPolicy ( key );
             return true;
         }
     }
@@ -70,11 +70,11 @@ bool State::deleteKey ( string accountName, string keyName ) {
 }
 
 //----------------------------------------------------------------//
-bool State::genesisMiner ( string accountName, u64 amount, string keyName, const Poco::Crypto::ECKey& key, string url ) {
+bool State::genesisMiner ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url ) {
 
     Account& account = this->mAccounts [ accountName ];
     account.mBalance = amount;
-    account.mKeys.insert ( pair < string, KeyAndPolicy >( keyName, KeyAndPolicy ( key ))); // because KeyAndPolicy has no empty constructor
+    account.mKeys [ keyName ] = KeyAndPolicy ( key );
     
     this->registerMiner ( accountName, keyName, url );
     return true;
@@ -152,7 +152,7 @@ bool State::keyPolicy ( string accountName, string policyName, const Policy* pol
 }
 
 //----------------------------------------------------------------//
-bool State::openAccount ( string accountName, string recipientName, u64 amount, string keyName, const Poco::Crypto::ECKey& key ) {
+bool State::openAccount ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key ) {
 
     Account* account = this->getAccount ( accountName );
     if ( account && ( account->mBalance >= amount )) {
@@ -164,7 +164,7 @@ bool State::openAccount ( string accountName, string recipientName, u64 amount, 
         account->mBalance -= amount;
         recipient.mBalance = amount;
         
-        recipient.mKeys.insert ( pair < string, KeyAndPolicy >( keyName, KeyAndPolicy ( key ))); // because KeyAndPolicy has no empty constructor
+        recipient.mKeys [ keyName ] = KeyAndPolicy ( key );
         
         return true;
     }
@@ -177,7 +177,7 @@ bool State::registerMiner ( string accountName, string keyName, string url ) {
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
     if ( accountKey ) {
         
-        this->mMinerInfo.insert ( pair < string, MinerInfo >( accountName, MinerInfo ( accountName, url, accountKey.mKeyAndPolicy->mKey ) )); // because MinerInfo has no empty constructor
+        this->mMinerInfo [ accountName ] = MinerInfo ( accountName, url, accountKey.mKeyAndPolicy->mKey );
         this->mMinerURLs [ accountName ] = url;
         return true;
     }

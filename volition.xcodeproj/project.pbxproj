@@ -60,6 +60,8 @@
 		CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
 		CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
 		CD4E80D82102BB57007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
+		CD4E80D9210300FA007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
+		CD4E80DA210300FA007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
 		CD59F3B320E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
 		CD59F3B420E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
 		CD59F3B520E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
@@ -750,6 +752,7 @@
 				CD36663320F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD0C3E4E20C86D88006E3B1C /* AbstractTransaction.cpp in Sources */,
 				CD0C3E4F20C86D88006E3B1C /* MinerInfo.cpp in Sources */,
+				CD4E80DA210300FA007DA585 /* CryptoKey.cpp in Sources */,
 				CDC2B34520D1196900300A96 /* TheContext.cpp in Sources */,
 				CD36663520F585E3000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32820CE0FA100300A96 /* Analysis.cpp in Sources */,
@@ -781,6 +784,7 @@
 				CD36663220F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
 				CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
+				CD4E80D9210300FA007DA585 /* CryptoKey.cpp in Sources */,
 				CDC2B34420D1196900300A96 /* TheContext.cpp in Sources */,
 				CD36663420F585E2000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32720CE0FA100300A96 /* Analysis.cpp in Sources */,

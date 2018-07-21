@@ -24,7 +24,7 @@ protected:
 
     string                                          mMinerID;
 
-    unique_ptr < Poco::Crypto::ECKey >              mKeyPair;
+    CryptoKey                                       mKeyPair;
     list < shared_ptr < AbstractTransaction >>      mPendingTransactions;
     bool                                            mLazy;
 
@@ -44,6 +44,7 @@ public:
     const State&            getState                () const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
     void                    setGenesis              ( shared_ptr < Block > block );
+    void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );
                             Miner                   ();
     virtual                 ~Miner                  ();

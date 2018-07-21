@@ -95,7 +95,7 @@ void Block::setPreviousBlock ( const Block* prevBlock ) {
 }
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Block::sign ( const Poco::Crypto::ECKey& key, string hashAlgorithm ) {
+const Poco::DigestEngine::Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 
     // no need to compute allure for the genesis block
     if ( this->mHeight ) {
@@ -130,7 +130,7 @@ bool Block::verify ( const State& state ) {
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const State& state, const Poco::Crypto::ECKey& key ) {
+bool Block::verify ( const State& state, const CryptoKey& key ) {
 
     if ( this->mHeight > 0 ) {
 

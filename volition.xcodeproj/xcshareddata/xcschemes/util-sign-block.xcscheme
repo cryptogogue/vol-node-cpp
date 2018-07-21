@@ -68,7 +68,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-k keys/genesis.pem"
+            argument = "-k keys/genesis.priv.json"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

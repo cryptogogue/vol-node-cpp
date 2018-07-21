@@ -57,9 +57,9 @@ public:
     TRANSACTION_TYPE ( "AFFIRM_KEY" )
     TRANSACTION_WEIGHT ( 1 )
 
-    string                                  mKeyName;
-    unique_ptr < Poco::Crypto::ECKey >      mKey;
-    string                                  mPolicyName;
+    string      mKeyName;
+    CryptoKey   mKey;
+    string      mPolicyName;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
@@ -73,7 +73,7 @@ public:
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( State& state ) const override {
     
-        return state.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey.get (), this->mPolicyName );
+        return state.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey, this->mPolicyName );
     }
 };
 
@@ -87,11 +87,11 @@ public:
     TRANSACTION_TYPE ( "GENESIS_MINER" )
     TRANSACTION_WEIGHT ( 1 )
 
-    string                                  mAccountName;
-    unique_ptr < Poco::Crypto::ECKey >      mKey;
-    string                                  mKeyName;
-    u64                                     mAmount;
-    string                                  mURL;
+    string      mAccountName;
+    CryptoKey   mKey;
+    string      mKeyName;
+    u64         mAmount;
+    string      mURL;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
@@ -108,7 +108,7 @@ public:
     bool AbstractTransaction_apply ( State& state ) const override {
     
         assert ( this->mKey );
-        return state.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, *this->mKey, this->mURL );
+        return state.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, this->mKey, this->mURL );
     }
 };
 
@@ -149,10 +149,10 @@ public:
     TRANSACTION_TYPE ( "OPEN_ACCOUNT" )
     TRANSACTION_WEIGHT ( 1 )
 
-    string                                  mAccountName;   // user provided name of account
-    unique_ptr < Poco::Crypto::ECKey >      mKey;           // master key
-    string                                  mKeyName;       // name of master key
-    u64                                     mAmount;        // amount to fund
+    string      mAccountName;   // user provided name of account
+    CryptoKey   mKey;           // master key
+    string      mKeyName;       // name of master key
+    u64         mAmount;        // amount to fund
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
@@ -168,7 +168,7 @@ public:
     bool AbstractTransaction_apply ( State& state ) const override {
         
         assert ( this->mKey );
-        return state.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, *this->mKey );
+        return state.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, this->mKey );
     }
 };
 
