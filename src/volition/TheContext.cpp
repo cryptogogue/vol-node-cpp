@@ -15,8 +15,6 @@ static const char* DIGEST_STRING        = "9ec61f3245d657536923fc88b526cbda3b280
 // TheContext
 //================================================================//
 
-const char* TheContext::EC_CURVE = "secp256k1";
-
 //----------------------------------------------------------------//
 const Poco::DigestEngine::Digest& TheContext::getGenesisBlockDigest () const {
 

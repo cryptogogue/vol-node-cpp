@@ -96,6 +96,23 @@ public:
     void serialize ( SerializerPropertyName name, TYPE& value ) {
         this->AbstractSerializer_serialize ( name, value );
     }
+    
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    TYPE serializeIn ( SerializerPropertyName name, const TYPE& fallback ) {
+        assert ( this->getMode () == SERIALIZE_IN );
+        TYPE value = fallback;
+        this->AbstractSerializer_serialize ( name, value );
+        return value;
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    void serializeOut ( SerializerPropertyName name, const TYPE& value ) {
+        assert (( this->getMode () == SERIALIZE_DIGEST ) || ( this->getMode () == SERIALIZE_OUT ));
+        TYPE temp = value;
+        this->AbstractSerializer_serialize ( name, temp );
+    }
 };
 
 } // namespace Volition

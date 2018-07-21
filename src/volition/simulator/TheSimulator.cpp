@@ -50,7 +50,7 @@ const SimMiner& TheSimulator::getMiner ( int minerID ) {
 void TheSimulator::initMiners ( int nMiners ) {
 
     if ( !this->mGenesisKey ) {
-        this->mGenesisKey = make_unique < Poco::Crypto::ECKey >( TheContext::EC_CURVE );
+        this->mGenesisKey = make_unique < Poco::Crypto::ECKey >( CryptoKey::DEFAULT_EC_GROUP_NAME );
         TheContext::get ().setGenesisBlockKey ( *this->mGenesisKey );
     }
 

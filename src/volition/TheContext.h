@@ -32,8 +32,6 @@ private:
 
 public:
 
-    static const char* EC_CURVE;
-
     //----------------------------------------------------------------//
     int                                     compare                         ( const Block& block0, const Block& block1 );
     string                                  getCurve                        () const;

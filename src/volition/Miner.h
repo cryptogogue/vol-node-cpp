@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransaction.h>
+#include <volition/CryptoKey.h>
 #include <volition/Chain.h>
 #include <volition/Singleton.h>
 #include <volition/State.h>
