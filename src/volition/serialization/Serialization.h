@@ -12,6 +12,7 @@
 #include <volition/serialization/SerializableVector.h>
 #include <volition/serialization/DigestSerializer.h>
 #include <volition/serialization/FromJSONSerializer.h>
+#include <volition/serialization/SortedDigestSerializer.h>
 #include <volition/serialization/ToJSONSerializer.h>
 
 #endif

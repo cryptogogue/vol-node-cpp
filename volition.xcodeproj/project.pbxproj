@@ -215,6 +215,7 @@
 		CD4E80D72102BB57007DA585 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
 		CD4E80DC21031AB0007DA585 /* Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Digest.h; path = src/volition/Digest.h; sourceTree = "<group>"; };
 		CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractStringifiable.h; path = src/volition/serialization/AbstractStringifiable.h; sourceTree = "<group>"; };
+		CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SortedDigestSerializer.h; path = src/volition/serialization/SortedDigestSerializer.h; sourceTree = "<group>"; };
 		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/volition/Signature.cpp; sourceTree = "<group>"; };
 		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/volition/Signature.h; sourceTree = "<group>"; };
 		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/volition/Policy.cpp; sourceTree = "<group>"; };
@@ -374,6 +375,7 @@
 				CD7791FC20F93B1E0058EBAC /* SerializableSet.h */,
 				CD7791FD20F93B1E0058EBAC /* SerializableVector.h */,
 				CD36664D20F73261000E0B43 /* Serialization.h */,
+				CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */,
 				CD36664C20F730AA000E0B43 /* ToJSONSerializer.h */,
 			);
 			name = serialization;

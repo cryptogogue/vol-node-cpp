@@ -15,8 +15,7 @@ namespace Volition {
 void _digest ( Poco::Crypto::ECDSADigestEngine& digestEngine, AbstractSerializable& serializable ) {
 
     Poco::DigestOutputStream signatureStream ( digestEngine );
-    DigestSerializer serializer;
-    serializer.hash ( serializable, signatureStream );
+    SortedDigestSerializer::hash ( serializable, signatureStream );
     signatureStream.close ();
 }
 
