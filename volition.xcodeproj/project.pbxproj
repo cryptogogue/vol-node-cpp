@@ -213,6 +213,8 @@
 		CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractTransaction.h; path = src/volition/AbstractTransaction.h; sourceTree = "<group>"; };
 		CD4E80D62102BB57007DA585 /* CryptoKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoKey.cpp; path = src/volition/CryptoKey.cpp; sourceTree = "<group>"; };
 		CD4E80D72102BB57007DA585 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
+		CD4E80DC21031AB0007DA585 /* Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Digest.h; path = src/volition/Digest.h; sourceTree = "<group>"; };
+		CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractStringifiable.h; path = src/volition/serialization/AbstractStringifiable.h; sourceTree = "<group>"; };
 		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/volition/Signature.cpp; sourceTree = "<group>"; };
 		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/volition/Signature.h; sourceTree = "<group>"; };
 		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/volition/Policy.cpp; sourceTree = "<group>"; };
@@ -364,6 +366,7 @@
 			children = (
 				CD36664820F73027000E0B43 /* AbstractSerializable.h */,
 				CD36664920F7304C000E0B43 /* AbstractSerializer.h */,
+				CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */,
 				CD36664A20F730AA000E0B43 /* DigestSerializer.h */,
 				CD36664B20F730AA000E0B43 /* FromJSONSerializer.h */,
 				CD36664E20F73FE4000E0B43 /* JSONSerializer.h */,
@@ -393,8 +396,6 @@
 				CDC2B34120D1182400300A96 /* TheContext.h */,
 				CD59F3BB20E8950100705AEB /* Policy.cpp */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
-				CD59F3B120E889A000705AEB /* Signature.cpp */,
-				CD59F3B220E889A000705AEB /* Signature.h */,
 				CDC2B31420CCAD2400300A96 /* State.cpp */,
 				CDC2B31520CCAD2400300A96 /* State.h */,
 			);
@@ -404,13 +405,23 @@
 		CD4665AF20BFF62600A02D55 /* util */ = {
 			isa = PBXGroup;
 			children = (
-				CD4E80D62102BB57007DA585 /* CryptoKey.cpp */,
-				CD4E80D72102BB57007DA585 /* CryptoKey.h */,
 				CD0C3E2820C279FB006E3B1C /* Factory.h */,
 				CD36663720F595B2000E0B43 /* FNV1a.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
 			);
 			name = util;
+			sourceTree = "<group>";
+		};
+		CD4E80E021031D24007DA585 /* crypto */ = {
+			isa = PBXGroup;
+			children = (
+				CD4E80D62102BB57007DA585 /* CryptoKey.cpp */,
+				CD4E80D72102BB57007DA585 /* CryptoKey.h */,
+				CD4E80DC21031AB0007DA585 /* Digest.h */,
+				CD59F3B120E889A000705AEB /* Signature.cpp */,
+				CD59F3B220E889A000705AEB /* Signature.h */,
+			);
+			name = crypto;
 			sourceTree = "<group>";
 		};
 		CD5C62F220B4F7930038EE98 /* lib */ = {
@@ -435,6 +446,7 @@
 		CD5C62F320B4F7A70038EE98 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CD4E80E021031D24007DA585 /* crypto */,
 				CD4665AA20BFE49000A02D55 /* ledger */,
 				CDED589120BD1CAC003A2969 /* main */,
 				CD0C3E0F20C14410006E3B1C /* miner */,

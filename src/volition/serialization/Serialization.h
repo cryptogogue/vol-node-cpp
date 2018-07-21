@@ -6,6 +6,7 @@
 
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/serialization/AbstractSerializer.h>
+#include <volition/serialization/AbstractStringifiable.h>
 #include <volition/serialization/SerializablePtr.h>
 #include <volition/serialization/SerializableSet.h>
 #include <volition/serialization/SerializableVector.h>

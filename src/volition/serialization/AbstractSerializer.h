@@ -5,10 +5,10 @@
 #define VOLITION_SERIALIZATION_ABSTRACTSERIALIZER_H
 
 #include <volition/common.h>
+#include <volition/serialization/AbstractSerializable.h>
+#include <volition/serialization/AbstractStringifiable.h>
 
 namespace Volition {
-
-class AbstractSerializable;
 
 //================================================================//
 // SerializerPropertyName
@@ -76,7 +76,7 @@ protected:
     virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, AbstractSerializable& value ) = 0;
     virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, AbstractSerializableArray& value ) = 0;
     virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, AbstractSerializablePointer& value ) = 0;
-    virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, Poco::DigestEngine::Digest& value ) = 0;
+    virtual void        AbstractSerializer_serialize        ( SerializerPropertyName name, AbstractStringifiable& value ) = 0;
 
 public:
 

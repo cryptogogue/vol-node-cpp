@@ -11,6 +11,15 @@
 
 namespace Volition {
 
+//----------------------------------------------------------------//
+void _digest ( Poco::Crypto::ECDSADigestEngine& digestEngine, AbstractSerializable& serializable ) {
+
+    Poco::DigestOutputStream signatureStream ( digestEngine );
+    DigestSerializer serializer;
+    serializer.hash ( serializable, signatureStream );
+    signatureStream.close ();
+}
+
 //================================================================//
 // CryptoKey
 //================================================================//
@@ -59,6 +68,46 @@ bool CryptoKey::hasCurve ( int nid ) {
 bool CryptoKey::hasCurve ( string groupName ) {
 
     return Poco::Crypto::ECKey::hasCurve ( groupName );
+}
+
+//----------------------------------------------------------------//
+Signature CryptoKey::sign ( AbstractSerializable& serializable, string hashAlgorithm ) const {
+
+    if ( this->mKeyPair ) {
+        switch ( this->mKeyPair->type ()) {
+                
+            case Poco::Crypto::KeyPair::KT_EC: {
+                Poco::Crypto::ECDSADigestEngine digestEngine ( *this, hashAlgorithm );
+                _digest ( digestEngine, serializable );
+                return Signature ( digestEngine.digest (), digestEngine.signature (), hashAlgorithm );
+            }
+            
+            case Poco::Crypto::KeyPair::KT_RSA: {
+                // TODO: RSA
+            }
+        }
+    }
+    return Signature ();
+}
+
+//----------------------------------------------------------------//
+bool CryptoKey::verify ( const Signature& signature, AbstractSerializable& serializable ) const {
+
+    if ( this->mKeyPair && signature ) {
+        switch ( this->mKeyPair->type ()) {
+                
+            case Poco::Crypto::KeyPair::KT_EC: {
+                Poco::Crypto::ECDSADigestEngine digestEngine ( *this, signature.getHashAlgorithm ());
+                _digest ( digestEngine, serializable );
+                return digestEngine.verify ( signature.getSignature ());
+            }
+            
+            case Poco::Crypto::KeyPair::KT_RSA: {
+                // TODO: RSA
+            }
+        }
+    }
+    return false;
 }
 
 //================================================================//
@@ -143,6 +192,7 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
                 break;
             }
             case FNV1a::const_hash_64 ( "RSA_PEM" ): {
+                // TODO: RSA
                 break;
             }
         }
@@ -185,7 +235,7 @@ void CryptoKey::AbstractSerializable_serialize ( AbstractSerializer& serializer 
                 break;
             }
              case Poco::Crypto::KeyPair::KT_RSA: {
-                
+                // TODO: RSA
                 serializer.serializeOut < string >( "type", "RSA_PEM" );
                 break;
             }

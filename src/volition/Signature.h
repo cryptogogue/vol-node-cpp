@@ -5,7 +5,7 @@
 #define VOLITION_SIGNATURE_H
 
 #include <volition/common.h>
-#include <volition/CryptoKey.h>
+#include <volition/Digest.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -17,34 +17,31 @@ class Signature :
     public AbstractSerializable {
 private:
 
-    Poco::DigestEngine::Digest              mDigest;
-    Poco::DigestEngine::Digest              mSignature;
-    string                                  mHashAlgorithm;
+    Digest      mDigest;
+    Digest      mSignature;
+    string      mHashAlgorithm;
 
 protected:
 
     //----------------------------------------------------------------//
-    static void                             digest              ( string str, Poco::Crypto::ECDSADigestEngine& digestEngine );
-    static void                             digest              ( AbstractSerializable& serializable, Poco::Crypto::ECDSADigestEngine& digestEngine );
-
-    //----------------------------------------------------------------//
-    void                                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
+    void                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
 public:
 
     static constexpr const char* DEFAULT_HASH_ALGORITHM = "SHA256";
 
     //----------------------------------------------------------------//
-    const Poco::DigestEngine::Digest&       getDigest           () const;
-    string                                  getHashAlgorithm    () const;
-    const Poco::DigestEngine::Digest&       getSignature        () const;
-    const Poco::DigestEngine::Digest&       sign                ( string str, const CryptoKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
-    const Poco::DigestEngine::Digest&       sign                ( AbstractSerializable& serializable, const CryptoKey& key, string hashAlgorithm = DEFAULT_HASH_ALGORITHM );
-                                            Signature           ();
-                                            ~Signature          ();
-    static string                           toHex               ( const Poco::DigestEngine::Digest& digest );
-    bool                                    verify              ( string str, const CryptoKey& key ) const;
-    bool                                    verify              ( AbstractSerializable& serializable, const CryptoKey& key ) const;
+    operator bool () const {
+        return ( this->mSignature.size () > 0 );
+    }
+
+    //----------------------------------------------------------------//
+    const Digest&       getDigest           () const;
+    string              getHashAlgorithm    () const;
+    const Digest&       getSignature        () const;
+                        Signature           ();
+                        Signature           ( Digest digest, Digest signature, string hashAlgorithm );
+                        ~Signature          ();
 };
 
 } // namespace Volition

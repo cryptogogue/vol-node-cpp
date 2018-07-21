@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/CryptoKey.h>
+#include <volition/Digest.h>
 #include <volition/Singleton.h>
 
 namespace Volition {
@@ -26,23 +27,23 @@ public:
 
 private:
 
-    CryptoKey                                       mKey;
-    unique_ptr < Poco::DigestEngine::Digest >       mDigest;
+    CryptoKey       mKey;
+    Digest          mDigest;
 
-    ScoringMode                                     mScoringMode;
+    ScoringMode     mScoringMode;
 
 public:
 
     //----------------------------------------------------------------//
-    int                                     compare                         ( const Block& block0, const Block& block1 );
-    string                                  getCurve                        () const;
-    const Poco::DigestEngine::Digest&       getGenesisBlockDigest           () const;
-    const CryptoKey&                        getGenesisBlockKey              () const;
-    ScoringMode                             getScoringMode                  () const;
-                                            TheContext                      ();
-    void                                    setGenesisBlockDigest           ( const Poco::DigestEngine::Digest& digest );
-    void                                    setGenesisBlockKey              ( const CryptoKey& key );
-    void                                    setScoringMode                  ( ScoringMode scoringMode );
+    int                 compare                     ( const Block& block0, const Block& block1 );
+    string              getCurve                    () const;
+    const Digest&       getGenesisBlockDigest       () const;
+    const CryptoKey&    getGenesisBlockKey          () const;
+    ScoringMode         getScoringMode              () const;
+                        TheContext                  ();
+    void                setGenesisBlockDigest       ( const Digest& digest );
+    void                setGenesisBlockKey          ( const CryptoKey& key );
+    void                setScoringMode              ( ScoringMode scoringMode );
 };
 
 } // namespace Volition

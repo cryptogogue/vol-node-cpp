@@ -8,8 +8,6 @@
 
 namespace Volition {
 
-class AbstractSerializer;
-
 //================================================================//
 // DigestSerializer
 //================================================================//
@@ -66,8 +64,8 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, Poco::DigestEngine::Digest& value ) override {
-        *this->mStream <<  Poco::DigestEngine::digestToHex ( value );
+    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) override {
+        *this->mStream << value.toString ();
     }
 
 public:

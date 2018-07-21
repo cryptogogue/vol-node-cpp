@@ -16,16 +16,14 @@ static const char* DIGEST_STRING        = "21502265b201586201e75ed45828b748187c2
 //================================================================//
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& TheContext::getGenesisBlockDigest () const {
+const Digest& TheContext::getGenesisBlockDigest () const {
 
-    assert ( this->mDigest );
-    return *this->mDigest;
+    return this->mDigest;
 }
 
 //----------------------------------------------------------------//
 const CryptoKey& TheContext::getGenesisBlockKey () const {
 
-    assert ( this->mKey );
     return this->mKey;
 }
 
@@ -45,13 +43,13 @@ TheContext::TheContext () :
 
     FromJSONSerializer::fromJSON ( this->mKey, *object );
     
-    this->mDigest = make_unique < Poco::DigestEngine::Digest >( Poco::DigestEngine::digestFromHex ( DIGEST_STRING ));
+    this->mDigest = DIGEST_STRING;
 }
 
 //----------------------------------------------------------------//
-void TheContext::setGenesisBlockDigest ( const Poco::DigestEngine::Digest& digest ) {
+void TheContext::setGenesisBlockDigest ( const Digest& digest ) {
 
-    this->mDigest = make_unique < Poco::DigestEngine::Digest >( digest );
+    this->mDigest = digest;
 }
 
 //----------------------------------------------------------------//

@@ -8,8 +8,6 @@
 
 namespace Volition {
 
-class AbstractSerializer;
-
 //================================================================//
 // ToJSONSerializer
 //================================================================//
@@ -72,10 +70,11 @@ protected:
             this->AbstractSerializer_serialize ( name, *serializable );
         }
     }
-    
+
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, Poco::DigestEngine::Digest& value ) override {
-        this->set ( name, Poco::DigestEngine::digestToHex ( value ).c_str ());
+    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) override {
+    
+        this->set ( name, value.toString ().c_str ());
     }
 
 public:

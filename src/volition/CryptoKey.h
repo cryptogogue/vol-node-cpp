@@ -5,6 +5,7 @@
 #define VOLITION_CRYPTOKEY_H
 
 #include <volition/common.h>
+#include <volition/Signature.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -27,14 +28,16 @@ public:
     static const int    DEFAULT_EC_GROUP_NID = NID_secp256k1;
 
     //----------------------------------------------------------------//
-                    CryptoKey               ();
-                    ~CryptoKey              ();
-    void            elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
-    void            elliptic                ( string groupName = DEFAULT_EC_GROUP_NAME );
-    static string   getGroupNameFromNID     ( int nid );
-    static int      getNIDFromGroupName     ( string groupName );
-    static bool     hasCurve                ( int nid );
-    static bool     hasCurve                ( string groupName );
+                        CryptoKey               ();
+                        ~CryptoKey              ();
+    void                elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
+    void                elliptic                ( string groupName = DEFAULT_EC_GROUP_NAME );
+    static string       getGroupNameFromNID     ( int nid );
+    static int          getNIDFromGroupName     ( string groupName );
+    static bool         hasCurve                ( int nid );
+    static bool         hasCurve                ( string groupName );
+    Signature           sign                    ( AbstractSerializable& serializable, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM ) const;
+    bool                verify                  ( const Signature& signature, AbstractSerializable& serializable ) const;
     
     //----------------------------------------------------------------//
     operator const bool () const {

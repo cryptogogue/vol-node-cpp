@@ -10,30 +10,13 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Signature::digest ( string str, Poco::Crypto::ECDSADigestEngine& digestEngine ) {
-
-    Poco::DigestOutputStream signatureStream ( digestEngine );
-    signatureStream << str;
-    signatureStream.close ();
-}
-
-//----------------------------------------------------------------//
-void Signature::digest ( AbstractSerializable& serializable, Poco::Crypto::ECDSADigestEngine& digestEngine ) {
-
-    Poco::DigestOutputStream signatureStream ( digestEngine );
-    DigestSerializer serializer;
-    serializer.hash ( serializable, signatureStream );
-    signatureStream.close ();
-}
-
-//----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signature::getDigest () const {
+const Digest& Signature::getDigest () const {
 
     return this->mDigest;
 }
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signature::getSignature () const {
+const Digest& Signature::getSignature () const {
 
     return this->mSignature;
 }
@@ -45,62 +28,19 @@ string Signature::getHashAlgorithm () const {
 }
 
 //----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signature::sign ( string str, const CryptoKey& key, string hashAlgorithm ) {
-
-    this->mHashAlgorithm = hashAlgorithm;
-
-    Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
-    this->digest ( str, signature );
-    
-    this->mDigest = signature.digest ();
-    this->mSignature = signature.signature ();
-    return this->mSignature;
-}
-
-//----------------------------------------------------------------//
-const Poco::DigestEngine::Digest& Signature::sign ( AbstractSerializable& serializable, const CryptoKey& key, string hashAlgorithm ) {
-
-    this->mHashAlgorithm = hashAlgorithm;
-
-    Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
-    this->digest ( serializable, signature );
-    
-    this->mDigest = signature.digest ();
-    this->mSignature = signature.signature ();
-    return this->mSignature;
-}
-
-//----------------------------------------------------------------//
 Signature::Signature () :
     mHashAlgorithm ( DEFAULT_HASH_ALGORITHM) {
 }
 
 //----------------------------------------------------------------//
+Signature::Signature ( Digest digest, Digest signature, string hashAlgorithm ) :
+    mDigest ( digest ),
+    mSignature ( signature ),
+    mHashAlgorithm ( hashAlgorithm ) {
+}
+
+//----------------------------------------------------------------//
 Signature::~Signature () {
-}
-
-//----------------------------------------------------------------//
-string Signature::toHex ( const Poco::DigestEngine::Digest& digest ) {
-
-    return Poco::DigestEngine::digestToHex ( digest );
-}
-
-//----------------------------------------------------------------//
-bool Signature::verify ( string str, const CryptoKey& key ) const {
-
-    Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
-    this->digest ( str, signature );
-    
-    return signature.verify ( this->mSignature );
-}
-
-//----------------------------------------------------------------//
-bool Signature::verify ( AbstractSerializable& serializable, const CryptoKey& key ) const {
-
-    Poco::Crypto::ECDSADigestEngine signature ( key, this->mHashAlgorithm );
-    this->digest ( serializable, signature );
-
-    return signature.verify ( this->mSignature );
 }
 
 //================================================================//

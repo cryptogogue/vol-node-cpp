@@ -25,37 +25,37 @@ private:
     friend class Chain;
     friend class Cycle;
 
-    u64                             mHeight;
-    u64                             mCycleID;
-    string                          mMinerID;
-    Poco::DigestEngine::Digest      mPrevDigest;
-    Poco::DigestEngine::Digest      mAllure; // digital signature of the hash of mCycleID
-    Signature                       mSignature;
+    u64             mHeight;
+    u64             mCycleID;
+    string          mMinerID;
+    Digest          mPrevDigest;
+    Digest          mAllure; // digital signature of the hash of mCycleID
+    Signature       mSignature;
 
     SerializableVector < SerializableSharedPtr < AbstractTransaction, TransactionFactory >>     mTransactions;
 
     //----------------------------------------------------------------//
-    void                                setCycleID                          ( size_t cycleID );
-    void                                setPreviousBlock                    ( const Block* prevBlock );
-    bool                                verify                              ( const State& state );
-    bool                                verify                              ( const State& state, const CryptoKey& key );
+    void                setCycleID                          ( size_t cycleID );
+    void                setPreviousBlock                    ( const Block* prevBlock );
+    bool                verify                              ( const State& state );
+    bool                verify                              ( const State& state, const CryptoKey& key );
 
     //----------------------------------------------------------------//
-    void                                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
+    void                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
 
 public:
 
     //----------------------------------------------------------------//
-    bool                                apply                               ( State& state );
-                                        Block                               ();
-                                        ~Block                              ();
-    size_t                              countTransactions                   () const;
-    string                              getMinerID                          () const;
-    size_t                              getScore                            () const;
-    const Signature&                    getSignature                        () const;
-    void                                pushTransaction                     ( shared_ptr < AbstractTransaction > transaction );
-    void                                setMinerID                          ( string minerID );
-    const Poco::DigestEngine::Digest&   sign                                ( const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    bool                apply                               ( State& state );
+                        Block                               ();
+                        ~Block                              ();
+    size_t              countTransactions                   () const;
+    string              getMinerID                          () const;
+    size_t              getScore                            () const;
+    const Signature&    getSignature                        () const;
+    void                pushTransaction                     ( shared_ptr < AbstractTransaction > transaction );
+    void                setMinerID                          ( string minerID );
+    const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
 };
 
 } // namespace Volition

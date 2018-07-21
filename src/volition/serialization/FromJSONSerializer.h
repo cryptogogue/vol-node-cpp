@@ -8,8 +8,6 @@
 
 namespace Volition {
 
-class AbstractSerializer;
-
 //================================================================//
 // FromJSONSerializer
 //================================================================//
@@ -91,10 +89,9 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, Poco::DigestEngine::Digest& value ) override {
+    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) override {
     
-        string digestString = this->optValue < string >( name, "" );
-        value = digestString.size () ? Poco::DigestEngine::digestFromHex ( digestString ) : Poco::DigestEngine::Digest ();
+        value.fromString ( this->optValue < string >( name, "" ));
     }
 
 public:
