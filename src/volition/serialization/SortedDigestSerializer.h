@@ -8,6 +8,8 @@
 
 namespace Volition {
 
+// TODO: we should be able to speed this up with a mem pool
+
 //================================================================//
 // AbstractSortedDigestSerializerValue
 //================================================================//
