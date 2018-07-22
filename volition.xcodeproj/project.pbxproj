@@ -62,6 +62,9 @@
 		CD4E80D82102BB57007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
 		CD4E80D9210300FA007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
 		CD4E80DA210300FA007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
+		CD4E80E521040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
+		CD4E80E621040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
+		CD4E80E721040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
 		CD59F3B320E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
 		CD59F3B420E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
 		CD59F3B520E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
@@ -216,6 +219,8 @@
 		CD4E80DC21031AB0007DA585 /* Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Digest.h; path = src/volition/Digest.h; sourceTree = "<group>"; };
 		CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractStringifiable.h; path = src/volition/serialization/AbstractStringifiable.h; sourceTree = "<group>"; };
 		CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SortedDigestSerializer.h; path = src/volition/serialization/SortedDigestSerializer.h; sourceTree = "<group>"; };
+		CD4E80E321040032007DA585 /* VersionedStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedStore.cpp; path = src/volition/VersionedStore.cpp; sourceTree = "<group>"; };
+		CD4E80E421040032007DA585 /* VersionedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedStore.h; path = src/volition/VersionedStore.h; sourceTree = "<group>"; };
 		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/volition/Signature.cpp; sourceTree = "<group>"; };
 		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/volition/Signature.h; sourceTree = "<group>"; };
 		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/volition/Policy.cpp; sourceTree = "<group>"; };
@@ -426,6 +431,15 @@
 			name = crypto;
 			sourceTree = "<group>";
 		};
+		CD4E80E821040051007DA585 /* store */ = {
+			isa = PBXGroup;
+			children = (
+				CD4E80E321040032007DA585 /* VersionedStore.cpp */,
+				CD4E80E421040032007DA585 /* VersionedStore.h */,
+			);
+			name = store;
+			sourceTree = "<group>";
+		};
 		CD5C62F220B4F7930038EE98 /* lib */ = {
 			isa = PBXGroup;
 			children = (
@@ -455,6 +469,7 @@
 				CDED587020BCDBD7003A2969 /* router */,
 				CD36664720F72F94000E0B43 /* serialization */,
 				CDC2B31A20CE0F8400300A96 /* simulator */,
+				CD4E80E821040051007DA585 /* store */,
 				CD6D7CCF21006C9F0005446F /* transaction */,
 				CD4665AF20BFF62600A02D55 /* util */,
 				CD5C62FA20B4F7B10038EE98 /* common.h */,
@@ -771,6 +786,7 @@
 				CD36663520F585E3000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32820CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD0C3E5020C86D88006E3B1C /* AbstractRequestHandler.cpp in Sources */,
+				CD4E80E721040032007DA585 /* VersionedStore.cpp in Sources */,
 				CD59F3BF20E8950100705AEB /* Policy.cpp in Sources */,
 				CD0C3E5420C86D88006E3B1C /* TheTransactionFactory.cpp in Sources */,
 				CDC2B31820CCAD2400300A96 /* State.cpp in Sources */,
@@ -803,6 +819,7 @@
 				CD36663420F585E2000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32720CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
+				CD4E80E621040032007DA585 /* VersionedStore.cpp in Sources */,
 				CD59F3BE20E8950100705AEB /* Policy.cpp in Sources */,
 				CD0C3E2A20C28F28006E3B1C /* TheTransactionFactory.cpp in Sources */,
 				CDC2B31720CCAD2400300A96 /* State.cpp in Sources */,
@@ -848,6 +865,7 @@
 				CD36662E20F56D9A000E0B43 /* TheWebMiner.cpp in Sources */,
 				CDC2B32620CE0FA100300A96 /* Analysis.cpp in Sources */,
 				CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
+				CD4E80E521040032007DA585 /* VersionedStore.cpp in Sources */,
 				CD59F3BD20E8950100705AEB /* Policy.cpp in Sources */,
 				CD0C3E2920C28F27006E3B1C /* TheTransactionFactory.cpp in Sources */,
 				CDC2B31620CCAD2400300A96 /* State.cpp in Sources */,

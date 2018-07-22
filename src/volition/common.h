@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include <Poco/Activity.h>
