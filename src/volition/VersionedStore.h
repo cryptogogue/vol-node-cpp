@@ -29,18 +29,20 @@ protected:
     vector < size_t >   mVersions;
 
     //----------------------------------------------------------------//
-    unique_ptr < AbstractVersionedValue >   copyTop                                 () const;
     const void*                             getRaw                                  () const;
     bool                                    isEmpty                                 () const;
+    unique_ptr < AbstractVersionedValue >   makeEmptyCopy                           () const;
     void                                    pop                                     ();
-    void                                    setRaw                                  ( const void* value );
+    void                                    pushBackRaw                             ( const void* value );
+    void                                    pushFrontRaw                            ( const void* value );
 
     //----------------------------------------------------------------//
-    virtual unique_ptr < AbstractVersionedValue >       AbstractVersionedValue_copyTop          () const = 0;
     virtual const void*                                 AbstractVersionedValue_getRaw           () const = 0;
     virtual bool                                        AbstractVersionedValue_isEmpty          () const = 0;
+    virtual unique_ptr < AbstractVersionedValue >       AbstractVersionedValue_makeEmptyCopy    () const = 0;
     virtual void                                        AbstractVersionedValue_pop              () = 0;
-    virtual void                                        AbstractVersionedValue_setRaw           ( const void* value ) = 0;
+    virtual void                                        AbstractVersionedValue_pushBackRaw      ( const void* value ) = 0;
+    virtual void                                        AbstractVersionedValue_pushFrontRaw     ( const void* value ) = 0;
 
 public:
 
@@ -64,16 +66,6 @@ protected:
     vector < TYPE >     mValues;
 
     //----------------------------------------------------------------//
-    unique_ptr < AbstractVersionedValue > AbstractVersionedValue_copyTop () const override {
-    
-        unique_ptr < VersionedValue < TYPE >> value = make_unique < VersionedValue < TYPE >>();
-        
-        assert ( this->mValues.size ());
-        value->mValues.push_back ( this->mValues.back ());
-        return value;
-    }
-
-    //----------------------------------------------------------------//
     const void* AbstractVersionedValue_getRaw () const override {
     
         assert ( this->mValues.size () > 0 );
@@ -86,6 +78,11 @@ protected:
     }
     
     //----------------------------------------------------------------//
+    unique_ptr < AbstractVersionedValue > AbstractVersionedValue_makeEmptyCopy () const override {
+        return make_unique < VersionedValue < TYPE >>();
+    }
+    
+    //----------------------------------------------------------------//
     void AbstractVersionedValue_pop () override {
     
         assert ( this->mValues.size () > 0 );
@@ -93,10 +90,17 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractVersionedValue_setRaw ( const void* value ) override {
+    void AbstractVersionedValue_pushBackRaw ( const void* value ) override {
     
         assert ( value );
         this->mValues.push_back ( *( const TYPE* )value );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractVersionedValue_pushFrontRaw ( const void* value ) override {
+    
+        assert ( value );
+        this->mValues.insert ( this->mValues.begin (), *( const TYPE* )value );
     }
 
 public:
@@ -114,6 +118,7 @@ class VersionedStoreLayer {
 private:
 
     friend class VersionedStore;
+    friend class VersionedStoreEpoch;
     
     set < string >      mKeys; // keys of values this layer changes
 };
@@ -121,7 +126,8 @@ private:
 //================================================================//
 // VersionedStoreEpoch
 //================================================================//
-class VersionedStoreEpoch {
+class VersionedStoreEpoch :
+    public enable_shared_from_this < VersionedStoreEpoch > {
 private:
 
     friend class VersionedStore;
@@ -134,43 +140,30 @@ private:
     set < VersionedStoreEpoch* >                            mChildren;
 
     //----------------------------------------------------------------//
-    const void*     getRaw                      ( string key ) const;
-    void            setRaw                      ( string key, const void* value );
-
-    //----------------------------------------------------------------//
     template < typename TYPE >
-    bool checkValue ( string key ) const {
-        map < string, unique_ptr < AbstractVersionedValue >> ::const_iterator mapIt = this->mMap.find ( key );
-        if ( mapIt != this->mMap.cend ()) {
-            return (( mapIt->second ) && ( mapIt->second->mTypeID == typeid ( TYPE ).hash_code ()));
-        }
-        return false;
-    }
-    
-    //----------------------------------------------------------------//
-    template < typename TYPE >
-    const TYPE* getValue ( string key ) const {
-
-        assert ( this->checkValue < TYPE >( key ));
-        return ( TYPE* )this->getRaw ( key );
-    }
-
-    //----------------------------------------------------------------//
-    template < typename TYPE >
-    void setValue ( string key, const TYPE& value ) {
-
+    void affirmVersionedValue ( string key ) {
         unique_ptr < AbstractVersionedValue >& versionedValue = this->mMap [ key ];
         if ( !versionedValue ) {
             versionedValue = make_unique < VersionedValue < TYPE >>();
         }
-        this->setRaw ( key, &value );
     }
+
+    //----------------------------------------------------------------//
+    void                                    affirmLayer                 ();
+    const AbstractVersionedValue*           findVersionedValue          ( string key ) const;
+    void                                    moveChildrenTo              ( VersionedStoreEpoch& epoch );
+    void                                    moveClientTo                ( VersionedStore& client, VersionedStoreEpoch* epoch );
+    void                                    moveClientsTo               ( VersionedStoreEpoch& epoch, const VersionedStore* except = NULL );
+    void                                    moveTopLayerTo              ( VersionedStoreEpoch& epoch );
+    void                                    popLayer                    ();
+    void                                    pushLayer                   ();
+    shared_ptr < VersionedStoreEpoch >      spawnChildEpoch             ();
 
 public:
 
     //----------------------------------------------------------------//
-            VersionedStoreEpoch         ();
-            ~VersionedStoreEpoch        ();
+                                            VersionedStoreEpoch         ();
+                                            ~VersionedStoreEpoch        ();
 };
 
 //================================================================//
@@ -180,6 +173,7 @@ class VersionedStore {
 private:
 
     friend class VersionedStore;
+    friend class VersionedStoreEpoch;
     
     shared_ptr < VersionedStoreEpoch >  mEpoch;
 
@@ -190,8 +184,11 @@ private:
 
     //----------------------------------------------------------------//
     void            clear                   ();
+    const void*     getRaw                  ( string key, size_t typeID ) const;
+    void            setRaw                  ( string key, size_t typeID, const void* value );
     void            takeSnapshot            ( VersionedStore& other );
                     VersionedStore          ( const VersionedStore& other );
+    
 public:
 
     //----------------------------------------------------------------//
@@ -218,13 +215,15 @@ public:
     //----------------------------------------------------------------//
     template < typename TYPE >
     const TYPE* getValueOrNil ( string key ) const {
-        return this->mEpoch->getValue < TYPE >( key );
+        return ( TYPE* )this->getRaw ( key, typeid ( TYPE ).hash_code ());
     }
 
     //----------------------------------------------------------------//
     template < typename TYPE >
     void setValue ( string key, const TYPE& value ) {
-        this->mEpoch->setValue < TYPE >( key, value );
+        assert ( this->mEpoch );
+        this->mEpoch->affirmVersionedValue < TYPE >( key );
+        this->setRaw ( key, typeid ( TYPE ).hash_code (), &value );
     }
 };
 

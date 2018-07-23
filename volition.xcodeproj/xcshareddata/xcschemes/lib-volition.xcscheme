@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CD4E817521059316007DA585"
-               BuildableName = "liblib-volition.a"
+               BuildableName = "libvolition.a"
                BlueprintName = "lib-volition"
                ReferencedContainer = "container:volition.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CD4E817521059316007DA585"
-            BuildableName = "liblib-volition.a"
+            BuildableName = "libvolition.a"
             BlueprintName = "lib-volition"
             ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CD4E817521059316007DA585"
-            BuildableName = "liblib-volition.a"
+            BuildableName = "libvolition.a"
             BlueprintName = "lib-volition"
             ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
