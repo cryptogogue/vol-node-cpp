@@ -186,6 +186,7 @@ private:
     }
 
     //----------------------------------------------------------------//
+    void            clear                   ();
     void            takeSnapshot            ( VersionedStore& other );
                     VersionedStore          ( const VersionedStore& other );
 public:
@@ -196,6 +197,11 @@ public:
                     VersionedStore          ();
                     VersionedStore          ( VersionedStore& other );
                     ~VersionedStore         ();
+    
+    //----------------------------------------------------------------//
+    VersionedStore& operator = ( VersionedStore& other ) {
+        this->takeSnapshot ( other );
+    }
     
     //----------------------------------------------------------------//
     template < typename TYPE >

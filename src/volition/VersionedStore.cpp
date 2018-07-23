@@ -81,6 +81,15 @@ VersionedStoreEpoch::~VersionedStoreEpoch () {
 //================================================================//
 
 //----------------------------------------------------------------//
+void VersionedStore::clear () {
+
+    if ( this->mEpoch ) {
+        this->mEpoch->mClients.erase ( this );
+        this->mEpoch = NULL;
+    }
+}
+
+//----------------------------------------------------------------//
 void VersionedStore::popVersion () {
 
     assert ( this->mEpoch );
@@ -183,7 +192,8 @@ void VersionedStore::pushVersion () {
 //----------------------------------------------------------------//
 void VersionedStore::takeSnapshot ( VersionedStore& other ) {
 
-    if ( other.mEpoch ) {
+    if ( other.mEpoch != this->mEpoch ) {
+        this->clear ();
         this->mEpoch = other.mEpoch;
         other.mEpoch->mClients.insert ( this );
     }
@@ -207,10 +217,7 @@ VersionedStore::VersionedStore ( const VersionedStore& other ) {
 //----------------------------------------------------------------//
 VersionedStore::~VersionedStore () {
 
-    if ( this->mEpoch ) {
-        this->mEpoch->mClients.erase ( this );
-        this->mEpoch = NULL;
-    }
+    this->clear ();
 }
 
 } // namespace Volition
