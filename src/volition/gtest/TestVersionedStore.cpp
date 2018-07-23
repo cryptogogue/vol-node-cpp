@@ -8,4 +8,11 @@ using namespace Volition;
 
 //----------------------------------------------------------------//
 TEST ( VersionedStore, unitTests ) {
+
+    VersionedStore store;
+    
+    store.setValue < string >( "test", "abc" );
+    string result = store.getValue < string >( "test" );
+    
+    ASSERT_TRUE ( result == "abc" );
 }

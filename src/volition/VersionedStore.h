@@ -25,19 +25,19 @@ protected:
     friend class VersionedStoreEpoch;
     template < typename TYPE > friend class VersionedValue;
 
-    type_info           mTypeID;
+    size_t              mTypeID;
     vector < size_t >   mVersions;
 
     //----------------------------------------------------------------//
     unique_ptr < AbstractVersionedValue >   copyTop                                 () const;
-    void*                                   getRaw                                  () const;
+    const void*                             getRaw                                  () const;
     bool                                    isEmpty                                 () const;
     void                                    pop                                     ();
     void                                    setRaw                                  ( const void* value );
 
     //----------------------------------------------------------------//
     virtual unique_ptr < AbstractVersionedValue >       AbstractVersionedValue_copyTop          () const = 0;
-    virtual void*                                       AbstractVersionedValue_getRaw           () const = 0;
+    virtual const void*                                 AbstractVersionedValue_getRaw           () const = 0;
     virtual bool                                        AbstractVersionedValue_isEmpty          () const = 0;
     virtual void                                        AbstractVersionedValue_pop              () = 0;
     virtual void                                        AbstractVersionedValue_setRaw           ( const void* value ) = 0;
@@ -45,6 +45,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+                        AbstractVersionedValue                  ();
     virtual             ~AbstractVersionedValue                 ();
 };
 
@@ -53,7 +54,7 @@ public:
 //================================================================//
 template < typename TYPE >
 class VersionedValue :
-    AbstractVersionedValue {
+    public AbstractVersionedValue {
 protected:
 
     friend class VersionedStore;
@@ -69,11 +70,11 @@ protected:
         
         assert ( this->mValues.size ());
         value->mValues.push_back ( this->mValues.back ());
-        return move ( value );
+        return value;
     }
 
     //----------------------------------------------------------------//
-    void* AbstractVersionedValue_getRaw () const override {
+    const void* AbstractVersionedValue_getRaw () const override {
     
         assert ( this->mValues.size () > 0 );
         return &this->mValues.back ();
@@ -97,10 +98,12 @@ protected:
         assert ( value );
         this->mValues.push_back ( *( const TYPE* )value );
     }
-    
+
+public:
+
     //----------------------------------------------------------------//
     VersionedValue () {
-        this->mTypeID = typeid ( TYPE );
+        this->mTypeID = typeid ( TYPE ).hash_code ();
     }
 };
 
@@ -139,7 +142,7 @@ private:
     bool checkValue ( string key ) const {
         map < string, unique_ptr < AbstractVersionedValue >> ::const_iterator mapIt = this->mMap.find ( key );
         if ( mapIt != this->mMap.cend ()) {
-            return (( mapIt->second ) && ( mapIt->second->mTypeID == typeid ( TYPE )));
+            return (( mapIt->second ) && ( mapIt->second->mTypeID == typeid ( TYPE ).hash_code ()));
         }
         return false;
     }
@@ -206,7 +209,15 @@ public:
     
     //----------------------------------------------------------------//
     template < typename TYPE >
-    const TYPE* getValue ( string key ) const {
+    const TYPE getValue ( string key ) const {
+        const TYPE* value = this->getValueOrNil < TYPE >( key );
+        assert ( value );
+        return *value;
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    const TYPE* getValueOrNil ( string key ) const {
         return this->mEpoch->getValue < TYPE >( key );
     }
 

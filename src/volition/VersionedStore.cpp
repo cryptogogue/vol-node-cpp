@@ -11,6 +11,11 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+AbstractVersionedValue::AbstractVersionedValue () :
+    mTypeID ( typeid ( void ).hash_code ()) {
+}
+
+//----------------------------------------------------------------//
 AbstractVersionedValue::~AbstractVersionedValue () {
 }
 
@@ -20,7 +25,7 @@ unique_ptr < AbstractVersionedValue > AbstractVersionedValue::copyTop () const {
 }
 
 //----------------------------------------------------------------//
-void* AbstractVersionedValue::getRaw () const {
+const void* AbstractVersionedValue::getRaw () const {
     return this->AbstractVersionedValue_getRaw ();
 }
 
@@ -201,6 +206,8 @@ void VersionedStore::takeSnapshot ( VersionedStore& other ) {
 
 //----------------------------------------------------------------//
 VersionedStore::VersionedStore () {
+
+    this->mEpoch =  make_shared < VersionedStoreEpoch >();
 }
 
 //----------------------------------------------------------------//

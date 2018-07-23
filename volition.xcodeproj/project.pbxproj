@@ -7,22 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CD0C3E1220C14460006E3B1C /* WebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* WebMiner.cpp */; };
-		CD0C3E1320C14460006E3B1C /* WebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* WebMiner.cpp */; };
-		CD0C3E1A20C25A00006E3B1C /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
-		CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
-		CD0C3E2920C28F27006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
-		CD0C3E2A20C28F28006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
-		CD0C3E3520C65D7C006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
-		CD0C3E3620C65D7C006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
-		CD0C3E4620C86D88006E3B1C /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
-		CD0C3E4720C86D88006E3B1C /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
-		CD0C3E4820C86D88006E3B1C /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
-		CD0C3E4C20C86D88006E3B1C /* WebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* WebMiner.cpp */; };
-		CD0C3E4E20C86D88006E3B1C /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
-		CD0C3E4F20C86D88006E3B1C /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
-		CD0C3E5020C86D88006E3B1C /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
-		CD0C3E5420C86D88006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
 		CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
@@ -36,34 +20,10 @@
 		CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CD0C3E6120C86D88006E3B1C /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
 		CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
-		CD36658B20EB3BE0000E0B43 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
-		CD36658C20EB3BE0000E0B43 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
-		CD36658D20EB3BE0000E0B43 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
-		CD36659520EC40E4000E0B43 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
-		CD36659620EC40E4000E0B43 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
-		CD36659720EC40E4000E0B43 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
-		CD36662E20F56D9A000E0B43 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
-		CD36663120F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
-		CD36663220F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
-		CD36663320F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
-		CD36663420F585E2000E0B43 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
-		CD36663520F585E3000E0B43 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
-		CD46659E20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
-		CD46659F20BE908300A02D55 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
 		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
 		CD4665A520BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
-		CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
-		CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
-		CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
-		CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
-		CD4E80D82102BB57007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
-		CD4E80D9210300FA007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
-		CD4E80DA210300FA007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
-		CD4E80E521040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
-		CD4E80E621040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
-		CD4E80E721040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
 		CD4E8111210578D7007DA585 /* gtest-all.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E8107210578D7007DA585 /* gtest-all.cc */; };
 		CD4E8112210578D7007DA585 /* gtest-death-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E8108210578D7007DA585 /* gtest-death-test.cc */; };
 		CD4E8113210578D7007DA585 /* gtest-filepath.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E8109210578D7007DA585 /* gtest-filepath.cc */; };
@@ -99,39 +59,76 @@
 		CD4E817221057E91007DA585 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
 		CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816B21057DD1007DA585 /* main-gtest.cpp */; };
 		CD4E81742105802E007DA585 /* TestVersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */; };
-		CD59F3B320E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
-		CD59F3B420E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
-		CD59F3B520E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
-		CD59F3BD20E8950100705AEB /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
-		CD59F3BE20E8950100705AEB /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
-		CD59F3BF20E8950100705AEB /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
-		CD59F3DB20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */; };
-		CD59F3DC20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */; };
-		CD59F3DD20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */; };
-		CD59F3E020EB045400705AEB /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
-		CD59F3E120EB045400705AEB /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
-		CD59F3E220EB045400705AEB /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
-		CDC2B31620CCAD2400300A96 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
-		CDC2B31720CCAD2400300A96 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
-		CDC2B31820CCAD2400300A96 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
-		CDC2B32620CE0FA100300A96 /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31B20CE0FA100300A96 /* Analysis.cpp */; };
-		CDC2B32720CE0FA100300A96 /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31B20CE0FA100300A96 /* Analysis.cpp */; };
-		CDC2B32820CE0FA100300A96 /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31B20CE0FA100300A96 /* Analysis.cpp */; };
-		CDC2B32C20CE0FA100300A96 /* Cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31F20CE0FA100300A96 /* Cohort.cpp */; };
-		CDC2B32D20CE0FA100300A96 /* Cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31F20CE0FA100300A96 /* Cohort.cpp */; };
-		CDC2B32E20CE0FA100300A96 /* Cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31F20CE0FA100300A96 /* Cohort.cpp */; };
-		CDC2B32F20CE0FA100300A96 /* TheSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */; };
-		CDC2B33020CE0FA100300A96 /* TheSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */; };
-		CDC2B33120CE0FA100300A96 /* TheSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */; };
-		CDC2B33920CE112F00300A96 /* Chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33520CE112F00300A96 /* Chain.cpp */; };
-		CDC2B33A20CE112F00300A96 /* Chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33520CE112F00300A96 /* Chain.cpp */; };
-		CDC2B33B20CE112F00300A96 /* Chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33520CE112F00300A96 /* Chain.cpp */; };
-		CDC2B33C20CE112F00300A96 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
-		CDC2B33D20CE112F00300A96 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
-		CDC2B33E20CE112F00300A96 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
-		CDC2B34320D1196900300A96 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
-		CDC2B34420D1196900300A96 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
-		CDC2B34520D1196900300A96 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
+		CD4E8190210593A4007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
+		CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80D72102BB57007DA585 /* CryptoKey.h */; };
+		CD4E8192210593A4007DA585 /* Digest.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80DC21031AB0007DA585 /* Digest.h */; };
+		CD4E8193210593A4007DA585 /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
+		CD4E8194210593A4007DA585 /* Signature.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3B220E889A000705AEB /* Signature.h */; };
+		CD4E8195210593BD007DA585 /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD46659C20BE908300A02D55 /* Block.cpp */; };
+		CD4E8196210593BD007DA585 /* Block.h in Headers */ = {isa = PBXBuildFile; fileRef = CD46659D20BE908300A02D55 /* Block.h */; };
+		CD4E8197210593BD007DA585 /* Chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33520CE112F00300A96 /* Chain.cpp */; };
+		CD4E8198210593BD007DA585 /* Chain.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B33620CE112F00300A96 /* Chain.h */; };
+		CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
+		CD4E819A210593BD007DA585 /* ChainPlacement.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3DF20EB045400705AEB /* ChainPlacement.h */; };
+		CD4E819B210593BD007DA585 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
+		CD4E819C210593BD007DA585 /* Cycle.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B33820CE112F00300A96 /* Cycle.h */; };
+		CD4E819D210593BD007DA585 /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
+		CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E1920C25A00006E3B1C /* MinerInfo.h */; };
+		CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
+		CD4E81A0210593BD007DA585 /* TheContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B34120D1182400300A96 /* TheContext.h */; };
+		CD4E81A1210593BD007DA585 /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
+		CD4E81A2210593BD007DA585 /* Policy.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3BC20E8950100705AEB /* Policy.h */; };
+		CD4E81A3210593BD007DA585 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
+		CD4E81A4210593BD007DA585 /* State.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B31520CCAD2400300A96 /* State.h */; };
+		CD4E81A5210593CA007DA585 /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
+		CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */; };
+		CD4E81A7210593CA007DA585 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
+		CD4E81A8210593CA007DA585 /* Miner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36658A20EB3BE0000E0B43 /* Miner.h */; };
+		CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
+		CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36662D20F56D9A000E0B43 /* TheWebMiner.h */; };
+		CD4E81AB210593CA007DA585 /* TheWebMinerAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36663B20F5A5F3000E0B43 /* TheWebMinerAPI.h */; };
+		CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* WebMiner.cpp */; };
+		CD4E81AD210593CA007DA585 /* WebMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E1120C14460006E3B1C /* WebMiner.h */; };
+		CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
+		CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */; };
+		CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
+		CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */; };
+		CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
+		CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED584320BA2131003A2969 /* RouteTable.h */; };
+		CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664820F73027000E0B43 /* AbstractSerializable.h */; };
+		CD4E81B5210593E5007DA585 /* AbstractSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664920F7304C000E0B43 /* AbstractSerializer.h */; };
+		CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */; };
+		CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664A20F730AA000E0B43 /* DigestSerializer.h */; };
+		CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664B20F730AA000E0B43 /* FromJSONSerializer.h */; };
+		CD4E81B9210593E5007DA585 /* JSONSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664E20F73FE4000E0B43 /* JSONSerializer.h */; };
+		CD4E81BA210593E5007DA585 /* SerializablePtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */; };
+		CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7791FC20F93B1E0058EBAC /* SerializableSet.h */; };
+		CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7791FD20F93B1E0058EBAC /* SerializableVector.h */; };
+		CD4E81BD210593E5007DA585 /* Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664D20F73261000E0B43 /* Serialization.h */; };
+		CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */; };
+		CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664C20F730AA000E0B43 /* ToJSONSerializer.h */; };
+		CD4E81C0210593F6007DA585 /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31B20CE0FA100300A96 /* Analysis.cpp */; };
+		CD4E81C1210593F6007DA585 /* Analysis.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B31C20CE0FA100300A96 /* Analysis.h */; };
+		CD4E81C2210593F6007DA585 /* Cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31F20CE0FA100300A96 /* Cohort.cpp */; };
+		CD4E81C3210593F6007DA585 /* Cohort.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32020CE0FA100300A96 /* Cohort.h */; };
+		CD4E81C4210593F6007DA585 /* Scenario.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32520CE0FA100300A96 /* Scenario.h */; };
+		CD4E81C5210593F6007DA585 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
+		CD4E81C6210593F6007DA585 /* SimMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36659420EC40E4000E0B43 /* SimMiner.h */; };
+		CD4E81C7210593F6007DA585 /* TheSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */; };
+		CD4E81C8210593F6007DA585 /* TheSimulator.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32220CE0FA100300A96 /* TheSimulator.h */; };
+		CD4E81C92105940F007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
+		CD4E81CA2105940F007DA585 /* VersionedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80E421040032007DA585 /* VersionedStore.h */; };
+		CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
+		CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */; };
+		CD4E81CD2105941A007DA585 /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
+		CD4E81CE2105941A007DA585 /* TheTransactionFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E1520C14E8A006E3B1C /* TheTransactionFactory.h */; };
+		CD4E81CF2105941A007DA585 /* TransactionMakerSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */; };
+		CD4E81D02105941A007DA585 /* TransactionMakerSignature.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */; };
+		CD4E81D12105941A007DA585 /* Transactions.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664120F6B404000E0B43 /* Transactions.h */; };
+		CD4E81D421059435007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
+		CD4E81D721059447007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
+		CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
+		CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -146,7 +143,6 @@
 		CDED583C20BA1FE0003A2969 /* StringTokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */; };
 		CDED583D20BA1FE0003A2969 /* StringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582420BA1F4E003A2969 /* StringTokenizer.h */; };
 		CDED584120BA2008003A2969 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
-		CDED584420BA2131003A2969 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
 		CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
@@ -158,7 +154,6 @@
 		CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
 		CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
-		CDED587C20BD1C5F003A2969 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CDED588220BD1C5F003A2969 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
 		CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
@@ -194,6 +189,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = CD4E80F1210577FF007DA585;
 			remoteInfo = "lib-gtest";
+		};
+		CD4E81D22105942B007DA585 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-volition";
+		};
+		CD4E81D52105943F007DA585 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-volition";
+		};
+		CD4E81D821059450007DA585 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-volition";
+		};
+		CD4E81DB21059463007DA585 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-volition";
 		};
 		CDED583E20BA2001003A2969 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -292,6 +315,7 @@
 		CD4E8161210579C8007DA585 /* gtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gtest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD4E816B21057DD1007DA585 /* main-gtest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-gtest.cpp"; path = "src/volition/gtest/main-gtest.cpp"; sourceTree = "<group>"; };
 		CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestVersionedStore.cpp; path = src/volition/gtest/TestVersionedStore.cpp; sourceTree = "<group>"; };
+		CD4E818F21059316007DA585 /* libvolition.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libvolition.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/volition/Signature.cpp; sourceTree = "<group>"; };
 		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/volition/Signature.h; sourceTree = "<group>"; };
 		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/volition/Policy.cpp; sourceTree = "<group>"; };
@@ -357,6 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */,
+				CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */,
 				CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */,
 				CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */,
 				CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */,
@@ -385,6 +410,7 @@
 			files = (
 				CD4E817121057E91007DA585 /* libgtest.a in Frameworks */,
 				CD4E817221057E91007DA585 /* libcpprouter.a in Frameworks */,
+				CD4E81D421059435007DA585 /* libvolition.a in Frameworks */,
 				CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */,
 				CD4E8152210579C8007DA585 /* libcrypto.a in Frameworks */,
 				CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */,
@@ -400,11 +426,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CD4E817F21059316007DA585 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD9345BF2093EB140077BAD4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				CDED584120BA2008003A2969 /* libcpprouter.a in Frameworks */,
+				CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */,
 				CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */,
 				CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */,
 				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
@@ -432,6 +466,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDED588220BD1C5F003A2969 /* libcpprouter.a in Frameworks */,
+				CD4E81D721059447007DA585 /* libvolition.a in Frameworks */,
 				CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */,
 				CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */,
 				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
@@ -614,7 +649,6 @@
 			children = (
 				CD4E80E021031D24007DA585 /* crypto */,
 				CD4665AA20BFE49000A02D55 /* ledger */,
-				CDED589120BD1CAC003A2969 /* main */,
 				CD0C3E0F20C14410006E3B1C /* miner */,
 				CDED587020BCDBD7003A2969 /* router */,
 				CD36664720F72F94000E0B43 /* serialization */,
@@ -646,6 +680,7 @@
 			children = (
 				CDED581320BA1EF7003A2969 /* 3rd-party */,
 				CD4E816621057ADF007DA585 /* gtest */,
+				CDED589120BD1CAC003A2969 /* main */,
 				CD5C62F320B4F7A70038EE98 /* src */,
 				CD5C62F220B4F7930038EE98 /* lib */,
 				CD9345C32093EB140077BAD4 /* Products */,
@@ -662,6 +697,7 @@
 				CD0C3E6720C86D88006E3B1C /* util */,
 				CD4E8105210577FF007DA585 /* libgtest.a */,
 				CD4E8161210579C8007DA585 /* gtest */,
+				CD4E818F21059316007DA585 /* libvolition.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -770,6 +806,54 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CD4E818021059316007DA585 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */,
+				CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */,
+				CD4E81CE2105941A007DA585 /* TheTransactionFactory.h in Headers */,
+				CD4E81B9210593E5007DA585 /* JSONSerializer.h in Headers */,
+				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
+				CD4E81D12105941A007DA585 /* Transactions.h in Headers */,
+				CD4E81C1210593F6007DA585 /* Analysis.h in Headers */,
+				CD4E81C3210593F6007DA585 /* Cohort.h in Headers */,
+				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
+				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
+				CD4E819A210593BD007DA585 /* ChainPlacement.h in Headers */,
+				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
+				CD4E819C210593BD007DA585 /* Cycle.h in Headers */,
+				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
+				CD4E8196210593BD007DA585 /* Block.h in Headers */,
+				CD4E81C8210593F6007DA585 /* TheSimulator.h in Headers */,
+				CD4E81BA210593E5007DA585 /* SerializablePtr.h in Headers */,
+				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
+				CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */,
+				CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */,
+				CD4E81AB210593CA007DA585 /* TheWebMinerAPI.h in Headers */,
+				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
+				CD4E8198210593BD007DA585 /* Chain.h in Headers */,
+				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
+				CD4E81C4210593F6007DA585 /* Scenario.h in Headers */,
+				CD4E81A0210593BD007DA585 /* TheContext.h in Headers */,
+				CD4E81CA2105940F007DA585 /* VersionedStore.h in Headers */,
+				CD4E81C6210593F6007DA585 /* SimMiner.h in Headers */,
+				CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */,
+				CD4E81AD210593CA007DA585 /* WebMiner.h in Headers */,
+				CD4E8194210593A4007DA585 /* Signature.h in Headers */,
+				CD4E81B5210593E5007DA585 /* AbstractSerializer.h in Headers */,
+				CD4E81A8210593CA007DA585 /* Miner.h in Headers */,
+				CD4E81A4210593BD007DA585 /* State.h in Headers */,
+				CD4E81D02105941A007DA585 /* TransactionMakerSignature.h in Headers */,
+				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
+				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
+				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
+				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
+				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
+				CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CDED582B20BA1FCE003A2969 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -799,6 +883,7 @@
 			);
 			dependencies = (
 				CD0C3E4020C86D88006E3B1C /* PBXTargetDependency */,
+				CD4E81DC21059463007DA585 /* PBXTargetDependency */,
 			);
 			name = util;
 			productName = consensus;
@@ -835,11 +920,29 @@
 			dependencies = (
 				CD4E817021057E4F007DA585 /* PBXTargetDependency */,
 				CD4E8132210579C8007DA585 /* PBXTargetDependency */,
+				CD4E81D32105942B007DA585 /* PBXTargetDependency */,
 			);
 			name = gtest;
 			productName = consensus;
 			productReference = CD4E8161210579C8007DA585 /* gtest */;
 			productType = "com.apple.product-type.tool";
+		};
+		CD4E817521059316007DA585 /* lib-volition */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CD4E818C21059316007DA585 /* Build configuration list for PBXNativeTarget "lib-volition" */;
+			buildPhases = (
+				CD4E817621059316007DA585 /* Sources */,
+				CD4E817F21059316007DA585 /* Frameworks */,
+				CD4E818021059316007DA585 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "lib-volition";
+			productName = "lib-simple-cpp-router";
+			productReference = CD4E818F21059316007DA585 /* libvolition.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 		CD9345C12093EB140077BAD4 /* simulator */ = {
 			isa = PBXNativeTarget;
@@ -853,6 +956,7 @@
 			);
 			dependencies = (
 				CDED583F20BA2001003A2969 /* PBXTargetDependency */,
+				CD4E81D921059450007DA585 /* PBXTargetDependency */,
 			);
 			name = simulator;
 			productName = consensus;
@@ -888,6 +992,7 @@
 			);
 			dependencies = (
 				CDED587520BD1C5F003A2969 /* PBXTargetDependency */,
+				CD4E81D62105943F007DA585 /* PBXTargetDependency */,
 			);
 			name = server;
 			productName = consensus;
@@ -911,6 +1016,9 @@
 					};
 					CD4E8131210579C8007DA585 = {
 						ProvisioningStyle = Manual;
+					};
+					CD4E817521059316007DA585 = {
+						ProvisioningStyle = Automatic;
 					};
 					CD9345C12093EB140077BAD4 = {
 						CreatedOnToolsVersion = 9.2;
@@ -943,6 +1051,7 @@
 				CD0C3E3F20C86D88006E3B1C /* util */,
 				CD4E80F1210577FF007DA585 /* lib-gtest */,
 				CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */,
+				CD4E817521059316007DA585 /* lib-volition */,
 			);
 		};
 /* End PBXProject section */
@@ -997,31 +1106,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD59F3E220EB045400705AEB /* ChainPlacement.cpp in Sources */,
-				CDC2B32E20CE0FA100300A96 /* Cohort.cpp in Sources */,
-				CD0C3E4620C86D88006E3B1C /* Block.cpp in Sources */,
-				CD59F3B520E889A000705AEB /* Signature.cpp in Sources */,
-				CD0C3E4720C86D88006E3B1C /* RouteTable.cpp in Sources */,
-				CD36659720EC40E4000E0B43 /* SimMiner.cpp in Sources */,
-				CD0C3E4820C86D88006E3B1C /* SyncChainTask.cpp in Sources */,
-				CDC2B33120CE0FA100300A96 /* TheSimulator.cpp in Sources */,
-				CD0C3E4C20C86D88006E3B1C /* WebMiner.cpp in Sources */,
-				CD36658D20EB3BE0000E0B43 /* Miner.cpp in Sources */,
-				CD36663320F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
-				CD0C3E4E20C86D88006E3B1C /* AbstractTransaction.cpp in Sources */,
-				CD0C3E4F20C86D88006E3B1C /* MinerInfo.cpp in Sources */,
-				CD4E80DA210300FA007DA585 /* CryptoKey.cpp in Sources */,
-				CDC2B34520D1196900300A96 /* TheContext.cpp in Sources */,
-				CD36663520F585E3000E0B43 /* TheWebMiner.cpp in Sources */,
-				CDC2B32820CE0FA100300A96 /* Analysis.cpp in Sources */,
-				CD0C3E5020C86D88006E3B1C /* AbstractRequestHandler.cpp in Sources */,
-				CD4E80E721040032007DA585 /* VersionedStore.cpp in Sources */,
-				CD59F3BF20E8950100705AEB /* Policy.cpp in Sources */,
-				CD0C3E5420C86D88006E3B1C /* TheTransactionFactory.cpp in Sources */,
-				CDC2B31820CCAD2400300A96 /* State.cpp in Sources */,
-				CDC2B33E20CE112F00300A96 /* Cycle.cpp in Sources */,
-				CD59F3DD20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */,
-				CDC2B33B20CE112F00300A96 /* Chain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1049,36 +1133,43 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CD4E817621059316007DA585 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
+				CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */,
+				CD4E81CF2105941A007DA585 /* TransactionMakerSignature.cpp in Sources */,
+				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
+				CD4E81C92105940F007DA585 /* VersionedStore.cpp in Sources */,
+				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
+				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
+				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,
+				CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */,
+				CD4E81C7210593F6007DA585 /* TheSimulator.cpp in Sources */,
+				CD4E81A1210593BD007DA585 /* Policy.cpp in Sources */,
+				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
+				CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */,
+				CD4E819B210593BD007DA585 /* Cycle.cpp in Sources */,
+				CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */,
+				CD4E81A5210593CA007DA585 /* SyncChainTask.cpp in Sources */,
+				CD4E81A3210593BD007DA585 /* State.cpp in Sources */,
+				CD4E81C5210593F6007DA585 /* SimMiner.cpp in Sources */,
+				CD4E81CD2105941A007DA585 /* TheTransactionFactory.cpp in Sources */,
+				CD4E81A7210593CA007DA585 /* Miner.cpp in Sources */,
+				CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */,
+				CD4E81C2210593F6007DA585 /* Cohort.cpp in Sources */,
+				CD4E819D210593BD007DA585 /* MinerInfo.cpp in Sources */,
+				CD4E8190210593A4007DA585 /* CryptoKey.cpp in Sources */,
+				CD4E81C0210593F6007DA585 /* Analysis.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD9345BE2093EB140077BAD4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD59F3E120EB045400705AEB /* ChainPlacement.cpp in Sources */,
-				CDC2B32D20CE0FA100300A96 /* Cohort.cpp in Sources */,
-				CD46659F20BE908300A02D55 /* Block.cpp in Sources */,
-				CD59F3B420E889A000705AEB /* Signature.cpp in Sources */,
-				CDED584420BA2131003A2969 /* RouteTable.cpp in Sources */,
-				CD36659620EC40E4000E0B43 /* SimMiner.cpp in Sources */,
-				CD0C3E3620C65D7C006E3B1C /* SyncChainTask.cpp in Sources */,
-				CD0C3E1320C14460006E3B1C /* WebMiner.cpp in Sources */,
-				CDC2B33020CE0FA100300A96 /* TheSimulator.cpp in Sources */,
 				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
-				CD36658C20EB3BE0000E0B43 /* Miner.cpp in Sources */,
-				CD36663220F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
-				CD4665AE20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
-				CD0C3E1B20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
-				CD4E80D9210300FA007DA585 /* CryptoKey.cpp in Sources */,
-				CDC2B34420D1196900300A96 /* TheContext.cpp in Sources */,
-				CD36663420F585E2000E0B43 /* TheWebMiner.cpp in Sources */,
-				CDC2B32720CE0FA100300A96 /* Analysis.cpp in Sources */,
-				CD4665A920BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
-				CD4E80E621040032007DA585 /* VersionedStore.cpp in Sources */,
-				CD59F3BE20E8950100705AEB /* Policy.cpp in Sources */,
-				CD0C3E2A20C28F28006E3B1C /* TheTransactionFactory.cpp in Sources */,
-				CDC2B31720CCAD2400300A96 /* State.cpp in Sources */,
-				CDC2B33D20CE112F00300A96 /* Cycle.cpp in Sources */,
-				CD59F3DC20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */,
-				CDC2B33A20CE112F00300A96 /* Chain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1099,32 +1190,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD59F3E020EB045400705AEB /* ChainPlacement.cpp in Sources */,
 				CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */,
-				CDC2B32C20CE0FA100300A96 /* Cohort.cpp in Sources */,
-				CD46659E20BE908300A02D55 /* Block.cpp in Sources */,
-				CD36663120F585D8000E0B43 /* AbstractAPIRequestHandler.cpp in Sources */,
-				CD59F3B320E889A000705AEB /* Signature.cpp in Sources */,
-				CD36659520EC40E4000E0B43 /* SimMiner.cpp in Sources */,
-				CD0C3E3520C65D7C006E3B1C /* SyncChainTask.cpp in Sources */,
-				CDED587C20BD1C5F003A2969 /* RouteTable.cpp in Sources */,
-				CD0C3E1220C14460006E3B1C /* WebMiner.cpp in Sources */,
-				CDC2B32F20CE0FA100300A96 /* TheSimulator.cpp in Sources */,
-				CD36658B20EB3BE0000E0B43 /* Miner.cpp in Sources */,
-				CD4665AD20BFF3DD00A02D55 /* AbstractTransaction.cpp in Sources */,
-				CD0C3E1A20C25A00006E3B1C /* MinerInfo.cpp in Sources */,
-				CD4E80D82102BB57007DA585 /* CryptoKey.cpp in Sources */,
-				CDC2B34320D1196900300A96 /* TheContext.cpp in Sources */,
-				CD36662E20F56D9A000E0B43 /* TheWebMiner.cpp in Sources */,
-				CDC2B32620CE0FA100300A96 /* Analysis.cpp in Sources */,
-				CD4665A820BEABE100A02D55 /* AbstractRequestHandler.cpp in Sources */,
-				CD4E80E521040032007DA585 /* VersionedStore.cpp in Sources */,
-				CD59F3BD20E8950100705AEB /* Policy.cpp in Sources */,
-				CD0C3E2920C28F27006E3B1C /* TheTransactionFactory.cpp in Sources */,
-				CDC2B31620CCAD2400300A96 /* State.cpp in Sources */,
-				CDC2B33C20CE112F00300A96 /* Cycle.cpp in Sources */,
-				CD59F3DB20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */,
-				CDC2B33920CE112F00300A96 /* Chain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1145,6 +1211,26 @@
 			isa = PBXTargetDependency;
 			target = CD4E80F1210577FF007DA585 /* lib-gtest */;
 			targetProxy = CD4E816F21057E4F007DA585 /* PBXContainerItemProxy */;
+		};
+		CD4E81D32105942B007DA585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD4E817521059316007DA585 /* lib-volition */;
+			targetProxy = CD4E81D22105942B007DA585 /* PBXContainerItemProxy */;
+		};
+		CD4E81D62105943F007DA585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD4E817521059316007DA585 /* lib-volition */;
+			targetProxy = CD4E81D52105943F007DA585 /* PBXContainerItemProxy */;
+		};
+		CD4E81D921059450007DA585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD4E817521059316007DA585 /* lib-volition */;
+			targetProxy = CD4E81D821059450007DA585 /* PBXContainerItemProxy */;
+		};
+		CD4E81DC21059463007DA585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD4E817521059316007DA585 /* lib-volition */;
+			targetProxy = CD4E81DB21059463007DA585 /* PBXContainerItemProxy */;
 		};
 		CDED583F20BA2001003A2969 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1236,6 +1322,42 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		CD4E818D21059316007DA585 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BUD786NAA6;
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"3rd-party/googletest/googletest",
+				);
+				PRODUCT_NAME = volition;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CD4E818E21059316007DA585 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BUD786NAA6;
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"3rd-party/googletest/googletest",
+				);
+				PRODUCT_NAME = volition;
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
@@ -1475,6 +1597,15 @@
 			buildConfigurations = (
 				CD4E815F210579C8007DA585 /* Debug */,
 				CD4E8160210579C8007DA585 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD4E818C21059316007DA585 /* Build configuration list for PBXNativeTarget "lib-volition" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD4E818D21059316007DA585 /* Debug */,
+				CD4E818E21059316007DA585 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
