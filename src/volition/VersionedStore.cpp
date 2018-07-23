@@ -7,46 +7,46 @@
 namespace Volition {
 
 //================================================================//
-// AbstractVersionedValue
+// AbstractValueStack
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractVersionedValue::AbstractVersionedValue () :
+AbstractValueStack::AbstractValueStack () :
     mTypeID ( typeid ( void ).hash_code ()) {
 }
 
 //----------------------------------------------------------------//
-AbstractVersionedValue::~AbstractVersionedValue () {
+AbstractValueStack::~AbstractValueStack () {
 }
 
 //----------------------------------------------------------------//
-const void* AbstractVersionedValue::getRaw () const {
-    return this->AbstractVersionedValue_getRaw ();
+const void* AbstractValueStack::getRaw () const {
+    return this->AbstractValueStack_getRaw ();
 }
 
 //----------------------------------------------------------------//
-bool AbstractVersionedValue::isEmpty () const {
-    return this->AbstractVersionedValue_isEmpty ();
+bool AbstractValueStack::isEmpty () const {
+    return this->AbstractValueStack_isEmpty ();
 }
 
 //----------------------------------------------------------------//
-unique_ptr < AbstractVersionedValue > AbstractVersionedValue::makeEmptyCopy () const {
-    return this->AbstractVersionedValue_makeEmptyCopy ();
+unique_ptr < AbstractValueStack > AbstractValueStack::makeEmptyCopy () const {
+    return this->AbstractValueStack_makeEmptyCopy ();
 }
 
 //----------------------------------------------------------------//
-void AbstractVersionedValue::pop () {
-    this->AbstractVersionedValue_pop ();
+void AbstractValueStack::pop () {
+    this->AbstractValueStack_pop ();
 }
 
 //----------------------------------------------------------------//
-void AbstractVersionedValue::pushBackRaw ( const void* value ) {
-    this->AbstractVersionedValue_pushBackRaw ( value );
+void AbstractValueStack::pushBackRaw ( const void* value ) {
+    this->AbstractValueStack_pushBackRaw ( value );
 }
 
 //----------------------------------------------------------------//
-void AbstractVersionedValue::pushFrontRaw ( const void* value ) {
-    this->AbstractVersionedValue_pushFrontRaw ( value );
+void AbstractValueStack::pushFrontRaw ( const void* value ) {
+    this->AbstractValueStack_pushFrontRaw ( value );
 }
 
 //================================================================//
@@ -62,14 +62,14 @@ void VersionedStoreEpoch::affirmLayer () {
 }
 
 //----------------------------------------------------------------//
-const AbstractVersionedValue* VersionedStoreEpoch::findVersionedValue ( string key ) const {
+const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) const {
 
     // descend through epochs until we find the value. if we don't find it, return NULL.
-    map < string, unique_ptr < AbstractVersionedValue >>::const_iterator valueIt = this->mMap.find ( key );
-    if ( valueIt != this->mMap.cend ()) {
+    map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
+    if ( valueIt != this->mValueStacksByKey.cend ()) {
         return valueIt->second.get ();
     }
-    return this->mParent ? this->mParent->findVersionedValue ( key ) : NULL;
+    return this->mParent ? this->mParent->findValueStack ( key ) : NULL;
 }
 
 //----------------------------------------------------------------//
@@ -137,25 +137,25 @@ void VersionedStoreEpoch::moveTopLayerTo ( VersionedStoreEpoch& epoch ) {
     for ( ; keyIt != topLayer->mKeys.cend (); ++keyIt ) {
         const string& key = *keyIt;
         
-        map < string, unique_ptr < AbstractVersionedValue >>::const_iterator valueIt = this->mMap.find ( key );
-        assert ( valueIt != this->mMap.cend ());
+        map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
+        assert ( valueIt != this->mValueStacksByKey.cend ());
         
         // from value
-        AbstractVersionedValue* fromValue = valueIt->second.get ();
-        assert ( fromValue );
-        assert ( !fromValue->isEmpty ());
+        AbstractValueStack* fromValueStack = valueIt->second.get ();
+        assert ( fromValueStack );
+        assert ( !fromValueStack->isEmpty ());
         
         // affirm to value
-        unique_ptr < AbstractVersionedValue >& toValuePtr = epoch.mMap [ key ];
-        if ( !toValuePtr ) {
-            toValuePtr = fromValue->makeEmptyCopy ();
+        unique_ptr < AbstractValueStack >& toValueStackPtr = epoch.mValueStacksByKey [ key ];
+        if ( !toValueStackPtr ) {
+            toValueStackPtr = fromValueStack->makeEmptyCopy ();
         }
         
-        toValuePtr->pushFrontRaw ( fromValue->getRaw ());
-        fromValue->pop ();
+        toValueStackPtr->pushFrontRaw ( fromValueStack->getRaw ());
+        fromValueStack->pop ();
         
-        if ( fromValue->isEmpty ()) {
-            this->mMap.erase ( key );
+        if ( fromValueStack->isEmpty ()) {
+            this->mValueStacksByKey.erase ( key );
         }
     }
     this->popLayer ();
@@ -173,14 +173,14 @@ void VersionedStoreEpoch::popLayer () {
         for ( ; keyIt != layer->mKeys.cend (); ++keyIt ) {
             const string& key = *keyIt;
             
-            AbstractVersionedValue* value = this->mMap [ key ].get ();
-            assert ( value );
+            AbstractValueStack* valueStack = this->mValueStacksByKey [ key ].get ();
+            assert ( valueStack );
             
-            value->pop (); // pop the value.
+            valueStack->pop (); // pop the value.
             
             // if it's empty now (no more versions), remove it.
-            if ( value->isEmpty ()) {
-                this->mMap.erase ( key );
+            if ( valueStack->isEmpty ()) {
+                this->mValueStacksByKey.erase ( key );
             }
         }
     }
@@ -231,11 +231,11 @@ void VersionedStore::clear () {
 const void* VersionedStore::getRaw ( string key, size_t typeID ) const {
 
     assert ( this->mEpoch );
-    const AbstractVersionedValue* value = this->mEpoch->findVersionedValue ( key );
+    const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key );
     
-    if ( value ) {
-        assert ( value->mTypeID == typeID );
-        return value->getRaw ();
+    if ( valueStack ) {
+        assert ( valueStack->mTypeID == typeID );
+        return valueStack->getRaw ();
     }
     return NULL;
 }
@@ -245,8 +245,8 @@ void VersionedStore::setRaw ( string key, size_t typeID, const void* value ) {
 
     assert ( this->mEpoch );
 
-    AbstractVersionedValue* versionedValue = this->mEpoch->mMap [ key ].get ();
-    assert ( versionedValue );
+    AbstractValueStack* valueStack = this->mEpoch->mValueStacksByKey [ key ].get ();
+    assert ( valueStack );
 
     // if this epoch has children, then we can't add the value here. we have to spawn a new
     // epoch and move this client to it.
@@ -256,13 +256,13 @@ void VersionedStore::setRaw ( string key, size_t typeID, const void* value ) {
         shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch->spawnChildEpoch ();
         this->mEpoch->moveClientTo ( *this, epoch.get ());
         
-        unique_ptr < AbstractVersionedValue > versionedValueCopy = versionedValue->makeEmptyCopy ();
-        versionedValue = versionedValueCopy.get ();
+        unique_ptr < AbstractValueStack > valueStackCopy = valueStack->makeEmptyCopy ();
+        valueStack = valueStackCopy.get ();
         
-        this->mEpoch->mMap [ key ] = move ( versionedValueCopy );
+        this->mEpoch->mValueStacksByKey [ key ] = move ( valueStackCopy );
     }
 
-    versionedValue->pushBackRaw ( value );
+    valueStack->pushBackRaw ( value );
     
     this->mEpoch->affirmLayer ();
     this->mEpoch->mLayers.back ()->mKeys.insert ( key );

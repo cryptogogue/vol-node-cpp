@@ -16,14 +16,14 @@ namespace Volition {
 class VersionedStore;
 
 //================================================================//
-// AbstractVersionedValue
+// AbstractValueStack
 //================================================================//
-class AbstractVersionedValue {
+class AbstractValueStack {
 protected:
 
     friend class VersionedStore;
     friend class VersionedStoreEpoch;
-    template < typename TYPE > friend class VersionedValue;
+    template < typename TYPE > friend class ValueStack;
 
     size_t              mTypeID;
     vector < size_t >   mVersions;
@@ -31,32 +31,32 @@ protected:
     //----------------------------------------------------------------//
     const void*                             getRaw                                  () const;
     bool                                    isEmpty                                 () const;
-    unique_ptr < AbstractVersionedValue >   makeEmptyCopy                           () const;
+    unique_ptr < AbstractValueStack >       makeEmptyCopy                           () const;
     void                                    pop                                     ();
     void                                    pushBackRaw                             ( const void* value );
     void                                    pushFrontRaw                            ( const void* value );
 
     //----------------------------------------------------------------//
-    virtual const void*                                 AbstractVersionedValue_getRaw           () const = 0;
-    virtual bool                                        AbstractVersionedValue_isEmpty          () const = 0;
-    virtual unique_ptr < AbstractVersionedValue >       AbstractVersionedValue_makeEmptyCopy    () const = 0;
-    virtual void                                        AbstractVersionedValue_pop              () = 0;
-    virtual void                                        AbstractVersionedValue_pushBackRaw      ( const void* value ) = 0;
-    virtual void                                        AbstractVersionedValue_pushFrontRaw     ( const void* value ) = 0;
+    virtual const void*                             AbstractValueStack_getRaw           () const = 0;
+    virtual bool                                    AbstractValueStack_isEmpty          () const = 0;
+    virtual unique_ptr < AbstractValueStack >       AbstractValueStack_makeEmptyCopy    () const = 0;
+    virtual void                                    AbstractValueStack_pop              () = 0;
+    virtual void                                    AbstractValueStack_pushBackRaw      ( const void* value ) = 0;
+    virtual void                                    AbstractValueStack_pushFrontRaw     ( const void* value ) = 0;
 
 public:
 
     //----------------------------------------------------------------//
-                        AbstractVersionedValue                  ();
-    virtual             ~AbstractVersionedValue                 ();
+                        AbstractValueStack                  ();
+    virtual             ~AbstractValueStack                 ();
 };
 
 //================================================================//
-// VersionedValue
+// ValueStack
 //================================================================//
 template < typename TYPE >
-class VersionedValue :
-    public AbstractVersionedValue {
+class ValueStack :
+    public AbstractValueStack {
 protected:
 
     friend class VersionedStore;
@@ -66,39 +66,35 @@ protected:
     vector < TYPE >     mValues;
 
     //----------------------------------------------------------------//
-    const void* AbstractVersionedValue_getRaw () const override {
-    
+    const void* AbstractValueStack_getRaw () const override {
         assert ( this->mValues.size () > 0 );
         return &this->mValues.back ();
     }
     
     //----------------------------------------------------------------//
-    bool AbstractVersionedValue_isEmpty () const override {
+    bool AbstractValueStack_isEmpty () const override {
         return ( this->mValues.size () == 0 );
     }
     
     //----------------------------------------------------------------//
-    unique_ptr < AbstractVersionedValue > AbstractVersionedValue_makeEmptyCopy () const override {
-        return make_unique < VersionedValue < TYPE >>();
+    unique_ptr < AbstractValueStack > AbstractValueStack_makeEmptyCopy () const override {
+        return make_unique < ValueStack < TYPE >>();
     }
     
     //----------------------------------------------------------------//
-    void AbstractVersionedValue_pop () override {
-    
+    void AbstractValueStack_pop () override {
         assert ( this->mValues.size () > 0 );
         this->mValues.pop_back ();
     }
     
     //----------------------------------------------------------------//
-    void AbstractVersionedValue_pushBackRaw ( const void* value ) override {
-    
+    void AbstractValueStack_pushBackRaw ( const void* value ) override {
         assert ( value );
         this->mValues.push_back ( *( const TYPE* )value );
     }
     
     //----------------------------------------------------------------//
-    void AbstractVersionedValue_pushFrontRaw ( const void* value ) override {
-    
+    void AbstractValueStack_pushFrontRaw ( const void* value ) override {
         assert ( value );
         this->mValues.insert ( this->mValues.begin (), *( const TYPE* )value );
     }
@@ -106,7 +102,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    VersionedValue () {
+    ValueStack () {
         this->mTypeID = typeid ( TYPE ).hash_code ();
     }
 };
@@ -134,23 +130,23 @@ private:
     
     set < VersionedStore* >                                 mClients;
     vector < unique_ptr < VersionedStoreLayer >>            mLayers;
-    map < string, unique_ptr < AbstractVersionedValue >>    mMap;
+    map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
     
     shared_ptr < VersionedStoreEpoch >                      mParent;
     set < VersionedStoreEpoch* >                            mChildren;
 
     //----------------------------------------------------------------//
     template < typename TYPE >
-    void affirmVersionedValue ( string key ) {
-        unique_ptr < AbstractVersionedValue >& versionedValue = this->mMap [ key ];
+    void affirmValueStack ( string key ) {
+        unique_ptr < AbstractValueStack >& versionedValue = this->mValueStacksByKey [ key ];
         if ( !versionedValue ) {
-            versionedValue = make_unique < VersionedValue < TYPE >>();
+            versionedValue = make_unique < ValueStack < TYPE >>();
         }
     }
 
     //----------------------------------------------------------------//
     void                                    affirmLayer                 ();
-    const AbstractVersionedValue*           findVersionedValue          ( string key ) const;
+    const AbstractValueStack*               findValueStack              ( string key ) const;
     void                                    moveChildrenTo              ( VersionedStoreEpoch& epoch );
     void                                    moveClientTo                ( VersionedStore& client, VersionedStoreEpoch* epoch );
     void                                    moveClientsTo               ( VersionedStoreEpoch& epoch, const VersionedStore* except = NULL );
@@ -222,7 +218,7 @@ public:
     template < typename TYPE >
     void setValue ( string key, const TYPE& value ) {
         assert ( this->mEpoch );
-        this->mEpoch->affirmVersionedValue < TYPE >( key );
+        this->mEpoch->affirmValueStack < TYPE >( key );
         this->setRaw ( key, typeid ( TYPE ).hash_code (), &value );
     }
 };
