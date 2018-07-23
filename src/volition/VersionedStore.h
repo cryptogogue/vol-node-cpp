@@ -201,6 +201,7 @@ public:
     //----------------------------------------------------------------//
     VersionedStore& operator = ( VersionedStore& other ) {
         this->takeSnapshot ( other );
+        return *this;
     }
     
     //----------------------------------------------------------------//

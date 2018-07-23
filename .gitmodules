@@ -5,3 +5,6 @@
 [submodule "3rd-party/simple-cpp-router"]
 	path = 3rd-party/simple-cpp-router
 	url = git@github.com:qoollo/simple-cpp-router.git
+[submodule "3rd-party/googletest"]
+	path = 3rd-party/googletest
+	url = git@github.com:google/googletest.git

@@ -24,7 +24,7 @@
 		CD0C3E5020C86D88006E3B1C /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
 		CD0C3E5420C86D88006E3B1C /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
-		CD0C3E5720C86D88006E3B1C /* liblib-simple-cpp-router.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */; };
+		CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
 		CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CD0C3E5A20C86D88006E3B1C /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
@@ -36,7 +36,6 @@
 		CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CD0C3E6120C86D88006E3B1C /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
 		CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
-		CD0C3E6920C86FBA006E3B1C /* main-util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E6820C86FBA006E3B1C /* main-util.cpp */; };
 		CD36658B20EB3BE0000E0B43 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
 		CD36658C20EB3BE0000E0B43 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
 		CD36658D20EB3BE0000E0B43 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
@@ -65,6 +64,41 @@
 		CD4E80E521040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
 		CD4E80E621040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
 		CD4E80E721040032007DA585 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStore.cpp */; };
+		CD4E8111210578D7007DA585 /* gtest-all.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E8107210578D7007DA585 /* gtest-all.cc */; };
+		CD4E8112210578D7007DA585 /* gtest-death-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E8108210578D7007DA585 /* gtest-death-test.cc */; };
+		CD4E8113210578D7007DA585 /* gtest-filepath.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E8109210578D7007DA585 /* gtest-filepath.cc */; };
+		CD4E8114210578D7007DA585 /* gtest-internal-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E810A210578D7007DA585 /* gtest-internal-inl.h */; };
+		CD4E8115210578D7007DA585 /* gtest-port.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E810B210578D7007DA585 /* gtest-port.cc */; };
+		CD4E8116210578D7007DA585 /* gtest-printers.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E810C210578D7007DA585 /* gtest-printers.cc */; };
+		CD4E8117210578D7007DA585 /* gtest-test-part.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E810D210578D7007DA585 /* gtest-test-part.cc */; };
+		CD4E8118210578D7007DA585 /* gtest-typed-test.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E810E210578D7007DA585 /* gtest-typed-test.cc */; };
+		CD4E8119210578D7007DA585 /* gtest.cc in Sources */ = {isa = PBXBuildFile; fileRef = CD4E810F210578D7007DA585 /* gtest.cc */; };
+		CD4E8127210578FF007DA585 /* gtest_pred_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E811C210578FF007DA585 /* gtest_pred_impl.h */; };
+		CD4E8128210578FF007DA585 /* gtest_prod.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E811D210578FF007DA585 /* gtest_prod.h */; };
+		CD4E8129210578FF007DA585 /* gtest-death-test.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E811E210578FF007DA585 /* gtest-death-test.h */; };
+		CD4E812A210578FF007DA585 /* gtest-message.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E811F210578FF007DA585 /* gtest-message.h */; };
+		CD4E812B210578FF007DA585 /* gtest-param-test.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E8120210578FF007DA585 /* gtest-param-test.h */; };
+		CD4E812C210578FF007DA585 /* gtest-printers.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E8122210578FF007DA585 /* gtest-printers.h */; };
+		CD4E812D210578FF007DA585 /* gtest-spi.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E8123210578FF007DA585 /* gtest-spi.h */; };
+		CD4E812E210578FF007DA585 /* gtest-test-part.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E8124210578FF007DA585 /* gtest-test-part.h */; };
+		CD4E812F210578FF007DA585 /* gtest-typed-test.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E8125210578FF007DA585 /* gtest-typed-test.h */; };
+		CD4E8130210578FF007DA585 /* gtest.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E8126210578FF007DA585 /* gtest.h */; };
+		CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
+		CD4E8152210579C8007DA585 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
+		CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
+		CD4E8154210579C8007DA585 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
+		CD4E8155210579C8007DA585 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
+		CD4E8156210579C8007DA585 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585F20BA3981003A2969 /* libPocoRedis.a */; };
+		CD4E8157210579C8007DA585 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
+		CD4E8158210579C8007DA585 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
+		CD4E8159210579C8007DA585 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
+		CD4E815A210579C8007DA585 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
+		CD4E815B210579C8007DA585 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
+		CD4E815C210579C8007DA585 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
+		CD4E817121057E91007DA585 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E8105210577FF007DA585 /* libgtest.a */; };
+		CD4E817221057E91007DA585 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
+		CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816B21057DD1007DA585 /* main-gtest.cpp */; };
+		CD4E81742105802E007DA585 /* TestVersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */; };
 		CD59F3B320E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
 		CD59F3B420E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
 		CD59F3B520E889A000705AEB /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
@@ -111,7 +145,7 @@
 		CDED583B20BA1FE0003A2969 /* RegexConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582220BA1F4E003A2969 /* RegexConverter.h */; };
 		CDED583C20BA1FE0003A2969 /* StringTokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */; };
 		CDED583D20BA1FE0003A2969 /* StringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582420BA1F4E003A2969 /* StringTokenizer.h */; };
-		CDED584120BA2008003A2969 /* liblib-simple-cpp-router.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */; };
+		CDED584120BA2008003A2969 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
 		CDED584420BA2131003A2969 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
@@ -126,7 +160,7 @@
 		CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
 		CDED587C20BD1C5F003A2969 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
-		CDED588220BD1C5F003A2969 /* liblib-simple-cpp-router.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */; };
+		CDED588220BD1C5F003A2969 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
 		CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
 		CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
@@ -146,6 +180,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = CDED582C20BA1FCE003A2969;
 			remoteInfo = "lib-simple-cpp-router";
+		};
+		CD4E8133210579C8007DA585 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDED582C20BA1FCE003A2969;
+			remoteInfo = "lib-simple-cpp-router";
+		};
+		CD4E816F21057E4F007DA585 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E80F1210577FF007DA585;
+			remoteInfo = "lib-gtest";
 		};
 		CDED583E20BA2001003A2969 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -221,6 +269,29 @@
 		CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SortedDigestSerializer.h; path = src/volition/serialization/SortedDigestSerializer.h; sourceTree = "<group>"; };
 		CD4E80E321040032007DA585 /* VersionedStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedStore.cpp; path = src/volition/VersionedStore.cpp; sourceTree = "<group>"; };
 		CD4E80E421040032007DA585 /* VersionedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedStore.h; path = src/volition/VersionedStore.h; sourceTree = "<group>"; };
+		CD4E8105210577FF007DA585 /* libgtest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgtest.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD4E8107210578D7007DA585 /* gtest-all.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-all.cc"; path = "3rd-party/googletest/googletest/src/gtest-all.cc"; sourceTree = "<group>"; };
+		CD4E8108210578D7007DA585 /* gtest-death-test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-death-test.cc"; path = "3rd-party/googletest/googletest/src/gtest-death-test.cc"; sourceTree = "<group>"; };
+		CD4E8109210578D7007DA585 /* gtest-filepath.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-filepath.cc"; path = "3rd-party/googletest/googletest/src/gtest-filepath.cc"; sourceTree = "<group>"; };
+		CD4E810A210578D7007DA585 /* gtest-internal-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-internal-inl.h"; path = "3rd-party/googletest/googletest/src/gtest-internal-inl.h"; sourceTree = "<group>"; };
+		CD4E810B210578D7007DA585 /* gtest-port.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-port.cc"; path = "3rd-party/googletest/googletest/src/gtest-port.cc"; sourceTree = "<group>"; };
+		CD4E810C210578D7007DA585 /* gtest-printers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-printers.cc"; path = "3rd-party/googletest/googletest/src/gtest-printers.cc"; sourceTree = "<group>"; };
+		CD4E810D210578D7007DA585 /* gtest-test-part.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-test-part.cc"; path = "3rd-party/googletest/googletest/src/gtest-test-part.cc"; sourceTree = "<group>"; };
+		CD4E810E210578D7007DA585 /* gtest-typed-test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-typed-test.cc"; path = "3rd-party/googletest/googletest/src/gtest-typed-test.cc"; sourceTree = "<group>"; };
+		CD4E810F210578D7007DA585 /* gtest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gtest.cc; path = "3rd-party/googletest/googletest/src/gtest.cc"; sourceTree = "<group>"; };
+		CD4E811C210578FF007DA585 /* gtest_pred_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gtest_pred_impl.h; path = "3rd-party/googletest/googletest/include/gtest/gtest_pred_impl.h"; sourceTree = "<group>"; };
+		CD4E811D210578FF007DA585 /* gtest_prod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gtest_prod.h; path = "3rd-party/googletest/googletest/include/gtest/gtest_prod.h"; sourceTree = "<group>"; };
+		CD4E811E210578FF007DA585 /* gtest-death-test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-death-test.h"; path = "3rd-party/googletest/googletest/include/gtest/gtest-death-test.h"; sourceTree = "<group>"; };
+		CD4E811F210578FF007DA585 /* gtest-message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-message.h"; path = "3rd-party/googletest/googletest/include/gtest/gtest-message.h"; sourceTree = "<group>"; };
+		CD4E8120210578FF007DA585 /* gtest-param-test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-param-test.h"; path = "3rd-party/googletest/googletest/include/gtest/gtest-param-test.h"; sourceTree = "<group>"; };
+		CD4E8122210578FF007DA585 /* gtest-printers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-printers.h"; path = "3rd-party/googletest/googletest/include/gtest/gtest-printers.h"; sourceTree = "<group>"; };
+		CD4E8123210578FF007DA585 /* gtest-spi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-spi.h"; path = "3rd-party/googletest/googletest/include/gtest/gtest-spi.h"; sourceTree = "<group>"; };
+		CD4E8124210578FF007DA585 /* gtest-test-part.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-test-part.h"; path = "3rd-party/googletest/googletest/include/gtest/gtest-test-part.h"; sourceTree = "<group>"; };
+		CD4E8125210578FF007DA585 /* gtest-typed-test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gtest-typed-test.h"; path = "3rd-party/googletest/googletest/include/gtest/gtest-typed-test.h"; sourceTree = "<group>"; };
+		CD4E8126210578FF007DA585 /* gtest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gtest.h; path = "3rd-party/googletest/googletest/include/gtest/gtest.h"; sourceTree = "<group>"; };
+		CD4E8161210579C8007DA585 /* gtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gtest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD4E816B21057DD1007DA585 /* main-gtest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-gtest.cpp"; path = "src/volition/gtest/main-gtest.cpp"; sourceTree = "<group>"; };
+		CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestVersionedStore.cpp; path = src/volition/gtest/TestVersionedStore.cpp; sourceTree = "<group>"; };
 		CD59F3B120E889A000705AEB /* Signature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signature.cpp; path = src/volition/Signature.cpp; sourceTree = "<group>"; };
 		CD59F3B220E889A000705AEB /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Signature.h; path = src/volition/Signature.h; sourceTree = "<group>"; };
 		CD59F3BB20E8950100705AEB /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/volition/Policy.cpp; sourceTree = "<group>"; };
@@ -264,7 +335,7 @@
 		CDED582220BA1F4E003A2969 /* RegexConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegexConverter.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/RegexConverter.h"; sourceTree = "<group>"; };
 		CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringTokenizer.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.cpp"; sourceTree = "<group>"; };
 		CDED582420BA1F4E003A2969 /* StringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringTokenizer.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.h"; sourceTree = "<group>"; };
-		CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblib-simple-cpp-router.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDED582D20BA1FCE003A2969 /* libcpprouter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcpprouter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDED584220BA2131003A2969 /* RouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RouteTable.cpp; path = src/volition/RouteTable.cpp; sourceTree = "<group>"; };
 		CDED584320BA2131003A2969 /* RouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RouteTable.h; path = src/volition/RouteTable.h; sourceTree = "<group>"; };
 		CDED585920BA3981003A2969 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
@@ -285,8 +356,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */,
 				CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */,
-				CD0C3E5720C86D88006E3B1C /* liblib-simple-cpp-router.a in Frameworks */,
 				CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */,
 				CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */,
 				CD0C3E5A20C86D88006E3B1C /* libPocoFoundation.a in Frameworks */,
@@ -301,12 +372,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CD4E80F9210577FF007DA585 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CD4E814F210579C8007DA585 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD4E817121057E91007DA585 /* libgtest.a in Frameworks */,
+				CD4E817221057E91007DA585 /* libcpprouter.a in Frameworks */,
+				CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */,
+				CD4E8152210579C8007DA585 /* libcrypto.a in Frameworks */,
+				CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */,
+				CD4E8154210579C8007DA585 /* libPocoFoundation.a in Frameworks */,
+				CD4E8155210579C8007DA585 /* libPocoNetSSL.a in Frameworks */,
+				CD4E8156210579C8007DA585 /* libPocoRedis.a in Frameworks */,
+				CD4E8157210579C8007DA585 /* libPocoEncodings.a in Frameworks */,
+				CD4E8158210579C8007DA585 /* libPocoNet.a in Frameworks */,
+				CD4E8159210579C8007DA585 /* libPocoZip.a in Frameworks */,
+				CD4E815A210579C8007DA585 /* libPocoXML.a in Frameworks */,
+				CD4E815B210579C8007DA585 /* libssl.a in Frameworks */,
+				CD4E815C210579C8007DA585 /* libPocoCrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD9345BF2093EB140077BAD4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDED584120BA2008003A2969 /* libcpprouter.a in Frameworks */,
 				CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */,
-				CDED584120BA2008003A2969 /* liblib-simple-cpp-router.a in Frameworks */,
 				CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */,
 				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */,
@@ -332,8 +431,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDED588220BD1C5F003A2969 /* libcpprouter.a in Frameworks */,
 				CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */,
-				CDED588220BD1C5F003A2969 /* liblib-simple-cpp-router.a in Frameworks */,
 				CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */,
 				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */,
@@ -440,6 +539,57 @@
 			name = store;
 			sourceTree = "<group>";
 		};
+		CD4E80F0210577F5007DA585 /* gtest */ = {
+			isa = PBXGroup;
+			children = (
+				CD4E811B210578EA007DA585 /* include */,
+				CD4E811A210578E0007DA585 /* src */,
+			);
+			name = gtest;
+			sourceTree = "<group>";
+		};
+		CD4E811A210578E0007DA585 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				CD4E8107210578D7007DA585 /* gtest-all.cc */,
+				CD4E8108210578D7007DA585 /* gtest-death-test.cc */,
+				CD4E8109210578D7007DA585 /* gtest-filepath.cc */,
+				CD4E810A210578D7007DA585 /* gtest-internal-inl.h */,
+				CD4E810B210578D7007DA585 /* gtest-port.cc */,
+				CD4E810C210578D7007DA585 /* gtest-printers.cc */,
+				CD4E810D210578D7007DA585 /* gtest-test-part.cc */,
+				CD4E810E210578D7007DA585 /* gtest-typed-test.cc */,
+				CD4E810F210578D7007DA585 /* gtest.cc */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		CD4E811B210578EA007DA585 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				CD4E811C210578FF007DA585 /* gtest_pred_impl.h */,
+				CD4E811D210578FF007DA585 /* gtest_prod.h */,
+				CD4E811E210578FF007DA585 /* gtest-death-test.h */,
+				CD4E811F210578FF007DA585 /* gtest-message.h */,
+				CD4E8120210578FF007DA585 /* gtest-param-test.h */,
+				CD4E8122210578FF007DA585 /* gtest-printers.h */,
+				CD4E8123210578FF007DA585 /* gtest-spi.h */,
+				CD4E8124210578FF007DA585 /* gtest-test-part.h */,
+				CD4E8125210578FF007DA585 /* gtest-typed-test.h */,
+				CD4E8126210578FF007DA585 /* gtest.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		CD4E816621057ADF007DA585 /* gtest */ = {
+			isa = PBXGroup;
+			children = (
+				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
+				CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */,
+			);
+			name = gtest;
+			sourceTree = "<group>";
+		};
 		CD5C62F220B4F7930038EE98 /* lib */ = {
 			isa = PBXGroup;
 			children = (
@@ -495,6 +645,7 @@
 			isa = PBXGroup;
 			children = (
 				CDED581320BA1EF7003A2969 /* 3rd-party */,
+				CD4E816621057ADF007DA585 /* gtest */,
 				CD5C62F320B4F7A70038EE98 /* src */,
 				CD5C62F220B4F7930038EE98 /* lib */,
 				CD9345C32093EB140077BAD4 /* Products */,
@@ -506,9 +657,11 @@
 			isa = PBXGroup;
 			children = (
 				CD9345C22093EB140077BAD4 /* simulator */,
-				CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */,
+				CDED582D20BA1FCE003A2969 /* libcpprouter.a */,
 				CDED589020BD1C5F003A2969 /* server */,
 				CD0C3E6720C86D88006E3B1C /* util */,
+				CD4E8105210577FF007DA585 /* libgtest.a */,
+				CD4E8161210579C8007DA585 /* gtest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -532,6 +685,7 @@
 		CDED581320BA1EF7003A2969 /* 3rd-party */ = {
 			isa = PBXGroup;
 			children = (
+				CD4E80F0210577F5007DA585 /* gtest */,
 				CDED581420BA1F02003A2969 /* simple-cpp-router */,
 			);
 			name = "3rd-party";
@@ -598,6 +752,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		CD4E80FA210577FF007DA585 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD4E812A210578FF007DA585 /* gtest-message.h in Headers */,
+				CD4E812E210578FF007DA585 /* gtest-test-part.h in Headers */,
+				CD4E812D210578FF007DA585 /* gtest-spi.h in Headers */,
+				CD4E8114210578D7007DA585 /* gtest-internal-inl.h in Headers */,
+				CD4E8128210578FF007DA585 /* gtest_prod.h in Headers */,
+				CD4E8127210578FF007DA585 /* gtest_pred_impl.h in Headers */,
+				CD4E8130210578FF007DA585 /* gtest.h in Headers */,
+				CD4E812C210578FF007DA585 /* gtest-printers.h in Headers */,
+				CD4E812F210578FF007DA585 /* gtest-typed-test.h in Headers */,
+				CD4E812B210578FF007DA585 /* gtest-param-test.h in Headers */,
+				CD4E8129210578FF007DA585 /* gtest-death-test.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CDED582B20BA1FCE003A2969 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -633,6 +805,42 @@
 			productReference = CD0C3E6720C86D88006E3B1C /* util */;
 			productType = "com.apple.product-type.tool";
 		};
+		CD4E80F1210577FF007DA585 /* lib-gtest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CD4E8102210577FF007DA585 /* Build configuration list for PBXNativeTarget "lib-gtest" */;
+			buildPhases = (
+				CD4E80F2210577FF007DA585 /* Sources */,
+				CD4E80F9210577FF007DA585 /* Frameworks */,
+				CD4E80FA210577FF007DA585 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "lib-gtest";
+			productName = "lib-simple-cpp-router";
+			productReference = CD4E8105210577FF007DA585 /* libgtest.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		CD4E8131210579C8007DA585 /* gtest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CD4E815E210579C8007DA585 /* Build configuration list for PBXNativeTarget "gtest" */;
+			buildPhases = (
+				CD4E8134210579C8007DA585 /* Sources */,
+				CD4E814F210579C8007DA585 /* Frameworks */,
+				CD4E815D210579C8007DA585 /* Copy Binaries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CD4E817021057E4F007DA585 /* PBXTargetDependency */,
+				CD4E8132210579C8007DA585 /* PBXTargetDependency */,
+			);
+			name = gtest;
+			productName = consensus;
+			productReference = CD4E8161210579C8007DA585 /* gtest */;
+			productType = "com.apple.product-type.tool";
+		};
 		CD9345C12093EB140077BAD4 /* simulator */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD9345C92093EB140077BAD4 /* Build configuration list for PBXNativeTarget "simulator" */;
@@ -665,7 +873,7 @@
 			);
 			name = "lib-simple-cpp-router";
 			productName = "lib-simple-cpp-router";
-			productReference = CDED582D20BA1FCE003A2969 /* liblib-simple-cpp-router.a */;
+			productReference = CDED582D20BA1FCE003A2969 /* libcpprouter.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		CDED587420BD1C5F003A2969 /* server */ = {
@@ -698,6 +906,12 @@
 					CD0C3E3F20C86D88006E3B1C = {
 						ProvisioningStyle = Manual;
 					};
+					CD4E80F1210577FF007DA585 = {
+						ProvisioningStyle = Automatic;
+					};
+					CD4E8131210579C8007DA585 = {
+						ProvisioningStyle = Manual;
+					};
 					CD9345C12093EB140077BAD4 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Manual;
@@ -723,9 +937,11 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				CD4E8131210579C8007DA585 /* gtest */,
 				CDED587420BD1C5F003A2969 /* server */,
 				CD9345C12093EB140077BAD4 /* simulator */,
 				CD0C3E3F20C86D88006E3B1C /* util */,
+				CD4E80F1210577FF007DA585 /* lib-gtest */,
 				CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */,
 			);
 		};
@@ -733,6 +949,20 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		CD0C3E2720C26097006E3B1C /* Copy Binaries */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Binaries";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "OSX_BIN=bin\nmkdir -p $OSX_BIN\ncp -a \"${TARGET_BUILD_DIR}/${TARGET_NAME}\" $OSX_BIN";
+		};
+		CD4E815D210579C8007DA585 /* Copy Binaries */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -774,7 +1004,6 @@
 				CD0C3E4720C86D88006E3B1C /* RouteTable.cpp in Sources */,
 				CD36659720EC40E4000E0B43 /* SimMiner.cpp in Sources */,
 				CD0C3E4820C86D88006E3B1C /* SyncChainTask.cpp in Sources */,
-				CD0C3E6920C86FBA006E3B1C /* main-util.cpp in Sources */,
 				CDC2B33120CE0FA100300A96 /* TheSimulator.cpp in Sources */,
 				CD0C3E4C20C86D88006E3B1C /* WebMiner.cpp in Sources */,
 				CD36658D20EB3BE0000E0B43 /* Miner.cpp in Sources */,
@@ -793,6 +1022,30 @@
 				CDC2B33E20CE112F00300A96 /* Cycle.cpp in Sources */,
 				CD59F3DD20E9BEC100705AEB /* TransactionMakerSignature.cpp in Sources */,
 				CDC2B33B20CE112F00300A96 /* Chain.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CD4E80F2210577FF007DA585 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD4E8112210578D7007DA585 /* gtest-death-test.cc in Sources */,
+				CD4E8113210578D7007DA585 /* gtest-filepath.cc in Sources */,
+				CD4E8117210578D7007DA585 /* gtest-test-part.cc in Sources */,
+				CD4E8111210578D7007DA585 /* gtest-all.cc in Sources */,
+				CD4E8116210578D7007DA585 /* gtest-printers.cc in Sources */,
+				CD4E8118210578D7007DA585 /* gtest-typed-test.cc in Sources */,
+				CD4E8115210578D7007DA585 /* gtest-port.cc in Sources */,
+				CD4E8119210578D7007DA585 /* gtest.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CD4E8134210579C8007DA585 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
+				CD4E81742105802E007DA585 /* TestVersionedStore.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -883,6 +1136,16 @@
 			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
 			targetProxy = CD0C3E4120C86D88006E3B1C /* PBXContainerItemProxy */;
 		};
+		CD4E8132210579C8007DA585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
+			targetProxy = CD4E8133210579C8007DA585 /* PBXContainerItemProxy */;
+		};
+		CD4E817021057E4F007DA585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD4E80F1210577FF007DA585 /* lib-gtest */;
+			targetProxy = CD4E816F21057E4F007DA585 /* PBXContainerItemProxy */;
+		};
 		CDED583F20BA2001003A2969 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
@@ -906,6 +1169,68 @@
 			name = Debug;
 		};
 		CD0C3E6620C86D88006E3B1C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		CD4E8103210577FF007DA585 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BUD786NAA6;
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"3rd-party/googletest/googletest",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(INHERITED)",
+					"-w",
+				);
+				PRODUCT_NAME = gtest;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CD4E8104210577FF007DA585 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BUD786NAA6;
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"3rd-party/googletest/googletest",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(INHERITED)",
+					"-w",
+				);
+				PRODUCT_NAME = gtest;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		CD4E815F210579C8007DA585 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		CD4E8160210579C8007DA585 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
@@ -969,6 +1294,7 @@
 					src,
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
+					"3rd-party/googletest/googletest/include",
 					/usr/local/opt/openssl/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -1034,6 +1360,7 @@
 					src,
 					poco/include,
 					"3rd-party/simple-cpp-router/src",
+					"3rd-party/googletest/googletest/include",
 					/usr/local/opt/openssl/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -1081,7 +1408,7 @@
 					"$(INHERITED)",
 					"-w",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = cpprouter;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -1099,7 +1426,7 @@
 					"$(INHERITED)",
 					"-w",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = cpprouter;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -1130,6 +1457,24 @@
 			buildConfigurations = (
 				CD0C3E6520C86D88006E3B1C /* Debug */,
 				CD0C3E6620C86D88006E3B1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD4E8102210577FF007DA585 /* Build configuration list for PBXNativeTarget "lib-gtest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD4E8103210577FF007DA585 /* Debug */,
+				CD4E8104210577FF007DA585 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD4E815E210579C8007DA585 /* Build configuration list for PBXNativeTarget "gtest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD4E815F210579C8007DA585 /* Debug */,
+				CD4E8160210579C8007DA585 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
