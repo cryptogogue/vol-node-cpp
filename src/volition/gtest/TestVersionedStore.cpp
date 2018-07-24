@@ -48,7 +48,8 @@ TEST ( VersionedStore, unitTests ) {
     // make sure we can get our v0 from the store1
     ASSERT_TRUE ( store1.getValue < string >( KEY ) == STR0 );
     
-    // now push a new version on the store1
+    // now push a new version on the stores
+    store0.pushVersion ();
     store1.pushVersion ();
     
     // values in either version should still be v0

@@ -145,15 +145,20 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void                                    affirmLayer                 ();
+    size_t                                  countChildren               () const;
+    size_t                                  countClients                () const;
+    size_t                                  countLayers                 () const;
+    void                                    copyBackLayerToFront        ( VersionedStoreEpoch& epoch ) const;
     const AbstractValueStack*               findValueStack              ( string key ) const;
+    shared_ptr < VersionedStoreEpoch >      getOnlyChild                ();
+    VersionedStore*                         getOnlyClient               ();
+    shared_ptr < VersionedStoreEpoch >      getParent                   ();
     void                                    moveChildrenTo              ( VersionedStoreEpoch& epoch );
-    void                                    moveClientTo                ( VersionedStore& client, VersionedStoreEpoch* epoch );
+    void                                    moveClientTo                ( VersionedStore& client, shared_ptr < VersionedStoreEpoch > epoch );
     void                                    moveClientsTo               ( VersionedStoreEpoch& epoch, const VersionedStore* except = NULL );
-    void                                    moveTopLayerTo              ( VersionedStoreEpoch& epoch );
     void                                    popLayer                    ();
     void                                    pushLayer                   ();
-    shared_ptr < VersionedStoreEpoch >      spawnChildEpoch             ();
+    void                                    setParent                   ( shared_ptr < VersionedStoreEpoch > parent );
 
 public:
 
@@ -179,8 +184,10 @@ private:
     }
 
     //----------------------------------------------------------------//
+    void            affirmEpoch             ();
     void            clear                   ();
     const void*     getRaw                  ( string key, size_t typeID ) const;
+    void            prepareForSetValue      ();
     void            setRaw                  ( string key, size_t typeID, const void* value );
     void            takeSnapshot            ( VersionedStore& other );
                     VersionedStore          ( const VersionedStore& other );
@@ -217,7 +224,7 @@ public:
     //----------------------------------------------------------------//
     template < typename TYPE >
     void setValue ( string key, const TYPE& value ) {
-        assert ( this->mEpoch );
+        this->prepareForSetValue ();
         this->mEpoch->affirmValueStack < TYPE >( key );
         this->setRaw ( key, typeid ( TYPE ).hash_code (), &value );
     }
