@@ -24,9 +24,31 @@ void VersionedStore::affirmEpoch () {
 void VersionedStore::clear () {
 
     if ( this->mEpoch ) {
-        this->mEpoch->mClients.erase ( this );
+        this->mEpoch->moveClientTo ( *this, NULL );
         this->mEpoch = NULL;
     }
+    this->affirmEpoch ();
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStore::countEpochChildren () const {
+
+    assert ( this->mEpoch );
+    return this->mEpoch->countChildren ();
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStore::countEpochClients () const {
+
+    assert ( this->mEpoch );
+    return this->mEpoch->countClients ();
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStore::countEpochLayers () const {
+
+    assert ( this->mEpoch );
+    return this->mEpoch->countLayers ();
 }
 
 //----------------------------------------------------------------//
@@ -40,6 +62,18 @@ const void* VersionedStore::getRaw ( string key, size_t typeID ) const {
         return valueStack->getRaw ();
     }
     return NULL;
+}
+
+//----------------------------------------------------------------//
+bool VersionedStore::hasValue ( string key ) const {
+
+    assert ( this->mEpoch );
+    const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key );
+    
+    if ( valueStack ) {
+        return ( valueStack->getRaw () != NULL );
+    }
+    return false;
 }
 
 //----------------------------------------------------------------//
@@ -67,7 +101,6 @@ void VersionedStore::popVersion () {
     //          if E has children == 1 && clients == 1
     //              copy the top layer of E to become the base of E+1
     //              pop the top layer of E
-    //              assign C to E-1
     //
     //          else: E has children > 1 || other clients > 1
     //              copy the top layer of E into a new epoch A
@@ -83,9 +116,7 @@ void VersionedStore::popVersion () {
 
     assert ( nClients > 0 );
     assert ( nLayers > 0 );
-    
-    assert (( nLayers > 1 ) || ( this->mEpoch->mParent ));
-    
+        
     // nothing special to do; just pop the version
 
     if (( nChildren == 0 ) && ( nClients == 1  )) {
@@ -101,6 +132,7 @@ void VersionedStore::popVersion () {
 
             // assign C to E-1
             epochE->moveClientTo ( *this, epochEParent );
+            this->affirmEpoch ();
         }
         else {
         
@@ -157,7 +189,6 @@ void VersionedStore::popVersion () {
             // E has children == 1 && clients == 1
             
             shared_ptr < VersionedStoreEpoch > epochE           = this->mEpoch;
-            shared_ptr < VersionedStoreEpoch > epochEParent     = epochE->getParent ();
             shared_ptr < VersionedStoreEpoch > epochEChild      = epochE->getOnlyChild ();
             
             // copy the top layer of E to become the base of E+1
@@ -165,9 +196,6 @@ void VersionedStore::popVersion () {
             
             // pop the top layer of E
             epochE->popLayer ();
-            
-            // assign C to E-1
-            epochE->moveClientTo ( *this, epochEParent );
         }
         else {
         
@@ -186,7 +214,7 @@ void VersionedStore::popVersion () {
             epochE->popLayer ();
             
             // assign all other clients and children to A
-            epochE->moveClientsTo ( *epochA );
+            epochE->moveClientsTo ( *epochA, this );
             epochE->moveChildrenTo ( *epochA );
             
             // set A as a child of E

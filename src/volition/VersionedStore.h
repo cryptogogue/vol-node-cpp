@@ -31,7 +31,6 @@ private:
 
     //----------------------------------------------------------------//
     void            affirmEpoch             ();
-    void            clear                   ();
     const void*     getRaw                  ( string key, size_t typeID ) const;
     void            prepareForSetValue      ();
     void            setRaw                  ( string key, size_t typeID, const void* value );
@@ -41,6 +40,11 @@ private:
 public:
 
     //----------------------------------------------------------------//
+    void            clear                   ();
+    size_t          countEpochChildren      () const;
+    size_t          countEpochClients       () const;
+    size_t          countEpochLayers        () const;
+    bool            hasValue                ( string key ) const;
     void            popVersion              ();
     void            pushVersion             ();
                     VersionedStore          ();
@@ -65,6 +69,13 @@ public:
     template < typename TYPE >
     const TYPE* getValueOrNil ( string key ) const {
         return ( TYPE* )this->getRaw ( key, typeid ( TYPE ).hash_code ());
+    }
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    bool hasTypedValue ( string key ) const {
+        const TYPE* value = this->getValueOrNil < TYPE >( key );
+        return ( value != NULL );
     }
 
     //----------------------------------------------------------------//
