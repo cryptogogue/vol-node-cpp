@@ -53,12 +53,12 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void                                    discardUnusedLayers         ();
     size_t                                  countClients                () const;
     VersionedStoreDownstream                countDownstream             ( size_t version ) const;
     size_t                                  countLayers                 () const;
     const AbstractValueStack*               findValueStack              ( string key, size_t version ) const;
     shared_ptr < VersionedStoreEpoch >      getParent                   ();
+    void                                    optimize                    ();
     void                                    popLayer                    ();
     void                                    pushLayer                   ();
 

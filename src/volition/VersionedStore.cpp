@@ -124,6 +124,22 @@ void VersionedStore::pushVersion () {
 }
 
 //----------------------------------------------------------------//
+void VersionedStore::seekVersion ( size_t version ) {
+
+    shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
+
+    while ( version < epoch->mVersion ) {
+        epoch = epoch->mEpoch;
+    }
+    
+    assert ( epoch );
+    assert (( version >= epoch->mVersion ) && ( version < ( epoch->mVersion + epoch->mLayers.size ())));
+    
+    this->setEpoch ( epoch );
+    this->mVersion = version;
+}
+
+//----------------------------------------------------------------//
 void VersionedStore::setRaw ( string key, size_t typeID, const void* value ) {
 
     assert ( this->mEpoch );

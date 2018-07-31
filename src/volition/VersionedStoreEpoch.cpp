@@ -48,26 +48,6 @@ size_t VersionedStoreEpoch::countLayers () const {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::discardUnusedLayers () {
-
-    size_t maxVersion = 0;
-    
-    set < VersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
-    for ( ; clientIt != this->mClients.end (); ++clientIt ) {
-    
-        VersionedStoreEpochClient* client = *clientIt;
-        if ( client->mVersion > maxVersion ) {
-            maxVersion = client->mVersion;
-        }
-    }
-    
-    size_t top = maxVersion + 1;
-    if ( this->mLayers.size () > top ) {
-        this->mLayers.resize ( top );
-    }
-}
-
-//----------------------------------------------------------------//
 const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
 
     assert ( version < ( this->mVersion + this->mLayers.size ()));
@@ -89,6 +69,28 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size
 shared_ptr < VersionedStoreEpoch > VersionedStoreEpoch::getParent () {
 
     return this->mEpoch;
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreEpoch::optimize () {
+
+    // TODO: implement consolidation of linear runs
+
+    size_t maxVersion = 0;
+    
+    set < VersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
+    for ( ; clientIt != this->mClients.end (); ++clientIt ) {
+    
+        VersionedStoreEpochClient* client = *clientIt;
+        if ( client->mVersion > maxVersion ) {
+            maxVersion = client->mVersion;
+        }
+    }
+    
+    size_t top = maxVersion + 1;
+    if ( this->mLayers.size () > top ) {
+        this->mLayers.resize ( top );
+    }
 }
 
 //----------------------------------------------------------------//

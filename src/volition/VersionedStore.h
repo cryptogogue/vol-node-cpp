@@ -46,6 +46,7 @@ public:
     bool            hasValue                ( string key ) const;
     void            popVersion              ();
     void            pushVersion             ();
+    void            seekVersion             ( size_t version );
                     VersionedStore          ();
                     VersionedStore          ( VersionedStore& other );
                     ~VersionedStore         ();

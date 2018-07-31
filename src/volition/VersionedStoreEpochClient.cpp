@@ -16,14 +16,14 @@ namespace Volition {
 void VersionedStoreEpochClient::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch ) {
 
     if ( epoch != this->mEpoch ) {
-    
+        
         if ( this->mEpoch ) {
             this->mEpoch->mClients.erase ( this );
-            this->mEpoch->discardUnusedLayers ();
+            this->mEpoch->optimize ();
         }
-    
+        
         this->mEpoch = epoch;
-    
+        
         if ( epoch ) {
             epoch->mClients.insert ( this );
         }
