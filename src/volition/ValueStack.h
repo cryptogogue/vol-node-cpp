@@ -9,6 +9,27 @@
 
 namespace Volition {
 
+template < typename TYPE > class ValueStack;
+
+//================================================================//
+// ValueStackTuple
+//================================================================//
+template < typename TYPE >
+class ValueStackTuple {
+private:
+
+    friend class ValueStack < TYPE >;
+
+    TYPE            mValue;
+    size_t          mVersion;
+
+    //----------------------------------------------------------------//
+    ValueStackTuple ( const TYPE& value, size_t version ) :
+        mValue ( value ),
+        mVersion ( version ) {
+    }
+};
+
 //================================================================//
 // ValueStack
 //================================================================//
@@ -21,12 +42,22 @@ protected:
     friend class VersionedStoreLayer;
     friend class VersionedStoreEpoch;
 
-    vector < TYPE >     mValues;
+    vector < ValueStackTuple < TYPE >>  mValues;
 
     //----------------------------------------------------------------//
-    const void* AbstractValueStack_getRaw () const override {
+    const void* AbstractValueStack_getRaw ( size_t version ) const override {
         assert ( this->mValues.size () > 0 );
-        return &this->mValues.back ();
+        
+        // naive lookup
+        // TODO: optimize
+        
+        for ( size_t i = this->mValues.size (); i > 0; --i ) {
+            const ValueStackTuple < TYPE >& tuple = this->mValues [ i - 1 ];
+            if ( tuple.mVersion <= version ) {
+                return &tuple.mValue;
+            }
+        }
+        return NULL;
     }
     
     //----------------------------------------------------------------//
@@ -46,16 +77,16 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractValueStack_pushBackRaw ( const void* value ) override {
+    void AbstractValueStack_pushBackRaw ( const void* value, size_t version ) override {
         assert ( value );
-        this->mValues.push_back ( *( const TYPE* )value );
+        this->mValues.push_back ( ValueStackTuple < TYPE >( *( const TYPE* )value, version ));
     }
     
     //----------------------------------------------------------------//
-    void AbstractValueStack_pushFrontRaw ( const void* value ) override {
-        assert ( value );
-        this->mValues.insert ( this->mValues.begin (), *( const TYPE* )value );
-    }
+//    void AbstractValueStack_pushFrontRaw ( const void* value ) override {
+//        assert ( value );
+//        this->mValues.insert ( this->mValues.begin (), ValueStackTuple < TYPE >( *( const TYPE* )value, 0 ));
+//    }
 
 public:
 

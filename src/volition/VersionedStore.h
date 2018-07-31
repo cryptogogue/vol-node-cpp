@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/VersionedStoreEpoch.h>
+#include <volition/VersionedStoreEpochClient.h>
 
 // TODO: this is all placeholder stuff, to get the algorithm working. will need to
 // optimize to reduce dynamic allocation. will also need to provide a NoSQL-backed
@@ -16,13 +17,12 @@ namespace Volition {
 //================================================================//
 // VersionedStore
 //================================================================//
-class VersionedStore {
+class VersionedStore :
+    public VersionedStoreEpochClient {
 private:
 
     friend class VersionedStore;
     friend class VersionedStoreEpoch;
-    
-    shared_ptr < VersionedStoreEpoch >  mEpoch;
 
     //----------------------------------------------------------------//
     VersionedStore& operator = ( const VersionedStore& other ) {
@@ -41,7 +41,6 @@ public:
 
     //----------------------------------------------------------------//
     void            clear                   ();
-    size_t          countEpochChildren      () const;
     size_t          countEpochClients       () const;
     size_t          countEpochLayers        () const;
     bool            hasValue                ( string key ) const;

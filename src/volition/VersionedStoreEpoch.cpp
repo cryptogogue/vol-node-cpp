@@ -12,13 +12,34 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::countChildren () const {
-    return this->mChildren.size ();
+size_t VersionedStoreEpoch::countClients () const {
+    return this->mClients.size ();
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::countClients () const {
-    return this->mClients.size ();
+VersionedStoreDownstream VersionedStoreEpoch::countDownstream ( size_t version ) const {
+
+    VersionedStoreDownstream downstream;
+    
+    downstream.mPeers = 0;
+    downstream.mDependents = 0;
+    
+    set < VersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
+    for ( ; clientIt != this->mClients.end (); ++clientIt ) {
+    
+        VersionedStoreEpochClient* client = *clientIt;
+        
+        if ( client->mVersion > version ) {
+            downstream.mDependents++;
+        }
+        else if ( client->mVersion == version ) {
+            downstream.mPeers++;
+        }
+    }
+    
+    downstream.mTotal = downstream.mPeers + downstream.mDependents;
+    
+    return downstream;
 }
 
 //----------------------------------------------------------------//
@@ -27,17 +48,102 @@ size_t VersionedStoreEpoch::countLayers () const {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::copyBackLayerToFront ( VersionedStoreEpoch& epoch ) const {
+void VersionedStoreEpoch::discardUnusedLayers () {
 
-    const VersionedStoreEpoch& fromEpoch = *this;
-    VersionedStoreEpoch& toEpoch = epoch;
+    size_t maxVersion = 0;
+    
+    set < VersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
+    for ( ; clientIt != this->mClients.end (); ++clientIt ) {
+    
+        VersionedStoreEpochClient* client = *clientIt;
+        if ( client->mVersion > maxVersion ) {
+            maxVersion = client->mVersion;
+        }
+    }
+    
+    size_t top = maxVersion + 1;
+    if ( this->mLayers.size () > top ) {
+        this->mLayers.resize ( top );
+    }
+}
 
-    toEpoch.mLayers.insert ( toEpoch.mLayers.begin (), make_unique < Layer >());
+//----------------------------------------------------------------//
+const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
 
-    assert ( fromEpoch.mLayers.size () && toEpoch.mLayers.size ());
+    assert ( version < ( this->mVersion + this->mLayers.size ()));
 
-    const Layer& fromLayer = *fromEpoch.mLayers.back ();
-    Layer& toLayer = *toEpoch.mLayers [ 0 ];
+    size_t sub = 0;
+    if ( version >= this->mVersion ) {
+
+        // see if we have the value in the current epoch.
+        map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
+        if ( valueIt != this->mValueStacksByKey.cend ()) {
+            return valueIt->second.get ();
+        }
+        sub = 1;
+    }
+    return this->mEpoch ? this->mEpoch->findValueStack ( key, version - sub ) : NULL;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < VersionedStoreEpoch > VersionedStoreEpoch::getParent () {
+
+    return this->mEpoch;
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreEpoch::popLayer () {
+
+    // if we're not popping the bottom layer, we need to pop any values it contains.
+    // we'll also need to erase any values that no longer have version history.
+    if ( this->mLayers.size () > 1 ) {
+
+        const Layer& layer = *this->mLayers.back ();
+        set < string >::const_iterator keyIt = layer.cbegin ();
+        for ( ; keyIt != layer.cend (); ++keyIt ) {
+            const string& key = *keyIt;
+
+            AbstractValueStack* valueStack = this->mValueStacksByKey [ key ].get ();
+            assert ( valueStack );
+
+            valueStack->pop (); // pop the value.
+
+            // if it's empty now (no more versions), remove it.
+            if ( valueStack->isEmpty ()) {
+                this->mValueStacksByKey.erase ( key );
+            }
+        }
+    }
+    this->mLayers.pop_back ();
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreEpoch::pushLayer () {
+
+    this->mLayers.push_back ( make_unique < Layer >());
+}
+
+//----------------------------------------------------------------//
+VersionedStoreEpoch::VersionedStoreEpoch () {
+
+    this->pushLayer ();
+}
+
+//----------------------------------------------------------------//
+VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > parent, size_t version ) {
+
+    assert ( parent );
+
+    this->mVersion = version;
+    this->setEpoch ( parent );
+    this->pushLayer ();
+
+    size_t layerID = version - parent->mVersion;
+    
+    assert ( layerID < parent->mLayers.size ());
+
+    const Layer& fromLayer = *parent->mLayers [ layerID ];
+    Layer& toLayer = *this->mLayers [ 0 ];
 
     // iterate through all the keys
     set < string >::const_iterator keyIt = fromLayer.cbegin ();
@@ -56,157 +162,16 @@ void VersionedStoreEpoch::copyBackLayerToFront ( VersionedStoreEpoch& epoch ) co
         assert ( !fromValueStack->isEmpty ());
         
         // affirm the destination value stack
-        unique_ptr < AbstractValueStack >& toValueStack = toEpoch.mValueStacksByKey [ key ];
-        if ( !toValueStack ) {
-            toValueStack = fromValueStack->makeEmptyCopy ();
-        }
+        unique_ptr < AbstractValueStack >& toValueStack = this->mValueStacksByKey [ key ];
+        toValueStack = fromValueStack->makeEmptyCopy ();
         
-        // push the value to the front of the destination value stack
-        toValueStack->pushFrontRaw ( fromValueStack->getRaw ());
+        // push the value to the destination value stack
+        toValueStack->pushBackRaw ( fromValueStack->getRaw ( version ), version );
     }
-}
-
-//----------------------------------------------------------------//
-const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) const {
-
-    // descend through epochs until we find the value. if we don't find it, return NULL.
-    map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
-    if ( valueIt != this->mValueStacksByKey.cend ()) {
-        return valueIt->second.get ();
-    }
-    return this->mParent ? this->mParent->findValueStack ( key ) : NULL;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < VersionedStoreEpoch > VersionedStoreEpoch::getOnlyChild () {
-
-    if ( this->mChildren.size () == 1 ) {
-        return ( *this->mChildren.begin ())->shared_from_this ();
-    }
-    return NULL;
-}
-
-//----------------------------------------------------------------//
-VersionedStore* VersionedStoreEpoch::getOnlyClient () {
-
-    if ( this->mClients.size () == 1 ) {
-        return ( *this->mClients.begin ());
-    }
-    return NULL;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < VersionedStoreEpoch > VersionedStoreEpoch::getParent () {
-
-    return this->mParent;
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::moveChildrenTo ( VersionedStoreEpoch& epoch ) {
-
-    set < VersionedStoreEpoch* >::iterator childIt = this->mChildren.begin ();
-    while ( childIt != this->mChildren.end()) {
-        epoch.mChildren.insert ( *childIt );
-        childIt = this->mChildren.erase ( childIt );
-    }
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::moveClientTo ( VersionedStore& client, shared_ptr < VersionedStoreEpoch > epoch ) {
-
-    assert ( client.mEpoch.get () == this );
-    assert ( this->mClients.find ( &client ) != this->mClients.end ());
-
-    // make sure we're not deleted until done
-    shared_ptr < VersionedStoreEpoch > scopedSelf = this->shared_from_this ();
-
-    this->mClients.erase ( &client );
-    client.mEpoch = NULL;
-
-    if ( epoch ) {
-        epoch->mClients.insert ( &client );
-        client.mEpoch = epoch->shared_from_this ();
-    }
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::moveClientsTo ( VersionedStoreEpoch& epoch, const VersionedStore* except ) {
-
-    // make sure we're not deleted until done
-    shared_ptr < VersionedStoreEpoch > scopedSelf = this->shared_from_this ();
-
-    // move all the other clients to the new epoch
-    set < VersionedStore* >::iterator clientIt = this->mClients.begin ();
-    while ( clientIt != this->mClients.end ()) {
-    
-        VersionedStore* client = *clientIt;
-        
-        if ( client == except ) {
-            // client is this, so do nothing and skip to the next client.
-            ++clientIt;
-        }
-        else {
-            // point the client at the new epoch and add it to that epoch's client set.
-            client->mEpoch = epoch.shared_from_this ();
-            epoch.mClients.insert ( client );
-            clientIt = this->mClients.erase ( clientIt ); // remove it from the current epoch's set.
-        }
-    }
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::popLayer () {
-
-    // if we're not popping the bottom layer, we need to pop any values it contains.
-    // we'll also need to erase any values that no longer have version history.
-    if ( this->mLayers.size () > 1 ) {
-
-        const Layer& layer = *this->mLayers.back ();
-        set < string >::const_iterator keyIt = layer.cbegin ();
-        for ( ; keyIt != layer.cend (); ++keyIt ) {
-            const string& key = *keyIt;
-            
-            AbstractValueStack* valueStack = this->mValueStacksByKey [ key ].get ();
-            assert ( valueStack );
-            
-            valueStack->pop (); // pop the value.
-            
-            // if it's empty now (no more versions), remove it.
-            if ( valueStack->isEmpty ()) {
-                this->mValueStacksByKey.erase ( key );
-            }
-        }
-    }
-    this->mLayers.pop_back ();
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::pushLayer () {
-
-    this->mLayers.push_back ( make_unique < Layer >());
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::setParent ( shared_ptr < VersionedStoreEpoch > parent ) {
-
-    if ( parent != this->mParent ) {
-        this->mParent = parent;
-        if ( parent ) {
-            parent->mChildren.insert ( this );
-        }
-   }
-}
-
-//----------------------------------------------------------------//
-VersionedStoreEpoch::VersionedStoreEpoch () {
 }
 
 //----------------------------------------------------------------//
 VersionedStoreEpoch::~VersionedStoreEpoch () {
-
-    if ( this->mParent ) {
-        this->mParent->mChildren.erase ( this );
-    }
 }
 
 } // namespace Volition

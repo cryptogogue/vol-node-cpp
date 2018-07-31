@@ -20,8 +20,8 @@ AbstractValueStack::~AbstractValueStack () {
 }
 
 //----------------------------------------------------------------//
-const void* AbstractValueStack::getRaw () const {
-    return this->AbstractValueStack_getRaw ();
+const void* AbstractValueStack::getRaw ( size_t version ) const {
+    return this->AbstractValueStack_getRaw ( version );
 }
 
 //----------------------------------------------------------------//
@@ -40,13 +40,13 @@ void AbstractValueStack::pop () {
 }
 
 //----------------------------------------------------------------//
-void AbstractValueStack::pushBackRaw ( const void* value ) {
-    this->AbstractValueStack_pushBackRaw ( value );
+void AbstractValueStack::pushBackRaw ( const void* value, size_t version ) {
+    this->AbstractValueStack_pushBackRaw ( value, version );
 }
 
 //----------------------------------------------------------------//
-void AbstractValueStack::pushFrontRaw ( const void* value ) {
-    this->AbstractValueStack_pushFrontRaw ( value );
-}
+//void AbstractValueStack::pushFrontRaw ( const void* value ) {
+//    this->AbstractValueStack_pushFrontRaw ( value );
+//}
 
 } // namespace Volition

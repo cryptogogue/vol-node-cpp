@@ -6,28 +6,42 @@
 
 #include <volition/common.h>
 #include <volition/ValueStack.h>
+#include <volition/VersionedStoreEpochClient.h>
 
 namespace Volition {
 
 class VersionedStore;
+class VersionedStoreEpoch;
+
+//================================================================//
+// VersionedStoreDownstream
+//================================================================//
+class VersionedStoreDownstream {
+private:
+
+    friend class VersionedStore;
+    friend class VersionedStoreEpoch;
+
+    size_t      mPeers;
+    size_t      mDependents;
+    size_t      mTotal;
+};
 
 //================================================================//
 // VersionedStoreEpoch
 //================================================================//
 class VersionedStoreEpoch :
-    public enable_shared_from_this < VersionedStoreEpoch > {
+    public VersionedStoreEpochClient {
 private:
 
     friend class VersionedStore;
+    friend class VersionedStoreEpochClient;
 
     typedef set < string > Layer;
 
-    set < VersionedStore* >                                 mClients;
+    set < VersionedStoreEpochClient* >                      mClients;
     vector < unique_ptr < Layer >>                          mLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
-    
-    shared_ptr < VersionedStoreEpoch >                      mParent;
-    set < VersionedStoreEpoch* >                            mChildren;
 
     //----------------------------------------------------------------//
     template < typename TYPE >
@@ -39,26 +53,21 @@ private:
     }
 
     //----------------------------------------------------------------//
-    size_t                                  countChildren               () const;
+    void                                    discardUnusedLayers         ();
     size_t                                  countClients                () const;
+    VersionedStoreDownstream                countDownstream             ( size_t version ) const;
     size_t                                  countLayers                 () const;
-    void                                    copyBackLayerToFront        ( VersionedStoreEpoch& epoch ) const;
-    const AbstractValueStack*               findValueStack              ( string key ) const;
-    shared_ptr < VersionedStoreEpoch >      getOnlyChild                ();
-    VersionedStore*                         getOnlyClient               ();
+    const AbstractValueStack*               findValueStack              ( string key, size_t version ) const;
     shared_ptr < VersionedStoreEpoch >      getParent                   ();
-    void                                    moveChildrenTo              ( VersionedStoreEpoch& epoch );
-    void                                    moveClientTo                ( VersionedStore& client, shared_ptr < VersionedStoreEpoch > epoch );
-    void                                    moveClientsTo               ( VersionedStoreEpoch& epoch, const VersionedStore* except = NULL );
     void                                    popLayer                    ();
     void                                    pushLayer                   ();
-    void                                    setParent                   ( shared_ptr < VersionedStoreEpoch > parent );
 
 public:
 
     //----------------------------------------------------------------//
-                                            VersionedStoreEpoch         ();
-                                            ~VersionedStoreEpoch        ();
+                            VersionedStoreEpoch         ();
+                            VersionedStoreEpoch         ( shared_ptr < VersionedStoreEpoch > parent, size_t version );
+                            ~VersionedStoreEpoch        ();
 };
 
 } // namespace Volition

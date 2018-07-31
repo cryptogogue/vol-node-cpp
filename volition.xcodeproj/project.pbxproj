@@ -134,6 +134,8 @@
 		CD561DBA210730E5008B06C7 /* ValueStack.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DB9210730E5008B06C7 /* ValueStack.h */; };
 		CD561DBD210730ED008B06C7 /* VersionedStoreEpoch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD561DBB210730ED008B06C7 /* VersionedStoreEpoch.cpp */; };
 		CD561DBE210730ED008B06C7 /* VersionedStoreEpoch.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DBC210730ED008B06C7 /* VersionedStoreEpoch.h */; };
+		CD65C760211074F20080CA13 /* VersionedStoreEpochClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD65C75E211074F20080CA13 /* VersionedStoreEpochClient.cpp */; };
+		CD65C761211074F20080CA13 /* VersionedStoreEpochClient.h in Headers */ = {isa = PBXBuildFile; fileRef = CD65C75F211074F20080CA13 /* VersionedStoreEpochClient.h */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -337,6 +339,8 @@
 		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/volition/common.h; sourceTree = "<group>"; };
 		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/volition/main-simulator.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/volition/main-server.cpp"; sourceTree = "<group>"; };
+		CD65C75E211074F20080CA13 /* VersionedStoreEpochClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedStoreEpochClient.cpp; path = src/volition/VersionedStoreEpochClient.cpp; sourceTree = "<group>"; };
+		CD65C75F211074F20080CA13 /* VersionedStoreEpochClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedStoreEpochClient.h; path = src/volition/VersionedStoreEpochClient.h; sourceTree = "<group>"; };
 		CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtr.h; path = src/volition/serialization/SerializablePtr.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
@@ -585,6 +589,8 @@
 				CD4E80E421040032007DA585 /* VersionedStore.h */,
 				CD561DBB210730ED008B06C7 /* VersionedStoreEpoch.cpp */,
 				CD561DBC210730ED008B06C7 /* VersionedStoreEpoch.h */,
+				CD65C75E211074F20080CA13 /* VersionedStoreEpochClient.cpp */,
+				CD65C75F211074F20080CA13 /* VersionedStoreEpochClient.h */,
 			);
 			name = store;
 			sourceTree = "<group>";
@@ -863,6 +869,7 @@
 				CD4E81A4210593BD007DA585 /* State.h in Headers */,
 				CD4E81D02105941A007DA585 /* TransactionMakerSignature.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
+				CD65C761211074F20080CA13 /* VersionedStoreEpochClient.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
 				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
@@ -1155,6 +1162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD65C760211074F20080CA13 /* VersionedStoreEpochClient.cpp in Sources */,
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
 				CD561DBD210730ED008B06C7 /* VersionedStoreEpoch.cpp in Sources */,
 				CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */,
