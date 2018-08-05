@@ -19,11 +19,13 @@ bool State::accountPolicy ( string accountName, const Policy* policy ) {
 //----------------------------------------------------------------//
 bool State::affirmKey ( string accountName, string keyName, const CryptoKey& key, string policyName ) {
 
-    Account* account = this->getAccount ( accountName );
+    const Account* account = this->getAccountOrNil ( accountName );
     if ( account ) {
 
         if ( key ) {
-            account->mKeys [ keyName ] = KeyAndPolicy ( key );
+            Account updatedAccount = *account;
+            updatedAccount.mKeys [ keyName ] = KeyAndPolicy ( key );
+            this->setAccount ( accountName, updatedAccount );
             return true;
         }
     }
@@ -33,8 +35,10 @@ bool State::affirmKey ( string accountName, string keyName, const CryptoKey& key
 //----------------------------------------------------------------//
 bool State::checkMakerSignature ( const TransactionMakerSignature* makerSignature ) const {
 
+    // TODO: actually check maker signature
+
     if ( makerSignature ) {
-        const Account* account = this->getAccount ( makerSignature->getAccountName ());
+        const Account* account = this->getAccountOrNil ( makerSignature->getAccountName ());
         if ( account ) {
             return ( account->mNonce == makerSignature->getNonce ());
         }
@@ -46,12 +50,15 @@ bool State::checkMakerSignature ( const TransactionMakerSignature* makerSignatur
 void State::consumeMakerSignature ( const TransactionMakerSignature* makerSignature ) {
 
     if ( makerSignature ) {
-    
+
         u64 nonce = makerSignature->getNonce ();
-    
-        Account* account = this->getAccount ( makerSignature->getAccountName ());
+        string accountName = makerSignature->getAccountName ();
+
+        const Account* account = this->getAccountOrNil ( accountName );
         if ( account && ( account->mNonce <= nonce )) {
-            account->mNonce = nonce + 1;
+            Account updatedAccount = *account;
+            updatedAccount.mNonce = nonce + 1;
+            this->setAccount ( accountName, updatedAccount );
         }
     }
 }
@@ -61,7 +68,9 @@ bool State::deleteKey ( string accountName, string keyName ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
     if ( accountKey ) {
-        accountKey.mAccount->mKeys.erase ( keyName );
+        Account updatedAccount = *accountKey.mAccount;
+        updatedAccount.mKeys.erase ( keyName );
+        this->setAccount ( accountName, updatedAccount );
         return true;
     }
     return false;
@@ -70,45 +79,27 @@ bool State::deleteKey ( string accountName, string keyName ) {
 //----------------------------------------------------------------//
 bool State::genesisMiner ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url ) {
 
-    Account& account = this->mAccounts [ accountName ];
+    Account account;
+
     account.mBalance = amount;
     account.mKeys [ keyName ] = KeyAndPolicy ( key );
-    
-    this->registerMiner ( accountName, keyName, url );
-    return true;
+    this->setAccount ( accountName, account );
+
+    return this->registerMiner ( accountName, keyName, url );
 }
 
 //----------------------------------------------------------------//
-Account* State::getAccount ( string accountName ) {
-
-    if ( this->mAccounts.find ( accountName ) != this->mAccounts.end ()) {
-        return &this->mAccounts [ accountName ];
-    }
-    return NULL;
-}
-
-//----------------------------------------------------------------//
-const Account* State::getAccount ( string accountName ) const {
-
-    map < string, Account >::const_iterator accountIt = this->mAccounts.find ( accountName );
-    if ( accountIt != this->mAccounts.cend ()) {
-        return &accountIt->second;
-    }
-    return NULL;
-}
-
-//----------------------------------------------------------------//
-AccountKey State::getAccountKey ( string accountName, string keyName ) {
+AccountKey State::getAccountKey ( string accountName, string keyName ) const {
 
     AccountKey accountKey;
-    
+
     accountKey.mAccount         = NULL;
     accountKey.mKeyAndPolicy    = NULL;
 
-    accountKey.mAccount = this->getAccount ( accountName );
+    accountKey.mAccount = this->getAccountOrNil ( accountName );
     if ( accountKey.mAccount ) {
-        map < string, KeyAndPolicy >::iterator keyAndPolicyIt = accountKey.mAccount->mKeys.find ( keyName );
-        if ( keyAndPolicyIt != accountKey.mAccount->mKeys.end ()) {
+        map < string, KeyAndPolicy >::const_iterator keyAndPolicyIt = accountKey.mAccount->mKeys.find ( keyName );
+        if ( keyAndPolicyIt != accountKey.mAccount->mKeys.cend ()) {
             accountKey.mKeyAndPolicy = &keyAndPolicyIt->second;
         }
     }
@@ -116,31 +107,43 @@ AccountKey State::getAccountKey ( string accountName, string keyName ) {
 }
 
 //----------------------------------------------------------------//
-u64 State::getHeight () const {
+const Account* State::getAccountOrNil ( string accountName ) const {
 
-    return this->mHeight;
+    return this->getValueOrNil < Account >( prefixKey ( ACCOUNT, accountName ));
 }
 
 //----------------------------------------------------------------//
-const map < string, MinerInfo >& State::getMinerInfo () const {
+const MinerInfo* State::getMinerInfoOrNil ( string accountName ) const {
 
-    return this->mMinerInfo;
+    return this->getValueOrNil < MinerInfo >( prefixKey ( MINER_INFO, accountName ));
 }
 
 //----------------------------------------------------------------//
-const MinerInfo* State::getMinerInfo ( string minerID ) const {
+map < string, MinerInfo > State::getMiners () const {
 
-    map < string, MinerInfo >::const_iterator minerInfoIt = this->mMinerInfo.find ( minerID );
-    if ( minerInfoIt != this->mMinerInfo.end ()) {
-        return &minerInfoIt->second;
+    map < string, MinerInfo > minerInfoMap;
+
+    const set < string >& miners = this->getValue < set < string >>( MINERS );
+    set < string >::const_iterator minerIt = miners.cbegin ();
+    for ( ; minerIt != miners.cend (); ++minerIt ) {
+    
+        const string& minerID = *minerIt;
+        
+        const MinerInfo* minerInfo = this->getMinerInfoOrNil ( minerID );
+        assert ( minerInfo );
+        minerInfoMap [ minerID ] = *minerInfo;
     }
-    return NULL;
+    return minerInfoMap;
 }
+
+
 
 //----------------------------------------------------------------//
 const map < string, string >& State::getMinerURLs () const {
 
-    return this->mMinerURLs;
+    const map < string, string >* minerURLs = this->getValueOrNil < map < string, string >>( MINER_URLS );
+    assert ( minerURLs );
+    return *minerURLs;
 }
 
 //----------------------------------------------------------------//
@@ -152,21 +155,29 @@ bool State::keyPolicy ( string accountName, string policyName, const Policy* pol
 //----------------------------------------------------------------//
 bool State::openAccount ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key ) {
 
-    Account* account = this->getAccount ( accountName );
+    const Account* account = this->getAccountOrNil ( accountName );
     if ( account && ( account->mBalance >= amount )) {
+
+        if ( this->getAccountOrNil ( recipientName )) return false;
+
+        Account accountUpdated = *account;
+        accountUpdated.mBalance -= amount;
+        this->setAccount ( accountName, accountUpdated );
         
-        if ( this->getAccount ( recipientName )) return false;
-        
-        Account& recipient = this->mAccounts [ recipientName ];
-        
-        account->mBalance -= amount;
+        Account recipient;
         recipient.mBalance = amount;
-        
         recipient.mKeys [ keyName ] = KeyAndPolicy ( key );
-        
+        this->setAccount ( recipientName, recipient );
+
         return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+string State::prefixKey ( string prefix, string key ) {
+
+    return prefix + "." + key;
 }
 
 //----------------------------------------------------------------//
@@ -174,37 +185,67 @@ bool State::registerMiner ( string accountName, string keyName, string url ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
     if ( accountKey ) {
+
+        this->setValue < MinerInfo >( prefixKey ( MINER_INFO, accountName ), MinerInfo ( accountName, url, accountKey.mKeyAndPolicy->mKey ));
         
-        this->mMinerInfo [ accountName ] = MinerInfo ( accountName, url, accountKey.mKeyAndPolicy->mKey );
-        this->mMinerURLs [ accountName ] = url;
+        // TODO: find an efficient way to do all this
+        map < string, string > minerURLs = this->getValue < map < string, string >>( MINER_URLS );
+        minerURLs [ accountName ] = url;
+        this->setValue < map < string, string >>( MINER_URLS, minerURLs );
+
+        set < string > miners = this->getValue < set < string >>( MINERS );
+        miners.insert ( accountName );
+        this->setValue < set < string >>( MINERS, miners );
+
         return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+void State::reset () {
+
+    this->clear ();
+    this->setValue < set < string >>( MINERS, set < string > ());
+    this->setValue < map < string, string >>( MINER_URLS, map < string, string > ());
 }
 
 //----------------------------------------------------------------//
 bool State::sendVOL ( string accountName, string recipientName, u64 amount ) {
 
-    Account* account    = this->getAccount ( accountName );
-    Account* recipient  = this->getAccount ( recipientName );
+    const Account* account    = this->getAccountOrNil ( accountName );
+    const Account* recipient  = this->getAccountOrNil ( recipientName );
 
     if ( account && recipient && ( account->mBalance >= amount )) {
-        account->mBalance -= amount;
-        recipient->mBalance += amount;
+    
+        Account accountUpdated = *account;
+        Account recipientUpdated = *recipient;
+    
+        accountUpdated.mBalance -= amount;
+        recipientUpdated.mBalance += amount;
+        
+        this->setAccount ( accountName, accountUpdated );
+        this->setAccount ( recipientName, recipientUpdated );
+        
         return true;
     }
     return false;
 }
 
 //----------------------------------------------------------------//
-void State::setHeight ( u64 height ) {
+void State::setAccount ( string accountName, const Account& account ) {
 
-    this->mHeight = height;
+    this->setValue < Account >( prefixKey ( ACCOUNT, accountName ), account );
 }
 
 //----------------------------------------------------------------//
-State::State () :
-    mHeight ( 0 ) {
+void State::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
+
+    this->setValue < MinerInfo >( prefixKey ( ACCOUNT, accountName ), minerInfo );
+}
+
+//----------------------------------------------------------------//
+State::State () {
 }
 
 //----------------------------------------------------------------//

@@ -22,21 +22,18 @@ void VersionedStore::affirmEpoch () {
 void VersionedStore::clear () {
 
     this->setEpoch ( NULL );
-    this->affirmEpoch ();
 }
 
 //----------------------------------------------------------------//
 size_t VersionedStore::countEpochClients () const {
 
-    assert ( this->mEpoch );
-    return this->mEpoch->countClients ();
+    return this->mEpoch ? this->mEpoch->countClients () : 0;
 }
 
 //----------------------------------------------------------------//
 size_t VersionedStore::countEpochLayers () const {
 
-    assert ( this->mEpoch );
-    return this->mEpoch->countLayers ();
+    return this->mEpoch ? this->mEpoch->countLayers () : 0;
 }
 
 //----------------------------------------------------------------//
@@ -55,11 +52,12 @@ const void* VersionedStore::getRaw ( string key, size_t typeID ) const {
 //----------------------------------------------------------------//
 bool VersionedStore::hasValue ( string key ) const {
 
-    assert ( this->mEpoch );
-    const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key, this->mVersion );
-    
-    if ( valueStack ) {
-        return ( valueStack->getRaw ( this->mVersion ) != NULL );
+    if ( this->mEpoch ) {
+        const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key, this->mVersion );
+        
+        if ( valueStack ) {
+            return ( valueStack->getRaw ( this->mVersion ) != NULL );
+        }
     }
     return false;
 }
@@ -67,26 +65,27 @@ bool VersionedStore::hasValue ( string key ) const {
 //----------------------------------------------------------------//
 void VersionedStore::popVersion () {
 
-    assert ( this->mEpoch );
+    if ( this->mEpoch ) {
 
-    VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
-    assert ( downstream.mTotal > 0 );
+        VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
+        assert ( downstream.mTotal > 0 );
 
-    if ((( downstream.mDependents == 0 ) && ( this->mEpoch->countLayers () > 1 ))) {
-        this->mEpoch->popLayer ();
+        if ((( downstream.mDependents == 0 ) && ( this->mEpoch->countLayers () > 1 ))) {
+            this->mEpoch->popLayer ();
+        }
+        
+        if ( this->mVersion == this->mEpoch->mVersion ) {
+            this->setEpoch ( this->mEpoch->mEpoch );
+        }
+        
+        this->mVersion--;
     }
-    
-    if ( this->mVersion == this->mEpoch->mVersion ) {
-        this->setEpoch ( this->mEpoch->mEpoch );
-    }
-    
-    this->mVersion--;
-    this->affirmEpoch ();
 }
 
 //----------------------------------------------------------------//
 void VersionedStore::prepareForSetValue () {
 
+    this->affirmEpoch ();
     assert ( this->mEpoch );
 
     VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
@@ -100,6 +99,7 @@ void VersionedStore::prepareForSetValue () {
 //----------------------------------------------------------------//
 void VersionedStore::pushVersion () {
 
+    this->affirmEpoch ();
     assert ( this->mEpoch );
 
     VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
@@ -137,6 +137,7 @@ void VersionedStore::seekVersion ( size_t version ) {
     
     this->setEpoch ( epoch );
     this->mVersion = version;
+    this->mEpoch->optimize ();
 }
 
 //----------------------------------------------------------------//
@@ -162,8 +163,6 @@ void VersionedStore::takeSnapshot ( VersionedStore& other ) {
 
 //----------------------------------------------------------------//
 VersionedStore::VersionedStore () {
-
-    this->affirmEpoch ();
 }
 
 //----------------------------------------------------------------//

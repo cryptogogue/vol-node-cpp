@@ -19,7 +19,7 @@ namespace Volition {
 //================================================================//
 class VersionedStore :
     public VersionedStoreEpochClient {
-private:
+protected:
 
     friend class VersionedStore;
     friend class VersionedStoreEpoch;
@@ -34,7 +34,6 @@ private:
     const void*     getRaw                  ( string key, size_t typeID ) const;
     void            prepareForSetValue      ();
     void            setRaw                  ( string key, size_t typeID, const void* value );
-    void            takeSnapshot            ( VersionedStore& other );
                     VersionedStore          ( const VersionedStore& other );
     
 public:
@@ -47,6 +46,7 @@ public:
     void            popVersion              ();
     void            pushVersion             ();
     void            seekVersion             ( size_t version );
+    void            takeSnapshot            ( VersionedStore& other );
                     VersionedStore          ();
                     VersionedStore          ( VersionedStore& other );
                     ~VersionedStore         ();

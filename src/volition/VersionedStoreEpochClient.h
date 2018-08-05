@@ -26,6 +26,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+    size_t      getVersion                      () const;
     void        setEpoch                        ( shared_ptr < VersionedStoreEpoch > epoch );
                 VersionedStoreEpochClient       ();
     virtual     ~VersionedStoreEpochClient      ();

@@ -75,6 +75,8 @@ shared_ptr < VersionedStoreEpoch > VersionedStoreEpoch::getParent () {
 void VersionedStoreEpoch::optimize () {
 
     // TODO: implement consolidation of linear runs
+    
+    if ( this->mClients.size () == 0 ) return;
 
     size_t maxVersion = 0;
     

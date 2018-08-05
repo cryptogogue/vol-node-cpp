@@ -82,7 +82,7 @@ Chain::Chain ( const Chain& chain ) {
     for ( size_t i = 0; i < nCycles; ++i ) {
         this->mCycles.push_back ( make_unique < Cycle >( *chain.mCycles [ i ]));
     }
-    this->mState = chain.mState;
+    this->rebuildState ();
 }
 
 //----------------------------------------------------------------//
@@ -238,6 +238,12 @@ const State& Chain::getState () const {
 }
 
 //----------------------------------------------------------------//
+void Chain::getStateSnapshot ( State& state ) {
+
+    state.takeSnapshot ( this->mState );
+}
+
+//----------------------------------------------------------------//
 Cycle* Chain::getTopCycle () {
 
     return this->mCycles.size () > 0 ? this->mCycles.back ().get () : 0;
@@ -310,12 +316,9 @@ bool Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > 
     block->setCycleID ( cycleID );
     block->setPreviousBlock ( prevBlock );
     block->sign ( key );
-    
-    // TODO: if we're backtracking; fix this later
-    if ( block->mHeight < this->mState.getHeight ()) {
-        this->rebuildState ();
-    }
-    
+
+    this->mState.seekVersion ( block->mHeight );
+
     cycle->mBlocks.push_back ( block );
     
     if ( !cycle->containsMiner ( minerID )) {
@@ -327,7 +330,7 @@ bool Chain::pushAndSign ( const ChainPlacement& placement, shared_ptr < Block > 
 //----------------------------------------------------------------//
 void Chain::rebuildState () {
 
-    this->mState = State ();
+    this->mState.reset ();
     for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
         if ( !this->mCycles [ i ]->apply ( this->mState )) {
             this->mCycles.resize ( i + 1 );

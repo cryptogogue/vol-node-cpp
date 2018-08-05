@@ -14,7 +14,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 bool Block::apply ( State& state ) {
 
-    if ( state.getHeight () != this->mHeight ) return false;
+    if ( state.getVersion () != this->mHeight ) return false;
     if ( !this->verify ( state )) return false;
 
     for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
@@ -23,7 +23,7 @@ bool Block::apply ( State& state ) {
             return false;
         }
     }
-    state.setHeight ( this->mHeight + 1 );
+    state.pushVersion ();
     return true;
 }
 
@@ -113,7 +113,7 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 //----------------------------------------------------------------//
 bool Block::verify ( const State& state ) {
 
-    const MinerInfo* minerInfo = state.getMinerInfo ( this->mMinerID );
+    const MinerInfo* minerInfo = state.getMinerInfoOrNil ( this->mMinerID );
 
     if ( minerInfo ) {
         return this->verify ( state, minerInfo->getPublicKey ());

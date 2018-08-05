@@ -87,7 +87,7 @@ void WebMiner::run () {
                 this->mTaskManager.start ( new SyncChainTask ( urlIt->first, url ));
             }
             
-            size_t nextHeight = this->mChain->getState ().getHeight ();
+            size_t nextHeight = this->mChain->getState ().getVersion ();
             if ( nextHeight != height ) {
                 printf ( "height: %d\n", ( int )nextHeight );
                 this->mChain->print ();

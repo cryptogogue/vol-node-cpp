@@ -54,10 +54,11 @@ void Miner::loadKey ( string keyfile, string password ) {
 }
 
 //----------------------------------------------------------------//
-unique_ptr < Block > Miner::makeBlock ( const Chain& chain ) {
+unique_ptr < Block > Miner::makeBlock ( Chain& chain ) {
     unique_ptr < Block > block = make_unique < Block >();
 
-    State state = chain.getState ();
+    State state;
+    chain.getStateSnapshot ( state );
 
     list < shared_ptr < AbstractTransaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
     for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {

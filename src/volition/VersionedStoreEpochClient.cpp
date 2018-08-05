@@ -13,6 +13,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+size_t VersionedStoreEpochClient::getVersion () const {
+
+    return this->mVersion;
+}
+
+//----------------------------------------------------------------//
 void VersionedStoreEpochClient::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch ) {
 
     if ( epoch != this->mEpoch ) {

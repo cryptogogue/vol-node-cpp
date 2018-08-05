@@ -49,6 +49,7 @@ public:
     ChainPlacement          findPlacement       ( string minerID, bool force ) const;
     Block&                  getBlock            ( size_t cycleIdx, size_t blockIdx );
     const State&            getState            () const;
+    void                    getStateSnapshot    ( State& state );
     bool                    pushAndSign         ( const ChainPlacement& placement, shared_ptr < Block > block, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
     void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
 };

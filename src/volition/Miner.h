@@ -31,7 +31,7 @@ protected:
     unique_ptr < Chain >                            mChain;
     
     //----------------------------------------------------------------//
-    unique_ptr < Block >    makeBlock               ( const Chain& chain );
+    unique_ptr < Block >    makeBlock               ( Chain& chain );
     void                    pushBlock               ( Chain& chain, bool force );
 
 public:
