@@ -14,7 +14,6 @@ TEST ( VersionedStore, unitTests ) {
     const string STR1       = "def";
     const string STR2       = "ghi";
     const string STR3       = "jkl";
-    const string STR4       = "mno";
 
     {
         VersionedStore store0;

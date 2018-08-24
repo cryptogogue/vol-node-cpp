@@ -136,6 +136,7 @@
 		CD561DBE210730ED008B06C7 /* VersionedStoreEpoch.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DBC210730ED008B06C7 /* VersionedStoreEpoch.h */; };
 		CD65C760211074F20080CA13 /* VersionedStoreEpochClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD65C75E211074F20080CA13 /* VersionedStoreEpochClient.cpp */; };
 		CD65C761211074F20080CA13 /* VersionedStoreEpochClient.h in Headers */ = {isa = PBXBuildFile; fileRef = CD65C75F211074F20080CA13 /* VersionedStoreEpochClient.h */; };
+		CDC13890212FCFDF004FA594 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -345,6 +346,7 @@
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDC1388F212FCFDF004FA594 /* TestChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestChain.cpp; path = src/volition/gtest/TestChain.cpp; sourceTree = "<group>"; };
 		CDC2B31420CCAD2400300A96 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = State.cpp; path = src/volition/State.cpp; sourceTree = "<group>"; };
 		CDC2B31520CCAD2400300A96 /* State.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = State.h; path = src/volition/State.h; sourceTree = "<group>"; };
 		CDC2B31B20CE0FA100300A96 /* Analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Analysis.cpp; path = src/volition/simulator/Analysis.cpp; sourceTree = "<group>"; };
@@ -641,6 +643,7 @@
 			isa = PBXGroup;
 			children = (
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
+				CDC1388F212FCFDF004FA594 /* TestChain.cpp */,
 				CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */,
 			);
 			name = gtest;
@@ -1155,6 +1158,7 @@
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
 				CD4E81742105802E007DA585 /* TestVersionedStore.cpp in Sources */,
+				CDC13890212FCFDF004FA594 /* TestChain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

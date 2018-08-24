@@ -31,7 +31,7 @@ public:
                         CryptoKey               ();
                         ~CryptoKey              ();
     void                elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
-    void                elliptic                ( string groupName = DEFAULT_EC_GROUP_NAME );
+    void                elliptic                ( string groupName );
     static string       getGroupNameFromNID     ( int nid );
     static int          getNIDFromGroupName     ( string groupName );
     static bool         hasCurve                ( int nid );

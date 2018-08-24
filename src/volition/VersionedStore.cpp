@@ -126,6 +126,8 @@ void VersionedStore::pushVersion () {
 //----------------------------------------------------------------//
 void VersionedStore::seekVersion ( size_t version ) {
 
+    this->affirmEpoch ();
+
     shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
 
     while ( version < epoch->mVersion ) {
