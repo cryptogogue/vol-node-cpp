@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_VERSIONEDSTOREEPOCHCLIENT_H
-#define VOLITION_VERSIONEDSTOREEPOCHCLIENT_H
+#ifndef VOLITION_ABSTRACTVERSIONEDSTOREEPOCHCLIENT_H
+#define VOLITION_ABSTRACTVERSIONEDSTOREEPOCHCLIENT_H
 
 #include <volition/common.h>
 #include <volition/ValueStack.h>
@@ -13,28 +13,24 @@ class VersionedStore;
 class VersionedStoreEpoch;
 
 //================================================================//
-// VersionedStoreEpochClient
+// AbstractVersionedStoreEpochClient
 //================================================================//
-class VersionedStoreEpochClient {
+class AbstractVersionedStoreEpochClient {
 protected:
 
     friend class AbstractVersionedValueIterator;
     friend class VersionedStoreEpoch;
     friend class VersionedStoreIterator;
 
-    shared_ptr < VersionedStoreEpoch >          mEpoch;
-    size_t                                      mVersion;
-
     //----------------------------------------------------------------//
-    void        setEpoch                        ( shared_ptr < VersionedStoreEpoch > epoch );
-    void        setEpoch                        ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
+    virtual size_t      AbstractVersionedStoreEpochClient_getVersion    () const = 0;
 
 public:
 
     //----------------------------------------------------------------//
-    size_t      getVersion                      () const;
-                VersionedStoreEpochClient       ();
-    virtual     ~VersionedStoreEpochClient      ();
+                        AbstractVersionedStoreEpochClient               ();
+    virtual             ~AbstractVersionedStoreEpochClient              ();
+    size_t              getVersion                                      () const;
 };
 
 } // namespace Volition

@@ -140,8 +140,8 @@
 		CD561DBA210730E5008B06C7 /* ValueStack.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DB9210730E5008B06C7 /* ValueStack.h */; };
 		CD561DBD210730ED008B06C7 /* VersionedStoreEpoch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD561DBB210730ED008B06C7 /* VersionedStoreEpoch.cpp */; };
 		CD561DBE210730ED008B06C7 /* VersionedStoreEpoch.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DBC210730ED008B06C7 /* VersionedStoreEpoch.h */; };
-		CD65C760211074F20080CA13 /* VersionedStoreEpochClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD65C75E211074F20080CA13 /* VersionedStoreEpochClient.cpp */; };
-		CD65C761211074F20080CA13 /* VersionedStoreEpochClient.h in Headers */ = {isa = PBXBuildFile; fileRef = CD65C75F211074F20080CA13 /* VersionedStoreEpochClient.h */; };
+		CD65C760211074F20080CA13 /* AbstractVersionedStoreEpochClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD65C75E211074F20080CA13 /* AbstractVersionedStoreEpochClient.cpp */; };
+		CD65C761211074F20080CA13 /* AbstractVersionedStoreEpochClient.h in Headers */ = {isa = PBXBuildFile; fileRef = CD65C75F211074F20080CA13 /* AbstractVersionedStoreEpochClient.h */; };
 		CDA06FDB214E3FAC003FA0C3 /* TestVersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */; };
 		CDA06FDC214E3FAC003FA0C3 /* TestVersionedValueIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD240D292133E8F000FF8812 /* TestVersionedValueIterator.cpp */; };
 		CDC13890212FCFDF004FA594 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
@@ -356,8 +356,8 @@
 		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/volition/common.h; sourceTree = "<group>"; };
 		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/volition/main-simulator.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/volition/main-server.cpp"; sourceTree = "<group>"; };
-		CD65C75E211074F20080CA13 /* VersionedStoreEpochClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedStoreEpochClient.cpp; path = src/volition/VersionedStoreEpochClient.cpp; sourceTree = "<group>"; };
-		CD65C75F211074F20080CA13 /* VersionedStoreEpochClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedStoreEpochClient.h; path = src/volition/VersionedStoreEpochClient.h; sourceTree = "<group>"; };
+		CD65C75E211074F20080CA13 /* AbstractVersionedStoreEpochClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractVersionedStoreEpochClient.cpp; path = src/volition/AbstractVersionedStoreEpochClient.cpp; sourceTree = "<group>"; };
+		CD65C75F211074F20080CA13 /* AbstractVersionedStoreEpochClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractVersionedStoreEpochClient.h; path = src/volition/AbstractVersionedStoreEpochClient.h; sourceTree = "<group>"; };
 		CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtr.h; path = src/volition/serialization/SerializablePtr.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
@@ -604,6 +604,8 @@
 			children = (
 				CD561DB5210730DB008B06C7 /* AbstractValueStack.cpp */,
 				CD561DB6210730DB008B06C7 /* AbstractValueStack.h */,
+				CD65C75E211074F20080CA13 /* AbstractVersionedStoreEpochClient.cpp */,
+				CD65C75F211074F20080CA13 /* AbstractVersionedStoreEpochClient.h */,
 				CD240D2321327C7800FF8812 /* AbstractVersionedValueIterator.cpp */,
 				CD240D2421327C7800FF8812 /* AbstractVersionedValueIterator.h */,
 				CD561DB9210730E5008B06C7 /* ValueStack.h */,
@@ -611,8 +613,6 @@
 				CD4E80E421040032007DA585 /* VersionedStore.h */,
 				CD561DBB210730ED008B06C7 /* VersionedStoreEpoch.cpp */,
 				CD561DBC210730ED008B06C7 /* VersionedStoreEpoch.h */,
-				CD65C75E211074F20080CA13 /* VersionedStoreEpochClient.cpp */,
-				CD65C75F211074F20080CA13 /* VersionedStoreEpochClient.h */,
 				CD240D2F21363CE000FF8812 /* VersionedStoreIterator.cpp */,
 				CD240D3021363CE000FF8812 /* VersionedStoreIterator.h */,
 				CD240D2721327F6600FF8812 /* VersionedValueIterator.h */,
@@ -900,7 +900,7 @@
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
 				CD240D3221363CE000FF8812 /* VersionedStoreIterator.h in Headers */,
 				CD240D2821327F6600FF8812 /* VersionedValueIterator.h in Headers */,
-				CD65C761211074F20080CA13 /* VersionedStoreEpochClient.h in Headers */,
+				CD65C761211074F20080CA13 /* AbstractVersionedStoreEpochClient.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
 				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
@@ -1195,7 +1195,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD65C760211074F20080CA13 /* VersionedStoreEpochClient.cpp in Sources */,
+				CD65C760211074F20080CA13 /* AbstractVersionedStoreEpochClient.cpp in Sources */,
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
 				CD561DBD210730ED008B06C7 /* VersionedStoreEpoch.cpp in Sources */,
 				CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */,

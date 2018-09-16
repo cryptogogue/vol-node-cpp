@@ -5,8 +5,8 @@
 #define VOLITION_VERSIONEDSTORE_H
 
 #include <volition/common.h>
+#include <volition/AbstractVersionedStoreEpochClient.h>
 #include <volition/VersionedStoreEpoch.h>
-#include <volition/VersionedStoreEpochClient.h>
 
 // TODO: this is all placeholder stuff, to get the algorithm working. will need to
 // optimize to reduce dynamic allocation. will also need to provide a NoSQL-backed
@@ -18,23 +18,27 @@ namespace Volition {
 // VersionedStore
 //================================================================//
 class VersionedStore :
-    public VersionedStoreEpochClient {
+    public AbstractVersionedStoreEpochClient {
 protected:
 
+    friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
     friend class VersionedStoreEpoch;
+    friend class VersionedStoreIterator;
 
-    //----------------------------------------------------------------//
-//    VersionedStore& operator = ( const VersionedStore& other ) {
-//        assert ( false );
-//    }
+    shared_ptr < VersionedStoreEpoch >      mEpoch;
+    size_t                                  mVersion;
 
     //----------------------------------------------------------------//
     void            affirmEpoch             ();
     const void*     getRaw                  ( string key, size_t typeID ) const;
     void            prepareForSetValue      ();
+    void            setEpoch                ( shared_ptr < VersionedStoreEpoch > epoch );
+    void            setEpoch                ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
     void            setRaw                  ( string key, size_t typeID, const void* value );
-//                    VersionedStore          ( const VersionedStore& other );
+    
+    //----------------------------------------------------------------//
+    size_t                                  AbstractVersionedStoreEpochClient_getVersion    () const override;
     
 public:
 

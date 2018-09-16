@@ -37,10 +37,10 @@ protected:
     int                             mState;
 
     //----------------------------------------------------------------//
-    void                seekPrev                                    ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
+    void                seekPrev                                ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
 
     //----------------------------------------------------------------//
-                        AbstractVersionedValueIterator              ( VersionedStore& versionedStore, string key, size_t typeID );
+                        AbstractVersionedValueIterator          ( VersionedStore& versionedStore, string key, size_t typeID );
 
 public:
 
@@ -50,11 +50,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    virtual             ~AbstractVersionedValueIterator             ();
-    bool                isValid                                     () const;
-    void                next                                        ();
-    void                prev                                        ();
-    size_t              version                                     () const;
+    virtual             ~AbstractVersionedValueIterator         ();
+    bool                isValid                                 () const;
+    void                next                                    ();
+    void                prev                                    ();
+    size_t              version                                 () const;
 };
 
 } // namespace Volition

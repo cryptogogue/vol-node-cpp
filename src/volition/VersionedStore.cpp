@@ -78,8 +78,8 @@ void VersionedStore::popVersion () {
         }
         
         if ( this->mVersion > 0 ) {
-            if ( this->mVersion == this->mEpoch->mVersion ) {
-                this->setEpoch ( this->mEpoch->mEpoch, this->mVersion - 1 );
+            if ( this->mVersion == this->mEpoch->mBaseVersion ) {
+                this->setEpoch ( this->mEpoch->mParent, this->mVersion - 1 );
             }
             else {
                 this->mVersion--;
@@ -121,7 +121,7 @@ void VersionedStore::pushVersion () {
 
         // make and set a new epoch
         shared_ptr < VersionedStoreEpoch > epoch = make_shared < VersionedStoreEpoch >();
-        epoch->setEpoch ( this->mEpoch, this->mVersion );
+        epoch->setParent ( this->mEpoch, this->mVersion );
         this->setEpoch ( epoch );
     }
     else {
@@ -138,15 +138,40 @@ void VersionedStore::seekVersion ( size_t version ) {
 
     shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
 
-    while ( version < epoch->mVersion ) {
-        epoch = epoch->mEpoch;
+    while ( version < epoch->mBaseVersion ) {
+        epoch = epoch->mParent;
     }
     
     assert ( epoch );
-    assert (( version >= epoch->mVersion ) && ( version < ( epoch->mVersion + epoch->mLayers.size ())));
+    assert (( version >= epoch->mBaseVersion ) && ( version < ( epoch->mBaseVersion + epoch->mLayers.size ())));
     
     this->setEpoch ( epoch, version );
     this->mEpoch->optimize ();
+}
+
+//----------------------------------------------------------------//
+void VersionedStore::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch ) {
+
+    this->setEpoch ( epoch, epoch ? epoch->getVersion () : 0 );
+}
+
+//----------------------------------------------------------------//
+void VersionedStore::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch, size_t version ) {
+
+    if ( this->mEpoch != epoch ) {
+        
+        if ( this->mEpoch ) {
+            this->mEpoch->eraseClient ( *this );
+        }
+        
+        this->mEpoch = epoch;
+        
+        if ( epoch ) {
+            epoch->affirmClient ( *this );
+        }
+    }
+    // TODO: add sanity check
+    this->mVersion = version;
 }
 
 //----------------------------------------------------------------//
@@ -170,7 +195,8 @@ void VersionedStore::takeSnapshot ( VersionedStore& other ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStore::VersionedStore () {
+VersionedStore::VersionedStore () :
+    mVersion ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -180,12 +206,19 @@ VersionedStore::VersionedStore ( VersionedStore& other ) {
 }
 
 //----------------------------------------------------------------//
-//VersionedStore::VersionedStore ( const VersionedStore& other ) {
-//    assert ( false );
-//}
+VersionedStore::~VersionedStore () {
+
+    this->setEpoch ( NULL, 0 );
+}
+
+//================================================================//
+// overrides
+//================================================================//
 
 //----------------------------------------------------------------//
-VersionedStore::~VersionedStore () {
+size_t VersionedStore::AbstractVersionedStoreEpochClient_getVersion () const {
+
+    return this->mVersion;
 }
 
 } // namespace Volition

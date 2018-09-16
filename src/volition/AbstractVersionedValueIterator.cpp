@@ -52,7 +52,7 @@ void AbstractVersionedValueIterator::next () {
                 shared_ptr < VersionedStoreEpoch > epoch = NULL;
                 const AbstractValueStack* valueStack = NULL;
                 
-                for ( ; epochCursor && ( epochCursor->mVersion > version ); epochCursor = epochCursor->getParent ()) {
+                for ( ; epochCursor && ( epochCursor->mBaseVersion > version ); epochCursor = epochCursor->mParent ) {
                     valueStack = epochCursor->findValueStack ( this->mKey );
                     epoch = epochCursor;
                 }
@@ -88,7 +88,7 @@ void AbstractVersionedValueIterator::prev () {
                 this->mCursor.mVersion = this->mValueStack->getVersionForIndex ( this->mIndex );
             }
             else {
-                this->seekPrev ( this->mCursor.mEpoch->getParent (), this->mCursor.mEpoch->getVersion () - 1 );
+                this->seekPrev ( this->mCursor.mEpoch->mParent, this->mCursor.mEpoch->getVersion () - 1 );
             }
             break;
         }
@@ -104,7 +104,7 @@ void AbstractVersionedValueIterator::prev () {
 void AbstractVersionedValueIterator::seekPrev ( shared_ptr < VersionedStoreEpoch > epoch, size_t version ) {
 
     const AbstractValueStack* valueStack = NULL;
-    for ( ; epoch; epoch = epoch->getParent ()) {
+    for ( ; epoch; epoch = epoch->mParent ) {
     
         assert ( epoch->getVersion () <= version );
     

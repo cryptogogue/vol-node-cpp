@@ -12,9 +12,15 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+void VersionedStoreEpoch::affirmClient ( AbstractVersionedStoreEpochClient& client ) {
+
+    this->mClients.insert ( &client );
+}
+
+//----------------------------------------------------------------//
 bool VersionedStoreEpoch::containsVersion ( size_t version ) const {
 
-    return (( this->mVersion <= version ) && ( version < ( this->mVersion + this->mLayers.size ())));
+    return (( this->mBaseVersion <= version ) && ( version < ( this->mBaseVersion + this->mLayers.size ())));
 }
 
 //----------------------------------------------------------------//
@@ -30,15 +36,16 @@ VersionedStoreDownstream VersionedStoreEpoch::countDownstream ( size_t version )
     downstream.mPeers = 0;
     downstream.mDependents = 0;
     
-    set < VersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
+    set < AbstractVersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
     for ( ; clientIt != this->mClients.end (); ++clientIt ) {
     
-        VersionedStoreEpochClient* client = *clientIt;
+        AbstractVersionedStoreEpochClient* client = *clientIt;
+        size_t clientVersion = client->getVersion ();
         
-        if ( client->mVersion > version ) {
+        if ( clientVersion > version ) {
             downstream.mDependents++;
         }
-        else if ( client->mVersion == version ) {
+        else if ( clientVersion == version ) {
             downstream.mPeers++;
         }
     }
@@ -54,6 +61,12 @@ size_t VersionedStoreEpoch::countLayers () const {
 }
 
 //----------------------------------------------------------------//
+void VersionedStoreEpoch::eraseClient ( AbstractVersionedStoreEpochClient& client ) {
+
+    this->mClients.erase ( &client );
+}
+
+//----------------------------------------------------------------//
 const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) const {
 
     map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
@@ -63,10 +76,10 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) con
 //----------------------------------------------------------------//
 const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
 
-    assert ( version < ( this->mVersion + this->mLayers.size ()));
+    assert ( version < ( this->mBaseVersion + this->mLayers.size ()));
 
     size_t sub = 0;
-    if ( version >= this->mVersion ) {
+    if ( version >= this->mBaseVersion ) {
 
         // see if we have the value in the current epoch.
         const AbstractValueStack* valueStack = this->findValueStack ( key );
@@ -75,13 +88,7 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size
         }
         sub = 1;
     }
-    return this->mEpoch ? this->mEpoch->findValueStack ( key, version - sub ) : NULL;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < VersionedStoreEpoch > VersionedStoreEpoch::getParent () {
-
-    return this->mEpoch;
+    return this->mParent ? this->mParent->findValueStack ( key, version - sub ) : NULL;
 }
 
 //----------------------------------------------------------------//
@@ -93,12 +100,14 @@ void VersionedStoreEpoch::optimize () {
 
     size_t maxVersion = 0;
     
-    set < VersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
+    set < AbstractVersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
     for ( ; clientIt != this->mClients.end (); ++clientIt ) {
     
-        VersionedStoreEpochClient* client = *clientIt;
-        if ( client->mVersion > maxVersion ) {
-            maxVersion = client->mVersion;
+        AbstractVersionedStoreEpochClient* client = *clientIt;
+        size_t clientVersion = client->getVersion ();
+        
+        if ( clientVersion > maxVersion ) {
+            maxVersion = clientVersion;
         }
     }
     
@@ -141,7 +150,27 @@ void VersionedStoreEpoch::pushLayer () {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreEpoch::VersionedStoreEpoch () {
+void VersionedStoreEpoch::setParent ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion ) {
+
+    if ( this->mParent != parent ) {
+        
+        if ( this->mParent ) {
+            this->mParent->eraseClient ( *this );
+        }
+        
+        this->mParent = parent;
+        
+        if ( parent ) {
+            parent->affirmClient ( *this );
+        }
+    }
+    // TODO: add sanity check
+    this->mBaseVersion = baseVersion;
+}
+
+//----------------------------------------------------------------//
+VersionedStoreEpoch::VersionedStoreEpoch () :
+    mBaseVersion ( 0 ) {
 
     this->pushLayer ();
 }
@@ -151,10 +180,10 @@ VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > pa
 
     assert ( parent );
 
-    this->setEpoch ( parent, version );
+    this->setParent ( parent, version );
     this->pushLayer ();
 
-    size_t layerID = version - parent->mVersion;
+    size_t layerID = version - parent->mBaseVersion;
     
     assert ( layerID < parent->mLayers.size ());
 
@@ -188,6 +217,18 @@ VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > pa
 
 //----------------------------------------------------------------//
 VersionedStoreEpoch::~VersionedStoreEpoch () {
+
+    this->setParent ( NULL, 0 );
+}
+
+//================================================================//
+// overrides
+//================================================================//
+
+//----------------------------------------------------------------//
+size_t VersionedStoreEpoch::AbstractVersionedStoreEpochClient_getVersion () const {
+
+    return this->mBaseVersion;
 }
 
 } // namespace Volition

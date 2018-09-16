@@ -64,7 +64,7 @@ void VersionedStoreIterator::seek ( size_t version ) {
         shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
     
         while ( epoch && !epoch->containsVersion ( version )) {
-            epoch = epoch->getParent ();
+            epoch = epoch->mParent;
         }
         assert ( epoch );
         this->setEpoch ( epoch, version );

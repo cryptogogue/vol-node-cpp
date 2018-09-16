@@ -5,8 +5,8 @@
 #define VOLITION_VERSIONEDSTOREEPOCH_H
 
 #include <volition/common.h>
+#include <volition/AbstractVersionedStoreEpochClient.h>
 #include <volition/ValueStack.h>
-#include <volition/VersionedStoreEpochClient.h>
 
 namespace Volition {
 
@@ -31,19 +31,22 @@ private:
 // VersionedStoreEpoch
 //================================================================//
 class VersionedStoreEpoch :
-    public VersionedStoreEpochClient {
+    public AbstractVersionedStoreEpochClient {
 private:
 
+    friend class AbstractVersionedStoreEpochClient;
     friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
-    friend class VersionedStoreEpochClient;
     friend class VersionedStoreIterator;
 
     typedef set < string > Layer;
 
-    set < VersionedStoreEpochClient* >                      mClients;
+    set < AbstractVersionedStoreEpochClient* >              mClients;
     vector < unique_ptr < Layer >>                          mLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
+
+    shared_ptr < VersionedStoreEpoch >                      mParent;
+    size_t                                                  mBaseVersion;
 
     //----------------------------------------------------------------//
     template < typename TYPE >
@@ -55,16 +58,21 @@ private:
     }
 
     //----------------------------------------------------------------//
-    bool                                    containsVersion             ( size_t version ) const;
-    size_t                                  countClients                () const;
-    VersionedStoreDownstream                countDownstream             ( size_t version ) const;
-    size_t                                  countLayers                 () const;
-    const AbstractValueStack*               findValueStack              ( string key ) const;
-    const AbstractValueStack*               findValueStack              ( string key, size_t version ) const;
-    shared_ptr < VersionedStoreEpoch >      getParent                   ();
-    void                                    optimize                    ();
-    void                                    popLayer                    ();
-    void                                    pushLayer                   ();
+    void                            affirmClient                ( AbstractVersionedStoreEpochClient& client );
+    bool                            containsVersion             ( size_t version ) const;
+    size_t                          countClients                () const;
+    VersionedStoreDownstream        countDownstream             ( size_t version ) const;
+    size_t                          countLayers                 () const;
+    void                            eraseClient                 ( AbstractVersionedStoreEpochClient& client );
+    const AbstractValueStack*       findValueStack              ( string key ) const;
+    const AbstractValueStack*       findValueStack              ( string key, size_t version ) const;
+    void                            optimize                    ();
+    void                            popLayer                    ();
+    void                            pushLayer                   ();
+    void                            setParent                   ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion );
+
+    //----------------------------------------------------------------//
+    size_t                          AbstractVersionedStoreEpochClient_getVersion    () const override;
 
 public:
 
