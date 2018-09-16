@@ -31,7 +31,9 @@ protected:
     unique_ptr < Chain >                            mChain;
     
     //----------------------------------------------------------------//
-    unique_ptr < Block >    makeBlock               ( Chain& chain );
+    void                    addTransactions         ( Chain& chain, Block& block );
+    Digest                  computeAllure           ( size_t cycleID ) const;
+    size_t                  computeScore            ( const Digest& allure ) const;
     void                    pushBlock               ( Chain& chain, bool force );
 
 public:

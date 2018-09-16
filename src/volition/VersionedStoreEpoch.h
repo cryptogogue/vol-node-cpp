@@ -34,8 +34,10 @@ class VersionedStoreEpoch :
     public VersionedStoreEpochClient {
 private:
 
+    friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
     friend class VersionedStoreEpochClient;
+    friend class VersionedStoreIterator;
 
     typedef set < string > Layer;
 
@@ -53,9 +55,11 @@ private:
     }
 
     //----------------------------------------------------------------//
+    bool                                    containsVersion             ( size_t version ) const;
     size_t                                  countClients                () const;
     VersionedStoreDownstream                countDownstream             ( size_t version ) const;
     size_t                                  countLayers                 () const;
+    const AbstractValueStack*               findValueStack              ( string key ) const;
     const AbstractValueStack*               findValueStack              ( string key, size_t version ) const;
     shared_ptr < VersionedStoreEpoch >      getParent                   ();
     void                                    optimize                    ();

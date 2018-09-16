@@ -4,33 +4,46 @@
 #ifndef VOLITION_CHAIN_H
 #define VOLITION_CHAIN_H
 
+#include <volition/common.h>
+#include <volition/serialization/AbstractSerializable.h>
 #include <volition/ChainPlacement.h>
-#include <volition/Cycle.h>
+#include <volition/State.h>
 
 namespace Volition {
 
-class State;
+class Block;
+class Cycle;
+class ChainMetadata;
 class ChainPlacement;
 
 //================================================================//
 // Chain
 //================================================================//
 class Chain :
-    public AbstractSerializable {
+    public AbstractSerializable,
+    public State {
 private:
 
-    State                                                   mState;
-    SerializableVector < SerializableUniquePtr < Cycle >>   mCycles;
+    static constexpr const char* BLOCK_KEY      = "block";
+    static constexpr const char* CYCLE_KEY      = "cycle";
+
+    //State                                                   mState;
+    //SerializableVector < SerializableUniquePtr < Cycle >>   mCycles;
+
+    shared_ptr < ChainMetadata >                mMetaData;
 
     //----------------------------------------------------------------//
-    bool                    canEdit             ( size_t cycleID, string minerID = "" ) const;
+    bool                    canEdit             ( const Cycle& cycle0, const Cycle& cycle1, string minerID = "" );
     bool                    canEdit             ( size_t cycleID, const Chain& chain ) const;
     static const Chain*     choose              ( size_t cycleID, const Chain& prefer, const Chain& other );
+    size_t                  countParticipants   ( const Cycle& cycle, string minerID = "" );
     size_t                  findMax             ( size_t cycleID ) const;
-    Cycle&                  getCycle            ( size_t idx );
-    Cycle*                  getTopCycle         ();
-    const Cycle*            getTopCycle         () const;
+    //const Cycle*            getCycle            ( size_t idx );
+    const Cycle&            getTopCycle         () const;
+    bool                    isInCycle           ( const Cycle& cycle, string minerID );
+    void                    newCycle            ();
     void                    rebuildState        ();
+    bool                    willImprove         ( const Cycle& cycle ) const;
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
@@ -38,20 +51,25 @@ private:
 public:
 
     //----------------------------------------------------------------//
+    bool                    canPush             ( string minerID, bool force );
                             Chain               ();
                             Chain               ( shared_ptr < Block > block );
                             Chain               ( const Chain& chain );
                             ~Chain              ();
     static const Chain*     choose              ( const Chain& chain0, const Chain& chain1 );
+    size_t                  countBlocks         ();
     size_t                  countBlocks         ( size_t cycleIdx );
     size_t                  countCycles         () const;
     Block*                  findBlock           ( u64 height );
-    ChainPlacement          findPlacement       ( string minerID, bool force ) const;
+    ChainPlacement          findNextCycle       ( string minerID );
     Block&                  getBlock            ( size_t cycleIdx, size_t blockIdx );
-    const State&            getState            () const;
-    void                    getStateSnapshot    ( State& state );
-    bool                    pushAndSign         ( const ChainPlacement& placement, shared_ptr < Block > block, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    const Block&            getTopBlock         ();
+    void                    prepareForPush      ( const ChainPlacement& placement, Block& block );
     void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
+    bool                    pushBlock           ( Block& block );
+    bool                    pushBlockAndSign    ( Block& block, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    size_t                  size                () const;
+    size_t                  truncate            ( const ChainPlacement& placement, size_t score );
 };
 
 } // namespace Volition

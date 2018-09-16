@@ -39,12 +39,13 @@ size_t VersionedStore::countEpochLayers () const {
 //----------------------------------------------------------------//
 const void* VersionedStore::getRaw ( string key, size_t typeID ) const {
 
-    assert ( this->mEpoch );
-    const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key, this->mVersion );
-    
-    if ( valueStack ) {
-        assert ( valueStack->mTypeID == typeID );
-        return valueStack->getRaw ( this->mVersion );
+    if ( this->mEpoch ) {
+        const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key, this->mVersion );
+        
+        if ( valueStack ) {
+            assert ( valueStack->mTypeID == typeID );
+            return valueStack->getRaw ( this->mVersion );
+        }
     }
     return NULL;
 }
@@ -67,18 +68,26 @@ void VersionedStore::popVersion () {
 
     if ( this->mEpoch ) {
 
+        assert ( this->mEpoch->countLayers () > 0 );
+
         VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
         assert ( downstream.mTotal > 0 );
 
-        if ((( downstream.mDependents == 0 ) && ( this->mEpoch->countLayers () > 1 ))) {
+        if ( downstream.mDependents == 0 ) {
             this->mEpoch->popLayer ();
         }
         
-        if ( this->mVersion == this->mEpoch->mVersion ) {
-            this->setEpoch ( this->mEpoch->mEpoch );
+        if ( this->mVersion > 0 ) {
+            if ( this->mVersion == this->mEpoch->mVersion ) {
+                this->setEpoch ( this->mEpoch->mEpoch, this->mVersion - 1 );
+            }
+            else {
+                this->mVersion--;
+            }
         }
-        
-        this->mVersion--;
+        else {
+            this->setEpoch ( NULL );
+        }
     }
 }
 
@@ -112,8 +121,7 @@ void VersionedStore::pushVersion () {
 
         // make and set a new epoch
         shared_ptr < VersionedStoreEpoch > epoch = make_shared < VersionedStoreEpoch >();
-        epoch->setEpoch ( this->mEpoch );
-        epoch->mVersion = this->mVersion;
+        epoch->setEpoch ( this->mEpoch, this->mVersion );
         this->setEpoch ( epoch );
     }
     else {
@@ -137,8 +145,7 @@ void VersionedStore::seekVersion ( size_t version ) {
     assert ( epoch );
     assert (( version >= epoch->mVersion ) && ( version < ( epoch->mVersion + epoch->mLayers.size ())));
     
-    this->setEpoch ( epoch );
-    this->mVersion = version;
+    this->setEpoch ( epoch, version );
     this->mEpoch->optimize ();
 }
 
@@ -159,8 +166,7 @@ void VersionedStore::setRaw ( string key, size_t typeID, const void* value ) {
 //----------------------------------------------------------------//
 void VersionedStore::takeSnapshot ( VersionedStore& other ) {
 
-    this->setEpoch ( other.mEpoch );
-    this->mVersion = other.mVersion;
+    this->setEpoch ( other.mEpoch, other.mVersion );
 }
 
 //----------------------------------------------------------------//
@@ -174,9 +180,9 @@ VersionedStore::VersionedStore ( VersionedStore& other ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStore::VersionedStore ( const VersionedStore& other ) {
-    assert ( false );
-}
+//VersionedStore::VersionedStore ( const VersionedStore& other ) {
+//    assert ( false );
+//}
 
 //----------------------------------------------------------------//
 VersionedStore::~VersionedStore () {

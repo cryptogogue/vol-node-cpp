@@ -12,6 +12,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+bool VersionedStoreEpoch::containsVersion ( size_t version ) const {
+
+    return (( this->mVersion <= version ) && ( version < ( this->mVersion + this->mLayers.size ())));
+}
+
+//----------------------------------------------------------------//
 size_t VersionedStoreEpoch::countClients () const {
     return this->mClients.size ();
 }
@@ -48,6 +54,13 @@ size_t VersionedStoreEpoch::countLayers () const {
 }
 
 //----------------------------------------------------------------//
+const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) const {
+
+    map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
+    return ( valueIt != this->mValueStacksByKey.cend ()) ? valueIt->second.get () : NULL;
+}
+
+//----------------------------------------------------------------//
 const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
 
     assert ( version < ( this->mVersion + this->mLayers.size ()));
@@ -56,9 +69,9 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size
     if ( version >= this->mVersion ) {
 
         // see if we have the value in the current epoch.
-        map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
-        if ( valueIt != this->mValueStacksByKey.cend ()) {
-            return valueIt->second.get ();
+        const AbstractValueStack* valueStack = this->findValueStack ( key );
+        if ( valueStack ) {
+            return valueStack;
         }
         sub = 1;
     }
@@ -138,8 +151,7 @@ VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > pa
 
     assert ( parent );
 
-    this->mVersion = version;
-    this->setEpoch ( parent );
+    this->setEpoch ( parent, version );
     this->pushLayer ();
 
     size_t layerID = version - parent->mVersion;
@@ -158,8 +170,8 @@ VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > pa
         toLayer.insert ( key );
         
         // find the value stack in source epoch
-        map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
-        assert ( valueIt != this->mValueStacksByKey.cend ());
+        map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = parent->mValueStacksByKey.find ( key );
+        assert ( valueIt != parent->mValueStacksByKey.cend ());
         
         // get the source value stack
         const AbstractValueStack* fromValueStack = valueIt->second.get ();

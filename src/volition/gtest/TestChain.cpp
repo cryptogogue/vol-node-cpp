@@ -13,14 +13,15 @@ using namespace Volition;
 
 //----------------------------------------------------------------//
 void pushBlock ( Chain& chain, string minerID, const CryptoKey& key ) {
+    
+    ASSERT_TRUE ( chain.canPush ( minerID, true ));
+    
+    ChainPlacement placement = chain.findNextCycle ( minerID );    
+    Block block ( minerID, placement.getCycleID (), key );
+    chain.prepareForPush ( placement, block );
 
-    shared_ptr < Block > block = make_shared < Block >();
-    block->setMinerID ( minerID );
-    
-    ChainPlacement placement = chain.findPlacement ( minerID, true );
-    ASSERT_TRUE ( placement.canPush ());
-    
-    chain.pushAndSign ( placement, block, key );
+    bool result = chain.pushBlockAndSign ( block, key );
+    ASSERT_TRUE ( result );
 }
 
 //----------------------------------------------------------------//
@@ -39,6 +40,8 @@ void pushMinerGenesisTransaction ( Block& block, string minerID, const CryptoKey
 
 //----------------------------------------------------------------//
 TEST ( Chain, unitTests ) {
+
+    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
     string miner0 = "0";
     CryptoKey key0;
@@ -62,16 +65,20 @@ TEST ( Chain, unitTests ) {
     
     Chain chain ( genesisBlock );
     
+    ASSERT_TRUE ( chain.countCycles () == 1 );
+    ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 );
+    ASSERT_TRUE ( chain.countBlocks () == 1 );
+    
     // cycle 0
     pushBlock ( chain, miner0, key0 );
     pushBlock ( chain, miner1, key1 );
     
-    // cycle 1
-    pushBlock ( chain, miner0, key0 );
-    pushBlock ( chain, miner1, key1 );
-    
-    ASSERT_TRUE ( chain.countCycles () == 3 );
-    ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
-    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
-    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
+//    // cycle 1
+//    pushBlock ( chain, miner0, key0 );
+//    pushBlock ( chain, miner1, key1 );
+//    
+//    ASSERT_TRUE ( chain.countCycles () == 3 );
+//    ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
+//    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
+//    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
 }

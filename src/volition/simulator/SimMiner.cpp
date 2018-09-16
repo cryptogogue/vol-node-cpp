@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/Block.h>
 #include <volition/TheContext.h>
 #include <volition/simulator/SimMiner.h>
 #include <volition/simulator/TheSimulator.h>

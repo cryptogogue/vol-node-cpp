@@ -61,6 +61,21 @@ protected:
     }
     
     //----------------------------------------------------------------//
+    const void* AbstractValueStack_getRawForIndex ( size_t index ) const override {
+    
+        assert ( index < this->size ());
+        const ValueStackTuple < TYPE >& tuple = this->mValues [ index ];
+        return &tuple.mValue;
+    }
+    
+    //----------------------------------------------------------------//
+    size_t AbstractValueStack_getVersionForIndex ( size_t index ) const override {
+    
+        const ValueStackTuple < TYPE >& tuple = this->mValues [ index ];
+        return tuple.mVersion;
+    }
+    
+    //----------------------------------------------------------------//
     bool AbstractValueStack_isEmpty () const override {
         return ( this->mValues.size () == 0 );
     }
@@ -75,18 +90,18 @@ protected:
         assert ( this->mValues.size () > 0 );
         this->mValues.pop_back ();
     }
-    
+        
     //----------------------------------------------------------------//
     void AbstractValueStack_pushBackRaw ( const void* value, size_t version ) override {
         assert ( value );
         this->mValues.push_back ( ValueStackTuple < TYPE >( *( const TYPE* )value, version ));
     }
-    
+
     //----------------------------------------------------------------//
-//    void AbstractValueStack_pushFrontRaw ( const void* value ) override {
-//        assert ( value );
-//        this->mValues.insert ( this->mValues.begin (), ValueStackTuple < TYPE >( *( const TYPE* )value, 0 ));
-//    }
+    size_t AbstractValueStack_size () const override {
+    
+        return this->mValues.size ();
+    }
 
 public:
 

@@ -25,6 +25,16 @@ const void* AbstractValueStack::getRaw ( size_t version ) const {
 }
 
 //----------------------------------------------------------------//
+const void* AbstractValueStack::getRawForIndex ( size_t index ) const {
+    return this->AbstractValueStack_getRawForIndex ( index );
+}
+
+//----------------------------------------------------------------//
+size_t AbstractValueStack::getVersionForIndex ( size_t index ) const {
+    return this->AbstractValueStack_getVersionForIndex ( index );
+}
+
+//----------------------------------------------------------------//
 bool AbstractValueStack::isEmpty () const {
     return this->AbstractValueStack_isEmpty ();
 }
@@ -45,8 +55,8 @@ void AbstractValueStack::pushBackRaw ( const void* value, size_t version ) {
 }
 
 //----------------------------------------------------------------//
-//void AbstractValueStack::pushFrontRaw ( const void* value ) {
-//    this->AbstractValueStack_pushFrontRaw ( value );
-//}
+size_t AbstractValueStack::size () const {
+    return this->AbstractValueStack_size ();
+}
 
 } // namespace Volition

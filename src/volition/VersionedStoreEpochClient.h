@@ -18,16 +18,21 @@ class VersionedStoreEpoch;
 class VersionedStoreEpochClient {
 protected:
 
+    friend class AbstractVersionedValueIterator;
     friend class VersionedStoreEpoch;
+    friend class VersionedStoreIterator;
 
     shared_ptr < VersionedStoreEpoch >          mEpoch;
     size_t                                      mVersion;
+
+    //----------------------------------------------------------------//
+    void        setEpoch                        ( shared_ptr < VersionedStoreEpoch > epoch );
+    void        setEpoch                        ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
 
 public:
 
     //----------------------------------------------------------------//
     size_t      getVersion                      () const;
-    void        setEpoch                        ( shared_ptr < VersionedStoreEpoch > epoch );
                 VersionedStoreEpochClient       ();
     virtual     ~VersionedStoreEpochClient      ();
 };

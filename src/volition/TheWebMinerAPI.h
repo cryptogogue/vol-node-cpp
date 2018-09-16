@@ -4,6 +4,7 @@
 #ifndef VOLITION_THEWEBMINERAPI_H
 #define VOLITION_THEWEBMINERAPI_H
 
+#include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionFactory.h>
 #include <volition/TheWebMiner.h>

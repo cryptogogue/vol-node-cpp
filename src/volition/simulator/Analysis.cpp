@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/simulator/Analysis.h>
+#include <volition/Block.h>
 #include <volition/simulator/SimMiner.h>
 #include <volition/simulator/TheSimulator.h>
 

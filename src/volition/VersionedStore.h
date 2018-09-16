@@ -25,16 +25,16 @@ protected:
     friend class VersionedStoreEpoch;
 
     //----------------------------------------------------------------//
-    VersionedStore& operator = ( const VersionedStore& other ) {
-        assert ( false );
-    }
+//    VersionedStore& operator = ( const VersionedStore& other ) {
+//        assert ( false );
+//    }
 
     //----------------------------------------------------------------//
     void            affirmEpoch             ();
     const void*     getRaw                  ( string key, size_t typeID ) const;
     void            prepareForSetValue      ();
     void            setRaw                  ( string key, size_t typeID, const void* value );
-                    VersionedStore          ( const VersionedStore& other );
+//                    VersionedStore          ( const VersionedStore& other );
     
 public:
 
@@ -59,12 +59,12 @@ public:
     
     //----------------------------------------------------------------//
     template < typename TYPE >
-    const TYPE getValue ( string key ) const {
+    const TYPE& getValue ( string key ) const {
         const TYPE* value = this->getValueOrNil < TYPE >( key );
         assert ( value );
         return *value;
     }
-    
+
     //----------------------------------------------------------------//
     template < typename TYPE >
     const TYPE* getValueOrNil ( string key ) const {

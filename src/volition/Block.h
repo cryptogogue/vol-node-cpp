@@ -25,9 +25,9 @@ private:
     friend class Chain;
     friend class Cycle;
 
-    u64             mHeight;
-    u64             mCycleID;
     string          mMinerID;
+    u64             mCycleID;
+    u64             mHeight;
     Digest          mPrevDigest;
     Digest          mAllure; // digital signature of the hash of mCycleID
     Signature       mSignature;
@@ -48,12 +48,14 @@ public:
     //----------------------------------------------------------------//
     bool                apply                               ( State& state );
                         Block                               ();
+                        Block                               ( string minerID, size_t cycleID, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
                         ~Block                              ();
     size_t              countTransactions                   () const;
     string              getMinerID                          () const;
     size_t              getScore                            () const;
     const Signature&    getSignature                        () const;
     void                pushTransaction                     ( shared_ptr < AbstractTransaction > transaction );
+    void                setAllure                           ( const Digest& allure );
     void                setMinerID                          ( string minerID );
     const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
 };

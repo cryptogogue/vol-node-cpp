@@ -13,6 +13,42 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+void Miner::addTransactions ( Chain& chain, Block& block ) {
+
+    State state;
+    state.takeSnapshot ( chain );
+
+    list < shared_ptr < AbstractTransaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
+    for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {
+        shared_ptr < AbstractTransaction > transaction = *transactionIt;
+        if ( transaction->apply ( state )) {
+            block.pushTransaction ( transaction );
+        }
+    }
+}
+
+//----------------------------------------------------------------//
+Digest Miner::computeAllure ( size_t cycleID ) const {
+
+    Poco::Crypto::ECDSADigestEngine signature ( this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+    Poco::DigestOutputStream signatureStream ( signature );
+    signatureStream << cycleID;
+    signatureStream.close ();
+    
+    return signature.signature ();
+}
+
+//----------------------------------------------------------------//
+size_t Miner::computeScore ( const Digest& allure ) const {
+
+    if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
+        string allureString = Poco::DigestEngine::digestToHex ( allure );
+        return std::hash < string >{}( allureString );
+    }
+    return strtol ( this->mMinerID.c_str (), 0, 10 );
+}
+
+//----------------------------------------------------------------//
 Chain* Miner::getChain () const {
 
     return this->mChain ? this->mChain.get () : 0;
@@ -28,7 +64,7 @@ string Miner::getMinerID () const {
 const State& Miner::getState () const {
 
     assert ( this->mChain );
-    return this->mChain->getState ();
+    return *this->mChain;
 }
 
 //----------------------------------------------------------------//
@@ -54,34 +90,28 @@ void Miner::loadKey ( string keyfile, string password ) {
 }
 
 //----------------------------------------------------------------//
-unique_ptr < Block > Miner::makeBlock ( Chain& chain ) {
-    unique_ptr < Block > block = make_unique < Block >();
-
-    State state;
-    chain.getStateSnapshot ( state );
-
-    list < shared_ptr < AbstractTransaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
-    for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {
-        shared_ptr < AbstractTransaction > transaction = *transactionIt;
-        if ( transaction->apply ( state )) {
-            block->pushTransaction ( transaction );
-        }
-    }
-    return block;
-}
-
-//----------------------------------------------------------------//
 void Miner::pushBlock ( Chain& chain, bool force ) {
 
-    ChainPlacement placement = chain.findPlacement ( this->mMinerID, force );
-    if ( placement.canPush ()) {
-        unique_ptr < Block > block = this->makeBlock ( chain );
+    if ( chain.canPush ( this->mMinerID, force )) {
+
+        // find the cycle (including a new cycle) that the block should be placed in.
+        ChainPlacement placement = chain.findNextCycle ( this->mMinerID );
         
-        if ( !( this->mLazy && ( block->countTransactions () == 0 ))) {
+        // this also computes the allure for that cyle.
+        Block block ( this->mMinerID, placement.getCycleID (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
         
-            block->setMinerID ( this->mMinerID );
-            bool result = chain.pushAndSign ( placement, move ( block ), this->mKeyPair );
+        Chain fork ( chain );
+        fork.prepareForPush ( placement, block );
+        
+        // do this *after* prepare
+        this->addTransactions ( fork, block );
+        
+        if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
+            
+            bool result = fork.pushBlockAndSign ( block, this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
             assert ( result );
+            
+            chain.takeSnapshot ( fork );
         }
     }
 }

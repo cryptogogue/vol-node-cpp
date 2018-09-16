@@ -23,7 +23,6 @@ bool Block::apply ( State& state ) {
             return false;
         }
     }
-    state.pushVersion ();
     return true;
 }
 
@@ -31,6 +30,20 @@ bool Block::apply ( State& state ) {
 Block::Block () :
     mCycleID ( 0 ),
     mHeight ( 0 ) {
+}
+
+//----------------------------------------------------------------//
+Block::Block ( string minerID, size_t cycleID, const CryptoKey& key, string hashAlgorithm ) :
+    mMinerID ( minerID ),
+    mCycleID ( cycleID ),
+    mHeight ( 0 ) {
+    
+    Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
+    Poco::DigestOutputStream signatureStream ( signature );
+    signatureStream << this->mCycleID;
+    signatureStream.close ();
+    
+    this->mAllure = signature.signature ();
 }
 
 //----------------------------------------------------------------//
@@ -78,6 +91,12 @@ void Block::setCycleID ( size_t cycleID ) {
 }
 
 //----------------------------------------------------------------//
+void Block::setAllure ( const Digest& allure ) {
+
+    this->mAllure = allure;
+}
+
+//----------------------------------------------------------------//
 void Block::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
@@ -94,17 +113,6 @@ void Block::setPreviousBlock ( const Block* prevBlock ) {
 
 //----------------------------------------------------------------//
 const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
-
-    // no need to compute allure for the genesis block
-    if ( this->mHeight ) {
-
-        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-        Poco::DigestOutputStream signatureStream ( signature );
-        signatureStream << this->mCycleID;
-        signatureStream.close ();
-        
-        this->mAllure = signature.signature ();
-    }
     
     this->mSignature = key.sign ( *this, hashAlgorithm );
     return this->mSignature.getSignature ();

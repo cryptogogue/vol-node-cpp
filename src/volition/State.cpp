@@ -203,12 +203,12 @@ bool State::registerMiner ( string accountName, string keyName, string url ) {
 }
 
 //----------------------------------------------------------------//
-void State::reset () {
-
-    this->clear ();
-    this->setValue < set < string >>( MINERS, set < string > ());
-    this->setValue < map < string, string >>( MINER_URLS, map < string, string > ());
-}
+//void State::reset () {
+//
+//    this->clear ();
+//    this->setValue < set < string >>( MINERS, set < string > ());
+//    this->setValue < map < string, string >>( MINER_URLS, map < string, string > ());
+//}
 
 //----------------------------------------------------------------//
 bool State::sendVOL ( string accountName, string recipientName, u64 amount ) {
@@ -246,6 +246,9 @@ void State::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
 
 //----------------------------------------------------------------//
 State::State () {
+
+    this->setValue < set < string >>( MINERS, set < string > ());
+    this->setValue < map < string, string >>( MINER_URLS, map < string, string > ());
 }
 
 //----------------------------------------------------------------//

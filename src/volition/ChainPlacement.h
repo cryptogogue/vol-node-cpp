@@ -19,18 +19,17 @@ private:
     friend class Chain;
     friend class Cycle;
 
-    bool                    mCanPush;
+    bool                    mNewCycle;
     const Cycle*            mCycle;
 
     //----------------------------------------------------------------//
-                            ChainPlacement      ();
-                            ChainPlacement      ( const Cycle* cycle );
+                            ChainPlacement      ( const Cycle& cycle, bool newCycle );
 
 public:
 
     //----------------------------------------------------------------//
-    bool                    canPush             () const;
                             ~ChainPlacement     ();
+    size_t                  getCycleID          () const;
 };
 
 } // namespace Volition

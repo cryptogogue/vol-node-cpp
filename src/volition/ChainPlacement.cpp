@@ -11,25 +11,20 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool ChainPlacement::canPush () const {
-
-    return this->mCanPush;
-}
-
-//----------------------------------------------------------------//
-ChainPlacement::ChainPlacement () :
-    mCanPush ( false ),
-    mCycle ( 0 ) {
-}
-
-//----------------------------------------------------------------//
-ChainPlacement::ChainPlacement ( const Cycle* cycle ) :
-    mCanPush ( true ),
-    mCycle ( cycle ) {
+ChainPlacement::ChainPlacement ( const Cycle& cycle, bool newCycle ) :
+    mNewCycle ( newCycle ),
+    mCycle ( &cycle ) {
 }
 
 //----------------------------------------------------------------//
 ChainPlacement::~ChainPlacement () {
+}
+
+//----------------------------------------------------------------//
+size_t ChainPlacement::getCycleID () const {
+
+    assert ( this->mCycle );
+    return this->mCycle->mCycleID + ( this->mNewCycle ? 1 : 0 );
 }
 
 } // namespace Volition

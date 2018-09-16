@@ -18,11 +18,13 @@ class Cycle :
 private:
 
     friend class Chain;
+    friend class ChainPlacement;
 
-    u64                                                         mCycleID;
+    u64     mCycleID;
+    u64     mBase; // verion where cycle starts
 
-    SerializableSet < string >                                  mMiners;
-    SerializableVector < SerializableSharedPtr < Block >>       mBlocks;
+    //SerializableSet < string >                                  mMiners;
+    //SerializableVector < SerializableSharedPtr < Block >>       mBlocks;
 
     //----------------------------------------------------------------//
     bool                    apply                   ( State& state );
@@ -32,7 +34,7 @@ private:
     size_t                  countMiners             ( string minerID = "" ) const;
     Block*                  findBlock               ( u64 height );
     u64                     findPosition            ( size_t score ) const;
-    Block&                  getBlock                ( size_t idx );
+//    Block&                  getBlock                ( size_t idx );
     size_t                  getID                   () const;
     size_t                  getLength               () const;
     bool                    isInChain               ( string minerID ) const;

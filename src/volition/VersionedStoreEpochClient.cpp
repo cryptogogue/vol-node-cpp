@@ -21,6 +21,12 @@ size_t VersionedStoreEpochClient::getVersion () const {
 //----------------------------------------------------------------//
 void VersionedStoreEpochClient::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch ) {
 
+    this->setEpoch ( epoch, epoch ? epoch->mVersion : 0 );
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreEpochClient::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch, size_t version ) {
+
     if ( epoch != this->mEpoch ) {
         
         if ( this->mEpoch ) {
@@ -34,6 +40,8 @@ void VersionedStoreEpochClient::setEpoch ( shared_ptr < VersionedStoreEpoch > ep
             epoch->mClients.insert ( this );
         }
     }
+    // TODO: add sanity check
+    this->mVersion = version;
 }
 
 //----------------------------------------------------------------//
@@ -44,7 +52,7 @@ VersionedStoreEpochClient::VersionedStoreEpochClient () :
 //----------------------------------------------------------------//
 VersionedStoreEpochClient::~VersionedStoreEpochClient () {
 
-    this->setEpoch ( NULL );
+    this->setEpoch ( NULL, 0 );
 }
 
 } // namespace Volition
