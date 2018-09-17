@@ -54,7 +54,7 @@ public:
     //----------------------------------------------------------------//
     bool                    canPush             ( string minerID, bool force );
                             Chain               ();
-                            Chain               ( shared_ptr < Block > block );
+                            Chain               ( Block& genesisBlock );
                             Chain               ( const Chain& chain );
                             ~Chain              ();
     static const Chain*     choose              ( const Chain& chain0, const Chain& chain1 );

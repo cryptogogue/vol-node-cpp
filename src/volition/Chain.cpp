@@ -74,12 +74,12 @@ Chain::Chain () {
 }
 
 //----------------------------------------------------------------//
-Chain::Chain ( shared_ptr < Block > genesisBlock ) {
+Chain::Chain ( Block& genesisBlock ) {
 
     this->mMetaData = make_shared < ChainMetadata >();
 
     this->newCycle ();
-    this->pushBlock ( *genesisBlock );
+    this->pushBlock ( genesisBlock );
     assert ( this->getValueOrNil < Block >( BLOCK_KEY ));
 }
 

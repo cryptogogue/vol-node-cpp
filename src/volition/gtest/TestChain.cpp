@@ -11,29 +11,46 @@
 
 using namespace Volition;
 
+//================================================================//
+// SimpleMiner
+//================================================================//
+class SimpleMiner {
+public:
+
+    string      mMinerID;
+    CryptoKey   mKeyPair;
+
+  
+    //----------------------------------------------------------------//
+    SimpleMiner ( string minerID ) :
+        mMinerID ( minerID ) {
+        this->mKeyPair.elliptic ();
+    }
+};
+
 //----------------------------------------------------------------//
-void pushBlock ( Chain& chain, string minerID, const CryptoKey& key ) {
+void pushBlock ( Chain& chain, const SimpleMiner& miner ) {
     
-    ASSERT_TRUE ( chain.canPush ( minerID, true ));
+    ASSERT_TRUE ( chain.canPush ( miner.mMinerID, true ));
     
-    ChainPlacement placement = chain.findNextCycle ( minerID );    
-    Block block ( minerID, placement.getCycleID (), key );
+    ChainPlacement placement = chain.findNextCycle ( miner.mMinerID );
+    Block block ( miner.mMinerID, placement.getCycleID (), miner.mKeyPair );
     chain.prepareForPush ( placement, block );
 
-    bool result = chain.pushBlockAndSign ( block, key );
+    bool result = chain.pushBlockAndSign ( block, miner.mKeyPair );
     ASSERT_TRUE ( result );
 }
 
 //----------------------------------------------------------------//
-void pushMinerGenesisTransaction ( Block& block, string minerID, const CryptoKey& key  ) {
+void pushMinerGenesisTransaction ( Block& block, const SimpleMiner& miner  ) {
 
     unique_ptr < Transaction::GenesisMiner > genesisMinerTransaction = make_unique < Transaction::GenesisMiner >();
     
-    genesisMinerTransaction->mAccountName = minerID;
-    genesisMinerTransaction->mKey = key;
-    genesisMinerTransaction->mKeyName = "master";
-    genesisMinerTransaction->mAmount = 0;
-    genesisMinerTransaction->mURL = "";
+    genesisMinerTransaction->mAccountName   = miner.mMinerID;
+    genesisMinerTransaction->mKey           = miner.mKeyPair;
+    genesisMinerTransaction->mKeyName       = "master";
+    genesisMinerTransaction->mAmount        = 0;
+    genesisMinerTransaction->mURL           = "";
 
     block.pushTransaction ( move ( genesisMinerTransaction ));
 }
@@ -43,25 +60,20 @@ TEST ( Chain, unitTests ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
-    string miner0 = "0";
-    CryptoKey key0;
-    key0.elliptic ();
-    
-    string miner1 = "1";
-    CryptoKey key1;
-    key1.elliptic ();
+    SimpleMiner miner0 ( "0" );
+    SimpleMiner miner1 ( "1" );
 
-    shared_ptr < Block > genesisBlock = make_shared < Block >();
+    Block genesisBlock;
 
-    pushMinerGenesisTransaction ( *genesisBlock, miner0, key0 );
-    pushMinerGenesisTransaction ( *genesisBlock, miner1, key1 );
+    pushMinerGenesisTransaction ( genesisBlock, miner0 );
+    pushMinerGenesisTransaction ( genesisBlock, miner1 );
 
     CryptoKey genesisKey;
     genesisKey.elliptic ();
     TheContext::get ().setGenesisBlockKey ( genesisKey );
     
-    genesisBlock->sign ( genesisKey );
-    TheContext::get ().setGenesisBlockDigest ( genesisBlock->getSignature ().getDigest ());
+    genesisBlock.sign ( genesisKey );
+    TheContext::get ().setGenesisBlockDigest ( genesisBlock.getSignature ().getDigest ());
     
     Chain chain ( genesisBlock );
     
@@ -70,15 +82,20 @@ TEST ( Chain, unitTests ) {
     ASSERT_TRUE ( chain.countBlocks () == 1 );
     
     // cycle 0
-    pushBlock ( chain, miner0, key0 );
-    pushBlock ( chain, miner1, key1 );
+    pushBlock ( chain, miner0 );
+    pushBlock ( chain, miner1 );
     
     // cycle 1
-    pushBlock ( chain, miner0, key0 );
-    pushBlock ( chain, miner1, key1 );
+    pushBlock ( chain, miner0 );
+    pushBlock ( chain, miner1 );
+    
+    // cycle 2
+    pushBlock ( chain, miner0 );
+    pushBlock ( chain, miner1 );
    
-    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countCycles () == 4 );
     ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
     ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
     ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 3 ) == 2 );
 }

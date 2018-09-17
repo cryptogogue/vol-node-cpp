@@ -146,7 +146,7 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::setGenesis ( shared_ptr < Block > block ) {
     
-    unique_ptr < Chain > chain = make_unique < Chain >( block );
+    unique_ptr < Chain > chain = make_unique < Chain >( *block );
     
     if ( chain->countCycles () > 0 ) {
         this->mChain = move ( chain );
