@@ -107,21 +107,24 @@ void AbstractVersionedValueIterator::seekPrev ( shared_ptr < VersionedStoreEpoch
     for ( ; epoch; epoch = epoch->mParent ) {
     
         assert ( epoch->getVersion () <= version );
-    
+        
         valueStack = epoch->findValueStack ( this->mKey );
         
-        for ( size_t i = valueStack->size (); i > 0; --i ) {
+        if ( valueStack ) {
         
-            size_t index = i - 1;
-            size_t prevVersion = valueStack->getVersionForIndex ( index );
+            for ( size_t i = valueStack->size (); i > 0; --i ) {
             
-            if ( prevVersion <= version ) {
-            
-                this->mValueStack = valueStack;
-                this->mIndex = index;
-                this->mCursor.setEpoch ( epoch, prevVersion );
-                this->mState = VALID;
-                return;
+                size_t index = i - 1;
+                size_t prevVersion = valueStack->getVersionForIndex ( index );
+                
+                if ( prevVersion <= version ) {
+                
+                    this->mValueStack = valueStack;
+                    this->mIndex = index;
+                    this->mCursor.setEpoch ( epoch, prevVersion );
+                    this->mState = VALID;
+                    return;
+                }
             }
         }
     }

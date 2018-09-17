@@ -40,6 +40,7 @@ public:
     void    affirmParticipant   ( size_t cycleID, string participant );
             ChainMetadata       ();
             ~ChainMetadata      ();
+    bool    isParticipant       ( size_t cycleID, string minerID ) const;
 };
 
 } // namespace Volition

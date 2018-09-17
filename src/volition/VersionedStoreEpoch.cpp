@@ -83,7 +83,7 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size
 
         // see if we have the value in the current epoch.
         const AbstractValueStack* valueStack = this->findValueStack ( key );
-        if ( valueStack ) {
+        if ( valueStack && valueStack->size () && ( valueStack->getVersionForIndex ( 0 ) <= version )) {
             return valueStack;
         }
         sub = 1;

@@ -247,7 +247,7 @@ ChainPlacement Chain::findNextCycle ( string minerID ) {
             const Cycle& cycle = *cycleIt; // cycle under consideration
             
             // if we're here at all, the cycle can be edited. if it will also be improved, choose it as our 'best' cycle.
-            bestCycle = this->willImprove ( cycle ) ? &cycle : bestCycle;
+            bestCycle = this->willImprove ( cycle, minerID ) ? &cycle : bestCycle;
             
             cycleIt.prev (); // don't need to check for overrun; canEdit () will always return false for cycle 0.
             
@@ -311,6 +311,12 @@ bool Chain::isInCycle ( const Cycle& cycle, string minerID ) {
         if ( chainIt.getValue < Block >( BLOCK_KEY ).mMinerID == minerID ) return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+bool Chain::isParticipant ( const Cycle& cycle, string minerID ) const {
+
+    return this->mMetaData->isParticipant ( cycle.mCycleID, minerID );
 }
 
 //----------------------------------------------------------------//
@@ -410,9 +416,10 @@ size_t Chain::size () const {
 }
 
 //----------------------------------------------------------------//
-bool Chain::willImprove ( const Cycle& cycle ) const {
+bool Chain::willImprove ( const Cycle& cycle, string minerID ) {
 
-    return true;
+    // cycle will improve if miner is missing from either the participant set or the chain itself
+    return (( cycle.mCycleID > 0 ) && (( this->isParticipant ( cycle, minerID ) && this->isInCycle ( cycle, minerID )) == false ));
 }
 
 //================================================================//

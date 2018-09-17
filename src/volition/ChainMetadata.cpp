@@ -33,4 +33,14 @@ ChainMetadata::ChainMetadata () {
 ChainMetadata::~ChainMetadata () {
 }
 
+//----------------------------------------------------------------//
+bool ChainMetadata::isParticipant ( size_t cycleID, string minerID ) const {
+
+    if ( cycleID < this->mCycleMetadata.size ()) {
+        const CycleMetadata& metadata = this->mCycleMetadata [ cycleID ];
+        return ( metadata.mKnownParticipants.find ( minerID ) != metadata.mKnownParticipants.end ());
+    }
+    return false;
+}
+
 } // namespace Volition

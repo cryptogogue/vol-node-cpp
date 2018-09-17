@@ -73,12 +73,12 @@ TEST ( Chain, unitTests ) {
     pushBlock ( chain, miner0, key0 );
     pushBlock ( chain, miner1, key1 );
     
-//    // cycle 1
-//    pushBlock ( chain, miner0, key0 );
-//    pushBlock ( chain, miner1, key1 );
-//    
-//    ASSERT_TRUE ( chain.countCycles () == 3 );
-//    ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
-//    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
-//    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
+    // cycle 1
+    pushBlock ( chain, miner0, key0 );
+    pushBlock ( chain, miner1, key1 );
+   
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
 }

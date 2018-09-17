@@ -41,9 +41,10 @@ private:
     //const Cycle*            getCycle            ( size_t idx );
     const Cycle&            getTopCycle         () const;
     bool                    isInCycle           ( const Cycle& cycle, string minerID );
+    bool                    isParticipant       ( const Cycle& cycle, string minerID ) const;
     void                    newCycle            ();
     void                    rebuildState        ();
-    bool                    willImprove         ( const Cycle& cycle ) const;
+    bool                    willImprove         ( const Cycle& cycle, string minerID );
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;

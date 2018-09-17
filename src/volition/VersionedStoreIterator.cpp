@@ -62,8 +62,10 @@ void VersionedStoreIterator::seek ( size_t version ) {
     if ( version < this->mVersion ) {
     
         shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
+        size_t top = this->mVersion;
     
-        while ( epoch && !epoch->containsVersion ( version )) {
+        while ( epoch && !(( epoch->mBaseVersion <= version ) && ( version < top ))) {
+            top = epoch->mBaseVersion;
             epoch = epoch->mParent;
         }
         assert ( epoch );
@@ -75,15 +77,10 @@ void VersionedStoreIterator::seek ( size_t version ) {
         if ( version > this->mAnchor.mVersion ) {
             version = this->mAnchor.mVersion;
         }
-    
-        if ( version < this->mEpoch->containsVersion ( version )) {
-            this->mVersion = version;
-        }
-        else {
-            this->setEpoch ( this->mAnchor.mEpoch, this->mAnchor.mVersion );
-            if ( version < this->mVersion ) {
-                this->seek ( version );
-            }
+        
+        this->setEpoch ( this->mAnchor.mEpoch, this->mAnchor.mVersion );
+        if ( version < this->mVersion ) {
+            this->seek ( version );
         }
     }
 }
