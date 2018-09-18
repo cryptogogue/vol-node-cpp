@@ -22,6 +22,37 @@ public:
 
   
     //----------------------------------------------------------------//
+    void pushBlock ( Chain& chain ) {
+    
+        ASSERT_TRUE ( chain.canPush ( this->mMinerID, true ));
+    
+        ChainPlacement placement = chain.findNextCycle ( this->mMinerID );
+        Block block ( this->mMinerID, placement.getCycleID (), this->mKeyPair );
+        chain.prepareForPush ( placement, block );
+
+        bool result = chain.pushBlockAndSign ( block, this->mKeyPair );
+        ASSERT_TRUE ( result );
+    }
+    
+    //----------------------------------------------------------------//
+    void pushMinerGenesisTransaction ( Block& block ) {
+        
+        unique_ptr < Transaction::GenesisMiner > genesisMinerTransaction = make_unique < Transaction::GenesisMiner >();
+        
+        genesisMinerTransaction->mAccountName   = this->mMinerID;
+        genesisMinerTransaction->mKey           = this->mKeyPair;
+        genesisMinerTransaction->mKeyName       = "master";
+        genesisMinerTransaction->mAmount        = 0;
+        genesisMinerTransaction->mURL           = "";
+
+        block.pushTransaction ( move ( genesisMinerTransaction ));
+    }
+    
+    //----------------------------------------------------------------//
+    SimpleMiner () {
+    }
+    
+    //----------------------------------------------------------------//
     SimpleMiner ( string minerID ) :
         mMinerID ( minerID ) {
         this->mKeyPair.elliptic ();
@@ -29,45 +60,21 @@ public:
 };
 
 //----------------------------------------------------------------//
-void pushBlock ( Chain& chain, const SimpleMiner& miner ) {
-    
-    ASSERT_TRUE ( chain.canPush ( miner.mMinerID, true ));
-    
-    ChainPlacement placement = chain.findNextCycle ( miner.mMinerID );
-    Block block ( miner.mMinerID, placement.getCycleID (), miner.mKeyPair );
-    chain.prepareForPush ( placement, block );
-
-    bool result = chain.pushBlockAndSign ( block, miner.mKeyPair );
-    ASSERT_TRUE ( result );
-}
-
-//----------------------------------------------------------------//
-void pushMinerGenesisTransaction ( Block& block, const SimpleMiner& miner  ) {
-
-    unique_ptr < Transaction::GenesisMiner > genesisMinerTransaction = make_unique < Transaction::GenesisMiner >();
-    
-    genesisMinerTransaction->mAccountName   = miner.mMinerID;
-    genesisMinerTransaction->mKey           = miner.mKeyPair;
-    genesisMinerTransaction->mKeyName       = "master";
-    genesisMinerTransaction->mAmount        = 0;
-    genesisMinerTransaction->mURL           = "";
-
-    block.pushTransaction ( move ( genesisMinerTransaction ));
-}
-
-//----------------------------------------------------------------//
-TEST ( Chain, unitTests ) {
-
-    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
-
-    SimpleMiner miner0 ( "0" );
-    SimpleMiner miner1 ( "1" );
+Chain initializeTestChainAndMiners ( SimpleMiner* miners, size_t nMiners ) {
 
     Block genesisBlock;
 
-    pushMinerGenesisTransaction ( genesisBlock, miner0 );
-    pushMinerGenesisTransaction ( genesisBlock, miner1 );
-
+    for ( size_t i = 0; i < nMiners; ++i ) {
+    
+        stringstream minerIDStream;
+        minerIDStream << ( int )i;
+    
+        SimpleMiner& miner = miners [ i ];
+        miner = SimpleMiner ( minerIDStream.str ());
+        
+        miner.pushMinerGenesisTransaction ( genesisBlock );
+    }
+    
     CryptoKey genesisKey;
     genesisKey.elliptic ();
     TheContext::get ().setGenesisBlockKey ( genesisKey );
@@ -75,23 +82,32 @@ TEST ( Chain, unitTests ) {
     genesisBlock.sign ( genesisKey );
     TheContext::get ().setGenesisBlockDigest ( genesisBlock.getSignature ().getDigest ());
     
-    Chain chain ( genesisBlock );
+    return Chain ( genesisBlock );
+}
+
+//----------------------------------------------------------------//
+TEST ( Chain, test0 ) {
+
+    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
+
+    SimpleMiner miners [ 2 ];
+    Chain chain = initializeTestChainAndMiners ( miners, 2 );
     
     ASSERT_TRUE ( chain.countCycles () == 1 );
     ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 );
     ASSERT_TRUE ( chain.countBlocks () == 1 );
     
     // cycle 0
-    pushBlock ( chain, miner0 );
-    pushBlock ( chain, miner1 );
+    miners [ 0 ].pushBlock ( chain );
+    miners [ 1 ].pushBlock ( chain );
     
     // cycle 1
-    pushBlock ( chain, miner0 );
-    pushBlock ( chain, miner1 );
+    miners [ 0 ].pushBlock ( chain );
+    miners [ 1 ].pushBlock ( chain );
     
     // cycle 2
-    pushBlock ( chain, miner0 );
-    pushBlock ( chain, miner1 );
+    miners [ 0 ].pushBlock ( chain );
+    miners [ 1 ].pushBlock ( chain );
    
     ASSERT_TRUE ( chain.countCycles () == 4 );
     ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
