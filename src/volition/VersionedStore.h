@@ -23,6 +23,7 @@ protected:
     friend class VersionedStore;
     friend class VersionedStoreEpoch;
     friend class VersionedStoreIterator;
+    template < typename > friend class VersionedValueIterator;
 
     shared_ptr < VersionedStoreEpoch >      mEpoch;
     size_t                                  mVersion;

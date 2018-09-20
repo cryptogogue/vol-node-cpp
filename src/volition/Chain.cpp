@@ -307,7 +307,7 @@ const Cycle& Chain::getTopCycle () const {
 bool Chain::isInCycle ( const Cycle& cycle, string minerID ) {
 
     VersionedStoreIterator chainIt ( *this, cycle.mBase );
-    for ( ; chainIt.hasNext () && ( chainIt.getValue < Cycle >( CYCLE_KEY ).mCycleID == cycle.mCycleID ); chainIt.next ()) {
+    for ( ; chainIt && ( chainIt.getValue < Cycle >( CYCLE_KEY ).mCycleID == cycle.mCycleID ); chainIt.next ()) {
         if ( chainIt.getValue < Block >( BLOCK_KEY ).mMinerID == minerID ) return true;
     }
     return false;

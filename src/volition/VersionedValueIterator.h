@@ -5,7 +5,6 @@
 #define VOLITION_VERSIONEDVALUEITERATOR_H
 
 #include <volition/common.h>
-#include <volition/AbstractVersionedValueIterator.h>
 #include <volition/VersionedStore.h>
 
 namespace Volition {
@@ -15,12 +14,105 @@ namespace Volition {
 //================================================================//
 template < typename TYPE >
 class VersionedValueIterator :
-    public AbstractVersionedValueIterator {
+    public VersionedStore {
 protected:
 
     friend class VersionedStore;
 
+    typedef typename map < size_t, TYPE >::const_iterator ValueIterator;
+
+    enum {
+        VALID,
+        
+        // these are only set *after* a call to prev() or next().
+        // they are not meant to be exposed or for general use.
+        NO_PREV,
+        NO_NEXT,
+    };
+
+    VersionedStore      mAnchor;
+    string              mKey;
+    ValueIterator       mIterator;
+    int                 mState;
+    
+    size_t              mFirstVersion;
+    size_t              mLastVersion;
+
+    //----------------------------------------------------------------//
+    const ValueStack < TYPE >* getValueStack () {
+        
+        return this->getValueStack ( this->mEpoch );
+    }
+
+    //----------------------------------------------------------------//
+    const ValueStack < TYPE >* getValueStack ( shared_ptr < VersionedStoreEpoch > epoch ) {
+    
+        if ( epoch ) {
+            const AbstractValueStack* abstractValueStack = epoch->findValueStack ( this->mKey );
+            if ( abstractValueStack ) {
+                return dynamic_cast < const ValueStack < TYPE >* >( abstractValueStack );
+            }
+        }
+        return NULL;
+    }
+
+    //----------------------------------------------------------------//
+    void seekNext ( shared_ptr < VersionedStoreEpoch > prevEpoch ) {
+        
+        shared_ptr < VersionedStoreEpoch > epoch = this->mAnchor.mEpoch;
+        
+        shared_ptr < VersionedStoreEpoch > bestEpoch;
+        const ValueStack < TYPE >* bestValueStack = NULL;
+        
+        for ( ; epoch != prevEpoch; epoch = epoch->mParent ) {
+            const ValueStack < TYPE >* valueStack = this->getValueStack ( epoch );
+            if ( valueStack && valueStack->size ()) {
+                bestEpoch = epoch;
+                bestValueStack = valueStack;
+            }
+        }
+        
+        if ( bestValueStack ) {
+            this->setExtents ( *bestValueStack );
+            this->mIterator = bestValueStack->mValuesByVersion.begin ();
+            this->setEpoch ( bestEpoch, this->mFirstVersion );
+            this->mState = VALID;
+        }
+        else {
+            this->mState = NO_NEXT;
+        }
+    }
+
+    //----------------------------------------------------------------//
+    void seekPrev ( shared_ptr < VersionedStoreEpoch > epoch ) {
+        
+        for ( ; epoch; epoch = epoch->mParent ) {
+            const ValueStack < TYPE >* valueStack = this->getValueStack ( epoch );
+            if ( valueStack && valueStack->size ()) {
+                this->setExtents ( *valueStack );
+                this->mIterator = valueStack->mValuesByVersion.find ( this->mLastVersion );
+                this->setEpoch ( epoch, this->mLastVersion );
+                this->mState = VALID;
+                return;
+            }
+        }
+        this->mState = NO_PREV;
+    }
+
+    //----------------------------------------------------------------//
+    void setExtents ( const ValueStack < TYPE >& valueStack ) {
+    
+        assert ( valueStack.mValuesByVersion.size ());
+        this->mFirstVersion     = valueStack.mValuesByVersion.begin ()->first;
+        this->mLastVersion      = valueStack.mValuesByVersion.rbegin ()->first;
+    }
+
 public:
+
+    //----------------------------------------------------------------//
+    operator bool () const {
+        return this->isValid ();
+    }
 
     //----------------------------------------------------------------//
     const TYPE& operator * () const {
@@ -28,13 +120,68 @@ public:
     }
 
     //----------------------------------------------------------------//
+    bool isValid () const {
+        return ( this->mState == VALID );
+    }
+    
+    //----------------------------------------------------------------//
+    bool next () {
+        
+        if ( !this->mEpoch ) return false;
+        
+        if ( this->mState == NO_PREV ) {
+            this->mState = VALID;
+        }
+        else if ( this->mState != NO_NEXT ) {
+            
+             if ( this->mIterator->first < this->mLastVersion ) {
+                ++this->mIterator;
+                this->mVersion = this->mIterator->first;
+            }
+            else {
+                assert ( this->mIterator->first == this->mLastVersion );
+                this->seekNext ( this->mEpoch );
+            }
+        }
+        return ( this->mState != NO_NEXT );
+    }
+    
+    //----------------------------------------------------------------//
+    bool prev () {
+
+        if ( !this->mEpoch ) return false;
+
+        if ( this->mState == NO_NEXT ) {
+            this->mState = VALID;
+        }
+        else if ( this->mState != NO_PREV ) {
+                
+            if ( this->mIterator->first > this->mFirstVersion ) {
+                --this->mIterator;
+                this->mVersion = this->mIterator->first;
+            }
+            else {
+                assert ( this->mIterator->first == this->mFirstVersion );
+                this->seekPrev ( this->mEpoch->mParent );
+            }
+        }
+        return ( this->mState != NO_PREV );
+    }
+
+    //----------------------------------------------------------------//
     const TYPE& value () const {
-        return this->mCursor.template getValue < TYPE >( this->mKey );
+        assert ( this->isValid ());
+        return this->mIterator->second;
     }
     
     //----------------------------------------------------------------//
     VersionedValueIterator ( VersionedStore& versionedStore, string key ) :
-        AbstractVersionedValueIterator ( versionedStore, key, typeid ( TYPE ).hash_code ()) {
+        mAnchor ( versionedStore ),
+        mKey ( key ) {
+        
+        if ( this->mAnchor.mEpoch ) {
+            this->seekPrev ( this->mAnchor.mEpoch );
+        }
     }
 };
 

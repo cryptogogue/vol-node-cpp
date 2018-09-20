@@ -10,6 +10,7 @@
 namespace Volition {
 
 template < typename TYPE > class ValueStack;
+template < typename TYPE > class VersionedValueIterator;
 
 //================================================================//
 // ValueStackTuple
@@ -41,6 +42,7 @@ protected:
     friend class VersionedStore;
     friend class VersionedStoreLayer;
     friend class VersionedStoreEpoch;
+    friend class VersionedValueIterator < TYPE >;
 
     map < size_t, TYPE >    mValuesByVersion;
 

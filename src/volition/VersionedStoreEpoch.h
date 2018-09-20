@@ -21,6 +21,7 @@ private:
     friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
     friend class VersionedStoreIterator;
+    template < typename > friend class VersionedValueIterator;
 
     typedef set < string > EpochLayer;
 

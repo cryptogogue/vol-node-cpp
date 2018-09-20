@@ -14,7 +14,10 @@ namespace Volition {
 VersionedStoreIterator::VersionedStoreIterator ( VersionedStore& versionedStore ) :
     mAnchor ( versionedStore ) {
 
-    this->takeSnapshot ( versionedStore );
+    if ( this->mAnchor.mEpoch && ( this->mAnchor.mEpoch->mTopVersion > 0 )) {
+        this->takeSnapshot ( versionedStore );
+    }
+    this->mState = this->mEpoch ? VALID : EMPTY;
 }
 
 //----------------------------------------------------------------//
@@ -29,35 +32,55 @@ VersionedStoreIterator::~VersionedStoreIterator () {
 }
 
 //----------------------------------------------------------------//
-bool VersionedStoreIterator::hasNext () const {
+bool VersionedStoreIterator::isValid () const {
 
-    return ( this->mVersion < this->mAnchor.mVersion );
+    return ( this->mState == VALID );
 }
 
 //----------------------------------------------------------------//
-bool VersionedStoreIterator::hasPrev () const {
+bool VersionedStoreIterator::next () {
 
-    return ( this->mVersion > 0 );
-}
+    if ( this->mState == EMPTY ) return false;
 
-//----------------------------------------------------------------//
-void VersionedStoreIterator::next () {
-
-    if ( this->hasNext ()) {
-        this->seek ( this->mVersion + 1 );
+    if ( this->mState == NO_PREV ) {
+        this->mState = VALID;
     }
+    else if ( this->mState != NO_NEXT ) {
+
+        if ( this->mVersion < this->mAnchor.mVersion ) {
+            this->seek ( this->mVersion + 1 );
+        }
+        else {
+            this->mState = NO_NEXT;
+        }
+    }
+    return ( this->mState != NO_NEXT );
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreIterator::prev () {
+bool VersionedStoreIterator::prev () {
 
-    if ( this->hasPrev ()) {
-        this->seek ( this->mVersion - 1 );
+    if ( this->mState == EMPTY ) return false;
+
+    if ( this->mState == NO_NEXT ) {
+        this->mState = VALID;
     }
+    else if ( this->mState != NO_PREV ) {
+
+        if ( this->mVersion > 0 ) {
+            this->seek ( this->mVersion - 1 );
+        }
+        else {
+            this->mState = NO_PREV;
+        }
+    }
+    return ( this->mState != NO_PREV );
 }
 
 //----------------------------------------------------------------//
 void VersionedStoreIterator::seek ( size_t version ) {
+
+    if ( this->mState == EMPTY ) return;
 
     if ( version < this->mVersion ) {
     
@@ -70,7 +93,6 @@ void VersionedStoreIterator::seek ( size_t version ) {
         }
         assert ( epoch );
         this->setEpoch ( epoch, version );
-        
     }
     else if ( version > this->mVersion ) {
     
@@ -83,6 +105,7 @@ void VersionedStoreIterator::seek ( size_t version ) {
             this->seek ( version );
         }
     }
+    this->mState = VALID;
 }
 
 } // namespace Volition

@@ -18,7 +18,18 @@ class VersionedStoreIterator :
     public VersionedStore {
 protected:
 
-    VersionedStore&                 mAnchor;
+    enum {
+        VALID,
+        EMPTY,
+        
+        // these are only set *after* a call to prev() or next().
+        // they are not meant to be exposed or for general use.
+        NO_PREV,
+        NO_NEXT,
+    };
+
+    VersionedStore      mAnchor;
+    int                 mState;
 
 public:
 
@@ -31,11 +42,9 @@ public:
                         VersionedStoreIterator              ( VersionedStore& versionedStore );
                         VersionedStoreIterator              ( VersionedStore& versionedStore, size_t version );
     virtual             ~VersionedStoreIterator             ();
-    bool                hasNext                             () const;
-    bool                hasPrev                             () const;
     bool                isValid                             () const;
-    void                next                                ();
-    void                prev                                ();
+    bool                next                                ();
+    bool                prev                                ();
     void                seek                                ( size_t version );
 };
 
