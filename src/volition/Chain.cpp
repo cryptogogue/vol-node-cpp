@@ -350,7 +350,7 @@ void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
         for ( ; truncate < top; ++truncate ) {
             if ( chainIt.getValue < Block >( BLOCK_KEY ).getScore () > score ) break;
         }
-        this->seekVersion ( truncate );
+        this->rewind ( truncate );
     }
     
     const Block* prevBlock = &this->getValue < Block >( BLOCK_KEY );

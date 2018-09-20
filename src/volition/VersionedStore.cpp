@@ -14,26 +14,15 @@ namespace Volition {
 void VersionedStore::affirmEpoch () {
 
     if ( !this->mEpoch ) {
-        this->setEpoch ( make_shared < VersionedStoreEpoch >());
+        this->mEpoch = make_shared < VersionedStoreEpoch >();
+        this->mVersion = 0;
     }
 }
 
 //----------------------------------------------------------------//
 void VersionedStore::clear () {
 
-    this->setEpoch ( NULL );
-}
-
-//----------------------------------------------------------------//
-size_t VersionedStore::countEpochClients () const {
-
-    return this->mEpoch ? this->mEpoch->countClients () : 0;
-}
-
-//----------------------------------------------------------------//
-size_t VersionedStore::countEpochLayers () const {
-
-    return this->mEpoch ? this->mEpoch->countLayers () : 0;
+    this->setEpoch ( NULL, 0 );
 }
 
 //----------------------------------------------------------------//
@@ -48,6 +37,12 @@ const void* VersionedStore::getRaw ( string key, size_t typeID ) const {
         }
     }
     return NULL;
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStore::getVersion () const {
+
+    return this->mVersion;
 }
 
 //----------------------------------------------------------------//
@@ -67,26 +62,23 @@ bool VersionedStore::hasValue ( string key ) const {
 void VersionedStore::popVersion () {
 
     if ( this->mEpoch ) {
-
-        assert ( this->mEpoch->countLayers () > 0 );
-
-        VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
-        assert ( downstream.mTotal > 0 );
-
-        if ( downstream.mDependents == 0 ) {
-            this->mEpoch->popLayer ();
+    
+        size_t version = this->mVersion;
+        shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
+        epoch->eraseClient ( *this );
+        
+        this->mEpoch = NULL;
+        this->mVersion = 0;
+        
+        if ( version == epoch->mBaseVersion ) {
+            epoch = epoch->mParent;
         }
         
-        if ( this->mVersion > 0 ) {
-            if ( this->mVersion == this->mEpoch->mBaseVersion ) {
-                this->setEpoch ( this->mEpoch->mParent, this->mVersion - 1 );
-            }
-            else {
-                this->mVersion--;
-            }
-        }
-        else {
-            this->setEpoch ( NULL );
+        if ( epoch ) {
+            epoch->affirmClient ( *this );
+            this->mEpoch = epoch;
+            this->mVersion = version - 1;
+            this->mEpoch->optimize ();
         }
     }
 }
@@ -95,64 +87,71 @@ void VersionedStore::popVersion () {
 void VersionedStore::prepareForSetValue () {
 
     this->affirmEpoch ();
-    assert ( this->mEpoch );
 
-    VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
-    assert ( downstream.mTotal > 0 );
-
-    if ( downstream.mTotal > 1 ) {
-        this->setEpoch ( make_shared < VersionedStoreEpoch >( this->mEpoch, this->mVersion ));
+    if ( this->mEpoch->countDependencies ()) {
+        
+        size_t immutableTop = this->mEpoch->findImmutableTop ( this );
+        
+        if ( this->mVersion <= immutableTop ) {
+            this->mEpoch->eraseClient ( *this );
+            this->mEpoch = make_shared < VersionedStoreEpoch >( this->mEpoch, this->mVersion );
+            this->mEpoch->affirmClient ( *this );
+        }
     }
 }
 
 //----------------------------------------------------------------//
 void VersionedStore::pushVersion () {
 
+    if ( !this->mEpoch ) {
+        this->mVersion = 0;
+    }
+
     this->affirmEpoch ();
     assert ( this->mEpoch );
 
-    VersionedStoreDownstream downstream = this->mEpoch->countDownstream ( this->mVersion );
-    assert ( downstream.mTotal > 0 );
-
     this->mVersion++;
-
-    // if more clients, can't change this epoch - gotta make a new one
-    if ( downstream.mDependents > 0 ) {
-
-        // make and set a new epoch
-        shared_ptr < VersionedStoreEpoch > epoch = make_shared < VersionedStoreEpoch >();
-        epoch->setParent ( this->mEpoch, this->mVersion );
-        this->setEpoch ( epoch );
-    }
-    else {
     
-        // make a new layer in the current epoch
-        this->mEpoch->pushLayer ();
+    if ( this->mVersion < this->mEpoch->mTopVersion ) {
+        this->mEpoch->eraseClient ( *this );
+        this->mEpoch = make_shared < VersionedStoreEpoch >( this->mEpoch, this->mVersion - 1 );
+        this->mEpoch->affirmClient ( *this );
     }
 }
 
 //----------------------------------------------------------------//
-void VersionedStore::seekVersion ( size_t version ) {
+void VersionedStore::rewind ( size_t version ) {
 
-    this->affirmEpoch ();
-
-    shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
-
-    while ( version < epoch->mBaseVersion ) {
-        epoch = epoch->mParent;
+    assert ( version <= this->mVersion );
+    
+    if (( this->mEpoch ) && ( version < this->mVersion )) {
+    
+        shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
+        epoch->eraseClient ( *this );
+        this->mEpoch = NULL;
+        
+        size_t top = this->mVersion;
+        for ( ; epoch && ( version < epoch->mBaseVersion ); epoch = epoch->mParent ) {
+            top = epoch->mBaseVersion;
+        }
+        
+        assert ( epoch );
+        assert ( epoch->mBaseVersion <= version );
+        assert ( version < top );
+        
+        epoch->affirmClient ( *this );
+        this->mEpoch = epoch;
+        this->mVersion = version;
+        this->mEpoch->optimize ();
     }
-    
-    assert ( epoch );
-    assert (( version >= epoch->mBaseVersion ) && ( version < ( epoch->mBaseVersion + epoch->mLayers.size ())));
-    
-    this->setEpoch ( epoch, version );
-    this->mEpoch->optimize ();
 }
 
 //----------------------------------------------------------------//
-void VersionedStore::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch ) {
+void VersionedStore::setDebugName ( string debugName ) {
 
-    this->setEpoch ( epoch, epoch ? epoch->getVersion () : 0 );
+    #ifdef _DEBUG
+        this->mDebugName = debugName;
+    #endif
 }
 
 //----------------------------------------------------------------//
@@ -168,24 +167,18 @@ void VersionedStore::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch, size_t
         
         if ( epoch ) {
             epoch->affirmClient ( *this );
+            assert ( version >= epoch->mBaseVersion );
         }
     }
-    // TODO: add sanity check
-    this->mVersion = version;
+    
+    this->mVersion = this->mEpoch ? version : 0;
 }
 
 //----------------------------------------------------------------//
-void VersionedStore::setRaw ( string key, size_t typeID, const void* value ) {
+void VersionedStore::setRaw ( string key, const void* value ) {
 
     assert ( this->mEpoch );
-    assert ( this->mEpoch->mLayers.size () > 0 );
-
-    this->mEpoch->mLayers.back ()->insert ( key );
-
-    AbstractValueStack* valueStack = this->mEpoch->mValueStacksByKey [ key ].get ();
-    assert ( valueStack );
-
-    valueStack->pushBackRaw ( value, this->mVersion );
+    this->mEpoch->setRaw ( this->mVersion, key, value );
 }
 
 //----------------------------------------------------------------//
@@ -208,7 +201,12 @@ VersionedStore::VersionedStore ( VersionedStore& other ) {
 //----------------------------------------------------------------//
 VersionedStore::~VersionedStore () {
 
+    weak_ptr < VersionedStoreEpoch > epochWeak = this->mEpoch;
     this->setEpoch ( NULL, 0 );
+    if ( !epochWeak.expired ()) {
+        shared_ptr < VersionedStoreEpoch > epoch = epochWeak.lock ();
+        epoch->optimize ();
+    }
 }
 
 //================================================================//
@@ -216,9 +214,9 @@ VersionedStore::~VersionedStore () {
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t VersionedStore::AbstractVersionedStoreEpochClient_getVersion () const {
-
-    return this->mVersion;
-}
+//size_t VersionedStore::AbstractVersionedStoreEpochClient_getBaseVersion () const {
+//
+//    return this->mVersion;
+//}
 
 } // namespace Volition

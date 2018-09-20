@@ -42,42 +42,40 @@ protected:
     friend class VersionedStoreLayer;
     friend class VersionedStoreEpoch;
 
-    vector < ValueStackTuple < TYPE >>  mValues;
+    map < size_t, TYPE >    mValuesByVersion;
+
+    //----------------------------------------------------------------//
+    void AbstractValueStack_copyFrom ( const AbstractValueStack& from ) override {
+    
+        const ValueStack < TYPE >* fromPtr = dynamic_cast < const ValueStack < TYPE >* >( &from );
+        assert ( fromPtr );
+        this->mValuesByVersion.insert ( fromPtr->mValuesByVersion.begin (),  fromPtr->mValuesByVersion.end ());
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractValueStack_erase ( size_t version ) override {
+        this->mValuesByVersion.erase ( version );
+    }
 
     //----------------------------------------------------------------//
     const void* AbstractValueStack_getRaw ( size_t version ) const override {
-        assert ( this->mValues.size () > 0 );
         
-        // naive lookup
-        // TODO: optimize
+        if ( this->mValuesByVersion.size ()) {
         
-        for ( size_t i = this->mValues.size (); i > 0; --i ) {
-            const ValueStackTuple < TYPE >& tuple = this->mValues [ i - 1 ];
-            if ( tuple.mVersion <= version ) {
-                return &tuple.mValue;
+            typename map < size_t, TYPE >::const_iterator valueIt = this->mValuesByVersion.lower_bound ( version );
+            
+            if ( valueIt == this->mValuesByVersion.cend ()) {
+                return &this->mValuesByVersion.rbegin ()->second;
+            }
+            else {
+            
+                if ( valueIt->first > version ) {
+                    valueIt--;
+                }
+                return &valueIt->second;
             }
         }
         return NULL;
-    }
-    
-    //----------------------------------------------------------------//
-    const void* AbstractValueStack_getRawForIndex ( size_t index ) const override {
-    
-        assert ( index < this->size ());
-        const ValueStackTuple < TYPE >& tuple = this->mValues [ index ];
-        return &tuple.mValue;
-    }
-    
-    //----------------------------------------------------------------//
-    size_t AbstractValueStack_getVersionForIndex ( size_t index ) const override {
-    
-        const ValueStackTuple < TYPE >& tuple = this->mValues [ index ];
-        return tuple.mVersion;
-    }
-    
-    //----------------------------------------------------------------//
-    bool AbstractValueStack_isEmpty () const override {
-        return ( this->mValues.size () == 0 );
     }
     
     //----------------------------------------------------------------//
@@ -86,21 +84,15 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractValueStack_pop () override {
-        assert ( this->mValues.size () > 0 );
-        this->mValues.pop_back ();
-    }
-        
-    //----------------------------------------------------------------//
-    void AbstractValueStack_pushBackRaw ( const void* value, size_t version ) override {
+    void AbstractValueStack_setRaw ( size_t version, const void* value ) override {
         assert ( value );
-        this->mValues.push_back ( ValueStackTuple < TYPE >( *( const TYPE* )value, version ));
+        this->mValuesByVersion [ version ] = *( TYPE* )value;
     }
 
     //----------------------------------------------------------------//
     size_t AbstractValueStack_size () const override {
     
-        return this->mValues.size ();
+        return this->mValuesByVersion.size ();
     }
 
 public:

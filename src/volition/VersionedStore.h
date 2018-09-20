@@ -5,7 +5,6 @@
 #define VOLITION_VERSIONEDSTORE_H
 
 #include <volition/common.h>
-#include <volition/AbstractVersionedStoreEpochClient.h>
 #include <volition/VersionedStoreEpoch.h>
 
 // TODO: this is all placeholder stuff, to get the algorithm working. will need to
@@ -17,8 +16,7 @@ namespace Volition {
 //================================================================//
 // VersionedStore
 //================================================================//
-class VersionedStore :
-    public AbstractVersionedStoreEpochClient {
+class VersionedStore {
 protected:
 
     friend class AbstractVersionedValueIterator;
@@ -29,27 +27,30 @@ protected:
     shared_ptr < VersionedStoreEpoch >      mEpoch;
     size_t                                  mVersion;
 
+    #ifdef _DEBUG
+        string                              mDebugName;
+    #endif
+
     //----------------------------------------------------------------//
     void            affirmEpoch             ();
     const void*     getRaw                  ( string key, size_t typeID ) const;
     void            prepareForSetValue      ();
-    void            setEpoch                ( shared_ptr < VersionedStoreEpoch > epoch );
     void            setEpoch                ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
-    void            setRaw                  ( string key, size_t typeID, const void* value );
+    void            setRaw                  ( string key, const void* value );
     
     //----------------------------------------------------------------//
-    size_t                                  AbstractVersionedStoreEpochClient_getVersion    () const override;
+    //size_t                                  AbstractVersionedStoreEpochClient_getBaseVersion    () const override;
     
 public:
 
     //----------------------------------------------------------------//
     void            clear                   ();
-    size_t          countEpochClients       () const;
-    size_t          countEpochLayers        () const;
+    size_t          getVersion              () const;
     bool            hasValue                ( string key ) const;
     void            popVersion              ();
     void            pushVersion             ();
-    void            seekVersion             ( size_t version );
+    void            rewind                  ( size_t version );
+    void            setDebugName            ( string debugName );
     void            takeSnapshot            ( VersionedStore& other );
                     VersionedStore          ();
                     VersionedStore          ( VersionedStore& other );
@@ -87,7 +88,7 @@ public:
     void setValue ( string key, const TYPE& value ) {
         this->prepareForSetValue ();
         this->mEpoch->affirmValueStack < TYPE >( key );
-        this->setRaw ( key, typeid ( TYPE ).hash_code (), &value );
+        this->setRaw ( key, &value );
     }
 };
 

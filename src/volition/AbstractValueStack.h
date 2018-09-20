@@ -23,23 +23,19 @@ protected:
     size_t              mTypeID;
 
     //----------------------------------------------------------------//
+    void                                            copyFrom                                    ( const AbstractValueStack& from );
+    void                                            erase                                       ( size_t version );
     const void*                                     getRaw                                      ( size_t version ) const;
-    const void*                                     getRawForIndex                              ( size_t index ) const;
-    size_t                                          getVersionForIndex                          ( size_t index ) const;
-    bool                                            isEmpty                                     () const;
     unique_ptr < AbstractValueStack >               makeEmptyCopy                               () const;
-    void                                            pop                                         ();
-    void                                            pushBackRaw                                 ( const void* value, size_t version );
+    void                                            setRaw                                      ( size_t version, const void* value );
     size_t                                          size                                        () const;
 
     //----------------------------------------------------------------//
+    virtual void                                    AbstractValueStack_copyFrom                 ( const AbstractValueStack& from ) = 0;
+    virtual void                                    AbstractValueStack_erase                    ( size_t version ) = 0;
     virtual const void*                             AbstractValueStack_getRaw                   ( size_t version ) const = 0;
-    virtual const void*                             AbstractValueStack_getRawForIndex           ( size_t index ) const = 0;
-    virtual size_t                                  AbstractValueStack_getVersionForIndex       ( size_t index ) const = 0;
-    virtual bool                                    AbstractValueStack_isEmpty                  () const = 0;
     virtual unique_ptr < AbstractValueStack >       AbstractValueStack_makeEmptyCopy            () const = 0;
-    virtual void                                    AbstractValueStack_pop                      () = 0;
-    virtual void                                    AbstractValueStack_pushBackRaw              ( const void* value, size_t version ) = 0;
+    virtual void                                    AbstractValueStack_setRaw                   ( size_t version, const void* value ) = 0;
     virtual size_t                                  AbstractValueStack_size                     () const = 0;
 
 public:

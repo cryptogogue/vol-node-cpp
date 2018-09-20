@@ -12,58 +12,67 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::affirmClient ( AbstractVersionedStoreEpochClient& client ) {
+void VersionedStoreEpoch::affirmChild ( VersionedStoreEpoch& child ) {
+
+    this->mChildren.insert ( &child );
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreEpoch::affirmClient ( VersionedStore& client ) {
 
     this->mClients.insert ( &client );
 }
 
 //----------------------------------------------------------------//
-bool VersionedStoreEpoch::containsVersion ( size_t version ) const {
+size_t VersionedStoreEpoch::countDependencies () const {
 
-    return (( this->mBaseVersion <= version ) && ( version < ( this->mBaseVersion + this->mLayers.size ())));
+    return ( this->mClients.size () + this->mChildren.size ());
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::countClients () const {
-    return this->mClients.size ();
+void VersionedStoreEpoch::eraseChild ( VersionedStoreEpoch& child ) {
+
+    this->mChildren.erase ( &child );
 }
 
 //----------------------------------------------------------------//
-VersionedStoreDownstream VersionedStoreEpoch::countDownstream ( size_t version ) const {
+void VersionedStoreEpoch::eraseClient ( VersionedStore& client ) {
 
-    VersionedStoreDownstream downstream;
-    
-    downstream.mPeers = 0;
-    downstream.mDependents = 0;
-    
-    set < AbstractVersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
-    for ( ; clientIt != this->mClients.end (); ++clientIt ) {
-    
-        AbstractVersionedStoreEpochClient* client = *clientIt;
-        size_t clientVersion = client->getVersion ();
+    this->mClients.erase ( &client );
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) const {
+
+    size_t immutableTop = this->mBaseVersion;
+
+    set < VersionedStore* >::const_iterator clientIt = this->mClients.cbegin ();
+    for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
+
+        const VersionedStore* client = *clientIt;
+        if ( client != ignore ) {
         
-        if ( clientVersion > version ) {
-            downstream.mDependents++;
-        }
-        else if ( clientVersion == version ) {
-            downstream.mPeers++;
+            size_t clientVersion = client->mVersion;
+            
+            if ( clientVersion > immutableTop ) {
+                immutableTop = clientVersion;
+            }
         }
     }
     
-    downstream.mTotal = downstream.mPeers + downstream.mDependents;
+    set < VersionedStoreEpoch* >::const_iterator childIt = this->mChildren.cbegin ();
+    for ( ; childIt != this->mChildren.cend (); ++childIt ) {
+
+        const VersionedStoreEpoch* child = *childIt;
+        
+        size_t clientVersion = child->mBaseVersion;
+            
+        if ( clientVersion > immutableTop ) {
+            immutableTop = clientVersion;
+        }
+    }
     
-    return downstream;
-}
-
-//----------------------------------------------------------------//
-size_t VersionedStoreEpoch::countLayers () const {
-    return this->mLayers.size ();
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::eraseClient ( AbstractVersionedStoreEpochClient& client ) {
-
-    this->mClients.erase ( &client );
+    return immutableTop;
 }
 
 //----------------------------------------------------------------//
@@ -76,149 +85,196 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) con
 //----------------------------------------------------------------//
 const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
 
-    assert ( version < ( this->mBaseVersion + this->mLayers.size ()));
-
-    size_t sub = 0;
-    if ( version >= this->mBaseVersion ) {
-
-        // see if we have the value in the current epoch.
-        const AbstractValueStack* valueStack = this->findValueStack ( key );
-        if ( valueStack && valueStack->size () && ( valueStack->getVersionForIndex ( 0 ) <= version )) {
-            return valueStack;
+    const VersionedStoreEpoch* epoch = this;
+    for ( ; epoch; epoch = epoch->mParent.get ()) {
+        if ( epoch->mBaseVersion <= version ) {
+            return findValueStack ( key );
         }
-        sub = 1;
+        version = epoch->mBaseVersion > 0 ? epoch->mBaseVersion - 1: 0;
     }
-    return this->mParent ? this->mParent->findValueStack ( key, version - sub ) : NULL;
+    return NULL;
 }
 
 //----------------------------------------------------------------//
 void VersionedStoreEpoch::optimize () {
 
-    // TODO: implement consolidation of linear runs
-    
-    if ( this->mClients.size () == 0 ) return;
+    VersionedStore* topClient = NULL;
+    VersionedStoreEpoch* topChild = NULL;
 
-    size_t maxVersion = 0;
-    
-    set < AbstractVersionedStoreEpochClient* >::iterator clientIt = this->mClients.begin ();
-    for ( ; clientIt != this->mClients.end (); ++clientIt ) {
-    
-        AbstractVersionedStoreEpochClient* client = *clientIt;
-        size_t clientVersion = client->getVersion ();
-        
-        if ( clientVersion > maxVersion ) {
-            maxVersion = clientVersion;
+    for ( set < VersionedStore* >::iterator clientIt = this->mClients.begin (); clientIt != this->mClients.end (); ++clientIt ) {
+
+        VersionedStore* client = *clientIt;
+        if (( topClient == NULL ) || ( topClient->mVersion < client->mVersion )) {
+            topClient = client;
         }
     }
     
-    size_t top = maxVersion + 1;
-    if ( this->mLayers.size () > top ) {
-        this->mLayers.resize ( top );
+    for ( set < VersionedStoreEpoch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
+        
+        VersionedStoreEpoch* child = *childIt;
+        if (( topChild == NULL ) || ( topChild->mBaseVersion < child->mBaseVersion ) || ( topChild->mTopVersion < child->mTopVersion )) {
+            topChild = child;
+        }
+    }
+
+    size_t immutableTop = topClient ? topClient->mVersion : 0;
+    if ( topChild && ( immutableTop < topChild->mBaseVersion )) {
+        immutableTop = topChild->mBaseVersion;
+    }
+    
+    if (( immutableTop + 1 ) < this->mTopVersion ) {
+            
+        for ( size_t i = immutableTop; i < this->mTopVersion; ++i ) {
+            this->popLayer ();
+        }
+        this->mTopVersion = immutableTop + 1;
+    }
+    
+    if ( topChild && (( topClient == NULL ) || ( topClient->mVersion <= topChild->mBaseVersion ))) {
+    
+        shared_ptr < VersionedStoreEpoch > mergeEpoch = topChild->shared_from_this ();
+        weak_ptr < VersionedStoreEpoch > weakMergeEpoch = mergeEpoch;
+    
+        // merge the epoch layers
+        this->mEpochLayers.insert ( mergeEpoch->mEpochLayers.begin(), mergeEpoch->mEpochLayers.end ());
+        
+        // copy the value stacks
+        map < string, unique_ptr < AbstractValueStack >>::iterator valueStackIt = mergeEpoch->mValueStacksByKey.begin ();
+        for ( ; valueStackIt != topChild->mValueStacksByKey.end (); ++valueStackIt ) {
+            
+            const AbstractValueStack* fromStack = mergeEpoch->findValueStack ( valueStackIt->first );
+            assert ( fromStack );
+            
+            unique_ptr < AbstractValueStack >& toStack = this->mValueStacksByKey [ valueStackIt->first ];
+            if ( !toStack ) {
+                toStack = fromStack->makeEmptyCopy ();
+            }
+            toStack->copyFrom ( *fromStack );
+        }
+        
+        // copy the clients
+        for ( set < VersionedStore* >::iterator clientIt = mergeEpoch->mClients.begin (); clientIt != mergeEpoch->mClients.end (); ++clientIt ) {
+            VersionedStore* client = *clientIt;
+            this->affirmClient ( *client );
+            client->mEpoch = this->shared_from_this ();
+        }
+        
+        // copy the children
+        for ( set < VersionedStoreEpoch* >::iterator childIt = mergeEpoch->mChildren.begin (); childIt != mergeEpoch->mChildren.end (); ++childIt ) {
+            VersionedStoreEpoch* child = *childIt;
+            this->affirmChild ( *child );
+            child->mParent = this->shared_from_this ();
+        }
+
+        this->mTopVersion = mergeEpoch->mTopVersion;
+
+        mergeEpoch = NULL;
+        assert ( weakMergeEpoch.expired ());
+        
+        this->optimize ();
     }
 }
 
 //----------------------------------------------------------------//
 void VersionedStoreEpoch::popLayer () {
 
-    // if we're not popping the bottom layer, we need to pop any values it contains.
-    // we'll also need to erase any values that no longer have version history.
-    if ( this->mLayers.size () > 1 ) {
+    map < size_t, EpochLayer >::reverse_iterator layerIt = this->mEpochLayers.rbegin ();
+    if ( layerIt != this->mEpochLayers.rend ()) {
+    
+        assert ( this->mTopVersion == ( layerIt->first + 1 ));
+    
+        EpochLayer& layer = layerIt->second;
+        
+        EpochLayer::iterator keyIt = layer.begin ();
+        for ( ; keyIt != layer.end (); ++keyIt ) {
 
-        const Layer& layer = *this->mLayers.back ();
-        set < string >::const_iterator keyIt = layer.cbegin ();
-        for ( ; keyIt != layer.cend (); ++keyIt ) {
-            const string& key = *keyIt;
-
-            AbstractValueStack* valueStack = this->mValueStacksByKey [ key ].get ();
+            unique_ptr < AbstractValueStack >& valueStack = this->mValueStacksByKey [ *keyIt ];
             assert ( valueStack );
-
-            valueStack->pop (); // pop the value.
-
-            // if it's empty now (no more versions), remove it.
-            if ( valueStack->isEmpty ()) {
-                this->mValueStacksByKey.erase ( key );
+            
+            valueStack->erase ( layerIt->first );
+            if ( valueStack->size () == 0 ) {
+                this->mValueStacksByKey.erase ( *keyIt );
             }
         }
+        
+        this->mTopVersion = layerIt->first;
+        this->mEpochLayers.erase ( this->mTopVersion );
     }
-    this->mLayers.pop_back ();
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::pushLayer () {
-
-    this->mLayers.push_back ( make_unique < Layer >());
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreEpoch::setParent ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion ) {
+void VersionedStoreEpoch::setParent ( shared_ptr < VersionedStoreEpoch > parent ) {
 
     if ( this->mParent != parent ) {
-        
+
         if ( this->mParent ) {
-            this->mParent->eraseClient ( *this );
+            this->mParent->eraseChild ( *this );
         }
-        
+
         this->mParent = parent;
-        
+
         if ( parent ) {
-            parent->affirmClient ( *this );
+            parent->affirmChild ( *this );
         }
     }
-    // TODO: add sanity check
-    this->mBaseVersion = baseVersion;
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreEpoch::setRaw ( size_t version, string key, const void* value ) {
+
+    if ( this->mTopVersion <= version ) {
+        this->mTopVersion = version + 1;
+    }
+    this->mValueStacksByKey [ key ]->setRaw ( version, value );
+    
+    EpochLayer& layer = this->mEpochLayers [ version ];
+    if ( layer.find ( key ) == layer.end ()) {
+        layer.insert ( key );
+    }
 }
 
 //----------------------------------------------------------------//
 VersionedStoreEpoch::VersionedStoreEpoch () :
-    mBaseVersion ( 0 ) {
-
-    this->pushLayer ();
+    mBaseVersion ( 0 ),
+    mTopVersion ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > parent, size_t version ) {
-
-    assert ( parent );
-
-    this->setParent ( parent, version );
-    this->pushLayer ();
-
-    size_t layerID = version - parent->mBaseVersion;
+VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion ) {
     
-    assert ( layerID < parent->mLayers.size ());
+    assert ( parent && ( parent->mBaseVersion <= baseVersion ) && ( baseVersion <= parent->mTopVersion ));
 
-    const Layer& fromLayer = *parent->mLayers [ layerID ];
-    Layer& toLayer = *this->mLayers [ 0 ];
-
-    // iterate through all the keys
-    set < string >::const_iterator keyIt = fromLayer.cbegin ();
-    for ( ; keyIt != fromLayer.cend (); ++keyIt ) {
-        const string& key = *keyIt;
+    this->setParent ( parent->mBaseVersion < baseVersion ? parent : parent->mParent );
+    this->mBaseVersion = baseVersion;
+    
+    map < size_t, EpochLayer >::const_iterator layerIt = parent->mEpochLayers.find ( baseVersion );
+    if ( layerIt != parent->mEpochLayers.cend ()) {
+    
+        this->mTopVersion = baseVersion + 1;
+        const EpochLayer& fromLayer = layerIt->second;
         
-        // copy the key to the destination layer
-        toLayer.insert ( key );
-        
-        // find the value stack in source epoch
-        map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = parent->mValueStacksByKey.find ( key );
-        assert ( valueIt != parent->mValueStacksByKey.cend ());
-        
-        // get the source value stack
-        const AbstractValueStack* fromValueStack = valueIt->second.get ();
-        assert ( !fromValueStack->isEmpty ());
-        
-        // affirm the destination value stack
-        unique_ptr < AbstractValueStack >& toValueStack = this->mValueStacksByKey [ key ];
-        toValueStack = fromValueStack->makeEmptyCopy ();
-        
-        // push the value to the destination value stack
-        toValueStack->pushBackRaw ( fromValueStack->getRaw ( version ), version );
+        EpochLayer::const_iterator keyIt = fromLayer.cbegin ();
+        for ( ; keyIt != fromLayer.cend (); ++keyIt ) {
+            
+            const AbstractValueStack* fromStack = parent->findValueStack ( *keyIt );
+            assert ( fromStack );
+            
+            unique_ptr < AbstractValueStack >& toStack = this->mValueStacksByKey [ *keyIt ];
+            if ( !toStack ) {
+                toStack = fromStack->makeEmptyCopy ();
+            }
+            toStack->setRaw ( baseVersion, fromStack->getRaw ( baseVersion ));
+        }
+    }
+    else {
+        this->mTopVersion = baseVersion;
     }
 }
 
 //----------------------------------------------------------------//
 VersionedStoreEpoch::~VersionedStoreEpoch () {
 
-    this->setParent ( NULL, 0 );
+    this->setParent ( NULL );
 }
 
 //================================================================//
@@ -226,9 +282,9 @@ VersionedStoreEpoch::~VersionedStoreEpoch () {
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::AbstractVersionedStoreEpochClient_getVersion () const {
-
-    return this->mBaseVersion;
-}
+//size_t VersionedStoreEpoch::AbstractVersionedStoreEpochClient_getBaseVersion () const {
+//
+//    return this->mBaseVersion;
+//}
 
 } // namespace Volition

@@ -19,15 +19,18 @@ TEST ( VersionedStore, test0 ) {
     VersionedStore store1;
     VersionedStore store2;
  
+    store0.setDebugName ( "store0" );
+    store1.setDebugName ( "store1" );
+    store2.setDebugName ( "store2" );
+ 
     store0.setValue < string >( KEY, STR0 );
     store0.pushVersion ();
-    
     store0.setValue < string >( KEY, STR1 );
+    
     store1.takeSnapshot ( store0 );
-    
     store0.setValue < string >( KEY, STR2 );
-    store2.takeSnapshot ( store0 );
     
+    store2.takeSnapshot ( store0 );
     store0.setValue < string >( KEY, STR3 );
     
     ASSERT_TRUE ( store0.getValue < string >( KEY ) == STR3 );

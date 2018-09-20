@@ -5,48 +5,33 @@
 #define VOLITION_VERSIONEDSTOREEPOCH_H
 
 #include <volition/common.h>
-#include <volition/AbstractVersionedStoreEpochClient.h>
 #include <volition/ValueStack.h>
 
 namespace Volition {
 
 class VersionedStore;
-class VersionedStoreEpoch;
-
-//================================================================//
-// VersionedStoreDownstream
-//================================================================//
-class VersionedStoreDownstream {
-private:
-
-    friend class VersionedStore;
-    friend class VersionedStoreEpoch;
-
-    size_t      mPeers;
-    size_t      mDependents;
-    size_t      mTotal;
-};
 
 //================================================================//
 // VersionedStoreEpoch
 //================================================================//
 class VersionedStoreEpoch :
-    public AbstractVersionedStoreEpochClient {
+    public enable_shared_from_this < VersionedStoreEpoch > {
 private:
 
-    friend class AbstractVersionedStoreEpochClient;
     friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
     friend class VersionedStoreIterator;
 
-    typedef set < string > Layer;
+    typedef set < string > EpochLayer;
 
-    set < AbstractVersionedStoreEpochClient* >              mClients;
-    vector < unique_ptr < Layer >>                          mLayers;
+    set < VersionedStore* >                                 mClients;
+    set < VersionedStoreEpoch* >                            mChildren;
+    map < size_t, EpochLayer >                              mEpochLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
 
     shared_ptr < VersionedStoreEpoch >                      mParent;
     size_t                                                  mBaseVersion;
+    size_t                                                  mTopVersion;
 
     //----------------------------------------------------------------//
     template < typename TYPE >
@@ -55,31 +40,33 @@ private:
         if ( !versionedValue ) {
             versionedValue = make_unique < ValueStack < TYPE >>();
         }
+        assert ( versionedValue->mTypeID == typeid ( TYPE ).hash_code ());
     }
 
     //----------------------------------------------------------------//
-    void                            affirmClient                ( AbstractVersionedStoreEpochClient& client );
-    bool                            containsVersion             ( size_t version ) const;
-    size_t                          countClients                () const;
-    VersionedStoreDownstream        countDownstream             ( size_t version ) const;
-    size_t                          countLayers                 () const;
-    void                            eraseClient                 ( AbstractVersionedStoreEpochClient& client );
+    void                            affirmChild                 ( VersionedStoreEpoch& child );
+    void                            affirmClient                ( VersionedStore& client );
+    size_t                          countDependencies           () const;
+    void                            eraseChild                  ( VersionedStoreEpoch& child );
+    void                            eraseClient                 ( VersionedStore& client );
+    size_t                          findImmutableTop            ( const VersionedStore* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
     const AbstractValueStack*       findValueStack              ( string key, size_t version ) const;
+    size_t                          getTopVersion               () const;
     void                            optimize                    ();
     void                            popLayer                    ();
-    void                            pushLayer                   ();
-    void                            setParent                   ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion );
+    void                            setParent                   ( shared_ptr < VersionedStoreEpoch > parent );
+    void                            setRaw                      ( size_t version, string key, const void* value );
 
     //----------------------------------------------------------------//
-    size_t                          AbstractVersionedStoreEpochClient_getVersion    () const override;
+    //size_t                          AbstractVersionedStoreEpochClient_getBaseVersion    () const override;
 
 public:
 
     //----------------------------------------------------------------//
-                            VersionedStoreEpoch         ();
-                            VersionedStoreEpoch         ( shared_ptr < VersionedStoreEpoch > parent, size_t version );
-                            ~VersionedStoreEpoch        ();
+                                    VersionedStoreEpoch         ();
+                                    VersionedStoreEpoch         ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion );
+                                    ~VersionedStoreEpoch        ();
 };
 
 } // namespace Volition

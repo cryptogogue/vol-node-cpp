@@ -20,23 +20,18 @@ AbstractValueStack::~AbstractValueStack () {
 }
 
 //----------------------------------------------------------------//
+void AbstractValueStack::copyFrom ( const AbstractValueStack& from ) {
+    this->AbstractValueStack_copyFrom ( from );
+}
+
+//----------------------------------------------------------------//
+void AbstractValueStack::erase ( size_t version ) {
+    this->AbstractValueStack_erase ( version );
+}
+
+//----------------------------------------------------------------//
 const void* AbstractValueStack::getRaw ( size_t version ) const {
     return this->AbstractValueStack_getRaw ( version );
-}
-
-//----------------------------------------------------------------//
-const void* AbstractValueStack::getRawForIndex ( size_t index ) const {
-    return this->AbstractValueStack_getRawForIndex ( index );
-}
-
-//----------------------------------------------------------------//
-size_t AbstractValueStack::getVersionForIndex ( size_t index ) const {
-    return this->AbstractValueStack_getVersionForIndex ( index );
-}
-
-//----------------------------------------------------------------//
-bool AbstractValueStack::isEmpty () const {
-    return this->AbstractValueStack_isEmpty ();
 }
 
 //----------------------------------------------------------------//
@@ -45,13 +40,8 @@ unique_ptr < AbstractValueStack > AbstractValueStack::makeEmptyCopy () const {
 }
 
 //----------------------------------------------------------------//
-void AbstractValueStack::pop () {
-    this->AbstractValueStack_pop ();
-}
-
-//----------------------------------------------------------------//
-void AbstractValueStack::pushBackRaw ( const void* value, size_t version ) {
-    this->AbstractValueStack_pushBackRaw ( value, version );
+void AbstractValueStack::setRaw ( size_t version, const void* value ) {
+    this->AbstractValueStack_setRaw ( version, value );
 }
 
 //----------------------------------------------------------------//
