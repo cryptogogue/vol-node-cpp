@@ -76,7 +76,6 @@ TEST ( VersionedStoreIterators, unitTests ) {
     store0.pushVersion ();
 
     store0.setValue < string >( KEY, "ac" );
-    //store0.pushVersion ();
 
     store1.setValue < string >( KEY, "ba" );
     store1.pushVersion ();
@@ -85,7 +84,6 @@ TEST ( VersionedStoreIterators, unitTests ) {
     store1.pushVersion ();
 
     store1.setValue < string >( KEY, "bc" );
-    //store1.pushVersion ();
     
     vector < string > expected0 = {
         "a",

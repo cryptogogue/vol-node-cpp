@@ -30,6 +30,7 @@ protected:
 
     VersionedStore      mAnchor;
     int                 mState;
+    size_t              mTopVersion;
 
 public:
 

@@ -16,6 +16,7 @@ VersionedStoreIterator::VersionedStoreIterator ( VersionedStore& versionedStore 
 
     if ( this->mAnchor.mEpoch && ( this->mAnchor.mEpoch->mTopVersion > 0 )) {
         this->takeSnapshot ( versionedStore );
+        this->mTopVersion = this->mVersion;
     }
     this->mState = this->mEpoch ? VALID : EMPTY;
 }
@@ -85,10 +86,9 @@ void VersionedStoreIterator::seek ( size_t version ) {
     if ( version < this->mVersion ) {
     
         shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
-        size_t top = this->mVersion;
     
-        while ( epoch && !(( epoch->mBaseVersion <= version ) && ( version < top ))) {
-            top = epoch->mBaseVersion;
+        while ( epoch && !(( epoch->mBaseVersion <= version ) && ( version <= this->mTopVersion ))) {
+            this->mTopVersion = epoch->mBaseVersion - 1;
             epoch = epoch->mParent;
         }
         assert ( epoch );
@@ -96,13 +96,16 @@ void VersionedStoreIterator::seek ( size_t version ) {
     }
     else if ( version > this->mVersion ) {
     
-        if ( version > this->mAnchor.mVersion ) {
-            version = this->mAnchor.mVersion;
-        }
-        
-        this->setEpoch ( this->mAnchor.mEpoch, this->mAnchor.mVersion );
-        if ( version < this->mVersion ) {
-            this->seek ( version );
+        this->mVersion = version;
+    
+        if ( this->mVersion > this->mTopVersion ) {
+            
+            this->setEpoch ( this->mAnchor.mEpoch, this->mAnchor.mVersion ); // overwrites this->mVersion
+            this->mTopVersion = this->mVersion;
+            
+            if ( version < this->mVersion ) {
+                this->seek ( version );
+            }
         }
     }
     this->mState = VALID;
