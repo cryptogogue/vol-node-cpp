@@ -47,7 +47,7 @@ public:
     //----------------------------------------------------------------//
     void            clear                   ();
     size_t          getVersion              () const;
-    bool            hasValue                ( string key ) const;
+//    bool            hasValue                ( string key ) const;
     void            popVersion              ();
     void            pushVersion             ();
     void            rewind                  ( size_t version );

@@ -60,20 +60,24 @@ protected:
     void seekNext ( shared_ptr < VersionedStoreEpoch > prevEpoch ) {
         
         shared_ptr < VersionedStoreEpoch > epoch = this->mAnchor.mEpoch;
+        size_t top = this->mAnchor.mVersion + 1;
         
         shared_ptr < VersionedStoreEpoch > bestEpoch;
         const ValueStack < TYPE >* bestValueStack = NULL;
+        size_t bestTop = top;
         
         for ( ; epoch != prevEpoch; epoch = epoch->mParent ) {
             const ValueStack < TYPE >* valueStack = this->getValueStack ( epoch );
             if ( valueStack && valueStack->size ()) {
                 bestEpoch = epoch;
                 bestValueStack = valueStack;
+                bestTop = top;
             }
+            top = epoch->mBaseVersion;
         }
         
         if ( bestValueStack ) {
-            this->setExtents ( *bestValueStack );
+            this->setExtents ( *bestValueStack, bestTop - 1 );
             this->mIterator = bestValueStack->mValuesByVersion.begin ();
             this->setEpoch ( bestEpoch, this->mFirstVersion );
             this->mState = VALID;
@@ -84,27 +88,41 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    void seekPrev ( shared_ptr < VersionedStoreEpoch > epoch ) {
+    void seekPrev ( shared_ptr < VersionedStoreEpoch > epoch, size_t top ) {
         
         for ( ; epoch; epoch = epoch->mParent ) {
+        
             const ValueStack < TYPE >* valueStack = this->getValueStack ( epoch );
+            
             if ( valueStack && valueStack->size ()) {
-                this->setExtents ( *valueStack );
+                this->setExtents ( *valueStack, top - 1 );
                 this->mIterator = valueStack->mValuesByVersion.find ( this->mLastVersion );
                 this->setEpoch ( epoch, this->mLastVersion );
                 this->mState = VALID;
                 return;
             }
+            top = epoch->mBaseVersion;
         }
         this->mState = NO_PREV;
     }
 
     //----------------------------------------------------------------//
-    void setExtents ( const ValueStack < TYPE >& valueStack ) {
+    void setExtents ( const ValueStack < TYPE >& valueStack, size_t top ) {
     
         assert ( valueStack.mValuesByVersion.size ());
         this->mFirstVersion     = valueStack.mValuesByVersion.begin ()->first;
-        this->mLastVersion      = valueStack.mValuesByVersion.rbegin ()->first;
+        
+        typename map < size_t, TYPE >::const_iterator valueIt = valueStack.mValuesByVersion.lower_bound ( top );
+        
+        if ( valueIt == valueStack.mValuesByVersion.cend ()) {
+            this->mLastVersion = valueStack.mValuesByVersion.rbegin ()->first;
+        }
+        else {
+            if ( valueIt->first > top ) {
+                valueIt--;
+            }
+            this->mLastVersion = valueIt->first;
+        }
     }
 
 public:
@@ -162,7 +180,7 @@ public:
             }
             else {
                 assert ( this->mIterator->first == this->mFirstVersion );
-                this->seekPrev ( this->mEpoch->mParent );
+                this->seekPrev ( this->mEpoch->mParent, this->mVersion );
             }
         }
         return ( this->mState != NO_PREV );
@@ -180,7 +198,7 @@ public:
         mKey ( key ) {
         
         if ( this->mAnchor.mEpoch ) {
-            this->seekPrev ( this->mAnchor.mEpoch );
+            this->seekPrev ( this->mAnchor.mEpoch, this->mAnchor.mVersion + 1 );
         }
     }
 };

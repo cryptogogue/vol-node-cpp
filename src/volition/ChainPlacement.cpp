@@ -13,7 +13,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 ChainPlacement::ChainPlacement ( const Cycle& cycle, bool newCycle ) :
     mNewCycle ( newCycle ),
-    mCycle ( &cycle ) {
+    mCycle ( cycle ) {
 }
 
 //----------------------------------------------------------------//
@@ -23,8 +23,7 @@ ChainPlacement::~ChainPlacement () {
 //----------------------------------------------------------------//
 size_t ChainPlacement::getCycleID () const {
 
-    assert ( this->mCycle );
-    return this->mCycle->mCycleID + ( this->mNewCycle ? 1 : 0 );
+    return this->mCycle.mCycleID + ( this->mNewCycle ? 1 : 0 );
 }
 
 } // namespace Volition

@@ -5,10 +5,9 @@
 #define VOLITION_CHAINPLACEMENT_H
 
 #include <volition/common.h>
+#include <volition/Cycle.h>
 
 namespace Volition {
-
-class Cycle;
 
 //================================================================//
 // ChainPlacement
@@ -19,17 +18,17 @@ private:
     friend class Chain;
     friend class Cycle;
 
-    bool                    mNewCycle;
-    const Cycle*            mCycle;
+    bool            mNewCycle;
+    Cycle           mCycle;
 
     //----------------------------------------------------------------//
-                            ChainPlacement      ( const Cycle& cycle, bool newCycle );
+                    ChainPlacement      ( const Cycle& cycle, bool newCycle );
 
 public:
 
     //----------------------------------------------------------------//
-                            ~ChainPlacement     ();
-    size_t                  getCycleID          () const;
+                    ~ChainPlacement     ();
+    size_t          getCycleID          () const;
 };
 
 } // namespace Volition

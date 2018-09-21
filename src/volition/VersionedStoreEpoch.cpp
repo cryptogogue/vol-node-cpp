@@ -83,14 +83,38 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) con
 }
 
 //----------------------------------------------------------------//
-const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
+//const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
+//
+//    const VersionedStoreEpoch* epoch = this;
+//    size_t top = version + 1;
+//    for ( ; epoch && ( version < top ); epoch = epoch->mParent.get ()) {
+//        if ( epoch->mBaseVersion <= version ) {
+//            const AbstractValueStack* valueStack = this->findValueStack ( key );
+//            if ( valueStack && valueStack->getRaw ( version )) return valueStack;
+//        }
+//        top = epoch->mBaseVersion;
+//    }
+//    return NULL;
+//}
+
+//----------------------------------------------------------------//
+const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typeID ) const {
 
     const VersionedStoreEpoch* epoch = this;
     for ( ; epoch; epoch = epoch->mParent.get ()) {
         if ( epoch->mBaseVersion <= version ) {
-            return findValueStack ( key );
+        
+            const AbstractValueStack* valueStack = epoch->findValueStack ( key );
+            
+            if ( valueStack ) {
+                assert ( valueStack->mTypeID == typeID );
+                const void* value = valueStack->getRaw ( version );
+                if ( value ) {
+                    return value;
+                }
+            }
         }
-        version = epoch->mBaseVersion > 0 ? epoch->mBaseVersion - 1: 0;
+        version = epoch->mBaseVersion > 0 ? epoch->mBaseVersion - 1 : 0;
     }
     return NULL;
 }

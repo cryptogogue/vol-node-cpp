@@ -231,12 +231,13 @@ ChainPlacement Chain::findNextCycle ( string minerID ) {
     // important to measure the threshold *after* the proposed change.
     size_t nCycles = this->countCycles ();
 
-    // the 'best' cycle is the earliest cycle in the chain that can be edited and will be 'improved.'
-    // 'improved' means the miner will be added to the pool and/or chain.
-    const Cycle* bestCycle = NULL; // default is to start a new cycle.
-
     // if only one cycle, that is the genesis cycle. skip it and add a new cycle.
     if ( nCycles > 1 ) {
+
+        // the 'best' cycle is the earliest cycle in the chain that can be edited and will be 'improved.'
+        // 'improved' means the miner will be added to the pool and/or chain.
+        bool foundCycle = false;
+        Cycle bestCycle; // default is to start a new cycle.
 
         // start at the last cycle and count backward until we find a the best cycle.
         // the most recent cycle can always be edited, though may not be 'improved.'
@@ -244,20 +245,24 @@ ChainPlacement Chain::findNextCycle ( string minerID ) {
         
         while ( cycleIt ) {
         
-            const Cycle& cycle = *cycleIt; // cycle under consideration
+            Cycle cycle1 = *cycleIt; // cycle under consideration
             
             // if we're here at all, the cycle can be edited. if it will also be improved, choose it as our 'best' cycle.
-            bestCycle = this->willImprove ( cycle, minerID ) ? &cycle : bestCycle;
+            if ( this->willImprove ( cycle1, minerID )) {
+                bestCycle = cycle1;
+                foundCycle = true;
+            }
             
             cycleIt.prev (); // don't need to check for overrun; canEdit () will always return false for cycle 0.
+            Cycle cycle0 = *cycleIt;
             
             // if we can't edit, break.
-            if ( !this->canEdit ( *cycleIt, cycle, minerID )) break;
+            if ( !this->canEdit ( cycle0, cycle1, minerID )) break;
         }
-    }
-
-    if ( bestCycle ) {
-        return ChainPlacement ( *bestCycle, false );
+        
+        if ( foundCycle ) {
+            return ChainPlacement ( bestCycle, false );
+        }
     }
     return ChainPlacement ( this->getTopCycle (), true );
 }
@@ -335,19 +340,17 @@ void Chain::newCycle () {
 //----------------------------------------------------------------//
 void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
 
-    assert ( placement.mCycle );
-
     if ( placement.mNewCycle ) {
         this->newCycle ();
     }
     else {
-        const Cycle* cycle = placement.mCycle;
+        const Cycle& cycle = placement.mCycle;
         
         size_t top = this->getVersion ();
-        size_t truncate = cycle->mBase;
+        size_t truncate = cycle.mBase;
         size_t score = block.getScore ();
         VersionedStoreIterator chainIt ( *this, truncate );
-        for ( ; truncate < top; ++truncate ) {
+        for ( ; chainIt && ( truncate < top ); chainIt.next (), ++truncate ) {
             if ( chainIt.getValue < Block >( BLOCK_KEY ).getScore () > score ) break;
         }
         this->rewind ( truncate );
