@@ -35,6 +35,7 @@ protected:
     //----------------------------------------------------------------//
     void            affirmEpoch             ();
     const void*     getRaw                  ( string key, size_t version, size_t typeID ) const;
+    size_t          getVersionDependency    () const;
     void            prepareForSetValue      ();
     void            setEpoch                ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
     void            setRaw                  ( string key, const void* value );

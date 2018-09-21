@@ -48,7 +48,7 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
 
     DEBUG_LOG ( "VersionedStoreEpoch::findImmutableTop ()\n" );
 
-    size_t immutableTop = this->mBaseVersion;
+    size_t immutableTop = this->getVersionDependency ();
 
     set < VersionedStore* >::const_iterator clientIt = this->mClients.cbegin ();
     for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
@@ -56,7 +56,7 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
         const VersionedStore* client = *clientIt;
         if ( client != ignore ) {
         
-            size_t clientVersion = client->mVersion + 1;
+            size_t clientVersion = client->getVersionDependency ();
             
             if ( clientVersion > immutableTop ) {
                 immutableTop = clientVersion;
@@ -69,7 +69,7 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
 
         const VersionedStoreEpoch* child = *childIt;
         
-        size_t clientVersion = child->mBaseVersion;
+        size_t clientVersion = child->getVersionDependency ();
             
         if ( clientVersion > immutableTop ) {
             immutableTop = clientVersion;
@@ -92,7 +92,7 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) con
 const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typeID ) const {
 
     const VersionedStoreEpoch* epoch = this;
-    for ( ; epoch; epoch = epoch->mParent.get ()) {
+    for ( ; epoch; version = epoch->mBaseVersion, epoch = epoch->mParent.get ()) {
         if ( epoch->mBaseVersion <= version ) {
         
             const AbstractValueStack* valueStack = epoch->findValueStack ( key );
@@ -105,9 +105,14 @@ const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typ
                 }
             }
         }
-        version = epoch->mBaseVersion > 0 ? epoch->mBaseVersion - 1 : 0;
     }
     return NULL;
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStoreEpoch::getVersionDependency () const {
+
+    return this->mBaseVersion;
 }
 
 //----------------------------------------------------------------//
@@ -121,24 +126,28 @@ void VersionedStoreEpoch::optimize () {
     for ( set < VersionedStore* >::iterator clientIt = this->mClients.begin (); clientIt != this->mClients.end (); ++clientIt ) {
 
         VersionedStore* client = *clientIt;
-        if (( topClient == NULL ) || ( topClient->mVersion < client->mVersion )) {
+        if (( topClient == NULL ) || ( topClient->getVersionDependency () < client->getVersionDependency ())) {
             topClient = client;
-            DEBUG_LOG ( "  topClient: %04x version: %d\n", ( int )(( size_t )client ) & 0xffff, ( int ) client->mVersion + 1 );
+            DEBUG_LOG ( "  topClient: %04x version: %d\n", ( int )(( size_t )client ) & 0xffff, ( int ) client->getVersionDependency ());
         }
     }
     
     for ( set < VersionedStoreEpoch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
         
         VersionedStoreEpoch* child = *childIt;
-        if (( topChild == NULL ) || ( topChild->mBaseVersion < child->mBaseVersion ) || ( topChild->mTopVersion < child->mTopVersion )) {
+        
+        bool replace = ( topChild == NULL ) || ( topChild->getVersionDependency () < child->getVersionDependency ());
+        replace = replace || (( topChild->getVersionDependency () == child->getVersionDependency ()) && ( topChild->mTopVersion < child->mTopVersion ));
+        
+        if ( replace ) {
             topChild = child;
-            DEBUG_LOG ( "  topClient: %04x topChild: %d\n", ( int )(( size_t )child ) & 0xffff, ( int ) child->mBaseVersion );
+            DEBUG_LOG ( "  topClient: %04x topChild: %d\n", ( int )(( size_t )child ) & 0xffff, ( int ) child->getVersionDependency ());
         }
     }
 
-    size_t immutableTop = topClient ? ( topClient->mVersion + 1 ) : 0;
-    if ( topChild && ( immutableTop < topChild->mBaseVersion )) {
-        immutableTop = topChild->mBaseVersion;
+    size_t immutableTop = topClient ? ( topClient->getVersionDependency ()) : 0;
+    if ( topChild && ( immutableTop < topChild->getVersionDependency ())) {
+        immutableTop = topChild->getVersionDependency ();
     }
     
     DEBUG_LOG ( "  immutableTop: %d\n", ( int )immutableTop );
@@ -152,7 +161,7 @@ void VersionedStoreEpoch::optimize () {
         assert ( this->mTopVersion == immutableTop );
     }
     
-    if ( topChild && (( topClient == NULL ) || (( topClient->mVersion + 1 ) <= topChild->mBaseVersion ))) {
+    if ( topChild && (( topClient == NULL ) || (( topClient->getVersionDependency ()) <= topChild->getVersionDependency ()))) {
     
         DEBUG_LOG ( "  MERGING CHILD EPOCH\n" );
     

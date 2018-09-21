@@ -53,6 +53,7 @@ private:
     size_t                          findImmutableTop            ( const VersionedStore* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
+    size_t                          getVersionDependency        () const;
     void                            optimize                    ();
     void                            popLayer                    ();
     void                            setParent                   ( shared_ptr < VersionedStoreEpoch > parent );

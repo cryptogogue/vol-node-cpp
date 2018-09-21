@@ -40,6 +40,12 @@ size_t VersionedStore::getVersion () const {
 }
 
 //----------------------------------------------------------------//
+size_t VersionedStore::getVersionDependency () const {
+
+    return this->mVersion + 1;
+}
+
+//----------------------------------------------------------------//
 void VersionedStore::popVersion () {
 
     DEBUG_LOG ( "VersionedStore::  ()\n" );
