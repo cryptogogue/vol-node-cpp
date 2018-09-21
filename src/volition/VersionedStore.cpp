@@ -4,7 +4,8 @@
 #include <volition/State.h>
 #include <volition/VersionedStore.h>
 
-#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
+//#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
+#define DEBUG_LOG(...)
 
 namespace Volition {
 
@@ -114,7 +115,7 @@ void VersionedStore::pushVersion () {
     this->mVersion++;
     DEBUG_LOG ( "  version: %d\n", ( int )this->mVersion );
     
-    if ( this->mVersion < this->mEpoch->mTopVersion ) {
+    if ( this->mVersion < this->mEpoch->getTopVersion ()) {
     
         DEBUG_LOG ( "  SPLIT\n" );
     

@@ -51,7 +51,7 @@ void testVersionedValueIterator ( VersionedStore& store, string key, const vecto
 }
 
 //----------------------------------------------------------------//
-TEST ( VersionedStoreIterators, unitTests ) {
+TEST ( VersionedStoreIterators, tes0 ) {
 
     const string KEY = "test";
 

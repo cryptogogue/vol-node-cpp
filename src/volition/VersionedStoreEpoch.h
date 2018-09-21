@@ -32,7 +32,6 @@ private:
 
     shared_ptr < VersionedStoreEpoch >                      mParent;
     size_t                                                  mBaseVersion;
-    size_t                                                  mTopVersion;
 
     //----------------------------------------------------------------//
     template < typename TYPE >
@@ -53,6 +52,7 @@ private:
     size_t                          findImmutableTop            ( const VersionedStore* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
+    size_t                          getTopVersion               () const;
     size_t                          getVersionDependency        () const;
     void                            optimize                    ();
     void                            popLayer                    ();

@@ -5,7 +5,8 @@
 #include <volition/VersionedStore.h>
 #include <volition/VersionedStoreEpoch.h>
 
-#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
+//#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
+#define DEBUG_LOG(...)
 
 namespace Volition {
 
@@ -110,6 +111,12 @@ const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typ
 }
 
 //----------------------------------------------------------------//
+size_t VersionedStoreEpoch::getTopVersion () const {
+
+    return this->mEpochLayers.size () ? this->mEpochLayers.rbegin ()->first + 1 : 0;
+}
+
+//----------------------------------------------------------------//
 size_t VersionedStoreEpoch::getVersionDependency () const {
 
     return this->mBaseVersion;
@@ -137,7 +144,7 @@ void VersionedStoreEpoch::optimize () {
         VersionedStoreEpoch* child = *childIt;
         
         bool replace = ( topChild == NULL ) || ( topChild->getVersionDependency () < child->getVersionDependency ());
-        replace = replace || (( topChild->getVersionDependency () == child->getVersionDependency ()) && ( topChild->mTopVersion < child->mTopVersion ));
+        replace = replace || (( topChild->getVersionDependency () == child->getVersionDependency ()) && ( topChild->getTopVersion () < child->getTopVersion ()));
         
         if ( replace ) {
             topChild = child;
@@ -151,14 +158,15 @@ void VersionedStoreEpoch::optimize () {
     }
     
     DEBUG_LOG ( "  immutableTop: %d\n", ( int )immutableTop );
-    DEBUG_LOG ( "  topVersion: %d\n", ( int )this->mTopVersion );
+    DEBUG_LOG ( "  topVersion: %d\n", ( int )this->getTopVersion ());
     
-    if ( immutableTop < this->mTopVersion ) {
-            
-        for ( size_t i = immutableTop; i < this->mTopVersion; ++i ) {
+    if ( immutableTop < this->getTopVersion ()) {
+        
+        size_t topVersion = this->getTopVersion ();
+        for ( size_t i = immutableTop; i < topVersion; ++i ) {
             this->popLayer ();
         }
-        assert ( this->mTopVersion == immutableTop );
+        assert ( this->getTopVersion () == immutableTop );
     }
     
     if ( topChild && (( topClient == NULL ) || (( topClient->getVersionDependency ()) <= topChild->getVersionDependency ()))) {
@@ -199,8 +207,6 @@ void VersionedStoreEpoch::optimize () {
             child->mParent = this->shared_from_this ();
         }
 
-        this->mTopVersion = mergeEpoch->mTopVersion;
-
         mergeEpoch = NULL;
         assert ( weakMergeEpoch.expired ());
         
@@ -217,9 +223,7 @@ void VersionedStoreEpoch::popLayer () {
     if ( layerIt != this->mEpochLayers.rend ()) {
     
         DEBUG_LOG ( "  popping layer: %d\n", ( int )layerIt->first );
-    
-        assert ( this->mTopVersion == ( layerIt->first + 1 ));
-    
+        
         EpochLayer& layer = layerIt->second;
         
         EpochLayer::iterator keyIt = layer.begin ();
@@ -234,8 +238,7 @@ void VersionedStoreEpoch::popLayer () {
             }
         }
         
-        this->mTopVersion = layerIt->first;
-        this->mEpochLayers.erase ( this->mTopVersion );
+        this->mEpochLayers.erase ( layerIt->first );
     }
 }
 
@@ -259,9 +262,6 @@ void VersionedStoreEpoch::setParent ( shared_ptr < VersionedStoreEpoch > parent 
 //----------------------------------------------------------------//
 void VersionedStoreEpoch::setRaw ( size_t version, string key, const void* value ) {
 
-    if ( this->mTopVersion <= version ) {
-        this->mTopVersion = version + 1;
-    }
     this->mValueStacksByKey [ key ]->setRaw ( version, value );
     
     EpochLayer& layer = this->mEpochLayers [ version ];
@@ -272,14 +272,13 @@ void VersionedStoreEpoch::setRaw ( size_t version, string key, const void* value
 
 //----------------------------------------------------------------//
 VersionedStoreEpoch::VersionedStoreEpoch () :
-    mBaseVersion ( 0 ),
-    mTopVersion ( 0 ) {
+    mBaseVersion ( 0 ) {
 }
 
 //----------------------------------------------------------------//
 VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion ) {
     
-    assert ( parent && ( parent->mBaseVersion <= baseVersion ) && ( baseVersion <= parent->mTopVersion ));
+    assert ( parent && ( parent->mBaseVersion <= baseVersion ) && ( baseVersion <= parent->getTopVersion ()));
 
     this->setParent ( parent->mBaseVersion < baseVersion ? parent : parent->mParent );
     this->mBaseVersion = baseVersion;
@@ -287,7 +286,6 @@ VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > pa
     map < size_t, EpochLayer >::const_iterator layerIt = parent->mEpochLayers.find ( baseVersion );
     if ( layerIt != parent->mEpochLayers.cend ()) {
     
-        this->mTopVersion = baseVersion + 1;
         const EpochLayer& fromLayer = layerIt->second;
         
         EpochLayer::const_iterator keyIt = fromLayer.cbegin ();
@@ -302,9 +300,6 @@ VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > pa
             }
             toStack->setRaw ( baseVersion, fromStack->getRaw ( baseVersion ));
         }
-    }
-    else {
-        this->mTopVersion = baseVersion;
     }
 }
 
