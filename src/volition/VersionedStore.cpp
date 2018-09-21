@@ -29,17 +29,6 @@ void VersionedStore::clear () {
 const void* VersionedStore::getRaw ( string key, size_t typeID ) const {
 
     return this->mEpoch ? this->mEpoch->getRaw ( this->mVersion, key, typeID ) : NULL;
-
-//    if ( this->mEpoch ) {
-//    
-//        const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key, this->mVersion );
-//
-//        if ( valueStack ) {
-//            assert ( valueStack->mTypeID == typeID );
-//            return valueStack->getRaw ( this->mVersion );
-//        }
-//    }
-//    return NULL;
 }
 
 //----------------------------------------------------------------//
@@ -47,19 +36,6 @@ size_t VersionedStore::getVersion () const {
 
     return this->mVersion;
 }
-
-//----------------------------------------------------------------//
-//bool VersionedStore::hasValue ( string key ) const {
-//
-//    if ( this->mEpoch ) {
-//        const AbstractValueStack* valueStack = this->mEpoch->findValueStack ( key, this->mVersion );
-//        
-//        if ( valueStack ) {
-//            return ( valueStack->getRaw ( this->mVersion ) != NULL );
-//        }
-//    }
-//    return false;
-//}
 
 //----------------------------------------------------------------//
 void VersionedStore::popVersion () {
@@ -211,15 +187,5 @@ VersionedStore::~VersionedStore () {
         epoch->optimize ();
     }
 }
-
-//================================================================//
-// overrides
-//================================================================//
-
-//----------------------------------------------------------------//
-//size_t VersionedStore::AbstractVersionedStoreEpochClient_getBaseVersion () const {
-//
-//    return this->mVersion;
-//}
 
 } // namespace Volition

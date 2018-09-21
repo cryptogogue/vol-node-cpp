@@ -39,15 +39,11 @@ protected:
     void            setEpoch                ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
     void            setRaw                  ( string key, const void* value );
     
-    //----------------------------------------------------------------//
-    //size_t                                  AbstractVersionedStoreEpochClient_getBaseVersion    () const override;
-    
 public:
 
     //----------------------------------------------------------------//
     void            clear                   ();
     size_t          getVersion              () const;
-//    bool            hasValue                ( string key ) const;
     void            popVersion              ();
     void            pushVersion             ();
     void            rewind                  ( size_t version );

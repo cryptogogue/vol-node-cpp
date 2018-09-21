@@ -52,16 +52,11 @@ private:
     void                            eraseClient                 ( VersionedStore& client );
     size_t                          findImmutableTop            ( const VersionedStore* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
-    //const AbstractValueStack*       findValueStack              ( string key, size_t version ) const;
-    //size_t                          getTopVersion               () const;
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
     void                            optimize                    ();
     void                            popLayer                    ();
     void                            setParent                   ( shared_ptr < VersionedStoreEpoch > parent );
     void                            setRaw                      ( size_t version, string key, const void* value );
-
-    //----------------------------------------------------------------//
-    //size_t                          AbstractVersionedStoreEpochClient_getBaseVersion    () const override;
 
 public:
 

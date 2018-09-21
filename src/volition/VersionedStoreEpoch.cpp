@@ -83,21 +83,6 @@ const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) con
 }
 
 //----------------------------------------------------------------//
-//const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key, size_t version ) const {
-//
-//    const VersionedStoreEpoch* epoch = this;
-//    size_t top = version + 1;
-//    for ( ; epoch && ( version < top ); epoch = epoch->mParent.get ()) {
-//        if ( epoch->mBaseVersion <= version ) {
-//            const AbstractValueStack* valueStack = this->findValueStack ( key );
-//            if ( valueStack && valueStack->getRaw ( version )) return valueStack;
-//        }
-//        top = epoch->mBaseVersion;
-//    }
-//    return NULL;
-//}
-
-//----------------------------------------------------------------//
 const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typeID ) const {
 
     const VersionedStoreEpoch* epoch = this;
@@ -300,15 +285,5 @@ VersionedStoreEpoch::~VersionedStoreEpoch () {
 
     this->setParent ( NULL );
 }
-
-//================================================================//
-// overrides
-//================================================================//
-
-//----------------------------------------------------------------//
-//size_t VersionedStoreEpoch::AbstractVersionedStoreEpochClient_getBaseVersion () const {
-//
-//    return this->mBaseVersion;
-//}
 
 } // namespace Volition
