@@ -356,8 +356,11 @@ void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
         this->rewind ( truncate );
     }
     
-    const Block* prevBlock = &this->getValue < Block >( BLOCK_KEY );
-    block.setPreviousBlock ( prevBlock );
+    size_t version = this->getVersion ();
+    if ( version > 0 ) {
+        const Block& prevBlock = this->getValue < Block >( BLOCK_KEY, version - 1 );
+        block.setPreviousBlock ( prevBlock );
+    }
 }
 
 //----------------------------------------------------------------//

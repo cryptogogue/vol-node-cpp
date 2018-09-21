@@ -36,7 +36,7 @@ private:
 
     //----------------------------------------------------------------//
     void                setCycleID                          ( size_t cycleID );
-    void                setPreviousBlock                    ( const Block* prevBlock );
+    void                setPreviousBlock                    ( const Block& prevBlock );
     bool                verify                              ( const State& state );
     bool                verify                              ( const State& state, const CryptoKey& key );
 

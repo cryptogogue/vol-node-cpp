@@ -16,7 +16,7 @@ VersionedStoreIterator::VersionedStoreIterator ( VersionedStore& versionedStore 
 
     if ( this->mAnchor.mEpoch && ( this->mAnchor.mEpoch->mTopVersion > 0 )) {
         this->takeSnapshot ( versionedStore );
-        this->mTopVersion = this->mVersion;
+        this->mTopVersion = this->mVersion + 1;
     }
     this->mState = this->mEpoch ? VALID : EMPTY;
 }

@@ -4,6 +4,8 @@
 #include <volition/State.h>
 #include <volition/VersionedStore.h>
 
+#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
+
 namespace Volition {
 
 //================================================================//
@@ -26,9 +28,9 @@ void VersionedStore::clear () {
 }
 
 //----------------------------------------------------------------//
-const void* VersionedStore::getRaw ( string key, size_t typeID ) const {
+const void* VersionedStore::getRaw ( string key, size_t version, size_t typeID ) const {
 
-    return this->mEpoch ? this->mEpoch->getRaw ( this->mVersion, key, typeID ) : NULL;
+    return this->mEpoch ? this->mEpoch->getRaw ( version < this->mVersion ? version : this->mVersion, key, typeID ) : NULL;
 }
 
 //----------------------------------------------------------------//
@@ -39,6 +41,8 @@ size_t VersionedStore::getVersion () const {
 
 //----------------------------------------------------------------//
 void VersionedStore::popVersion () {
+
+    DEBUG_LOG ( "VersionedStore::  ()\n" );
 
     if ( this->mEpoch ) {
     
@@ -65,22 +69,34 @@ void VersionedStore::popVersion () {
 //----------------------------------------------------------------//
 void VersionedStore::prepareForSetValue () {
 
+    DEBUG_LOG ( "VersionedStore::prepareForSetValue ()\n" );
+
     this->affirmEpoch ();
 
-    if (( this->mEpoch->countDependencies () - 1 ) > 0 ) {
+    size_t dependencies = this->mEpoch->countDependencies () - 1 ;
+    DEBUG_LOG ( "  dependencies: %d\n", ( int )dependencies );
+    
+    if ( dependencies > 0 ) {
+        
+        DEBUG_LOG ( "  SPLIT\n" );
         
         size_t immutableTop = this->mEpoch->findImmutableTop ( this );
         
         if ( this->mVersion <= immutableTop ) {
+        
+            shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
             this->mEpoch->eraseClient ( *this );
             this->mEpoch = make_shared < VersionedStoreEpoch >( this->mEpoch, this->mVersion );
             this->mEpoch->affirmClient ( *this );
+            epoch->optimize ();
         }
     }
 }
 
 //----------------------------------------------------------------//
 void VersionedStore::pushVersion () {
+
+    DEBUG_LOG ( "VersionedStore::pushVersion ()\n" );
 
     if ( !this->mEpoch ) {
         this->mVersion = 0;
@@ -90,16 +106,24 @@ void VersionedStore::pushVersion () {
     assert ( this->mEpoch );
 
     this->mVersion++;
+    DEBUG_LOG ( "  version: %d\n", ( int )this->mVersion );
     
     if ( this->mVersion < this->mEpoch->mTopVersion ) {
+    
+        DEBUG_LOG ( "  SPLIT\n" );
+    
+        shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
         this->mEpoch->eraseClient ( *this );
         this->mEpoch = make_shared < VersionedStoreEpoch >( this->mEpoch, this->mVersion - 1 );
         this->mEpoch->affirmClient ( *this );
+        epoch->optimize ();
     }
 }
 
 //----------------------------------------------------------------//
 void VersionedStore::rewind ( size_t version ) {
+
+    DEBUG_LOG ( "VersionedStore::rewind ( %d )\n", ( int )version );
 
     assert ( version <= this->mVersion );
     
@@ -136,25 +160,41 @@ void VersionedStore::setDebugName ( string debugName ) {
 //----------------------------------------------------------------//
 void VersionedStore::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch, size_t version ) {
 
+    weak_ptr < VersionedStoreEpoch > prevEpochWeak;
+
     if ( this->mEpoch != epoch ) {
         
+        DEBUG_LOG ( "VersionedStore::setEpoch () - changing epoch\n" );
+        
         if ( this->mEpoch ) {
+            prevEpochWeak = this->mEpoch;
             this->mEpoch->eraseClient ( *this );
         }
         
         this->mEpoch = epoch;
-        
-        if ( epoch ) {
-            epoch->affirmClient ( *this );
-            assert ( version >= epoch->mBaseVersion );
-        }
+        epoch = NULL;
     }
     
-    this->mVersion = this->mEpoch ? version : 0;
+     if ( this->mEpoch ) {
+        assert ( version >= this->mEpoch->mBaseVersion );
+        this->mVersion = version;
+        this->mEpoch->affirmClient ( *this );
+        this->mEpoch->optimize ();
+    }
+    else {
+        this->mVersion = 0;
+    }
+
+    if ( !prevEpochWeak.expired ()) {
+        epoch = prevEpochWeak.lock ();
+        epoch->optimize ();
+    }
 }
 
 //----------------------------------------------------------------//
 void VersionedStore::setRaw ( string key, const void* value ) {
+
+    DEBUG_LOG ( "VersionedStore::setRaw ( %s, %p )\n", key.c_str (), value );
 
     assert ( this->mEpoch );
     this->mEpoch->setRaw ( this->mVersion, key, value );

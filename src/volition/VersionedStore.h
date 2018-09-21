@@ -34,7 +34,7 @@ protected:
 
     //----------------------------------------------------------------//
     void            affirmEpoch             ();
-    const void*     getRaw                  ( string key, size_t typeID ) const;
+    const void*     getRaw                  ( string key, size_t version, size_t typeID ) const;
     void            prepareForSetValue      ();
     void            setEpoch                ( shared_ptr < VersionedStoreEpoch > epoch, size_t version );
     void            setRaw                  ( string key, const void* value );
@@ -69,8 +69,22 @@ public:
 
     //----------------------------------------------------------------//
     template < typename TYPE >
+    const TYPE& getValue ( string key, size_t version ) const {
+        const TYPE* value = this->getValueOrNil < TYPE >( key, version );
+        assert ( value );
+        return *value;
+    }
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
     const TYPE* getValueOrNil ( string key ) const {
-        return ( TYPE* )this->getRaw ( key, typeid ( TYPE ).hash_code ());
+        return ( TYPE* )this->getRaw ( key, this->mVersion, typeid ( TYPE ).hash_code ());
+    }
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    const TYPE* getValueOrNil ( string key, size_t version ) const {
+        return ( TYPE* )this->getRaw ( key, version, typeid ( TYPE ).hash_code ());
     }
 
     //----------------------------------------------------------------//

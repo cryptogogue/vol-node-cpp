@@ -5,6 +5,8 @@
 #include <volition/VersionedStore.h>
 #include <volition/VersionedStoreEpoch.h>
 
+#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
+
 namespace Volition {
 
 //================================================================//
@@ -44,6 +46,8 @@ void VersionedStoreEpoch::eraseClient ( VersionedStore& client ) {
 //----------------------------------------------------------------//
 size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) const {
 
+    DEBUG_LOG ( "VersionedStoreEpoch::findImmutableTop ()\n" );
+
     size_t immutableTop = this->mBaseVersion;
 
     set < VersionedStore* >::const_iterator clientIt = this->mClients.cbegin ();
@@ -52,7 +56,7 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
         const VersionedStore* client = *clientIt;
         if ( client != ignore ) {
         
-            size_t clientVersion = client->mVersion;
+            size_t clientVersion = client->mVersion + 1;
             
             if ( clientVersion > immutableTop ) {
                 immutableTop = clientVersion;
@@ -71,6 +75,8 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
             immutableTop = clientVersion;
         }
     }
+    
+    DEBUG_LOG ( "  immutableTop: %d\n", ( int )immutableTop );
     
     return immutableTop;
 }
@@ -107,6 +113,8 @@ const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typ
 //----------------------------------------------------------------//
 void VersionedStoreEpoch::optimize () {
 
+    DEBUG_LOG ( "VersionedStoreEpoch::optimize ()\n" );
+
     VersionedStore* topClient = NULL;
     VersionedStoreEpoch* topChild = NULL;
 
@@ -115,6 +123,7 @@ void VersionedStoreEpoch::optimize () {
         VersionedStore* client = *clientIt;
         if (( topClient == NULL ) || ( topClient->mVersion < client->mVersion )) {
             topClient = client;
+            DEBUG_LOG ( "  topClient: %04x version: %d\n", ( int )(( size_t )client ) & 0xffff, ( int ) client->mVersion + 1 );
         }
     }
     
@@ -123,23 +132,29 @@ void VersionedStoreEpoch::optimize () {
         VersionedStoreEpoch* child = *childIt;
         if (( topChild == NULL ) || ( topChild->mBaseVersion < child->mBaseVersion ) || ( topChild->mTopVersion < child->mTopVersion )) {
             topChild = child;
+            DEBUG_LOG ( "  topClient: %04x topChild: %d\n", ( int )(( size_t )child ) & 0xffff, ( int ) child->mBaseVersion );
         }
     }
 
-    size_t immutableTop = topClient ? topClient->mVersion : 0;
+    size_t immutableTop = topClient ? ( topClient->mVersion + 1 ) : 0;
     if ( topChild && ( immutableTop < topChild->mBaseVersion )) {
         immutableTop = topChild->mBaseVersion;
     }
     
-    if (( immutableTop + 1 ) < this->mTopVersion ) {
+    DEBUG_LOG ( "  immutableTop: %d\n", ( int )immutableTop );
+    DEBUG_LOG ( "  topVersion: %d\n", ( int )this->mTopVersion );
+    
+    if ( immutableTop < this->mTopVersion ) {
             
         for ( size_t i = immutableTop; i < this->mTopVersion; ++i ) {
             this->popLayer ();
         }
-        this->mTopVersion = immutableTop + 1;
+        assert ( this->mTopVersion == immutableTop );
     }
     
-    if ( topChild && (( topClient == NULL ) || ( topClient->mVersion <= topChild->mBaseVersion ))) {
+    if ( topChild && (( topClient == NULL ) || (( topClient->mVersion + 1 ) <= topChild->mBaseVersion ))) {
+    
+        DEBUG_LOG ( "  MERGING CHILD EPOCH\n" );
     
         shared_ptr < VersionedStoreEpoch > mergeEpoch = topChild->shared_from_this ();
         weak_ptr < VersionedStoreEpoch > weakMergeEpoch = mergeEpoch;
@@ -187,8 +202,12 @@ void VersionedStoreEpoch::optimize () {
 //----------------------------------------------------------------//
 void VersionedStoreEpoch::popLayer () {
 
+    DEBUG_LOG ( "VersionedStoreEpoch::popLayer ()\n" );
+
     map < size_t, EpochLayer >::reverse_iterator layerIt = this->mEpochLayers.rbegin ();
     if ( layerIt != this->mEpochLayers.rend ()) {
+    
+        DEBUG_LOG ( "  popping layer: %d\n", ( int )layerIt->first );
     
         assert ( this->mTopVersion == ( layerIt->first + 1 ));
     

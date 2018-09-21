@@ -103,12 +103,10 @@ void Block::setMinerID ( string minerID ) {
 }
 
 //----------------------------------------------------------------//
-void Block::setPreviousBlock ( const Block* prevBlock ) {
+void Block::setPreviousBlock ( const Block& prevBlock ) {
 
-    if ( prevBlock ) {
-        this->mHeight = prevBlock->mHeight + 1;
-        this->mPrevDigest = prevBlock->mSignature.getDigest ();
-    }
+    this->mHeight = prevBlock.mHeight + 1;
+    this->mPrevDigest = prevBlock.mSignature.getDigest ();
 }
 
 //----------------------------------------------------------------//

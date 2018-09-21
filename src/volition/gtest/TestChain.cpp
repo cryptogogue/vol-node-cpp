@@ -97,21 +97,145 @@ TEST ( Chain, test0 ) {
     ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 );
     ASSERT_TRUE ( chain.countBlocks () == 1 );
     
-    // cycle 0
-    miners [ 0 ].pushBlock ( chain );
-    miners [ 1 ].pushBlock ( chain );
-    
     // cycle 1
+    printf ( "\nCYCLE1:\n" );
     miners [ 0 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 1 );
+    
     miners [ 1 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
     
     // cycle 2
+    printf ( "\nCYCLE1:\n" );
     miners [ 0 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 1 );
+    
     miners [ 1 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
+    
+    // cycle 3
+    printf ( "\nCYCLE1:\n" );
+    miners [ 0 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 4 );
+    ASSERT_TRUE ( chain.countBlocks ( 3 ) == 1 );
+    
+    miners [ 1 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 4 );
+    ASSERT_TRUE ( chain.countBlocks ( 3 ) == 2 );
    
     ASSERT_TRUE ( chain.countCycles () == 4 );
     ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
     ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
     ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
     ASSERT_TRUE ( chain.countBlocks ( 3 ) == 2 );
+}
+
+//----------------------------------------------------------------//
+TEST ( Chain, test1 ) {
+
+    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
+
+    SimpleMiner miners [ 4 ];
+    Chain chain = initializeTestChainAndMiners ( miners, 4 );
+    
+    // cycle 1
+    
+    // 1.0 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 1 );
+    
+    miners [ 2 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 1 );
+    
+    miners [ 1 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 1 );
+    
+    miners [ 0 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 1 );
+    
+    // 1.1 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
+    
+    miners [ 2 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
+    
+    miners [ 1 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 2 );
+    
+    // 1.2 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
+    
+    miners [ 2 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
+    
+    // 1.3 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 2 );
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 4 );
+    
+    // cycle 2
+    
+    // 2.0 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 1 );
+    
+    miners [ 2 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 1 );
+    
+    miners [ 1 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 1 );
+    
+    miners [ 0 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 1 );
+    
+    // 2.1 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
+    
+    miners [ 2 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
+    
+    miners [ 1 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 2 );
+    
+    // 2.2 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
+    
+    miners [ 2 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
+    
+    // 2.3 in reverse order
+    miners [ 3 ].pushBlock ( chain );
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 4 );
+    
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 4 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 4 );
 }
