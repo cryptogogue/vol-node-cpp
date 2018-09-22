@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_VERSIONEDSTOREEPOCH_H
-#define VOLITION_VERSIONEDSTOREEPOCH_H
+#ifndef VOLITION_VERSIONEDSTOREBRANCH_H
+#define VOLITION_VERSIONEDSTOREBRANCH_H
 
 #include <volition/common.h>
 #include <volition/ValueStack.h>
@@ -12,10 +12,10 @@ namespace Volition {
 class VersionedStore;
 
 //================================================================//
-// VersionedStoreEpoch
+// VersionedStoreBranch
 //================================================================//
-class VersionedStoreEpoch :
-    public enable_shared_from_this < VersionedStoreEpoch > {
+class VersionedStoreBranch :
+    public enable_shared_from_this < VersionedStoreBranch > {
 private:
 
     friend class AbstractVersionedValueIterator;
@@ -23,14 +23,14 @@ private:
     friend class VersionedStoreIterator;
     template < typename > friend class VersionedValueIterator;
 
-    typedef set < string > EpochLayer;
+    typedef set < string > BranchLayer;
 
     set < VersionedStore* >                                 mClients;
-    set < VersionedStoreEpoch* >                            mChildren;
-    map < size_t, EpochLayer >                              mEpochLayers;
+    set < VersionedStoreBranch* >                           mChildren;
+    map < size_t, BranchLayer >                             mBranchLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
 
-    shared_ptr < VersionedStoreEpoch >                      mParent;
+    shared_ptr < VersionedStoreBranch >                     mParent;
     size_t                                                  mBaseVersion;
 
     //----------------------------------------------------------------//
@@ -44,10 +44,10 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void                            affirmChild                 ( VersionedStoreEpoch& child );
+    void                            affirmChild                 ( VersionedStoreBranch& child );
     void                            affirmClient                ( VersionedStore& client );
     size_t                          countDependencies           () const;
-    void                            eraseChild                  ( VersionedStoreEpoch& child );
+    void                            eraseChild                  ( VersionedStoreBranch& child );
     void                            eraseClient                 ( VersionedStore& client );
     size_t                          findImmutableTop            ( const VersionedStore* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
@@ -56,15 +56,15 @@ private:
     size_t                          getVersionDependency        () const;
     void                            optimize                    ();
     void                            popLayer                    ();
-    void                            setParent                   ( shared_ptr < VersionedStoreEpoch > parent );
+    void                            setParent                   ( shared_ptr < VersionedStoreBranch > parent );
     void                            setRaw                      ( size_t version, string key, const void* value );
 
 public:
 
     //----------------------------------------------------------------//
-                                    VersionedStoreEpoch         ();
-                                    VersionedStoreEpoch         ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion );
-                                    ~VersionedStoreEpoch        ();
+                                    VersionedStoreBranch        ();
+                                    VersionedStoreBranch        ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion );
+                                    ~VersionedStoreBranch       ();
 };
 
 } // namespace Volition

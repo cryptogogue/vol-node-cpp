@@ -353,7 +353,7 @@ void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
         for ( ; chainIt && ( truncate < top ); chainIt.next (), ++truncate ) {
             if ( chainIt.getValue < Block >( BLOCK_KEY ).getScore () > score ) break;
         }
-        this->rewind ( truncate );
+        this->revert ( truncate );
     }
     
     size_t version = this->getVersion ();

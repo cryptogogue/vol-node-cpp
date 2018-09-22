@@ -41,14 +41,14 @@ protected:
     //----------------------------------------------------------------//
     const ValueStack < TYPE >* getValueStack () {
         
-        return this->getValueStack ( this->mEpoch );
+        return this->getValueStack ( this->mBranch );
     }
 
     //----------------------------------------------------------------//
-    const ValueStack < TYPE >* getValueStack ( shared_ptr < VersionedStoreEpoch > epoch ) {
+    const ValueStack < TYPE >* getValueStack ( shared_ptr < VersionedStoreBranch > branch ) {
     
-        if ( epoch ) {
-            const AbstractValueStack* abstractValueStack = epoch->findValueStack ( this->mKey );
+        if ( branch ) {
+            const AbstractValueStack* abstractValueStack = branch->findValueStack ( this->mKey );
             if ( abstractValueStack ) {
                 return dynamic_cast < const ValueStack < TYPE >* >( abstractValueStack );
             }
@@ -57,29 +57,29 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    void seekNext ( shared_ptr < VersionedStoreEpoch > prevEpoch ) {
+    void seekNext ( shared_ptr < VersionedStoreBranch > prevBranch ) {
         
-        shared_ptr < VersionedStoreEpoch > epoch = this->mAnchor.mEpoch;
+        shared_ptr < VersionedStoreBranch > branch = this->mAnchor.mBranch;
         size_t top = this->mAnchor.mVersion + 1;
         
-        shared_ptr < VersionedStoreEpoch > bestEpoch;
+        shared_ptr < VersionedStoreBranch > bestBranch;
         const ValueStack < TYPE >* bestValueStack = NULL;
         size_t bestTop = top;
         
-        for ( ; epoch != prevEpoch; epoch = epoch->mParent ) {
-            const ValueStack < TYPE >* valueStack = this->getValueStack ( epoch );
+        for ( ; branch != prevBranch; branch = branch->mParent ) {
+            const ValueStack < TYPE >* valueStack = this->getValueStack ( branch );
             if ( valueStack && valueStack->size ()) {
-                bestEpoch = epoch;
+                bestBranch = branch;
                 bestValueStack = valueStack;
                 bestTop = top;
             }
-            top = epoch->mBaseVersion;
+            top = branch->mBaseVersion;
         }
         
         if ( bestValueStack ) {
             this->setExtents ( *bestValueStack, bestTop - 1 );
             this->mIterator = bestValueStack->mValuesByVersion.begin ();
-            this->setEpoch ( bestEpoch, this->mFirstVersion );
+            this->setBranch ( bestBranch, this->mFirstVersion );
             this->mState = VALID;
         }
         else {
@@ -88,20 +88,20 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    void seekPrev ( shared_ptr < VersionedStoreEpoch > epoch, size_t top ) {
+    void seekPrev ( shared_ptr < VersionedStoreBranch > branch, size_t top ) {
         
-        for ( ; epoch; epoch = epoch->mParent ) {
+        for ( ; branch; branch = branch->mParent ) {
         
-            const ValueStack < TYPE >* valueStack = this->getValueStack ( epoch );
+            const ValueStack < TYPE >* valueStack = this->getValueStack ( branch );
             
             if ( valueStack && valueStack->size ()) {
                 this->setExtents ( *valueStack, top - 1 );
                 this->mIterator = valueStack->mValuesByVersion.find ( this->mLastVersion );
-                this->setEpoch ( epoch, this->mLastVersion );
+                this->setBranch ( branch, this->mLastVersion );
                 this->mState = VALID;
                 return;
             }
-            top = epoch->mBaseVersion;
+            top = branch->mBaseVersion;
         }
         this->mState = NO_PREV;
     }
@@ -145,7 +145,7 @@ public:
     //----------------------------------------------------------------//
     bool next () {
         
-        if ( !this->mEpoch ) return false;
+        if ( !this->mBranch ) return false;
         
         if ( this->mState == NO_PREV ) {
             this->mState = VALID;
@@ -158,7 +158,7 @@ public:
             }
             else {
                 assert ( this->mIterator->first == this->mLastVersion );
-                this->seekNext ( this->mEpoch );
+                this->seekNext ( this->mBranch );
             }
         }
         return ( this->mState != NO_NEXT );
@@ -167,7 +167,7 @@ public:
     //----------------------------------------------------------------//
     bool prev () {
 
-        if ( !this->mEpoch ) return false;
+        if ( !this->mBranch ) return false;
 
         if ( this->mState == NO_NEXT ) {
             this->mState = VALID;
@@ -180,7 +180,7 @@ public:
             }
             else {
                 assert ( this->mIterator->first == this->mFirstVersion );
-                this->seekPrev ( this->mEpoch->mParent, this->mVersion );
+                this->seekPrev ( this->mBranch->mParent, this->mVersion );
             }
         }
         return ( this->mState != NO_PREV );
@@ -197,8 +197,8 @@ public:
         mAnchor ( versionedStore ),
         mKey ( key ) {
         
-        if ( this->mAnchor.mEpoch ) {
-            this->seekPrev ( this->mAnchor.mEpoch, this->mAnchor.mVersion + 1 );
+        if ( this->mAnchor.mBranch ) {
+            this->seekPrev ( this->mAnchor.mBranch, this->mAnchor.mVersion + 1 );
         }
     }
 };

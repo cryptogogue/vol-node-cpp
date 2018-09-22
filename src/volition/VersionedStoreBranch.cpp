@@ -3,7 +3,7 @@
 
 #include <volition/State.h>
 #include <volition/VersionedStore.h>
-#include <volition/VersionedStoreEpoch.h>
+#include <volition/VersionedStoreBranch.h>
 
 //#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
 #define DEBUG_LOG(...)
@@ -11,43 +11,43 @@
 namespace Volition {
 
 //================================================================//
-// VersionedStoreEpoch
+// VersionedStoreBranch
 //================================================================//
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::affirmChild ( VersionedStoreEpoch& child ) {
+void VersionedStoreBranch::affirmChild ( VersionedStoreBranch& child ) {
 
     this->mChildren.insert ( &child );
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::affirmClient ( VersionedStore& client ) {
+void VersionedStoreBranch::affirmClient ( VersionedStore& client ) {
 
     this->mClients.insert ( &client );
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::countDependencies () const {
+size_t VersionedStoreBranch::countDependencies () const {
 
     return ( this->mClients.size () + this->mChildren.size ());
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::eraseChild ( VersionedStoreEpoch& child ) {
+void VersionedStoreBranch::eraseChild ( VersionedStoreBranch& child ) {
 
     this->mChildren.erase ( &child );
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::eraseClient ( VersionedStore& client ) {
+void VersionedStoreBranch::eraseClient ( VersionedStore& client ) {
 
     this->mClients.erase ( &client );
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) const {
+size_t VersionedStoreBranch::findImmutableTop ( const VersionedStore* ignore ) const {
 
-    LOG_SCOPE_F ( INFO, "VersionedStoreEpoch::findImmutableTop ()" );
+    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::findImmutableTop ()" );
 
     size_t immutableTop = this->getVersionDependency ();
 
@@ -65,10 +65,10 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
         }
     }
     
-    set < VersionedStoreEpoch* >::const_iterator childIt = this->mChildren.cbegin ();
+    set < VersionedStoreBranch* >::const_iterator childIt = this->mChildren.cbegin ();
     for ( ; childIt != this->mChildren.cend (); ++childIt ) {
 
-        const VersionedStoreEpoch* child = *childIt;
+        const VersionedStoreBranch* child = *childIt;
         
         size_t clientVersion = child->getVersionDependency ();
             
@@ -83,20 +83,20 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
 }
 
 //----------------------------------------------------------------//
-const AbstractValueStack* VersionedStoreEpoch::findValueStack ( string key ) const {
+const AbstractValueStack* VersionedStoreBranch::findValueStack ( string key ) const {
 
     map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
     return ( valueIt != this->mValueStacksByKey.cend ()) ? valueIt->second.get () : NULL;
 }
 
 //----------------------------------------------------------------//
-const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typeID ) const {
+const void* VersionedStoreBranch::getRaw ( size_t version, string key, size_t typeID ) const {
 
-    const VersionedStoreEpoch* epoch = this;
-    for ( ; epoch; version = epoch->mBaseVersion, epoch = epoch->mParent.get ()) {
-        if ( epoch->mBaseVersion <= version ) {
+    const VersionedStoreBranch* branch = this;
+    for ( ; branch; version = branch->mBaseVersion, branch = branch->mParent.get ()) {
+        if ( branch->mBaseVersion <= version ) {
         
-            const AbstractValueStack* valueStack = epoch->findValueStack ( key );
+            const AbstractValueStack* valueStack = branch->findValueStack ( key );
             
             if ( valueStack ) {
                 assert ( valueStack->mTypeID == typeID );
@@ -111,24 +111,24 @@ const void* VersionedStoreEpoch::getRaw ( size_t version, string key, size_t typ
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::getTopVersion () const {
+size_t VersionedStoreBranch::getTopVersion () const {
 
-    return this->mEpochLayers.size () ? this->mEpochLayers.rbegin ()->first + 1 : 0;
+    return this->mBranchLayers.size () ? this->mBranchLayers.rbegin ()->first + 1 : 0;
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreEpoch::getVersionDependency () const {
+size_t VersionedStoreBranch::getVersionDependency () const {
 
     return this->mBaseVersion;
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::optimize () {
+void VersionedStoreBranch::optimize () {
 
-    LOG_SCOPE_F ( INFO, "VersionedStoreEpoch::optimize ()" );
+    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::optimize ()" );
 
     VersionedStore* topClient = NULL;
-    VersionedStoreEpoch* topChild = NULL;
+    VersionedStoreBranch* topChild = NULL;
 
     LOG_SCOPE_F ( INFO, "evaluating clients..." );
     for ( set < VersionedStore* >::iterator clientIt = this->mClients.begin (); clientIt != this->mClients.end (); ++clientIt ) {
@@ -143,9 +143,9 @@ void VersionedStoreEpoch::optimize () {
     }
     
     LOG_SCOPE_F ( INFO, "evaluating children..." );
-    for ( set < VersionedStoreEpoch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
+    for ( set < VersionedStoreBranch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
         
-        VersionedStoreEpoch* child = *childIt;
+        VersionedStoreBranch* child = *childIt;
         LOG_SCOPE_F ( INFO, "child %p", child );
         
         bool replace = ( topChild == NULL ) || ( topChild->getVersionDependency () < child->getVersionDependency ());
@@ -178,17 +178,17 @@ void VersionedStoreEpoch::optimize () {
     
         LOG_F ( INFO, "MERGING CHILD EPOCH" );
     
-        shared_ptr < VersionedStoreEpoch > mergeEpoch = topChild->shared_from_this ();
-        weak_ptr < VersionedStoreEpoch > weakMergeEpoch = mergeEpoch;
+        shared_ptr < VersionedStoreBranch > mergeBranch = topChild->shared_from_this ();
+        weak_ptr < VersionedStoreBranch > weakMergeBranch = mergeBranch;
     
-        // merge the epoch layers
-        this->mEpochLayers.insert ( mergeEpoch->mEpochLayers.begin(), mergeEpoch->mEpochLayers.end ());
+        // merge the branch layers
+        this->mBranchLayers.insert ( mergeBranch->mBranchLayers.begin(), mergeBranch->mBranchLayers.end ());
         
         // copy the value stacks
-        map < string, unique_ptr < AbstractValueStack >>::iterator valueStackIt = mergeEpoch->mValueStacksByKey.begin ();
+        map < string, unique_ptr < AbstractValueStack >>::iterator valueStackIt = mergeBranch->mValueStacksByKey.begin ();
         for ( ; valueStackIt != topChild->mValueStacksByKey.end (); ++valueStackIt ) {
             
-            const AbstractValueStack* fromStack = mergeEpoch->findValueStack ( valueStackIt->first );
+            const AbstractValueStack* fromStack = mergeBranch->findValueStack ( valueStackIt->first );
             assert ( fromStack );
             
             unique_ptr < AbstractValueStack >& toStack = this->mValueStacksByKey [ valueStackIt->first ];
@@ -199,39 +199,39 @@ void VersionedStoreEpoch::optimize () {
         }
         
         // copy the clients
-        for ( set < VersionedStore* >::iterator clientIt = mergeEpoch->mClients.begin (); clientIt != mergeEpoch->mClients.end (); ++clientIt ) {
+        for ( set < VersionedStore* >::iterator clientIt = mergeBranch->mClients.begin (); clientIt != mergeBranch->mClients.end (); ++clientIt ) {
             VersionedStore* client = *clientIt;
             this->affirmClient ( *client );
-            client->mEpoch = this->shared_from_this ();
+            client->mBranch = this->shared_from_this ();
         }
         
         // copy the children
-        for ( set < VersionedStoreEpoch* >::iterator childIt = mergeEpoch->mChildren.begin (); childIt != mergeEpoch->mChildren.end (); ++childIt ) {
-            VersionedStoreEpoch* child = *childIt;
+        for ( set < VersionedStoreBranch* >::iterator childIt = mergeBranch->mChildren.begin (); childIt != mergeBranch->mChildren.end (); ++childIt ) {
+            VersionedStoreBranch* child = *childIt;
             this->affirmChild ( *child );
             child->mParent = this->shared_from_this ();
         }
 
-        mergeEpoch = NULL;
-        assert ( weakMergeEpoch.expired ());
+        mergeBranch = NULL;
+        assert ( weakMergeBranch.expired ());
         
         this->optimize ();
     }
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::popLayer () {
+void VersionedStoreBranch::popLayer () {
 
-    LOG_SCOPE_F ( INFO, "VersionedStoreEpoch::popLayer ()" );
+    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::popLayer ()" );
 
-    map < size_t, EpochLayer >::reverse_iterator layerIt = this->mEpochLayers.rbegin ();
-    if ( layerIt != this->mEpochLayers.rend ()) {
+    map < size_t, BranchLayer >::reverse_iterator layerIt = this->mBranchLayers.rbegin ();
+    if ( layerIt != this->mBranchLayers.rend ()) {
     
         LOG_SCOPE_F ( INFO, "popping layer: %d", ( int )layerIt->first );
         
-        EpochLayer& layer = layerIt->second;
+        BranchLayer& layer = layerIt->second;
         
-        EpochLayer::iterator keyIt = layer.begin ();
+        BranchLayer::iterator keyIt = layer.begin ();
         for ( ; keyIt != layer.end (); ++keyIt ) {
 
             unique_ptr < AbstractValueStack >& valueStack = this->mValueStacksByKey [ *keyIt ];
@@ -243,12 +243,12 @@ void VersionedStoreEpoch::popLayer () {
             }
         }
         
-        this->mEpochLayers.erase ( layerIt->first );
+        this->mBranchLayers.erase ( layerIt->first );
     }
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::setParent ( shared_ptr < VersionedStoreEpoch > parent ) {
+void VersionedStoreBranch::setParent ( shared_ptr < VersionedStoreBranch > parent ) {
 
     if ( this->mParent != parent ) {
 
@@ -265,35 +265,35 @@ void VersionedStoreEpoch::setParent ( shared_ptr < VersionedStoreEpoch > parent 
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreEpoch::setRaw ( size_t version, string key, const void* value ) {
+void VersionedStoreBranch::setRaw ( size_t version, string key, const void* value ) {
 
     this->mValueStacksByKey [ key ]->setRaw ( version, value );
     
-    EpochLayer& layer = this->mEpochLayers [ version ];
+    BranchLayer& layer = this->mBranchLayers [ version ];
     if ( layer.find ( key ) == layer.end ()) {
         layer.insert ( key );
     }
 }
 
 //----------------------------------------------------------------//
-VersionedStoreEpoch::VersionedStoreEpoch () :
+VersionedStoreBranch::VersionedStoreBranch () :
     mBaseVersion ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > parent, size_t baseVersion ) {
+VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion ) {
     
     assert ( parent && ( parent->mBaseVersion <= baseVersion ) && ( baseVersion <= parent->getTopVersion ()));
 
     this->setParent ( parent->mBaseVersion < baseVersion ? parent : parent->mParent );
     this->mBaseVersion = baseVersion;
     
-    map < size_t, EpochLayer >::const_iterator layerIt = parent->mEpochLayers.find ( baseVersion );
-    if ( layerIt != parent->mEpochLayers.cend ()) {
+    map < size_t, BranchLayer >::const_iterator layerIt = parent->mBranchLayers.find ( baseVersion );
+    if ( layerIt != parent->mBranchLayers.cend ()) {
     
-        const EpochLayer& fromLayer = layerIt->second;
+        const BranchLayer& fromLayer = layerIt->second;
         
-        EpochLayer::const_iterator keyIt = fromLayer.cbegin ();
+        BranchLayer::const_iterator keyIt = fromLayer.cbegin ();
         for ( ; keyIt != fromLayer.cend (); ++keyIt ) {
             
             const AbstractValueStack* fromStack = parent->findValueStack ( *keyIt );
@@ -309,7 +309,7 @@ VersionedStoreEpoch::VersionedStoreEpoch ( shared_ptr < VersionedStoreEpoch > pa
 }
 
 //----------------------------------------------------------------//
-VersionedStoreEpoch::~VersionedStoreEpoch () {
+VersionedStoreBranch::~VersionedStoreBranch () {
 
     this->setParent ( NULL );
 }

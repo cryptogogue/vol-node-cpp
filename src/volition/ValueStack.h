@@ -41,7 +41,7 @@ protected:
 
     friend class VersionedStore;
     friend class VersionedStoreLayer;
-    friend class VersionedStoreEpoch;
+    friend class VersionedStoreBranch;
     friend class VersionedValueIterator < TYPE >;
 
     map < size_t, TYPE >    mValuesByVersion;
