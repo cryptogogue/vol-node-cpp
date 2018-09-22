@@ -47,7 +47,7 @@ void VersionedStoreEpoch::eraseClient ( VersionedStore& client ) {
 //----------------------------------------------------------------//
 size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) const {
 
-    DEBUG_LOG ( "VersionedStoreEpoch::findImmutableTop ()\n" );
+    LOG_SCOPE_F ( INFO, "VersionedStoreEpoch::findImmutableTop ()" );
 
     size_t immutableTop = this->getVersionDependency ();
 
@@ -77,7 +77,7 @@ size_t VersionedStoreEpoch::findImmutableTop ( const VersionedStore* ignore ) co
         }
     }
     
-    DEBUG_LOG ( "  immutableTop: %d\n", ( int )immutableTop );
+    LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
     
     return immutableTop;
 }
@@ -125,30 +125,35 @@ size_t VersionedStoreEpoch::getVersionDependency () const {
 //----------------------------------------------------------------//
 void VersionedStoreEpoch::optimize () {
 
-    DEBUG_LOG ( "VersionedStoreEpoch::optimize ()\n" );
+    LOG_SCOPE_F ( INFO, "VersionedStoreEpoch::optimize ()" );
 
     VersionedStore* topClient = NULL;
     VersionedStoreEpoch* topChild = NULL;
 
+    LOG_SCOPE_F ( INFO, "evaluating clients..." );
     for ( set < VersionedStore* >::iterator clientIt = this->mClients.begin (); clientIt != this->mClients.end (); ++clientIt ) {
 
         VersionedStore* client = *clientIt;
+        LOG_SCOPE_F ( INFO, "client %p", client );
+        
         if (( topClient == NULL ) || ( topClient->getVersionDependency () < client->getVersionDependency ())) {
             topClient = client;
-            DEBUG_LOG ( "  topClient: %04x version: %d\n", ( int )(( size_t )client ) & 0xffff, ( int ) client->getVersionDependency ());
+            LOG_F ( INFO, "topClient: %04x version: %d", ( int )(( size_t )client ) & 0xffff, ( int ) client->getVersionDependency ());
         }
     }
     
+    LOG_SCOPE_F ( INFO, "evaluating children..." );
     for ( set < VersionedStoreEpoch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
         
         VersionedStoreEpoch* child = *childIt;
+        LOG_SCOPE_F ( INFO, "child %p", child );
         
         bool replace = ( topChild == NULL ) || ( topChild->getVersionDependency () < child->getVersionDependency ());
         replace = replace || (( topChild->getVersionDependency () == child->getVersionDependency ()) && ( topChild->getTopVersion () < child->getTopVersion ()));
         
         if ( replace ) {
             topChild = child;
-            DEBUG_LOG ( "  topClient: %04x topChild: %d\n", ( int )(( size_t )child ) & 0xffff, ( int ) child->getVersionDependency ());
+            LOG_F ( INFO, "topClient: %04x topChild: %d", ( int )(( size_t )child ) & 0xffff, ( int ) child->getVersionDependency ());
         }
     }
 
@@ -157,8 +162,8 @@ void VersionedStoreEpoch::optimize () {
         immutableTop = topChild->getVersionDependency ();
     }
     
-    DEBUG_LOG ( "  immutableTop: %d\n", ( int )immutableTop );
-    DEBUG_LOG ( "  topVersion: %d\n", ( int )this->getTopVersion ());
+    LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
+    LOG_F ( INFO, "topVersion: %d", ( int )this->getTopVersion ());
     
     if ( immutableTop < this->getTopVersion ()) {
         
@@ -171,7 +176,7 @@ void VersionedStoreEpoch::optimize () {
     
     if ( topChild && (( topClient == NULL ) || (( topClient->getVersionDependency ()) <= topChild->getVersionDependency ()))) {
     
-        DEBUG_LOG ( "  MERGING CHILD EPOCH\n" );
+        LOG_F ( INFO, "MERGING CHILD EPOCH" );
     
         shared_ptr < VersionedStoreEpoch > mergeEpoch = topChild->shared_from_this ();
         weak_ptr < VersionedStoreEpoch > weakMergeEpoch = mergeEpoch;
@@ -217,12 +222,12 @@ void VersionedStoreEpoch::optimize () {
 //----------------------------------------------------------------//
 void VersionedStoreEpoch::popLayer () {
 
-    DEBUG_LOG ( "VersionedStoreEpoch::popLayer ()\n" );
+    LOG_SCOPE_F ( INFO, "VersionedStoreEpoch::popLayer ()" );
 
     map < size_t, EpochLayer >::reverse_iterator layerIt = this->mEpochLayers.rbegin ();
     if ( layerIt != this->mEpochLayers.rend ()) {
     
-        DEBUG_LOG ( "  popping layer: %d\n", ( int )layerIt->first );
+        LOG_SCOPE_F ( INFO, "popping layer: %d", ( int )layerIt->first );
         
         EpochLayer& layer = layerIt->second;
         

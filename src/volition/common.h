@@ -53,6 +53,8 @@
 #include <Routing/Exceptions.h>
 #include <Routing/Router.h>
 
+#include <loguru.hpp>
+
 using namespace std;
 
 //----------------------------------------------------------------//

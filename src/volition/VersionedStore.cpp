@@ -17,8 +17,8 @@ namespace Volition {
 void VersionedStore::affirmEpoch () {
 
     if ( !this->mEpoch ) {
-        this->mEpoch = make_shared < VersionedStoreEpoch >();
-        this->mVersion = 0;
+        assert ( this->mVersion == 0 );
+        this->setEpoch ( make_shared < VersionedStoreEpoch >(), this->mVersion );
     }
 }
 
@@ -49,7 +49,7 @@ size_t VersionedStore::getVersionDependency () const {
 //----------------------------------------------------------------//
 void VersionedStore::popVersion () {
 
-    DEBUG_LOG ( "VersionedStore::  ()\n" );
+    LOG_SCOPE_F ( INFO, "VersionedStore::  ()" );
 
     if ( this->mEpoch ) {
     
@@ -76,20 +76,19 @@ void VersionedStore::popVersion () {
 //----------------------------------------------------------------//
 void VersionedStore::prepareForSetValue () {
 
-    DEBUG_LOG ( "VersionedStore::prepareForSetValue ()\n" );
+    LOG_SCOPE_F ( INFO, "VersionedStore::prepareForSetValue ()" );
 
     this->affirmEpoch ();
-
-    size_t dependencies = this->mEpoch->countDependencies () - 1 ;
-    DEBUG_LOG ( "  dependencies: %d\n", ( int )dependencies );
     
-    if ( dependencies > 0 ) {
-        
-        DEBUG_LOG ( "  SPLIT\n" );
-        
+    size_t dependencies = this->mEpoch->countDependencies ();
+    if ( dependencies > 1 ) {
+    
         size_t immutableTop = this->mEpoch->findImmutableTop ( this );
+        LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
         
-        if ( this->mVersion <= immutableTop ) {
+        if ( this->mVersion < immutableTop ) {
+        
+            LOG_F ( INFO, "SPLIT!" );
         
             shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
             this->mEpoch->eraseClient ( *this );
@@ -103,7 +102,7 @@ void VersionedStore::prepareForSetValue () {
 //----------------------------------------------------------------//
 void VersionedStore::pushVersion () {
 
-    DEBUG_LOG ( "VersionedStore::pushVersion ()\n" );
+    LOG_SCOPE_F ( INFO, "VersionedStore::pushVersion ()" );
 
     if ( !this->mEpoch ) {
         this->mVersion = 0;
@@ -113,11 +112,11 @@ void VersionedStore::pushVersion () {
     assert ( this->mEpoch );
 
     this->mVersion++;
-    DEBUG_LOG ( "  version: %d\n", ( int )this->mVersion );
+    LOG_F ( INFO, "version: %d", ( int )this->mVersion );
     
     if ( this->mVersion < this->mEpoch->getTopVersion ()) {
     
-        DEBUG_LOG ( "  SPLIT\n" );
+        LOG_F ( INFO, "SPLIT" );
     
         shared_ptr < VersionedStoreEpoch > epoch = this->mEpoch;
         this->mEpoch->eraseClient ( *this );
@@ -130,7 +129,7 @@ void VersionedStore::pushVersion () {
 //----------------------------------------------------------------//
 void VersionedStore::rewind ( size_t version ) {
 
-    DEBUG_LOG ( "VersionedStore::rewind ( %d )\n", ( int )version );
+    LOG_SCOPE_F ( INFO, "VersionedStore::rewind ( %d )", ( int )version );
 
     assert ( version <= this->mVersion );
     
@@ -171,7 +170,7 @@ void VersionedStore::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch, size_t
 
     if ( this->mEpoch != epoch ) {
         
-        DEBUG_LOG ( "VersionedStore::setEpoch () - changing epoch\n" );
+        LOG_SCOPE_F ( INFO, "VersionedStore::setEpoch () - changing epoch" );
         
         if ( this->mEpoch ) {
             prevEpochWeak = this->mEpoch;
@@ -201,7 +200,7 @@ void VersionedStore::setEpoch ( shared_ptr < VersionedStoreEpoch > epoch, size_t
 //----------------------------------------------------------------//
 void VersionedStore::setRaw ( string key, const void* value ) {
 
-    DEBUG_LOG ( "VersionedStore::setRaw ( %s, %p )\n", key.c_str (), value );
+    LOG_SCOPE_F ( INFO, "VersionedStore::setRaw ( %s, %p )", key.c_str (), value );
 
     assert ( this->mEpoch );
     this->mEpoch->setRaw ( this->mVersion, key, value );
