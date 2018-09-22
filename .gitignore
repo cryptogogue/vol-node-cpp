@@ -1,6 +1,7 @@
 bin/
 bin-back/
 build/
+/doxydocs/
 /poco/
 xcuserdata/
 *.pbxuser
