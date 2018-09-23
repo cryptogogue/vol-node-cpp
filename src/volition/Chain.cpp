@@ -80,7 +80,7 @@ Chain::Chain ( Block& genesisBlock ) {
 
     this->newCycle ();
     this->pushBlock ( genesisBlock );
-    assert ( this->getValueOrNil < Block >( BLOCK_KEY ));
+    assert ( this->hasValue < Block >( BLOCK_KEY ));
 }
 
 //----------------------------------------------------------------//
@@ -297,13 +297,13 @@ ChainPlacement Chain::findNextCycle ( string minerID ) {
 //}
 
 //----------------------------------------------------------------//
-const Block& Chain::getTopBlock () {
+VersionedValue < Block > Chain::getTopBlock () const {
 
-    return this->getValue < Block >( BLOCK_KEY );
+    return VersionedValue < Block >( *this, BLOCK_KEY );
 }
 
 //----------------------------------------------------------------//
-const Cycle& Chain::getTopCycle () const {
+Cycle Chain::getTopCycle () const {
 
     return this->getValue < Cycle >( CYCLE_KEY );
 }
@@ -358,7 +358,7 @@ void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
     
     size_t version = this->getVersion ();
     if ( version > 0 ) {
-        const Block& prevBlock = this->getValue < Block >( BLOCK_KEY, version - 1 );
+        const Block prevBlock = this->getValue < Block >( BLOCK_KEY, version - 1 );
         block.setPreviousBlock ( prevBlock );
     }
 }

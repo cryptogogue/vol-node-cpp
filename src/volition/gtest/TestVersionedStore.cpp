@@ -66,7 +66,7 @@ TEST ( VersionedStore, test2 ) {
     
     store0.popVersion ();
     
-    ASSERT_TRUE ( store0.getValueOrNil < string >( KEY ) == NULL );
+    ASSERT_TRUE ( store0.hasValue < string >( KEY ) == false );
     ASSERT_TRUE ( store0.getVersion () == 0 );
     
     store0.setValue < string >( KEY, STR0 );
@@ -83,7 +83,7 @@ TEST ( VersionedStore, test2 ) {
     ASSERT_TRUE ( store0.getVersion () == 0 );
     
     store0.popVersion ();
-    ASSERT_TRUE ( store0.getValueOrNil < string >( KEY ) == NULL );
+    ASSERT_TRUE ( store0.hasValue < string >( KEY ) == false );
     ASSERT_TRUE ( store0.getVersion () == 0 );
     
     store0.setValue < string >( KEY, STR0 );

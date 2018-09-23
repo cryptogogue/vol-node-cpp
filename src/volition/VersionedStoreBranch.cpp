@@ -292,9 +292,12 @@ VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch >
     if ( layerIt != parent->mBranchLayers.cend ()) {
     
         const BranchLayer& fromLayer = layerIt->second;
+        BranchLayer& toLayer = this->mBranchLayers [ baseVersion ];
         
         BranchLayer::const_iterator keyIt = fromLayer.cbegin ();
         for ( ; keyIt != fromLayer.cend (); ++keyIt ) {
+            
+            toLayer.insert ( *keyIt );
             
             const AbstractValueStack* fromStack = parent->findValueStack ( *keyIt );
             assert ( fromStack );

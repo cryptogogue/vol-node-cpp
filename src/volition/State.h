@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/MinerInfo.h>
 #include <volition/VersionedStore.h>
+#include <volition/VersionedValue.h>
 
 namespace Volition {
 
@@ -80,8 +81,8 @@ private:
 
     friend class State;
     
-    const Account*          mAccount;
-    const KeyAndPolicy*     mKeyAndPolicy;
+    VersionedValue < Account >  mAccount;
+    const KeyAndPolicy*         mKeyAndPolicy;
     
     //----------------------------------------------------------------//
     operator bool () const {
@@ -102,31 +103,33 @@ private:
     static constexpr const char* MINER_URLS     = "minerUrls";
 
     //----------------------------------------------------------------//
-    static string                       prefixKey               ( string prefix, string key );
-    void                                setAccount              ( string accountName, const Account& account );
-    void                                setMinerInfo            ( string accountName, const MinerInfo& minerInfo );
+    static string                   prefixKey               ( string prefix, string key );
+    void                            setAccount              ( string accountName, const Account& account );
+    void                            setMinerInfo            ( string accountName, const MinerInfo& minerInfo );
 
 public:
 
+    typedef VersionedValue < map < string, string >> MinerURLMap;
+
     //----------------------------------------------------------------//
-    bool                                accountPolicy           ( string accountName, const Policy* policy );
-    bool                                affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
-    bool                                checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
-    void                                consumeMakerSignature   ( const TransactionMakerSignature* makerSignature );
-    bool                                deleteKey               ( string accountName, string keyName );
-    bool                                genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
-    AccountKey                          getAccountKey           ( string accountName, string keyName ) const;
-    const Account*                      getAccountOrNil         ( string accountName ) const;
-    const MinerInfo*                    getMinerInfoOrNil       ( string accountName ) const;
-    map < string, MinerInfo >           getMiners               () const;
-    const map < string, string >&       getMinerURLs            () const;
-    bool                                keyPolicy               ( string accountName, string policyName, const Policy* policy );
-    bool                                openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
-    bool                                registerMiner           ( string accountName, string keyName, string url );
-//    void                                reset                   ();
-    bool                                sendVOL                 ( string accountName, string recipientName, u64 amount );
-                                        State                   ();
-                                        ~State                  ();
+    bool                            accountPolicy           ( string accountName, const Policy* policy );
+    bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
+    bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
+    void                            consumeMakerSignature   ( const TransactionMakerSignature* makerSignature );
+    bool                            deleteKey               ( string accountName, string keyName );
+    bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
+    AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
+    VersionedValue < Account >      getAccount              ( string accountName ) const;
+    VersionedValue < MinerInfo >    getMinerInfo            ( string accountName ) const;
+    map < string, MinerInfo >       getMiners               () const;
+    MinerURLMap                     getMinerURLs            () const;
+    bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
+    bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
+    bool                            registerMiner           ( string accountName, string keyName, string url );
+//    void                          reset                   ();
+    bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
+                                    State                   ();
+                                    ~State                  ();
 };
 
 } // namespace Volition

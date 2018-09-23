@@ -39,7 +39,7 @@ private:
     size_t                  countParticipants   ( const Cycle& cycle, string minerID = "" );
     size_t                  findMax             ( size_t cycleID ) const;
     //const Cycle*            getCycle            ( size_t idx );
-    const Cycle&            getTopCycle         () const;
+    Cycle                   getTopCycle         () const;
     bool                    isInCycle           ( const Cycle& cycle, string minerID );
     bool                    isParticipant       ( const Cycle& cycle, string minerID ) const;
     void                    newCycle            ();
@@ -52,25 +52,25 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    bool                    canPush             ( string minerID, bool force );
-                            Chain               ();
-                            Chain               ( Block& genesisBlock );
-                            Chain               ( const Chain& chain );
-                            ~Chain              ();
-    static const Chain*     choose              ( const Chain& chain0, const Chain& chain1 );
-    size_t                  countBlocks         ();
-    size_t                  countBlocks         ( size_t cycleIdx );
-    size_t                  countCycles         () const;
-    Block*                  findBlock           ( u64 height );
-    ChainPlacement          findNextCycle       ( string minerID );
-    Block&                  getBlock            ( size_t cycleIdx, size_t blockIdx );
-    const Block&            getTopBlock         ();
-    void                    prepareForPush      ( const ChainPlacement& placement, Block& block );
-    void                    print               ( const char* pre = 0, const char* post = "\n" ) const;
-    bool                    pushBlock           ( Block& block );
-    bool                    pushBlockAndSign    ( Block& block, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
-    size_t                  size                () const;
-    size_t                  truncate            ( const ChainPlacement& placement, size_t score );
+    bool                        canPush             ( string minerID, bool force );
+                                Chain               ();
+                                Chain               ( Block& genesisBlock );
+                                Chain               ( const Chain& chain );
+                                ~Chain              ();
+    static const Chain*         choose              ( const Chain& chain0, const Chain& chain1 );
+    size_t                      countBlocks         ();
+    size_t                      countBlocks         ( size_t cycleIdx );
+    size_t                      countCycles         () const;
+    Block*                      findBlock           ( u64 height );
+    ChainPlacement              findNextCycle       ( string minerID );
+    VersionedValue < Block >    getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
+    VersionedValue < Block >    getTopBlock         () const;
+    void                        prepareForPush      ( const ChainPlacement& placement, Block& block );
+    void                        print               ( const char* pre = 0, const char* post = "\n" ) const;
+    bool                        pushBlock           ( Block& block );
+    bool                        pushBlockAndSign    ( Block& block, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    size_t                      size                () const;
+    size_t                      truncate            ( const ChainPlacement& placement, size_t score );
 };
 
 } // namespace Volition

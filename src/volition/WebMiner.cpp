@@ -74,7 +74,7 @@ void WebMiner::run () {
             //this->mChain->print ();
             
             if ( !this->mSolo ) {
-                this->mMinerURLs = this->mChain->getMinerURLs ();
+                this->mMinerURLs = *this->mChain->getMinerURLs ();
             }
             
             if ( this->mMinerURLs.find ( this->mMinerID ) != this->mMinerURLs.end ()) {

@@ -27,7 +27,7 @@ public:
         string accountName = this->getMatchString ( "accountName" );
         const State& state = TheWebMiner::get ().getState ();
         
-        const Account* account = state.getAccountOrNil ( accountName );
+        VersionedValue < Account > account = state.getAccount ( accountName );
         if ( account ) {
             Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
             accountJSON->set ( "accountName", accountName.c_str ());
@@ -55,7 +55,7 @@ public:
         string accountName = this->getMatchString ( "accountName" );
         const State& state = TheWebMiner::get ().getState ();
         
-        const Account* account = state.getAccountOrNil ( accountName );
+        VersionedValue < Account > account = state.getAccount ( accountName );
         if ( account ) {
     
             map < string, CryptoKey > keys;

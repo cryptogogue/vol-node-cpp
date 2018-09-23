@@ -32,9 +32,9 @@ void Tree::addChain ( Chain& chain ) {
         size_t nBlocks = chain.countBlocks ( i );
         for ( size_t j = 0; j < nBlocks; ++j ) {
             
-            const Block& block = chain.getBlock ( i, j );
+            VersionedValue < Block > block = chain.getBlock ( i, j );
             
-            string minerID      = block.getMinerID ();
+            string minerID      = block->getMinerID ();
             cursor              = &cursor->mChildren [ minerID ];
             cursor->mMinerID    = minerID;
         }

@@ -119,7 +119,7 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 //----------------------------------------------------------------//
 bool Block::verify ( const State& state ) {
 
-    const MinerInfo* minerInfo = state.getMinerInfoOrNil ( this->mMinerID );
+    VersionedValue < MinerInfo > minerInfo = state.getMinerInfo ( this->mMinerID );
 
     if ( minerInfo ) {
         return this->verify ( state, minerInfo->getPublicKey ());

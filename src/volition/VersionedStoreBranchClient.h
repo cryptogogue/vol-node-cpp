@@ -22,6 +22,7 @@ protected:
     friend class AbstractVersionedValueIterator;
     friend class VersionedStoreBranch;
     friend class VersionedStoreIterator;
+    template < typename > friend class VersionedValue;
     template < typename > friend class VersionedValueIterator;
 
     /// Pointer to the branch containg the current version.
@@ -40,6 +41,22 @@ protected:
     const void*     getRaw                          ( string key, size_t version, size_t typeID ) const;
     size_t          getVersionDependency            () const;
     void            setBranch                       ( shared_ptr < VersionedStoreBranch > epoch, size_t version );
+    
+    //----------------------------------------------------------------//
+    /** \brief  Return a pointer to the value for a key at a given version
+                or NULL if the value cannot be found.
+     
+                Returns the value for the most recent version equal to or less than
+                the given version.
+     
+        \param  key         The key.
+        \param  version     The version.
+        \return             A pointer to the value or NULL.
+    */
+    template < typename TYPE >
+    const TYPE* getValueOrNil ( string key, size_t version ) const {
+        return ( TYPE* )this->getRaw ( key, version, typeid ( TYPE ).hash_code ());
+    }
     
 public:
 
@@ -70,8 +87,8 @@ public:
         \return         A copy of the value.
     */
     template < typename TYPE >
-    const TYPE& getValue ( string key ) const {
-        const TYPE* value = this->getValueOrNil < TYPE >( key );
+    const TYPE getValue ( string key ) const {
+        const TYPE* value = this->getValueOrNil < TYPE >( key, this->mVersion );
         assert ( value );
         return *value;
     }
@@ -88,38 +105,10 @@ public:
         \return             A copy of the value.
     */
     template < typename TYPE >
-    const TYPE& getValue ( string key, size_t version ) const {
+    const TYPE getValue ( string key, size_t version ) const {
         const TYPE* value = this->getValueOrNil < TYPE >( key, version );
         assert ( value );
         return *value;
-    }
-
-    //----------------------------------------------------------------//
-    /** \brief  Return a pointer to the value for a key or NULL if the
-                value cannot be found.
-     
-        \param  key     The key.
-        \return         A pointer to the value or NULL.
-    */
-    template < typename TYPE >
-    const TYPE* getValueOrNil ( string key ) const {
-        return ( TYPE* )this->getRaw ( key, this->mVersion, typeid ( TYPE ).hash_code ());
-    }
-
-    //----------------------------------------------------------------//
-    /** \brief  Return a pointer to the value for a key at a given version
-                or NULL if the value cannot be found.
-     
-                Returns the value for the most recent version equal to or less than
-                the given version.
-     
-        \param  key         The key.
-        \param  version     The version.
-        \return             A pointer to the value or NULL.
-    */
-    template < typename TYPE >
-    const TYPE* getValueOrNil ( string key, size_t version ) const {
-        return ( TYPE* )this->getRaw ( key, version, typeid ( TYPE ).hash_code ());
     }
 
     //----------------------------------------------------------------//
@@ -129,8 +118,23 @@ public:
         \return         True if the value exists. False if it cant.
     */
     template < typename TYPE >
-    bool hasTypedValue ( string key ) const {
-        const TYPE* value = this->getValueOrNil < TYPE >( key );
+    bool hasValue ( string key ) const {
+        const TYPE* value = this->getValueOrNil < TYPE >( key, this->mVersion );
+        return ( value != NULL );
+    }
+    
+    //----------------------------------------------------------------//
+    /** \brief  Check to see if the value can be found for the given version.
+     
+                Check the value for the most recent version equal to or less than
+                the given version.
+     
+        \param  key     The key.
+        \return         True if the value exists. False if it cant.
+    */
+    template < typename TYPE >
+    bool hasValue ( string key, size_t version ) const {
+        const TYPE* value = this->getValueOrNil < TYPE >( key, version );
         return ( value != NULL );
     }
 };
