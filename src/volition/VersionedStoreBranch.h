@@ -9,7 +9,7 @@
 
 namespace Volition {
 
-class VersionedStore;
+class VersionedStoreBranchClient;
 
 //================================================================//
 // VersionedStoreBranch
@@ -20,12 +20,13 @@ private:
 
     friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
+    friend class VersionedStoreBranchClient;
     friend class VersionedStoreIterator;
     template < typename > friend class VersionedValueIterator;
 
     typedef set < string > BranchLayer;
 
-    set < VersionedStore* >                                 mClients;
+    set < VersionedStoreBranchClient* >                       mClients;
     set < VersionedStoreBranch* >                           mChildren;
     map < size_t, BranchLayer >                             mBranchLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
@@ -45,11 +46,11 @@ private:
 
     //----------------------------------------------------------------//
     void                            affirmChild                 ( VersionedStoreBranch& child );
-    void                            affirmClient                ( VersionedStore& client );
+    void                            affirmClient                ( VersionedStoreBranchClient& client );
     size_t                          countDependencies           () const;
     void                            eraseChild                  ( VersionedStoreBranch& child );
-    void                            eraseClient                 ( VersionedStore& client );
-    size_t                          findImmutableTop            ( const VersionedStore* ignore = NULL ) const;
+    void                            eraseClient                 ( VersionedStoreBranchClient& client );
+    size_t                          findImmutableTop            ( const VersionedStoreBranchClient* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
     size_t                          getTopVersion               () const;

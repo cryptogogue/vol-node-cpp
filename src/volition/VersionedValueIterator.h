@@ -5,7 +5,7 @@
 #define VOLITION_VERSIONEDVALUEITERATOR_H
 
 #include <volition/common.h>
-#include <volition/VersionedStore.h>
+#include <volition/VersionedStoreBranchClient.h>
 
 namespace Volition {
 
@@ -14,10 +14,10 @@ namespace Volition {
 //================================================================//
 template < typename TYPE >
 class VersionedValueIterator :
-    public VersionedStore {
+    public VersionedStoreBranchClient {
 protected:
 
-    friend class VersionedStore;
+    friend class VersionedStoreBranchClient;
 
     typedef typename map < size_t, TYPE >::const_iterator ValueIterator;
 
@@ -30,13 +30,13 @@ protected:
         NO_NEXT,
     };
 
-    VersionedStore      mAnchor;
-    string              mKey;
-    ValueIterator       mIterator;
-    int                 mState;
+    VersionedStoreBranchClient  mAnchor;
+    string                      mKey;
+    ValueIterator               mIterator;
+    int                         mState;
     
-    size_t              mFirstVersion;
-    size_t              mLastVersion;
+    size_t                      mFirstVersion;
+    size_t                      mLastVersion;
 
     //----------------------------------------------------------------//
     const ValueStack < TYPE >* getValueStack () {
@@ -193,7 +193,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    VersionedValueIterator ( VersionedStore& versionedStore, string key ) :
+    VersionedValueIterator ( VersionedStoreBranchClient& versionedStore, string key ) :
         mAnchor ( versionedStore ),
         mKey ( key ) {
         

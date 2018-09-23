@@ -2,7 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/State.h>
-#include <volition/VersionedStore.h>
+#include <volition/VersionedStoreBranchClient.h>
 #include <volition/VersionedStoreBranch.h>
 
 //#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
@@ -21,7 +21,7 @@ void VersionedStoreBranch::affirmChild ( VersionedStoreBranch& child ) {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::affirmClient ( VersionedStore& client ) {
+void VersionedStoreBranch::affirmClient ( VersionedStoreBranchClient& client ) {
 
     this->mClients.insert ( &client );
 }
@@ -39,22 +39,22 @@ void VersionedStoreBranch::eraseChild ( VersionedStoreBranch& child ) {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::eraseClient ( VersionedStore& client ) {
+void VersionedStoreBranch::eraseClient ( VersionedStoreBranchClient& client ) {
 
     this->mClients.erase ( &client );
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::findImmutableTop ( const VersionedStore* ignore ) const {
+size_t VersionedStoreBranch::findImmutableTop ( const VersionedStoreBranchClient* ignore ) const {
 
     LOG_SCOPE_F ( INFO, "VersionedStoreBranch::findImmutableTop ()" );
 
     size_t immutableTop = this->getVersionDependency ();
 
-    set < VersionedStore* >::const_iterator clientIt = this->mClients.cbegin ();
+    set < VersionedStoreBranchClient* >::const_iterator clientIt = this->mClients.cbegin ();
     for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
 
-        const VersionedStore* client = *clientIt;
+        const VersionedStoreBranchClient* client = *clientIt;
         if ( client != ignore ) {
         
             size_t clientVersion = client->getVersionDependency ();
@@ -127,13 +127,13 @@ void VersionedStoreBranch::optimize () {
 
     LOG_SCOPE_F ( INFO, "VersionedStoreBranch::optimize ()" );
 
-    VersionedStore* topClient = NULL;
+    VersionedStoreBranchClient* topClient = NULL;
     VersionedStoreBranch* topChild = NULL;
 
     LOG_SCOPE_F ( INFO, "evaluating clients..." );
-    for ( set < VersionedStore* >::iterator clientIt = this->mClients.begin (); clientIt != this->mClients.end (); ++clientIt ) {
+    for ( set < VersionedStoreBranchClient* >::iterator clientIt = this->mClients.begin (); clientIt != this->mClients.end (); ++clientIt ) {
 
-        VersionedStore* client = *clientIt;
+        VersionedStoreBranchClient* client = *clientIt;
         LOG_SCOPE_F ( INFO, "client %p", client );
         
         if (( topClient == NULL ) || ( topClient->getVersionDependency () < client->getVersionDependency ())) {
@@ -199,8 +199,8 @@ void VersionedStoreBranch::optimize () {
         }
         
         // copy the clients
-        for ( set < VersionedStore* >::iterator clientIt = mergeBranch->mClients.begin (); clientIt != mergeBranch->mClients.end (); ++clientIt ) {
-            VersionedStore* client = *clientIt;
+        for ( set < VersionedStoreBranchClient* >::iterator clientIt = mergeBranch->mClients.begin (); clientIt != mergeBranch->mClients.end (); ++clientIt ) {
+            VersionedStoreBranchClient* client = *clientIt;
             this->affirmClient ( *client );
             client->mBranch = this->shared_from_this ();
         }
