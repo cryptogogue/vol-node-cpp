@@ -9,27 +9,7 @@
 
 namespace Volition {
 
-template < typename TYPE > class ValueStack;
 template < typename TYPE > class VersionedValueIterator;
-
-//================================================================//
-// ValueStackTuple
-//================================================================//
-template < typename TYPE >
-class ValueStackTuple {
-private:
-
-    friend class ValueStack < TYPE >;
-
-    TYPE            mValue;
-    size_t          mVersion;
-
-    //----------------------------------------------------------------//
-    ValueStackTuple ( const TYPE& value, size_t version ) :
-        mValue ( value ),
-        mVersion ( version ) {
-    }
-};
 
 //================================================================//
 // ValueStack

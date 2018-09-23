@@ -4,9 +4,6 @@
 #include <volition/State.h>
 #include <volition/VersionedStore.h>
 
-//#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
-#define DEBUG_LOG(...)
-
 namespace Volition {
 
 //================================================================//
@@ -14,7 +11,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-/** \brief  Pop the top version and revert to the version before it.
+/** \brief Pop the top version and revert to the version before it.
 */
 void VersionedStore::popVersion () {
 
@@ -43,8 +40,8 @@ void VersionedStore::popVersion () {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Make sure a branch exists to hodl the value. If a branch already exists,
-            create a new branch if setting a value for a version with dependencies.
+/** \brief Make sure a branch exists to hodl the value. If a branch already exists,
+    create a new branch if setting a value for a version with dependencies.
  
     This function find the top version in the store below which all other versions
     should be considered immutable. The immutable top is simply the highest version
@@ -81,7 +78,7 @@ void VersionedStore::prepareForSetValue () {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Increment the version.
+/** \brief Increment the version.
  
     This function just increments the version counter. Since layers
     are created sparsely (and only on write), nothing gets created by
@@ -117,7 +114,7 @@ void VersionedStore::pushVersion () {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Revert to a previous version.
+/** \brief Revert to a previous version.
  
     This method may trigger branch optimizations and deletions. Once
     reverted, there is no way to seek forward again. Use takeSnapshot()
@@ -155,7 +152,7 @@ void VersionedStore::revert ( size_t version ) {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Set the value of a key using a raw pointer to its data.
+/** \brief Set the value of a key using a raw pointer to its data.
  
     The value type should be checked and the branch's corresponding ValueStack
     should be created before calling this method. It's up to the ValueStack

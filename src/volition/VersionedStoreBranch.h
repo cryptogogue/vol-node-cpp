@@ -22,17 +22,20 @@ private:
     friend class VersionedStore;
     friend class VersionedStoreBranchClient;
     friend class VersionedStoreIterator;
+    template < typename > friend class VersionedValue;
     template < typename > friend class VersionedValueIterator;
 
     typedef set < string > BranchLayer;
 
-    set < VersionedStoreBranchClient* >                       mClients;
+    set < VersionedStoreBranchClient* >                     mClients;
     set < VersionedStoreBranch* >                           mChildren;
     map < size_t, BranchLayer >                             mBranchLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
 
     shared_ptr < VersionedStoreBranch >                     mParent;
     size_t                                                  mBaseVersion;
+
+    size_t                                                  mDirectReferenceCount;
 
     //----------------------------------------------------------------//
     template < typename TYPE >

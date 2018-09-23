@@ -7,15 +7,18 @@
 #include <volition/common.h>
 #include <volition/VersionedStoreBranch.h>
 
-// TODO: this is all placeholder stuff, to get the algorithm working. will need to
-// optimize to reduce dynamic allocation. will also need to provide a NoSQL-backed
-// implementation.
-
 namespace Volition {
 
 //================================================================//
 // VersionedStoreBranchClient
 //================================================================//
+/** \brief Common base implementation for versioned storeiterators. Contains only read-only methods
+    and getters.
+ 
+    This is the base to VersionedStore, VersionedStoreIterator and VersionedValueIterator. It
+    was originally part of VersionedStore, but was broken out into a separate base class
+    to avoid exposing mutators through the interator implementations, which are read-only.
+*/
 class VersionedStoreBranchClient {
 protected:
 
@@ -65,9 +68,9 @@ public:
     size_t          getVersion                      () const;
     void            setDebugName                    ( string debugName );
     void            takeSnapshot                    ( VersionedStoreBranchClient& other );
-                    VersionedStoreBranchClient        ();
-                    VersionedStoreBranchClient        ( VersionedStoreBranchClient& other );
-    virtual         ~VersionedStoreBranchClient       ();
+                    VersionedStoreBranchClient      ();
+                    VersionedStoreBranchClient      ( VersionedStoreBranchClient& other );
+    virtual         ~VersionedStoreBranchClient     ();
     
     //----------------------------------------------------------------//
     /** \brief  Implements assignment by calling takeSnapshot().

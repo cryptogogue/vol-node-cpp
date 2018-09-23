@@ -4,9 +4,6 @@
 #include <volition/State.h>
 #include <volition/VersionedStoreBranchClient.h>
 
-//#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
-#define DEBUG_LOG(...)
-
 namespace Volition {
 
 //================================================================//
@@ -14,7 +11,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-/** \brief  Create a branch if none exists and add self as client.
+/** \brief Create a branch if none exists and add self as client.
 */
 void VersionedStoreBranchClient::affirmBranch () {
 
@@ -25,7 +22,7 @@ void VersionedStoreBranchClient::affirmBranch () {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Abandons branch and sets version to 0.
+/** \brief Abandons branch and sets version to 0.
 */
 void VersionedStoreBranchClient::clear () {
 
@@ -33,7 +30,7 @@ void VersionedStoreBranchClient::clear () {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Return a void pointer to the value for key.
+/** \brief Return a void pointer to the value for key.
 
     Searches back through the store for the most recent value assigned
     to the key. If no value for the key is found in the history, NULL
@@ -50,7 +47,7 @@ const void* VersionedStoreBranchClient::getRaw ( string key, size_t version, siz
 }
 
 //----------------------------------------------------------------//
-/** \brief  Return the current version.
+/** \brief Return the current version.
 
     \return             The current version.
 */
@@ -60,8 +57,8 @@ size_t VersionedStoreBranchClient::getVersion () const {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Return the version depended on in the branch by this cursor.
-            This version must not be altered by any other cursor.
+/** \brief Return the version depended on in the branch by this cursor.
+    This version must not be altered by any other cursor.
 
     All values are held in a branch. The "dependent version" is the
     version below which all layers must be unique to the cursor. If any other
@@ -80,8 +77,8 @@ size_t VersionedStoreBranchClient::getVersionDependency () const {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Remove the cursor from the existing branch (if any) and add
-            it to the new branch.
+/** \brief Remove the cursor from the existing branch (if any) and add
+    it to the new branch.
 
     Branches internally maintain a set of their clients. This method updates
     the branch client sets correctly. Any version may be specified that
@@ -129,7 +126,7 @@ void VersionedStoreBranchClient::setBranch ( shared_ptr < VersionedStoreBranch >
 }
 
 //----------------------------------------------------------------//
-/** \brief  Set the debug name. Implemented in _DEBUG builds only. Otehrwise a no-op.
+/** \brief Set the debug name. Implemented in _DEBUG builds only. Otehrwise a no-op.
  
     \param  debugName   The debug name.
 */
@@ -141,7 +138,7 @@ void VersionedStoreBranchClient::setDebugName ( string debugName ) {
 }
 
 //----------------------------------------------------------------//
-/** \brief  Take a snapshot of the current version.
+/** \brief Take a snapshot of the current version.
 
     This is a relatively low-cost operation. Taking a snapshot will
     add a dependency on the shared branch but won'y do anything else

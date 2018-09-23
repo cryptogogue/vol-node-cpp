@@ -14,10 +14,10 @@
 namespace Volition {
 
 //================================================================//
-// VersionedStoreBranchClient
+// VersionedStore
 //================================================================//
-/** \brief  VersionedStoreBranchClient is a key/value store that can be rewound and branched into multiple
-            versions. This is the "backbone" of the Volition blockchain implementation.
+/** \brief VersionedStore is a key/value store that can be rewound and branched into multiple
+    versions. This is the "backbone" of the Volition blockchain implementation.
  
     The VersionedStoreBranchClient class represents a cursor into the versioned key/value store. The database
     itself is held in a series of branches (VersionedStoreBranch). Branches may have multiple
@@ -43,6 +43,18 @@ namespace Volition {
     of the store, iterating forward may incur additional overhead when a fork in a branch is
     reached. To navigate the fork, the iterator must restart at the end of the branch and search
     bakward through branches until the correct side of the fork is found.
+ 
+    A versioned store is interesting for blockchain implementation because it can represent
+    both the blockchain itself (each version contains a block) and the overall "state" of the
+    ledger. This state can be rewound and branched as new blocks are evaluated for addition
+    to the chain.
+ 
+    \todo The current implementation heavily uses STL maps. During the optimization step,
+    branches are combined through concatenation. We'll eventually want an implementation that
+    can do this operation quickly.
+ 
+    \todo The current implementation exists only as a local in-memory data structure. We'll need
+    a way to back it to an in-memory database server backed by storage media, such as Redis.
 */
 class VersionedStore :
     public VersionedStoreBranchClient {

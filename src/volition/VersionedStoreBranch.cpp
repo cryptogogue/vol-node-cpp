@@ -5,9 +5,6 @@
 #include <volition/VersionedStoreBranchClient.h>
 #include <volition/VersionedStoreBranch.h>
 
-//#define DEBUG_LOG printf ( "%04x:  ", ( int )(( size_t )this ) & 0xffff ); printf
-#define DEBUG_LOG(...)
-
 namespace Volition {
 
 //================================================================//
@@ -127,40 +124,7 @@ void VersionedStoreBranch::optimize () {
 
     LOG_SCOPE_F ( INFO, "VersionedStoreBranch::optimize ()" );
 
-    VersionedStoreBranchClient* topClient = NULL;
-    VersionedStoreBranch* topChild = NULL;
-
-    LOG_SCOPE_F ( INFO, "evaluating clients..." );
-    for ( set < VersionedStoreBranchClient* >::iterator clientIt = this->mClients.begin (); clientIt != this->mClients.end (); ++clientIt ) {
-
-        VersionedStoreBranchClient* client = *clientIt;
-        LOG_SCOPE_F ( INFO, "client %p", client );
-        
-        if (( topClient == NULL ) || ( topClient->getVersionDependency () < client->getVersionDependency ())) {
-            topClient = client;
-            LOG_F ( INFO, "topClient: %04x version: %d", ( int )(( size_t )client ) & 0xffff, ( int ) client->getVersionDependency ());
-        }
-    }
-    
-    LOG_SCOPE_F ( INFO, "evaluating children..." );
-    for ( set < VersionedStoreBranch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
-        
-        VersionedStoreBranch* child = *childIt;
-        LOG_SCOPE_F ( INFO, "child %p", child );
-        
-        bool replace = ( topChild == NULL ) || ( topChild->getVersionDependency () < child->getVersionDependency ());
-        replace = replace || (( topChild->getVersionDependency () == child->getVersionDependency ()) && ( topChild->getTopVersion () < child->getTopVersion ()));
-        
-        if ( replace ) {
-            topChild = child;
-            LOG_F ( INFO, "topClient: %04x topChild: %d", ( int )(( size_t )child ) & 0xffff, ( int ) child->getVersionDependency ());
-        }
-    }
-
-    size_t immutableTop = topClient ? ( topClient->getVersionDependency ()) : 0;
-    if ( topChild && ( immutableTop < topChild->getVersionDependency ())) {
-        immutableTop = topChild->getVersionDependency ();
-    }
+    size_t immutableTop = this->findImmutableTop ();
     
     LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
     LOG_F ( INFO, "topVersion: %d", ( int )this->getTopVersion ());
@@ -174,11 +138,26 @@ void VersionedStoreBranch::optimize () {
         assert ( this->getTopVersion () == immutableTop );
     }
     
-    if ( topChild && (( topClient == NULL ) || (( topClient->getVersionDependency ()) <= topChild->getVersionDependency ()))) {
+    LOG_F ( INFO, "evaluating children for possible concatenation..." );
+    shared_ptr < VersionedStoreBranch > mergeBranch;
+    for ( set < VersionedStoreBranch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
+        
+        VersionedStoreBranch* child = *childIt;
+        LOG_SCOPE_F ( INFO, "child %p", child );
+        
+        if (( child->mDirectReferenceCount == 0 ) && ( child->getVersionDependency () == immutableTop )) {
+            
+            if (( !mergeBranch ) || ( mergeBranch->getTopVersion () < child->getTopVersion () )) {
+                LOG_F ( INFO, "found a mergeable branch" );
+                mergeBranch = child->shared_from_this ();
+            }
+        }
+    }
     
-        LOG_F ( INFO, "MERGING CHILD EPOCH" );
+    if ( mergeBranch ) {
     
-        shared_ptr < VersionedStoreBranch > mergeBranch = topChild->shared_from_this ();
+        LOG_F ( INFO, "MERGING CHILD BRANCH" );
+    
         weak_ptr < VersionedStoreBranch > weakMergeBranch = mergeBranch;
     
         // merge the branch layers
@@ -186,7 +165,7 @@ void VersionedStoreBranch::optimize () {
         
         // copy the value stacks
         map < string, unique_ptr < AbstractValueStack >>::iterator valueStackIt = mergeBranch->mValueStacksByKey.begin ();
-        for ( ; valueStackIt != topChild->mValueStacksByKey.end (); ++valueStackIt ) {
+        for ( ; valueStackIt != mergeBranch->mValueStacksByKey.end (); ++valueStackIt ) {
             
             const AbstractValueStack* fromStack = mergeBranch->findValueStack ( valueStackIt->first );
             assert ( fromStack );
@@ -277,11 +256,13 @@ void VersionedStoreBranch::setRaw ( size_t version, string key, const void* valu
 
 //----------------------------------------------------------------//
 VersionedStoreBranch::VersionedStoreBranch () :
-    mBaseVersion ( 0 ) {
+    mBaseVersion ( 0 ),
+    mDirectReferenceCount ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion ) {
+VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion ) :
+    mDirectReferenceCount ( 0 ) {
     
     assert ( parent && ( parent->mBaseVersion <= baseVersion ) && ( baseVersion <= parent->getTopVersion ()));
 
@@ -314,6 +295,7 @@ VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch >
 //----------------------------------------------------------------//
 VersionedStoreBranch::~VersionedStoreBranch () {
 
+    assert ( this->mDirectReferenceCount == 0 );
     this->setParent ( NULL );
 }
 
