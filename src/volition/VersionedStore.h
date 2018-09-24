@@ -5,7 +5,7 @@
 #define VOLITION_VERSIONEDSTORE_H
 
 #include <volition/common.h>
-#include <volition/VersionedStoreBranchClient.h>
+#include <volition/VersionedStoreSnapshot.h>
 
 // TODO: this is all placeholder stuff, to get the algorithm working. will need to
 // optimize to reduce dynamic allocation. will also need to provide a NoSQL-backed
@@ -19,7 +19,7 @@ namespace Volition {
 /** \brief VersionedStore is a key/value store that can be rewound and branched into multiple
     versions. This is the "backbone" of the Volition blockchain implementation.
  
-    The VersionedStoreBranchClient class represents a cursor into the versioned key/value store. The database
+    The VersionedStoreSnapshot class represents a cursor into the versioned key/value store. The database
     itself is held in a series of branches (VersionedStoreBranch). Branches may have multiple
     dependencies in the form of cursors and child branches.
  
@@ -37,7 +37,7 @@ namespace Volition {
     Two iterator implementations are provided: VersionedStoreIterator and VersionedValueIterator.
     VersionedStoreIterator iterates through versions sequentially. VersionedValueIterator only
     visits versions where the value being iterated was set of changed. Both iterators inherit
-    from VersionedStoreBranchClient and thus give access to any value in the store.
+    from VersionedStoreSnapshot and thus give access to any value in the store.
  
     Iterators are faster moving backward through the version history. Due to the branching nature
     of the store, iterating forward may incur additional overhead when a fork in a branch is
@@ -57,7 +57,7 @@ namespace Volition {
     a way to back it to an in-memory database server backed by storage media, such as Redis.
 */
 class VersionedStore :
-    public VersionedStoreBranchClient {
+    public VersionedStoreSnapshot {
 protected:
 
     //----------------------------------------------------------------//
@@ -71,7 +71,7 @@ public:
     void            pushVersion                     ();
     void            revert                          ( size_t version );
                     VersionedStore                  ();
-                    VersionedStore                  ( VersionedStoreBranchClient& other );
+                    VersionedStore                  ( VersionedStoreSnapshot& other );
                     ~VersionedStore                 ();
     
     //----------------------------------------------------------------//
@@ -79,7 +79,7 @@ public:
      
         \param  other   The version to snapshot.
     */
-    VersionedStore& operator = ( VersionedStoreBranchClient& other ) {
+    VersionedStore& operator = ( VersionedStoreSnapshot& other ) {
         this->takeSnapshot ( other );
         return *this;
     }

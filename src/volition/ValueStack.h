@@ -19,7 +19,7 @@ class ValueStack :
     public AbstractValueStack {
 protected:
 
-    friend class VersionedStoreBranchClient;
+    friend class VersionedStoreSnapshot;
     friend class VersionedStoreLayer;
     friend class VersionedStoreBranch;
     friend class VersionedValueIterator < TYPE >;

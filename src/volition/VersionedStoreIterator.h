@@ -5,7 +5,7 @@
 #define VOLITION_VERSIONEDSTOREITERATOR_H
 
 #include <volition/common.h>
-#include <volition/VersionedStoreBranchClient.h>
+#include <volition/VersionedStoreSnapshot.h>
 
 namespace Volition {
 
@@ -15,7 +15,7 @@ class AbstractValueStack;
 // VersionedStoreIterator
 //================================================================//
 class VersionedStoreIterator :
-    public VersionedStoreBranchClient {
+    public VersionedStoreSnapshot {
 protected:
 
     enum {
@@ -28,7 +28,7 @@ protected:
         NO_NEXT,
     };
 
-    VersionedStoreBranchClient  mAnchor;
+    VersionedStoreSnapshot      mAnchor;
     int                         mState;
     size_t                      mTopVersion;
 
@@ -40,8 +40,8 @@ public:
     }
 
     //----------------------------------------------------------------//
-                        VersionedStoreIterator              ( VersionedStoreBranchClient& versionedStore );
-                        VersionedStoreIterator              ( VersionedStoreBranchClient& versionedStore, size_t version );
+                        VersionedStoreIterator              ( VersionedStoreSnapshot& versionedStore );
+                        VersionedStoreIterator              ( VersionedStoreSnapshot& versionedStore, size_t version );
     virtual             ~VersionedStoreIterator             ();
     bool                isValid                             () const;
     bool                next                                ();

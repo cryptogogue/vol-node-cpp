@@ -9,7 +9,7 @@
 
 namespace Volition {
 
-class VersionedStoreBranchClient;
+class VersionedStoreSnapshot;
 
 //================================================================//
 // VersionedStoreBranch
@@ -36,14 +36,14 @@ private:
 
     friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
-    friend class VersionedStoreBranchClient;
+    friend class VersionedStoreSnapshot;
     friend class VersionedStoreIterator;
     template < typename > friend class VersionedValue;
     template < typename > friend class VersionedValueIterator;
 
     typedef set < string > Layer;
 
-    set < VersionedStoreBranchClient* >                     mClients;
+    set < VersionedStoreSnapshot* >                     mClients;
     set < VersionedStoreBranch* >                           mChildren;
     map < size_t, Layer >                                   mLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
@@ -65,11 +65,11 @@ private:
 
     //----------------------------------------------------------------//
     void                            affirmChild                 ( VersionedStoreBranch& child );
-    void                            affirmClient                ( VersionedStoreBranchClient& client );
+    void                            affirmClient                ( VersionedStoreSnapshot& client );
     size_t                          countDependencies           () const;
     void                            eraseChild                  ( VersionedStoreBranch& child );
-    void                            eraseClient                 ( VersionedStoreBranchClient& client );
-    size_t                          findImmutableTop            ( const VersionedStoreBranchClient* ignore = NULL ) const;
+    void                            eraseClient                 ( VersionedStoreSnapshot& client );
+    size_t                          findImmutableTop            ( const VersionedStoreSnapshot* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
     size_t                          getTopVersion               () const;

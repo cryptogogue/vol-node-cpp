@@ -2,18 +2,18 @@
 // http://cryptogogue.com
 
 #include <volition/State.h>
-#include <volition/VersionedStoreBranchClient.h>
+#include <volition/VersionedStoreSnapshot.h>
 
 namespace Volition {
 
 //================================================================//
-// VersionedStoreBranchClient
+// VersionedStoreSnapshot
 //================================================================//
 
 //----------------------------------------------------------------//
 /** \brief Create a branch if none exists and add self as client.
 */
-void VersionedStoreBranchClient::affirmBranch () {
+void VersionedStoreSnapshot::affirmBranch () {
 
     if ( !this->mBranch ) {
         assert ( this->mVersion == 0 );
@@ -24,7 +24,7 @@ void VersionedStoreBranchClient::affirmBranch () {
 //----------------------------------------------------------------//
 /** \brief Abandons branch and sets version to 0.
 */
-void VersionedStoreBranchClient::clear () {
+void VersionedStoreSnapshot::clear () {
 
     this->setBranch ( NULL, 0 );
 }
@@ -41,7 +41,7 @@ void VersionedStoreBranchClient::clear () {
     \param  typeID      Has of the value's typeid. Used as a sanity check.
     \return             A raw pointer to the value's memory or NULL.
 */
-const void* VersionedStoreBranchClient::getRaw ( string key, size_t version, size_t typeID ) const {
+const void* VersionedStoreSnapshot::getRaw ( string key, size_t version, size_t typeID ) const {
 
     return this->mBranch ? this->mBranch->getRaw ( version < this->mVersion ? version : this->mVersion, key, typeID ) : NULL;
 }
@@ -51,7 +51,7 @@ const void* VersionedStoreBranchClient::getRaw ( string key, size_t version, siz
 
     \return             The current version.
 */
-size_t VersionedStoreBranchClient::getVersion () const {
+size_t VersionedStoreSnapshot::getVersion () const {
 
     return this->mVersion;
 }
@@ -71,7 +71,7 @@ size_t VersionedStoreBranchClient::getVersion () const {
  
     \return             The dependent version.
 */
-size_t VersionedStoreBranchClient::getVersionDependency () const {
+size_t VersionedStoreSnapshot::getVersionDependency () const {
 
     return this->mVersion + 1;
 }
@@ -92,13 +92,13 @@ size_t VersionedStoreBranchClient::getVersionDependency () const {
     \param  branch      The new branch for the cursor.
     \param  version     The version referenced by the cursor.
 */
-void VersionedStoreBranchClient::setBranch ( shared_ptr < VersionedStoreBranch > branch, size_t version ) {
+void VersionedStoreSnapshot::setBranch ( shared_ptr < VersionedStoreBranch > branch, size_t version ) {
 
     weak_ptr < VersionedStoreBranch > prevBranchWeak;
 
     if ( this->mBranch != branch ) {
         
-        LOG_SCOPE_F ( INFO, "VersionedStoreBranchClient::setBranch () - changing branch" );
+        LOG_SCOPE_F ( INFO, "VersionedStoreSnapshot::setBranch () - changing branch" );
         
         if ( this->mBranch ) {
             prevBranchWeak = this->mBranch;
@@ -130,7 +130,7 @@ void VersionedStoreBranchClient::setBranch ( shared_ptr < VersionedStoreBranch >
  
     \param  debugName   The debug name.
 */
-void VersionedStoreBranchClient::setDebugName ( string debugName ) {
+void VersionedStoreSnapshot::setDebugName ( string debugName ) {
 
     #ifdef _DEBUG
         this->mDebugName = debugName;
@@ -146,24 +146,24 @@ void VersionedStoreBranchClient::setDebugName ( string debugName ) {
  
     \param  other   The version to snapshot.
 */
-void VersionedStoreBranchClient::takeSnapshot ( VersionedStoreBranchClient& other ) {
+void VersionedStoreSnapshot::takeSnapshot ( VersionedStoreSnapshot& other ) {
 
     this->setBranch ( other.mBranch, other.mVersion );
 }
 
 //----------------------------------------------------------------//
-VersionedStoreBranchClient::VersionedStoreBranchClient () :
+VersionedStoreSnapshot::VersionedStoreSnapshot () :
     mVersion ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreBranchClient::VersionedStoreBranchClient ( VersionedStoreBranchClient& other ) {
+VersionedStoreSnapshot::VersionedStoreSnapshot ( VersionedStoreSnapshot& other ) {
 
     this->takeSnapshot ( other );
 }
 
 //----------------------------------------------------------------//
-VersionedStoreBranchClient::~VersionedStoreBranchClient () {
+VersionedStoreSnapshot::~VersionedStoreSnapshot () {
 
     weak_ptr < VersionedStoreBranch > branchWeak = this->mBranch;
     this->setBranch ( NULL, 0 );

@@ -174,8 +174,8 @@ VersionedStore::VersionedStore () {
 }
 
 //----------------------------------------------------------------//
-VersionedStore::VersionedStore ( VersionedStoreBranchClient& other ) :
-    VersionedStoreBranchClient ( other ) {
+VersionedStore::VersionedStore ( VersionedStoreSnapshot& other ) :
+    VersionedStoreSnapshot ( other ) {
 }
 
 //----------------------------------------------------------------//

@@ -2,7 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/State.h>
-#include <volition/VersionedStoreBranchClient.h>
+#include <volition/VersionedStoreSnapshot.h>
 #include <volition/VersionedStoreBranch.h>
 
 namespace Volition {
@@ -18,7 +18,7 @@ void VersionedStoreBranch::affirmChild ( VersionedStoreBranch& child ) {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::affirmClient ( VersionedStoreBranchClient& client ) {
+void VersionedStoreBranch::affirmClient ( VersionedStoreSnapshot& client ) {
 
     this->mClients.insert ( &client );
 }
@@ -36,22 +36,22 @@ void VersionedStoreBranch::eraseChild ( VersionedStoreBranch& child ) {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::eraseClient ( VersionedStoreBranchClient& client ) {
+void VersionedStoreBranch::eraseClient ( VersionedStoreSnapshot& client ) {
 
     this->mClients.erase ( &client );
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::findImmutableTop ( const VersionedStoreBranchClient* ignore ) const {
+size_t VersionedStoreBranch::findImmutableTop ( const VersionedStoreSnapshot* ignore ) const {
 
     LOG_SCOPE_F ( INFO, "VersionedStoreBranch::findImmutableTop ()" );
 
     size_t immutableTop = this->getVersionDependency ();
 
-    set < VersionedStoreBranchClient* >::const_iterator clientIt = this->mClients.cbegin ();
+    set < VersionedStoreSnapshot* >::const_iterator clientIt = this->mClients.cbegin ();
     for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
 
-        const VersionedStoreBranchClient* client = *clientIt;
+        const VersionedStoreSnapshot* client = *clientIt;
         if ( client != ignore ) {
         
             size_t clientVersion = client->getVersionDependency ();
@@ -171,8 +171,8 @@ void VersionedStoreBranch::optimize () {
         }
         
         // copy the clients
-        for ( set < VersionedStoreBranchClient* >::iterator clientIt = mergeBranch->mClients.begin (); clientIt != mergeBranch->mClients.end (); ++clientIt ) {
-            VersionedStoreBranchClient* client = *clientIt;
+        for ( set < VersionedStoreSnapshot* >::iterator clientIt = mergeBranch->mClients.begin (); clientIt != mergeBranch->mClients.end (); ++clientIt ) {
+            VersionedStoreSnapshot* client = *clientIt;
             this->affirmClient ( *client );
             client->mBranch = this->shared_from_this ();
         }
@@ -242,10 +242,8 @@ void VersionedStoreBranch::truncate ( size_t topVersion ) {
                 this->mValueStacksByKey.erase ( *keyIt );
             }
         }
-        
-        size_t eraseID = layerIt->first;
-        ++layerIt;
-        this->mLayers.erase ( eraseID );
+        this->mLayers.erase ( layerIt->first );
+        layerIt = this->mLayers.rbegin ();
     }
 }
 

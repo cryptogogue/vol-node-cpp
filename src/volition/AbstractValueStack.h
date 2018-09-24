@@ -15,7 +15,7 @@ class AbstractValueStack {
 protected:
 
     friend class AbstractVersionedValueIterator;
-    friend class VersionedStoreBranchClient;
+    friend class VersionedStoreSnapshot;
     friend class VersionedStoreBranch;
     
     template < typename TYPE > friend class ValueStack;

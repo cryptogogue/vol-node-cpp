@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_VERSIONEDSTOREBRANCHCLIENT_H
-#define VOLITION_VERSIONEDSTOREBRANCHCLIENT_H
+#ifndef VOLITION_VERSIONEDSTOREBRANCHHANDLE_H
+#define VOLITION_VERSIONEDSTOREBRANCHHANDLE_H
 
 #include <volition/common.h>
 #include <volition/VersionedStoreBranch.h>
@@ -10,7 +10,7 @@
 namespace Volition {
 
 //================================================================//
-// VersionedStoreBranchClient
+// VersionedStoreSnapshot
 //================================================================//
 /** \brief Common base implementation for versioned storeiterators. Contains only read-only methods
     and getters.
@@ -19,7 +19,7 @@ namespace Volition {
     was originally part of VersionedStore, but was broken out into a separate base class
     to avoid exposing mutators through the interator implementations, which are read-only.
 */
-class VersionedStoreBranchClient {
+class VersionedStoreSnapshot {
 protected:
 
     friend class AbstractVersionedValueIterator;
@@ -67,17 +67,17 @@ public:
     void            clear                           ();
     size_t          getVersion                      () const;
     void            setDebugName                    ( string debugName );
-    void            takeSnapshot                    ( VersionedStoreBranchClient& other );
-                    VersionedStoreBranchClient      ();
-                    VersionedStoreBranchClient      ( VersionedStoreBranchClient& other );
-    virtual         ~VersionedStoreBranchClient     ();
+    void            takeSnapshot                    ( VersionedStoreSnapshot& other );
+                    VersionedStoreSnapshot          ();
+                    VersionedStoreSnapshot          ( VersionedStoreSnapshot& other );
+    virtual         ~VersionedStoreSnapshot         ();
     
     //----------------------------------------------------------------//
     /** \brief  Implements assignment by calling takeSnapshot().
      
         \param  other   The version to snapshot.
     */
-    VersionedStoreBranchClient& operator = ( VersionedStoreBranchClient& other ) {
+    VersionedStoreSnapshot& operator = ( VersionedStoreSnapshot& other ) {
         this->takeSnapshot ( other );
         return *this;
     }

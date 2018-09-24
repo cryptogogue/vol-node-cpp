@@ -5,7 +5,7 @@
 #define VOLITION_VERSIONEDVALUE_H
 
 #include <volition/common.h>
-#include <volition/VersionedStoreBranchClient.h>
+#include <volition/VersionedStoreSnapshot.h>
 
 namespace Volition {
 
@@ -25,7 +25,7 @@ namespace Volition {
 */
 template < typename TYPE >
 class VersionedValue :
-    public VersionedStoreBranchClient {
+    public VersionedStoreSnapshot {
 protected:
 
     /// Direct pointer to the value being referenced.
@@ -46,11 +46,11 @@ protected:
         \param  versionedStore  The versioned store containing the value.
         \param  value           The value. Should be from versionedStore.
     */
-    void setValue ( const VersionedStoreBranchClient& versionedStore, const TYPE* value ) {
+    void setValue ( const VersionedStoreSnapshot& versionedStore, const TYPE* value ) {
     
         if ( value ) {
         
-            VersionedStoreBranchClient& mutableStore = const_cast < VersionedStoreBranchClient& >( versionedStore );
+            VersionedStoreSnapshot& mutableStore = const_cast < VersionedStoreSnapshot& >( versionedStore );
             mutableStore.mBranch->mDirectReferenceCount++; // increment this first
         
             this->takeSnapshot ( mutableStore );
@@ -69,7 +69,7 @@ public:
             this->mBranch->mDirectReferenceCount--;
         }
         this->mValue = NULL;
-        this->VersionedStoreBranchClient::clear ();
+        this->VersionedStoreSnapshot::clear ();
     }
 
     //----------------------------------------------------------------//
@@ -128,7 +128,7 @@ public:
         \param  versionedStore      VersionedValue to get value from.
         \param  key                 The key.
     */
-    void setValue ( const VersionedStoreBranchClient& versionedStore, string key ) {
+    void setValue ( const VersionedStoreSnapshot& versionedStore, string key ) {
         
         this->clear ();
         
@@ -156,7 +156,7 @@ public:
         \param  versionedStore      VersionedValue to get value from.
         \param  key                 The key.
     */
-    VersionedValue ( const VersionedStoreBranchClient& versionedStore, string key ) {
+    VersionedValue ( const VersionedStoreSnapshot& versionedStore, string key ) {
         this->setValue ( versionedStore, key );
     }
 

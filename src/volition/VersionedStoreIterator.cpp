@@ -11,7 +11,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreBranchClient& versionedStore ) :
+VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreSnapshot& versionedStore ) :
     mAnchor ( versionedStore ) {
 
     if ( this->mAnchor.mBranch && ( this->mAnchor.mBranch->getTopVersion () > 0 )) {
@@ -22,7 +22,7 @@ VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreBranchClient& ver
 }
 
 //----------------------------------------------------------------//
-VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreBranchClient& versionedStore, size_t version ) :
+VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreSnapshot& versionedStore, size_t version ) :
     VersionedStoreIterator ( versionedStore ) {
 
     this->seek ( version );

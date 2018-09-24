@@ -120,8 +120,8 @@
 		CD4E81C6210593F6007DA585 /* SimMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36659420EC40E4000E0B43 /* SimMiner.h */; };
 		CD4E81C7210593F6007DA585 /* TheSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */; };
 		CD4E81C8210593F6007DA585 /* TheSimulator.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32220CE0FA100300A96 /* TheSimulator.h */; };
-		CD4E81C92105940F007DA585 /* VersionedStoreBranchClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStoreBranchClient.cpp */; };
-		CD4E81CA2105940F007DA585 /* VersionedStoreBranchClient.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80E421040032007DA585 /* VersionedStoreBranchClient.h */; };
+		CD4E81C92105940F007DA585 /* VersionedStoreSnapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80E321040032007DA585 /* VersionedStoreSnapshot.cpp */; };
+		CD4E81CA2105940F007DA585 /* VersionedStoreSnapshot.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80E421040032007DA585 /* VersionedStoreSnapshot.h */; };
 		CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
 		CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */; };
 		CD4E81CD2105941A007DA585 /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
@@ -312,8 +312,8 @@
 		CD4E80DC21031AB0007DA585 /* Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Digest.h; path = src/volition/Digest.h; sourceTree = "<group>"; };
 		CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractStringifiable.h; path = src/volition/serialization/AbstractStringifiable.h; sourceTree = "<group>"; };
 		CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SortedDigestSerializer.h; path = src/volition/serialization/SortedDigestSerializer.h; sourceTree = "<group>"; };
-		CD4E80E321040032007DA585 /* VersionedStoreBranchClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedStoreBranchClient.cpp; path = src/volition/VersionedStoreBranchClient.cpp; sourceTree = "<group>"; };
-		CD4E80E421040032007DA585 /* VersionedStoreBranchClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedStoreBranchClient.h; path = src/volition/VersionedStoreBranchClient.h; sourceTree = "<group>"; };
+		CD4E80E321040032007DA585 /* VersionedStoreSnapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedStoreSnapshot.cpp; path = src/volition/VersionedStoreSnapshot.cpp; sourceTree = "<group>"; };
+		CD4E80E421040032007DA585 /* VersionedStoreSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedStoreSnapshot.h; path = src/volition/VersionedStoreSnapshot.h; sourceTree = "<group>"; };
 		CD4E8105210577FF007DA585 /* libgtest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgtest.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD4E8107210578D7007DA585 /* gtest-all.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-all.cc"; path = "3rd-party/googletest/googletest/src/gtest-all.cc"; sourceTree = "<group>"; };
 		CD4E8108210578D7007DA585 /* gtest-death-test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gtest-death-test.cc"; path = "3rd-party/googletest/googletest/src/gtest-death-test.cc"; sourceTree = "<group>"; };
@@ -611,8 +611,8 @@
 				CDA06FF121570FDF003FA0C3 /* VersionedStore.h */,
 				CD561DBB210730ED008B06C7 /* VersionedStoreBranch.cpp */,
 				CD561DBC210730ED008B06C7 /* VersionedStoreBranch.h */,
-				CD4E80E321040032007DA585 /* VersionedStoreBranchClient.cpp */,
-				CD4E80E421040032007DA585 /* VersionedStoreBranchClient.h */,
+				CD4E80E321040032007DA585 /* VersionedStoreSnapshot.cpp */,
+				CD4E80E421040032007DA585 /* VersionedStoreSnapshot.h */,
 				CD240D2F21363CE000FF8812 /* VersionedStoreIterator.cpp */,
 				CD240D3021363CE000FF8812 /* VersionedStoreIterator.h */,
 				CDA06FF4215715EE003FA0C3 /* VersionedValue.h */,
@@ -899,7 +899,7 @@
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
 				CD4E81C4210593F6007DA585 /* Scenario.h in Headers */,
 				CD4E81A0210593BD007DA585 /* TheContext.h in Headers */,
-				CD4E81CA2105940F007DA585 /* VersionedStoreBranchClient.h in Headers */,
+				CD4E81CA2105940F007DA585 /* VersionedStoreSnapshot.h in Headers */,
 				CD4E81C6210593F6007DA585 /* SimMiner.h in Headers */,
 				CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */,
 				CD4E81AD210593CA007DA585 /* WebMiner.h in Headers */,
@@ -1214,7 +1214,7 @@
 				CDA06FE72155C57F003FA0C3 /* common.cpp in Sources */,
 				CD240D3121363CE000FF8812 /* VersionedStoreIterator.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
-				CD4E81C92105940F007DA585 /* VersionedStoreBranchClient.cpp in Sources */,
+				CD4E81C92105940F007DA585 /* VersionedStoreSnapshot.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
 				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,
