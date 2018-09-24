@@ -66,7 +66,7 @@ protected:
         const ValueStack < TYPE >* bestValueStack = NULL;
         size_t bestTop = top;
         
-        for ( ; branch != prevBranch; branch = branch->mParent ) {
+        for ( ; branch != prevBranch; branch = branch->mBranch ) {
             const ValueStack < TYPE >* valueStack = this->getValueStack ( branch );
             if ( valueStack && valueStack->size ()) {
                 bestBranch = branch;
@@ -90,7 +90,7 @@ protected:
     //----------------------------------------------------------------//
     void seekPrev ( shared_ptr < VersionedStoreBranch > branch, size_t top ) {
         
-        for ( ; branch; branch = branch->mParent ) {
+        for ( ; branch; branch = branch->mBranch ) {
         
             const ValueStack < TYPE >* valueStack = this->getValueStack ( branch );
             
@@ -180,7 +180,7 @@ public:
             }
             else {
                 assert ( this->mIterator->first == this->mFirstVersion );
-                this->seekPrev ( this->mBranch->mParent, this->mVersion );
+                this->seekPrev ( this->mBranch->mBranch, this->mVersion );
             }
         }
         return ( this->mState != NO_PREV );

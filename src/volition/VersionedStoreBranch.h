@@ -5,10 +5,12 @@
 #define VOLITION_VERSIONEDSTOREBRANCH_H
 
 #include <volition/common.h>
+#include <volition/AbstractVersionedStoreClient.h>
 #include <volition/ValueStack.h>
 
 namespace Volition {
 
+class AbstractVersionedStoreClient;
 class VersionedStoreSnapshot;
 
 //================================================================//
@@ -31,7 +33,8 @@ class VersionedStoreSnapshot;
     be searched recurively until a value is found.
 */
 class VersionedStoreBranch :
-    public enable_shared_from_this < VersionedStoreBranch > {
+    public enable_shared_from_this < VersionedStoreBranch >,
+    public AbstractVersionedStoreClient {
 private:
 
     friend class AbstractVersionedValueIterator;
@@ -43,12 +46,10 @@ private:
 
     typedef set < string > Layer;
 
-    set < VersionedStoreSnapshot* >                     mClients;
-    set < VersionedStoreBranch* >                           mChildren;
+    set < AbstractVersionedStoreClient* >                   mClients;
     map < size_t, Layer >                                   mLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
 
-    shared_ptr < VersionedStoreBranch >                     mParent;
     size_t                                                  mBaseVersion;
 
     size_t                                                  mDirectReferenceCount;
@@ -64,27 +65,31 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void                            affirmChild                 ( VersionedStoreBranch& child );
-    void                            affirmClient                ( VersionedStoreSnapshot& client );
+    void                            affirmClient                ( AbstractVersionedStoreClient& client );
     size_t                          countDependencies           () const;
-    void                            eraseChild                  ( VersionedStoreBranch& child );
-    void                            eraseClient                 ( VersionedStoreSnapshot& client );
-    size_t                          findImmutableTop            ( const VersionedStoreSnapshot* ignore = NULL ) const;
+    void                            eraseClient                 ( AbstractVersionedStoreClient& client );
+    size_t                          findImmutableTop            ( const AbstractVersionedStoreClient* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
     size_t                          getTopVersion               () const;
-    size_t                          getVersionDependency        () const;
     void                            optimize                    ();
     void                            setParent                   ( shared_ptr < VersionedStoreBranch > parent );
     void                            setRaw                      ( size_t version, string key, const void* value );
     void                            truncate                    ( size_t topVersion );
 
+    //----------------------------------------------------------------//
+    bool            AbstractVersionedStoreClient_canJoin                    () const override;
+    size_t          AbstractVersionedStoreClient_getJoinScore               () const override;
+    size_t          AbstractVersionedStoreClient_getVersionDependency       () const override;
+    void            AbstractVersionedStoreClient_joinBranch                 ( VersionedStoreBranch& branch ) override;
+    bool            AbstractVersionedStoreClient_preventJoin                () const override;
+
 public:
 
     //----------------------------------------------------------------//
-                                    VersionedStoreBranch        ();
-                                    VersionedStoreBranch        ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion );
-                                    ~VersionedStoreBranch       ();
+                    VersionedStoreBranch        ();
+                    VersionedStoreBranch        ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion );
+                    ~VersionedStoreBranch       ();
 };
 
 } // namespace Volition

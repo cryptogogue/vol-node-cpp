@@ -12,13 +12,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::affirmChild ( VersionedStoreBranch& child ) {
-
-    this->mChildren.insert ( &child );
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreBranch::affirmClient ( VersionedStoreSnapshot& client ) {
+void VersionedStoreBranch::affirmClient ( AbstractVersionedStoreClient& client ) {
 
     this->mClients.insert ( &client );
 }
@@ -26,51 +20,33 @@ void VersionedStoreBranch::affirmClient ( VersionedStoreSnapshot& client ) {
 //----------------------------------------------------------------//
 size_t VersionedStoreBranch::countDependencies () const {
 
-    return ( this->mClients.size () + this->mChildren.size ());
+    return this->mClients.size ();
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::eraseChild ( VersionedStoreBranch& child ) {
-
-    this->mChildren.erase ( &child );
-}
-
-//----------------------------------------------------------------//
-void VersionedStoreBranch::eraseClient ( VersionedStoreSnapshot& client ) {
+void VersionedStoreBranch::eraseClient ( AbstractVersionedStoreClient& client ) {
 
     this->mClients.erase ( &client );
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::findImmutableTop ( const VersionedStoreSnapshot* ignore ) const {
+size_t VersionedStoreBranch::findImmutableTop ( const AbstractVersionedStoreClient* ignore ) const {
 
     LOG_SCOPE_F ( INFO, "VersionedStoreBranch::findImmutableTop ()" );
 
     size_t immutableTop = this->getVersionDependency ();
 
-    set < VersionedStoreSnapshot* >::const_iterator clientIt = this->mClients.cbegin ();
+    set < AbstractVersionedStoreClient* >::const_iterator clientIt = this->mClients.cbegin ();
     for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
 
-        const VersionedStoreSnapshot* client = *clientIt;
+        const AbstractVersionedStoreClient* client = *clientIt;
         if ( client != ignore ) {
         
             size_t clientVersion = client->getVersionDependency ();
             
-            if ( clientVersion > immutableTop ) {
+            if ( immutableTop < clientVersion ) {
                 immutableTop = clientVersion;
             }
-        }
-    }
-    
-    set < VersionedStoreBranch* >::const_iterator childIt = this->mChildren.cbegin ();
-    for ( ; childIt != this->mChildren.cend (); ++childIt ) {
-
-        const VersionedStoreBranch* child = *childIt;
-        
-        size_t clientVersion = child->getVersionDependency ();
-            
-        if ( clientVersion > immutableTop ) {
-            immutableTop = clientVersion;
         }
     }
     
@@ -90,7 +66,7 @@ const AbstractValueStack* VersionedStoreBranch::findValueStack ( string key ) co
 const void* VersionedStoreBranch::getRaw ( size_t version, string key, size_t typeID ) const {
 
     const VersionedStoreBranch* branch = this;
-    for ( ; branch; version = branch->mBaseVersion, branch = branch->mParent.get ()) {
+    for ( ; branch; version = branch->mBaseVersion, branch = branch->mBranch.get ()) {
         if ( branch->mBaseVersion <= version ) {
         
             const AbstractValueStack* valueStack = branch->findValueStack ( key );
@@ -114,96 +90,65 @@ size_t VersionedStoreBranch::getTopVersion () const {
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::getVersionDependency () const {
-
-    return this->mBaseVersion;
-}
-
-//----------------------------------------------------------------//
 void VersionedStoreBranch::optimize () {
 
     LOG_SCOPE_F ( INFO, "VersionedStoreBranch::optimize ()" );
+    
+    size_t immutableTop = this->mBaseVersion;
+    bool preventJoin = this->preventJoin ();
+    AbstractVersionedStoreClient* bestJoin = NULL;
+    
+    LOG_F ( INFO, "evaluating clients for possible concatenation..." );
+    set < AbstractVersionedStoreClient* >::const_iterator clientIt = this->mClients.cbegin ();
+    for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
 
-    size_t immutableTop = this->findImmutableTop ();
+        AbstractVersionedStoreClient* client = *clientIt;
+        LOG_SCOPE_F ( INFO, "client %p", client );
+        
+        size_t clientVersion = client->getVersionDependency ();
+        if ( immutableTop < clientVersion ) {
+            immutableTop = clientVersion;
+            bestJoin = NULL;
+        }
+        
+        if (( !preventJoin ) && client->canJoin ()) {
+
+            if ( client->preventJoin ()) {
+                preventJoin = true;
+                bestJoin = NULL;
+            }
+            else {
+                if (( !bestJoin ) || ( bestJoin->getJoinScore () < client->getJoinScore ())) {
+                    LOG_F ( INFO, "found a client that can join" );
+                    bestJoin = client;
+                }
+            }
+        }
+    }
     
     LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
     LOG_F ( INFO, "topVersion: %d", ( int )this->getTopVersion ());
     
     this->truncate ( immutableTop );
     
-    LOG_F ( INFO, "evaluating children for possible concatenation..." );
-    shared_ptr < VersionedStoreBranch > mergeBranch;
-    for ( set < VersionedStoreBranch* >::iterator childIt = this->mChildren.begin (); childIt != this->mChildren.end (); ++childIt ) {
-        
-        VersionedStoreBranch* child = *childIt;
-        LOG_SCOPE_F ( INFO, "child %p", child );
-        
-        if (( child->mDirectReferenceCount == 0 ) && ( child->getVersionDependency () == immutableTop )) {
-            
-            if (( !mergeBranch ) || ( mergeBranch->getTopVersion () < child->getTopVersion () )) {
-                LOG_F ( INFO, "found a mergeable branch" );
-                mergeBranch = child->shared_from_this ();
-            }
-        }
-    }
-    
-    if ( mergeBranch ) {
-    
-        LOG_F ( INFO, "MERGING CHILD BRANCH" );
-    
-        weak_ptr < VersionedStoreBranch > weakMergeBranch = mergeBranch;
-    
-        // merge the branch layers
-        this->mLayers.insert ( mergeBranch->mLayers.begin(), mergeBranch->mLayers.end ());
-        
-        // copy the value stacks
-        map < string, unique_ptr < AbstractValueStack >>::iterator valueStackIt = mergeBranch->mValueStacksByKey.begin ();
-        for ( ; valueStackIt != mergeBranch->mValueStacksByKey.end (); ++valueStackIt ) {
-            
-            const AbstractValueStack* fromStack = mergeBranch->findValueStack ( valueStackIt->first );
-            assert ( fromStack );
-            
-            unique_ptr < AbstractValueStack >& toStack = this->mValueStacksByKey [ valueStackIt->first ];
-            if ( !toStack ) {
-                toStack = fromStack->makeEmptyCopy ();
-            }
-            toStack->copyFrom ( *fromStack );
-        }
-        
-        // copy the clients
-        for ( set < VersionedStoreSnapshot* >::iterator clientIt = mergeBranch->mClients.begin (); clientIt != mergeBranch->mClients.end (); ++clientIt ) {
-            VersionedStoreSnapshot* client = *clientIt;
-            this->affirmClient ( *client );
-            client->mBranch = this->shared_from_this ();
-        }
-        
-        // copy the children
-        for ( set < VersionedStoreBranch* >::iterator childIt = mergeBranch->mChildren.begin (); childIt != mergeBranch->mChildren.end (); ++childIt ) {
-            VersionedStoreBranch* child = *childIt;
-            this->affirmChild ( *child );
-            child->mParent = this->shared_from_this ();
-        }
-
-        mergeBranch = NULL;
-        assert ( weakMergeBranch.expired ());
-        
-        this->optimize ();
+    if ( bestJoin ) {
+        bestJoin->joinBranch ( *this );
     }
 }
 
 //----------------------------------------------------------------//
 void VersionedStoreBranch::setParent ( shared_ptr < VersionedStoreBranch > parent ) {
 
-    if ( this->mParent != parent ) {
+    if ( this->mBranch != parent ) {
 
-        if ( this->mParent ) {
-            this->mParent->eraseChild ( *this );
+        if ( this->mBranch ) {
+            this->mBranch->eraseClient ( *this );
         }
 
-        this->mParent = parent;
+        this->mBranch = parent;
 
         if ( parent ) {
-            parent->affirmChild ( *this );
+            parent->affirmClient ( *this );
         }
     }
 }
@@ -259,7 +204,7 @@ VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch >
     
     assert ( parent && ( parent->mBaseVersion <= baseVersion ) && ( baseVersion <= parent->getTopVersion ()));
 
-    this->setParent ( parent->mBaseVersion < baseVersion ? parent : parent->mParent );
+    this->setParent ( parent->mBaseVersion < baseVersion ? parent : parent->mBranch );
     this->mBaseVersion = baseVersion;
     
     map < size_t, Layer >::const_iterator layerIt = parent->mLayers.find ( baseVersion );
@@ -290,6 +235,68 @@ VersionedStoreBranch::~VersionedStoreBranch () {
 
     assert ( this->mDirectReferenceCount == 0 );
     this->setParent ( NULL );
+}
+
+//================================================================//
+// overrides
+//================================================================//
+
+//----------------------------------------------------------------//
+bool VersionedStoreBranch::AbstractVersionedStoreClient_canJoin () const {
+    return true;
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStoreBranch::AbstractVersionedStoreClient_getJoinScore () const {
+    return this->getTopVersion ();
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStoreBranch::AbstractVersionedStoreClient_getVersionDependency () const {
+    return this->mBaseVersion;
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreBranch::AbstractVersionedStoreClient_joinBranch ( VersionedStoreBranch& branch ) {
+
+    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::AbstractVersionedStoreClient_joinBranch ()" );
+    LOG_F ( INFO, "JOINING PARENT BRANCH" );
+    
+    this->optimize ();
+    
+    shared_ptr < VersionedStoreBranch > pinThis = this->shared_from_this ();
+    
+    // merge the branch layers
+    branch.mLayers.insert ( this->mLayers.begin(), this->mLayers.end ());
+
+    // copy the value stacks
+    map < string, unique_ptr < AbstractValueStack >>::iterator valueStackIt = this->mValueStacksByKey.begin ();
+    for ( ; valueStackIt != this->mValueStacksByKey.end (); ++valueStackIt ) {
+        
+        const AbstractValueStack* fromStack = this->findValueStack ( valueStackIt->first );
+        assert ( fromStack );
+        
+        unique_ptr < AbstractValueStack >& toStack = branch.mValueStacksByKey [ valueStackIt->first ];
+        if ( !toStack ) {
+            toStack = fromStack->makeEmptyCopy ();
+        }
+        toStack->copyFrom ( *fromStack );
+    }
+
+    // copy the clients
+    set < AbstractVersionedStoreClient* >::iterator clientIt = this->mClients.begin ();
+    for ( ; clientIt != this->mClients.end (); ++clientIt ) {
+        AbstractVersionedStoreClient* client = *clientIt;
+        branch.affirmClient ( *client );
+        client->mBranch = branch.shared_from_this ();
+    }
+    
+    pinThis = NULL;
+}
+
+//----------------------------------------------------------------//
+bool VersionedStoreBranch::AbstractVersionedStoreClient_preventJoin () const {
+    return ( this->mDirectReferenceCount > 0 );
 }
 
 } // namespace Volition

@@ -57,27 +57,7 @@ size_t VersionedStoreSnapshot::getVersion () const {
 }
 
 //----------------------------------------------------------------//
-/** \brief Return the version depended on in the branch by this cursor.
-    This version must not be altered by any other cursor.
-
-    All values are held in a branch. The "dependent version" is the
-    version below which all layers must be unique to the cursor. If any other
-    cursor needs to alter any layer below the depdent layer, a new branch
-    must be created to hold the changes. The new branch will contain a
-    full copy of the layer being changed.
- 
-    For cursors, since they reference the "current version" where
-    values will be written, the "dependent version" is the mVersion + 1.
- 
-    \return             The dependent version.
-*/
-size_t VersionedStoreSnapshot::getVersionDependency () const {
-
-    return this->mVersion + 1;
-}
-
-//----------------------------------------------------------------//
-/** \brief Remove the cursor from the existing branch (if any) and add
+/** \brief Remove the snapshot from the existing branch (if any) and add
     it to the new branch.
 
     Branches internally maintain a set of their clients. This method updates
@@ -85,12 +65,12 @@ size_t VersionedStoreSnapshot::getVersionDependency () const {
     is greater than the base version of the new branch. This will add a
     dependency on all lesser versions held in the branch.
  
-    When the cursor is removed from its original, the original branch
+    When the snapshot is removed from its original, the original branch
     will be deleted or optimized. The original branch is only deleted
-    if the cursor was the last reference to it.
+    if the snapshot was the last reference to it.
  
-    \param  branch      The new branch for the cursor.
-    \param  version     The version referenced by the cursor.
+    \param  branch      The new branch for the snapshot.
+    \param  version     The version referenced by the snapshot.
 */
 void VersionedStoreSnapshot::setBranch ( shared_ptr < VersionedStoreBranch > branch, size_t version ) {
 
@@ -171,6 +151,50 @@ VersionedStoreSnapshot::~VersionedStoreSnapshot () {
         shared_ptr < VersionedStoreBranch > branch = branchWeak.lock ();
         branch->optimize ();
     }
+}
+
+//================================================================//
+// overrides
+//================================================================//
+
+//----------------------------------------------------------------//
+bool VersionedStoreSnapshot::AbstractVersionedStoreClient_canJoin () const {
+    return false;
+}
+
+//----------------------------------------------------------------//
+size_t VersionedStoreSnapshot::AbstractVersionedStoreClient_getJoinScore () const {
+    assert ( false );
+    return 0;
+}
+
+//----------------------------------------------------------------//
+/** \brief Return the version depended on in the branch by this snapshot.
+    This version must not be altered by any other snapshot.
+
+    All values are held in a branch. The "dependent version" is the
+    version below which all layers must be unique to the snapshot. If any other
+    snapshot needs to alter any layer below the depdent layer, a new branch
+    must be created to hold the changes. The new branch will contain a
+    full copy of the layer being changed.
+ 
+    For snapshots, since they reference the "current version" where
+    values will be written, the "dependent version" is the mVersion + 1.
+ 
+    \return             The dependent version.
+*/
+size_t VersionedStoreSnapshot::AbstractVersionedStoreClient_getVersionDependency () const {
+    return this->mVersion + 1;
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreSnapshot::AbstractVersionedStoreClient_joinBranch ( VersionedStoreBranch& branch ) {
+    assert ( false );
+}
+
+//----------------------------------------------------------------//
+bool VersionedStoreSnapshot::AbstractVersionedStoreClient_preventJoin () const {
+    return false;
 }
 
 } // namespace Volition

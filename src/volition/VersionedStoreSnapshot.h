@@ -1,10 +1,11 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_VERSIONEDSTOREBRANCHHANDLE_H
-#define VOLITION_VERSIONEDSTOREBRANCHHANDLE_H
+#ifndef VOLITION_VERSIONEDSTORESNAPSHOT_H
+#define VOLITION_VERSIONEDSTORESNAPSHOT_H
 
 #include <volition/common.h>
+#include <volition/AbstractVersionedStoreClient.h>
 #include <volition/VersionedStoreBranch.h>
 
 namespace Volition {
@@ -19,7 +20,8 @@ namespace Volition {
     was originally part of VersionedStore, but was broken out into a separate base class
     to avoid exposing mutators through the interator implementations, which are read-only.
 */
-class VersionedStoreSnapshot {
+class VersionedStoreSnapshot :
+    public AbstractVersionedStoreClient {
 protected:
 
     friend class AbstractVersionedValueIterator;
@@ -27,22 +29,18 @@ protected:
     friend class VersionedStoreIterator;
     template < typename > friend class VersionedValue;
     template < typename > friend class VersionedValueIterator;
-
-    /// Pointer to the branch containg the current version.
-    shared_ptr < VersionedStoreBranch >     mBranch;
     
     /// Current version of the store. Values set will be set at this version.
     size_t                                  mVersion;
 
     #ifdef _DEBUG
-        /// Available in debug builds to add an easily readable name to cursors.
+        /// Available in debug builds to add an easily readable name to snapshots.
         string                              mDebugName;
     #endif
 
     //----------------------------------------------------------------//
     void            affirmBranch                    ();
     const void*     getRaw                          ( string key, size_t version, size_t typeID ) const;
-    size_t          getVersionDependency            () const;
     void            setBranch                       ( shared_ptr < VersionedStoreBranch > epoch, size_t version );
     
     //----------------------------------------------------------------//
@@ -60,6 +58,13 @@ protected:
     const TYPE* getValueOrNil ( string key, size_t version ) const {
         return ( TYPE* )this->getRaw ( key, version, typeid ( TYPE ).hash_code ());
     }
+    
+    //----------------------------------------------------------------//
+    bool            AbstractVersionedStoreClient_canJoin                    () const override;
+    size_t          AbstractVersionedStoreClient_getJoinScore               () const override;
+    size_t          AbstractVersionedStoreClient_getVersionDependency       () const override;
+    void            AbstractVersionedStoreClient_joinBranch                 ( VersionedStoreBranch& branch ) override;
+    bool            AbstractVersionedStoreClient_preventJoin                () const override;
     
 public:
 

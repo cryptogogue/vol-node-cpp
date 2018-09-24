@@ -89,7 +89,7 @@ void VersionedStoreIterator::seek ( size_t version ) {
     
         while ( branch && !(( branch->mBaseVersion <= version ) && ( version <= this->mTopVersion ))) {
             this->mTopVersion = branch->mBaseVersion - 1;
-            branch = branch->mParent;
+            branch = branch->mBranch;
         }
         assert ( branch );
         this->setBranch ( branch, version );

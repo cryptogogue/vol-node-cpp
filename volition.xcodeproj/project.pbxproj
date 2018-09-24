@@ -141,11 +141,13 @@
 		CDA06FDB214E3FAC003FA0C3 /* TestVersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */; };
 		CDA06FE52155C4CF003FA0C3 /* loguru.hpp in Headers */ = {isa = PBXBuildFile; fileRef = CDA06FE42155C4CF003FA0C3 /* loguru.hpp */; };
 		CDA06FE72155C57F003FA0C3 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FE62155C57F003FA0C3 /* common.cpp */; };
-		CDA06FEA2155CEA0003FA0C3 /* TestVersionedStoreIterators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FDE21541FE3003FA0C3 /* TestVersionedStoreIterators.cpp */; };
-		CDA06FEB2155CEA8003FA0C3 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
 		CDA06FF221570FDF003FA0C3 /* VersionedStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FF021570FDF003FA0C3 /* VersionedStore.cpp */; };
 		CDA06FF321570FDF003FA0C3 /* VersionedStore.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA06FF121570FDF003FA0C3 /* VersionedStore.h */; };
 		CDA06FF5215715EE003FA0C3 /* VersionedValue.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA06FF4215715EE003FA0C3 /* VersionedValue.h */; };
+		CDA06FF7215875D1003FA0C3 /* AbstractVersionedStoreClient.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA06FF6215875D1003FA0C3 /* AbstractVersionedStoreClient.h */; };
+		CDA06FF921587771003FA0C3 /* AbstractVersionedStoreClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FF821587771003FA0C3 /* AbstractVersionedStoreClient.cpp */; };
+		CDA06FFA21588EB3003FA0C3 /* TestVersionedStoreIterators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FDE21541FE3003FA0C3 /* TestVersionedStoreIterators.cpp */; };
+		CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -364,6 +366,8 @@
 		CDA06FF021570FDF003FA0C3 /* VersionedStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedStore.cpp; path = src/volition/VersionedStore.cpp; sourceTree = "<group>"; };
 		CDA06FF121570FDF003FA0C3 /* VersionedStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedStore.h; path = src/volition/VersionedStore.h; sourceTree = "<group>"; };
 		CDA06FF4215715EE003FA0C3 /* VersionedValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedValue.h; path = src/volition/VersionedValue.h; sourceTree = "<group>"; };
+		CDA06FF6215875D1003FA0C3 /* AbstractVersionedStoreClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractVersionedStoreClient.h; path = src/volition/AbstractVersionedStoreClient.h; sourceTree = "<group>"; };
+		CDA06FF821587771003FA0C3 /* AbstractVersionedStoreClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractVersionedStoreClient.cpp; path = src/volition/AbstractVersionedStoreClient.cpp; sourceTree = "<group>"; };
 		CDC1388F212FCFDF004FA594 /* TestChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestChain.cpp; path = src/volition/gtest/TestChain.cpp; sourceTree = "<group>"; };
 		CDC2B31420CCAD2400300A96 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = State.cpp; path = src/volition/State.cpp; sourceTree = "<group>"; };
 		CDC2B31520CCAD2400300A96 /* State.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = State.h; path = src/volition/State.h; sourceTree = "<group>"; };
@@ -606,6 +610,8 @@
 			children = (
 				CD561DB5210730DB008B06C7 /* AbstractValueStack.cpp */,
 				CD561DB6210730DB008B06C7 /* AbstractValueStack.h */,
+				CDA06FF821587771003FA0C3 /* AbstractVersionedStoreClient.cpp */,
+				CDA06FF6215875D1003FA0C3 /* AbstractVersionedStoreClient.h */,
 				CD561DB9210730E5008B06C7 /* ValueStack.h */,
 				CDA06FF021570FDF003FA0C3 /* VersionedStore.cpp */,
 				CDA06FF121570FDF003FA0C3 /* VersionedStore.h */,
@@ -914,6 +920,7 @@
 				CDA06FF321570FDF003FA0C3 /* VersionedStore.h in Headers */,
 				CD240D2821327F6600FF8812 /* VersionedValueIterator.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
+				CDA06FF7215875D1003FA0C3 /* AbstractVersionedStoreClient.h in Headers */,
 				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
@@ -1197,9 +1204,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CDA06FEB2155CEA8003FA0C3 /* TestChain.cpp in Sources */,
+				CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */,
 				CDA06FDB214E3FAC003FA0C3 /* TestVersionedStore.cpp in Sources */,
-				CDA06FEA2155CEA0003FA0C3 /* TestVersionedStoreIterators.cpp in Sources */,
+				CDA06FFA21588EB3003FA0C3 /* TestVersionedStoreIterators.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1207,6 +1214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDA06FF921587771003FA0C3 /* AbstractVersionedStoreClient.cpp in Sources */,
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
 				CD561DBD210730ED008B06C7 /* VersionedStoreBranch.cpp in Sources */,
 				CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */,
