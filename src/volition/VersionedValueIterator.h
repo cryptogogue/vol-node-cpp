@@ -73,7 +73,7 @@ protected:
                 bestValueStack = valueStack;
                 bestTop = top;
             }
-            top = branch->mBaseVersion;
+            top = branch->mVersion;
         }
         
         if ( bestValueStack ) {
@@ -101,7 +101,7 @@ protected:
                 this->mState = VALID;
                 return;
             }
-            top = branch->mBaseVersion;
+            top = branch->mVersion;
         }
         this->mState = NO_PREV;
     }

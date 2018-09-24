@@ -26,9 +26,9 @@ protected:
     //----------------------------------------------------------------//
     void                                            copyFrom                                    ( const AbstractValueStack& from );
     void                                            erase                                       ( size_t version );
-    const void*                                     getRaw                                      ( size_t version ) const;
+    const void*                                     getRaw                                      ( size_t version, size_t typeID ) const;
     unique_ptr < AbstractValueStack >               makeEmptyCopy                               () const;
-    void                                            setRaw                                      ( size_t version, const void* value );
+    void                                            setRaw                                      ( size_t version, size_t typeID, const void* value );
     size_t                                          size                                        () const;
 
     //----------------------------------------------------------------//

@@ -26,12 +26,12 @@ void VersionedStore::popVersion () {
         this->mBranch = NULL;
         this->mVersion = 0;
         
-        if ( version == branch->mBaseVersion ) {
+        if ( version == branch->mVersion ) {
             branch = branch->mBranch;
         }
         
         if ( branch ) {
-            branch->affirmClient ( *this );
+            branch->insertClient ( *this );
             this->mBranch = branch;
             this->mVersion = version - 1;
             this->mBranch->optimize ();
@@ -69,8 +69,8 @@ void VersionedStore::prepareForSetValue () {
             LOG_F ( INFO, "SPLIT!" );
         
             this->mBranch->eraseClient ( *this );
-            this->mBranch = make_shared < VersionedBranch >( this->mBranch, this->mVersion );
-            this->mBranch->affirmClient ( *this );
+            this->mBranch = this->mBranch->fork ( this->mVersion );
+            this->mBranch->insertClient ( *this );
         }
     }
 }
@@ -104,8 +104,8 @@ void VersionedStore::pushVersion () {
         LOG_F ( INFO, "SPLIT" );
     
         this->mBranch->eraseClient ( *this );
-        this->mBranch = make_shared < VersionedBranch >( this->mBranch, this->mVersion - 1 );
-        this->mBranch->affirmClient ( *this );
+        this->mBranch = this->mBranch->fork ( this->mVersion - 1 );
+        this->mBranch->insertClient ( *this );
     }
 }
 
@@ -132,37 +132,19 @@ void VersionedStore::revert ( size_t version ) {
         this->mBranch = NULL;
         
         size_t top = this->mVersion;
-        for ( ; branch && ( version < branch->mBaseVersion ); branch = branch->mBranch ) {
-            top = branch->mBaseVersion;
+        for ( ; branch && ( version < branch->mVersion ); branch = branch->mBranch ) {
+            top = branch->mVersion;
         }
         
         assert ( branch );
-        assert ( branch->mBaseVersion <= version );
+        assert ( branch->mVersion <= version );
         assert ( version < top );
         
-        branch->affirmClient ( *this );
+        branch->insertClient ( *this );
         this->mBranch = branch;
         this->mVersion = version;
         this->mBranch->optimize ();
     }
-}
-
-//----------------------------------------------------------------//
-/** \brief Set the value of a key using a raw pointer to its data.
- 
-    The value type should be checked and the branch's corresponding ValueStack
-    should be created before calling this method. It's up to the ValueStack
-    implementation to interpret the raw pointer correctly.
- 
-    \param  key         The key.
-    \param  value       The value.
-*/
-void VersionedStore::setRaw ( string key, const void* value ) {
-
-    LOG_SCOPE_F ( INFO, "VersionedStore::setRaw ( %s, %p )", key.c_str (), value );
-
-    assert ( this->mBranch );
-    this->mBranch->setRaw ( this->mVersion, key, value );
 }
 
 //----------------------------------------------------------------//

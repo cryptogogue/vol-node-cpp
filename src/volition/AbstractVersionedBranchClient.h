@@ -19,6 +19,7 @@ protected:
     friend class VersionedBranch;
 
     shared_ptr < VersionedBranch >      mBranch;
+    size_t                              mVersion;
 
     //----------------------------------------------------------------//
     bool                canJoin                                                 () const;
@@ -26,6 +27,8 @@ protected:
     size_t              getVersionDependency                                    () const;
     void                joinBranch                                              ( VersionedBranch& branch );
     bool                preventJoin                                             () const;
+    void                setBranch                                               ( shared_ptr < VersionedBranch > branch );
+    void                setBranch                                               ( shared_ptr < VersionedBranch > branch, size_t version );
 
     //----------------------------------------------------------------//
     virtual bool        AbstractVersionedStoreClient_canJoin                    () const = 0;

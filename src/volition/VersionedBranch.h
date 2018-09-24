@@ -37,6 +37,7 @@ class VersionedBranch :
     public AbstractVersionedBranchClient {
 private:
 
+    friend class AbstractVersionedBranchClient;
     friend class AbstractVersionedValueIterator;
     friend class VersionedStore;
     friend class VersionedStoreSnapshot;
@@ -46,15 +47,21 @@ private:
 
     typedef set < string > Layer;
 
+    /// Set containing active clients. This is needed to calculate dependencies and to know when to optimize.
     set < AbstractVersionedBranchClient* >                  mClients;
+    
+    /// Sparse array mapping versions onto layers. Each layer holds the set of keys corresponding to values that were set or modified in the version.
     map < size_t, Layer >                                   mLayers;
+    
+    /// Map of value stacks, indexed by key.
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
 
-    size_t                                                  mBaseVersion;
-
+    /// The number of clients holding direct references to branch internals. A nonzero direct reference count will prevent optimization of the branch.
     size_t                                                  mDirectReferenceCount;
 
     //----------------------------------------------------------------//
+    /** \brief Creates a typed instance of ValueStack for the given key if none exists.
+    */
     template < typename TYPE >
     void affirmValueStack ( string key ) {
         unique_ptr < AbstractValueStack >& versionedValue = this->mValueStacksByKey [ key ];
@@ -65,16 +72,16 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void                            affirmClient                ( AbstractVersionedBranchClient& client );
     size_t                          countDependencies           () const;
     void                            eraseClient                 ( AbstractVersionedBranchClient& client );
     size_t                          findImmutableTop            ( const AbstractVersionedBranchClient* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
+    shared_ptr < VersionedBranch >  fork                        ( size_t baseVersion );
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
     size_t                          getTopVersion               () const;
+    void                            insertClient                ( AbstractVersionedBranchClient& client );
     void                            optimize                    ();
-    void                            setParent                   ( shared_ptr < VersionedBranch > parent );
-    void                            setRaw                      ( size_t version, string key, const void* value );
+    void                            setRaw                      ( size_t version, string key, size_t typeID, const void* value );
     void                            truncate                    ( size_t topVersion );
 
     //----------------------------------------------------------------//
@@ -88,7 +95,6 @@ public:
 
     //----------------------------------------------------------------//
                     VersionedBranch         ();
-                    VersionedBranch         ( shared_ptr < VersionedBranch > parent, size_t baseVersion );
                     ~VersionedBranch        ();
 };
 

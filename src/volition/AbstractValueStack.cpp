@@ -30,7 +30,8 @@ void AbstractValueStack::erase ( size_t version ) {
 }
 
 //----------------------------------------------------------------//
-const void* AbstractValueStack::getRaw ( size_t version ) const {
+const void* AbstractValueStack::getRaw ( size_t version, size_t typeID ) const {
+    assert ( typeID == this->mTypeID );
     return this->AbstractValueStack_getRaw ( version );
 }
 
@@ -40,7 +41,8 @@ unique_ptr < AbstractValueStack > AbstractValueStack::makeEmptyCopy () const {
 }
 
 //----------------------------------------------------------------//
-void AbstractValueStack::setRaw ( size_t version, const void* value ) {
+void AbstractValueStack::setRaw ( size_t version, size_t typeID, const void* value ) {
+    assert ( typeID == this->mTypeID );
     this->AbstractValueStack_setRaw ( version, value );
 }
 

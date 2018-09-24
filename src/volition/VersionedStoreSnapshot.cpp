@@ -57,55 +57,6 @@ size_t VersionedStoreSnapshot::getVersion () const {
 }
 
 //----------------------------------------------------------------//
-/** \brief Remove the snapshot from the existing branch (if any) and add
-    it to the new branch.
-
-    Branches internally maintain a set of their clients. This method updates
-    the branch client sets correctly. Any version may be specified that
-    is greater than the base version of the new branch. This will add a
-    dependency on all lesser versions held in the branch.
- 
-    When the snapshot is removed from its original, the original branch
-    will be deleted or optimized. The original branch is only deleted
-    if the snapshot was the last reference to it.
- 
-    \param  branch      The new branch for the snapshot.
-    \param  version     The version referenced by the snapshot.
-*/
-void VersionedStoreSnapshot::setBranch ( shared_ptr < VersionedBranch > branch, size_t version ) {
-
-    weak_ptr < VersionedBranch > prevBranchWeak;
-
-    if ( this->mBranch != branch ) {
-        
-        LOG_SCOPE_F ( INFO, "VersionedStoreSnapshot::setBranch () - changing branch" );
-        
-        if ( this->mBranch ) {
-            prevBranchWeak = this->mBranch;
-            this->mBranch->eraseClient ( *this );
-        }
-        
-        this->mBranch = branch;
-        branch = NULL;
-    }
-    
-     if ( this->mBranch ) {
-        assert ( version >= this->mBranch->mBaseVersion );
-        this->mVersion = version;
-        this->mBranch->affirmClient ( *this );
-        this->mBranch->optimize ();
-    }
-    else {
-        this->mVersion = 0;
-    }
-
-    if ( !prevBranchWeak.expired ()) {
-        branch = prevBranchWeak.lock ();
-        branch->optimize ();
-    }
-}
-
-//----------------------------------------------------------------//
 /** \brief Set the debug name. Implemented in _DEBUG builds only. Otehrwise a no-op.
  
     \param  debugName   The debug name.
@@ -118,13 +69,13 @@ void VersionedStoreSnapshot::setDebugName ( string debugName ) {
 }
 
 //----------------------------------------------------------------//
-/** \brief Take a snapshot of the current version.
+/** \brief Copy a snapshot.
 
     This is a relatively low-cost operation. Taking a snapshot will
     add a dependency on the shared branch but won'y do anything else
     until the branch is altered.
  
-    \param  other   The version to snapshot.
+    \param  other   The snapshot to copy.
 */
 void VersionedStoreSnapshot::takeSnapshot ( VersionedStoreSnapshot& other ) {
 
@@ -132,11 +83,14 @@ void VersionedStoreSnapshot::takeSnapshot ( VersionedStoreSnapshot& other ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreSnapshot::VersionedStoreSnapshot () :
-    mVersion ( 0 ) {
+VersionedStoreSnapshot::VersionedStoreSnapshot () {
 }
 
 //----------------------------------------------------------------//
+/** \brief Copy a snapshot.
+ 
+    \param  other   The snapshot to copy.
+*/
 VersionedStoreSnapshot::VersionedStoreSnapshot ( VersionedStoreSnapshot& other ) {
 
     this->takeSnapshot ( other );
@@ -144,13 +98,6 @@ VersionedStoreSnapshot::VersionedStoreSnapshot ( VersionedStoreSnapshot& other )
 
 //----------------------------------------------------------------//
 VersionedStoreSnapshot::~VersionedStoreSnapshot () {
-
-    weak_ptr < VersionedBranch > branchWeak = this->mBranch;
-    this->setBranch ( NULL, 0 );
-    if ( !branchWeak.expired ()) {
-        shared_ptr < VersionedBranch > branch = branchWeak.lock ();
-        branch->optimize ();
-    }
 }
 
 //================================================================//
@@ -158,11 +105,17 @@ VersionedStoreSnapshot::~VersionedStoreSnapshot () {
 //================================================================//
 
 //----------------------------------------------------------------//
+/** \brief Implementation of virtual method. Always returns false.
+    \return     Always returns false.
+*/
 bool VersionedStoreSnapshot::AbstractVersionedStoreClient_canJoin () const {
     return false;
 }
 
 //----------------------------------------------------------------//
+/** \brief Implementation of virtual method. Asserts false in debug builds;
+    returns zero in non-debug builds.
+*/
 size_t VersionedStoreSnapshot::AbstractVersionedStoreClient_getJoinScore () const {
     assert ( false );
     return 0;
@@ -188,11 +141,17 @@ size_t VersionedStoreSnapshot::AbstractVersionedStoreClient_getVersionDependency
 }
 
 //----------------------------------------------------------------//
+/** \brief Implementation of virtual method. Asserts false in debug builds;
+    does nothing in non-debug builds.
+*/
 void VersionedStoreSnapshot::AbstractVersionedStoreClient_joinBranch ( VersionedBranch& branch ) {
     assert ( false );
 }
 
 //----------------------------------------------------------------//
+/** \brief Implementation of virtual method. Always returns false.
+    \return     Always returns false.
+*/
 bool VersionedStoreSnapshot::AbstractVersionedStoreClient_preventJoin () const {
     return false;
 }

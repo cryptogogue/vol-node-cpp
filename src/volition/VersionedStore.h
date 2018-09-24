@@ -62,7 +62,6 @@ protected:
 
     //----------------------------------------------------------------//
     void            prepareForSetValue              ();
-    void            setRaw                          ( string key, const void* value );
     
 public:
 
@@ -94,8 +93,9 @@ public:
     template < typename TYPE >
     void setValue ( string key, const TYPE& value ) {
         this->prepareForSetValue ();
+        assert ( this->mBranch );
         this->mBranch->affirmValueStack < TYPE >( key );
-        this->setRaw ( key, &value );
+        this->mBranch->setRaw ( this->mVersion, key, typeid ( TYPE ).hash_code (), &value );
     }
 };
 

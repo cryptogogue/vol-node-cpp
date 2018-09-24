@@ -30,9 +30,6 @@ protected:
     
     template < typename > friend class VersionedValue;
     template < typename > friend class VersionedValueIterator;
-    
-    /// Current version of the store. Values set will be set at this version.
-    size_t                                  mVersion;
 
     #ifdef _DEBUG
         /// Available in debug builds to add an easily readable name to snapshots.
@@ -42,7 +39,6 @@ protected:
     //----------------------------------------------------------------//
     void            affirmBranch                    ();
     const void*     getRaw                          ( string key, size_t version, size_t typeID ) const;
-    void            setBranch                       ( shared_ptr < VersionedBranch > epoch, size_t version );
     
     //----------------------------------------------------------------//
     /** \brief  Return a pointer to the value for a key at a given version
