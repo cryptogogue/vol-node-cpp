@@ -110,7 +110,7 @@ const void* VersionedStoreBranch::getRaw ( size_t version, string key, size_t ty
 //----------------------------------------------------------------//
 size_t VersionedStoreBranch::getTopVersion () const {
 
-    return this->mBranchLayers.size () ? this->mBranchLayers.rbegin ()->first + 1 : 0;
+    return this->mLayers.size () ? this->mLayers.rbegin ()->first + 1 : 0;
 }
 
 //----------------------------------------------------------------//
@@ -129,14 +129,7 @@ void VersionedStoreBranch::optimize () {
     LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
     LOG_F ( INFO, "topVersion: %d", ( int )this->getTopVersion ());
     
-    if ( immutableTop < this->getTopVersion ()) {
-        
-        size_t topVersion = this->getTopVersion ();
-        for ( size_t i = immutableTop; i < topVersion; ++i ) {
-            this->popLayer ();
-        }
-        assert ( this->getTopVersion () == immutableTop );
-    }
+    this->truncate ( immutableTop );
     
     LOG_F ( INFO, "evaluating children for possible concatenation..." );
     shared_ptr < VersionedStoreBranch > mergeBranch;
@@ -161,7 +154,7 @@ void VersionedStoreBranch::optimize () {
         weak_ptr < VersionedStoreBranch > weakMergeBranch = mergeBranch;
     
         // merge the branch layers
-        this->mBranchLayers.insert ( mergeBranch->mBranchLayers.begin(), mergeBranch->mBranchLayers.end ());
+        this->mLayers.insert ( mergeBranch->mLayers.begin(), mergeBranch->mLayers.end ());
         
         // copy the value stacks
         map < string, unique_ptr < AbstractValueStack >>::iterator valueStackIt = mergeBranch->mValueStacksByKey.begin ();
@@ -199,34 +192,6 @@ void VersionedStoreBranch::optimize () {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::popLayer () {
-
-    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::popLayer ()" );
-
-    map < size_t, BranchLayer >::reverse_iterator layerIt = this->mBranchLayers.rbegin ();
-    if ( layerIt != this->mBranchLayers.rend ()) {
-    
-        LOG_SCOPE_F ( INFO, "popping layer: %d", ( int )layerIt->first );
-        
-        BranchLayer& layer = layerIt->second;
-        
-        BranchLayer::iterator keyIt = layer.begin ();
-        for ( ; keyIt != layer.end (); ++keyIt ) {
-
-            unique_ptr < AbstractValueStack >& valueStack = this->mValueStacksByKey [ *keyIt ];
-            assert ( valueStack );
-            
-            valueStack->erase ( layerIt->first );
-            if ( valueStack->size () == 0 ) {
-                this->mValueStacksByKey.erase ( *keyIt );
-            }
-        }
-        
-        this->mBranchLayers.erase ( layerIt->first );
-    }
-}
-
-//----------------------------------------------------------------//
 void VersionedStoreBranch::setParent ( shared_ptr < VersionedStoreBranch > parent ) {
 
     if ( this->mParent != parent ) {
@@ -248,9 +213,39 @@ void VersionedStoreBranch::setRaw ( size_t version, string key, const void* valu
 
     this->mValueStacksByKey [ key ]->setRaw ( version, value );
     
-    BranchLayer& layer = this->mBranchLayers [ version ];
+    Layer& layer = this->mLayers [ version ];
     if ( layer.find ( key ) == layer.end ()) {
         layer.insert ( key );
+    }
+}
+
+//----------------------------------------------------------------//
+void VersionedStoreBranch::truncate ( size_t topVersion ) {
+
+    LOG_SCOPE_F ( INFO, "truncate: %d -> %d", ( int )this->getTopVersion (), ( int )topVersion );
+
+    map < size_t, Layer >::reverse_iterator layerIt = this->mLayers.rbegin ();
+    while (( layerIt != this->mLayers.rend ()) && ( layerIt->first >= topVersion )) {
+    
+        LOG_SCOPE_F ( INFO, "popping layer: %d", ( int )layerIt->first );
+        
+        Layer& layer = layerIt->second;
+        
+        Layer::iterator keyIt = layer.begin ();
+        for ( ; keyIt != layer.end (); ++keyIt ) {
+
+            unique_ptr < AbstractValueStack >& valueStack = this->mValueStacksByKey [ *keyIt ];
+            assert ( valueStack );
+            
+            valueStack->erase ( layerIt->first );
+            if ( valueStack->size () == 0 ) {
+                this->mValueStacksByKey.erase ( *keyIt );
+            }
+        }
+        
+        size_t eraseID = layerIt->first;
+        ++layerIt;
+        this->mLayers.erase ( eraseID );
     }
 }
 
@@ -269,13 +264,13 @@ VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch >
     this->setParent ( parent->mBaseVersion < baseVersion ? parent : parent->mParent );
     this->mBaseVersion = baseVersion;
     
-    map < size_t, BranchLayer >::const_iterator layerIt = parent->mBranchLayers.find ( baseVersion );
-    if ( layerIt != parent->mBranchLayers.cend ()) {
+    map < size_t, Layer >::const_iterator layerIt = parent->mLayers.find ( baseVersion );
+    if ( layerIt != parent->mLayers.cend ()) {
     
-        const BranchLayer& fromLayer = layerIt->second;
-        BranchLayer& toLayer = this->mBranchLayers [ baseVersion ];
+        const Layer& fromLayer = layerIt->second;
+        Layer& toLayer = this->mLayers [ baseVersion ];
         
-        BranchLayer::const_iterator keyIt = fromLayer.cbegin ();
+        Layer::const_iterator keyIt = fromLayer.cbegin ();
         for ( ; keyIt != fromLayer.cend (); ++keyIt ) {
             
             toLayer.insert ( *keyIt );

@@ -14,6 +14,22 @@ class VersionedStoreBranchClient;
 //================================================================//
 // VersionedStoreBranch
 //================================================================//
+/** \brief VersionedStoreBranch is an internal data structure used to store
+    a contiguous block of versioned values.
+ 
+    Each branch is a sparse record of changes to the database over a
+    span of versions. It contains a map of ValueStack instances referenced
+    by key. In addition, a sparse stack of version layers (implemented as a map of
+    string sets) is used to quickly identify the keys of values modified in that layer.
+ 
+    The branch tracks a base version. Its "top" version is the highest version
+    index in the layer stack. When a layer is removed, the keys of the values that were
+    set in that layer are retrieved from the layer stack and used to erase the
+    corresponding values from each value stack.
+ 
+    Any branch may have a parent branch. When searching for values, the tree will
+    be searched recurively until a value is found.
+*/
 class VersionedStoreBranch :
     public enable_shared_from_this < VersionedStoreBranch > {
 private:
@@ -25,11 +41,11 @@ private:
     template < typename > friend class VersionedValue;
     template < typename > friend class VersionedValueIterator;
 
-    typedef set < string > BranchLayer;
+    typedef set < string > Layer;
 
     set < VersionedStoreBranchClient* >                     mClients;
     set < VersionedStoreBranch* >                           mChildren;
-    map < size_t, BranchLayer >                             mBranchLayers;
+    map < size_t, Layer >                                   mLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
 
     shared_ptr < VersionedStoreBranch >                     mParent;
@@ -59,9 +75,9 @@ private:
     size_t                          getTopVersion               () const;
     size_t                          getVersionDependency        () const;
     void                            optimize                    ();
-    void                            popLayer                    ();
     void                            setParent                   ( shared_ptr < VersionedStoreBranch > parent );
     void                            setRaw                      ( size_t version, string key, const void* value );
+    void                            truncate                    ( size_t topVersion );
 
 public:
 
