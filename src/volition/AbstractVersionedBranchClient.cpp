@@ -2,45 +2,45 @@
 // http://cryptogogue.com
 
 #include <volition/State.h>
-#include <volition/AbstractVersionedStoreClient.h>
-#include <volition/VersionedStoreBranch.h>
+#include <volition/AbstractVersionedBranchClient.h>
+#include <volition/VersionedBranch.h>
 
 namespace Volition {
 
 //================================================================//
-// AbstractVersionedStoreClient
+// AbstractVersionedBranchClient
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractVersionedStoreClient::AbstractVersionedStoreClient () {
+AbstractVersionedBranchClient::AbstractVersionedBranchClient () {
 }
 
 //----------------------------------------------------------------//
-AbstractVersionedStoreClient::~AbstractVersionedStoreClient () {
+AbstractVersionedBranchClient::~AbstractVersionedBranchClient () {
 }
 
 //----------------------------------------------------------------//
-bool AbstractVersionedStoreClient::canJoin () const {
+bool AbstractVersionedBranchClient::canJoin () const {
     return this->AbstractVersionedStoreClient_canJoin ();
 }
 
 //----------------------------------------------------------------//
-size_t AbstractVersionedStoreClient::getJoinScore () const {
+size_t AbstractVersionedBranchClient::getJoinScore () const {
     return this->AbstractVersionedStoreClient_getJoinScore ();
 }
 
 //----------------------------------------------------------------//
-size_t AbstractVersionedStoreClient::getVersionDependency () const {
+size_t AbstractVersionedBranchClient::getVersionDependency () const {
     return this->AbstractVersionedStoreClient_getVersionDependency ();
 }
 
 //----------------------------------------------------------------//
-void AbstractVersionedStoreClient::joinBranch ( VersionedStoreBranch& branch ) {
+void AbstractVersionedBranchClient::joinBranch ( VersionedBranch& branch ) {
     this->AbstractVersionedStoreClient_joinBranch ( branch );
 }
 
 //----------------------------------------------------------------//
-bool AbstractVersionedStoreClient::preventJoin () const {
+bool AbstractVersionedBranchClient::preventJoin () const {
     return this->AbstractVersionedStoreClient_preventJoin ();
 }
 

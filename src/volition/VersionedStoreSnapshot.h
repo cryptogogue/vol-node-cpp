@@ -5,8 +5,8 @@
 #define VOLITION_VERSIONEDSTORESNAPSHOT_H
 
 #include <volition/common.h>
-#include <volition/AbstractVersionedStoreClient.h>
-#include <volition/VersionedStoreBranch.h>
+#include <volition/AbstractVersionedBranchClient.h>
+#include <volition/VersionedBranch.h>
 
 namespace Volition {
 
@@ -21,12 +21,13 @@ namespace Volition {
     to avoid exposing mutators through the interator implementations, which are read-only.
 */
 class VersionedStoreSnapshot :
-    public AbstractVersionedStoreClient {
+    public AbstractVersionedBranchClient {
 protected:
 
     friend class AbstractVersionedValueIterator;
-    friend class VersionedStoreBranch;
+    friend class VersionedBranch;
     friend class VersionedStoreIterator;
+    
     template < typename > friend class VersionedValue;
     template < typename > friend class VersionedValueIterator;
     
@@ -41,7 +42,7 @@ protected:
     //----------------------------------------------------------------//
     void            affirmBranch                    ();
     const void*     getRaw                          ( string key, size_t version, size_t typeID ) const;
-    void            setBranch                       ( shared_ptr < VersionedStoreBranch > epoch, size_t version );
+    void            setBranch                       ( shared_ptr < VersionedBranch > epoch, size_t version );
     
     //----------------------------------------------------------------//
     /** \brief  Return a pointer to the value for a key at a given version
@@ -63,7 +64,7 @@ protected:
     bool            AbstractVersionedStoreClient_canJoin                    () const override;
     size_t          AbstractVersionedStoreClient_getJoinScore               () const override;
     size_t          AbstractVersionedStoreClient_getVersionDependency       () const override;
-    void            AbstractVersionedStoreClient_joinBranch                 ( VersionedStoreBranch& branch ) override;
+    void            AbstractVersionedStoreClient_joinBranch                 ( VersionedBranch& branch ) override;
     bool            AbstractVersionedStoreClient_preventJoin                () const override;
     
 public:

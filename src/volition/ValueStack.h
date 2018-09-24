@@ -20,8 +20,8 @@ class ValueStack :
 protected:
 
     friend class VersionedStoreSnapshot;
+    friend class VersionedBranch;
     friend class VersionedStoreLayer;
-    friend class VersionedStoreBranch;
     friend class VersionedValueIterator < TYPE >;
 
     map < size_t, TYPE >    mValuesByVersion;

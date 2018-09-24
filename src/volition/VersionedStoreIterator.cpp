@@ -85,7 +85,7 @@ void VersionedStoreIterator::seek ( size_t version ) {
 
     if ( version < this->mVersion ) {
     
-        shared_ptr < VersionedStoreBranch > branch = this->mBranch;
+        shared_ptr < VersionedBranch > branch = this->mBranch;
     
         while ( branch && !(( branch->mBaseVersion <= version ) && ( version <= this->mTopVersion ))) {
             this->mTopVersion = branch->mBaseVersion - 1;

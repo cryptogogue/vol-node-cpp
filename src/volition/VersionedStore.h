@@ -20,7 +20,7 @@ namespace Volition {
     versions. This is the "backbone" of the Volition blockchain implementation.
  
     The VersionedStoreSnapshot class represents a cursor into the versioned key/value store. The database
-    itself is held in a series of branches (VersionedStoreBranch). Branches may have multiple
+    itself is held in a series of branches (VersionedBranch). Branches may have multiple
     dependencies in the form of cursors and child branches.
  
     New branches are created as needed. For example, when a value is set for a key in a branch with

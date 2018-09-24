@@ -1,22 +1,22 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_VERSIONEDSTOREBRANCH_H
-#define VOLITION_VERSIONEDSTOREBRANCH_H
+#ifndef VOLITION_VERSIONEDBRANCH_H
+#define VOLITION_VERSIONEDBRANCH_H
 
 #include <volition/common.h>
-#include <volition/AbstractVersionedStoreClient.h>
+#include <volition/AbstractVersionedBranchClient.h>
 #include <volition/ValueStack.h>
 
 namespace Volition {
 
-class AbstractVersionedStoreClient;
+class AbstractVersionedBranchClient;
 class VersionedStoreSnapshot;
 
 //================================================================//
-// VersionedStoreBranch
+// VersionedBranch
 //================================================================//
-/** \brief VersionedStoreBranch is an internal data structure used to store
+/** \brief VersionedBranch is an internal data structure used to store
     a contiguous block of versioned values.
  
     Each branch is a sparse record of changes to the database over a
@@ -32,9 +32,9 @@ class VersionedStoreSnapshot;
     Any branch may have a parent branch. When searching for values, the tree will
     be searched recurively until a value is found.
 */
-class VersionedStoreBranch :
-    public enable_shared_from_this < VersionedStoreBranch >,
-    public AbstractVersionedStoreClient {
+class VersionedBranch :
+    public enable_shared_from_this < VersionedBranch >,
+    public AbstractVersionedBranchClient {
 private:
 
     friend class AbstractVersionedValueIterator;
@@ -46,7 +46,7 @@ private:
 
     typedef set < string > Layer;
 
-    set < AbstractVersionedStoreClient* >                   mClients;
+    set < AbstractVersionedBranchClient* >                  mClients;
     map < size_t, Layer >                                   mLayers;
     map < string, unique_ptr < AbstractValueStack >>        mValueStacksByKey;
 
@@ -65,15 +65,15 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void                            affirmClient                ( AbstractVersionedStoreClient& client );
+    void                            affirmClient                ( AbstractVersionedBranchClient& client );
     size_t                          countDependencies           () const;
-    void                            eraseClient                 ( AbstractVersionedStoreClient& client );
-    size_t                          findImmutableTop            ( const AbstractVersionedStoreClient* ignore = NULL ) const;
+    void                            eraseClient                 ( AbstractVersionedBranchClient& client );
+    size_t                          findImmutableTop            ( const AbstractVersionedBranchClient* ignore = NULL ) const;
     const AbstractValueStack*       findValueStack              ( string key ) const;
     const void*                     getRaw                      ( size_t version, string key, size_t typeID ) const;
     size_t                          getTopVersion               () const;
     void                            optimize                    ();
-    void                            setParent                   ( shared_ptr < VersionedStoreBranch > parent );
+    void                            setParent                   ( shared_ptr < VersionedBranch > parent );
     void                            setRaw                      ( size_t version, string key, const void* value );
     void                            truncate                    ( size_t topVersion );
 
@@ -81,15 +81,15 @@ private:
     bool            AbstractVersionedStoreClient_canJoin                    () const override;
     size_t          AbstractVersionedStoreClient_getJoinScore               () const override;
     size_t          AbstractVersionedStoreClient_getVersionDependency       () const override;
-    void            AbstractVersionedStoreClient_joinBranch                 ( VersionedStoreBranch& branch ) override;
+    void            AbstractVersionedStoreClient_joinBranch                 ( VersionedBranch& branch ) override;
     bool            AbstractVersionedStoreClient_preventJoin                () const override;
 
 public:
 
     //----------------------------------------------------------------//
-                    VersionedStoreBranch        ();
-                    VersionedStoreBranch        ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion );
-                    ~VersionedStoreBranch       ();
+                    VersionedBranch         ();
+                    VersionedBranch         ( shared_ptr < VersionedBranch > parent, size_t baseVersion );
+                    ~VersionedBranch        ();
 };
 
 } // namespace Volition

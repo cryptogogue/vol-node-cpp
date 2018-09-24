@@ -3,43 +3,43 @@
 
 #include <volition/State.h>
 #include <volition/VersionedStoreSnapshot.h>
-#include <volition/VersionedStoreBranch.h>
+#include <volition/VersionedBranch.h>
 
 namespace Volition {
 
 //================================================================//
-// VersionedStoreBranch
+// VersionedBranch
 //================================================================//
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::affirmClient ( AbstractVersionedStoreClient& client ) {
+void VersionedBranch::affirmClient ( AbstractVersionedBranchClient& client ) {
 
     this->mClients.insert ( &client );
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::countDependencies () const {
+size_t VersionedBranch::countDependencies () const {
 
     return this->mClients.size ();
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::eraseClient ( AbstractVersionedStoreClient& client ) {
+void VersionedBranch::eraseClient ( AbstractVersionedBranchClient& client ) {
 
     this->mClients.erase ( &client );
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::findImmutableTop ( const AbstractVersionedStoreClient* ignore ) const {
+size_t VersionedBranch::findImmutableTop ( const AbstractVersionedBranchClient* ignore ) const {
 
-    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::findImmutableTop ()" );
+    LOG_SCOPE_F ( INFO, "VersionedBranch::findImmutableTop ()" );
 
     size_t immutableTop = this->getVersionDependency ();
 
-    set < AbstractVersionedStoreClient* >::const_iterator clientIt = this->mClients.cbegin ();
+    set < AbstractVersionedBranchClient* >::const_iterator clientIt = this->mClients.cbegin ();
     for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
 
-        const AbstractVersionedStoreClient* client = *clientIt;
+        const AbstractVersionedBranchClient* client = *clientIt;
         if ( client != ignore ) {
         
             size_t clientVersion = client->getVersionDependency ();
@@ -56,16 +56,16 @@ size_t VersionedStoreBranch::findImmutableTop ( const AbstractVersionedStoreClie
 }
 
 //----------------------------------------------------------------//
-const AbstractValueStack* VersionedStoreBranch::findValueStack ( string key ) const {
+const AbstractValueStack* VersionedBranch::findValueStack ( string key ) const {
 
     map < string, unique_ptr < AbstractValueStack >>::const_iterator valueIt = this->mValueStacksByKey.find ( key );
     return ( valueIt != this->mValueStacksByKey.cend ()) ? valueIt->second.get () : NULL;
 }
 
 //----------------------------------------------------------------//
-const void* VersionedStoreBranch::getRaw ( size_t version, string key, size_t typeID ) const {
+const void* VersionedBranch::getRaw ( size_t version, string key, size_t typeID ) const {
 
-    const VersionedStoreBranch* branch = this;
+    const VersionedBranch* branch = this;
     for ( ; branch; version = branch->mBaseVersion, branch = branch->mBranch.get ()) {
         if ( branch->mBaseVersion <= version ) {
         
@@ -84,25 +84,25 @@ const void* VersionedStoreBranch::getRaw ( size_t version, string key, size_t ty
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::getTopVersion () const {
+size_t VersionedBranch::getTopVersion () const {
 
     return this->mLayers.size () ? this->mLayers.rbegin ()->first + 1 : 0;
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::optimize () {
+void VersionedBranch::optimize () {
 
-    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::optimize ()" );
+    LOG_SCOPE_F ( INFO, "VersionedBranch::optimize ()" );
     
     size_t immutableTop = this->mBaseVersion;
     bool preventJoin = this->preventJoin ();
-    AbstractVersionedStoreClient* bestJoin = NULL;
+    AbstractVersionedBranchClient* bestJoin = NULL;
     
     LOG_F ( INFO, "evaluating clients for possible concatenation..." );
-    set < AbstractVersionedStoreClient* >::const_iterator clientIt = this->mClients.cbegin ();
+    set < AbstractVersionedBranchClient* >::const_iterator clientIt = this->mClients.cbegin ();
     for ( ; clientIt != this->mClients.cend (); ++clientIt ) {
 
-        AbstractVersionedStoreClient* client = *clientIt;
+        AbstractVersionedBranchClient* client = *clientIt;
         LOG_SCOPE_F ( INFO, "client %p", client );
         
         size_t clientVersion = client->getVersionDependency ();
@@ -137,7 +137,7 @@ void VersionedStoreBranch::optimize () {
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::setParent ( shared_ptr < VersionedStoreBranch > parent ) {
+void VersionedBranch::setParent ( shared_ptr < VersionedBranch > parent ) {
 
     if ( this->mBranch != parent ) {
 
@@ -154,7 +154,7 @@ void VersionedStoreBranch::setParent ( shared_ptr < VersionedStoreBranch > paren
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::setRaw ( size_t version, string key, const void* value ) {
+void VersionedBranch::setRaw ( size_t version, string key, const void* value ) {
 
     this->mValueStacksByKey [ key ]->setRaw ( version, value );
     
@@ -165,7 +165,7 @@ void VersionedStoreBranch::setRaw ( size_t version, string key, const void* valu
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::truncate ( size_t topVersion ) {
+void VersionedBranch::truncate ( size_t topVersion ) {
 
     LOG_SCOPE_F ( INFO, "truncate: %d -> %d", ( int )this->getTopVersion (), ( int )topVersion );
 
@@ -193,13 +193,13 @@ void VersionedStoreBranch::truncate ( size_t topVersion ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreBranch::VersionedStoreBranch () :
+VersionedBranch::VersionedBranch () :
     mBaseVersion ( 0 ),
     mDirectReferenceCount ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch > parent, size_t baseVersion ) :
+VersionedBranch::VersionedBranch ( shared_ptr < VersionedBranch > parent, size_t baseVersion ) :
     mDirectReferenceCount ( 0 ) {
     
     assert ( parent && ( parent->mBaseVersion <= baseVersion ) && ( baseVersion <= parent->getTopVersion ()));
@@ -231,7 +231,7 @@ VersionedStoreBranch::VersionedStoreBranch ( shared_ptr < VersionedStoreBranch >
 }
 
 //----------------------------------------------------------------//
-VersionedStoreBranch::~VersionedStoreBranch () {
+VersionedBranch::~VersionedBranch () {
 
     assert ( this->mDirectReferenceCount == 0 );
     this->setParent ( NULL );
@@ -242,29 +242,29 @@ VersionedStoreBranch::~VersionedStoreBranch () {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool VersionedStoreBranch::AbstractVersionedStoreClient_canJoin () const {
+bool VersionedBranch::AbstractVersionedStoreClient_canJoin () const {
     return true;
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::AbstractVersionedStoreClient_getJoinScore () const {
+size_t VersionedBranch::AbstractVersionedStoreClient_getJoinScore () const {
     return this->getTopVersion ();
 }
 
 //----------------------------------------------------------------//
-size_t VersionedStoreBranch::AbstractVersionedStoreClient_getVersionDependency () const {
+size_t VersionedBranch::AbstractVersionedStoreClient_getVersionDependency () const {
     return this->mBaseVersion;
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreBranch::AbstractVersionedStoreClient_joinBranch ( VersionedStoreBranch& branch ) {
+void VersionedBranch::AbstractVersionedStoreClient_joinBranch ( VersionedBranch& branch ) {
 
-    LOG_SCOPE_F ( INFO, "VersionedStoreBranch::AbstractVersionedStoreClient_joinBranch ()" );
+    LOG_SCOPE_F ( INFO, "VersionedBranch::AbstractVersionedStoreClient_joinBranch ()" );
     LOG_F ( INFO, "JOINING PARENT BRANCH" );
     
     this->optimize ();
     
-    shared_ptr < VersionedStoreBranch > pinThis = this->shared_from_this ();
+    shared_ptr < VersionedBranch > pinThis = this->shared_from_this ();
     
     // merge the branch layers
     branch.mLayers.insert ( this->mLayers.begin(), this->mLayers.end ());
@@ -284,9 +284,9 @@ void VersionedStoreBranch::AbstractVersionedStoreClient_joinBranch ( VersionedSt
     }
 
     // copy the clients
-    set < AbstractVersionedStoreClient* >::iterator clientIt = this->mClients.begin ();
+    set < AbstractVersionedBranchClient* >::iterator clientIt = this->mClients.begin ();
     for ( ; clientIt != this->mClients.end (); ++clientIt ) {
-        AbstractVersionedStoreClient* client = *clientIt;
+        AbstractVersionedBranchClient* client = *clientIt;
         branch.affirmClient ( *client );
         client->mBranch = branch.shared_from_this ();
     }
@@ -295,7 +295,7 @@ void VersionedStoreBranch::AbstractVersionedStoreClient_joinBranch ( VersionedSt
 }
 
 //----------------------------------------------------------------//
-bool VersionedStoreBranch::AbstractVersionedStoreClient_preventJoin () const {
+bool VersionedBranch::AbstractVersionedStoreClient_preventJoin () const {
     return ( this->mDirectReferenceCount > 0 );
 }
 

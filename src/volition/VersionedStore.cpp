@@ -20,7 +20,7 @@ void VersionedStore::popVersion () {
     if ( this->mBranch ) {
     
         size_t version = this->mVersion;
-        shared_ptr < VersionedStoreBranch > branch = this->mBranch;
+        shared_ptr < VersionedBranch > branch = this->mBranch;
         branch->eraseClient ( *this );
         
         this->mBranch = NULL;
@@ -69,7 +69,7 @@ void VersionedStore::prepareForSetValue () {
             LOG_F ( INFO, "SPLIT!" );
         
             this->mBranch->eraseClient ( *this );
-            this->mBranch = make_shared < VersionedStoreBranch >( this->mBranch, this->mVersion );
+            this->mBranch = make_shared < VersionedBranch >( this->mBranch, this->mVersion );
             this->mBranch->affirmClient ( *this );
         }
     }
@@ -104,7 +104,7 @@ void VersionedStore::pushVersion () {
         LOG_F ( INFO, "SPLIT" );
     
         this->mBranch->eraseClient ( *this );
-        this->mBranch = make_shared < VersionedStoreBranch >( this->mBranch, this->mVersion - 1 );
+        this->mBranch = make_shared < VersionedBranch >( this->mBranch, this->mVersion - 1 );
         this->mBranch->affirmClient ( *this );
     }
 }
@@ -127,7 +127,7 @@ void VersionedStore::revert ( size_t version ) {
     
     if (( this->mBranch ) && ( version < this->mVersion )) {
     
-        shared_ptr < VersionedStoreBranch > branch = this->mBranch;
+        shared_ptr < VersionedBranch > branch = this->mBranch;
         branch->eraseClient ( *this );
         this->mBranch = NULL;
         

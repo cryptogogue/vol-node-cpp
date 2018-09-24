@@ -45,7 +45,7 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    const ValueStack < TYPE >* getValueStack ( shared_ptr < VersionedStoreBranch > branch ) {
+    const ValueStack < TYPE >* getValueStack ( shared_ptr < VersionedBranch > branch ) {
     
         if ( branch ) {
             const AbstractValueStack* abstractValueStack = branch->findValueStack ( this->mKey );
@@ -57,12 +57,12 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    void seekNext ( shared_ptr < VersionedStoreBranch > prevBranch ) {
+    void seekNext ( shared_ptr < VersionedBranch > prevBranch ) {
         
-        shared_ptr < VersionedStoreBranch > branch = this->mAnchor.mBranch;
+        shared_ptr < VersionedBranch > branch = this->mAnchor.mBranch;
         size_t top = this->mAnchor.mVersion + 1;
         
-        shared_ptr < VersionedStoreBranch > bestBranch;
+        shared_ptr < VersionedBranch > bestBranch;
         const ValueStack < TYPE >* bestValueStack = NULL;
         size_t bestTop = top;
         
@@ -88,7 +88,7 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    void seekPrev ( shared_ptr < VersionedStoreBranch > branch, size_t top ) {
+    void seekPrev ( shared_ptr < VersionedBranch > branch, size_t top ) {
         
         for ( ; branch; branch = branch->mBranch ) {
         

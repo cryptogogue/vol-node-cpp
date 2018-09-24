@@ -17,7 +17,7 @@ void VersionedStoreSnapshot::affirmBranch () {
 
     if ( !this->mBranch ) {
         assert ( this->mVersion == 0 );
-        this->setBranch ( make_shared < VersionedStoreBranch >(), this->mVersion );
+        this->setBranch ( make_shared < VersionedBranch >(), this->mVersion );
     }
 }
 
@@ -72,9 +72,9 @@ size_t VersionedStoreSnapshot::getVersion () const {
     \param  branch      The new branch for the snapshot.
     \param  version     The version referenced by the snapshot.
 */
-void VersionedStoreSnapshot::setBranch ( shared_ptr < VersionedStoreBranch > branch, size_t version ) {
+void VersionedStoreSnapshot::setBranch ( shared_ptr < VersionedBranch > branch, size_t version ) {
 
-    weak_ptr < VersionedStoreBranch > prevBranchWeak;
+    weak_ptr < VersionedBranch > prevBranchWeak;
 
     if ( this->mBranch != branch ) {
         
@@ -145,10 +145,10 @@ VersionedStoreSnapshot::VersionedStoreSnapshot ( VersionedStoreSnapshot& other )
 //----------------------------------------------------------------//
 VersionedStoreSnapshot::~VersionedStoreSnapshot () {
 
-    weak_ptr < VersionedStoreBranch > branchWeak = this->mBranch;
+    weak_ptr < VersionedBranch > branchWeak = this->mBranch;
     this->setBranch ( NULL, 0 );
     if ( !branchWeak.expired ()) {
-        shared_ptr < VersionedStoreBranch > branch = branchWeak.lock ();
+        shared_ptr < VersionedBranch > branch = branchWeak.lock ();
         branch->optimize ();
     }
 }
@@ -188,7 +188,7 @@ size_t VersionedStoreSnapshot::AbstractVersionedStoreClient_getVersionDependency
 }
 
 //----------------------------------------------------------------//
-void VersionedStoreSnapshot::AbstractVersionedStoreClient_joinBranch ( VersionedStoreBranch& branch ) {
+void VersionedStoreSnapshot::AbstractVersionedStoreClient_joinBranch ( VersionedBranch& branch ) {
     assert ( false );
 }
 
