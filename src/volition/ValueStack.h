@@ -14,6 +14,8 @@ template < typename TYPE > class VersionedValueIterator;
 //================================================================//
 // ValueStack
 //================================================================//
+/** \brief Templated implementation of AbstractValueStack.
+*/
 template < typename TYPE >
 class ValueStack :
     public AbstractValueStack {

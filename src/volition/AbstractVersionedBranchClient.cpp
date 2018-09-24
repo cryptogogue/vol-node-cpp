@@ -22,26 +22,50 @@ AbstractVersionedBranchClient::~AbstractVersionedBranchClient () {
 }
 
 //----------------------------------------------------------------//
+/** \brief Returns true if client supports the join operation.
+
+    \return     True if the join operation is supported (i.e. client is a branch). Otherwise false.
+*/
 bool AbstractVersionedBranchClient::canJoin () const {
     return this->AbstractVersionedStoreClient_canJoin ();
 }
 
 //----------------------------------------------------------------//
+/** \brief If a client supports the join operation, returns the
+    score to use to select a winner from two valid candidates.
+
+    \return     The join score (i.e. the branch's top version).
+*/
 size_t AbstractVersionedBranchClient::getJoinScore () const {
     return this->AbstractVersionedStoreClient_getJoinScore ();
 }
 
 //----------------------------------------------------------------//
+/** \brief Returns the version below which all verions are depended
+    on (to not change) by client. If any version below the dependent
+    verion is changed, the branch must be forked and the change applied
+    to the new branch.
+
+    \return     The version below which no other version should be changed.
+*/
 size_t AbstractVersionedBranchClient::getVersionDependency () const {
     return this->AbstractVersionedStoreClient_getVersionDependency ();
 }
 
 //----------------------------------------------------------------//
+/** \brief If a client supports the join operation (i.e. client is a branch),
+    appends the contents of the client to the given branch.
+*/
 void AbstractVersionedBranchClient::joinBranch ( VersionedBranch& branch ) {
     this->AbstractVersionedStoreClient_joinBranch ( branch );
 }
 
 //----------------------------------------------------------------//
+/** \brief Used by client to prevent a join from happening. Only considered
+    is canJoin() returns true.
+
+    \return     True if join should be prevented.
+*/
 bool AbstractVersionedBranchClient::preventJoin () const {
     return this->AbstractVersionedStoreClient_preventJoin ();
 }
@@ -76,23 +100,23 @@ void AbstractVersionedBranchClient::setBranch ( shared_ptr < VersionedBranch > b
 
     weak_ptr < VersionedBranch > prevBranchWeak;
 
-    if ( this->mBranch != branch ) {
+    if ( this->mSourceBranch != branch ) {
         
         LOG_SCOPE_F ( INFO, "VersionedStoreSnapshot::setBranch () - changing branch" );
         
-        if ( this->mBranch ) {
-            prevBranchWeak = this->mBranch;
-            this->mBranch->eraseClient ( *this );
+        if ( this->mSourceBranch ) {
+            prevBranchWeak = this->mSourceBranch;
+            this->mSourceBranch->eraseClient ( *this );
         }
         
-        this->mBranch = branch;
+        this->mSourceBranch = branch;
         branch = NULL;
     }
     
-    if ( this->mBranch ) {
-        assert ( version >= this->mBranch->mVersion );
+    if ( this->mSourceBranch ) {
+        assert ( version >= this->mSourceBranch->mVersion );
         this->mVersion = version;
-        this->mBranch->insertClient ( *this );
+        this->mSourceBranch->insertClient ( *this );
     }
     else {
         this->mVersion = 0;

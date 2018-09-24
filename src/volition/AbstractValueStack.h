@@ -11,6 +11,9 @@ namespace Volition {
 //================================================================//
 // AbstractValueStack
 //================================================================//
+/** \brief Sparse stack of values indexed by version. Intended to
+    support fast lookup of a value for the most recent version.
+*/
 class AbstractValueStack {
 protected:
 

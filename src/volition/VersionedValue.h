@@ -51,7 +51,7 @@ protected:
         if ( value ) {
         
             VersionedStoreSnapshot& mutableStore = const_cast < VersionedStoreSnapshot& >( versionedStore );
-            mutableStore.mBranch->mDirectReferenceCount++; // increment this first
+            mutableStore.mSourceBranch->mDirectReferenceCount++; // increment this first
         
             this->takeSnapshot ( mutableStore );
             this->mValue = value;
@@ -65,8 +65,8 @@ public:
     */
     void clear () {
     
-        if ( this->mBranch ) {
-            this->mBranch->mDirectReferenceCount--;
+        if ( this->mSourceBranch ) {
+            this->mSourceBranch->mDirectReferenceCount--;
         }
         this->mValue = NULL;
         this->VersionedStoreSnapshot::clear ();

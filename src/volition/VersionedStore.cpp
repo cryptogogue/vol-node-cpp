@@ -17,24 +17,24 @@ void VersionedStore::popVersion () {
 
     LOG_SCOPE_F ( INFO, "VersionedStore::  ()" );
 
-    if ( this->mBranch ) {
+    if ( this->mSourceBranch ) {
     
         size_t version = this->mVersion;
-        shared_ptr < VersionedBranch > branch = this->mBranch;
+        shared_ptr < VersionedBranch > branch = this->mSourceBranch;
         branch->eraseClient ( *this );
         
-        this->mBranch = NULL;
+        this->mSourceBranch = NULL;
         this->mVersion = 0;
         
         if ( version == branch->mVersion ) {
-            branch = branch->mBranch;
+            branch = branch->mSourceBranch;
         }
         
         if ( branch ) {
             branch->insertClient ( *this );
-            this->mBranch = branch;
+            this->mSourceBranch = branch;
             this->mVersion = version - 1;
-            this->mBranch->optimize ();
+            this->mSourceBranch->optimize ();
         }
     }
 }
@@ -58,19 +58,19 @@ void VersionedStore::prepareForSetValue () {
 
     this->affirmBranch ();
     
-    size_t dependencies = this->mBranch->countDependencies ();
+    size_t dependencies = this->mSourceBranch->countDependencies ();
     if ( dependencies > 1 ) {
     
-        size_t immutableTop = this->mBranch->findImmutableTop ( this );
+        size_t immutableTop = this->mSourceBranch->findImmutableTop ( this );
         LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
         
         if ( this->mVersion < immutableTop ) {
         
             LOG_F ( INFO, "SPLIT!" );
         
-            this->mBranch->eraseClient ( *this );
-            this->mBranch = this->mBranch->fork ( this->mVersion );
-            this->mBranch->insertClient ( *this );
+            this->mSourceBranch->eraseClient ( *this );
+            this->mSourceBranch = this->mSourceBranch->fork ( this->mVersion );
+            this->mSourceBranch->insertClient ( *this );
         }
     }
 }
@@ -89,23 +89,23 @@ void VersionedStore::pushVersion () {
 
     LOG_SCOPE_F ( INFO, "VersionedStore::pushVersion ()" );
 
-    if ( !this->mBranch ) {
+    if ( !this->mSourceBranch ) {
         this->mVersion = 0;
     }
 
     this->affirmBranch ();
-    assert ( this->mBranch );
+    assert ( this->mSourceBranch );
 
     this->mVersion++;
     LOG_F ( INFO, "version: %d", ( int )this->mVersion );
     
-    if ( this->mVersion < this->mBranch->getTopVersion ()) {
+    if ( this->mVersion < this->mSourceBranch->getTopVersion ()) {
     
         LOG_F ( INFO, "SPLIT" );
     
-        this->mBranch->eraseClient ( *this );
-        this->mBranch = this->mBranch->fork ( this->mVersion - 1 );
-        this->mBranch->insertClient ( *this );
+        this->mSourceBranch->eraseClient ( *this );
+        this->mSourceBranch = this->mSourceBranch->fork ( this->mVersion - 1 );
+        this->mSourceBranch->insertClient ( *this );
     }
 }
 
@@ -125,14 +125,14 @@ void VersionedStore::revert ( size_t version ) {
 
     assert ( version <= this->mVersion );
     
-    if (( this->mBranch ) && ( version < this->mVersion )) {
+    if (( this->mSourceBranch ) && ( version < this->mVersion )) {
     
-        shared_ptr < VersionedBranch > branch = this->mBranch;
+        shared_ptr < VersionedBranch > branch = this->mSourceBranch;
         branch->eraseClient ( *this );
-        this->mBranch = NULL;
+        this->mSourceBranch = NULL;
         
         size_t top = this->mVersion;
-        for ( ; branch && ( version < branch->mVersion ); branch = branch->mBranch ) {
+        for ( ; branch && ( version < branch->mVersion ); branch = branch->mSourceBranch ) {
             top = branch->mVersion;
         }
         
@@ -141,9 +141,9 @@ void VersionedStore::revert ( size_t version ) {
         assert ( version < top );
         
         branch->insertClient ( *this );
-        this->mBranch = branch;
+        this->mSourceBranch = branch;
         this->mVersion = version;
-        this->mBranch->optimize ();
+        this->mSourceBranch->optimize ();
     }
 }
 

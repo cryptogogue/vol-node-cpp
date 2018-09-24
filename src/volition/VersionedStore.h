@@ -93,9 +93,9 @@ public:
     template < typename TYPE >
     void setValue ( string key, const TYPE& value ) {
         this->prepareForSetValue ();
-        assert ( this->mBranch );
-        this->mBranch->affirmValueStack < TYPE >( key );
-        this->mBranch->setRaw ( this->mVersion, key, typeid ( TYPE ).hash_code (), &value );
+        assert ( this->mSourceBranch );
+        this->mSourceBranch->affirmValueStack < TYPE >( key );
+        this->mSourceBranch->setRaw ( this->mVersion, key, typeid ( TYPE ).hash_code (), &value );
     }
 };
 

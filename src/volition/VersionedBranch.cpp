@@ -109,7 +109,7 @@ shared_ptr < VersionedBranch > VersionedBranch::fork ( size_t baseVersion ) {
     
     assert (( this->mVersion <= baseVersion ) && ( baseVersion <= this->getTopVersion ()));
 
-    child->setBranch ( this->mVersion < baseVersion ? this->shared_from_this () : this->mBranch );
+    child->setBranch ( this->mVersion < baseVersion ? this->shared_from_this () : this->mSourceBranch );
     child->mVersion = baseVersion;
     
     map < size_t, Layer >::const_iterator layerIt = this->mLayers.find ( baseVersion );
@@ -157,7 +157,7 @@ const void* VersionedBranch::getRaw ( size_t version, string key, size_t typeID 
     const VersionedBranch* branch = this;
     
     // iterate through parent branches.
-    for ( ; branch; branch = branch->mBranch.get ()) {
+    for ( ; branch; branch = branch->mSourceBranch.get ()) {
     
         // ignore branches above the version we're searching for.
         if ( branch->mVersion <= version ) {
@@ -447,7 +447,7 @@ void VersionedBranch::AbstractVersionedStoreClient_joinBranch ( VersionedBranch&
     for ( ; clientIt != this->mClients.end (); ++clientIt ) {
         AbstractVersionedBranchClient* client = *clientIt;
         branch.insertClient ( *client );
-        client->mBranch = branch.shared_from_this ();
+        client->mSourceBranch = branch.shared_from_this ();
     }
     
     pinThis = NULL;

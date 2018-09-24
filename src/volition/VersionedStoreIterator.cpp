@@ -14,11 +14,11 @@ namespace Volition {
 VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreSnapshot& versionedStore ) :
     mAnchor ( versionedStore ) {
 
-    if ( this->mAnchor.mBranch && ( this->mAnchor.mBranch->getTopVersion () > 0 )) {
+    if ( this->mAnchor.mSourceBranch && ( this->mAnchor.mSourceBranch->getTopVersion () > 0 )) {
         this->takeSnapshot ( versionedStore );
         this->mTopVersion = this->mVersion + 1;
     }
-    this->mState = this->mBranch ? VALID : EMPTY;
+    this->mState = this->mSourceBranch ? VALID : EMPTY;
 }
 
 //----------------------------------------------------------------//
@@ -85,11 +85,11 @@ void VersionedStoreIterator::seek ( size_t version ) {
 
     if ( version < this->mVersion ) {
     
-        shared_ptr < VersionedBranch > branch = this->mBranch;
+        shared_ptr < VersionedBranch > branch = this->mSourceBranch;
     
         while ( branch && !(( branch->mVersion <= version ) && ( version <= this->mTopVersion ))) {
             this->mTopVersion = branch->mVersion - 1;
-            branch = branch->mBranch;
+            branch = branch->mSourceBranch;
         }
         assert ( branch );
         this->setBranch ( branch, version );
@@ -100,7 +100,7 @@ void VersionedStoreIterator::seek ( size_t version ) {
     
         if ( this->mVersion > this->mTopVersion ) {
             
-            this->setBranch ( this->mAnchor.mBranch, this->mAnchor.mVersion ); // overwrites this->mVersion
+            this->setBranch ( this->mAnchor.mSourceBranch, this->mAnchor.mVersion ); // overwrites this->mVersion
             this->mTopVersion = this->mVersion;
             
             if ( version < this->mVersion ) {

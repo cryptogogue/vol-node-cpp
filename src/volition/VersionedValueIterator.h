@@ -59,14 +59,14 @@ protected:
     //----------------------------------------------------------------//
     void seekNext ( shared_ptr < VersionedBranch > prevBranch ) {
         
-        shared_ptr < VersionedBranch > branch = this->mAnchor.mBranch;
+        shared_ptr < VersionedBranch > branch = this->mAnchor.mSourceBranch;
         size_t top = this->mAnchor.mVersion + 1;
         
         shared_ptr < VersionedBranch > bestBranch;
         const ValueStack < TYPE >* bestValueStack = NULL;
         size_t bestTop = top;
         
-        for ( ; branch != prevBranch; branch = branch->mBranch ) {
+        for ( ; branch != prevBranch; branch = branch->mSourceBranch ) {
             const ValueStack < TYPE >* valueStack = this->getValueStack ( branch );
             if ( valueStack && valueStack->size ()) {
                 bestBranch = branch;
@@ -90,7 +90,7 @@ protected:
     //----------------------------------------------------------------//
     void seekPrev ( shared_ptr < VersionedBranch > branch, size_t top ) {
         
-        for ( ; branch; branch = branch->mBranch ) {
+        for ( ; branch; branch = branch->mSourceBranch ) {
         
             const ValueStack < TYPE >* valueStack = this->getValueStack ( branch );
             
@@ -145,7 +145,7 @@ public:
     //----------------------------------------------------------------//
     bool next () {
         
-        if ( !this->mBranch ) return false;
+        if ( !this->mSourceBranch ) return false;
         
         if ( this->mState == NO_PREV ) {
             this->mState = VALID;
@@ -158,7 +158,7 @@ public:
             }
             else {
                 assert ( this->mIterator->first == this->mLastVersion );
-                this->seekNext ( this->mBranch );
+                this->seekNext ( this->mSourceBranch );
             }
         }
         return ( this->mState != NO_NEXT );
@@ -167,7 +167,7 @@ public:
     //----------------------------------------------------------------//
     bool prev () {
 
-        if ( !this->mBranch ) return false;
+        if ( !this->mSourceBranch ) return false;
 
         if ( this->mState == NO_NEXT ) {
             this->mState = VALID;
@@ -180,7 +180,7 @@ public:
             }
             else {
                 assert ( this->mIterator->first == this->mFirstVersion );
-                this->seekPrev ( this->mBranch->mBranch, this->mVersion );
+                this->seekPrev ( this->mSourceBranch->mSourceBranch, this->mVersion );
             }
         }
         return ( this->mState != NO_PREV );
@@ -197,8 +197,8 @@ public:
         mAnchor ( versionedStore ),
         mKey ( key ) {
         
-        if ( this->mAnchor.mBranch ) {
-            this->seekPrev ( this->mAnchor.mBranch, this->mAnchor.mVersion + 1 );
+        if ( this->mAnchor.mSourceBranch ) {
+            this->seekPrev ( this->mAnchor.mSourceBranch, this->mAnchor.mVersion + 1 );
         }
     }
 };

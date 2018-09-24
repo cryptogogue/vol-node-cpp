@@ -15,7 +15,7 @@ namespace Volition {
 */
 void VersionedStoreSnapshot::affirmBranch () {
 
-    if ( !this->mBranch ) {
+    if ( !this->mSourceBranch ) {
         assert ( this->mVersion == 0 );
         this->setBranch ( make_shared < VersionedBranch >(), this->mVersion );
     }
@@ -43,7 +43,7 @@ void VersionedStoreSnapshot::clear () {
 */
 const void* VersionedStoreSnapshot::getRaw ( string key, size_t version, size_t typeID ) const {
 
-    return this->mBranch ? this->mBranch->getRaw ( version < this->mVersion ? version : this->mVersion, key, typeID ) : NULL;
+    return this->mSourceBranch ? this->mSourceBranch->getRaw ( version < this->mVersion ? version : this->mVersion, key, typeID ) : NULL;
 }
 
 //----------------------------------------------------------------//
@@ -79,7 +79,7 @@ void VersionedStoreSnapshot::setDebugName ( string debugName ) {
 */
 void VersionedStoreSnapshot::takeSnapshot ( VersionedStoreSnapshot& other ) {
 
-    this->setBranch ( other.mBranch, other.mVersion );
+    this->setBranch ( other.mSourceBranch, other.mVersion );
 }
 
 //----------------------------------------------------------------//

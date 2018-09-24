@@ -13,12 +13,27 @@ class VersionedBranch;
 //================================================================//
 // AbstractVersionedBranchClient
 //================================================================//
+/** \brief Base class for VersionedBranch clients. Branch client types
+    include branches (parent-to-child) as well as snapshots and iterators.
+ 
+    Implementing this functionality as a base class saves some redundant
+    code in VersionedBranch at the expense of some extra methods to implement
+    in VersionedBranch and VersionedStoreSnapshot (which is the base for
+    snapshots and iterators).
+ 
+    In practice, it is easier and cleaner to implement a handful of
+    single-line virtual methods than to complicate the client bookkeeping
+    in VersionedBranch.
+*/
 class AbstractVersionedBranchClient {
 protected:
 
     friend class VersionedBranch;
 
-    shared_ptr < VersionedBranch >      mBranch;
+    /// The source (or parent) branch for this client. May be NULL.
+    shared_ptr < VersionedBranch >      mSourceBranch;
+    
+    /// The current (or base) version for this client.
     size_t                              mVersion;
 
     //----------------------------------------------------------------//
