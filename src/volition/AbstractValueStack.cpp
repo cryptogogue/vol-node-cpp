@@ -11,8 +11,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractValueStack::AbstractValueStack () :
-    mTypeID ( typeid ( void ).hash_code ()) {
+AbstractValueStack::AbstractValueStack () {
 }
 
 //----------------------------------------------------------------//
@@ -25,25 +24,18 @@ void AbstractValueStack::copyFrom ( const AbstractValueStack& from ) {
 }
 
 //----------------------------------------------------------------//
+void AbstractValueStack::copyValueFrom ( const AbstractValueStack& from, size_t version ) {
+    this->AbstractValueStack_copyValueFrom ( from, version );
+}
+
+//----------------------------------------------------------------//
 void AbstractValueStack::erase ( size_t version ) {
     this->AbstractValueStack_erase ( version );
 }
 
 //----------------------------------------------------------------//
-const void* AbstractValueStack::getRaw ( size_t version, size_t typeID ) const {
-    assert ( typeID == this->mTypeID );
-    return this->AbstractValueStack_getRaw ( version );
-}
-
-//----------------------------------------------------------------//
 unique_ptr < AbstractValueStack > AbstractValueStack::makeEmptyCopy () const {
     return this->AbstractValueStack_makeEmptyCopy ();
-}
-
-//----------------------------------------------------------------//
-void AbstractValueStack::setRaw ( size_t version, size_t typeID, const void* value ) {
-    assert ( typeID == this->mTypeID );
-    this->AbstractValueStack_setRaw ( version, value );
 }
 
 //----------------------------------------------------------------//

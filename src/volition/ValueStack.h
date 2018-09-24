@@ -31,18 +31,45 @@ protected:
     //----------------------------------------------------------------//
     void AbstractValueStack_copyFrom ( const AbstractValueStack& from ) override {
     
-        const ValueStack < TYPE >* fromPtr = dynamic_cast < const ValueStack < TYPE >* >( &from );
-        assert ( fromPtr );
-        this->mValuesByVersion.insert ( fromPtr->mValuesByVersion.begin (),  fromPtr->mValuesByVersion.end ());
+        const ValueStack < TYPE >* valueStack = dynamic_cast < const ValueStack < TYPE >* >( &from );
+        assert ( valueStack );
+        this->mValuesByVersion.insert ( valueStack->mValuesByVersion.begin (),  valueStack->mValuesByVersion.end ());
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractValueStack_copyValueFrom ( const AbstractValueStack& from, size_t version ) override {
+    
+        const ValueStack < TYPE >* valueStack = dynamic_cast < const ValueStack < TYPE >* >( &from );
+        assert ( valueStack );
+        
+        const TYPE* value = valueStack->getValueOrNil ( version );
+        if ( value ) {
+            this->setValue ( version, *value );
+        }
     }
 
     //----------------------------------------------------------------//
     void AbstractValueStack_erase ( size_t version ) override {
         this->mValuesByVersion.erase ( version );
     }
+    
+    //----------------------------------------------------------------//
+    unique_ptr < AbstractValueStack > AbstractValueStack_makeEmptyCopy () const override {
+        return make_unique < ValueStack < TYPE >>();
+    }
 
     //----------------------------------------------------------------//
-    const void* AbstractValueStack_getRaw ( size_t version ) const override {
+    size_t AbstractValueStack_size () const override {
+    
+        return this->mValuesByVersion.size ();
+    }
+    
+    //================================================================//
+    // overrides
+    //================================================================//
+    
+    //----------------------------------------------------------------//
+    const TYPE* getValueOrNil ( size_t version ) const {
         
         if ( this->mValuesByVersion.size ()) {
         
@@ -63,27 +90,14 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    unique_ptr < AbstractValueStack > AbstractValueStack_makeEmptyCopy () const override {
-        return make_unique < ValueStack < TYPE >>();
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractValueStack_setRaw ( size_t version, const void* value ) override {
-        assert ( value );
-        this->mValuesByVersion [ version ] = *( TYPE* )value;
-    }
-
-    //----------------------------------------------------------------//
-    size_t AbstractValueStack_size () const override {
-    
-        return this->mValuesByVersion.size ();
+    void setValue ( size_t version, const TYPE& value ) {
+        this->mValuesByVersion [ version ] = value;
     }
 
 public:
 
     //----------------------------------------------------------------//
     ValueStack () {
-        this->mTypeID = typeid ( TYPE ).hash_code ();
     }
 };
 

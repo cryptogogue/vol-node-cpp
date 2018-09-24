@@ -30,23 +30,6 @@ void VersionedStoreSnapshot::clear () {
 }
 
 //----------------------------------------------------------------//
-/** \brief Return a void pointer to the value for key.
-
-    Searches back through the store for the most recent value assigned
-    to the key. If no value for the key is found in the history, NULL
-    is returned.
- 
-    \param  key         Find the value using this key.
-    \param  version     Search backward for the value starting at this version.
-    \param  typeID      Has of the value's typeid. Used as a sanity check.
-    \return             A raw pointer to the value's memory or NULL.
-*/
-const void* VersionedStoreSnapshot::getRaw ( string key, size_t version, size_t typeID ) const {
-
-    return this->mSourceBranch ? this->mSourceBranch->getRaw ( version < this->mVersion ? version : this->mVersion, key, typeID ) : NULL;
-}
-
-//----------------------------------------------------------------//
 /** \brief Return the current version.
 
     \return             The current version.

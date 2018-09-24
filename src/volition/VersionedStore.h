@@ -94,8 +94,7 @@ public:
     void setValue ( string key, const TYPE& value ) {
         this->prepareForSetValue ();
         assert ( this->mSourceBranch );
-        this->mSourceBranch->affirmValueStack < TYPE >( key );
-        this->mSourceBranch->setRaw ( this->mVersion, key, typeid ( TYPE ).hash_code (), &value );
+        this->mSourceBranch->setValue < TYPE >( this->mVersion, key, value );
     }
 };
 

@@ -133,8 +133,6 @@
 		CD4E81D721059447007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
-		CD561DB7210730DB008B06C7 /* AbstractValueStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD561DB5210730DB008B06C7 /* AbstractValueStack.cpp */; };
-		CD561DB8210730DB008B06C7 /* AbstractValueStack.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DB6210730DB008B06C7 /* AbstractValueStack.h */; };
 		CD561DBA210730E5008B06C7 /* ValueStack.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DB9210730E5008B06C7 /* ValueStack.h */; };
 		CD561DBD210730ED008B06C7 /* VersionedBranch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD561DBB210730ED008B06C7 /* VersionedBranch.cpp */; };
 		CD561DBE210730ED008B06C7 /* VersionedBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = CD561DBC210730ED008B06C7 /* VersionedBranch.h */; };
@@ -148,6 +146,8 @@
 		CDA06FF921587771003FA0C3 /* AbstractVersionedBranchClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FF821587771003FA0C3 /* AbstractVersionedBranchClient.cpp */; };
 		CDA06FFA21588EB3003FA0C3 /* TestVersionedStoreIterators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FDE21541FE3003FA0C3 /* TestVersionedStoreIterators.cpp */; };
 		CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
+		CDA06FFE2159A79C003FA0C3 /* AbstractValueStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA06FFC2159A79B003FA0C3 /* AbstractValueStack.cpp */; };
+		CDA06FFF2159A79C003FA0C3 /* AbstractValueStack.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA06FFD2159A79C003FA0C3 /* AbstractValueStack.h */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -340,8 +340,6 @@
 		CD4E816B21057DD1007DA585 /* main-gtest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-gtest.cpp"; path = "src/volition/gtest/main-gtest.cpp"; sourceTree = "<group>"; };
 		CD4E816C21057DD1007DA585 /* TestVersionedStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestVersionedStore.cpp; path = src/volition/gtest/TestVersionedStore.cpp; sourceTree = "<group>"; };
 		CD4E818F21059316007DA585 /* libvolition.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libvolition.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		CD561DB5210730DB008B06C7 /* AbstractValueStack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractValueStack.cpp; path = src/volition/AbstractValueStack.cpp; sourceTree = "<group>"; };
-		CD561DB6210730DB008B06C7 /* AbstractValueStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractValueStack.h; path = src/volition/AbstractValueStack.h; sourceTree = "<group>"; };
 		CD561DB9210730E5008B06C7 /* ValueStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ValueStack.h; path = src/volition/ValueStack.h; sourceTree = "<group>"; };
 		CD561DBB210730ED008B06C7 /* VersionedBranch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionedBranch.cpp; path = src/volition/VersionedBranch.cpp; sourceTree = "<group>"; };
 		CD561DBC210730ED008B06C7 /* VersionedBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedBranch.h; path = src/volition/VersionedBranch.h; sourceTree = "<group>"; };
@@ -368,6 +366,8 @@
 		CDA06FF4215715EE003FA0C3 /* VersionedValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionedValue.h; path = src/volition/VersionedValue.h; sourceTree = "<group>"; };
 		CDA06FF6215875D1003FA0C3 /* AbstractVersionedBranchClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractVersionedBranchClient.h; path = src/volition/AbstractVersionedBranchClient.h; sourceTree = "<group>"; };
 		CDA06FF821587771003FA0C3 /* AbstractVersionedBranchClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractVersionedBranchClient.cpp; path = src/volition/AbstractVersionedBranchClient.cpp; sourceTree = "<group>"; };
+		CDA06FFC2159A79B003FA0C3 /* AbstractValueStack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractValueStack.cpp; path = src/volition/AbstractValueStack.cpp; sourceTree = "<group>"; };
+		CDA06FFD2159A79C003FA0C3 /* AbstractValueStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractValueStack.h; path = src/volition/AbstractValueStack.h; sourceTree = "<group>"; };
 		CDC1388F212FCFDF004FA594 /* TestChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestChain.cpp; path = src/volition/gtest/TestChain.cpp; sourceTree = "<group>"; };
 		CDC2B31420CCAD2400300A96 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = State.cpp; path = src/volition/State.cpp; sourceTree = "<group>"; };
 		CDC2B31520CCAD2400300A96 /* State.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = State.h; path = src/volition/State.h; sourceTree = "<group>"; };
@@ -608,8 +608,8 @@
 		CD4E80E821040051007DA585 /* store */ = {
 			isa = PBXGroup;
 			children = (
-				CD561DB5210730DB008B06C7 /* AbstractValueStack.cpp */,
-				CD561DB6210730DB008B06C7 /* AbstractValueStack.h */,
+				CDA06FFC2159A79B003FA0C3 /* AbstractValueStack.cpp */,
+				CDA06FFD2159A79C003FA0C3 /* AbstractValueStack.h */,
 				CDA06FF821587771003FA0C3 /* AbstractVersionedBranchClient.cpp */,
 				CDA06FF6215875D1003FA0C3 /* AbstractVersionedBranchClient.h */,
 				CD561DB9210730E5008B06C7 /* ValueStack.h */,
@@ -888,6 +888,7 @@
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
 				CD4E819A210593BD007DA585 /* ChainPlacement.h in Headers */,
+				CDA06FFF2159A79C003FA0C3 /* AbstractValueStack.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
 				CDA06FE52155C4CF003FA0C3 /* loguru.hpp in Headers */,
 				CD4E819C210593BD007DA585 /* Cycle.h in Headers */,
@@ -897,7 +898,6 @@
 				CD4E81BA210593E5007DA585 /* SerializablePtr.h in Headers */,
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
 				CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */,
-				CD561DB8210730DB008B06C7 /* AbstractValueStack.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */,
 				CD4E81AB210593CA007DA585 /* TheWebMinerAPI.h in Headers */,
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
@@ -1228,10 +1228,10 @@
 				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,
 				CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */,
 				CD4E81C7210593F6007DA585 /* TheSimulator.cpp in Sources */,
+				CDA06FFE2159A79C003FA0C3 /* AbstractValueStack.cpp in Sources */,
 				CD4E81A1210593BD007DA585 /* Policy.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD240D2D21360BD900FF8812 /* ChainMetadata.cpp in Sources */,
-				CD561DB7210730DB008B06C7 /* AbstractValueStack.cpp in Sources */,
 				CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */,
 				CD4E819B210593BD007DA585 /* Cycle.cpp in Sources */,
 				CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */,

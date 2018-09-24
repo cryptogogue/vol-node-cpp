@@ -130,58 +130,10 @@ shared_ptr < VersionedBranch > VersionedBranch::fork ( size_t baseVersion ) {
             if ( !toStack ) {
                 toStack = fromStack->makeEmptyCopy ();
             }
-            size_t typeID = fromStack->mTypeID;
-            toStack->setRaw ( baseVersion, typeID, fromStack->getRaw ( baseVersion, typeID ));
+            toStack->copyValueFrom ( *fromStack, baseVersion );
         }
     }
     return child;
-}
-
-//----------------------------------------------------------------//
-/** \brief Recursively searches the branch to find the value for the key. The most recent version
-    equal to or earlier will be returned.
-
-    A raw pointer to the value is returned.
-
-    This method also performs a sanity check on the type of the ValueStack using the provided
-    typeID. The typeID is the has of the type signature. It must match that of the ValueStack.
-
-    \param      version     Search for this version of the most recent lesser version of the value;
-    \param      key         The key.
-    \param      typeID      The hash of the typeid. Used to sanity check the type against the ValueStack.
-    \return                 A raw pointer to the value for the key or NULL.
-*/
-const void* VersionedBranch::getRaw ( size_t version, string key, size_t typeID ) const {
-
-    // start searching at the current branch.
-    const VersionedBranch* branch = this;
-    
-    // iterate through parent branches.
-    for ( ; branch; branch = branch->mSourceBranch.get ()) {
-    
-        // ignore branches above the version we're searching for.
-        if ( branch->mVersion <= version ) {
-        
-            // check for a value stack without recursion.
-            const AbstractValueStack* valueStack = branch->findValueStack ( key );
-            
-            if ( valueStack ) {
-                
-                // check if value stack contains an ID for a matching or most recent lesser version.
-                // it's possible that all values are more recent than the version, in which case
-                // NULL will be returned and we'll keep searching.
-                const void* value = valueStack->getRaw ( version, typeID );
-                if ( value ) {
-                    return value;
-                }
-            }
-        }
-        
-        // cap the version at the base version before moving to the parent branch.
-        // necessary because branches don't always emerge from the top.
-        version = branch->mVersion;
-    }
-    return NULL;
 }
 
 //----------------------------------------------------------------//
@@ -293,35 +245,6 @@ void VersionedBranch::optimize () {
     if ( bestJoin ) {
         assert ( bestJoin->getVersionDependency () >= immutableTop );
         bestJoin->joinBranch ( *this );
-    }
-}
-
-//----------------------------------------------------------------//
-/** \brief Sets a raw value at the given version. If the version doesn't exist,
-    a new layer will be created.
- 
-    Note that the ValueStack must be affirmed before this. Because ValueStack objects
-    are templated, we cannot create it here. The corresponding ValueStack must be
-    created ahead of time in a template function that captures the type of the
-    value being set.
- 
-    It's up to the ValueStack implementation to interpret the raw pointer correctly.
- 
-    \param      version     The version to set the value at. Must be equal to or greater than the branch's base version.
-    \param      key         Key of the value to set.
-    \param      typeID      The hash of the typeid. Used to sanity check the type against the ValueStack.
-    \param      value       Raw pointer to value to set.
-*/
-void VersionedBranch::setRaw ( size_t version, string key, size_t typeID, const void* value ) {
-
-    assert ( this->mVersion <= version );
-    assert ( this->mValueStacksByKey.find ( key ) != this->mValueStacksByKey.end ());
-
-    this->mValueStacksByKey [ key ]->setRaw ( version, typeID, value );
-    
-    Layer& layer = this->mLayers [ version ];
-    if ( layer.find ( key ) == layer.end ()) {
-        layer.insert ( key );
     }
 }
 

@@ -41,7 +41,7 @@ protected:
     const void*     getRaw                          ( string key, size_t version, size_t typeID ) const;
     
     //----------------------------------------------------------------//
-    /** \brief  Return a pointer to the value for a key at a given version
+    /** \brief  Returns a pointer to the value for a key at a given version
                 or NULL if the value cannot be found.
      
                 Returns the value for the most recent version equal to or less than
@@ -53,7 +53,7 @@ protected:
     */
     template < typename TYPE >
     const TYPE* getValueOrNil ( string key, size_t version ) const {
-        return ( TYPE* )this->getRaw ( key, version, typeid ( TYPE ).hash_code ());
+        return this->mSourceBranch ? this->mSourceBranch->getValueOrNil < TYPE >( version < this->mVersion ? version : this->mVersion, key ) : NULL;
     }
     
     //----------------------------------------------------------------//
