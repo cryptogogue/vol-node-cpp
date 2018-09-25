@@ -25,16 +25,16 @@ protected:
     template < typename TYPE > friend class VersionedValueIterator;
 
     //----------------------------------------------------------------//
-    void                                            copyFrom                                    ( const AbstractValueStack& from );
     void                                            copyValueFrom                               ( const AbstractValueStack& from, size_t version );
     void                                            erase                                       ( size_t version );
+    void                                            join                                        ( AbstractValueStack& to ) const;
     unique_ptr < AbstractValueStack >               makeEmptyCopy                               () const;
     size_t                                          size                                        () const;
 
     //----------------------------------------------------------------//
-    virtual void                                    AbstractValueStack_copyFrom                 ( const AbstractValueStack& from ) = 0;
     virtual void                                    AbstractValueStack_copyValueFrom            ( const AbstractValueStack& from, size_t version ) = 0;
     virtual void                                    AbstractValueStack_erase                    ( size_t version ) = 0;
+    virtual void                                    AbstractValueStack_join                     ( AbstractValueStack& to ) const = 0;
     virtual unique_ptr < AbstractValueStack >       AbstractValueStack_makeEmptyCopy            () const = 0;
     virtual size_t                                  AbstractValueStack_size                     () const = 0;
 

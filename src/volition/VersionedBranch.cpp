@@ -238,7 +238,7 @@ void VersionedBranch::optimize () {
     LOG_F ( INFO, "immutableTop: %d", ( int )immutableTop );
     LOG_F ( INFO, "topVersion: %d", ( int )this->getTopVersion ());
     
-    // throw away any versions equal to or greated than the immutable top.
+    // throw away any versions equal to or greater than the immutable top.
     this->truncate ( immutableTop );
     
     // if we have a join candidate, perform the join.
@@ -362,7 +362,7 @@ void VersionedBranch::AbstractVersionedStoreClient_joinBranch ( VersionedBranch&
         if ( !toStack ) {
             toStack = fromStack->makeEmptyCopy ();
         }
-        toStack->copyFrom ( *fromStack );
+        fromStack->join ( *toStack );
     }
 
     // copy the clients

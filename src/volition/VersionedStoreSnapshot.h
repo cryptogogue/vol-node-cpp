@@ -41,15 +41,14 @@ protected:
     const void*     getRaw                          ( string key, size_t version, size_t typeID ) const;
     
     //----------------------------------------------------------------//
-    /** \brief  Returns a pointer to the value for a key at a given version
-                or NULL if the value cannot be found.
-     
-                Returns the value for the most recent version equal to or less than
-                the given version.
-     
-        \param  key         The key.
-        \param  version     The version.
-        \return             A pointer to the value or NULL.
+    /** \brief Recursively searches the branch to find the value for the key. The most recent version
+        equal to or earlier will be returned.
+
+        A pointer to the value or NULL is returned.
+
+        \param      version     Search for this version of the most recent lesser version of the value;
+        \param      key         The key.
+        \return                 A raw pointer to the value for the key or NULL.
     */
     template < typename TYPE >
     const TYPE* getValueOrNil ( string key, size_t version ) const {

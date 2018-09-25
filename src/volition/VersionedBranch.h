@@ -67,7 +67,6 @@ private:
 
         \param      version     Search for this version of the most recent lesser version of the value;
         \param      key         The key.
-        \param      typeID      The hash of the typeid. Used to sanity check the type against the ValueStack.
         \return                 A raw pointer to the value for the key or NULL.
     */
     template < typename TYPE >
