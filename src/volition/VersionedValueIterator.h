@@ -31,9 +31,6 @@ namespace Volition {
  
     Iteration is performed in a sparse manner: only the versions of
     the store where the value was modified will be visited.
- 
-    \todo The branch's internal direct reference counter should be used
-    to prevent branch optimization during iteration.
 */
 template < typename TYPE >
 class VersionedValueIterator :
@@ -70,16 +67,6 @@ protected:
     
     /// Upper bound of the stack being iterated.
     size_t                      mLastVersion;
-
-    //----------------------------------------------------------------//
-    /** \brief Calls getValueStack() on the branch currently being iterated.
-     
-        \return     A pointer to the strongly typed ValueStack or NULL.
-    */
-    const ValueStack < TYPE >* getValueStack () {
-        
-        return this->getValueStack ( this->mBranch );
-    }
 
     //----------------------------------------------------------------//
     /** \brief Helper method to find an AbstractValueStack in a branch and
@@ -125,6 +112,13 @@ protected:
         }
         
         if ( bestValueStack ) {
+        
+            bestBranch->mDirectReferenceCount++;
+            
+            if ( this->mSourceBranch ) {
+                this->mSourceBranch->mDirectReferenceCount--;
+            }
+            
             this->setExtents ( *bestValueStack, bestTop - 1 );
             this->mIterator = bestValueStack->mValuesByVersion.begin ();
             this->setBranch ( bestBranch, this->mFirstVersion );
@@ -152,6 +146,13 @@ protected:
             const ValueStack < TYPE >* valueStack = this->getValueStack ( branch );
             
             if ( valueStack && valueStack->size ()) {
+            
+                branch->mDirectReferenceCount++;
+            
+                if ( this->mSourceBranch ) {
+                    this->mSourceBranch->mDirectReferenceCount--;
+                }
+                
                 this->setExtents ( *valueStack, top - 1 );
                 this->mIterator = valueStack->mValuesByVersion.find ( this->mLastVersion );
                 this->setBranch ( branch, this->mLastVersion );
@@ -311,6 +312,13 @@ public:
         
         if ( this->mAnchor.mSourceBranch ) {
             this->seekPrev ( this->mAnchor.mSourceBranch, this->mAnchor.mVersion + 1 );
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    ~VersionedValueIterator () {
+        if ( this->mSourceBranch ) {
+            this->mSourceBranch->mDirectReferenceCount--;
         }
     }
 };
