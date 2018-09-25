@@ -11,34 +11,20 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreSnapshot& versionedStore ) :
-    mAnchor ( versionedStore ) {
+/** \brief Returns true if iterator is in the valid range for iteration.
 
-    if ( this->mAnchor.mSourceBranch && ( this->mAnchor.mSourceBranch->getTopVersion () > 0 )) {
-        this->takeSnapshot ( versionedStore );
-        this->mTopVersion = this->mVersion + 1;
-    }
-    this->mState = this->mSourceBranch ? VALID : EMPTY;
-}
-
-//----------------------------------------------------------------//
-VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreSnapshot& versionedStore, size_t version ) :
-    VersionedStoreIterator ( versionedStore ) {
-
-    this->seek ( version );
-}
-
-//----------------------------------------------------------------//
-VersionedStoreIterator::~VersionedStoreIterator () {
-}
-
-//----------------------------------------------------------------//
+    \return     True if iteration is in the valid range.
+*/
 bool VersionedStoreIterator::isValid () const {
 
     return ( this->mState == VALID );
 }
 
 //----------------------------------------------------------------//
+/** \brief Iterates forward by one version.
+
+    \return     True if the step was successful.
+*/
 bool VersionedStoreIterator::next () {
 
     if ( this->mState == EMPTY ) return false;
@@ -59,6 +45,10 @@ bool VersionedStoreIterator::next () {
 }
 
 //----------------------------------------------------------------//
+/** \brief Iterates backward by one version.
+
+    \return     True if the step was successful.
+*/
 bool VersionedStoreIterator::prev () {
 
     if ( this->mState == EMPTY ) return false;
@@ -79,6 +69,10 @@ bool VersionedStoreIterator::prev () {
 }
 
 //----------------------------------------------------------------//
+/** \brief Seeks forward or backward in the range.
+
+    \param  version     Version to seek to.
+*/
 void VersionedStoreIterator::seek ( size_t version ) {
 
     if ( this->mState == EMPTY ) return;
@@ -109,6 +103,40 @@ void VersionedStoreIterator::seek ( size_t version ) {
         }
     }
     this->mState = VALID;
+}
+
+//----------------------------------------------------------------//
+/** \brief Initialize the iterator with a given snapshot. Upper bound for
+    iteration is the current version of the snapshot.
+
+    \param  versionedStore  Snapshot to use as the upper bound for iteration.
+*/
+VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreSnapshot& versionedStore ) :
+    mAnchor ( versionedStore ) {
+
+    if ( this->mAnchor.mSourceBranch && ( this->mAnchor.mSourceBranch->getTopVersion () > 0 )) {
+        this->takeSnapshot ( versionedStore );
+        this->mTopVersion = this->mVersion + 1;
+    }
+    this->mState = this->mSourceBranch ? VALID : EMPTY;
+}
+
+//----------------------------------------------------------------//
+/** \brief Initialize the iterator with a given snapshot and seek to
+    a specific version. Upper bound for iteration is the current version
+    of the snapshot.
+
+    \param  versionedStore  Snapshot to use as the upper bound for iteration.
+    \param  version         Version to seek back to. Must be equal to or less than the upper bound.
+*/
+VersionedStoreIterator::VersionedStoreIterator ( VersionedStoreSnapshot& versionedStore, size_t version ) :
+    VersionedStoreIterator ( versionedStore ) {
+
+    this->seek ( version );
+}
+
+//----------------------------------------------------------------//
+VersionedStoreIterator::~VersionedStoreIterator () {
 }
 
 } // namespace Volition
