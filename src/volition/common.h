@@ -55,7 +55,13 @@
 
 #include <loguru.hpp>
 
+#include <padamose/VersionedStore.h>
+#include <padamose/VersionedStoreIterator.h>
+#include <padamose/VersionedValue.h>
+#include <padamose/VersionedValueIterator.h>
+
 using namespace std;
+using namespace Padamose;
 
 //----------------------------------------------------------------//
 typedef unsigned int            uint;

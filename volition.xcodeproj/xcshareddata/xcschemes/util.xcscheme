@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CD4E8131210579C8007DA585"
-               BuildableName = "gtest"
-               BlueprintName = "gtest"
+               BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
+               BuildableName = "util"
+               BlueprintName = "util"
                ReferencedContainer = "container:volition.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD4E8131210579C8007DA585"
-            BuildableName = "gtest"
-            BlueprintName = "gtest"
+            BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
+            BuildableName = "util"
+            BlueprintName = "util"
             ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -46,7 +46,8 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "$PROJECT_DIR"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -55,9 +56,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD4E8131210579C8007DA585"
-            BuildableName = "gtest"
-            BlueprintName = "gtest"
+            BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
+            BuildableName = "util"
+            BlueprintName = "util"
             ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -74,9 +75,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CD4E8131210579C8007DA585"
-            BuildableName = "gtest"
-            BlueprintName = "gtest"
+            BlueprintIdentifier = "CD0C3E3F20C86D88006E3B1C"
+            BuildableName = "util"
+            BlueprintName = "util"
             ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

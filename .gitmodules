@@ -11,3 +11,6 @@
 [submodule "3rd-party/loguru"]
 	path = 3rd-party/loguru
 url=git@github.com:cryptogogue/loguru.git
+[submodule "3rd-party/padamose"]
+	path = 3rd-party/padamose
+	url = git@github.com:cryptogogue/padamose.git

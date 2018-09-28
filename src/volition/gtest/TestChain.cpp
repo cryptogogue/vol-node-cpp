@@ -7,7 +7,6 @@
 #include <volition/CryptoKey.h>
 #include <volition/TheContext.h>
 #include <volition/Transactions.h>
-#include <volition/VersionedStore.h>
 
 using namespace Volition;
 

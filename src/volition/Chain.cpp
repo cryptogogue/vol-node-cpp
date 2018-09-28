@@ -5,8 +5,6 @@
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
 #include <volition/Cycle.h>
-#include <volition/VersionedStoreIterator.h>
-#include <volition/VersionedValueIterator.h>
 
 namespace Volition {
 

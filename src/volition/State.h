@@ -6,8 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/MinerInfo.h>
-#include <volition/VersionedStore.h>
-#include <volition/VersionedValue.h>
 
 namespace Volition {
 
