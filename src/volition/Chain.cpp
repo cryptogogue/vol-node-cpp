@@ -178,8 +178,11 @@ size_t Chain::countBlocks ( size_t cycleIdx ) {
 //----------------------------------------------------------------//
 size_t Chain::countCycles () const {
 
-    const Cycle& cycle = this->getTopCycle ();
-    return cycle.mCycleID + 1;
+    if ( this->hasValue < Cycle >( CYCLE_KEY )) {
+        const Cycle& cycle = this->getTopCycle ();
+        return cycle.mCycleID + 1;
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------//
@@ -223,6 +226,10 @@ size_t Chain::findMax ( size_t cycleID ) const {
 
 //----------------------------------------------------------------//
 ChainPlacement Chain::findNextCycle ( string minerID ) {
+
+    if ( !this->hasValue < Cycle >( CYCLE_KEY )) {
+        return ChainPlacement ( Cycle (), true );
+    }
 
     // first, seek back to find the earliest cycle we could change.
     // we're only allowed change if next cycle ratio is below the threshold.
@@ -381,7 +388,6 @@ void Chain::print ( const char* pre, const char* post ) const {
 bool Chain::pushBlock ( Block& block ) {
 
     State state ( *this );
-
     bool result = block.apply ( state );
 
     if ( result ) {
@@ -390,7 +396,6 @@ bool Chain::pushBlock ( Block& block ) {
         this->takeSnapshot ( state );
         this->mMetaData->affirmParticipant ( block.mCycleID, block.mMinerID );
     }
-    
     return result;
 }
 
@@ -414,6 +419,13 @@ void Chain::rebuildState () {
 }
 
 //----------------------------------------------------------------//
+void Chain::reset () {
+
+    this->State::reset ();
+    this->mMetaData = make_shared < ChainMetadata >();
+}
+
+//----------------------------------------------------------------//
 size_t Chain::size () const {
 
     return this->VersionedStore::getVersion ();
@@ -433,11 +445,36 @@ bool Chain::willImprove ( const Cycle& cycle, string minerID ) {
 //----------------------------------------------------------------//
 void Chain::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
-//    serializer.serialize ( "cycles",        this->mCycles );
-//
-//    if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
-//        this->rebuildState ();
-//    }
+    
+    if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
+    
+        this->reset ();
+    
+        SerializableVector < Block > blocks;
+        serializer.serialize ( "blocks", blocks );
+
+        size_t size = blocks.size ();
+        for ( size_t i = 0; i < size; ++i ) {
+        
+            Block block = blocks [ i ];
+            
+            assert ( this->canPush ( block.mMinerID, true ));
+    
+            ChainPlacement placement = this->findNextCycle ( block.mMinerID );
+            this->prepareForPush ( placement, block );
+            this->pushBlock ( block );
+        }
+    }
+    else {
+        SerializableVector < Block > blocks;
+        
+        size_t top = this->getVersion ();
+        VersionedStoreIterator chainIt ( *this, 0 );
+        for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
+            blocks.push_back ( chainIt.getValue < Block >( BLOCK_KEY ));
+        }
+        serializer.serialize ( "blocks", blocks );
+    }
 }
 
 } // namespace Volition

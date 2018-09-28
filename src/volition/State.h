@@ -124,7 +124,7 @@ public:
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
     bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
     bool                            registerMiner           ( string accountName, string keyName, string url );
-//    void                          reset                   ();
+    void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
                                     State                   ();
                                     ~State                  ();

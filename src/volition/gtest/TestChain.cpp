@@ -238,3 +238,40 @@ TEST ( Chain, test1 ) {
     ASSERT_TRUE ( chain.countBlocks ( 1 ) == 4 );
     ASSERT_TRUE ( chain.countBlocks ( 2 ) == 4 );
 }
+
+//----------------------------------------------------------------//
+TEST ( Chain, test3 ) {
+
+    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
+
+    stringstream strStream;
+
+    {
+        SimpleMiner miners [ 3 ];
+        Chain chain = initializeTestChainAndMiners ( miners, 3 );
+        
+        miners [ 0 ].pushBlock ( chain );
+        miners [ 1 ].pushBlock ( chain );
+        miners [ 2 ].pushBlock ( chain );
+        
+        miners [ 0 ].pushBlock ( chain );
+        miners [ 1 ].pushBlock ( chain );
+        miners [ 2 ].pushBlock ( chain );
+        
+        ASSERT_TRUE ( chain.countCycles () == 3 );
+        ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
+        ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
+        ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
+    
+
+        ToJSONSerializer::toJSON ( chain, strStream );
+    }
+    
+    Chain chain;
+    FromJSONSerializer::fromJSON ( chain, strStream );
+ 
+    ASSERT_TRUE ( chain.countCycles () == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
+    ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
+    ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
+}

@@ -27,9 +27,6 @@ private:
     static constexpr const char* BLOCK_KEY      = "block";
     static constexpr const char* CYCLE_KEY      = "cycle";
 
-    //State                                                   mState;
-    //SerializableVector < SerializableUniquePtr < Cycle >>   mCycles;
-
     shared_ptr < ChainMetadata >                mMetaData;
 
     //----------------------------------------------------------------//
@@ -69,6 +66,7 @@ public:
     void                        print               ( const char* pre = 0, const char* post = "\n" ) const;
     bool                        pushBlock           ( Block& block );
     bool                        pushBlockAndSign    ( Block& block, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    void                        reset               ();
     size_t                      size                () const;
     size_t                      truncate            ( const ChainPlacement& placement, size_t score );
 };
