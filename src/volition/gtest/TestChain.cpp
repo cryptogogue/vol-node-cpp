@@ -262,7 +262,8 @@ TEST ( Chain, test3 ) {
         ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
         ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
         ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
-    
+
+        ASSERT_TRUE ( chain.print ( "", "" ) == "[.][0,1,2 (3)][0,1,2 (3)]" );
 
         ToJSONSerializer::toJSON ( chain, strStream );
     }
@@ -274,4 +275,6 @@ TEST ( Chain, test3 ) {
     ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 ); // genesis cycle
     ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
     ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
+    
+    ASSERT_TRUE ( chain.print ( "", "" ) == "[.][0,1,2 (3)][0,1,2 (3)]" );
 }

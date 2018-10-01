@@ -5,6 +5,7 @@
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
 #include <volition/Cycle.h>
+#include <volition/Format.h>
 
 namespace Volition {
 
@@ -34,6 +35,8 @@ bool Chain::canEdit ( const Cycle& cycle0, const Cycle& cycle1, string minerID )
 
 //----------------------------------------------------------------//
 bool Chain::canEdit ( size_t cycleID, const Chain& chain ) const {
+
+    assert ( false );
 
 //    if ( this->canEdit ( cycleID )) return true;
 //
@@ -84,6 +87,8 @@ Chain::Chain ( Block& genesisBlock ) {
 //----------------------------------------------------------------//
 Chain::Chain ( const Chain& chain ) {
 
+    assert ( false );
+
 //    size_t nCycles = chain.mCycles.size ();
 //
 //    this->mCycles.reserve ( nCycles );
@@ -99,6 +104,8 @@ Chain::~Chain () {
 
 //----------------------------------------------------------------//
 const Chain* Chain::choose ( const Chain& chain0, const Chain& chain1 ) {
+
+    assert ( false );
 
 //    size_t size0 = chain0.mCycles.size ();
 //    size_t size1 = chain1.mCycles.size ();
@@ -129,6 +136,8 @@ const Chain* Chain::choose ( const Chain& chain0, const Chain& chain1 ) {
 
 //----------------------------------------------------------------//
 const Chain* Chain::choose ( size_t cycleID, const Chain& prefer, const Chain& other ) {
+
+    assert ( false );
 
 //    // if other is editable, the decision is easy. go with the preferred.
 //    if ( other.canEdit ( cycleID )) return &prefer;
@@ -196,6 +205,8 @@ size_t Chain::countParticipants ( const Cycle& cycle, string minerID ) {
 //----------------------------------------------------------------//
 Block* Chain::findBlock ( u64 height ) {
 
+    assert ( false );
+
     Block* block = NULL;
 
 //    // TODO: replace with something more efficient
@@ -208,6 +219,8 @@ Block* Chain::findBlock ( u64 height ) {
 
 //----------------------------------------------------------------//
 size_t Chain::findMax ( size_t cycleID ) const {
+
+    assert ( false );
 
 //    size_t max = this->mCycles [ cycleID ]->countMiners ();
 //
@@ -369,19 +382,64 @@ void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
 }
 
 //----------------------------------------------------------------//
-void Chain::print ( const char* pre, const char* post ) const {
+string Chain::print ( const char* pre, const char* post ) {
 
-//    if ( pre ) {
-//        printf ( "%s", pre );
-//    }
-//
-//    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
-//        this->mCycles [ i ]->print ();
-//    }
-//
-//    if ( post ) {
-//        printf ( "%s", post );
-//    }
+    string str;
+
+    if ( pre ) {
+        Format::write ( str, "%s", pre );
+    }
+
+    size_t cycleCount = 0;
+    size_t blockCount = 0;
+    
+    VersionedStoreIterator chainIt ( *this, 0 );
+    
+    Cycle prevCycle = chainIt.getValue < Cycle >( CYCLE_KEY );
+    
+    size_t top = this->getVersion ();
+    for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
+        Cycle cycle = chainIt.getValue < Cycle >( CYCLE_KEY );
+        
+        if (( cycleCount == 0 ) || ( cycle.mCycleID != prevCycle.mCycleID )) {
+        
+            if ( cycleCount > 0 ) {
+                if ( cycleCount > 1 ) {
+                    size_t i = cycleCount - 1 ;
+                    assert ( i < this->mMetaData->mCycleMetadata.size ());
+                    const CycleMetadata& cycleMetadata = this->mMetaData->mCycleMetadata [ i ];
+                    Format::write ( str, " (%d)]", ( int )cycleMetadata.mKnownParticipants.size ());
+                }
+                else {
+                    Format::write ( str, "]" );
+                }
+            }
+            Format::write ( str, "[" );
+            cycleCount++;
+            blockCount = 0;
+        }
+        
+        const Block& block = chainIt.getValue < Block >( BLOCK_KEY );
+    
+        if ( blockCount > 0 ) {
+            Format::write ( str, "," );
+        }
+        
+        Format::write ( str, "%s", block.mHeight == 0  ? "." : block.getMinerID ().c_str ());
+        blockCount++;
+        prevCycle = cycle;
+    }
+    
+    if ( cycleCount > 1 ) {
+        const CycleMetadata& cycleMetadata = this->mMetaData->mCycleMetadata [ cycleCount - 1 ];
+        Format::write ( str, " (%d)]", ( int )cycleMetadata.mKnownParticipants.size ());
+    }
+
+    if ( post ) {
+        Format::write ( str, "%s", post );
+    }
+    
+    return str;
 }
 
 //----------------------------------------------------------------//
@@ -404,18 +462,6 @@ bool Chain::pushBlockAndSign ( Block& block, const CryptoKey& key, string hashAl
 
     block.sign ( key, hashAlgorithm );
     return this->pushBlock ( block );
-}
-
-//----------------------------------------------------------------//
-void Chain::rebuildState () {
-
-//    this->mState.reset ();
-//    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
-//        if ( !this->mCycles [ i ]->apply ( this->mState )) {
-//            this->mCycles.resize ( i + 1 );
-//            break;
-//        }
-//    }
 }
 
 //----------------------------------------------------------------//

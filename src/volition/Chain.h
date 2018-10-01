@@ -40,7 +40,6 @@ private:
     bool                    isInCycle           ( const Cycle& cycle, string minerID );
     bool                    isParticipant       ( const Cycle& cycle, string minerID ) const;
     void                    newCycle            ();
-    void                    rebuildState        ();
     bool                    willImprove         ( const Cycle& cycle, string minerID );
 
     //----------------------------------------------------------------//
@@ -63,7 +62,7 @@ public:
     VersionedValue < Block >    getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
     VersionedValue < Block >    getTopBlock         () const;
     void                        prepareForPush      ( const ChainPlacement& placement, Block& block );
-    void                        print               ( const char* pre = 0, const char* post = "\n" ) const;
+    string                      print               ( const char* pre = 0, const char* post = "\n" );
     bool                        pushBlock           ( Block& block );
     bool                        pushBlockAndSign    ( Block& block, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
     void                        reset               ();

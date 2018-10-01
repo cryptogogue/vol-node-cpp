@@ -139,6 +139,8 @@
 		CDD36CFD215DA75D004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
 		CDD36CFE215DA75E004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
 		CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E6820C86FBA006E3B1C /* main-util.cpp */; };
+		CDD36D012162A415004FC222 /* Format.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD36D002162A415004FC222 /* Format.h */; };
+		CDD36D032162A496004FC222 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36D022162A496004FC222 /* Format.cpp */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -436,6 +438,8 @@
 		CDC2B34220D1196900300A96 /* TheContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheContext.cpp; path = src/volition/TheContext.cpp; sourceTree = "<group>"; };
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
 		CDD36CD7215DA3A3004FC222 /* loguru.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = loguru.cpp; path = src/volition/loguru.cpp; sourceTree = "<group>"; };
+		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
+		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -635,7 +639,9 @@
 		CD4665AF20BFF62600A02D55 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				CDD36D022162A496004FC222 /* Format.cpp */,
 				CD0C3E2820C279FB006E3B1C /* Factory.h */,
+				CDD36D002162A415004FC222 /* Format.h */,
 				CD36663720F595B2000E0B43 /* FNV1a.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
 			);
@@ -860,6 +866,7 @@
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
 				CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */,
+				CDD36D012162A415004FC222 /* Format.h in Headers */,
 				CD4E81AB210593CA007DA585 /* TheWebMinerAPI.h in Headers */,
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
 				CD4E8198210593BD007DA585 /* Chain.h in Headers */,
@@ -1174,6 +1181,7 @@
 			files = (
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
 				CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */,
+				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD4E81CF2105941A007DA585 /* TransactionMakerSignature.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
