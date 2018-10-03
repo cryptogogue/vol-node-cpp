@@ -79,9 +79,9 @@ private:
 
     //----------------------------------------------------------------//
     Cycle                       getTopCycle         () const;
-    bool                        isInCycle           ( const Cycle& cycle, string minerID );
+    bool                        isInCycle           ( const Cycle& cycle, string minerID ) const;
     void                        newCycle            ();
-    bool                        willImprove         ( ChainMetadata& metaData, const Cycle& cycle, string minerID );
+    bool                        willImprove         ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) const;
 
     //----------------------------------------------------------------//
     void                        AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
@@ -92,17 +92,17 @@ public:
     static constexpr const char* CYCLE_KEY      = "cycle";
 
     //----------------------------------------------------------------//
-    bool                        canPush             ( string minerID, bool force );
+    bool                        canPush             ( string minerID, bool force ) const;
                                 Chain               ();
                                 ~Chain              ();
-    size_t                      countBlocks         ();
-    size_t                      countBlocks         ( size_t cycleIdx );
+    size_t                      countBlocks         () const;
+    size_t                      countBlocks         ( size_t cycleIdx ) const;
     size_t                      countCycles         () const;
-    ChainPlacement              findNextCycle       ( ChainMetadata& metaData, string minerID );
+    ChainPlacement              findNextCycle       ( ChainMetadata& metaData, string minerID ) const;
     VersionedValue < Block >    getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
     VersionedValue < Block >    getTopBlock         () const;
     void                        prepareForPush      ( ChainMetadata& metaData, const ChainPlacement& placement, Block& block );
-    string                      print               ( const ChainMetadata& metaData, const char* pre = 0, const char* post = 0 );
+    string                      print               ( const ChainMetadata& metaData, const char* pre = 0, const char* post = 0 ) const;
     bool                        pushBlock           ( Block& block );
     void                        reset               ();
     size_t                      size                () const;

@@ -13,7 +13,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Chain::canPush ( string minerID, bool force ) {
+bool Chain::canPush ( string minerID, bool force ) const {
 
     return ( force || ( !this->isInCycle ( this->getTopCycle (), minerID )));
 }
@@ -29,13 +29,13 @@ Chain::~Chain () {
 }
 
 //----------------------------------------------------------------//
-size_t Chain::countBlocks () {
+size_t Chain::countBlocks () const {
 
     return this->getVersion ();
 }
 
 //----------------------------------------------------------------//
-size_t Chain::countBlocks ( size_t cycleIdx ) {
+size_t Chain::countBlocks ( size_t cycleIdx ) const {
 
     VersionedValueIterator < Cycle > cycleIt ( *this, CYCLE_KEY );
     size_t top = this->getVersion ();
@@ -61,7 +61,7 @@ size_t Chain::countCycles () const {
 }
 
 //----------------------------------------------------------------//
-ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) {
+ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) const {
 
     if ( !this->hasValue < Cycle >( CYCLE_KEY )) {
         return ChainPlacement ( Cycle (), true );
@@ -120,7 +120,7 @@ Cycle Chain::getTopCycle () const {
 }
 
 //----------------------------------------------------------------//
-bool Chain::isInCycle ( const Cycle& cycle, string minerID ) {
+bool Chain::isInCycle ( const Cycle& cycle, string minerID ) const {
 
     VersionedStoreIterator chainIt ( *this, cycle.mBase );
     for ( ; chainIt && ( chainIt.getValue < Cycle >( CYCLE_KEY ).mCycleID == cycle.mCycleID ); chainIt.next ()) {
@@ -172,7 +172,7 @@ void Chain::prepareForPush ( ChainMetadata& metaData, const ChainPlacement& plac
 }
 
 //----------------------------------------------------------------//
-string Chain::print ( const ChainMetadata& metaData, const char* pre, const char* post ) {
+string Chain::print ( const ChainMetadata& metaData, const char* pre, const char* post ) const {
 
     string str;
 
@@ -352,7 +352,7 @@ void Chain::update ( ChainMetadata& metaData, Chain& other ) {
 }
 
 //----------------------------------------------------------------//
-bool Chain::willImprove ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) {
+bool Chain::willImprove ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) const {
 
     // cycle will improve if miner is missing from either the participant set or the chain itself
     return (( cycle.mCycleID > 0 ) && (( metaData.isParticipant ( cycle.mCycleID, minerID ) && this->isInCycle ( cycle, minerID )) == false ));
