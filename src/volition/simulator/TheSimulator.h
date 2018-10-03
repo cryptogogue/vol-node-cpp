@@ -47,6 +47,7 @@ public:
     void                print                   ();
     void                printTree               ( bool verbose = false, int maxDepth = 0 );
     void                process                 ();
+    size_t              rand                    ();
     void                reset                   ();
     void                setCyclesPerStep        ( int cycles );
     void                setDropRate             ( float percentage );

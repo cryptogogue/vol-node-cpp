@@ -26,18 +26,15 @@ void Tree::addChain ( Chain& chain ) {
 
     Tree* cursor = this;
 
-    size_t nCycles = chain.countCycles ();
-    for ( size_t i = 0; i < nCycles; ++i ) {
+    VersionedStoreIterator chainIt ( chain, 0 );
+    
+    size_t top = chain.getVersion ();
+    for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
+        const Block& block = chainIt.getValue < Block >( Chain::BLOCK_KEY );
         
-        size_t nBlocks = chain.countBlocks ( i );
-        for ( size_t j = 0; j < nBlocks; ++j ) {
-            
-            VersionedValue < Block > block = chain.getBlock ( i, j );
-            
-            string minerID      = block->getMinerID ();
-            cursor              = &cursor->mChildren [ minerID ];
-            cursor->mMinerID    = minerID;
-        }
+        string minerID      = block.getMinerID ();
+        cursor              = &cursor->mChildren [ minerID ];
+        cursor->mMinerID    = minerID;
     }
 }
 

@@ -127,6 +127,7 @@ public:
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
                                     State                   ();
+                                    State                   ( State& other );
                                     ~State                  ();
 };
 

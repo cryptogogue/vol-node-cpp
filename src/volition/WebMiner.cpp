@@ -24,7 +24,7 @@ void WebMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
         assert ( this->mMinerURLs.find ( minerID ) != this->mMinerURLs.end ());
         this->mMinerURLs.erase ( minerID );
         
-        this->updateChain ( task->moveChain ());
+        this->updateChain ( *task->moveChain ());
     }
     pNf->release ();
 }
@@ -90,7 +90,7 @@ void WebMiner::run () {
             size_t nextHeight = this->mChain->getVersion ();
             if ( nextHeight != height ) {
                 printf ( "height: %d\n", ( int )nextHeight );
-                this->mChain->print ();
+                this->mChain->print ( this->mMetadata );
                 height = nextHeight;
             }
         }

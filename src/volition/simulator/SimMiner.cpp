@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/Cohort.h>
 #include <volition/TheContext.h>
 #include <volition/simulator/SimMiner.h>
 #include <volition/simulator/TheSimulator.h>
@@ -38,14 +39,14 @@ void SimMiner::pushGenesisTransaction ( Block& block ) const {
     genesisMinerTransaction->mURL = "";
 
     block.pushTransaction ( move ( genesisMinerTransaction ));
-
 }
 
 //----------------------------------------------------------------//
 void SimMiner::print () const {
 
-    //printf ( "[%s] ", this->mCohort ? this->mCohort->mName.c_str () : "" );
-    this->mChain->print ();
+    string name = this->mCohort ? this->mCohort->mName.c_str () : "";
+
+    LOG_F ( INFO, "[%s] %s", name.c_str (), this->mChain->print ( this->mMetadata, "CHAIN: " ).c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -58,6 +59,19 @@ void SimMiner::resetMinerQueue () {
 //----------------------------------------------------------------//
 void SimMiner::step () {
 
+    LOG_SCOPE_F ( INFO, "SimMiner::step ()" );
+
+    int tag = ( int )( TheSimulator::get ().rand () & 0xffffffff );
+    LOG_F ( INFO, "0x%08x", tag );
+    
+    if ( tag == 0x62eca207 ) {
+        LOG_F ( INFO, "break" );
+    }
+    
+    if ( tag == 0x2fd078d7 ) {
+        LOG_F ( INFO, "break" );
+    }
+
     if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
         this->resetMinerQueue ();
         this->pushBlock ( *this->mChain, true );
@@ -66,19 +80,22 @@ void SimMiner::step () {
     const SimMiner* miner = this->nextMiner ();
     if ( !miner ) return;
 
-    unique_ptr < Chain > chain = make_unique < Chain >( *miner->mChain );
+    //unique_ptr < Chain > chain = make_unique < Chain >( *miner->mChain );
 
     if ( this->mVerbose ) {
-        printf ( " player: %s\n", this->mMinerID.c_str ());
-        this->mChain->print ( "   CHAIN0: " );
-        chain->print ( "   CHAIN1: " );
+        LOG_F ( INFO, " player: %s\n", this->mMinerID.c_str ());
+        LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "   CHAIN0: " ).c_str ());
+        LOG_F ( INFO, "%s", miner->mChain->print ( this->mMetadata, "   CHAIN1: " ).c_str ());
     }
 
-    this->updateChain ( move ( chain ));
+    this->updateChain ( *miner->mChain );
+
+    LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "     TEMP: " ).c_str ());
+    this->pushBlock ( *this->mChain, false );
 
     if ( this->mVerbose ) {
-        this->mChain->print ( "     BEST: " );
-        printf ( "\n" );
+        LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "     BEST: " ).c_str ());
+        LOG_F ( INFO, "\n" );
     }
 }
 

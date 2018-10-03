@@ -95,22 +95,24 @@ void Miner::pushBlock ( Chain& chain, bool force ) {
     if ( chain.canPush ( this->mMinerID, force )) {
 
         // find the cycle (including a new cycle) that the block should be placed in.
-        ChainPlacement placement = chain.findNextCycle ( this->mMinerID );
+        ChainPlacement placement = chain.findNextCycle ( this->mMetadata, this->mMinerID );
         
-        // this also computes the allure for that cyle.
+        // this also computes the allure for that cycle.
         Block block ( this->mMinerID, placement.getCycleID (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
         
         Chain fork ( chain );
-        fork.prepareForPush ( placement, block );
+        fork.prepareForPush ( this->mMetadata, placement, block );
         
         // do this *after* prepare
         this->addTransactions ( fork, block );
         
         if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
             
-            bool result = fork.pushBlockAndSign ( block, this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+            block.sign ( this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+            bool result = fork.pushBlock ( block );
             assert ( result );
             
+            this->mMetadata.affirmParticipant ( block.getCycleID (), block.getMinerID ());
             chain.takeSnapshot ( fork );
         }
     }
@@ -146,7 +148,8 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::setGenesis ( shared_ptr < Block > block ) {
     
-    unique_ptr < Chain > chain = make_unique < Chain >( *block );
+    unique_ptr < Chain > chain = make_unique < Chain >();
+    chain->pushBlock ( *block );
     
     if ( chain->countCycles () > 0 ) {
         this->mChain = move ( chain );
@@ -154,15 +157,17 @@ void Miner::setGenesis ( shared_ptr < Block > block ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::updateChain ( unique_ptr < Chain > proposedChain ) {
+void Miner::updateChain ( Chain& proposedChain ) {
+    
+//    Chain snapshot;
+//    snapshot.takeSnapshot ( proposedChain );
+//    this->pushBlock ( snapshot, false );
 
-    if ( !proposedChain ) return;
-    
-    this->pushBlock ( *proposedChain, false );
-    
-    if ( this->mChain.get () != Chain::choose ( *this->mChain, *proposedChain )) {
-        this->mChain = move ( proposedChain );
-    }
+    this->mChain->update ( this->mMetadata, proposedChain );
+
+//    if ( this->mChain.get () != Chain::choose ( *this->mChain, *proposedChain )) {
+//        this->mChain = move ( proposedChain );
+//    }
 }
 
 } // namespace Volition

@@ -9,60 +9,9 @@
 
 namespace Volition {
 
-static const double THRESHOLD = 0.75;
-
 //================================================================//
 // Chain
 //================================================================//
-
-//----------------------------------------------------------------//
-bool Chain::canEdit ( const Cycle& cycle0, const Cycle& cycle1, string minerID ) {
-
-    assert ( cycle0.mCycleID == ( cycle1.mCycleID - 1 )); // don't send us cycles out of order!
-
-    if ( cycle0.mCycleID == 0 ) return false; // cannot change genesis cycle
-
-    // cycle is neither last nor genesis; can change if majority of miners have not yet
-    // agreed on next cycle
-
-    size_t size0            = this->countParticipants ( cycle0, minerID );
-    size_t size1            = this->countParticipants ( cycle1 );
-
-    float ratio             = ( float )size1 / ( float )size0;
-
-    return ratio <= THRESHOLD;
-}
-
-//----------------------------------------------------------------//
-bool Chain::canEdit ( size_t cycleID, const Chain& chain ) const {
-
-    assert ( false );
-
-//    if ( this->canEdit ( cycleID )) return true;
-//
-//    size_t participants0 = this->mCycles [ cycleID ]->countMiners ();
-//    size_t participants1 = chain.mCycles [ cycleID ]->countMiners ();
-//
-//    if ( participants0 < participants1 ) {
-//
-//        float ratio = ( float )participants0 / ( float )participants1;
-//        if ( ratio <= THRESHOLD ) return true;
-//    }
-//
-//    size_t size0 = this->mCycles.size ();
-//    size_t size1 = chain.mCycles.size ();
-//
-//    size_t min = ( size0 < size1 ) ? size0 : size1;
-//
-//    for ( size_t i = cycleID + 1; i < ( min - 1 ); ++i ) {
-//        if ( this->mCycles [ i ]->countMiners () < chain.mCycles [ i ]->countMiners ()) {
-//            return true;
-//        }
-//    }
-//    return false;
-
-    return false;
-}
 
 //----------------------------------------------------------------//
 bool Chain::canPush ( string minerID, bool force ) {
@@ -72,30 +21,8 @@ bool Chain::canPush ( string minerID, bool force ) {
 
 //----------------------------------------------------------------//
 Chain::Chain () {
-}
 
-//----------------------------------------------------------------//
-Chain::Chain ( Block& genesisBlock ) {
-
-    this->mMetaData = make_shared < ChainMetadata >();
-
-    this->newCycle ();
-    this->pushBlock ( genesisBlock );
-    assert ( this->hasValue < Block >( BLOCK_KEY ));
-}
-
-//----------------------------------------------------------------//
-Chain::Chain ( const Chain& chain ) {
-
-    assert ( false );
-
-//    size_t nCycles = chain.mCycles.size ();
-//
-//    this->mCycles.reserve ( nCycles );
-//    for ( size_t i = 0; i < nCycles; ++i ) {
-//        this->mCycles.push_back ( make_unique < Cycle >( *chain.mCycles [ i ]));
-//    }
-//    this->rebuildState ();
+    this->reset ();
 }
 
 //----------------------------------------------------------------//
@@ -135,10 +62,8 @@ const Chain* Chain::choose ( const Chain& chain0, const Chain& chain1 ) {
 }
 
 //----------------------------------------------------------------//
-const Chain* Chain::choose ( size_t cycleID, const Chain& prefer, const Chain& other ) {
-
-    assert ( false );
-
+//const Chain* Chain::choose ( size_t cycleID, const Chain& prefer, const Chain& other ) {
+//
 //    // if other is editable, the decision is easy. go with the preferred.
 //    if ( other.canEdit ( cycleID )) return &prefer;
 //
@@ -158,9 +83,7 @@ const Chain* Chain::choose ( size_t cycleID, const Chain& prefer, const Chain& o
 //
 //    // other chain wins it.
 //    return &other;
-
-    return &prefer;
-}
+//}
 
 //----------------------------------------------------------------//
 size_t Chain::countBlocks () {
@@ -192,14 +115,6 @@ size_t Chain::countCycles () const {
         return cycle.mCycleID + 1;
     }
     return 0;
-}
-
-//----------------------------------------------------------------//
-size_t Chain::countParticipants ( const Cycle& cycle, string minerID ) {
-
-    assert ( cycle.mCycleID < this->mMetaData->mCycleMetadata.size ());
-    const CycleMetadata& cycleMetadata = this->mMetaData->mCycleMetadata [ cycle.mCycleID ];
-    return cycleMetadata.mKnownParticipants.size () + ( minerID.size () > 0 ? ( this->isInCycle ( cycle, minerID ) ? 0 : 1 ) : 0 );
 }
 
 //----------------------------------------------------------------//
@@ -238,7 +153,7 @@ size_t Chain::findMax ( size_t cycleID ) const {
 }
 
 //----------------------------------------------------------------//
-ChainPlacement Chain::findNextCycle ( string minerID ) {
+ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) {
 
     if ( !this->hasValue < Cycle >( CYCLE_KEY )) {
         return ChainPlacement ( Cycle (), true );
@@ -261,21 +176,20 @@ ChainPlacement Chain::findNextCycle ( string minerID ) {
         // the most recent cycle can always be edited, though may not be 'improved.'
         VersionedValueIterator < Cycle > cycleIt ( *this, CYCLE_KEY );
         
-        while ( cycleIt ) {
+        for ( ; cycleIt; cycleIt.prev ()) {
         
-            Cycle cycle1 = *cycleIt; // cycle under consideration
+            const Cycle& cycle = *cycleIt;
+        
+            if ( metaData.canEdit ( cycle.mCycleID, minerID )) {
             
-            // if we're here at all, the cycle can be edited. if it will also be improved, choose it as our 'best' cycle.
-            if ( this->willImprove ( cycle1, minerID )) {
-                bestCycle = cycle1;
-                foundCycle = true;
+                if ( this->willImprove ( metaData, cycle, minerID )) {
+                    bestCycle = cycle;
+                    foundCycle = true;
+                }
             }
-            
-            cycleIt.prev (); // don't need to check for overrun; canEdit () will always return false for cycle 0.
-            Cycle cycle0 = *cycleIt;
-            
-            // if we can't edit, break.
-            if ( !this->canEdit ( cycle0, cycle1, minerID )) break;
+            else {
+                break;
+            }
         }
         
         if ( foundCycle ) {
@@ -337,12 +251,6 @@ bool Chain::isInCycle ( const Cycle& cycle, string minerID ) {
 }
 
 //----------------------------------------------------------------//
-bool Chain::isParticipant ( const Cycle& cycle, string minerID ) const {
-
-    return this->mMetaData->isParticipant ( cycle.mCycleID, minerID );
-}
-
-//----------------------------------------------------------------//
 void Chain::newCycle () {
 
     Cycle cycle;
@@ -352,11 +260,10 @@ void Chain::newCycle () {
         cycle.mCycleID = prevCycle.mCycleID + 1;
     }
     this->setValue < Cycle >( CYCLE_KEY, cycle );
-    this->mMetaData->affirmCycle ( cycle.mCycleID );
 }
 
 //----------------------------------------------------------------//
-void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
+void Chain::prepareForPush ( ChainMetadata& metaData, const ChainPlacement& placement, Block& block ) {
 
     if ( placement.mNewCycle ) {
         this->newCycle ();
@@ -368,10 +275,14 @@ void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
         size_t truncate = cycle.mBase;
         size_t score = block.getScore ();
         VersionedStoreIterator chainIt ( *this, truncate );
-        for ( ; chainIt && ( truncate < top ); chainIt.next (), ++truncate ) {
-            if ( chainIt.getValue < Block >( BLOCK_KEY ).getScore () > score ) break;
+        for ( ; chainIt && ( !chainIt.isCurrent ()) && ( truncate < top ); chainIt.next (), ++truncate ) {
+            const Block& block = chainIt.getValue < Block >( BLOCK_KEY );
+            if (( block.mCycleID > cycle.mCycleID ) || ( chainIt.getValue < Block >( BLOCK_KEY ).getScore () > score )) break;
         }
         this->revert ( truncate );
+        this->clearVersion ();
+        
+        metaData.mCycleMetadata.resize ( cycle.mCycleID + 1 );
     }
     
     size_t version = this->getVersion ();
@@ -382,7 +293,7 @@ void Chain::prepareForPush ( const ChainPlacement& placement, Block& block ) {
 }
 
 //----------------------------------------------------------------//
-string Chain::print ( const char* pre, const char* post ) {
+string Chain::print ( const ChainMetadata& metaData, const char* pre, const char* post ) {
 
     string str;
 
@@ -397,18 +308,14 @@ string Chain::print ( const char* pre, const char* post ) {
     
     Cycle prevCycle = chainIt.getValue < Cycle >( CYCLE_KEY );
     
-    size_t top = this->getVersion ();
-    for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
+    for ( ; chainIt && ( !chainIt.isCurrent ()); chainIt.next ()) {
         Cycle cycle = chainIt.getValue < Cycle >( CYCLE_KEY );
         
         if (( cycleCount == 0 ) || ( cycle.mCycleID != prevCycle.mCycleID )) {
         
             if ( cycleCount > 0 ) {
                 if ( cycleCount > 1 ) {
-                    size_t i = cycleCount - 1 ;
-                    assert ( i < this->mMetaData->mCycleMetadata.size ());
-                    const CycleMetadata& cycleMetadata = this->mMetaData->mCycleMetadata [ i ];
-                    Format::write ( str, " (%d)]", ( int )cycleMetadata.mKnownParticipants.size ());
+                    Format::write ( str, " (%d)]", ( int )metaData.countParticipants ( cycleCount - 1 ));
                 }
                 else {
                     Format::write ( str, "]" );
@@ -431,8 +338,10 @@ string Chain::print ( const char* pre, const char* post ) {
     }
     
     if ( cycleCount > 1 ) {
-        const CycleMetadata& cycleMetadata = this->mMetaData->mCycleMetadata [ cycleCount - 1 ];
-        Format::write ( str, " (%d)]", ( int )cycleMetadata.mKnownParticipants.size ());
+        Format::write ( str, " (%d)]", ( int )metaData.countParticipants ( cycleCount - 1 ));
+    }
+    else {
+        Format::write ( str, "]" );
     }
 
     if ( post ) {
@@ -446,29 +355,33 @@ string Chain::print ( const char* pre, const char* post ) {
 bool Chain::pushBlock ( Block& block ) {
 
     State state ( *this );
+    
+    if ( !state.hasValue < Cycle >( CYCLE_KEY )) {
+        assert ( state.getVersion () == 0 );
+        state.setValue < Cycle >( CYCLE_KEY, Cycle ());
+    }
+
+    size_t baseCycleID = state.getValue < Cycle >( CYCLE_KEY ).mCycleID;
+    
+    if ( block.mCycleID != baseCycleID ) {
+        assert ( block.mCycleID == ( baseCycleID + 1 ));
+        state.setValue < Cycle >( CYCLE_KEY, Cycle ( block.mCycleID, state.getVersion ()));
+    }
+    
     bool result = block.apply ( state );
 
     if ( result ) {
         state.setValue < Block >( BLOCK_KEY, block );
         state.pushVersion ();
         this->takeSnapshot ( state );
-        this->mMetaData->affirmParticipant ( block.mCycleID, block.mMinerID );
     }
     return result;
-}
-
-//----------------------------------------------------------------//
-bool Chain::pushBlockAndSign ( Block& block, const CryptoKey& key, string hashAlgorithm ) {
-
-    block.sign ( key, hashAlgorithm );
-    return this->pushBlock ( block );
 }
 
 //----------------------------------------------------------------//
 void Chain::reset () {
 
     this->State::reset ();
-    this->mMetaData = make_shared < ChainMetadata >();
 }
 
 //----------------------------------------------------------------//
@@ -478,10 +391,92 @@ size_t Chain::size () const {
 }
 
 //----------------------------------------------------------------//
-bool Chain::willImprove ( const Cycle& cycle, string minerID ) {
+bool Chain::willImprove ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) {
 
     // cycle will improve if miner is missing from either the participant set or the chain itself
-    return (( cycle.mCycleID > 0 ) && (( this->isParticipant ( cycle, minerID ) && this->isInCycle ( cycle, minerID )) == false ));
+    return (( cycle.mCycleID > 0 ) && (( metaData.isParticipant ( cycle.mCycleID, minerID ) && this->isInCycle ( cycle, minerID )) == false ));
+}
+
+//----------------------------------------------------------------//
+void Chain::update ( ChainMetadata& metaData, Chain& other ) {
+
+    if ( other.getVersion () == 0 ) return;
+    
+    VersionedStoreIterator chainIt0 ( *this, 0 );
+    VersionedStoreIterator chainIt1 ( other, 0 );
+    
+    bool diverged = false;
+    size_t diverge = 0;
+    bool overwrite = false;
+    
+    for ( ; chainIt1 && ( !chainIt1.isCurrent ()); chainIt0.next (), chainIt1.next ()) {
+        
+        size_t height = chainIt1.getVersion ();
+        
+        if ( chainIt0 && ( !chainIt0.isCurrent ())) {
+            
+            const Block& block0 = chainIt0.getValue < Block >( BLOCK_KEY );
+            const Block& block1 = chainIt1.getValue < Block >( BLOCK_KEY );
+        
+            if ( diverged == false ) {
+                diverge = height;
+                diverged = ( block0 != block1 );
+            }
+            
+            int compare = Block::compare ( block0, block1 );
+            
+            if ( compare != 0 ) {
+                overwrite = (( compare > 0 ) && ( metaData.canEdit ( block0.mCycleID, block1.mMinerID )));
+                break;
+            }
+        }
+        else {
+            diverge = height;
+            overwrite = true;
+            break;
+        }
+    }
+    
+    if ( overwrite ) {
+        
+        // roll back to the point of divergence
+        Chain state;
+        state.takeSnapshot ( *this );
+        state.revert ( diverge );
+        state.clearVersion ();
+        
+        // apply all the other chain's blocks
+        VersionedStoreIterator fromIt ( other, diverge );
+        for ( ; fromIt && ( !fromIt.isCurrent ()); fromIt.next ()) {
+            
+            Block block = fromIt.getValue < Block >( BLOCK_KEY );
+            
+            bool result = state.pushBlock ( block );
+            if ( !result ) return;
+        }
+        
+        // if we're here, then all the blocks were valid. go ahead and truncate
+        // the chain and rebuild the metadata.
+        
+        // this truncates the chain and grabs the revised state.
+        this->takeSnapshot ( state );
+        
+        // rewind back to diverge
+        VersionedStoreIterator chainIt ( *this, diverge );
+        
+        // save the base cycle ID for later
+        size_t baseCycleID = chainIt.hasValue < Cycle >( CYCLE_KEY ) ? chainIt.getValue < Cycle >( CYCLE_KEY ).mCycleID : 0;
+        
+        // truncate the metadata. we're keeping base cycle so we get the full
+        // set of all active contributors known to the chain prior to truncation.
+        metaData.mCycleMetadata.resize ( baseCycleID + 1 );
+        
+        for ( ; chainIt && ( !chainIt.isCurrent ()); chainIt.next ()) {
+        
+            Block block = chainIt.getValue < Block >( BLOCK_KEY );
+            metaData.affirmParticipant ( block.mCycleID, block.mMinerID );
+        }
+    }
 }
 
 //================================================================//
@@ -491,7 +486,6 @@ bool Chain::willImprove ( const Cycle& cycle, string minerID ) {
 //----------------------------------------------------------------//
 void Chain::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
 
-    
     if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
     
         this->reset ();
@@ -503,11 +497,6 @@ void Chain::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
         for ( size_t i = 0; i < size; ++i ) {
         
             Block block = blocks [ i ];
-            
-            assert ( this->canPush ( block.mMinerID, true ));
-    
-            ChainPlacement placement = this->findNextCycle ( block.mMinerID );
-            this->prepareForPush ( placement, block );
             this->pushBlock ( block );
         }
     }

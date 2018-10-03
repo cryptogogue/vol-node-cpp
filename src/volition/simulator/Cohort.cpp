@@ -32,7 +32,7 @@ void Cohort::randomizeFrequencies ( int max ) {
 
     list < SimMiner* >::iterator minerIt = this->mMiners.begin ();
     for ( ; minerIt != this->mMiners.end (); ++minerIt ) {
-        ( *minerIt )->mFrequency = ( rand () % max ) + 1;
+        ( *minerIt )->mFrequency = ( TheSimulator::get ().rand () % max ) + 1;
     }
 }
 

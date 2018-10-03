@@ -51,9 +51,39 @@ Block::~Block () {
 }
 
 //----------------------------------------------------------------//
+int Block::compare ( const Block& block0, const Block& block1 ) {
+
+    assert ( block0.mHeight == block1.mHeight );
+
+    if ( block0 != block1 ) {
+    
+        if ( block0.mCycleID != block1.mCycleID ) {
+        
+            if ( block0.mCycleID < block1.mCycleID ) return -1;
+            if ( block0.mCycleID > block1.mCycleID ) return 1;
+        }
+        else {
+        
+            size_t score0 = block0.getScore ();
+            size_t score1 = block1.getScore ();
+            
+            if ( score0 < score1 ) return -1;
+            if ( score0 > score1 ) return 1;
+        }
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------//
 size_t Block::countTransactions () const {
 
     return this->mTransactions.size ();
+}
+
+//----------------------------------------------------------------//
+size_t Block::getCycleID () const {
+
+    return this->mCycleID;
 }
 
 //----------------------------------------------------------------//

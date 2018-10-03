@@ -38,7 +38,7 @@ int TheSimulator::countMiners () {
 //----------------------------------------------------------------//
 bool TheSimulator::drop () {
 
-    return (( float )( rand () % ( 1000 + 1 )) / 1000.0 ) < this->mDropRate;
+    return (( float )( this->rand () % ( 1000 + 1 )) / 1000.0 ) < this->mDropRate;
 }
 
 //----------------------------------------------------------------//
@@ -115,7 +115,7 @@ void TheSimulator::process () {
 
         while ( schedule.size ()) {
 
-            map < SimMiner*, int >::iterator scheduleIt = next ( schedule.begin (), rand () % schedule.size ());
+            map < SimMiner*, int >::iterator scheduleIt = next ( schedule.begin (), this->rand () % schedule.size ());
 
             if ( !this->drop ()) {
                 scheduleIt->first->step ();
@@ -127,6 +127,12 @@ void TheSimulator::process () {
             }
         }
     }
+}
+
+//----------------------------------------------------------------//
+size_t TheSimulator::rand () {
+
+    return this->mRand ();
 }
 
 //----------------------------------------------------------------//

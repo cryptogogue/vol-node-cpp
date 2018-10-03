@@ -46,11 +46,23 @@ private:
 public:
 
     //----------------------------------------------------------------//
+    bool operator == ( const Block& rhs ) const {
+        return ( this->mSignature == rhs.mSignature );
+    }
+    
+    //----------------------------------------------------------------//
+    bool operator != ( const Block& rhs ) const {
+        return !( *this == rhs );
+    }
+
+    //----------------------------------------------------------------//
     bool                apply                               ( State& state );
+    static int          compare                             ( const Block& block0, const Block& block1 );
                         Block                               ();
                         Block                               ( string minerID, size_t cycleID, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
                         ~Block                              ();
     size_t              countTransactions                   () const;
+    size_t              getCycleID                          () const;
     string              getMinerID                          () const;
     size_t              getScore                            () const;
     const Signature&    getSignature                        () const;

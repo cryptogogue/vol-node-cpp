@@ -36,6 +36,16 @@ public:
     }
 
     //----------------------------------------------------------------//
+    bool operator == ( const Signature& rhs ) const {
+        return ( Poco::DigestEngine::constantTimeEquals ( this->mSignature, rhs.mSignature ));
+    }
+    
+    //----------------------------------------------------------------//
+    bool operator != ( const Signature& rhs ) const {
+        return !( *this == rhs );
+    }
+
+    //----------------------------------------------------------------//
     const Digest&       getDigest           () const;
     string              getHashAlgorithm    () const;
     const Digest&       getSignature        () const;

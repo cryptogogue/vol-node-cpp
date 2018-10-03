@@ -326,11 +326,13 @@ public:
     //----------------------------------------------------------------//
     SmallScenario () {
     
+        TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
+    
         TheSimulator::get ().reset ();
         TheSimulator::get ().initMiners ( 4 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 4 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 16 );
         
-        //this->mNormal.setVerbose ( true );
+        this->mNormal.setVerbose ( true );
     }
 
     //================================================================//

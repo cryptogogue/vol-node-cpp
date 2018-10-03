@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <volition/Block.h>
 #include <volition/Chain.h>
+#include <volition/ChainMetadata.h>
 #include <volition/CryptoKey.h>
 #include <volition/TheContext.h>
 #include <volition/Transactions.h>
@@ -16,21 +17,30 @@ using namespace Volition;
 class SimpleMiner {
 public:
 
-    string      mMinerID;
-    CryptoKey   mKeyPair;
-
+    string          mMinerID;
+    CryptoKey       mKeyPair;
+    ChainMetadata   mMetaData;
   
     //----------------------------------------------------------------//
     void pushBlock ( Chain& chain ) {
-    
+        
+        VersionedStoreIterator chainIt ( chain, 0 );
+        for ( ; chainIt && ( !chainIt.isCurrent ()); chainIt.next ()) {
+            const Block& block = chainIt.getValue < Block >( Chain::BLOCK_KEY );
+            this->mMetaData.affirmParticipant ( block.getCycleID (), block.getMinerID ());
+        }
+        
         ASSERT_TRUE ( chain.canPush ( this->mMinerID, true ));
-    
-        ChainPlacement placement = chain.findNextCycle ( this->mMinerID );
+        
+        ChainPlacement placement = chain.findNextCycle ( this->mMetaData, this->mMinerID );
         Block block ( this->mMinerID, placement.getCycleID (), this->mKeyPair );
         chain.prepareForPush ( placement, block );
-
-        bool result = chain.pushBlockAndSign ( block, this->mKeyPair );
+        block.sign ( this->mKeyPair );
+        
+        bool result = chain.pushBlock ( block );
         ASSERT_TRUE ( result );
+        
+        this->mMetaData.affirmParticipant ( block.getCycleID (), block.getMinerID ());
     }
     
     //----------------------------------------------------------------//
@@ -59,7 +69,7 @@ public:
 };
 
 //----------------------------------------------------------------//
-Chain initializeTestChainAndMiners ( SimpleMiner* miners, size_t nMiners ) {
+void initializeTestChainAndMiners ( Chain& chain, SimpleMiner* miners, size_t nMiners ) {
 
     Block genesisBlock;
 
@@ -81,16 +91,18 @@ Chain initializeTestChainAndMiners ( SimpleMiner* miners, size_t nMiners ) {
     genesisBlock.sign ( genesisKey );
     TheContext::get ().setGenesisBlockDigest ( genesisBlock.getSignature ().getDigest ());
     
-    return Chain ( genesisBlock );
+    chain.reset ();
+    chain.pushBlock ( genesisBlock );
 }
 
 //----------------------------------------------------------------//
 TEST ( Chain, test0 ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
-
+    
+    Chain chain;
     SimpleMiner miners [ 2 ];
-    Chain chain = initializeTestChainAndMiners ( miners, 2 );
+    initializeTestChainAndMiners ( chain, miners, 2 );
     
     ASSERT_TRUE ( chain.countCycles () == 1 );
     ASSERT_TRUE ( chain.countBlocks ( 0 ) == 1 );
@@ -138,8 +150,9 @@ TEST ( Chain, test1 ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
+    Chain chain;
     SimpleMiner miners [ 4 ];
-    Chain chain = initializeTestChainAndMiners ( miners, 4 );
+    initializeTestChainAndMiners ( chain, miners, 4 );
     
     // cycle 1
     
@@ -247,8 +260,9 @@ TEST ( Chain, test3 ) {
     stringstream strStream;
 
     {
+        Chain chain;
         SimpleMiner miners [ 3 ];
-        Chain chain = initializeTestChainAndMiners ( miners, 3 );
+        initializeTestChainAndMiners ( chain, miners, 3 );
         
         miners [ 0 ].pushBlock ( chain );
         miners [ 1 ].pushBlock ( chain );
@@ -263,7 +277,7 @@ TEST ( Chain, test3 ) {
         ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
         ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
 
-        ASSERT_TRUE ( chain.print ( "", "" ) == "[.][0,1,2 (3)][0,1,2 (3)]" );
+        ASSERT_TRUE ( chain.print () == "[.][0,1,2 (3)][0,1,2 (3)]" );
 
         ToJSONSerializer::toJSON ( chain, strStream );
     }
@@ -276,5 +290,5 @@ TEST ( Chain, test3 ) {
     ASSERT_TRUE ( chain.countBlocks ( 1 ) == 3 );
     ASSERT_TRUE ( chain.countBlocks ( 2 ) == 3 );
     
-    ASSERT_TRUE ( chain.print ( "", "" ) == "[.][0,1,2 (3)][0,1,2 (3)]" );
+    ASSERT_TRUE ( chain.print () == "[.][0,1,2 (3)][0,1,2 (3)]" );
 }

@@ -36,11 +36,13 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void    affirmCycle         ( size_t cycleID );
-    void    affirmParticipant   ( size_t cycleID, string participant );
-            ChainMetadata       ();
-            ~ChainMetadata      ();
-    bool    isParticipant       ( size_t cycleID, string minerID ) const;
+    void        affirmCycle             ( size_t cycleID );
+    void        affirmParticipant       ( size_t cycleID, string participant );
+    bool        canEdit                 ( size_t cycleID, string minerID = "" ) const;
+                ChainMetadata           ();
+                ~ChainMetadata          ();
+    size_t      countParticipants       ( size_t cycleID, string minerID = "" ) const;
+    bool        isParticipant           ( size_t cycleID, string minerID ) const;
 };
 
 } // namespace Volition

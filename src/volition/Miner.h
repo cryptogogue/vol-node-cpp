@@ -8,6 +8,7 @@
 #include <volition/AbstractTransaction.h>
 #include <volition/CryptoKey.h>
 #include <volition/Chain.h>
+#include <volition/ChainMetadata.h>
 #include <volition/Singleton.h>
 #include <volition/State.h>
 
@@ -29,6 +30,7 @@ protected:
     bool                                            mLazy;
 
     unique_ptr < Chain >                            mChain;
+    ChainMetadata                                   mMetadata;
     
     //----------------------------------------------------------------//
     void                    addTransactions         ( Chain& chain, Block& block );
@@ -50,7 +52,7 @@ public:
     void                    setMinerID              ( string minerID );
                             Miner                   ();
     virtual                 ~Miner                  ();
-    void                    updateChain             ( unique_ptr < Chain > proposedChain );
+    void                    updateChain             ( Chain& proposedChain );
 };
 
 } // namespace Volition

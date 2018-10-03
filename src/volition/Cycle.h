@@ -42,7 +42,6 @@ private:
     void                    rebuildMinerSet         ();
     void                    setID                   ( u64 cycleID );
     bool                    willImprove             ( string minerID ) const;
-    
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
@@ -51,6 +50,7 @@ public:
     
     //----------------------------------------------------------------//
                             Cycle                   ();
+                            Cycle                   ( size_t cycleID, size_t base );
                             ~Cycle                  ();
 };
 
