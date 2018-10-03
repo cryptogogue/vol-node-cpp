@@ -69,10 +69,6 @@
 		CD4E8196210593BD007DA585 /* Block.h in Headers */ = {isa = PBXBuildFile; fileRef = CD46659D20BE908300A02D55 /* Block.h */; };
 		CD4E8197210593BD007DA585 /* Chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33520CE112F00300A96 /* Chain.cpp */; };
 		CD4E8198210593BD007DA585 /* Chain.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B33620CE112F00300A96 /* Chain.h */; };
-		CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */; };
-		CD4E819A210593BD007DA585 /* ChainPlacement.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3DF20EB045400705AEB /* ChainPlacement.h */; };
-		CD4E819B210593BD007DA585 /* Cycle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B33720CE112F00300A96 /* Cycle.cpp */; };
-		CD4E819C210593BD007DA585 /* Cycle.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B33820CE112F00300A96 /* Cycle.h */; };
 		CD4E819D210593BD007DA585 /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
 		CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E1920C25A00006E3B1C /* MinerInfo.h */; };
 		CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
@@ -411,8 +407,6 @@
 		CD59F3BC20E8950100705AEB /* Policy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Policy.h; path = src/volition/Policy.h; sourceTree = "<group>"; };
 		CD59F3D920E9BEC100705AEB /* TransactionMakerSignature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMakerSignature.cpp; path = src/volition/TransactionMakerSignature.cpp; sourceTree = "<group>"; };
 		CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionMakerSignature.h; path = src/volition/TransactionMakerSignature.h; sourceTree = "<group>"; };
-		CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChainPlacement.cpp; path = src/volition/ChainPlacement.cpp; sourceTree = "<group>"; };
-		CD59F3DF20EB045400705AEB /* ChainPlacement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChainPlacement.h; path = src/volition/ChainPlacement.h; sourceTree = "<group>"; };
 		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/volition/common.h; sourceTree = "<group>"; };
 		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/volition/main-simulator.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/volition/main-server.cpp"; sourceTree = "<group>"; };
@@ -432,8 +426,6 @@
 		CDC2B32520CE0FA100300A96 /* Scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scenario.h; path = src/volition/simulator/Scenario.h; sourceTree = "<group>"; };
 		CDC2B33520CE112F00300A96 /* Chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chain.cpp; path = src/volition/Chain.cpp; sourceTree = "<group>"; };
 		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/volition/Chain.h; sourceTree = "<group>"; };
-		CDC2B33720CE112F00300A96 /* Cycle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cycle.cpp; path = src/volition/Cycle.cpp; sourceTree = "<group>"; };
-		CDC2B33820CE112F00300A96 /* Cycle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cycle.h; path = src/volition/Cycle.h; sourceTree = "<group>"; };
 		CDC2B34120D1182400300A96 /* TheContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheContext.h; path = src/volition/TheContext.h; sourceTree = "<group>"; };
 		CDC2B34220D1196900300A96 /* TheContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheContext.cpp; path = src/volition/TheContext.cpp; sourceTree = "<group>"; };
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
@@ -620,10 +612,6 @@
 				CDC2B33620CE112F00300A96 /* Chain.h */,
 				CD240D2B21360BD900FF8812 /* ChainMetadata.cpp */,
 				CD240D2C21360BD900FF8812 /* ChainMetadata.h */,
-				CD59F3DE20EB045400705AEB /* ChainPlacement.cpp */,
-				CD59F3DF20EB045400705AEB /* ChainPlacement.h */,
-				CDC2B33720CE112F00300A96 /* Cycle.cpp */,
-				CDC2B33820CE112F00300A96 /* Cycle.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
@@ -764,7 +752,7 @@
 		CDD36CCB215DA35E004FC222 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CDD36CD2215DA35E004FC222 /* gtest */,
+				CDD36CD2215DA35E004FC222 /* padamose-gtest */,
 				CDD36CD4215DA35E004FC222 /* libgtest.a */,
 				CDD36CD6215DA35E004FC222 /* libpadamose.a */,
 			);
@@ -856,9 +844,7 @@
 				CD240D2E21360BD900FF8812 /* ChainMetadata.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
-				CD4E819A210593BD007DA585 /* ChainPlacement.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
-				CD4E819C210593BD007DA585 /* Cycle.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD4E81C8210593F6007DA585 /* TheSimulator.h in Headers */,
@@ -1087,10 +1073,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		CDD36CD2215DA35E004FC222 /* gtest */ = {
+		CDD36CD2215DA35E004FC222 /* padamose-gtest */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = gtest;
+			path = "padamose-gtest";
 			remoteRef = CDD36CD1215DA35E004FC222 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1180,7 +1166,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
-				CD4E8199210593BD007DA585 /* ChainPlacement.cpp in Sources */,
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD4E81CF2105941A007DA585 /* TransactionMakerSignature.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
@@ -1193,7 +1178,6 @@
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD240D2D21360BD900FF8812 /* ChainMetadata.cpp in Sources */,
 				CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */,
-				CD4E819B210593BD007DA585 /* Cycle.cpp in Sources */,
 				CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */,
 				CD4E81A5210593CA007DA585 /* SyncChainTask.cpp in Sources */,
 				CD4E81A3210593BD007DA585 /* State.cpp in Sources */,

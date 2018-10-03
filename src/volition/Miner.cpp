@@ -159,15 +159,10 @@ void Miner::setGenesis ( shared_ptr < Block > block ) {
 //----------------------------------------------------------------//
 void Miner::updateChain ( Chain& proposedChain ) {
     
-//    Chain snapshot;
-//    snapshot.takeSnapshot ( proposedChain );
-//    this->pushBlock ( snapshot, false );
-
-    this->mChain->update ( this->mMetadata, proposedChain );
-
-//    if ( this->mChain.get () != Chain::choose ( *this->mChain, *proposedChain )) {
-//        this->mChain = move ( proposedChain );
-//    }
+    if ( this->mChain ) {
+        this->mChain->update ( this->mMetadata, proposedChain );
+        this->pushBlock ( *this->mChain, false );
+    }
 }
 
 } // namespace Volition

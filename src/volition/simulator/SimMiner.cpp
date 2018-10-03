@@ -63,14 +63,6 @@ void SimMiner::step () {
 
     int tag = ( int )( TheSimulator::get ().rand () & 0xffffffff );
     LOG_F ( INFO, "0x%08x", tag );
-    
-    if ( tag == 0x62eca207 ) {
-        LOG_F ( INFO, "break" );
-    }
-    
-    if ( tag == 0x2fd078d7 ) {
-        LOG_F ( INFO, "break" );
-    }
 
     if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
         this->resetMinerQueue ();
@@ -80,8 +72,6 @@ void SimMiner::step () {
     const SimMiner* miner = this->nextMiner ();
     if ( !miner ) return;
 
-    //unique_ptr < Chain > chain = make_unique < Chain >( *miner->mChain );
-
     if ( this->mVerbose ) {
         LOG_F ( INFO, " player: %s\n", this->mMinerID.c_str ());
         LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "   CHAIN0: " ).c_str ());
@@ -89,9 +79,6 @@ void SimMiner::step () {
     }
 
     this->updateChain ( *miner->mChain );
-
-    LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "     TEMP: " ).c_str ());
-    this->pushBlock ( *this->mChain, false );
 
     if ( this->mVerbose ) {
         LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "     BEST: " ).c_str ());

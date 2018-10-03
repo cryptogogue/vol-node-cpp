@@ -4,7 +4,6 @@
 #include <volition/Block.h>
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
-#include <volition/Cycle.h>
 #include <volition/Format.h>
 
 namespace Volition {
@@ -28,62 +27,6 @@ Chain::Chain () {
 //----------------------------------------------------------------//
 Chain::~Chain () {
 }
-
-//----------------------------------------------------------------//
-const Chain* Chain::choose ( const Chain& chain0, const Chain& chain1 ) {
-
-    assert ( false );
-
-//    size_t size0 = chain0.mCycles.size ();
-//    size_t size1 = chain1.mCycles.size ();
-//
-//    size_t minSize = size0 < size1 ? size0 : size1;
-//    for ( size_t i = 0; i < minSize; ++i ) {
-//
-//        const Cycle& cycle0 = *chain0.mCycles [ i ];
-//        const Cycle& cycle1 = *chain1.mCycles [ i ];
-//
-//        int compare = Cycle::compare ( cycle0, cycle1 );
-//
-//        // if cycle0 is better
-//        if ( compare == -1 ) {
-//            return Chain::choose ( i, chain0, chain1 );
-//        }
-//
-//        // if cycle1 is better
-//        if ( compare == 1 ) {
-//            return Chain::choose ( i, chain1, chain0 );
-//        }
-//    }
-//
-//    return &chain0;
-
-    return &chain0;
-}
-
-//----------------------------------------------------------------//
-//const Chain* Chain::choose ( size_t cycleID, const Chain& prefer, const Chain& other ) {
-//
-//    // if other is editable, the decision is easy. go with the preferred.
-//    if ( other.canEdit ( cycleID )) return &prefer;
-//
-//    // other is not editable, which means a critical mass of players have committed
-//    // to the next cycle. so the only way we can beat it is if we have a critical
-//    // mass of players later in the preferred chain. (can this happen?)
-//
-//    size_t max0 = prefer.findMax ( cycleID );
-//    size_t max1 = other.findMax ( cycleID );
-//
-//    if ( max0 == max1 ) return &prefer;
-//
-//    if ( max1 < max0 ) {
-//        float ratio = ( float )max1 / ( float )max0;
-//        if ( ratio <= THRESHOLD ) return &prefer;
-//    }
-//
-//    // other chain wins it.
-//    return &other;
-//}
 
 //----------------------------------------------------------------//
 size_t Chain::countBlocks () {
@@ -114,41 +57,6 @@ size_t Chain::countCycles () const {
         const Cycle& cycle = this->getTopCycle ();
         return cycle.mCycleID + 1;
     }
-    return 0;
-}
-
-//----------------------------------------------------------------//
-Block* Chain::findBlock ( u64 height ) {
-
-    assert ( false );
-
-    Block* block = NULL;
-
-//    // TODO: replace with something more efficient
-//    for ( size_t i = 0; i < this->mCycles.size (); ++i ) {
-//        block = this->mCycles [ i ]->findBlock ( height );
-//        if ( block ) break;
-//    }
-    return block;
-}
-
-//----------------------------------------------------------------//
-size_t Chain::findMax ( size_t cycleID ) const {
-
-    assert ( false );
-
-//    size_t max = this->mCycles [ cycleID ]->countMiners ();
-//
-//    size_t size = this->mCycles.size ();
-//    for ( size_t i = cycleID + 1; i < size; ++i ) {
-//
-//        size_t test = this->mCycles [ i ]->countMiners ();
-//        if ( max < test ) {
-//            max = test;
-//        }
-//    }
-//    return max;
-
     return 0;
 }
 
@@ -198,35 +106,6 @@ ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) 
     }
     return ChainPlacement ( this->getTopCycle (), true );
 }
-
-//----------------------------------------------------------------//
-//size_t Chain::findPositionInCycle ( const Cycle& cycle, size_t score ) {
-//
-//    VersionedStoreIterator chainIt ( *this, cycle.mBase );
-//    size_t top = this->getVersion () - cycle.mBase;
-//    for ( size_t i = 0; i < top; ++i ) {
-//        if ( chainIt.getValue < Block >( BLOCK_KEY ).getScore () < score ) return i;
-//    }
-//    return top;
-//}
-
-//----------------------------------------------------------------//
-//Block& Chain::getBlock ( size_t cycleIdx, size_t blockIdx ) {
-//
-//    return this->getCycle ( cycleIdx ).getBlock ( blockIdx );
-//}
-
-//----------------------------------------------------------------//
-//const Cycle* Chain::getCycle ( size_t idx ) {
-//    
-//    VersionedValueIterator < Cycle > cycleIt ( *this, CYCLE_KEY );
-//    
-//    for ( ; cycleIt; cycleIt.prev ()) {
-//        const Cycle& cycle = *cycleIt;
-//        if ( cycle.mCycleID == idx ) return &cycle;
-//    }
-//    return NULL;
-//}
 
 //----------------------------------------------------------------//
 VersionedValue < Block > Chain::getTopBlock () const {
@@ -391,13 +270,6 @@ size_t Chain::size () const {
 }
 
 //----------------------------------------------------------------//
-bool Chain::willImprove ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) {
-
-    // cycle will improve if miner is missing from either the participant set or the chain itself
-    return (( cycle.mCycleID > 0 ) && (( metaData.isParticipant ( cycle.mCycleID, minerID ) && this->isInCycle ( cycle, minerID )) == false ));
-}
-
-//----------------------------------------------------------------//
 void Chain::update ( ChainMetadata& metaData, Chain& other ) {
 
     if ( other.getVersion () == 0 ) return;
@@ -477,6 +349,13 @@ void Chain::update ( ChainMetadata& metaData, Chain& other ) {
             metaData.affirmParticipant ( block.mCycleID, block.mMinerID );
         }
     }
+}
+
+//----------------------------------------------------------------//
+bool Chain::willImprove ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) {
+
+    // cycle will improve if miner is missing from either the participant set or the chain itself
+    return (( cycle.mCycleID > 0 ) && (( metaData.isParticipant ( cycle.mCycleID, minerID ) && this->isInCycle ( cycle, minerID )) == false ));
 }
 
 //================================================================//

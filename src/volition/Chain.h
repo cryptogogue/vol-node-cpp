@@ -6,7 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
-#include <volition/ChainPlacement.h>
 #include <volition/State.h>
 
 namespace Volition {
@@ -17,6 +16,60 @@ class ChainMetadata;
 class ChainPlacement;
 
 //================================================================//
+// Cycle
+//================================================================//
+class Cycle {
+private:
+
+    friend class Chain;
+    friend class ChainPlacement;
+
+    u64     mCycleID;
+    u64     mBase; // verion where cycle starts
+
+public:
+    
+    //----------------------------------------------------------------//
+    Cycle () :
+        mCycleID ( 0 ),
+        mBase ( 0 ) {
+    }
+
+    //----------------------------------------------------------------//
+    Cycle ( size_t cycleID, size_t base ) :
+        mCycleID ( cycleID ),
+        mBase ( base ) {
+    }
+};
+
+//================================================================//
+// ChainPlacement
+//================================================================//
+class ChainPlacement {
+private:
+
+    friend class Chain;
+    friend class Cycle;
+
+    bool            mNewCycle;
+    Cycle           mCycle;
+
+    //----------------------------------------------------------------//
+    ChainPlacement ( const Cycle& cycle, bool newCycle ) :
+        mNewCycle ( newCycle ),
+        mCycle ( cycle ) {
+    }
+
+public:
+
+    //----------------------------------------------------------------//
+    size_t getCycleID () const {
+
+        return this->mCycle.mCycleID + ( this->mNewCycle ? 1 : 0 );
+    }
+};
+
+//================================================================//
 // Chain
 //================================================================//
 class Chain :
@@ -25,8 +78,6 @@ class Chain :
 private:
 
     //----------------------------------------------------------------//
-    size_t                      findMax             ( size_t cycleID ) const;
-    //const Cycle*              getCycle            ( size_t idx );
     Cycle                       getTopCycle         () const;
     bool                        isInCycle           ( const Cycle& cycle, string minerID );
     void                        newCycle            ();
@@ -44,11 +95,9 @@ public:
     bool                        canPush             ( string minerID, bool force );
                                 Chain               ();
                                 ~Chain              ();
-    static const Chain*         choose              ( const Chain& chain0, const Chain& chain1 );
     size_t                      countBlocks         ();
     size_t                      countBlocks         ( size_t cycleIdx );
     size_t                      countCycles         () const;
-    Block*                      findBlock           ( u64 height );
     ChainPlacement              findNextCycle       ( ChainMetadata& metaData, string minerID );
     VersionedValue < Block >    getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
     VersionedValue < Block >    getTopBlock         () const;
@@ -57,7 +106,6 @@ public:
     bool                        pushBlock           ( Block& block );
     void                        reset               ();
     size_t                      size                () const;
-    size_t                      truncate            ( const ChainPlacement& placement, size_t score );
     void                        update              ( ChainMetadata& metaData, Chain& other );
 };
 

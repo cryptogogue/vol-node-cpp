@@ -330,7 +330,7 @@ public:
     
         TheSimulator::get ().reset ();
         TheSimulator::get ().initMiners ( 4 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 16 );
+        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 4 );
         
         this->mNormal.setVerbose ( true );
     }
