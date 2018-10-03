@@ -119,10 +119,8 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-        Chain* chain = TheWebMiner::get ().getChain ();
-        if ( chain ) {
-            jsonOut.set ( "blocks", ToJSONSerializer::toJSON ( *chain ));
-        }
+        const Chain& chain = TheWebMiner::get ().getChain ();
+        jsonOut.set ( "blocks", ToJSONSerializer::toJSON ( chain ));
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

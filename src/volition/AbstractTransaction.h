@@ -33,7 +33,8 @@ protected:
     SerializableUniquePtr < TransactionMakerSignature >     mMakerSignature;
 
     //----------------------------------------------------------------//
-    void                    AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
+    void                    AbstractSerializable_serializeFrom  ( const AbstractSerializerFrom& serializer ) override;
+    void                    AbstractSerializable_serializeTo    ( AbstractSerializerTo& serializer ) const override;
 
     //----------------------------------------------------------------//
     virtual bool            AbstractTransaction_apply           ( State& state ) const = 0;

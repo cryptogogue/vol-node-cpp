@@ -46,7 +46,7 @@ void SimMiner::print () const {
 
     string name = this->mCohort ? this->mCohort->mName.c_str () : "";
 
-    LOG_F ( INFO, "[%s] %s", name.c_str (), this->mChain->print ( this->mMetadata, "CHAIN: " ).c_str ());
+    LOG_F ( INFO, "[%s] %s", name.c_str (), this->mChain.print ( this->mMetadata, "CHAIN: " ).c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -66,7 +66,7 @@ void SimMiner::step () {
 
     if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
         this->resetMinerQueue ();
-        this->pushBlock ( *this->mChain, true );
+        this->pushBlock ( this->mChain, true );
     }
     
     const SimMiner* miner = this->nextMiner ();
@@ -74,14 +74,14 @@ void SimMiner::step () {
 
     if ( this->mVerbose ) {
         LOG_F ( INFO, " player: %s\n", this->mMinerID.c_str ());
-        LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "   CHAIN0: " ).c_str ());
-        LOG_F ( INFO, "%s", miner->mChain->print ( this->mMetadata, "   CHAIN1: " ).c_str ());
+        LOG_F ( INFO, "%s", this->mChain.print ( this->mMetadata, "   CHAIN0: " ).c_str ());
+        LOG_F ( INFO, "%s", miner->mChain.print ( this->mMetadata, "   CHAIN1: " ).c_str ());
     }
 
-    this->updateChain ( *miner->mChain );
+    this->updateChain ( miner->mChain );
 
     if ( this->mVerbose ) {
-        LOG_F ( INFO, "%s", this->mChain->print ( this->mMetadata, "     BEST: " ).c_str ());
+        LOG_F ( INFO, "%s", this->mChain.print ( this->mMetadata, "     BEST: " ).c_str ());
         LOG_F ( INFO, "\n" );
     }
 }

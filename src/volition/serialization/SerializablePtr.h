@@ -4,8 +4,7 @@
 #ifndef VOLITION_SERIALIZATION_SERIALIZABLEPTR_H
 #define VOLITION_SERIALIZATION_SERIALIZABLEPTR_H
 
-#include <volition/serialization/AbstractSerializable.h>
-#include <volition/serialization/AbstractSerializer.h>
+#include <volition/serialization/AbstractSerializablePtr.h>
 
 namespace Volition {
 
@@ -51,12 +50,17 @@ class SerializableSharedPtr :
 public:
 
     //----------------------------------------------------------------//
-    AbstractSerializable* AbstractSerializablePointer_get () {
+    AbstractSerializable* AbstractSerializablePointer_get () override {
         return this->get ();
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializablePointer_make ( const AbstractSerializableTypeInfo& typeInfo ) {
+    const AbstractSerializable* AbstractSerializablePointer_get () const override {
+        return this->get ();
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializablePointer_make ( const AbstractSerializableTypeInfo& typeInfo ) override {
         FACTORY factory;
         *( shared_ptr < TYPE >* )this = factory.make ( typeInfo );
     }
@@ -86,12 +90,17 @@ class SerializableUniquePtr :
 public:
 
     //----------------------------------------------------------------//
-    AbstractSerializable* AbstractSerializablePointer_get () {
+    AbstractSerializable* AbstractSerializablePointer_get () override {
         return this->get ();
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializablePointer_make ( const AbstractSerializableTypeInfo& typeInfo ) {
+    const AbstractSerializable* AbstractSerializablePointer_get () const override {
+        return this->get ();
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializablePointer_make ( const AbstractSerializableTypeInfo& typeInfo ) override {
         FACTORY factory;
         *( unique_ptr < TYPE >* )this = factory.make ( typeInfo );
     }

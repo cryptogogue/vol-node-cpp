@@ -231,7 +231,7 @@ string Chain::print ( const ChainMetadata& metaData, const char* pre, const char
 }
 
 //----------------------------------------------------------------//
-bool Chain::pushBlock ( Block& block ) {
+bool Chain::pushBlock ( const Block& block ) {
 
     State state ( *this );
     
@@ -270,7 +270,7 @@ size_t Chain::size () const {
 }
 
 //----------------------------------------------------------------//
-void Chain::update ( ChainMetadata& metaData, Chain& other ) {
+void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
 
     if ( other.getVersion () == 0 ) return;
     
@@ -363,32 +363,32 @@ bool Chain::willImprove ( ChainMetadata& metaData, const Cycle& cycle, string mi
 //================================================================//
 
 //----------------------------------------------------------------//
-void Chain::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
+void Chain::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
-    if ( serializer.getMode () == AbstractSerializer::SERIALIZE_IN ) {
+    this->reset ();
     
-        this->reset ();
-    
-        SerializableVector < Block > blocks;
-        serializer.serialize ( "blocks", blocks );
+    SerializableVector < Block > blocks;
+    serializer.serialize ( "blocks", blocks );
 
-        size_t size = blocks.size ();
-        for ( size_t i = 0; i < size; ++i ) {
-        
-            Block block = blocks [ i ];
-            this->pushBlock ( block );
-        }
+    size_t size = blocks.size ();
+    for ( size_t i = 0; i < size; ++i ) {
+    
+        Block block = blocks [ i ];
+        this->pushBlock ( block );
     }
-    else {
-        SerializableVector < Block > blocks;
-        
-        size_t top = this->getVersion ();
-        VersionedStoreIterator chainIt ( *this, 0 );
-        for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
-            blocks.push_back ( chainIt.getValue < Block >( BLOCK_KEY ));
-        }
-        serializer.serialize ( "blocks", blocks );
+}
+
+//----------------------------------------------------------------//
+void Chain::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    SerializableVector < Block > blocks;
+    
+    size_t top = this->getVersion ();
+    VersionedStoreIterator chainIt ( *this, 0 );
+    for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
+        blocks.push_back ( chainIt.getValue < Block >( BLOCK_KEY ));
     }
+    serializer.serialize ( "blocks", blocks );
 }
 
 } // namespace Volition

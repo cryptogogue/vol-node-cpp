@@ -55,7 +55,7 @@ void TheSimulator::initMiners ( int nMiners ) {
         TheContext::get ().setGenesisBlockKey ( this->mGenesisKey );
     }
 
-    shared_ptr < Block > genesisBlock = make_shared < Block >();
+    Block genesisBlock;
 
     this->mMiners.clear ();
     this->mMiners.resize ( nMiners );
@@ -68,11 +68,11 @@ void TheSimulator::initMiners ( int nMiners ) {
         minerIDStream << i;
         miner.setMinerID ( minerIDStream.str ());
         
-        miner.pushGenesisTransaction ( *genesisBlock );
+        miner.pushGenesisTransaction ( genesisBlock );
     }
     
-    genesisBlock->sign ( this->mGenesisKey );
-    TheContext::get ().setGenesisBlockDigest ( genesisBlock->getSignature ().getDigest ());
+    genesisBlock.sign ( this->mGenesisKey );
+    TheContext::get ().setGenesisBlockDigest ( genesisBlock.getSignature ().getDigest ());
     
     for ( int i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ]->setGenesis ( genesisBlock );
@@ -193,7 +193,7 @@ void TheSimulator::summarize ( TreeSummary& summary ) {
     Tree tree;
     int nMiners = this->countMiners ();
     for ( int i = 0; i < nMiners; ++i ) {
-        tree.addChain ( *this->mMiners [ i ]->mChain );
+        tree.addChain ( this->mMiners [ i ]->mChain );
     }
     summary.summarize ( tree );
 }

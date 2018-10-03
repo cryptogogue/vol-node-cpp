@@ -20,7 +20,8 @@ private:
     shared_ptr < Poco::Crypto::KeyPair >      mKeyPair;
     
     //----------------------------------------------------------------//
-    void            AbstractSerializable_serialize       ( AbstractSerializer& serializer );
+    void            AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void            AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
@@ -36,8 +37,8 @@ public:
     static int          getNIDFromGroupName     ( string groupName );
     static bool         hasCurve                ( int nid );
     static bool         hasCurve                ( string groupName );
-    Signature           sign                    ( AbstractSerializable& serializable, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM ) const;
-    bool                verify                  ( const Signature& signature, AbstractSerializable& serializable ) const;
+    Signature           sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM ) const;
+    bool                verify                  ( const Signature& signature, const AbstractSerializable& serializable ) const;
     
     //----------------------------------------------------------------//
     operator const bool () const {

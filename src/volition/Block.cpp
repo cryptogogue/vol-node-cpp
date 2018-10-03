@@ -12,7 +12,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Block::apply ( State& state ) {
+bool Block::apply ( State& state ) const {
 
     if ( state.getVersion () != this->mHeight ) return false;
     if ( !this->verify ( state )) return false;
@@ -147,7 +147,7 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const State& state ) {
+bool Block::verify ( const State& state ) const {
 
     VersionedValue < MinerInfo > minerInfo = state.getMinerInfo ( this->mMinerID );
 
@@ -165,7 +165,7 @@ bool Block::verify ( const State& state ) {
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const State& state, const CryptoKey& key ) {
+bool Block::verify ( const State& state, const CryptoKey& key ) const {
 
     if ( this->mHeight > 0 ) {
 
@@ -188,7 +188,7 @@ bool Block::verify ( const State& state, const CryptoKey& key ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Block::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
+void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     
     serializer.serialize ( "height",        this->mHeight );
     serializer.serialize ( "cycleID",       this->mCycleID );
@@ -199,7 +199,23 @@ void Block::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
         serializer.serialize ( "allure",        this->mAllure );
     }
     
-    if ( serializer.getMode () != AbstractSerializer::SERIALIZE_DIGEST ) {
+    serializer.serialize ( "signature",     this->mSignature );
+    serializer.serialize ( "transactions",  this->mTransactions );
+}
+
+//----------------------------------------------------------------//
+void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    serializer.serialize ( "height",        this->mHeight );
+    serializer.serialize ( "cycleID",       this->mCycleID );
+    
+    if ( this->mHeight > 0 ) {
+        serializer.serialize ( "minerID",       this->mMinerID );
+        serializer.serialize ( "prevDigest",    this->mPrevDigest );
+        serializer.serialize ( "allure",        this->mAllure );
+    }
+    
+    if ( !serializer.isDigest ()) {
         serializer.serialize ( "signature",     this->mSignature );
     }
     

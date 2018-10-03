@@ -4,7 +4,7 @@
 #ifndef VOLITION_SERIALIZATION_SORTEDDIGESTSERIALIZER_H
 #define VOLITION_SERIALIZATION_SORTEDDIGESTSERIALIZER_H
 
-#include <volition/serialization/AbstractSerializer.h>
+#include <volition/serialization/AbstractSerializerTo.h>
 
 namespace Volition {
 
@@ -135,7 +135,7 @@ private:
 // SortedDigestSerializer
 //================================================================//
 class SortedDigestSerializer :
-    public AbstractSerializer {
+    public AbstractSerializerTo {
 private:
 
     unique_ptr < AbstractSortedDigestSerializerContainer > mContainer;
@@ -143,59 +143,49 @@ private:
 protected:
 
     //----------------------------------------------------------------//
-    Mode AbstractSerializer_getMode () override {
-        return SERIALIZE_DIGEST;
-    }
-    
-    //----------------------------------------------------------------//
-    size_t AbstractSerializer_getSize () override {
-        return 0;
+    bool AbstractSerializerTo_isDigest () override {
+        return true;
     }
 
     //----------------------------------------------------------------//
-    bool AbstractSerializer_has ( SerializerPropertyName name ) override {
-        return false;
-    }
-
-    //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, u64& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const u64& value ) override {
         assert ( this->mContainer );
         this->mContainer->setValue ( name, make_unique < SortedDigestSerializerValue < u64 >>( value ));
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, string& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const string& value ) override {
         assert ( this->mContainer );
         this->mContainer->setValue ( name, make_unique < SortedDigestSerializerValue < string >>( value ));
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializable& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
     
         SortedDigestSerializer serializer ( make_unique < SortedDigestSerializerObject >());
-        value.serialize ( serializer );
+        value.serializeTo ( serializer );
         this->mContainer->setValue ( name, move ( serializer.mContainer ));
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializableArray& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableArray& value ) override {
     
         SortedDigestSerializer serializer ( make_unique < SortedDigestSerializerValueArray >());
-        value.serialize ( serializer );
+        value.serializeTo ( serializer );
         this->mContainer->setValue ( name, move ( serializer.mContainer ));
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializablePointer& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializablePointer& value ) override {
     
-        AbstractSerializable* serializable = value.AbstractSerializablePointer_get ();
+        const AbstractSerializable* serializable = value.AbstractSerializablePointer_get ();
         if ( serializable ) {
-            this->AbstractSerializer_serialize ( name, *serializable );
+            this->AbstractSerializerTo_serialize ( name, *serializable );
         }
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractStringifiable& value ) override {
         assert ( this->mContainer );
         this->mContainer->setValue ( name, make_unique < SortedDigestSerializerValue < string >>( value.toString ()));
     }
@@ -208,10 +198,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static void hash ( AbstractSerializable& serializable, Poco::DigestOutputStream& digestStream ) {
+    static void hash ( const AbstractSerializable& serializable, Poco::DigestOutputStream& digestStream ) {
 
         SortedDigestSerializer serializer ( make_unique < SortedDigestSerializerObject >());
-        serializable.serialize ( serializer );
+        serializable.serializeTo ( serializer );
         serializer.mContainer->digest ( digestStream );
     }
 };

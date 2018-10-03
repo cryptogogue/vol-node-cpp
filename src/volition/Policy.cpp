@@ -22,7 +22,11 @@ Policy::~Policy () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Policy::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
+void Policy::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+}
+
+//----------------------------------------------------------------//
+void Policy::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 }
 
 } // namespace Volition

@@ -29,7 +29,7 @@ protected:
     list < shared_ptr < AbstractTransaction >>      mPendingTransactions;
     bool                                            mLazy;
 
-    unique_ptr < Chain >                            mChain;
+    Chain                                           mChain;
     ChainMetadata                                   mMetadata;
     
     //----------------------------------------------------------------//
@@ -43,16 +43,16 @@ public:
     //----------------------------------------------------------------//
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
-    Chain*                  getChain                () const;
+    const Chain&            getChain                () const;
     string                  getMinerID              () const;
     const State&            getState                () const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
-    void                    setGenesis              ( shared_ptr < Block > block );
+    void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );
                             Miner                   ();
     virtual                 ~Miner                  ();
-    void                    updateChain             ( Chain& proposedChain );
+    void                    updateChain             ( const Chain& proposedChain );
 };
 
 } // namespace Volition

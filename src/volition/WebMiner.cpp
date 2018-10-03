@@ -68,13 +68,13 @@ void WebMiner::run () {
     size_t height = 0;
     while ( !this->isStopped ()) {
     
-        if ( this->mChain && ( this->mMinerURLs.size () == 0 )) {
+        if ( this->mMinerURLs.size () == 0 ) {
             
-            this->pushBlock ( *this->mChain, true );
+            this->pushBlock ( this->mChain, true );
             //this->mChain->print ();
             
             if ( !this->mSolo ) {
-                this->mMinerURLs = *this->mChain->getMinerURLs ();
+                this->mMinerURLs = *this->mChain.getMinerURLs ();
             }
             
             if ( this->mMinerURLs.find ( this->mMinerID ) != this->mMinerURLs.end ()) {
@@ -87,10 +87,10 @@ void WebMiner::run () {
                 this->mTaskManager.start ( new SyncChainTask ( urlIt->first, url ));
             }
             
-            size_t nextHeight = this->mChain->getVersion ();
+            size_t nextHeight = this->mChain.getVersion ();
             if ( nextHeight != height ) {
                 printf ( "height: %d\n", ( int )nextHeight );
-                this->mChain->print ( this->mMetadata );
+                this->mChain.print ( this->mMetadata );
                 height = nextHeight;
             }
         }

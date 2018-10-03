@@ -37,11 +37,12 @@ private:
     //----------------------------------------------------------------//
     void                setCycleID                          ( size_t cycleID );
     void                setPreviousBlock                    ( const Block& prevBlock );
-    bool                verify                              ( const State& state );
-    bool                verify                              ( const State& state, const CryptoKey& key );
+    bool                verify                              ( const State& state ) const;
+    bool                verify                              ( const State& state, const CryptoKey& key ) const;
 
     //----------------------------------------------------------------//
-    void                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
+    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
@@ -56,7 +57,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool                apply                               ( State& state );
+    bool                apply                               ( State& state ) const;
     static int          compare                             ( const Block& block0, const Block& block1 );
                         Block                               ();
                         Block                               ( string minerID, size_t cycleID, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );

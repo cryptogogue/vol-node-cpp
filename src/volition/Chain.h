@@ -84,7 +84,8 @@ private:
     bool                        willImprove         ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) const;
 
     //----------------------------------------------------------------//
-    void                        AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
+    void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
@@ -103,10 +104,10 @@ public:
     VersionedValue < Block >    getTopBlock         () const;
     void                        prepareForPush      ( ChainMetadata& metaData, const ChainPlacement& placement, Block& block );
     string                      print               ( const ChainMetadata& metaData, const char* pre = 0, const char* post = 0 ) const;
-    bool                        pushBlock           ( Block& block );
+    bool                        pushBlock           ( const Block& block );
     void                        reset               ();
     size_t                      size                () const;
-    void                        update              ( ChainMetadata& metaData, Chain& other );
+    void                        update              ( ChainMetadata& metaData, const Chain& other );
 };
 
 } // namespace Volition

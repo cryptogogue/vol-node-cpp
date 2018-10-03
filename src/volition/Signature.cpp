@@ -48,7 +48,15 @@ Signature::~Signature () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Signature::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
+void Signature::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+
+    serializer.serialize ( "hashAlgorithm",     this->mHashAlgorithm );
+    serializer.serialize ( "digest",            this->mDigest );
+    serializer.serialize ( "signature",         this->mSignature );
+}
+
+//----------------------------------------------------------------//
+void Signature::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "hashAlgorithm",     this->mHashAlgorithm );
     serializer.serialize ( "digest",            this->mDigest );

@@ -24,7 +24,8 @@ private:
 protected:
 
     //----------------------------------------------------------------//
-    void                AbstractSerializable_serialize      ( AbstractSerializer& serializer ) override;
+    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 

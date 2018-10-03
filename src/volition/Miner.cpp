@@ -49,9 +49,9 @@ size_t Miner::computeScore ( const Digest& allure ) const {
 }
 
 //----------------------------------------------------------------//
-Chain* Miner::getChain () const {
+const Chain& Miner::getChain () const {
 
-    return this->mChain ? this->mChain.get () : 0;
+    return this->mChain;
 }
 
 //----------------------------------------------------------------//
@@ -63,8 +63,7 @@ string Miner::getMinerID () const {
 //----------------------------------------------------------------//
 const State& Miner::getState () const {
 
-    assert ( this->mChain );
-    return *this->mChain;
+    return this->mChain;
 }
 
 //----------------------------------------------------------------//
@@ -73,10 +72,10 @@ void Miner::loadGenesis ( string path ) {
     fstream inStream;
     inStream.open ( path, ios_base::in );
 
-    unique_ptr < Block > block = make_unique < Block >();
-    FromJSONSerializer::fromJSON ( *block, inStream );
+    Block block;
+    FromJSONSerializer::fromJSON ( block, inStream );
 
-    this->setGenesis ( move ( block ));
+    this->setGenesis ( block );
 }
 
 //----------------------------------------------------------------//
@@ -146,23 +145,17 @@ Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
-void Miner::setGenesis ( shared_ptr < Block > block ) {
+void Miner::setGenesis ( const Block& block ) {
     
-    unique_ptr < Chain > chain = make_unique < Chain >();
-    chain->pushBlock ( *block );
-    
-    if ( chain->countCycles () > 0 ) {
-        this->mChain = move ( chain );
-    }
+    this->mChain.reset ();
+    this->mChain.pushBlock ( block );
 }
 
 //----------------------------------------------------------------//
-void Miner::updateChain ( Chain& proposedChain ) {
+void Miner::updateChain ( const Chain& proposedChain ) {
     
-    if ( this->mChain ) {
-        this->mChain->update ( this->mMetadata, proposedChain );
-        this->pushBlock ( *this->mChain, false );
-    }
+    this->mChain.update ( this->mMetadata, proposedChain );
+    this->pushBlock ( this->mChain, false );
 }
 
 } // namespace Volition

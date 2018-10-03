@@ -4,6 +4,7 @@
 #ifndef VOLITION_SERIALIZATION_FROMJSONSERIALIZER_H
 #define VOLITION_SERIALIZATION_FROMJSONSERIALIZER_H
 
+#include <volition/serialization/AbstractSerializerFrom.h>
 #include <volition/serialization/JSONSerializer.h>
 
 namespace Volition {
@@ -12,27 +13,23 @@ namespace Volition {
 // FromJSONSerializer
 //================================================================//
 class FromJSONSerializer :
+    public AbstractSerializerFrom,
     public JSONSerializer < const Poco::JSON::Array, const Poco::JSON::Object > {
 protected:
 
     //----------------------------------------------------------------//
-    Mode AbstractSerializer_getMode () override {
-        return SERIALIZE_IN;
-    }
-
-    //----------------------------------------------------------------//
-    size_t AbstractSerializer_getSize () override {
+    size_t AbstractSerializerFrom_getSize () override {
         assert ( this->mObject || this->mArray );
         return this->mObject ? this->mObject->size () : this->mArray->size ();
     }
 
     //----------------------------------------------------------------//
-    bool AbstractSerializer_has ( SerializerPropertyName name ) override {
+    bool AbstractSerializerFrom_has ( SerializerPropertyName name ) const override {
         return this->has ( name );
     }
 
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, u64& value ) override {
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, u64& value ) const override {
         value = this->optValue < u64 >( name, value );
 
         // TODO:
@@ -50,12 +47,12 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, string& value ) override {
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, string& value ) const override {
         value = this->optValue < string >( name, value );
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializable& value ) override {
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializable& value ) const override {
     
         Poco::JSON::Object::Ptr object = this->getObject ( name );
         if ( object ) {
@@ -64,7 +61,7 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializableArray& value ) override {
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializableArray& value ) const override {
     
         Poco::JSON::Array::Ptr array = this->getArray ( name );
         if ( array ) {
@@ -73,12 +70,12 @@ protected:
     
             FromJSONSerializer serializer;
             serializer.mArray = array;
-            value.serialize ( serializer );
+            value.serializeFrom ( serializer );
         }
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializablePointer& value ) override {
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializablePointer& value ) const override {
         
         Poco::JSON::Object::Ptr object = this->getObject ( name );
         if ( object ) {
@@ -89,7 +86,7 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) override {
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) const override {
     
         value.fromString ( this->optValue < string >( name, "" ));
     }
@@ -101,7 +98,7 @@ public:
 
         FromJSONSerializer serializer;
         serializer.mObject = &object;
-        serializable.serialize ( serializer );
+        serializable.serializeFrom ( serializer );
     }
 
     //----------------------------------------------------------------//

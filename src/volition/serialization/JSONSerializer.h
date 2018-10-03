@@ -4,8 +4,6 @@
 #ifndef VOLITION_SERIALIZATION_JSONSERIALIZER_H
 #define VOLITION_SERIALIZATION_JSONSERIALIZER_H
 
-#include <volition/serialization/AbstractSerializer.h>
-
 namespace Volition {
 
 //================================================================//
@@ -34,8 +32,7 @@ public:
 // JSONSerializer
 //================================================================//
 template < typename ARRAY_TYPE, typename OBJECT_TYPE >
-class JSONSerializer :
-    public AbstractSerializer {
+class JSONSerializer {
 protected:
     
     ARRAY_TYPE*     mArray;
@@ -48,7 +45,7 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    Poco::JSON::Array::Ptr getArray ( SerializerPropertyName name ) {
+    const Poco::JSON::Array::Ptr getArray ( SerializerPropertyName name ) const {
     
         if ( this->mArray ) {
             return this->mArray->getArray (( unsigned int )name.getIndex ());
@@ -57,7 +54,7 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    Poco::JSON::Object::Ptr getObject ( SerializerPropertyName name ) {
+    const Poco::JSON::Object::Ptr getObject ( SerializerPropertyName name ) const {
     
         if ( this->mArray ) {
             return this->mArray->getObject (( unsigned int )name.getIndex ());
@@ -66,7 +63,7 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    bool has ( SerializerPropertyName name ) {
+    bool has ( SerializerPropertyName name ) const {
     
         if ( this->mArray ) {
             return name.getIndex () < this->mArray->size ();
@@ -76,7 +73,7 @@ protected:
 
     //----------------------------------------------------------------//
     template < typename TYPE >
-    TYPE optValue ( SerializerPropertyName name, const TYPE& fallback ) {
+    TYPE optValue ( SerializerPropertyName name, const TYPE& fallback ) const {
     
         assert ( this->mObject || this->mArray );
     

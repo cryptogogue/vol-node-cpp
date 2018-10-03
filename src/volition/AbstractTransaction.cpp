@@ -46,14 +46,21 @@ size_t AbstractTransaction::weight () const {
 //================================================================//
 
 //----------------------------------------------------------------//
-void AbstractTransaction::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
+void AbstractTransaction::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
-    string type = this->typeString ();
+    string type;
     
     serializer.serialize ( "type",      type );
     serializer.serialize ( "maker",     this->mMakerSignature );
     
     assert ( type == this->typeString ());
+}
+
+//----------------------------------------------------------------//
+void AbstractTransaction::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    serializer.serialize ( "type",      this->typeString ());
+    serializer.serialize ( "maker",     this->mMakerSignature );
 }
 
 } // namespace Volition

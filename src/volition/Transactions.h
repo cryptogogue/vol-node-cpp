@@ -34,8 +34,16 @@ public:
     SerializableUniquePtr < Policy >        mPolicy;
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serialize ( serializer );
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "policyName",    this->mPolicyName );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
@@ -62,8 +70,17 @@ public:
     string      mPolicyName;
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serialize ( serializer );
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "key",           this->mKey );
+        serializer.serialize ( "keyName",       this->mKeyName );
+        serializer.serialize ( "policyName",    this->mPolicyName );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
@@ -94,8 +111,19 @@ public:
     string      mURL;
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serialize ( serializer );
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "accountName",   this->mAccountName );
+        serializer.serialize ( "amount",        this->mAmount  );
+        serializer.serialize ( "key",           this->mKey );
+        serializer.serialize ( "keyName",       this->mKeyName );
+        serializer.serialize ( "url",           this->mURL );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -126,8 +154,16 @@ public:
     SerializableUniquePtr < Policy >        mPolicy;
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serialize ( serializer );
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "policyName",    this->mPolicyName );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
@@ -155,8 +191,18 @@ public:
     u64         mAmount;        // amount to fund
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serialize ( serializer );
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "accountName",   this->mAccountName );
+        serializer.serialize ( "amount",        this->mAmount  );
+        serializer.serialize ( "key",           this->mKey );
+        serializer.serialize ( "keyName",       this->mKeyName );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -185,8 +231,15 @@ public:
     string                                  mURL;
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serialize ( serializer );
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "url",           this->mURL );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "url",           this->mURL );
     }
@@ -212,8 +265,16 @@ public:
     u64                                     mAmount;
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serialize ( AbstractSerializer& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serialize ( serializer );
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "accountName",   this->mAccountName );
+        serializer.serialize ( "amount",        this->mAmount  );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );

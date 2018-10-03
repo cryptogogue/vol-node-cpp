@@ -48,7 +48,16 @@ u64 TransactionMakerSignature::getNonce () const {
 }
 
 //----------------------------------------------------------------//
-void TransactionMakerSignature::AbstractSerializable_serialize ( AbstractSerializer& serializer ) {
+void TransactionMakerSignature::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+
+    serializer.serialize ( "accountName",   this->mAccountName );
+    serializer.serialize ( "gratuity",      this->mGratuity );
+    serializer.serialize ( "keyName",       this->mKeyName );
+    serializer.serialize ( "nonce",         this->mNonce );
+}
+
+//----------------------------------------------------------------//
+void TransactionMakerSignature::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "accountName",   this->mAccountName );
     serializer.serialize ( "gratuity",      this->mGratuity );

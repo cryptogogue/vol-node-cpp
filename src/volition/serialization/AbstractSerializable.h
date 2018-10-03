@@ -8,7 +8,8 @@
 
 namespace Volition {
 
-class AbstractSerializer;
+class AbstractSerializerFrom;
+class AbstractSerializerTo;
 
 //================================================================//
 // AbstractSerializable
@@ -17,7 +18,8 @@ class AbstractSerializable {
 protected:
 
     //----------------------------------------------------------------//
-    virtual void        AbstractSerializable_serialize      ( AbstractSerializer& serializer ) = 0;
+    virtual void        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) = 0;
+    virtual void        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const = 0;
 
 public:
 
@@ -30,48 +32,14 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void serialize ( AbstractSerializer& serializer ) {
-        this->AbstractSerializable_serialize ( serializer );
+    void serializeFrom ( const AbstractSerializerFrom& serializer ) {
+        this->AbstractSerializable_serializeFrom ( serializer );
     }
-};
-
-//================================================================//
-// AbstractSerializableArray
-//================================================================//
-class AbstractSerializableArray :
-    public AbstractSerializable {
-public:
-
+    
     //----------------------------------------------------------------//
-    virtual void        AbstractSerializableArray_resize        ( size_t size ) = 0;
-};
-
-//================================================================//
-// AbstractSerializableTypeInfo
-//================================================================//
-class AbstractSerializableTypeInfo {
-protected:
-
-    //----------------------------------------------------------------//
-    virtual string      AbstractSerializableTypeInfo_get        ( string key ) const = 0;
-
-public:
-
-    //----------------------------------------------------------------//
-    string get ( string key ) const {
-        return this->AbstractSerializableTypeInfo_get ( key );
+    void serializeTo ( AbstractSerializerTo& serializer ) const {
+        this->AbstractSerializable_serializeTo ( serializer );
     }
-};
-
-//================================================================//
-// AbstractSerializablePointer
-//================================================================//
-class AbstractSerializablePointer {
-public:
-
-    //----------------------------------------------------------------//
-    virtual AbstractSerializable*       AbstractSerializablePointer_get         () = 0;
-    virtual void                        AbstractSerializablePointer_make        ( const AbstractSerializableTypeInfo& typeInfo ) = 0;
 };
 
 } // namespace Volition

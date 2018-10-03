@@ -4,6 +4,7 @@
 #ifndef VOLITION_SERIALIZATION_TOJSONSERIALIZER_H
 #define VOLITION_SERIALIZATION_TOJSONSERIALIZER_H
 
+#include <volition/serialization/AbstractSerializerTo.h>
 #include <volition/serialization/JSONSerializer.h>
 
 namespace Volition {
@@ -12,26 +13,17 @@ namespace Volition {
 // ToJSONSerializer
 //================================================================//
 class ToJSONSerializer :
+    public AbstractSerializerTo,
     public JSONSerializer < Poco::JSON::Array, Poco::JSON::Object > {
 protected:
 
     //----------------------------------------------------------------//
-    Mode AbstractSerializer_getMode () override {
-        return SERIALIZE_OUT;
-    }
-
-    //----------------------------------------------------------------//
-    size_t AbstractSerializer_getSize () override {
-        return 0;
-    }
-
-    //----------------------------------------------------------------//
-    bool AbstractSerializer_has ( SerializerPropertyName name ) override {
+    bool AbstractSerializerTo_isDigest () override {
         return false;
     }
 
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, u64& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const u64& value ) override {
     
         this->set ( name, ( int )value );
     
@@ -42,37 +34,37 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, string& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const string& value ) override {
         this->set ( name, value.c_str ());
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializable& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
         this->set ( name, toJSON ( value ));
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializableArray& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableArray& value ) override {
     
         Poco::JSON::Array::Ptr array = new Poco::JSON::Array ();
         this->set ( name, array );
     
         ToJSONSerializer serializer;
         serializer.mArray = array;
-        value.serialize ( serializer );
+        value.serializeTo ( serializer );
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializablePointer& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializablePointer& value ) override {
     
-        AbstractSerializable* serializable = value.AbstractSerializablePointer_get ();
+        const AbstractSerializable* serializable = value.AbstractSerializablePointer_get ();
         if ( serializable ) {
-            this->AbstractSerializer_serialize ( name, *serializable );
+            this->AbstractSerializerTo_serialize ( name, *serializable );
         }
     }
 
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractStringifiable& value ) override {
     
         this->set ( name, value.toString ().c_str ());
     }
@@ -80,7 +72,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    static Poco::JSON::Object::Ptr toJSON ( AbstractSerializable& serializable ) {
+    static Poco::JSON::Object::Ptr toJSON ( const AbstractSerializable& serializable ) {
 
         Poco::JSON::Object::Ptr object = new Poco::JSON::Object ();
         toJSON ( serializable, *object );
@@ -88,15 +80,15 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static void toJSON ( AbstractSerializable& serializable, Poco::JSON::Object& object ) {
+    static void toJSON ( const AbstractSerializable& serializable, Poco::JSON::Object& object ) {
 
         ToJSONSerializer serializer;
         serializer.mObject = &object;
-        serializable.serialize ( serializer );
+        serializable.serializeTo ( serializer );
     }
 
     //----------------------------------------------------------------//
-    static void toJSON ( AbstractSerializable& serializable, ostream& outStream, unsigned int indent = 4, int step = -1 ) {
+    static void toJSON ( const AbstractSerializable& serializable, ostream& outStream, unsigned int indent = 4, int step = -1 ) {
 
         Poco::JSON::Object::Ptr object = toJSON ( serializable );
         object->stringify ( outStream, indent, step );

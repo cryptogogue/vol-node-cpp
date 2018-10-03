@@ -4,7 +4,7 @@
 #ifndef VOLITION_SERIALIZATION_DIGESTSERIALIZER_H
 #define VOLITION_SERIALIZATION_DIGESTSERIALIZER_H
 
-#include <volition/serialization/AbstractSerializer.h>
+#include <volition/serialization/AbstractSerializerTo.h>
 
 namespace Volition {
 
@@ -12,7 +12,7 @@ namespace Volition {
 // DigestSerializer
 //================================================================//
 class DigestSerializer :
-    public AbstractSerializer {
+    public AbstractSerializerTo {
 private:
 
     Poco::DigestOutputStream*       mStream;
@@ -20,62 +20,52 @@ private:
 protected:
 
     //----------------------------------------------------------------//
-    Mode AbstractSerializer_getMode () override {
-        return SERIALIZE_DIGEST;
-    }
-    
-    //----------------------------------------------------------------//
-    size_t AbstractSerializer_getSize () override {
-        return 0;
+    bool AbstractSerializerTo_isDigest () override {
+        return true;
     }
 
     //----------------------------------------------------------------//
-    bool AbstractSerializer_has ( SerializerPropertyName name ) override {
-        return false;
-    }
-
-    //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, u64& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const u64& value ) override {
         *this->mStream << value;
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, string& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const string& value ) override {
         *this->mStream << value;
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializable& value ) override {
-        value.serialize ( *this );
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
+        value.serializeTo ( *this );
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializableArray& value ) override {
-        value.serialize ( *this );
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableArray& value ) override {
+        value.serializeTo ( *this );
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractSerializablePointer& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializablePointer& value ) override {
     
-        AbstractSerializable* serializable = value.AbstractSerializablePointer_get ();
+        const AbstractSerializable* serializable = value.AbstractSerializablePointer_get ();
         if ( serializable ) {
-            serializable->serialize ( *this );
+            serializable->serializeTo ( *this );
         }
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializer_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractStringifiable& value ) override {
         *this->mStream << value.toString ();
     }
 
 public:
 
     //----------------------------------------------------------------//
-    static void hash ( AbstractSerializable& serializable, Poco::DigestOutputStream& digestStream ) {
+    static void hash ( const AbstractSerializable& serializable, Poco::DigestOutputStream& digestStream ) {
 
         DigestSerializer serializer;
         serializer.mStream = &digestStream;
-        serializable.serialize ( serializer );
+        serializable.serializeTo ( serializer );
     }
 };
 
