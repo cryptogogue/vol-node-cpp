@@ -3,8 +3,6 @@
 
 #include <volition/simulator/Analysis.h>
 #include <volition/Block.h>
-#include <volition/simulator/SimMiner.h>
-#include <volition/simulator/TheSimulator.h>
 #include <volition/Format.h>
 
 namespace Volition {
@@ -107,7 +105,26 @@ size_t TreeSummary::computeSize () {
 }
 
 //----------------------------------------------------------------//
-void TreeSummary::log ( string prefix, bool verbose, int maxDepth, int depth ) const {
+void TreeSummary::logLevels ( string prefix ) const {
+
+    size_t totalBlocks = this->mSubtreeSize;
+
+    map < size_t, TreeLevelStats > levels;
+    this->analyzeLevels ( levels );
+
+    string str;
+    size_t maxDepth = levels.size ();
+    for ( size_t i = 0; i < maxDepth; ++i ) {
+        TreeLevelStats& stats = levels [ i ];
+        float percent = ( totalBlocks > 0 ) ? (( float )stats.mContribution / ( float )totalBlocks ) : 0.0;
+        //Format::write ( str, "[branches: %d, percent: %g]", ( int )stats.mChains, percent );
+        Format::write ( str, "[%.2f]", percent );
+    }
+    LOG_F ( INFO, "%s%s", prefix.c_str (), str.c_str ());
+}
+
+//----------------------------------------------------------------//
+void TreeSummary::logTree ( string prefix, bool verbose, int maxDepth, int depth ) const {
 
     if (( maxDepth > 0 ) && ( depth >= maxDepth )) return;
 
@@ -131,27 +148,8 @@ void TreeSummary::log ( string prefix, bool verbose, int maxDepth, int depth ) c
     ++depth;
     list < TreeSummary >::const_iterator childrenIt = this->mChildren.begin ();
     for ( ; childrenIt != this->mChildren.end (); ++ childrenIt ) {
-        childrenIt->log ( prefix, verbose, maxDepth, depth );
+        childrenIt->logTree ( prefix, verbose, maxDepth, depth );
     }
-}
-
-//----------------------------------------------------------------//
-void TreeSummary::logLevels ( string prefix ) const {
-
-    size_t totalBlocks = this->mSubtreeSize;
-
-    map < size_t, TreeLevelStats > levels;
-    this->analyzeLevels ( levels );
-
-    string str;
-    size_t maxDepth = levels.size ();
-    for ( size_t i = 0; i < maxDepth; ++i ) {
-        TreeLevelStats& stats = levels [ i ];
-        float percent = ( totalBlocks > 0 ) ? (( float )stats.mContribution / ( float )totalBlocks ) : 0.0;
-        //Format::write ( str, "[branches: %d, percent: %g]", ( int )stats.mChains, percent );
-        Format::write ( str, "[%.2f]", percent );
-    }
-    LOG_F ( INFO, "%s%s", prefix.c_str (), str.c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -238,18 +236,18 @@ Analysis::Analysis () :
 }
 
 //----------------------------------------------------------------//
-void Analysis::log ( string prefix, bool verbose, int maxDepth ) {
+void Analysis::log ( string prefix, bool verbose, int maxDepth ) const {
 
     LOG_F ( INFO, "%sPASS: %d, AVG: %g LEN: %d\n", prefix.c_str (), ( int )this->mPasses, this->mAverageIncrease, ( int )this->mChainLength );
     this->mSummary.logLevels ( prefix );
-    this->mSummary.log ( prefix, verbose, maxDepth );
+    this->mSummary.logTree ( prefix, verbose, maxDepth );
 }
 
 //----------------------------------------------------------------//
-void Analysis::update () {
+void Analysis::update ( const Tree& tree ) {
 
     this->mSummary = TreeSummary ();
-    TheSimulator::get ().summarize ( this->mSummary );
+    this->mSummary.summarize ( tree );
     
     this->mChainLength = this->mSummary.measureChain ( 0.65 );
     this->mPassesToLength [ this->mPasses ] = this->mChainLength;

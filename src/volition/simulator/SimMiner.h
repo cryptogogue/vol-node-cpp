@@ -11,6 +11,7 @@ namespace Volition {
 namespace Simulator {
 
 class Cohort;
+class Simulation;
 
 //================================================================//
 // SimMiner
@@ -20,9 +21,10 @@ class SimMiner :
 private:
 
     friend class Cohort;
-    friend class TheSimulator;
+    friend class Simulation;
 
     Cohort*                 mCohort;
+    Simulation&             mSimulation;
     int                     mFrequency;
     bool                    mVerbose;
 
@@ -39,7 +41,7 @@ public:
     //----------------------------------------------------------------//
     void                log                         ( string prefix ) const;
     void                step                        ();
-                        SimMiner                    ();
+                        SimMiner                    ( Simulation& simulation );
                         ~SimMiner                   ();
 };
 

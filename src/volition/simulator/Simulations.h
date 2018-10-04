@@ -7,48 +7,16 @@
 #include <volition/TheContext.h>
 #include <volition/simulator/Analysis.h>
 #include <volition/simulator/Cohort.h>
-#include <volition/simulator/TheSimulator.h>
+#include <volition/simulator/Simulation.h>
 
 namespace Volition {
 namespace Simulator {
 
 //================================================================//
-// Scenario
+// FastGangSimulation
 //================================================================//
-class Scenario {
-
-    Analysis    mAnalysis;
-
-public:
-
-    //----------------------------------------------------------------//
-    void run () {
-    
-        for ( int i = 0; this->Scenario_control ( i ); ++i ) {
-    
-            TheSimulator::get ().process ();
-            this->mAnalysis.update ();
-            this->Scenario_report ( i );
-        }
-    }
-    
-    //----------------------------------------------------------------//
-    virtual void Scenario_report ( int i ) {
-        LOG_F ( INFO, "SIM: ROUND: %d - ", i );
-        this->mAnalysis.log ( "SIM: ", false, 1 );
-        TheSimulator::get ().log ( "SIM: " );
-        LOG_F ( INFO, "SIM:" );
-    }
-    
-    //----------------------------------------------------------------//
-    virtual bool    Scenario_control                        ( int step ) = 0;
-};
-
-//================================================================//
-// FastGangScenario
-//================================================================//
-class FastGangScenario :
-    public Scenario {
+class FastGangSimulation :
+    public Simulation {
 
     Cohort mRogue;
     Cohort mNormal;
@@ -56,39 +24,33 @@ class FastGangScenario :
 public:
 
     //----------------------------------------------------------------//
-    FastGangScenario () {
+    FastGangSimulation () {
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().setScoreRandomizer ( true );
-        TheSimulator::get ().initMiners ( 16 );
+        this->setScoreRandomizer ( true );
+        this->initMiners ( 16 );
         
-        TheSimulator::get ().applyCohort ( this->mRogue, "RGUE", 0, 4 );
+        this->applyCohort ( this->mRogue, "RGUE", 0, 4 );
         this->mRogue.setFlags ( 1, 1, 3 );
         this->mRogue.setFrequency ( 16 );
         
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 4, 12 );
+        this->applyCohort ( this->mNormal, "NORM", 4, 12 );
         this->mNormal.setFlags ( 2, 3, 3 );
         
-        //TheSimulator::get ().setPlayerVerbose ( 4, true );
+        //this->setPlayerVerbose ( 4, true );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
-        
-        //return step < 1024;
-        return true;
-    }
 };
 
 //================================================================//
-// LateJoinPairScenario
+// LateJoinPairSimulation
 //================================================================//
-class LateJoinPairScenario :
-    public Scenario {
+class LateJoinPairSimulation :
+    public Simulation {
 
     Cohort mNormal;
     Cohort mLate;
@@ -96,12 +58,11 @@ class LateJoinPairScenario :
 public:
 
     //----------------------------------------------------------------//
-    LateJoinPairScenario () {
+    LateJoinPairSimulation () {
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().initMiners ( 2 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 1 );
-        TheSimulator::get ().applyCohort ( this->mLate, "LATE", 1, 1 );
+        this->initMiners ( 2 );
+        this->applyCohort ( this->mNormal, "NORM", 0, 1 );
+        this->applyCohort ( this->mLate, "LATE", 1, 1 );
         
         //this->mNormal.setVerbose ( true );
         //this->mLate.setVerbose ( true );
@@ -110,11 +71,11 @@ public:
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
+    bool Simulation_control ( size_t step ) {
         
         if ( step == 16 ) {
             this->mLate.pause ( false );
@@ -124,10 +85,10 @@ public:
 };
 
 //================================================================//
-// LateJoinQuadScenario
+// LateJoinQuadSimulation
 //================================================================//
-class LateJoinQuadScenario :
-    public Scenario {
+class LateJoinQuadSimulation :
+    public Simulation {
 
     Cohort mNormal;
     Cohort mLate;
@@ -135,23 +96,22 @@ class LateJoinQuadScenario :
 public:
 
     //----------------------------------------------------------------//
-    LateJoinQuadScenario () {
+    LateJoinQuadSimulation () {
     
-        TheSimulator::get ().reset ();
-        //TheSimulator::get ().setThreshold ( 0.3 );
-        TheSimulator::get ().initMiners ( 4 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 3 );
-        TheSimulator::get ().applyCohort ( this->mLate, "LATE", 3, 1 );
+        //this->setThreshold ( 0.3 );
+        this->initMiners ( 4 );
+        this->applyCohort ( this->mNormal, "NORM", 0, 3 );
+        this->applyCohort ( this->mLate, "LATE", 3, 1 );
     
         this->mLate.pause ( true );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
+    bool Simulation_control ( size_t step ) {
         
         if ( step == 64 ) {
             this->mLate.pause ( false );
@@ -161,42 +121,36 @@ public:
 };
 
 //================================================================//
-// RandFreqScenario
+// RandFreqSimulation
 //================================================================//
-class RandFreqScenario :
-    public Scenario {
+class RandFreqSimulation :
+    public Simulation {
 
     Cohort mRandFreq;
 
 public:
 
     //----------------------------------------------------------------//
-    RandFreqScenario () {
+    RandFreqSimulation () {
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().initMiners ( 32 );
+        this->initMiners ( 32 );
         
-        TheSimulator::get ().applyCohort ( this->mRandFreq, "RANDFREQ", 0, 32 );
+        this->applyCohort ( this->mRandFreq, "RANDFREQ", 0, 32 );
         this->mRandFreq.randomizeFrequencies ( 10 );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
-    
-        //return step < 64;
-        return true;
-    }
 };
 
 //================================================================//
-// RogueScenario
+// RogueSimulation
 //================================================================//
-class RogueScenario :
-    public Scenario {
+class RogueSimulation :
+    public Simulation {
 
     Cohort mRogue;
     Cohort mNormal;
@@ -204,26 +158,25 @@ class RogueScenario :
 public:
 
     //----------------------------------------------------------------//
-    RogueScenario () {
+    RogueSimulation () {
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().initMiners ( 16 );
-        TheSimulator::get ().setDropRate ( 0.8 );
+        this->initMiners ( 16 );
+        this->setDropRate ( 0.8 );
         
-        TheSimulator::get ().applyCohort ( this->mRogue, "RGUE", 0, 4 );
+        this->applyCohort ( this->mRogue, "RGUE", 0, 4 );
         this->mRogue.setFlags ( 1, 3, 3 );
         this->mRogue.setFrequency ( 16 );
         
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 4, 12 );
+        this->applyCohort ( this->mNormal, "NORM", 4, 12 );
         this->mNormal.setFlags ( 2, 3, 3 );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
+    bool Simulation_control ( size_t step ) {
     
         switch ( step ) {
             case 0:
@@ -239,44 +192,38 @@ public:
 };
 
 //================================================================//
-// SimpleScenario
+// SimpleSimulation
 //================================================================//
-class SimpleScenario :
-    public Scenario {
+class SimpleSimulation :
+    public Simulation {
 
     Cohort mNormal;
 
 public:
 
     //----------------------------------------------------------------//
-    SimpleScenario () {
+    SimpleSimulation () {
     
         TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().initMiners ( 16 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 16 );
+        this->initMiners ( 16 );
+        this->applyCohort ( this->mNormal, "NORM", 0, 16 );
         
         //this->mNormal.setVerbose ( true );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
-        
-        //return step < 32;
-        return true;
-    }
 };
 
 //================================================================//
-// SleepyScenario
+// SleepySimulation
 //================================================================//
-class SleepyScenario :
-    public Scenario {
+class SleepySimulation :
+    public Simulation {
 
     Cohort mSleepy;
     Cohort mNormal;
@@ -284,21 +231,20 @@ class SleepyScenario :
 public:
 
     //----------------------------------------------------------------//
-    SleepyScenario () {
+    SleepySimulation () {
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().initMiners ( 16 );
+        this->initMiners ( 16 );
         
-        TheSimulator::get ().applyCohort ( this->mSleepy, "SLPY", 0, 12 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 12, 4 );
+        this->applyCohort ( this->mSleepy, "SLPY", 0, 12 );
+        this->applyCohort ( this->mNormal, "NORM", 12, 4 );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
+    bool Simulation_control ( size_t step ) {
     
         switch ( step ) {
             case 0:
@@ -314,71 +260,64 @@ public:
 };
 
 //================================================================//
-// SmallScenario
+// SmallSimulation
 //================================================================//
-class SmallScenario :
-    public Scenario {
+class SmallSimulation :
+    public Simulation {
 
     Cohort mNormal;
 
 public:
 
     //----------------------------------------------------------------//
-    SmallScenario () {
+    SmallSimulation () {
     
         TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().initMiners ( 4 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 4 );
+        this->initMiners ( 4 );
+        this->applyCohort ( this->mNormal, "NORM", 0, 4 );
         
         this->mNormal.setVerbose ( true );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
-        
-        //return step < 32;
-        return true;
-    }
 };
 
 //================================================================//
-// TenKScenario
+// TenKSimulation
 //================================================================//
-class TenKScenario :
-    public Scenario {
+class TenKSimulation :
+    public Simulation {
 
     Cohort mNormal;
 
 public:
 
     //----------------------------------------------------------------//
-    TenKScenario () {
+    TenKSimulation () {
     
-        TheSimulator::get ().reset ();
-        TheSimulator::get ().initMiners ( 10000 );
-        TheSimulator::get ().applyCohort ( this->mNormal, "NORM", 0, 10000 );
+        this->initMiners ( 10000 );
+        this->applyCohort ( this->mNormal, "NORM", 0, 10000 );
     }
 
     //================================================================//
-    // Scenario
+    // Simulation
     //================================================================//
 
     //----------------------------------------------------------------//
-    bool Scenario_control ( int step ) {
+    bool Simulation_control ( size_t step ) {
         
         return true;
     }
     
     //----------------------------------------------------------------//
-    void Scenario_report ( int i ) {
-        LOG_F ( INFO, "SIM: ROUND: %d - ", i );
-        TheSimulator::get ().logTree ( "SIM: ", false, 1 );
+    void Simulation_report ( size_t step ) const {
+        LOG_F ( INFO, "SIM: ROUND: %d - ", ( int )step );
+        this->logTree ( "SIM: ", false, 1 );
     }
 };
 

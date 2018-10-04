@@ -1,11 +1,12 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_SIMULATOR_THESIMULATOR_H
-#define VOLITION_SIMULATOR_THESIMULATOR_H
+#ifndef VOLITION_SIMULATOR_SIMULATION_H
+#define VOLITION_SIMULATOR_SIMULATION_H
 
 #include <volition/common.h>
 #include <volition/Singleton.h>
+#include <volition/simulator/Analysis.h>
 #include <volition/simulator/SimMiner.h>
 
 namespace Volition {
@@ -17,16 +18,16 @@ class TreeSummary;
 class SimMiner;
 
 //================================================================//
-// TheSimulator
+// Simulation
 //================================================================//
-class TheSimulator :
-    public Singleton < TheSimulator > {
+class Simulation {
 private:
     
     friend class SimMiner;
     
     CryptoKey                               mGenesisKey;
     
+    Analysis                                mAnalysis;
     vector < unique_ptr < SimMiner >>       mMiners;
     float                                   mDropRate;
     int                                     mCyclesPerStep;
@@ -36,6 +37,13 @@ private:
     //----------------------------------------------------------------//
     bool                drop                    ();
     void                resetMinerQueue         ( vector < int >& minerQueue, bool shuffle );
+    void                step                    ( size_t step );
+
+protected:
+
+    //----------------------------------------------------------------//
+    virtual bool        Simulation_control      ( size_t step );
+    virtual void        Simulation_report       ( size_t step ) const;
     
 public:
     
@@ -44,16 +52,18 @@ public:
     int                 countMiners             () const;
     const SimMiner&     getMiner                ( int minerID ) const;
     void                initMiners              ( int nMiners );
-    void                log                     ( string prefix ) const;
-    void                logTree                 ( string prefix, bool verbose = false, int maxDepth = 0 );
-    void                process                 ();
+    void                logMiners               ( string prefix ) const;
+    void                logTree                 ( string prefix, bool verbose = false, int maxDepth = 0 ) const;
     size_t              rand                    ();
     void                reset                   ();
+    void                run                     ();
+    void                run                     ( size_t iterations, bool force = false );
     void                setCyclesPerStep        ( int cycles );
     void                setDropRate             ( float percentage );
     void                setPlayerVerbose        ( int minerID, bool verbose );
     void                setScoreRandomizer      ( bool randomize );
-    void                summarize               ( TreeSummary& summary ) const;
+                        Simulation              ();
+    virtual             ~Simulation             ();
 };
 
 } // namespace Simulator

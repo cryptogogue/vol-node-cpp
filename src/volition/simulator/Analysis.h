@@ -64,8 +64,8 @@ public:
     
     //----------------------------------------------------------------//
     void        analyzeLevels       ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
-    void        log                 ( string prefix, bool verbose, int maxDepth = 0, int depth = 0 ) const;
     void        logLevels           ( string prefix ) const;
+    void        logTree             ( string prefix, bool verbose, int maxDepth = 0, int depth = 0 ) const;
     size_t      measureChain        ( float threshold ) const;
     void        summarize           ( const Tree& tree );
                 TreeSummary         ();
@@ -76,8 +76,6 @@ public:
 //================================================================//
 class Analysis {
 private:
-
-    friend class Context;
 
     map < size_t, size_t >  mPassesToLength;
 
@@ -91,8 +89,8 @@ public:
 
     //----------------------------------------------------------------//
                 Analysis            ();
-    void        log                 ( string prefix, bool verbose = false, int maxDepth = 0 );
-    void        update              ();
+    void        log                 ( string prefix, bool verbose = false, int maxDepth = 0 ) const;
+    void        update              ( const Tree& tree );
 };
 
 } // namespace Simulator

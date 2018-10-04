@@ -5,7 +5,7 @@
 #include <volition/Cohort.h>
 #include <volition/TheContext.h>
 #include <volition/simulator/SimMiner.h>
-#include <volition/simulator/TheSimulator.h>
+#include <volition/simulator/Simulation.h>
 #include <volition/Transactions.h>
 
 namespace Volition {
@@ -21,7 +21,7 @@ const SimMiner* SimMiner::nextMiner () {
     if ( this->mMinerCursor < this->mMinerQueue.size ()) {
     
         int minerIdx = this->mMinerQueue [ this->mMinerCursor++ ];
-        const SimMiner* miner = &TheSimulator::get ().getMiner ( minerIdx );
+        const SimMiner* miner = &this->mSimulation.getMiner ( minerIdx );
         return ( this == miner ) ? this->nextMiner () : miner;
     }
     return 0;
@@ -52,7 +52,7 @@ void SimMiner::pushGenesisTransaction ( Block& block ) const {
 //----------------------------------------------------------------//
 void SimMiner::resetMinerQueue () {
 
-    TheSimulator::get ().resetMinerQueue ( this->mMinerQueue, true );
+    this->mSimulation.resetMinerQueue ( this->mMinerQueue, true );
     this->mMinerCursor = 0;
 }
 
@@ -61,7 +61,7 @@ void SimMiner::step () {
 
     LOG_SCOPE_F ( INFO, "SimMiner::step ()" );
 
-    int tag = ( int )( TheSimulator::get ().rand () & 0xffffffff );
+    int tag = ( int )( this->mSimulation.rand () & 0xffffffff );
     LOG_F ( INFO, "0x%08x", tag );
 
     if ( this->mCohort && this->mCohort->mIsPaused ) return;
@@ -89,8 +89,9 @@ void SimMiner::step () {
 }
 
 //----------------------------------------------------------------//
-SimMiner::SimMiner () :
+SimMiner::SimMiner ( Simulation& simulation ) :
     mCohort ( 0 ),
+    mSimulation ( simulation ),
     mFrequency ( 1 ),
     mVerbose ( false ),
     mMinerCursor ( 0 ) {

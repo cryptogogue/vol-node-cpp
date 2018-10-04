@@ -3,7 +3,7 @@
 
 #include <volition/simulator/Cohort.h>
 #include <volition/simulator/SimMiner.h>
-#include <volition/simulator/TheSimulator.h>
+#include <volition/simulator/Simulation.h>
 
 namespace Volition {
 namespace Simulator {
@@ -32,7 +32,8 @@ void Cohort::randomizeFrequencies ( int max ) {
 
     list < SimMiner* >::iterator minerIt = this->mMiners.begin ();
     for ( ; minerIt != this->mMiners.end (); ++minerIt ) {
-        ( *minerIt )->mFrequency = ( TheSimulator::get ().rand () % max ) + 1;
+        SimMiner* miner = *minerIt;
+        miner->mFrequency = ( miner->mSimulation.rand () % max ) + 1;
     }
 }
 

@@ -108,11 +108,9 @@
 		CD4E81C1210593F6007DA585 /* Analysis.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B31C20CE0FA100300A96 /* Analysis.h */; };
 		CD4E81C2210593F6007DA585 /* Cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31F20CE0FA100300A96 /* Cohort.cpp */; };
 		CD4E81C3210593F6007DA585 /* Cohort.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32020CE0FA100300A96 /* Cohort.h */; };
-		CD4E81C4210593F6007DA585 /* Scenario.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32520CE0FA100300A96 /* Scenario.h */; };
+		CD4E81C4210593F6007DA585 /* Simulations.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32520CE0FA100300A96 /* Simulations.h */; };
 		CD4E81C5210593F6007DA585 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36659320EC40E4000E0B43 /* SimMiner.cpp */; };
 		CD4E81C6210593F6007DA585 /* SimMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36659420EC40E4000E0B43 /* SimMiner.h */; };
-		CD4E81C7210593F6007DA585 /* TheSimulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */; };
-		CD4E81C8210593F6007DA585 /* TheSimulator.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B32220CE0FA100300A96 /* TheSimulator.h */; };
 		CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665AB20BFF3DD00A02D55 /* AbstractTransaction.cpp */; };
 		CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4665AC20BFF3DD00A02D55 /* AbstractTransaction.h */; };
 		CD4E81CD2105941A007DA585 /* TheTransactionFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */; };
@@ -128,6 +126,8 @@
 		CD73D8162165474000F43CC7 /* AbstractSerializerTo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */; };
 		CD73D819216576EE00F43CC7 /* AbstractSerializableArray.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D817216576EE00F43CC7 /* AbstractSerializableArray.h */; };
 		CD73D81A216576EE00F43CC7 /* AbstractSerializablePtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */; };
+		CD73D81D2166C6F100F43CC7 /* Simulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D81B2166C6F100F43CC7 /* Simulation.cpp */; };
+		CD73D81E2166C6F100F43CC7 /* Simulation.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D81C2166C6F100F43CC7 /* Simulation.h */; };
 		CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
 		CDD36CD8215DA3A3004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
 		CDD36CE3215DA428004FC222 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD4215DA35E004FC222 /* libgtest.a */; };
@@ -418,6 +418,8 @@
 		CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializerTo.h; path = src/volition/serialization/AbstractSerializerTo.h; sourceTree = "<group>"; };
 		CD73D817216576EE00F43CC7 /* AbstractSerializableArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializableArray.h; path = src/volition/serialization/AbstractSerializableArray.h; sourceTree = "<group>"; };
 		CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializablePtr.h; path = src/volition/serialization/AbstractSerializablePtr.h; sourceTree = "<group>"; };
+		CD73D81B2166C6F100F43CC7 /* Simulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Simulation.cpp; path = src/volition/simulator/Simulation.cpp; sourceTree = "<group>"; };
+		CD73D81C2166C6F100F43CC7 /* Simulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Simulation.h; path = src/volition/simulator/Simulation.h; sourceTree = "<group>"; };
 		CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtr.h; path = src/volition/serialization/SerializablePtr.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
@@ -429,9 +431,7 @@
 		CDC2B31C20CE0FA100300A96 /* Analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Analysis.h; path = src/volition/simulator/Analysis.h; sourceTree = "<group>"; };
 		CDC2B31F20CE0FA100300A96 /* Cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cohort.cpp; path = src/volition/simulator/Cohort.cpp; sourceTree = "<group>"; };
 		CDC2B32020CE0FA100300A96 /* Cohort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cohort.h; path = src/volition/simulator/Cohort.h; sourceTree = "<group>"; };
-		CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheSimulator.cpp; path = src/volition/simulator/TheSimulator.cpp; sourceTree = "<group>"; };
-		CDC2B32220CE0FA100300A96 /* TheSimulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheSimulator.h; path = src/volition/simulator/TheSimulator.h; sourceTree = "<group>"; };
-		CDC2B32520CE0FA100300A96 /* Scenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scenario.h; path = src/volition/simulator/Scenario.h; sourceTree = "<group>"; };
+		CDC2B32520CE0FA100300A96 /* Simulations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Simulations.h; path = src/volition/simulator/Simulations.h; sourceTree = "<group>"; };
 		CDC2B33520CE112F00300A96 /* Chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chain.cpp; path = src/volition/Chain.cpp; sourceTree = "<group>"; };
 		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/volition/Chain.h; sourceTree = "<group>"; };
 		CDC2B34120D1182400300A96 /* TheContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheContext.h; path = src/volition/TheContext.h; sourceTree = "<group>"; };
@@ -696,7 +696,7 @@
 				CD0C3E0F20C14410006E3B1C /* miner */,
 				CDED587020BCDBD7003A2969 /* router */,
 				CD36664720F72F94000E0B43 /* serialization */,
-				CDC2B31A20CE0F8400300A96 /* simulator */,
+				CDC2B31A20CE0F8400300A96 /* simulation */,
 				CD6D7CCF21006C9F0005446F /* transaction */,
 				CD4665AF20BFF62600A02D55 /* util */,
 				CD5C62FA20B4F7B10038EE98 /* common.h */,
@@ -745,20 +745,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CDC2B31A20CE0F8400300A96 /* simulator */ = {
+		CDC2B31A20CE0F8400300A96 /* simulation */ = {
 			isa = PBXGroup;
 			children = (
 				CDC2B31B20CE0FA100300A96 /* Analysis.cpp */,
 				CDC2B31C20CE0FA100300A96 /* Analysis.h */,
 				CDC2B31F20CE0FA100300A96 /* Cohort.cpp */,
 				CDC2B32020CE0FA100300A96 /* Cohort.h */,
-				CDC2B32520CE0FA100300A96 /* Scenario.h */,
+				CDC2B32520CE0FA100300A96 /* Simulations.h */,
 				CD36659320EC40E4000E0B43 /* SimMiner.cpp */,
 				CD36659420EC40E4000E0B43 /* SimMiner.h */,
-				CDC2B32120CE0FA100300A96 /* TheSimulator.cpp */,
-				CDC2B32220CE0FA100300A96 /* TheSimulator.h */,
+				CD73D81B2166C6F100F43CC7 /* Simulation.cpp */,
+				CD73D81C2166C6F100F43CC7 /* Simulation.h */,
 			);
-			name = simulator;
+			name = simulation;
 			sourceTree = "<group>";
 		};
 		CDD36CCB215DA35E004FC222 /* Products */ = {
@@ -861,7 +861,7 @@
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
-				CD4E81C8210593F6007DA585 /* TheSimulator.h in Headers */,
+				CD73D81E2166C6F100F43CC7 /* Simulation.h in Headers */,
 				CD4E81BA210593E5007DA585 /* SerializablePtr.h in Headers */,
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
@@ -872,7 +872,7 @@
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
 				CD4E8198210593BD007DA585 /* Chain.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
-				CD4E81C4210593F6007DA585 /* Scenario.h in Headers */,
+				CD4E81C4210593F6007DA585 /* Simulations.h in Headers */,
 				CD4E81A0210593BD007DA585 /* TheContext.h in Headers */,
 				CD4E81C6210593F6007DA585 /* SimMiner.h in Headers */,
 				CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */,
@@ -1181,6 +1181,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD73D81D2166C6F100F43CC7 /* Simulation.cpp in Sources */,
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD4E81CF2105941A007DA585 /* TransactionMakerSignature.cpp in Sources */,
@@ -1189,7 +1190,6 @@
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
 				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,
 				CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */,
-				CD4E81C7210593F6007DA585 /* TheSimulator.cpp in Sources */,
 				CD4E81A1210593BD007DA585 /* Policy.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD240D2D21360BD900FF8812 /* ChainMetadata.cpp in Sources */,

@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/simulator/Scenario.h>
+#include <volition/simulator/Simulations.h>
 
 //================================================================//
 // ConsensusApp
@@ -13,8 +13,8 @@ public:
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) override {
     
-        Volition::Simulator::SmallScenario scenario;
-        scenario.run ();
+        Volition::Simulator::SmallSimulation simulation;
+        simulation.run ();
         return EXIT_OK;
     }
 };

@@ -6,17 +6,32 @@
 #include <volition/simulator/Analysis.h>
 #include <volition/simulator/Cohort.h>
 #include <volition/simulator/SimMiner.h>
-#include <volition/simulator/TheSimulator.h>
+#include <volition/simulator/Simulation.h>
 
 namespace Volition {
 namespace Simulator {
 
 //================================================================//
-// TheSimulator
+// Simulation
 //================================================================//
 
 //----------------------------------------------------------------//
-void TheSimulator::applyCohort ( Cohort& cohort, string name, int baseMinerID, int size ) {
+bool Simulation::Simulation_control ( size_t step ) {
+
+    return true;
+}
+
+//----------------------------------------------------------------//
+void Simulation::Simulation_report ( size_t step ) const {
+
+    LOG_F ( INFO, "SIM: ROUND: %d - ", ( int )step );
+    this->logTree ( "SIM: ", false, 1 );
+    this->logMiners ( "SIM: " );
+    LOG_F ( INFO, "SIM:" );
+}
+
+//----------------------------------------------------------------//
+void Simulation::applyCohort ( Cohort& cohort, string name, int baseMinerID, int size ) {
 
     cohort.mName        = name;
     cohort.mBasePlayer  = baseMinerID;
@@ -30,25 +45,25 @@ void TheSimulator::applyCohort ( Cohort& cohort, string name, int baseMinerID, i
 }
 
 //----------------------------------------------------------------//
-int TheSimulator::countMiners () const {
+int Simulation::countMiners () const {
 
     return ( int )this->mMiners.size ();
 }
 
 //----------------------------------------------------------------//
-bool TheSimulator::drop () {
+bool Simulation::drop () {
 
     return (( float )( this->rand () % ( 1000 + 1 )) / 1000.0 ) < this->mDropRate;
 }
 
 //----------------------------------------------------------------//
-const SimMiner& TheSimulator::getMiner ( int minerID ) const {
+const SimMiner& Simulation::getMiner ( int minerID ) const {
 
     return *this->mMiners [ minerID ];
 }
 
 //----------------------------------------------------------------//
-void TheSimulator::initMiners ( int nMiners ) {
+void Simulation::initMiners ( int nMiners ) {
 
     if ( !this->mGenesisKey ) {
         this->mGenesisKey.elliptic ( CryptoKey::DEFAULT_EC_GROUP_NAME );
@@ -61,7 +76,7 @@ void TheSimulator::initMiners ( int nMiners ) {
     this->mMiners.resize ( nMiners );
 
     for ( int i = 0; i < nMiners; ++i ) {
-        this->mMiners [ i ] = make_unique < SimMiner >();
+        this->mMiners [ i ] = make_unique < SimMiner >( *this );
         SimMiner& miner = *this->mMiners [ i ];
         
         stringstream minerIDStream;
@@ -80,7 +95,7 @@ void TheSimulator::initMiners ( int nMiners ) {
 }
 
 //----------------------------------------------------------------//
-void TheSimulator::log ( string prefix ) const {
+void Simulation::logMiners ( string prefix ) const {
 
     int nMiners = this->countMiners ();
     for ( int i = 0; i < nMiners; ++i ) {
@@ -89,17 +104,95 @@ void TheSimulator::log ( string prefix ) const {
 }
 
 //----------------------------------------------------------------//
-void TheSimulator::logTree ( string prefix, bool verbose, int maxDepth ) {
+void Simulation::logTree ( string prefix, bool verbose, int maxDepth ) const {
 
-    TreeSummary summary;
-    this->summarize ( summary );
-    
-    summary.logLevels ( prefix );
-    summary.log ( prefix, verbose, maxDepth );
+    this->mAnalysis.log ( prefix, verbose, maxDepth );
 }
 
 //----------------------------------------------------------------//
-void TheSimulator::process () {
+size_t Simulation::rand () {
+
+    return this->mRand ();
+}
+
+//----------------------------------------------------------------//
+void Simulation::reset () {
+
+    this->mMiners.clear ();
+    this->mRand.seed ( 1 );
+    
+    this->mDropRate           = 0.0;
+    this->mCyclesPerStep      = 1;
+    this->mRandomizeScore     = false;
+}
+
+//----------------------------------------------------------------//
+void Simulation::resetMinerQueue ( vector < int >& minerQueue, bool shuffle ) {
+
+    int nMiners = this->countMiners ();
+
+    minerQueue.clear ();
+    minerQueue.reserve ( nMiners );
+    
+    for ( int i = 0; i < nMiners; ++i ) {
+        minerQueue.push_back ( i );
+    }
+    
+    if ( shuffle ) {
+        std::shuffle ( minerQueue.begin (), minerQueue.end (), this->mRand );
+    }
+}
+
+//----------------------------------------------------------------//
+void Simulation::run () {
+
+    for ( size_t i = 0; this->Simulation_control ( i ); ++i ) {
+        this->step ( i );
+    }
+}
+
+//----------------------------------------------------------------//
+void Simulation::run ( size_t iterations, bool force ) {
+
+    for ( size_t i = 0; (( i < iterations ) && ( force || this->Simulation_control ( i ))); ++i ) {
+        this->step ( i );
+    }
+}
+
+//----------------------------------------------------------------//
+void Simulation::setCyclesPerStep ( int cycles ) {
+
+    this->mCyclesPerStep = cycles;
+}
+
+//----------------------------------------------------------------//
+void Simulation::setDropRate ( float percentage ) {
+
+    this->mDropRate = percentage;
+}
+
+//----------------------------------------------------------------//
+void Simulation::setPlayerVerbose ( int minerID, bool verbose ) {
+
+    this->mMiners [ minerID ]->mVerbose = verbose;
+}
+
+//----------------------------------------------------------------//
+void Simulation::setScoreRandomizer ( bool randomize ) {
+
+    this->mRandomizeScore = randomize;
+}
+
+//----------------------------------------------------------------//
+Simulation::Simulation () {
+}
+
+//----------------------------------------------------------------//
+Simulation::~Simulation () {
+}
+
+//----------------------------------------------------------------//
+void Simulation::step ( size_t step ) {
 
     int nMiners = this->countMiners ();
     int cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
@@ -127,75 +220,13 @@ void TheSimulator::process () {
             }
         }
     }
-}
-
-//----------------------------------------------------------------//
-size_t TheSimulator::rand () {
-
-    return this->mRand ();
-}
-
-//----------------------------------------------------------------//
-void TheSimulator::reset () {
-
-    this->mMiners.clear ();
-    this->mRand.seed ( 1 );
     
-    this->mDropRate           = 0.0;
-    this->mCyclesPerStep      = 1;
-    this->mRandomizeScore     = false;
-}
-
-//----------------------------------------------------------------//
-void TheSimulator::resetMinerQueue ( vector < int >& minerQueue, bool shuffle ) {
-
-    int nMiners = this->countMiners ();
-
-    minerQueue.clear ();
-    minerQueue.reserve ( nMiners );
-    
-    for ( int i = 0; i < nMiners; ++i ) {
-        minerQueue.push_back ( i );
-    }
-    
-    if ( shuffle ) {
-        std::shuffle ( minerQueue.begin (), minerQueue.end (), this->mRand );
-    }
-}
-
-//----------------------------------------------------------------//
-void TheSimulator::setCyclesPerStep ( int cycles ) {
-
-    this->mCyclesPerStep = cycles;
-}
-
-//----------------------------------------------------------------//
-void TheSimulator::setDropRate ( float percentage ) {
-
-    this->mDropRate = percentage;
-}
-
-//----------------------------------------------------------------//
-void TheSimulator::setPlayerVerbose ( int minerID, bool verbose ) {
-
-    this->mMiners [ minerID ]->mVerbose = verbose;
-}
-
-//----------------------------------------------------------------//
-void TheSimulator::setScoreRandomizer ( bool randomize ) {
-
-    this->mRandomizeScore = randomize;
-}
-
-//----------------------------------------------------------------//
-void TheSimulator::summarize ( TreeSummary& summary ) const {
-
     Tree tree;
-    int nMiners = this->countMiners ();
     for ( int i = 0; i < nMiners; ++i ) {
         tree.addChain ( this->mMiners [ i ]->mChain );
     }
-    summary.summarize ( tree );
+    this->mAnalysis.update ( tree );
+    this->Simulation_report ( step );
 }
 
 } // namespace Simulator

@@ -17,14 +17,14 @@ class SimMiner;
 class Cohort {
 private:
 
-    friend class TheSimulator;
     friend class SimMiner;
+    friend class Simulation;
 
     string  mName;
 
     int     mBasePlayer;
-    bool    mIsPaused;
     
+    bool    mIsPaused;
     int     mGroupFlags;
     int     mRequestFlags;
     int     mRespondFlags;
