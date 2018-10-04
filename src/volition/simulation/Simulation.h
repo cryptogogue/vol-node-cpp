@@ -6,11 +6,11 @@
 
 #include <volition/common.h>
 #include <volition/Singleton.h>
-#include <volition/simulator/Analysis.h>
-#include <volition/simulator/SimMiner.h>
+#include <volition/simulation/Analysis.h>
+#include <volition/simulation/SimMiner.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 class Cohort;
 class Player;

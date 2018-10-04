@@ -7,7 +7,7 @@
 #include <volition/common.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 class SimMiner;
 

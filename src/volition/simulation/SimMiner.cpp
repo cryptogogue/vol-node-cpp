@@ -4,12 +4,12 @@
 #include <volition/Block.h>
 #include <volition/Cohort.h>
 #include <volition/TheContext.h>
-#include <volition/simulator/SimMiner.h>
-#include <volition/simulator/Simulation.h>
+#include <volition/simulation/SimMiner.h>
+#include <volition/simulation/Simulation.h>
 #include <volition/Transactions.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 //================================================================//
 // SimMiner

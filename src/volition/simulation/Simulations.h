@@ -5,12 +5,12 @@
 #define VOLITION_SIMULATOR_SCENARIO_H
 
 #include <volition/TheContext.h>
-#include <volition/simulator/Analysis.h>
-#include <volition/simulator/Cohort.h>
-#include <volition/simulator/Simulation.h>
+#include <volition/simulation/Analysis.h>
+#include <volition/simulation/Cohort.h>
+#include <volition/simulation/Simulation.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 //================================================================//
 // FastGangSimulation

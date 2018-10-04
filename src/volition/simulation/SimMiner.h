@@ -8,7 +8,7 @@
 #include <volition/Miner.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 class Cohort;
 class Simulation;

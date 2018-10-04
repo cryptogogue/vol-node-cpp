@@ -1,12 +1,12 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/simulator/Analysis.h>
+#include <volition/simulation/Analysis.h>
 #include <volition/Block.h>
 #include <volition/Format.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 //----------------------------------------------------------------//
 void print_indent ( string& str, int indent ) {

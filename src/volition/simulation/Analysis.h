@@ -8,7 +8,7 @@
 #include <volition/Chain.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 //================================================================//
 // Tree

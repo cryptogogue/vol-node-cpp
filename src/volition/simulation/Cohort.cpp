@@ -1,12 +1,12 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/simulator/Cohort.h>
-#include <volition/simulator/SimMiner.h>
-#include <volition/simulator/Simulation.h>
+#include <volition/simulation/Cohort.h>
+#include <volition/simulation/SimMiner.h>
+#include <volition/simulation/Simulation.h>
 
 namespace Volition {
-namespace Simulator {
+namespace Simulation {
 
 //================================================================//
 // Cohort
