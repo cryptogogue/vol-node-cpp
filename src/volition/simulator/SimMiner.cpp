@@ -28,6 +28,14 @@ const SimMiner* SimMiner::nextMiner () {
 }
 
 //----------------------------------------------------------------//
+void SimMiner::log ( string prefix ) const {
+
+    string name = this->mCohort ? this->mCohort->mName.c_str () : "";
+
+    LOG_F ( INFO, "%s[%s] %s", prefix.c_str (), name.c_str (), this->mChain.print ( this->mMetadata, "CHAIN: " ).c_str ());
+}
+
+//----------------------------------------------------------------//
 void SimMiner::pushGenesisTransaction ( Block& block ) const {
 
     unique_ptr < Transaction::GenesisMiner > genesisMinerTransaction = make_unique < Transaction::GenesisMiner >();
@@ -39,14 +47,6 @@ void SimMiner::pushGenesisTransaction ( Block& block ) const {
     genesisMinerTransaction->mURL = "";
 
     block.pushTransaction ( move ( genesisMinerTransaction ));
-}
-
-//----------------------------------------------------------------//
-void SimMiner::print () const {
-
-    string name = this->mCohort ? this->mCohort->mName.c_str () : "";
-
-    LOG_F ( INFO, "[%s] %s", name.c_str (), this->mChain.print ( this->mMetadata, "CHAIN: " ).c_str ());
 }
 
 //----------------------------------------------------------------//

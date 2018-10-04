@@ -37,7 +37,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void                print                       () const;
+    void                log                         ( string prefix ) const;
     void                step                        ();
                         SimMiner                    ();
                         ~SimMiner                   ();

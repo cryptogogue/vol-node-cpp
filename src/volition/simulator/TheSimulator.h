@@ -41,11 +41,11 @@ public:
     
     //----------------------------------------------------------------//
     void                applyCohort             ( Cohort& cohort, string name, int baseMinerID, int size = 1 );
-    int                 countMiners             ();
-    const SimMiner&     getMiner                ( int minerID );
+    int                 countMiners             () const;
+    const SimMiner&     getMiner                ( int minerID ) const;
     void                initMiners              ( int nMiners );
-    void                print                   ();
-    void                printTree               ( bool verbose = false, int maxDepth = 0 );
+    void                log                     ( string prefix ) const;
+    void                logTree                 ( string prefix, bool verbose = false, int maxDepth = 0 );
     void                process                 ();
     size_t              rand                    ();
     void                reset                   ();
@@ -53,7 +53,7 @@ public:
     void                setDropRate             ( float percentage );
     void                setPlayerVerbose        ( int minerID, bool verbose );
     void                setScoreRandomizer      ( bool randomize );
-    void                summarize               ( TreeSummary& summary );
+    void                summarize               ( TreeSummary& summary ) const;
 };
 
 } // namespace Simulator

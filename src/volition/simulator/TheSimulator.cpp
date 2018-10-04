@@ -30,7 +30,7 @@ void TheSimulator::applyCohort ( Cohort& cohort, string name, int baseMinerID, i
 }
 
 //----------------------------------------------------------------//
-int TheSimulator::countMiners () {
+int TheSimulator::countMiners () const {
 
     return ( int )this->mMiners.size ();
 }
@@ -42,7 +42,7 @@ bool TheSimulator::drop () {
 }
 
 //----------------------------------------------------------------//
-const SimMiner& TheSimulator::getMiner ( int minerID ) {
+const SimMiner& TheSimulator::getMiner ( int minerID ) const {
 
     return *this->mMiners [ minerID ];
 }
@@ -80,22 +80,22 @@ void TheSimulator::initMiners ( int nMiners ) {
 }
 
 //----------------------------------------------------------------//
-void TheSimulator::print () {
+void TheSimulator::log ( string prefix ) const {
 
     int nMiners = this->countMiners ();
     for ( int i = 0; i < nMiners; ++i ) {
-        this->mMiners [ i ]->print ();
+        this->mMiners [ i ]->log ( prefix );
     }
 }
 
 //----------------------------------------------------------------//
-void TheSimulator::printTree ( bool verbose, int maxDepth ) {
+void TheSimulator::logTree ( string prefix, bool verbose, int maxDepth ) {
 
     TreeSummary summary;
     this->summarize ( summary );
     
-    summary.printLevels ();
-    summary.print ( verbose, maxDepth );
+    summary.logLevels ( prefix );
+    summary.log ( prefix, verbose, maxDepth );
 }
 
 //----------------------------------------------------------------//
@@ -188,7 +188,7 @@ void TheSimulator::setScoreRandomizer ( bool randomize ) {
 }
 
 //----------------------------------------------------------------//
-void TheSimulator::summarize ( TreeSummary& summary ) {
+void TheSimulator::summarize ( TreeSummary& summary ) const {
 
     Tree tree;
     int nMiners = this->countMiners ();

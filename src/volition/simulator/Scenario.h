@@ -34,10 +34,10 @@ public:
     
     //----------------------------------------------------------------//
     virtual void Scenario_report ( int i ) {
-        printf ( "ROUND: %d - ", i );
-        this->mAnalysis.print ( false, 1 );
-        TheSimulator::get ().print ();
-        printf ( "\n" );
+        LOG_F ( INFO, "SIM: ROUND: %d - ", i );
+        this->mAnalysis.log ( "SIM: ", false, 1 );
+        TheSimulator::get ().log ( "SIM: " );
+        LOG_F ( INFO, "SIM:" );
     }
     
     //----------------------------------------------------------------//
@@ -377,8 +377,8 @@ public:
     
     //----------------------------------------------------------------//
     void Scenario_report ( int i ) {
-        printf ( "ROUND: %d - ", i );
-        TheSimulator::get ().printTree ( false, 1 );
+        LOG_F ( INFO, "SIM: ROUND: %d - ", i );
+        TheSimulator::get ().logTree ( "SIM: ", false, 1 );
     }
 };
 

@@ -24,7 +24,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void        addChain        ( Chain& chain );
+    void        addChain        ( const Chain& chain );
                 Tree            ();
 };
 
@@ -64,9 +64,9 @@ public:
     
     //----------------------------------------------------------------//
     void        analyzeLevels       ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
+    void        log                 ( string prefix, bool verbose, int maxDepth = 0, int depth = 0 ) const;
+    void        logLevels           ( string prefix ) const;
     size_t      measureChain        ( float threshold ) const;
-    void        print               ( bool verbose, int maxDepth = 0, int depth = 0 ) const;
-    void        printLevels         () const;
     void        summarize           ( const Tree& tree );
                 TreeSummary         ();
 };
@@ -91,7 +91,7 @@ public:
 
     //----------------------------------------------------------------//
                 Analysis            ();
-    void        print               ( bool verbose = false, int maxDepth = 0 );
+    void        log                 ( string prefix, bool verbose = false, int maxDepth = 0 );
     void        update              ();
 };
 
