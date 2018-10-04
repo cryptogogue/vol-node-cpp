@@ -64,6 +64,8 @@ void SimMiner::step () {
     int tag = ( int )( TheSimulator::get ().rand () & 0xffffffff );
     LOG_F ( INFO, "0x%08x", tag );
 
+    if ( this->mCohort && this->mCohort->mIsPaused ) return;
+
     if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
         this->resetMinerQueue ();
         this->pushBlock ( this->mChain, true );
