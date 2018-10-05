@@ -24,18 +24,18 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-        string accountName = this->getMatchString ( "accountName" );
-        const State& state = TheWebMiner::get ().getState ();
-        
-        VersionedValue < Account > account = state.getAccount ( accountName );
-        if ( account ) {
-            Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
-            accountJSON->set ( "accountName", accountName.c_str ());
-            accountJSON->set ( "balance", ( int )account->getBalance ());
-            
-            jsonOut.set ( "account", accountJSON );
-            return Poco::Net::HTTPResponse::HTTP_OK;
-        }
+//        string accountName = this->getMatchString ( "accountName" );
+//        const State& state = TheWebMiner::get ().getState ();
+//
+//        VersionedValue < Account > account = state.getAccount ( accountName );
+//        if ( account ) {
+//            Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
+//            accountJSON->set ( "accountName", accountName.c_str ());
+//            accountJSON->set ( "balance", ( int )account->getBalance ());
+//
+//            jsonOut.set ( "account", accountJSON );
+//            return Poco::Net::HTTPResponse::HTTP_OK;
+//        }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };
@@ -52,26 +52,26 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-        string accountName = this->getMatchString ( "accountName" );
-        const State& state = TheWebMiner::get ().getState ();
-        
-        VersionedValue < Account > account = state.getAccount ( accountName );
-        if ( account ) {
-    
-            map < string, CryptoKey > keys;
-            account->getKeys ( keys );
-            
-            Poco::JSON::Object::Ptr keysJSON = new Poco::JSON::Object ();
-    
-            map < string, CryptoKey >::iterator keyIt = keys.begin ();
-            for ( ; keyIt != keys.end (); ++keyIt ) {
-                Poco::JSON::Object::Ptr keyJSON = ToJSONSerializer::toJSON ( keyIt->second );
-                keysJSON->set ( keyIt->first, keyJSON );
-            }
-            
-            jsonOut.set ( "accountKeys", keysJSON );
-            return Poco::Net::HTTPResponse::HTTP_OK;
-        }
+//        string accountName = this->getMatchString ( "accountName" );
+//        const State& state = TheWebMiner::get ().getState ();
+//
+//        VersionedValue < Account > account = state.getAccount ( accountName );
+//        if ( account ) {
+//
+//            map < string, CryptoKey > keys;
+//            account->getKeys ( keys );
+//
+//            Poco::JSON::Object::Ptr keysJSON = new Poco::JSON::Object ();
+//
+//            map < string, CryptoKey >::iterator keyIt = keys.begin ();
+//            for ( ; keyIt != keys.end (); ++keyIt ) {
+//                Poco::JSON::Object::Ptr keyJSON = ToJSONSerializer::toJSON ( keyIt->second );
+//                keysJSON->set ( keyIt->first, keyJSON );
+//            }
+//
+//            jsonOut.set ( "accountKeys", keysJSON );
+//            return Poco::Net::HTTPResponse::HTTP_OK;
+//        }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };
@@ -119,8 +119,10 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-        const Chain& chain = TheWebMiner::get ().getChain ();
-        jsonOut.set ( "blocks", ToJSONSerializer::toJSON ( chain ));
+        const Chain& chain = TheWebMiner::get ().lockChain ();
+        ToJSONSerializer::toJSON ( chain, jsonOut );
+        TheWebMiner::get ().unlockChain ();
+        
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

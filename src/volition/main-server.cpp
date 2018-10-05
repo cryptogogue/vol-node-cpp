@@ -5,6 +5,7 @@
 #include <volition/TheTransactionFactory.h>
 #include <volition/RouteTable.h>
 #include <volition/Singleton.h>
+#include <volition/TheContext.h>
 #include <volition/TheWebMiner.h>
 
 //================================================================//
@@ -218,9 +219,6 @@ protected:
     //----------------------------------------------------------------//
     int main ( const vector < string >& ) override {
         
-        // force line buffering even when running as a spawned process
-        setvbuf ( stdout, NULL, _IOLBF, 0 );
-        
         //this->printProperties ();
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
@@ -231,9 +229,11 @@ protected:
         string nodelist     = configuration.getString ( "nodelist", "" );
         bool solo           = configuration.getBool ( "solo", false );
     
-        printf ( "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+        LOG_F ( INFO, "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
     
         string minerID      = to_string ( port );
+    
+        Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
     
         Volition::TheWebMiner& theMiner = Volition::TheWebMiner::get ();
         
@@ -305,6 +305,15 @@ protected:
 
 //----------------------------------------------------------------//
 int main ( int argc, char** argv ) {
+
+    // force line buffering even when running as a spawned process
+    setvbuf ( stdout, NULL, _IOLBF, 0 );
+    setvbuf ( stderr, NULL, _IOLBF, 0 );
+
+    loguru::init ( argc, argv );
+    loguru::g_preamble = false;
+    LOG_F ( INFO, "Hello from main.cpp!" );
+
     ServerApp app;
     return app.run ( argc, argv );
 }

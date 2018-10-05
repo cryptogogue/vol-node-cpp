@@ -8,6 +8,7 @@
 int main ( int argc, char **argv ) {
 
     loguru::init ( argc, argv );
+    loguru::g_preamble = false;
     LOG_F ( INFO, "Hello from main.cpp!" );
 
     ::testing::InitGoogleTest ( &argc, argv );

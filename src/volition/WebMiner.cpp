@@ -13,6 +13,13 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+const Chain& WebMiner::lockChain () {
+
+    this->mChainMutex.lock ();
+    return this->mChain;
+}
+
+//----------------------------------------------------------------//
 void WebMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
 
     SyncChainTask* task = dynamic_cast < SyncChainTask* >( pNf->task ());
@@ -24,7 +31,10 @@ void WebMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
         assert ( this->mMinerURLs.find ( minerID ) != this->mMinerURLs.end ());
         this->mMinerURLs.erase ( minerID );
         
-        this->updateChain ( *task->moveChain ());
+        if ( task->isValid ()) {
+            Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mChainMutex );
+            this->updateChain ( task->getChain ());
+        }
     }
     pNf->release ();
 }
@@ -41,6 +51,12 @@ void WebMiner::shutdown () {
     this->stop ();
     this->mTaskManager.joinAll ();
     this->wait ();
+}
+
+//----------------------------------------------------------------//
+void WebMiner::unlockChain () {
+
+    this->mChainMutex.unlock ();
 }
 
 //----------------------------------------------------------------//
@@ -70,8 +86,11 @@ void WebMiner::run () {
     
         if ( this->mMinerURLs.size () == 0 ) {
             
+            Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mChainMutex );
+            
+            LOG_SCOPE_F ( INFO, "WEB: WebMiner::run () - step" );
+            
             this->pushBlock ( this->mChain, true );
-            //this->mChain->print ();
             
             if ( !this->mSolo ) {
                 this->mMinerURLs = *this->mChain.getMinerURLs ();
@@ -89,8 +108,8 @@ void WebMiner::run () {
             
             size_t nextHeight = this->mChain.getVersion ();
             if ( nextHeight != height ) {
-                printf ( "height: %d\n", ( int )nextHeight );
-                this->mChain.print ( this->mMetadata );
+                LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
+                LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
                 height = nextHeight;
             }
         }

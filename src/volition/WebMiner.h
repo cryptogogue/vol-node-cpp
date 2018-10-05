@@ -27,15 +27,20 @@ private:
 
     bool                                        mSolo;
 
+    Poco::Mutex                                 mChainMutex;
+
     //----------------------------------------------------------------//
     void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
     void            run                         () override;
+    void            updateChains                ();
 
 public:
 
     //----------------------------------------------------------------//
+    const Chain&    lockChain               ();
     void            setSolo                 ( bool solo );
     void            shutdown                ();
+    void            unlockChain             ();
                     WebMiner                ();
                     ~WebMiner               ();
 };

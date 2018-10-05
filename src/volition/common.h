@@ -41,6 +41,7 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Observer.h>
+#include <Poco/ScopedLock.h>
 #include <Poco/SingletonHolder.h>
 #include <Poco/Task.h>
 #include <Poco/TaskManager.h>

@@ -1,7 +1,6 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/Chain.h>
 #include <volition/SyncChainTask.h>
 
 namespace Volition {
@@ -9,6 +8,12 @@ namespace Volition {
 //================================================================//
 // SyncChainTask
 //================================================================//
+
+//----------------------------------------------------------------//
+const Chain& SyncChainTask::getChain () const {
+
+    return this->mChain;
+}
 
 //----------------------------------------------------------------//
 string SyncChainTask::getMinerID () const {
@@ -23,16 +28,17 @@ string SyncChainTask::getURL () const {
 }
 
 //----------------------------------------------------------------//
-unique_ptr < Chain > SyncChainTask::moveChain () {
+bool SyncChainTask::isValid () const {
 
-    return move ( this->mChain );
+    return this->mIsValid;
 }
 
 //----------------------------------------------------------------//
 SyncChainTask::SyncChainTask ( string minerID, string url ) :
     Task ( "SYNC CHAIN" ),
     mMinerID ( minerID ),
-    mURL ( url ) {
+    mURL ( url ),
+    mIsValid ( false ) {
 }
 
 //----------------------------------------------------------------//
@@ -49,15 +55,22 @@ void SyncChainTask::runTask () {
     Poco::URI uri ( this->mURL );
     std::string path ( uri.getPathAndQuery ());
 
-    Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
-    Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
-    Poco::Net::HTTPResponse response;
-    session.sendRequest ( request );
-    std::istream& rs = session.receiveResponse ( response );
-    
-    if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
-        this->mChain = make_unique < Chain >();
-        FromJSONSerializer::fromJSON ( *this->mChain, rs );
+    try {
+        Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
+        Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
+        Poco::Net::HTTPResponse response;
+        //session.setKeepAlive ( true );
+        session.setTimeout ( Poco::Timespan ( 1, 0 ));
+        session.sendRequest ( request );
+        std::istream& rs = session.receiveResponse ( response );
+        
+        if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
+            FromJSONSerializer::fromJSON ( this->mChain, rs );
+            this->mIsValid = true;
+        }
+    }
+    catch ( Poco::Exception& exc ) {
+        LOG_F ( INFO, "%s", exc.message ().c_str ());
     }
 }
 

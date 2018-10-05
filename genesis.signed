@@ -2,9 +2,9 @@
     "cycleID" : 0,
     "height" : 0,
     "signature" : {
-        "digest" : "483b57365c189d2877a0c2afa9d5238831190d45584a57e1f98abc7173d64892",
+        "digest" : "9a67ce9a8ccbe4e8491f0c572da5aa390ae636f53403f6fce08943e710998654",
         "hashAlgorithm" : "SHA256",
-        "signature" : "304602210088555d4e230f84e0722eb47b65fab1d0b2396410996935b90c1b250b46948fa7022100f7062dbe3481051910f5b3efa0f54d547c20a6b038a664c66fc1e082806affe5"
+        "signature" : "3046022100a0e337ecb05376ad7571ee79cc7ad4ef70bb905d9fdc8c1628cc02e0bde69159022100fd8a63e015d05833c094a0c70e6f54b50a0ce5bcaee0e34b04bd0f1d9736afe7"
     },
     "transactions" : [
         {
@@ -30,6 +30,42 @@
             "keyName" : "master",
             "type" : "GENESIS_MINER",
             "url" : "http:\/\/127.0.0.1:9091\/"
+        },
+        {
+            "accountName" : "9092",
+            "amount" : 1000000,
+            "key" : {
+                "groupName" : "secp256k1",
+                "publicKey" : "02B2BAB862BC3F095AC40BABFCB94ED377AA92DFFF322DA29DEFCA17B81BA52013",
+                "type" : "EC_HEX"
+            },
+            "keyName" : "master",
+            "type" : "GENESIS_MINER",
+            "url" : "http:\/\/127.0.0.1:9092\/"
+        },
+        {
+            "accountName" : "9093",
+            "amount" : 1000000,
+            "key" : {
+                "groupName" : "secp256k1",
+                "publicKey" : "026AF5C09B1252B3ED8FE4677E117817DCAD2AF2106918EB9449A5E51D31733CA8",
+                "type" : "EC_HEX"
+            },
+            "keyName" : "master",
+            "type" : "GENESIS_MINER",
+            "url" : "http:\/\/127.0.0.1:9093\/"
+        },
+        {
+            "accountName" : "9094",
+            "amount" : 1000000,
+            "key" : {
+                "groupName" : "secp256k1",
+                "publicKey" : "033A509CCF521461616FC67C5330167223619B372A76B0B8C202D4BD2488639E3E",
+                "type" : "EC_HEX"
+            },
+            "keyName" : "master",
+            "type" : "GENESIS_MINER",
+            "url" : "http:\/\/127.0.0.1:9094\/"
         }
     ]
 }

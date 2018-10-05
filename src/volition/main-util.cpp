@@ -137,8 +137,7 @@ int runApp ( int argc, char** argv, Poco::Util::Application* app ) {
     try {
         pApp->init ( argc, argv );
     }
-    catch ( Poco::Exception& exc )
-    {
+    catch ( Poco::Exception& exc ) {
         pApp->logger ().log ( exc );
         return Poco::Util::Application::EXIT_CONFIG;
     }

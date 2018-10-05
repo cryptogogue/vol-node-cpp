@@ -21,6 +21,39 @@
                 "type" :            "EC_PEM",
                 "publicKey" :       "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n" 
             }
+        },
+        {
+            "type" :            "GENESIS_MINER",
+            "accountName" :     "9092",
+            "amount" :          1000000,
+            "url" :             "http://127.0.0.1:9092/",
+            "keyName" :         "master",
+            "key" : {
+                "type" :        "EC_PEM",
+                "publicKey" :   "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEsrq4Yrw\/CVrEC6v8uU7Td6qS3\/8yLaKd\n78oXuBulIBMbifgfxt8pUL89BgV0XblZsFL8WvtjV86ZwZhFq4fCag==\n-----END PUBLIC KEY-----\n"
+            }
+        },
+        {
+            "type" :            "GENESIS_MINER",
+            "accountName" :     "9093",
+            "amount" :          1000000,
+            "url" :             "http://127.0.0.1:9093/",
+            "keyName" :         "master",
+            "key" : {
+                "type" :        "EC_PEM",
+                "publicKey" :   "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEavXAmxJSs+2P5Gd+EXgX3K0q8hBpGOuU\nSaXlHTFzPKipcf2K6u6QUBXQFkBYDRJ+s07DAqTUbn3zY1fZTQWslA==\n-----END PUBLIC KEY-----\n"
+            }
+        },
+        {
+            "type" :            "GENESIS_MINER",
+            "accountName" :     "9094",
+            "amount" :          1000000,
+            "url" :             "http://127.0.0.1:9094/",
+            "keyName" :         "master",
+            "key" : {
+                "type" :        "EC_PEM",
+                "publicKey" :   "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEOlCcz1IUYWFvxnxTMBZyI2GbNyp2sLjC\nAtS9JIhjnj7Bk3iASH9DDMpMQp0tyyWvYuz9b4z3D0l3o999b0+rYQ==\n-----END PUBLIC KEY-----\n"
+            }
         }
     ]
 }
