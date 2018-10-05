@@ -69,6 +69,13 @@ void TreeSummary::analyzeLevels ( map < size_t, TreeLevelStats >& levels, size_t
 }
 
 //----------------------------------------------------------------//
+void TreeSummary::clear () {
+
+    this->mMiners.clear ();
+    this->mChildren.clear ();
+}
+
+//----------------------------------------------------------------//
 void TreeSummary::computePercents ( size_t totalBlocks ) {
 
     this->mPercentOfTotal = totalBlocks > 0 ? (( float )this->mContribution / ( float )totalBlocks ) : 0.0;
@@ -102,25 +109,6 @@ size_t TreeSummary::computeSize () {
         this->mContribution = this->mSubtreeSize;
     }
     return this->mSubtreeSize;
-}
-
-//----------------------------------------------------------------//
-void TreeSummary::logLevels ( string prefix ) const {
-
-    size_t totalBlocks = this->mSubtreeSize;
-
-    map < size_t, TreeLevelStats > levels;
-    this->analyzeLevels ( levels );
-
-    string str;
-    size_t maxDepth = levels.size ();
-    for ( size_t i = 0; i < maxDepth; ++i ) {
-        TreeLevelStats& stats = levels [ i ];
-        float percent = ( totalBlocks > 0 ) ? (( float )stats.mContribution / ( float )totalBlocks ) : 0.0;
-        //Format::write ( str, "[branches: %d, percent: %g]", ( int )stats.mChains, percent );
-        Format::write ( str, "[%.2f]", percent );
-    }
-    LOG_F ( INFO, "%s%s", prefix.c_str (), str.c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -236,21 +224,62 @@ Analysis::Analysis () :
 }
 
 //----------------------------------------------------------------//
+void Analysis::clear () {
+
+    this->TreeSummary::clear ();
+    this->mPassesToLength.clear ();
+    this->mLevels.clear ();
+}
+
+//----------------------------------------------------------------//
+size_t Analysis::countLevels () const {
+
+    return this->mLevels.size ();
+}
+
+//----------------------------------------------------------------//
+float Analysis::getLevelPercent ( size_t level ) const {
+
+    size_t totalBlocks = this->mSubtreeSize;
+
+     map < size_t, TreeLevelStats >::const_iterator levelIt = this->mLevels.find ( level );
+    if ( levelIt != this->mLevels.cend ()) {
+        const TreeLevelStats& stats = levelIt->second;
+        return ( totalBlocks > 0 ) ? (( float )stats.mContribution / ( float )totalBlocks ) : 0.0;
+    }
+    return 0.0;
+}
+
+//----------------------------------------------------------------//
 void Analysis::log ( string prefix, bool verbose, int maxDepth ) const {
 
     LOG_F ( INFO, "%sPASS: %d, AVG: %g LEN: %d\n", prefix.c_str (), ( int )this->mPasses, this->mAverageIncrease, ( int )this->mChainLength );
-    this->mSummary.logLevels ( prefix );
-    this->mSummary.logTree ( prefix, verbose, maxDepth );
+    this->logLevels ( prefix );
+    this->logTree ( prefix, verbose, maxDepth );
+}
+
+//----------------------------------------------------------------//
+void Analysis::logLevels ( string prefix ) const {
+
+    string str;
+    size_t maxDepth = this->mLevels.size ();
+    for ( size_t i = 0; i < maxDepth; ++i ) {
+        float percent = this->getLevelPercent ( i );
+        //Format::write ( str, "[branches: %d, percent: %g]", ( int )stats.mChains, percent );
+        Format::write ( str, "[%.2f]", percent );
+    }
+    LOG_F ( INFO, "%s%s", prefix.c_str (), str.c_str ());
 }
 
 //----------------------------------------------------------------//
 void Analysis::update ( const Tree& tree ) {
 
-    this->mSummary = TreeSummary ();
-    this->mSummary.summarize ( tree );
+    this->clear ();
+    this->summarize ( tree );
     
-    this->mChainLength = this->mSummary.measureChain ( 0.65 );
+    this->mChainLength = this->measureChain ( 0.65 );
     this->mPassesToLength [ this->mPasses ] = this->mChainLength;
+    this->analyzeLevels ( this->mLevels );
     
     if ( this->mPasses > 0 ) {
         

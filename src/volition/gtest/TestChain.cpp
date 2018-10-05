@@ -34,7 +34,7 @@ public:
         
         ChainPlacement placement = chain.findNextCycle ( this->mMetaData, this->mMinerID );
         Block block ( this->mMinerID, placement.getCycleID (), this->mKeyPair );
-        chain.prepareForPush ( placement, block );
+        chain.prepareForPush ( this->mMetaData, placement, block );
         block.sign ( this->mKeyPair );
         
         bool result = chain.pushBlock ( block );

@@ -172,7 +172,19 @@ void Chain::prepareForPush ( ChainMetadata& metaData, const ChainPlacement& plac
 }
 
 //----------------------------------------------------------------//
+string Chain::print ( const char* pre, const char* post ) const {
+    
+    return this->print ( NULL, pre, post );
+}
+
+//----------------------------------------------------------------//
 string Chain::print ( const ChainMetadata& metaData, const char* pre, const char* post ) const {
+
+    return this->print ( &metaData, pre, post );
+}
+
+//----------------------------------------------------------------//
+string Chain::print ( const ChainMetadata* metaData, const char* pre, const char* post ) const {
 
     string str;
 
@@ -194,7 +206,7 @@ string Chain::print ( const ChainMetadata& metaData, const char* pre, const char
         
             if ( cycleCount > 0 ) {
                 if ( cycleCount > 1 ) {
-                    Format::write ( str, " (%d)]", ( int )metaData.countParticipants ( cycleCount - 1 ));
+                    Format::write ( str, " (%d)]", ( int )( metaData ? metaData->countParticipants ( cycleCount - 1 ) : blockCount ));
                 }
                 else {
                     Format::write ( str, "]" );
@@ -217,7 +229,7 @@ string Chain::print ( const ChainMetadata& metaData, const char* pre, const char
     }
     
     if ( cycleCount > 1 ) {
-        Format::write ( str, " (%d)]", ( int )metaData.countParticipants ( cycleCount - 1 ));
+        Format::write ( str, " (%d)]", ( int )( metaData ? metaData->countParticipants ( cycleCount - 1 ) : blockCount ));
     }
     else {
         Format::write ( str, "]" );

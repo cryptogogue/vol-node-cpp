@@ -57,6 +57,12 @@ bool Simulation::drop () {
 }
 
 //----------------------------------------------------------------//
+const Analysis& Simulation::getAnalysis () const {
+
+    return this->mAnalysis;
+}
+
+//----------------------------------------------------------------//
 const SimMiner& Simulation::getMiner ( int minerID ) const {
 
     return *this->mMiners [ minerID ];

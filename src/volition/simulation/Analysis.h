@@ -45,7 +45,7 @@ public:
 // TreeSummary
 //================================================================//
 class TreeSummary {
-private:
+protected:
 
     vector < string >       mMiners;
     list < TreeSummary >    mChildren;
@@ -56,6 +56,7 @@ private:
     float                   mPercentOfTotal;
 
     //----------------------------------------------------------------//
+    void        analyzeLevels       ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
     void        computePercents     ( size_t totalBlocks );
     size_t      computeSize         ();
     void        summarizeRecurse    ( const Tree& tree );
@@ -63,8 +64,7 @@ private:
 public:
     
     //----------------------------------------------------------------//
-    void        analyzeLevels       ( map < size_t, TreeLevelStats >& levels, size_t depth = 0 ) const;
-    void        logLevels           ( string prefix ) const;
+    void        clear               ();
     void        logTree             ( string prefix, bool verbose, int maxDepth = 0, int depth = 0 ) const;
     size_t      measureChain        ( float threshold ) const;
     void        summarize           ( const Tree& tree );
@@ -74,13 +74,14 @@ public:
 //================================================================//
 // Analysis
 //================================================================//
-class Analysis {
+class Analysis :
+    public TreeSummary {
 private:
 
-    map < size_t, size_t >  mPassesToLength;
+    map < size_t, size_t >          mPassesToLength;
+    map < size_t, TreeLevelStats >  mLevels;
 
     size_t                  mPasses;
-    TreeSummary             mSummary;
     
     size_t                  mChainLength;
     float                   mAverageIncrease;
@@ -89,7 +90,11 @@ public:
 
     //----------------------------------------------------------------//
                 Analysis            ();
+    void        clear               ();
+    size_t      countLevels         () const;
+    float       getLevelPercent     ( size_t level ) const;
     void        log                 ( string prefix, bool verbose = false, int maxDepth = 0 ) const;
+    void        logLevels           ( string prefix ) const;
     void        update              ( const Tree& tree );
 };
 

@@ -128,6 +128,7 @@
 		CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8252166D68700F43CC7 /* Simulation.cpp */; };
 		CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8262166D68700F43CC7 /* Simulation.h */; };
 		CD73D8302166D68700F43CC7 /* Simulations.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8272166D68700F43CC7 /* Simulations.h */; };
+		CD73D8322166E5CF00F43CC7 /* TestSimulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */; };
 		CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
 		CDD36CD8215DA3A3004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
 		CDD36CE3215DA428004FC222 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD4215DA35E004FC222 /* libgtest.a */; };
@@ -425,6 +426,7 @@
 		CD73D8252166D68700F43CC7 /* Simulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Simulation.cpp; path = src/volition/simulation/Simulation.cpp; sourceTree = "<group>"; };
 		CD73D8262166D68700F43CC7 /* Simulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Simulation.h; path = src/volition/simulation/Simulation.h; sourceTree = "<group>"; };
 		CD73D8272166D68700F43CC7 /* Simulations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Simulations.h; path = src/volition/simulation/Simulations.h; sourceTree = "<group>"; };
+		CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestSimulation.cpp; path = src/volition/gtest/TestSimulation.cpp; sourceTree = "<group>"; };
 		CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtr.h; path = src/volition/serialization/SerializablePtr.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
@@ -665,6 +667,7 @@
 			children = (
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestChain.cpp */,
+				CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */,
 			);
 			name = gtest;
 			sourceTree = "<group>";
@@ -1172,6 +1175,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
+				CD73D8322166E5CF00F43CC7 /* TestSimulation.cpp in Sources */,
 				CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */,
 				CDD36CD8215DA3A3004FC222 /* loguru.cpp in Sources */,
 			);

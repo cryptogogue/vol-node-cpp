@@ -81,6 +81,7 @@ private:
     Cycle                       getTopCycle         () const;
     bool                        isInCycle           ( const Cycle& cycle, string minerID ) const;
     void                        newCycle            ();
+    string                      print               ( const ChainMetadata* metaData, const char* pre, const char* post ) const;
     bool                        willImprove         ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) const;
 
     //----------------------------------------------------------------//
@@ -103,7 +104,8 @@ public:
     VersionedValue < Block >    getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
     VersionedValue < Block >    getTopBlock         () const;
     void                        prepareForPush      ( ChainMetadata& metaData, const ChainPlacement& placement, Block& block );
-    string                      print               ( const ChainMetadata& metaData, const char* pre = 0, const char* post = 0 ) const;
+    string                      print               ( const char* pre = NULL, const char* post = NULL ) const;
+    string                      print               ( const ChainMetadata& metaData, const char* pre = NULL, const char* post = NULL ) const;
     bool                        pushBlock           ( const Block& block );
     void                        reset               ();
     size_t                      size                () const;

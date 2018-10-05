@@ -50,6 +50,7 @@ public:
     //----------------------------------------------------------------//
     void                applyCohort             ( Cohort& cohort, string name, int baseMinerID, int size = 1 );
     int                 countMiners             () const;
+    const Analysis&     getAnalysis             () const;
     const SimMiner&     getMiner                ( int minerID ) const;
     void                initMiners              ( int nMiners );
     void                logMiners               ( string prefix ) const;
