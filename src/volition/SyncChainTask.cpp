@@ -10,35 +10,10 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-const Chain& SyncChainTask::getChain () const {
-
-    return this->mChain;
-}
-
-//----------------------------------------------------------------//
-string SyncChainTask::getMinerID () const {
-
-    return this->mMinerID;
-}
-
-//----------------------------------------------------------------//
-string SyncChainTask::getURL () const {
-
-    return this->mURL;
-}
-
-//----------------------------------------------------------------//
-bool SyncChainTask::isValid () const {
-
-    return this->mIsValid;
-}
-
-//----------------------------------------------------------------//
 SyncChainTask::SyncChainTask ( string minerID, string url ) :
     Task ( "SYNC CHAIN" ),
     mMinerID ( minerID ),
-    mURL ( url ),
-    mIsValid ( false ) {
+    mURL ( url ) {
 }
 
 //----------------------------------------------------------------//
@@ -55,6 +30,10 @@ void SyncChainTask::runTask () {
     Poco::URI uri ( this->mURL );
     std::string path ( uri.getPathAndQuery ());
 
+    this->mBlockQueueEntry = make_unique < BlockQueueEntry >();
+    this->mBlockQueueEntry->mMinerID = this->mMinerID;
+    this->mBlockQueueEntry->mHasBlock = false;
+
     try {
         Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
         Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
@@ -62,11 +41,25 @@ void SyncChainTask::runTask () {
         //session.setKeepAlive ( true );
         session.setTimeout ( Poco::Timespan ( 1, 0 ));
         session.sendRequest ( request );
-        std::istream& rs = session.receiveResponse ( response );
+        
         
         if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
-            FromJSONSerializer::fromJSON ( this->mChain, rs );
-            this->mIsValid = true;
+        
+            std::istream& jsonStream = session.receiveResponse ( response );
+        
+            //string jsonString ( istreambuf_iterator < char >( jsonStream ), {});
+            //LOG_F ( INFO, "JSON: %s", jsonString ());
+        
+            Poco::JSON::Parser parser;
+            Poco::Dynamic::Var result = parser.parse ( jsonStream );
+            Poco::JSON::Object::Ptr json = result.extract < Poco::JSON::Object::Ptr >();
+        
+            json = json ? json->getObject ( "block" ) : NULL;
+        
+            if ( json ) {
+                FromJSONSerializer::fromJSON ( this->mBlockQueueEntry->mBlock, *json );
+                this->mBlockQueueEntry->mHasBlock = true;
+            }
         }
     }
     catch ( Poco::Exception& exc ) {

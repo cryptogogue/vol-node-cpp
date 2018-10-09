@@ -87,6 +87,12 @@ size_t Block::getCycleID () const {
 }
 
 //----------------------------------------------------------------//
+size_t Block::getHeight () const {
+
+    return this->mHeight;
+}
+
+//----------------------------------------------------------------//
 const Signature& Block::getSignature () const {
 
     return this->mSignature;

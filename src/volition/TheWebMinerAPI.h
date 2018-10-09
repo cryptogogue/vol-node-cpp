@@ -88,21 +88,23 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-//        try {
-//            u64 height = this->getMatchU64 ( "blockID" );
-//
-//            Chain* chain = TheWebMiner::get ().getChain ();
-//            if ( chain ) {
-//                Block* block = chain->findBlock ( height );
-//                if ( block ) {
-//                    jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
-//                    return Poco::Net::HTTPResponse::HTTP_OK;
-//                }
-//            }
-//        }
-//        catch ( ... ) {
-//            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-//        }
+        try {
+            
+            u64 height = this->getMatchU64 ( "blockID" );
+
+            TheWebMiner& webMiner = TheWebMiner::get ();
+            Poco::ScopedLock < Poco::Mutex > scopedLock ( webMiner.getMutex ());
+
+            const Chain& chain = webMiner.getChain ();
+            VersionedValue < Block > block = chain.getBlock ( height );
+            if ( block ) {
+                jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
+                return Poco::Net::HTTPResponse::HTTP_OK;
+            }
+        }
+        catch ( ... ) {
+            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
+        }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };
@@ -119,9 +121,10 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-        const Chain& chain = TheWebMiner::get ().lockChain ();
+        TheWebMiner& webMiner = TheWebMiner::get ();
+        Poco::ScopedLock < Poco::Mutex > scopedLock ( webMiner.getMutex ());
+        const Chain& chain = webMiner.getChain ();
         ToJSONSerializer::toJSON ( chain, jsonOut );
-        TheWebMiner::get ().unlockChain ();
         
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

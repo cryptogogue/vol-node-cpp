@@ -108,6 +108,16 @@ ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) 
 }
 
 //----------------------------------------------------------------//
+VersionedValue < Block > Chain::getBlock ( size_t height ) const {
+
+    VersionedStore snapshot ( *this );
+    if ( height < snapshot.getVersion ()) {
+        snapshot.revert ( height );
+    }
+    return VersionedValue < Block >( snapshot, BLOCK_KEY );
+}
+
+//----------------------------------------------------------------//
 VersionedValue < Block > Chain::getTopBlock () const {
 
     return VersionedValue < Block >( *this, BLOCK_KEY );
@@ -279,6 +289,56 @@ void Chain::reset () {
 size_t Chain::size () const {
 
     return this->VersionedStore::getVersion ();
+}
+
+//----------------------------------------------------------------//
+Chain::UpdateResult Chain::update ( ChainMetadata& metaData, const Block& block ) {
+
+    // rewind to block height.
+    VersionedStoreIterator chainIt ( *this, block.mHeight );
+
+    const Block& original = chainIt.getValue < Block >( BLOCK_KEY );
+
+    // if the block matches... do nothing. next block.
+    if ( block == original ) return UpdateResult::UPDATE_EQUALS;
+    
+    // check to see if the previous block matches
+    if ( block.mPrevDigest == original.mPrevDigest ) {
+        
+        // it's preceded by a match (hashes match), so let's see if it's a better block.
+        int compare = Block::compare ( original, block );
+        assert ( compare != 0 );
+        
+        if (( compare < 0 ) || ( !metaData.canEdit ( original.mCycleID, block.mMinerID ))) {
+        
+            // rejected or can't edit, so try again
+            return UpdateResult::UPDATE_RETRY;
+        }
+        
+        // new block is an improvement *and* we can edit. so, truncate the chain and add the new block.
+        
+        // roll back to the point of divergence
+        Chain state;
+        state.takeSnapshot ( *this );
+        state.revert ( block.mHeight );
+        state.clearVersion ();
+        
+        bool result = state.pushBlock ( block );
+        if ( !result ) return UpdateResult::UPDATE_RETRY; // block was rejected
+
+        // truncate the chain and grabs the revised state.
+        this->takeSnapshot ( state );
+        
+        // truncate the metadata. we're keeping base cycle so we get the full
+        // set of all active contributors known to the chain prior to truncation.
+        metaData.mCycleMetadata.resize ( block.mCycleID + 1 );
+
+        // affirm the block as a participant in the current cycle.
+        metaData.affirmParticipant ( block.mCycleID, block.mMinerID );
+    }
+
+    // previous blocks don't match. need to rewind.
+    return UpdateResult::UPDATE_REWIND;
 }
 
 //----------------------------------------------------------------//

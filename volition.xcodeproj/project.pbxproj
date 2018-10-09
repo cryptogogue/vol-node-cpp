@@ -430,6 +430,8 @@
 		CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtr.h; path = src/volition/serialization/SerializablePtr.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
+		CD844870216C26FF00831CE1 /* ChainFragment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChainFragment.cpp; path = src/volition/ChainFragment.cpp; sourceTree = "<group>"; };
+		CD844871216C26FF00831CE1 /* ChainFragment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChainFragment.h; path = src/volition/ChainFragment.h; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDC1388F212FCFDF004FA594 /* TestChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestChain.cpp; path = src/volition/gtest/TestChain.cpp; sourceTree = "<group>"; };
 		CDC2B31420CCAD2400300A96 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = State.cpp; path = src/volition/State.cpp; sourceTree = "<group>"; };
@@ -624,6 +626,8 @@
 				CD46659D20BE908300A02D55 /* Block.h */,
 				CDC2B33520CE112F00300A96 /* Chain.cpp */,
 				CDC2B33620CE112F00300A96 /* Chain.h */,
+				CD844870216C26FF00831CE1 /* ChainFragment.cpp */,
+				CD844871216C26FF00831CE1 /* ChainFragment.h */,
 				CD240D2B21360BD900FF8812 /* ChainMetadata.cpp */,
 				CD240D2C21360BD900FF8812 /* ChainMetadata.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
@@ -641,8 +645,8 @@
 		CD4665AF20BFF62600A02D55 /* util */ = {
 			isa = PBXGroup;
 			children = (
-				CDD36D022162A496004FC222 /* Format.cpp */,
 				CD0C3E2820C279FB006E3B1C /* Factory.h */,
+				CDD36D022162A496004FC222 /* Format.cpp */,
 				CDD36D002162A415004FC222 /* Format.h */,
 				CD36663720F595B2000E0B43 /* FNV1a.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,

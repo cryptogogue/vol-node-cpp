@@ -5,9 +5,7 @@
 #define VOLITION_SYNCCHAINTASK_H
 
 #include <volition/common.h>
-#include <volition/Chain.h>
-#include <volition/MinerInfo.h>
-#include <volition/Singleton.h>
+#include <volition/WebMiner.h>
 
 namespace Volition {
 
@@ -18,24 +16,20 @@ class SyncChainTask :
     public Poco::Task {
 private:
 
-    string          mMinerID;
-    string          mURL;
+    friend class WebMiner;
 
-    bool            mIsValid;
-    Chain           mChain;
+    string                          mMinerID;
+    string                          mURL;
+    unique_ptr < BlockQueueEntry >  mBlockQueueEntry;
 
     //----------------------------------------------------------------//
-    void            runTask             () override;
+    void                    runTask                 () override;
 
 public:
 
     //----------------------------------------------------------------//
-    const Chain&    getChain            () const;
-    string          getMinerID          () const;
-    string          getURL              () const;
-    bool            isValid             () const;
-                    SyncChainTask       ( string minerID, string url );
-                    ~SyncChainTask      ();
+                            SyncChainTask           ( string minerID, string url );
+                            ~SyncChainTask          ();
 };
 
 } // namespace Volition

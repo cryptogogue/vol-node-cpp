@@ -93,6 +93,13 @@ public:
     static constexpr const char* BLOCK_KEY      = "block";
     static constexpr const char* CYCLE_KEY      = "cycle";
 
+    enum class UpdateResult {
+        UPDATE_ACCEPTED,
+        UPDATE_EQUALS,
+        UPDATE_RETRY,
+        UPDATE_REWIND,
+    };
+
     //----------------------------------------------------------------//
     bool                        canPush             ( string minerID, bool force ) const;
                                 Chain               ();
@@ -101,7 +108,7 @@ public:
     size_t                      countBlocks         ( size_t cycleIdx ) const;
     size_t                      countCycles         () const;
     ChainPlacement              findNextCycle       ( ChainMetadata& metaData, string minerID ) const;
-    VersionedValue < Block >    getBlock            ( size_t cycleIdx, size_t blockIdx ) const;
+    VersionedValue < Block >    getBlock            ( size_t height ) const;
     VersionedValue < Block >    getTopBlock         () const;
     void                        prepareForPush      ( ChainMetadata& metaData, const ChainPlacement& placement, Block& block );
     string                      print               ( const char* pre = NULL, const char* post = NULL ) const;
@@ -109,6 +116,7 @@ public:
     bool                        pushBlock           ( const Block& block );
     void                        reset               ();
     size_t                      size                () const;
+    UpdateResult                update              ( ChainMetadata& metaData, const Block& block );
     void                        update              ( ChainMetadata& metaData, const Chain& other );
 };
 

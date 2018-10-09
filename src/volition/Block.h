@@ -64,6 +64,7 @@ public:
                         ~Block                              ();
     size_t              countTransactions                   () const;
     size_t              getCycleID                          () const;
+    size_t              getHeight                           () const;
     string              getMinerID                          () const;
     size_t              getScore                            () const;
     const Signature&    getSignature                        () const;

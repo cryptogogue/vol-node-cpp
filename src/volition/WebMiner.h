@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransaction.h>
+#include <volition/Block.h>
 #include <volition/Chain.h>
 #include <volition/Miner.h>
 #include <volition/State.h>
@@ -15,6 +16,40 @@ namespace Volition {
 class SyncChainTask;
 
 //================================================================//
+// RemoteMiner
+//================================================================//
+class RemoteMiner {
+private:
+
+    friend class WebMiner;
+
+    string                  mURL;
+    size_t                  mCurrentBlock;
+
+    bool                    mWaitingForTask;
+
+public:
+
+    //----------------------------------------------------------------//
+                    RemoteMiner             ();
+                    ~RemoteMiner            ();
+};
+
+//================================================================//
+// BlockQueueEntry
+//================================================================//
+class BlockQueueEntry {
+private:
+
+    friend class WebMiner;
+    friend class SyncChainTask;
+
+    string      mMinerID;
+    Block       mBlock;
+    bool        mHasBlock;
+};
+
+//================================================================//
 // WebMiner
 //================================================================//
 class WebMiner :
@@ -22,25 +57,30 @@ class WebMiner :
     public Poco::Activity < WebMiner > {
 private:
 
-    Poco::TaskManager                           mTaskManager;
-    map < string, string >                      mMinerURLs;
+    Poco::Mutex                         mMutex;
+
+    Poco::TaskManager                   mTaskManager;
+    set < string >                      mMinerSet;
+    map < string, RemoteMiner >         mRemoteMiners;
 
     bool                                        mSolo;
-
-    Poco::Mutex                                 mChainMutex;
+    list < unique_ptr < BlockQueueEntry >>      mBlockQueue;
 
     //----------------------------------------------------------------//
     void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
+    void            processQueue                ();
     void            run                         () override;
-    void            updateChains                ();
+    void            runMulti                    ();
+    void            runSolo                     ();
+    void            startTasks                  ();
+    void            updateMiners                ();
 
 public:
 
     //----------------------------------------------------------------//
-    const Chain&    lockChain               ();
+    Poco::Mutex&    getMutex                ();
     void            setSolo                 ( bool solo );
     void            shutdown                ();
-    void            unlockChain             ();
                     WebMiner                ();
                     ~WebMiner               ();
 };

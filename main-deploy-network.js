@@ -28,7 +28,8 @@ function spawnWithArgs ( prefix, command, args ) {
     });
 }
 
-spawnWithArgs ( '9090: ', 'bin/server', '-p 9090 -k keys/pkey0.priv.json -g genesis.signed' );
+//spawnWithArgs ( '9090: ', 'bin/server', '-p 9090 -k keys/pkey0.priv.json -g genesis.signed' );
 spawnWithArgs ( '9091: ', 'bin/server', '-p 9091 -k keys/pkey1.priv.json -g genesis.signed' );
 spawnWithArgs ( '9092: ', 'bin/server', '-p 9092 -k keys/pkey2.priv.json -g genesis.signed' );
 spawnWithArgs ( '9093: ', 'bin/server', '-p 9093 -k keys/pkey3.priv.json -g genesis.signed' );
+spawnWithArgs ( '9094: ', 'bin/server', '-p 9094 -k keys/pkey4.priv.json -g genesis.signed' );
