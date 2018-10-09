@@ -68,6 +68,7 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, *jsonIn, *jsonOut );
 
     response.setStatus ( status );
+    response.add ( "Access-Control-Allow-Origin", "*" );
     
     ostream& out = response.send ();
     jsonOut->stringify ( out, 4, -1 );
