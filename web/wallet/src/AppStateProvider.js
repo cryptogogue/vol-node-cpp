@@ -87,12 +87,6 @@ class AppStateProvider extends Component {
 
         let state = {
             accounts : {},
-            alerts : {
-                body : '',
-                error : {
-                    message : ''
-                }
-            },
             session : {
                 isLoggedIn : false,
             },
