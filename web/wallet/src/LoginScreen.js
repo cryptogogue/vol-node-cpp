@@ -22,13 +22,13 @@ class LoginScreen extends Component {
     }
 
     //----------------------------------------------------------------//
-    handleChange = ( event ) => {
+    handleChange ( event ) {
 
         this.setState ({[ event.target.name ]: event.target.value });
     }
 
     //----------------------------------------------------------------//
-    handleSubmit = ( event ) => {
+    handleSubmit () {
 
         const { appState } = this.props;
         const passwordHash = ( appState.state.user && appState.state.user.passwordHash ) || '';
@@ -59,6 +59,9 @@ class LoginScreen extends Component {
         if ( !appState.hasUser ()) return ( <Redirect to = "/" />);
         if ( appState.isLoggedIn ()) return ( <Redirect to = "/accounts" />);
 
+        let onChange        = ( event ) => { this.handleChange ( event )};
+        let onSubmit        = () => { this.handleSubmit ()};
+
         return (
         
             <div className='login-form'>
@@ -79,7 +82,7 @@ class LoginScreen extends Component {
                     <Header as="h2" color="teal" textAlign="center">
                         Login to your account
                     </Header>
-                    <Form size = "large" onSubmit = { this.handleSubmit }>
+                    <Form size = "large" onSubmit = { onSubmit }>
                         <Segment stacked>
                             <Form.Input
                                 fluid
@@ -89,7 +92,7 @@ class LoginScreen extends Component {
                                 type = "password"
                                 name = "password"
                                 value = { this.state.password }
-                                onChange = { this.handleChange }
+                                onChange = { onChange }
                                 error = {( errorMessage.length > 0 ) ? true : false}
                             />
                             {( errorMessage.length > 0 ) && <span>{ errorMessage }</span>}

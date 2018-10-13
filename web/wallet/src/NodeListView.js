@@ -11,7 +11,7 @@ import { Button, Form, Segment }    from 'semantic-ui-react';
 class NodeListView extends Component {
 
     //----------------------------------------------------------------//
-    affirmNodeURL = () => {
+    affirmNodeURL () {
 
         this.props.appState.affirmNodeURL ( this.state.nodeURL );
         this.setState ({ nodeURL : '' });
@@ -27,13 +27,13 @@ class NodeListView extends Component {
     }
   
     //----------------------------------------------------------------//
-    handleChange = ( event ) => {
+    handleChange ( event ) {
 
         this.setState ({[ event.target.name ]: event.target.value });
     }
 
     //----------------------------------------------------------------//
-    clearNodeURLs = () => {
+    clearNodeURLs () {
 
         this.props.appState.clearNodeURLs ();
     }
@@ -51,6 +51,10 @@ class NodeListView extends Component {
         // TODO: this interface is crap, but it gets us started. what we want is a table of nodes, a status indicator
         // for each node and individual delete buttons for each node.
 
+        let onClickAdd      = () => { this.affirmNodeURL ()};
+        let onClickClear    = () => { this.clearNodeURLs ()};
+        let onChange        = ( event ) => { this.handleChange ( event )};
+
         return (
 
             <div>
@@ -59,19 +63,19 @@ class NodeListView extends Component {
                     return (<p key = { 'url' + idx }>{ url }</p>);
                 })}
 
-                <Form size = "large" onSubmit = { this.handleSubmit }>
+                <Form size = "large">
                     <Segment stacked>
                         <Form.Input
                             fluid
                             placeholder = "Node URL"
                             name = "nodeURL"
                             value = { this.state.nodeURL }
-                            onChange = { this.handleChange }
+                            onChange = { onChange }
                         />
-                        <Button color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { this.affirmNodeURL }>
+                        <Button color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickAdd }>
                             Add
                         </Button>
-                        { isClearEnabled && <Button color = "red" fluid onClick = { this.clearNodeURLs }>Clear</Button> }
+                        { isClearEnabled && <Button color = "red" fluid onClick = { onClickClear }>Clear</Button> }
                     </Segment>
                 </Form>
             </div>

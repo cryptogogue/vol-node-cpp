@@ -21,7 +21,7 @@ class NavigationBar extends Component {
     }
 
     //----------------------------------------------------------------//
-    logout = () => {
+    logout () {
         this.props.appState.login ( false );
     }
   
@@ -30,6 +30,9 @@ class NavigationBar extends Component {
         
         const { appState, navTitle } = this.props;
         const { activeItem } = this.state;
+
+        let onClickDeleteStorage    = () => { appState.deleteStorage ()};
+        let onClickLogout           = () => { this.logout ()};
 
         return (
             <Menu>
@@ -46,8 +49,8 @@ class NavigationBar extends Component {
                     <Dropdown item icon = "settings">
                         <Dropdown.Menu>
                             <Dropdown.Item icon = "add square" text = "Create Account" as = { Link } to = '/accounts/new' />
-                            <Dropdown.Item icon = "log out" text = "Logout" onClick = { this.logout }/>
-                            <Dropdown.Item icon = "globe" text = "DEBUG: Delete Local Storage" onClick = { appState.deleteStorage }/>
+                            <Dropdown.Item icon = "log out" text = "Logout" onClick = { onClickLogout }/>
+                            <Dropdown.Item icon = "globe" text = "DEBUG: Delete Local Storage" onClick = { onClickDeleteStorage }/>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Menu.Menu>

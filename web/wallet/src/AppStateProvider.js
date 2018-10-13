@@ -35,7 +35,7 @@ function withAppState ( WrappedComponent ) {
 class AppStateProvider extends Component {
 
     //----------------------------------------------------------------//
-    affirmNodeURL = ( nodeURL ) => {
+    affirmNodeURL ( nodeURL ) {
 
         const idx = this.state.nodes.indexOf ( nodeURL );
         if ( idx < 0 ) {
@@ -47,7 +47,7 @@ class AppStateProvider extends Component {
     }
 
     //----------------------------------------------------------------//
-    clearNodeURLs = () => {
+    clearNodeURLs () {
         storage.setItem ( STORE_NODES, []);
         this.setState ({ nodes : []});
     }
@@ -58,14 +58,12 @@ class AppStateProvider extends Component {
 
         this.state = this.loadState ();
 
-        // this.discoverNetwork = this.discoverNetwork.bind ( this );
-
         // this.discoveryTimer = setTimeout ( this.discoverNetwork, 0 );
     }
 
     //----------------------------------------------------------------//
     // DELETE account from local storage
-    deleteStorage = () => {
+    deleteStorage () {
         storage.clear ();
         this.setState ( this.makeClearState ());
     }
@@ -115,17 +113,17 @@ class AppStateProvider extends Component {
     // }
 
     //----------------------------------------------------------------//
-    hasUser = () => {
+    hasUser () {
         return ( this.state.user.passwordHash.length > 0 );
     }
 
     //----------------------------------------------------------------//
-    isLoggedIn = () => {
+    isLoggedIn () {
         return ( this.state.session.isLoggedIn === true );
     }
 
     //----------------------------------------------------------------//
-    loadState = () => {
+    loadState () {
 
         let state = this.makeClearState ();
 
@@ -140,7 +138,7 @@ class AppStateProvider extends Component {
     //----------------------------------------------------------------//
     // LOGIN to the app
     // TODO: Pass clear errors/error messages
-    login = ( status ) => {
+    login ( status ) {
 
         const session = {
             isLoggedIn : status,
@@ -152,7 +150,7 @@ class AppStateProvider extends Component {
 
     //----------------------------------------------------------------//
     // CLEAR App State (reset to initial state)
-    makeClearState = () => {
+    makeClearState () {
 
         let state = {
             accounts : {},
@@ -171,7 +169,7 @@ class AppStateProvider extends Component {
     }
 
     //----------------------------------------------------------------//
-    register = ( passwordHash ) => {
+    register ( passwordHash ) {
 
         const session = {
             isLoggedIn : true,
@@ -201,7 +199,7 @@ class AppStateProvider extends Component {
     }
 
     //----------------------------------------------------------------//
-    saveAccount = ( accountId, privateKey, publicKey ) => {
+    saveAccount ( accountId, privateKey, publicKey ) {
 
         let account = {
             keys : {

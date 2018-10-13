@@ -22,13 +22,13 @@ class RegisterScreen extends Component {
     }
 
     //----------------------------------------------------------------//
-    handleChange = ( event ) => {
+    handleChange ( event ) {
 
         this.setState ({[ event.target.name ]: event.target.value });
     }
 
     //----------------------------------------------------------------//
-    handleSubmit = ( event ) => {
+    handleSubmit () {
 
         // Hash password with salt
         let passwordHash = bcrypt.hashSync ( this.state.password, 10 );
@@ -54,6 +54,9 @@ class RegisterScreen extends Component {
             return (<Redirect to = { to }/>);
         }
 
+        let onChange        = ( event ) => { this.handleChange ( event )};
+        let onSubmit        = () => { this.handleSubmit ()};
+
         return (
             <div className = "register-form">
                 {/*
@@ -73,7 +76,7 @@ class RegisterScreen extends Component {
                         <Header as = "h2" color = "red" textAlign = "center">
                             Register your account
                         </Header>
-                        <Form size = "large" onSubmit = { this.handleSubmit }>
+                        <Form size = "large" onSubmit = { onSubmit }>
                             <Segment stacked>
                                 <Form.Input
                                     fluid
@@ -83,7 +86,7 @@ class RegisterScreen extends Component {
                                     type = "password"
                                     name = "password"
                                     value = { this.state.password }
-                                    onChange = { this.handleChange }
+                                    onChange = { onChange }
                                 />
                                 <Form.Input
                                     fluid
@@ -93,7 +96,7 @@ class RegisterScreen extends Component {
                                     type = "password"
                                     name = "confirmPassword"
                                     value = { this.state.confirmPassword }
-                                    onChange = { this.handleChange }
+                                    onChange = { onChange }
                                 />
                                 { errorMessage && <span>{ errorMessage }</span>}
                                 <Button color = "red" fluid size = "large" disabled = { !isEnabled }>

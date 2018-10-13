@@ -12,8 +12,6 @@ class Transactions extends Component {
     constructor ( props ) {
         super ( props );
         this.state = { transactions : "" };
-
-        this.getTransactions  = this.getTransactions.bind ( this );
     }
 
     //----------------------------------------------------------------//

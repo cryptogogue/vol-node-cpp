@@ -43,7 +43,8 @@ class AccountScreen extends BaseComponent {
                 this.revocablePromise ( fetch ( url ))
                 .then (( response ) => { return response.json (); })
                 .then (( data ) => { isMiner = ( data.type === 'VOL_MINING_NODE' ); })
-                .finally (( error ) => {
+                .catch (( error ) => { console.log ( error )})
+                .finally (() => {
                     miners [ url ] = isMiner;
                     resolve ( isMiner );
                 });
@@ -64,6 +65,7 @@ class AccountScreen extends BaseComponent {
                         this.setState ({ balance : balance });
                     }
                 })
+                .catch (( error ) => { console.log ( error )})
                 .finally (() => {
                     resolve ( balance );
                 });
@@ -144,7 +146,7 @@ class AccountScreen extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    renderAccountDetails = () => {
+    renderAccountDetails () {
 
         const accountId = this.props.match.params.accountId;
         const { accounts, nodes } = this.props.appState.state;
