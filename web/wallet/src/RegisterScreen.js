@@ -19,19 +19,16 @@ class RegisterScreen extends Component {
             password: '',
             confirmPassword: '',
         };
-
-        this.handleChange = this.handleChange.bind ( this );
-        this.handleSubmit = this.handleSubmit.bind ( this );
     }
 
     //----------------------------------------------------------------//
-    handleChange ( event ) {
+    handleChange = ( event ) => {
 
         this.setState ({[ event.target.name ]: event.target.value });
     }
 
     //----------------------------------------------------------------//
-    handleSubmit ( event ) {
+    handleSubmit = ( event ) => {
 
         // Hash password with salt
         let passwordHash = bcrypt.hashSync ( this.state.password, 10 );

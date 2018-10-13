@@ -2,8 +2,8 @@
 
 import { withAppState }         from './AppStateProvider';
 import NavigationBar            from './NavigationBar';
+import NodeListView             from './NodeListView';
 //import Transactions             from './Transactions';
-import { request }              from './utils/api.js';
 import React, { Component }     from 'react';
 import { Redirect }             from 'react-router-dom';
 import { Dropdown, Segment, Header, Icon, Button, Divider, Modal, Grid } from 'semantic-ui-react';
@@ -17,55 +17,87 @@ class AccountScreen extends Component {
     constructor ( props ) {
         super ( props );
 
-        console.log ( 'CONSTRUCTOR' );
-
         this.state = {
-            accountId : this.props.match.params && this.props.match.params.accountId
+            accountId : this.props.match.params && this.props.match.params.accountId,
+            balance : -1,
         };
 
-        this.getAccountBalance  = this.getAccountBalance.bind ( this );
-        this.openAccount        = this.openAccount.bind ( this );
+        this.getAccountBalance ();
     }
 
     //----------------------------------------------------------------//
     // Fetch account balance from the blockchain
     getAccountBalance () {
 
-        const URI = 'http://localhost:9090/accounts/' + this.state.accountName;
-        
-        request ( URI )
-        .then ( res => { return res.json (); })
-        .then ( data => { this.setState ({ balance : data.account.balance }) })
-        .catch ( error => this.setState ({ error : error.message, balance : "--"}));
-    }
+        let miners = {};
+        let minerQueue = [];
 
-    //----------------------------------------------------------------//
-    // Perform OPEN_ACCOUNT transaction on the blockchain
-    openAccount () {
-        
-        const accountName = this.state.accountName;
-        const publicKey = this.state.publicKey;
+        let checkIsMiner = ( url ) => {
 
-        let accountObject = {
-            "type" : "OPEN_ACCOUNT",
-            "maker" : {
-                "accountName" : "9090",
-                "keyName" : "master",
-                "gratuity" : 0,
-                "nonce" : 0
-            },
-            "accountName" : accountName,
-            "key" : {
-                "type" : "EC_HEX",
-                "groupName" : "secp256k1",
-                "publicKey" : publicKey
-            },
-            "keyName" : "master",
-            "amount" : 5
-        };
+            return new Promise (( resolve ) => {
 
-        request ( `http://localhost:9090/transactions`, 'post', accountObject )
-        .catch ( error => console.log ( error ));
+                if ( url in miners ) resolve ( miners [ url ]);
+
+                let isMiner = false;
+
+                fetch ( url )
+                .then (( response ) => { return response.json (); })
+                .then (( data ) => { isMiner = ( data.type === 'VOL_MINING_NODE' ); })
+                .finally (( error ) => {
+                    miners [ url ] = isMiner;
+                    resolve ( isMiner );
+                });
+            });
+        }
+
+        let updateBalance = ( url ) => {
+
+            return new Promise (( resolve ) => {
+
+                let balance = false;
+
+                fetch ( url + '/accounts/' + this.state.accountId )
+                .then (( response ) => { return response.json (); })
+                .then (( data ) => {
+                    if ( data.account && ( data.account.accountName === this.state.accountId )) {
+                        balance = data.account.balance;
+                        this.setState ({ balance : balance });
+                    }
+                })
+                .finally (() => {
+                    resolve ( balance );
+                });
+            });
+        }
+
+        let fetchBalance = async () => {
+
+            if ( minerQueue.length === 0 ) {
+                const { nodes } = this.props.appState.state;
+                for ( let i in nodes ) {
+
+                    const url = nodes [ i ];
+                    if ( await checkIsMiner ( url )) {
+                        minerQueue.push ( url );
+                    }
+                }
+            }
+
+            if ( !this.state.accountId ) {
+                minerQueue = [];
+            }
+
+            if ( minerQueue.length > 0 ) {
+                const url = minerQueue.shift ();
+                await updateBalance ( url );
+            }
+
+            // it's possible to be a bit smarter about when this kicks off. but...
+            // not sure if it's worth the effort.
+            setTimeout (() => { fetchBalance (); }, 1000 );
+        }
+
+        setTimeout (() => { fetchBalance (); }, 0 );
     }
 
     //----------------------------------------------------------------//
@@ -101,6 +133,10 @@ class AccountScreen extends Component {
                             { this.renderAccountDetails ()}
                         </div>
 
+                        <Segment>
+                            <NodeListView/>
+                        </Segment>
+
                     </Grid.Column>
                 </Grid>
             </div>
@@ -111,12 +147,32 @@ class AccountScreen extends Component {
     renderAccountDetails = () => {
 
         const accountId = this.props.match.params.accountId;
-        const { accounts } = this.props.appState.state;
+        const { accounts, nodes } = this.props.appState.state;
         const account = ( accountId in accounts ) && accounts [ accountId ];
 
         if ( !account ) return;
 
         const publicKey = account.keys.master.publicKey;
+
+        let contextAware;
+
+        if ( nodes.length === 0 ) {
+            contextAware = (
+                <p>No nodes have been defined. Add nodes below to sync account with chain.</p>
+            );
+        }
+        else if ( this.state.balance >= 0 ) {
+            contextAware = (
+                <Header as = "h2">
+                    <p>Balance: { this.state.balance }</p>
+                </Header>
+            );
+        }
+        else {
+            contextAware = (
+                <p>Checking balance...</p>
+            );
+        }
 
         return (
             <Segment>
@@ -135,19 +191,10 @@ class AccountScreen extends Component {
                             </center>
                         </Modal.Content>
                     </Modal>
-
-                    <Button primary onClick = { this.getAccountBalance }>
-                        Check balance
-                    </Button>
-
-                    <p>Balance: { this.state.balance }</p>
-
                 </Header>
-                <Divider hidden />
-                <Button primary icon labelPosition = "right" onClick = { this.openAccount }>
-                    Push account to chain
-                    <Icon name = "right arrow" />
-                </Button>
+
+                { contextAware }
+
             </Segment>
         );
     }
@@ -169,7 +216,7 @@ class AccountScreen extends Component {
                 search
                 selection
                 options = { options }
-                onChange = {( event, data ) => { this.setState ({ accountId : data.value }); }}
+                onChange = {( event, data ) => { this.setState ({ accountId : data.value, balance : -1 }); }}
             />
         );
     }

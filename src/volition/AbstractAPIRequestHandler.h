@@ -26,9 +26,10 @@ protected:
     static const int HTTP_DELETE        =  1 << 0;
     static const int HTTP_GET           =  1 << 1;
     static const int HTTP_HEAD          =  1 << 2;
-    static const int HTTP_PATCH         =  1 << 3;
-    static const int HTTP_POST          =  1 << 4;
-    static const int HTTP_PUT           =  1 << 5;
+    static const int HTTP_OPTIONS       =  1 << 3;
+    static const int HTTP_PATCH         =  1 << 4;
+    static const int HTTP_POST          =  1 << 5;
+    static const int HTTP_PUT           =  1 << 6;
     
     //----------------------------------------------------------------//
     static int              getMethodForString                          ( string method );

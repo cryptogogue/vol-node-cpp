@@ -24,18 +24,19 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-//        string accountName = this->getMatchString ( "accountName" );
-//        const State& state = TheWebMiner::get ().getState ();
-//
-//        VersionedValue < Account > account = state.getAccount ( accountName );
-//        if ( account ) {
-//            Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
-//            accountJSON->set ( "accountName", accountName.c_str ());
-//            accountJSON->set ( "balance", ( int )account->getBalance ());
-//
-//            jsonOut.set ( "account", accountJSON );
-//            return Poco::Net::HTTPResponse::HTTP_OK;
-//        }
+        string accountName = this->getMatchString ( "accountName" );
+        const State& state = TheWebMiner::get ().getState ();
+
+        VersionedValue < Account > account = state.getAccount ( accountName );
+        if ( account ) {
+            Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
+            accountJSON->set ( "accountName", accountName.c_str ());
+            accountJSON->set ( "balance", ( int )account->getBalance ());
+            accountJSON->set ( "nonce", ( int )account->getNonce ());
+
+            jsonOut.set ( "account", accountJSON );
+            return Poco::Net::HTTPResponse::HTTP_OK;
+        }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };
@@ -144,6 +145,7 @@ public:
         
         const TheWebMiner& theMiner = TheWebMiner::get ();
         
+        jsonOut.set ( "type", "VOL_MINING_NODE" );
         jsonOut.set ( "minerID", theMiner.getMinerID ().c_str ());
 
         return Poco::Net::HTTPResponse::HTTP_OK;

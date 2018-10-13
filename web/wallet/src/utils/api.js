@@ -3,9 +3,9 @@
 //----------------------------------------------------------------//
 export const request = ( url, method, data ) => {
 
-    method = (typeof method === 'undefined') ? 'GET' : method.toUpperCase ();
+    method = ( typeof method === 'undefined' ) ? 'GET' : method.toUpperCase ();
 
-    return new Promise((resolve, reject) => {
+    return new Promise (( resolve, reject ) => {
         (() => {
             if (method === 'GET') {
                 return fetch ( url );

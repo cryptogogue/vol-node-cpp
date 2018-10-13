@@ -19,19 +19,16 @@ class LoginScreen extends Component {
             password: '',
             errorMessage: '',
         };
-
-        this.handleChange = this.handleChange.bind ( this );
-        this.handleSubmit = this.handleSubmit.bind ( this );
     }
 
     //----------------------------------------------------------------//
-    handleChange ( event ) {
+    handleChange = ( event ) => {
 
         this.setState ({[ event.target.name ]: event.target.value });
     }
 
     //----------------------------------------------------------------//
-    handleSubmit ( event ) {
+    handleSubmit = ( event ) => {
 
         const { appState } = this.props;
         const passwordHash = ( appState.state.user && appState.state.user.passwordHash ) || '';

@@ -1,9 +1,11 @@
 /* eslint-disable no-whitespace-before-property */
+/* eslint-disable no-loop-func */
 
 import * as storage             from './utils/storage';
 import React, { Component }     from 'react';
 
 const STORE_ACCOUNTS        = 'vol_accounts';
+const STORE_NODES           = 'vol_nodes';
 const STORE_PASSWORD_HASH   = 'vol_password_hash';
 const STORE_SESSION         = 'vol_session';
 
@@ -33,10 +35,32 @@ function withAppState ( WrappedComponent ) {
 class AppStateProvider extends Component {
 
     //----------------------------------------------------------------//
+    affirmNodeURL = ( nodeURL ) => {
+
+        const idx = this.state.nodes.indexOf ( nodeURL );
+        if ( idx < 0 ) {
+            let nodes = this.state.nodes.slice ( 0 );
+            nodes.push ( nodeURL );
+            storage.setItem ( STORE_NODES, nodes );
+            this.setState ({ nodes : nodes });
+        }
+    }
+
+    //----------------------------------------------------------------//
+    clearNodeURLs = () => {
+        storage.setItem ( STORE_NODES, []);
+        this.setState ({ nodes : []});
+    }
+
+    //----------------------------------------------------------------//
     constructor ( props ) {
         super ( props );
 
         this.state = this.loadState ();
+
+        // this.discoverNetwork = this.discoverNetwork.bind ( this );
+
+        // this.discoveryTimer = setTimeout ( this.discoverNetwork, 0 );
     }
 
     //----------------------------------------------------------------//
@@ -45,6 +69,50 @@ class AppStateProvider extends Component {
         storage.clear ();
         this.setState ( this.makeClearState ());
     }
+
+    //----------------------------------------------------------------//
+    // discoverNetwork () {
+
+    //     console.log ( 'DISCOVER NETWORK' );
+
+    //     const { nodes } = this.state;
+
+    //     let count = 0;
+    //     let top = nodes.length;
+
+    //     let finish = () => {
+    //         if ( count >= top ) {
+    //             this.discoveryTimer = setTimeout ( this.discoverNetwork, 1000 );
+    //         }
+    //     }
+
+    //     for ( let i in nodes ) {
+
+    //         const nodeURL = nodes [ i ];
+
+    //         console.log ( 'NODE URL:', nodeURL );
+
+    //         fetch ( nodeURL )
+    //         .then (( response ) => {
+
+    //             return response.json();
+    //         })
+    //         .then (( data ) => {
+
+    //             console.log ( data );
+    //         }) 
+    //         .catch (( error ) => {
+
+    //             console.log ( error );
+    //         })
+    //         .finally (() => {
+    //             count++;
+    //             finish ();
+    //         });
+    //     }
+
+    //     finish ()
+    // }
 
     //----------------------------------------------------------------//
     hasUser = () => {
@@ -61,9 +129,10 @@ class AppStateProvider extends Component {
 
         let state = this.makeClearState ();
 
-        state.user.passwordHash = storage.getItem ( STORE_PASSWORD_HASH ) || state.user.passwordHash;
-        state.accounts = storage.getItem ( STORE_ACCOUNTS ) || state.accounts;
-        state.session = storage.getItem ( STORE_SESSION ) || state.session;
+        state.user.passwordHash     = storage.getItem ( STORE_PASSWORD_HASH ) || state.user.passwordHash;
+        state.accounts              = storage.getItem ( STORE_ACCOUNTS ) || state.accounts;
+        state.nodes                 = storage.getItem ( STORE_NODES ) || state.nodes;
+        state.session               = storage.getItem ( STORE_SESSION ) || state.session;
 
         return state;
     }
@@ -90,6 +159,7 @@ class AppStateProvider extends Component {
             session : {
                 isLoggedIn : false,
             },
+            nodes : [],
             user : {
                 passwordHash : '',
                 confirmPassword : '',
@@ -138,9 +208,9 @@ class AppStateProvider extends Component {
                 master : {
                     privateKey : privateKey, // TODO: encrypt this with password
                     publicKey : publicKey
-                    
                 }
-            }
+            },
+            isNew : true
         };
 
         // Add new account to StateManager state

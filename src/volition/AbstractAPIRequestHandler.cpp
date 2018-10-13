@@ -25,6 +25,7 @@ int AbstractAPIRequestHandler::getMethodForString ( string method ) {
         case FNV1a::const_hash_64 ( "DELETE" ):     return HTTP_DELETE;
         case FNV1a::const_hash_64 ( "GET" ):        return HTTP_GET;
         case FNV1a::const_hash_64 ( "HEAD" ):       return HTTP_HEAD;
+        case FNV1a::const_hash_64 ( "OPTIONS" ):    return HTTP_OPTIONS;
         case FNV1a::const_hash_64 ( "PATCH" ):      return HTTP_PATCH;
         case FNV1a::const_hash_64 ( "POST" ):       return HTTP_POST;
         case FNV1a::const_hash_64 ( "PUT" ):        return HTTP_PUT;
@@ -39,11 +40,21 @@ int AbstractAPIRequestHandler::getMethodForString ( string method ) {
 //----------------------------------------------------------------//
 void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const {
 
-    response.setContentType ( "application/json" );
+    response.add ( "Access-Control-Allow-Origin", "*" );
+    response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );
+    response.add ( "Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, POST, PUT" );
 
     int method = AbstractAPIRequestHandler::getMethodForString ( request.getMethod ());
+    
+    if ( method == HTTP_OPTIONS ) {
+        response.setStatus (  Poco::Net::HTTPResponse::HTTP_OK );
+        response.send ();
+        return;
+    }
+    
     if ( !( this->AbstractAPIRequestHandler_getSupportedHTTPMethods () & method )) {
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED );
+        response.send ();
         return;
     }
 
@@ -58,6 +69,7 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     
         if ( !jsonIn ) {
             response.setStatus ( Poco::Net::HTTPResponse::HTTP_BAD_REQUEST );
+            response.send ();
             return;
         }
     }
@@ -66,9 +78,8 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     }
 
     HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, *jsonIn, *jsonOut );
-
     response.setStatus ( status );
-    response.add ( "Access-Control-Allow-Origin", "*" );
+    response.setContentType ( "application/json" );
     
     ostream& out = response.send ();
     jsonOut->stringify ( out, 4, -1 );
