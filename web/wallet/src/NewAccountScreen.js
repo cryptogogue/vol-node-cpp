@@ -1,13 +1,14 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { withAppState }         from './AppStateProvider';
-import { randomBytes }          from './utils/randomBytes';
-import * as bip39               from 'bip39';
-import * as bitcoin             from 'bitcoinjs-lib';
-import React, { Component }     from 'react';
-import { Redirect }             from 'react-router-dom';
-import { Header, Icon, Button } from 'semantic-ui-react';
+import { withAppState }             from './AppStateProvider';
+import BaseComponent                from './BaseComponent';
+import { randomBytes }              from './utils/randomBytes';
+import * as bip39                   from 'bip39';
+import * as bitcoin                 from 'bitcoinjs-lib';
+import React                        from 'react';
+import { Redirect }                 from 'react-router-dom';
+import { Header, Icon, Button }     from 'semantic-ui-react';
 
 const STATUS_SEARCHING_FOR_PROVIDERS    = 0;
 const STATUS_NO_PROVIDERS_FOUND         = 1;
@@ -20,7 +21,7 @@ const STATUS_DONE                       = 6;
 //================================================================//
 // NewAccountScreen
 //================================================================//
-class NewAccountScreen extends Component {
+class NewAccountScreen extends BaseComponent {
     
     //----------------------------------------------------------------//
     acceptBid () {
@@ -39,11 +40,11 @@ class NewAccountScreen extends Component {
             amount:         0,
         };
 
-        fetch ( bid.provider + '/bid', {
+        this.revocablePromise ( fetch ( bid.provider + '/bid', {
             method : 'POST',
             headers : { 'content-type': 'application/json' },
             body : JSON.stringify ( order )
-        })
+        }))
         .then (( response ) => {
 
             return response.json ();
@@ -135,7 +136,7 @@ class NewAccountScreen extends Component {
 
         this.miners = [];
 
-        setTimeout (() => { this.searchForProviders (); }, 0 );
+        this.revocableTimeout (() => { this.searchForProviders (); }, 0 );
     }
 
     //----------------------------------------------------------------//
@@ -154,11 +155,11 @@ class NewAccountScreen extends Component {
             
             console.log ( 'POST TO MINER:', url );
 
-            fetch ( url + '/transactions', {
+            this.revocablePromise ( fetch ( url + '/transactions', {
                 method : 'POST',
                 headers : { 'content-type': 'application/json' },
                 body : JSON.stringify ( transaction )
-            })
+            }))
             .then (( response ) => { success++; })
             .catch (( error ) => { console.log ( error ); })
             .finally (() => {
@@ -264,7 +265,7 @@ class NewAccountScreen extends Component {
 
         let checkBid = ( url ) => {
             
-            fetch ( url + '/bid' )
+            this.revocablePromise ( fetch ( url + '/bid' ))
             .then (( response ) => { return response.json (); })
             .then (( data ) => {
 
@@ -331,7 +332,7 @@ class NewAccountScreen extends Component {
             searchSet [ url ] = true;
             visitedSet [ url ] = true;
 
-            fetch ( url )
+            this.revocablePromise ( fetch ( url ))
             .then (( response ) => { return response.json (); })
             .then (( data ) => {
 

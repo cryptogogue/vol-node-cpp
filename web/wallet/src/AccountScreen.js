@@ -1,17 +1,17 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { withAppState }         from './AppStateProvider';
+import BaseComponent            from './BaseComponent';
 import NavigationBar            from './NavigationBar';
 import NodeListView             from './NodeListView';
-//import Transactions             from './Transactions';
-import React, { Component }     from 'react';
+import React                    from 'react';
 import { Redirect }             from 'react-router-dom';
-import { Dropdown, Segment, Header, Icon, Button, Divider, Modal, Grid } from 'semantic-ui-react';
+import { Dropdown, Segment, Header, Icon, Divider, Modal, Grid } from 'semantic-ui-react';
 
 //================================================================//
 // AccountSelection
 //================================================================//
-class AccountScreen extends Component {
+class AccountScreen extends BaseComponent {
     
     //----------------------------------------------------------------//
     constructor ( props ) {
@@ -40,7 +40,7 @@ class AccountScreen extends Component {
 
                 let isMiner = false;
 
-                fetch ( url )
+                this.revocablePromise ( fetch ( url ))
                 .then (( response ) => { return response.json (); })
                 .then (( data ) => { isMiner = ( data.type === 'VOL_MINING_NODE' ); })
                 .finally (( error ) => {
@@ -56,7 +56,7 @@ class AccountScreen extends Component {
 
                 let balance = false;
 
-                fetch ( url + '/accounts/' + this.state.accountId )
+                this.revocablePromise ( fetch ( url + '/accounts/' + this.state.accountId ))
                 .then (( response ) => { return response.json (); })
                 .then (( data ) => {
                     if ( data.account && ( data.account.accountName === this.state.accountId )) {
@@ -94,10 +94,10 @@ class AccountScreen extends Component {
 
             // it's possible to be a bit smarter about when this kicks off. but...
             // not sure if it's worth the effort.
-            setTimeout (() => { fetchBalance (); }, 1000 );
+            this.revocableTimeout (() => { fetchBalance (); }, 1000 );
         }
 
-        setTimeout (() => { fetchBalance (); }, 0 );
+        this.revocableTimeout (() => { fetchBalance (); }, 0 );
     }
 
     //----------------------------------------------------------------//
