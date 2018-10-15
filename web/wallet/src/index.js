@@ -11,6 +11,7 @@ import registerServiceWorker    from './utils/registerServiceWorker';
 import React                    from 'react';
 import ReactDOM                 from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
+import StripeTestScreen         from './StripeTestScreen';
 
 //----------------------------------------------------------------//
 const App = () => (
@@ -20,6 +21,7 @@ const App = () => (
                 <li><Link to = "/">Register</Link></li>
                 <li><Link to = "/login">Login</Link></li>
                 <li><Link to = "/accounts">Accounts</Link></li>
+                <li><Link to = "/stripe">Stripe</Link></li>
             </ul>
             <hr />
             <AppStateProvider value = { this.state }>
@@ -28,6 +30,7 @@ const App = () => (
                     <Route path = "/accounts/:accountId" component = { AccountScreen }/>
                     <Route path = "/accounts" component = { AccountScreen }/>
                     <Route exact path = "/login" component = { LoginScreen }/>
+                    <Route exact path = "/stripe" component = { StripeTestScreen }/>
                     <Route exact path = "/" component = { RegisterScreen }/>
                 </Switch>
             </AppStateProvider>

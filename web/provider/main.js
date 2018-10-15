@@ -5,22 +5,35 @@ process.on ( 'uncaughtException', function ( err ) {
     process.exit ( 1 );
 });
 
-const bodyParser    = require ( 'body-parser' );
-const dotenv        = require ( 'dotenv' );
-const express       = require ( 'express' );
-const fetch         = require ( 'node-fetch' );
+require ( 'dotenv' ).config ();
 
-dotenv.load ();
-
-const PORT              = process.env.PORT;
-const MAKER_NAME        = process.env.MAKER_NAME;
-const MAKER_KEY_NAME    = process.env.MAKER_KEY_NAME;
-const MINER_URL         = process.env.MINER_URL;
+const PORT                  = process.env.PORT;
+const MAKER_NAME            = process.env.MAKER_NAME;
+const MAKER_KEY_NAME        = process.env.MAKER_KEY_NAME;
+const MINER_URL             = process.env.MINER_URL;
 
 if ( !PORT ) throw 'Missing PORT environment variable.';
 if ( !MAKER_NAME ) throw 'Missing MAKER_NAME environment variable.';
 if ( !MAKER_KEY_NAME ) throw 'Missing MAKER_KEY_NAME environment variable.';
 if ( !MINER_URL ) throw 'Missing MINER_URL environment variable.';
+
+const bodyParser    = require ( 'body-parser' );
+const express       = require ( 'express' );
+const fetch         = require ( 'node-fetch' );
+
+let stripe;
+
+const STRIPE_PUBLIC_KEY     = process.env.STRIPE_PUBLIC_KEY;
+const STRIPE_SECRET_KEY     = process.env.STRIPE_SECRET_KEY;
+
+if ( STRIPE_PUBLIC_KEY && STRIPE_SECRET_KEY ) {
+    console.log ( 'LOADING STRIPE' );
+    stripe = require ( 'stripe' )( STRIPE_SECRET_KEY );
+}
+else {
+    if ( !STRIPE_PUBLIC_KEY ) console.log ( 'WARNING: Missing STRIPE_PUBLIC_KEY environment variable.' );
+    if ( !STRIPE_SECRET_KEY ) console.log ( 'WARNING: Missing STRIPE_SECRET_KEY environment variable.' );
+}
 
 server = express ();
 
@@ -37,6 +50,7 @@ let router = express.Router ();
 
 router.get      ( '/bid',       _getBid );
 router.post     ( '/bid',       _postBid );
+router.post     ( '/stripe',    _postCharge );
 router.get      ( '/',          _getStatus );
 
 server.use ( '/', router );
@@ -150,6 +164,30 @@ async function _postBid ( request, result ) {
 
         result.status ( 500 );
         result.send ( 'SOMETHING HAPPEN' );
+    }
+}
+
+//----------------------------------------------------------------//
+async function _postCharge ( request, result ) {
+
+    console.log ( 'STRIPE TOKEN:', request.body.tokenID );
+
+    try {
+
+        let { status } = await stripe.charges.create ({
+            amount: 2000,
+            currency: 'usd',
+            description: 'An example charge',
+            source: request.body.tokenID
+        });
+
+        console.log ( 'STRIPE:', status );
+
+        result.json ({ status });
+    }
+    catch ( error ) {
+        console.log ( 'ERROR:', error );
+        result.status ( 500 ).end ();
     }
 }
 

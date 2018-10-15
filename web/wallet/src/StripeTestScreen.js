@@ -1,24 +1,31 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { withAppState }         from './AppStateProvider';
-import * as bcrypt              from 'bcryptjs';
+import StripeCheckoutForm       from './StripeCheckoutForm';
+import * as storage             from './utils/storage';
 import React, { Component }     from 'react';
-import { Redirect }             from 'react-router-dom';
-import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
+import { Elements, StripeProvider } from 'react-stripe-elements';
+
+const STRIPE_SETTINGS   = 'vol_stripe_settings';
 
 //================================================================//
-// RegisterScreen
+// StripeTestScreen
 //================================================================//
-class RegisterScreen extends Component {
+class StripeTestScreen extends Component {
 
     //----------------------------------------------------------------//
     constructor ( props ) {
         super ( props );
 
-        this.state = {
-            password: '',
-            confirmPassword: '',
+        const settings = storage.getItem ( STRIPE_SETTINGS );
+
+        let state = {
+            stripeURL:          ( settings && settings.stripeURL ) || '',
+            stripePublicKey:    ( settings && settings.stripePublicKey ) || '',
+            isReady:            false,
         };
+
+        this.state = state;
     }
 
     //----------------------------------------------------------------//
@@ -30,32 +37,37 @@ class RegisterScreen extends Component {
     //----------------------------------------------------------------//
     handleSubmit () {
 
-        // Hash password with salt
-        let passwordHash = bcrypt.hashSync ( this.state.password, 10 );
+        let settings = {
+            stripeURL: this.state.stripeURL,
+            stripePublicKey: this.state.stripePublicKey,
+        };
+        storage.setItem ( STRIPE_SETTINGS, settings );
 
-        // Check to see if hash exists and commit the App State to Transactioned Storage
-        if ( passwordHash.length > 0 ) {
-            this.props.appState.register ( passwordHash );
-        }
-        else {
-            console.log ( "Failed to hash password." )
-        }
+        this.setState ({ isReady: true });
     }
-    
+
     //----------------------------------------------------------------//
     render () {
 
-        const { appState } = this.props;
-        const { errorMessage, password, confirmPassword } = this.state;
-        const isEnabled = ( password.length > 0 ) && ( password === confirmPassword );
-        
-        if ( appState.hasUser ()) {
-            const to = appState.isLoggedIn () ? '/accounts' : '/login';
-            return (<Redirect to = { to }/>);
-        }
+        const { isReady, stripeURL, stripePublicKey } = this.state;
+        const isEnabled = ( stripeURL.length > 0 ) && ( stripePublicKey.length > 0 );
 
         let onChange        = ( event ) => { this.handleChange ( event )};
         let onSubmit        = () => { this.handleSubmit ()};
+
+        let stripeForm;
+
+        if ( isReady ) {
+            stripeForm = (
+                <StripeProvider apiKey = { stripePublicKey }>
+                    <div className = "example">
+                        <Elements>
+                            <StripeCheckoutForm stripeURL = { stripeURL }/>
+                        </Elements>
+                    </div>
+                </StripeProvider>
+            );
+        }
 
         return (
             <div className = "register-form">
@@ -74,7 +86,7 @@ class RegisterScreen extends Component {
                 <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
                     <Grid.Column style = {{ maxWidth: 450 }}>
                         <Header as = "h2" color = "red" textAlign = "center">
-                            Register your account
+                            Test Stripe Payment
                         </Header>
                         <Form size = "large" onSubmit = { onSubmit }>
                             <Segment stacked>
@@ -82,36 +94,32 @@ class RegisterScreen extends Component {
                                     fluid
                                     icon = "lock"
                                     iconPosition = "left"
-                                    placeholder = "Password"
-                                    type = "password"
-                                    name = "password"
-                                    value = { this.state.password }
+                                    placeholder = "Stripe URL"
+                                    name = "stripeURL"
+                                    value = { this.state.stripeURL }
                                     onChange = { onChange }
                                 />
                                 <Form.Input
                                     fluid
                                     icon = "lock"
                                     iconPosition = "left"
-                                    placeholder = "Confirm password"
-                                    type = "password"
-                                    name = "confirmPassword"
-                                    value = { this.state.confirmPassword }
+                                    placeholder = "Stripe public key"
+                                    name = "stripePublicKey"
+                                    value = { this.state.stripePublicKey }
                                     onChange = { onChange }
                                 />
-                                { errorMessage && <span>{ errorMessage }</span>}
                                 <Button color = "red" fluid size = "large" disabled = { !isEnabled }>
-                                    Create Account
+                                    Create form
                                 </Button>
                             </Segment>
                         </Form>
-                        <Message>
-                            Already have an account? <a>Import</a>
-                        </Message>
+
+                        { stripeForm }
+
                     </Grid.Column>
                 </Grid>
             </div>
         );
     }
 }
-
-export default withAppState ( RegisterScreen );
+export default StripeTestScreen;
