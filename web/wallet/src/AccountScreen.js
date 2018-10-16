@@ -4,6 +4,7 @@ import { withAppState }         from './AppStateProvider';
 import BaseComponent            from './BaseComponent';
 import NavigationBar            from './NavigationBar';
 import NodeListView             from './NodeListView';
+import TransactionFormSelector  from './TransactionFormSelector';
 import React                    from 'react';
 import { Redirect }             from 'react-router-dom';
 import { Dropdown, Segment, Header, Icon, Divider, Modal, Grid } from 'semantic-ui-react';
@@ -20,6 +21,7 @@ class AccountScreen extends BaseComponent {
         this.state = {
             accountId : this.props.match.params && this.props.match.params.accountId,
             balance : -1,
+            nonce: -1,
         };
 
         this.getAccountBalance ();
@@ -56,18 +58,21 @@ class AccountScreen extends BaseComponent {
             return new Promise (( resolve ) => {
 
                 let balance = false;
+                let nonce = false;
 
                 this.revocablePromise ( fetch ( url + '/accounts/' + this.state.accountId ))
                 .then (( response ) => { return response.json (); })
                 .then (( data ) => {
                     if ( data.account && ( data.account.accountName === this.state.accountId )) {
                         balance = data.account.balance;
-                        this.setState ({ balance : balance });
+                        nonce = data.account.nonce;
+                        this.setState ({ balance: balance });
+                        this.setState ({ nonce: nonce });
                     }
                 })
                 .catch (( error ) => { console.log ( error )})
                 .finally (() => {
-                    resolve ( balance );
+                    resolve ({ balance: balance, nonce: nonce });
                 });
             });
         }
@@ -131,9 +136,18 @@ class AccountScreen extends BaseComponent {
                         <NavigationBar navTitle = "Accounts"/>
 
                         <div>
-                            { this.renderDropdown ()}
+                            { this.renderAccountSelector ()}
                             { this.renderAccountDetails ()}
                         </div>
+
+                        <Segment>
+                            <TransactionFormSelector
+                                accountId = { targetAccountId }
+                                nonce = { this.state.nonce }
+                            />
+                        </Segment>
+
+                        { this.renderTransactions ()}
 
                         <Segment>
                             <NodeListView/>
@@ -167,6 +181,9 @@ class AccountScreen extends BaseComponent {
             contextAware = (
                 <Header as = "h2">
                     <p>Balance: { this.state.balance }</p>
+                    <Header.Subheader>
+                        <p>Nonce: { this.state.nonce }</p>
+                    </Header.Subheader>
                 </Header>
             );
         }
@@ -188,7 +205,7 @@ class AccountScreen extends BaseComponent {
                         <Modal.Content>
                             <center>
                                 <h3>Public Key</h3>
-                                <Divider />
+                                <Divider/>
                                 <p>{ publicKey }</p>
                             </center>
                         </Modal.Content>
@@ -202,13 +219,13 @@ class AccountScreen extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    renderDropdown () {
+    renderAccountSelector () {
 
         const { accounts } = this.props.appState.state;
         let options = [];
 
-        Object.keys ( accounts ).forEach ( function ( accountId ) {
-            options.push ({ key:accountId, value:accountId, text:accountId })
+        Object.keys ( accounts ).forEach (( accountId ) => {
+            options.push ({ key:accountId, value:accountId, text:accountId });
         });
 
         return (
@@ -220,6 +237,23 @@ class AccountScreen extends BaseComponent {
                 options = { options }
                 onChange = {( event, data ) => { this.setState ({ accountId : data.value, balance : -1 }); }}
             />
+        );
+    }
+
+    //----------------------------------------------------------------//
+    renderTransactions () {
+
+        const { transactions } = this.props.appState.state;
+        if ( transactions.length === 0 ) return;
+
+        let count = 0;
+
+        return (
+            <Segment>
+                { transactions.map (( transaction ) => {
+                    return (<p key = { count++ }>{ transaction.friendlyName }</p>);
+                })}
+            </Segment>
         );
     }
 }

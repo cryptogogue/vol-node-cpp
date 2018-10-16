@@ -69,8 +69,8 @@ function _fetchNonce () {
         fetch ( MINER_URL + '/accounts/' + MAKER_NAME )
         .then (( response ) => { return response.json (); })
         .then (( data ) => {
-
-            if ( data.account && data.account.nonce ) {
+            
+            if ( data.account ) {
                 resolve ( data.account.nonce )
             }
             else {

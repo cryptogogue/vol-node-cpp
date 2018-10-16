@@ -8,6 +8,7 @@ const STORE_ACCOUNTS        = 'vol_accounts';
 const STORE_NODES           = 'vol_nodes';
 const STORE_PASSWORD_HASH   = 'vol_password_hash';
 const STORE_SESSION         = 'vol_session';
+const STORE_TRANSACTIONS    = 'vol_transactions';
 
 const TheContext = React.createContext ();
 const AppStateConsumer = TheContext.Consumer;
@@ -113,6 +114,25 @@ class AppStateProvider extends Component {
     // }
 
     //----------------------------------------------------------------//
+    getAccount ( accountId ) {
+        const { accounts } = this.state;
+        return ( accountId in accounts ) && accounts [ accountId ];
+    }
+
+    //----------------------------------------------------------------//
+    getAccountKeyNames ( accountId ) {
+        const account = this.getAccount ( accountId );
+        return ( account && Object.keys ( account.keys )) || [];
+    }
+
+    //----------------------------------------------------------------//
+    getDefaultAccountKeyName ( accountId, defaultKeyName ) {
+        const accountKeyNames = this.getAccountKeyNames ( accountId );
+        if ( defaultKeyName && accountKeyNames.includes [ defaultKeyName ]) return defaultKeyName;
+        return (( accountKeyNames.length > 0 ) && accountKeyNames [ 0 ]) || '';
+    }
+
+    //----------------------------------------------------------------//
     hasUser () {
         return ( this.state.user.passwordHash.length > 0 );
     }
@@ -131,6 +151,7 @@ class AppStateProvider extends Component {
         state.accounts              = storage.getItem ( STORE_ACCOUNTS ) || state.accounts;
         state.nodes                 = storage.getItem ( STORE_NODES ) || state.nodes;
         state.session               = storage.getItem ( STORE_SESSION ) || state.session;
+        state.transactions          = storage.getItem ( STORE_TRANSACTIONS ) || state.transactions;
 
         return state;
     }
@@ -153,19 +174,29 @@ class AppStateProvider extends Component {
     makeClearState () {
 
         let state = {
-            accounts : {},
-            session : {
-                isLoggedIn : false,
+            accounts: {},
+            session: {
+                isLoggedIn: false,
             },
-            nodes : [],
-            user : {
-                passwordHash : '',
-                confirmPassword : '',
-                password : ''
+            nodes: [],
+            transactions: [],
+            user: {
+                passwordHash: '',
+                confirmPassword: '',
+                password: ''
             }
         };
 
         return state;
+    }
+
+    //----------------------------------------------------------------//
+    pushTransaction ( transaction ) {
+
+        let transactions = this.state.transactions.slice ( 0 );
+        transactions.push ( transaction );
+        storage.setItem ( STORE_TRANSACTIONS, transactions );
+        this.setState ({ transactions : transactions });
     }
 
     //----------------------------------------------------------------//
