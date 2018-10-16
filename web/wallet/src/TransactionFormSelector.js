@@ -47,7 +47,11 @@ class TransactionFormSelector extends Component {
     //----------------------------------------------------------------//
     render () {
 
-        const isShowFormEnabled = ( this.props.nonce >= 0 );
+        const isShowFormEnabled = (
+            this.props.accountId &&
+            ( this.props.accountId.length > 0 ) &&
+            ( this.props.nonce >= 0 )
+        );
 
         if ( isShowFormEnabled && this.state.showForm ) {
 
