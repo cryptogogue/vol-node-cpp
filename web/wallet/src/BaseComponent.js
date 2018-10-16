@@ -29,7 +29,7 @@ class BaseComponent extends Component {
 
         const wrappedPromise = new Promise (( resolve, reject ) => {
 
-            let wrapOnFulfilled = ( value ) => {
+            let onFulfilled = ( value ) => {
                 if ( isCancelled ) {
                     reject ({ isCanceled: true });
                 }
@@ -51,7 +51,8 @@ class BaseComponent extends Component {
                 this.revocables.delete ( wrappedPromise );
             }
 
-            promise.then ( wrapOnFulfilled, onRejected ).finally ( onFinally );
+            promise.then ( onFulfilled, onRejected )
+            .finally ( onFinally );
         });
 
         this.revocables.set ( wrappedPromise, () => {

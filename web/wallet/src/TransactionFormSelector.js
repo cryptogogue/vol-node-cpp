@@ -2,6 +2,7 @@
 
 import { withAppState }             from './AppStateProvider';
 import TransactionForm              from './TransactionForm';
+import { transactionSchemas }       from './TransactionSchemas';
 import React, { Component }         from 'react';
 import { Button, Divider, Dropdown } from 'semantic-ui-react';
 
@@ -16,40 +17,11 @@ class TransactionFormSelector extends Component {
 
         // TODO: this is a placeholder; transaction schemas should come from
         // the server.
-        const sendVOLTransactionSchema = {
-            transactionType:    'SEND_VOL',
-            friendlyName:       'Send VOL',
-            fields: {
-                'makerAccountName': {
-                    hashOrder:      0,
-                    fieldType:      'STRING',
-                },
-                'makerKeyName': {
-                    hashOrder:      1,
-                    fieldType:      'STRING',
-                },
-                'makerNonce': {
-                    hashOrder:      2,
-                    fieldType:      'INTEGER',
-                },
-                'recipientAccountName': {
-                    hashOrder:      3,
-                    fieldType:      'STRING',
-                },
-                'amount': {
-                    hashOrder:      4,
-                    fieldType:      'INTEGER',
-                },
-                'gratuity': {
-                    hashOrder:      5,
-                    fieldType:      'INTEGER',
-                },
-            },
-        }
-
-        this.transactionSchemas = [
-            sendVOLTransactionSchema,
-        ];
+        
+        // placeholder; eventuall this will be local to the form. because
+        // schemas will be pulled from the server and may be unique to
+        // the account.
+        this.transactionSchemas = transactionSchemas ();
 
         this.state = {
             showForm: false,

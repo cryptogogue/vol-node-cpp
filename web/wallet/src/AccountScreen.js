@@ -36,16 +36,22 @@ class AccountScreen extends BaseComponent {
 
         let checkIsMiner = ( url ) => {
 
-            return new Promise (( resolve ) => {
+            return new Promise (( resolve, reject ) => {
 
-                if ( url in miners ) resolve ( miners [ url ]);
+                if ( url in miners ) {
+                    resolve ( miners [ url ]);
+                    return;
+                }
 
                 let isMiner = false;
 
                 this.revocablePromise ( fetch ( url ))
                 .then (( response ) => { return response.json (); })
                 .then (( data ) => { isMiner = ( data.type === 'VOL_MINING_NODE' ); })
-                .catch (( error ) => { console.log ( error )})
+                .catch (( error ) => {
+                    miners [ url ] = false;
+                    console.log ( error );
+                })
                 .finally (() => {
                     miners [ url ] = isMiner;
                     resolve ( isMiner );
@@ -55,7 +61,7 @@ class AccountScreen extends BaseComponent {
 
         let updateBalance = ( url ) => {
 
-            return new Promise (( resolve ) => {
+            return new Promise (( resolve, reject ) => {
 
                 let balance = false;
                 let nonce = false;
@@ -128,6 +134,9 @@ class AccountScreen extends BaseComponent {
             return ( <Redirect to = { '/accounts/' + targetAccountId }/>);
         }
 
+        // TODO: nonce should come from account or from last known transaction
+        const nonce = this.state.nonce < 0 ? 0 : this.state.nonce;
+
         return (
             <div>
                 <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
@@ -143,7 +152,7 @@ class AccountScreen extends BaseComponent {
                         <Segment>
                             <TransactionFormSelector
                                 accountId = { targetAccountId }
-                                nonce = { this.state.nonce }
+                                nonce = { nonce }
                             />
                         </Segment>
 
