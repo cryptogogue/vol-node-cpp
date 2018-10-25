@@ -4,7 +4,6 @@
 #ifndef VOLITION_SERIALIZATION_SERIALIZABLEVECTOR_H
 #define VOLITION_SERIALIZATION_SERIALIZABLEVECTOR_H
 
-#include <volition/serialization/AbstractSerializableArray.h>
 #include <volition/serialization/AbstractSerializerFrom.h>
 #include <volition/serialization/AbstractSerializerTo.h>
 

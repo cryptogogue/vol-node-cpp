@@ -18,7 +18,7 @@ class ToJSONSerializer :
 protected:
 
     //----------------------------------------------------------------//
-    bool AbstractSerializerTo_isDigest () override {
+    bool AbstractSerializerTo_isDigest () const override {
         return false;
     }
 

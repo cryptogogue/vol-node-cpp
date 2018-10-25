@@ -5,33 +5,53 @@
 #define VOLITION_CHAINMETADATA_H
 
 #include <volition/common.h>
+#include <volition/serialization/AbstractSerializable.h>
+#include <volition/serialization/SerializableSet.h>
+#include <volition/serialization/SerializableVector.h>
 
 namespace Volition {
 
 //================================================================//
 // CycleMetadata
 //================================================================//
-class CycleMetadata {
+class CycleMetadata :
+    public AbstractSerializable {
 private:
 
     friend class Chain;
     friend class ChainMetadata;
 
-    set < string > mKnownParticipants;
+    SerializableSet < string > mKnownParticipants;
+
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "participants", this->mKnownParticipants );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "participants", this->mKnownParticipants );
+    }
 
 public:
-
 };
 
 //================================================================//
 // ChainMetadata
 //================================================================//
-class ChainMetadata {
+class ChainMetadata :
+    public AbstractSerializable {
 private:
 
     friend class Chain;
 
-    vector < CycleMetadata > mCycleMetadata;
+    SerializableVector < CycleMetadata > mCycleMetadata;
+
+    //----------------------------------------------------------------//
+    void        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 

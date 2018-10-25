@@ -110,6 +110,7 @@ void WebMiner::runMulti () {
             LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
             LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
             height = nextHeight;
+            this->saveChain ();
         }
         
         // update remote miners
@@ -137,6 +138,7 @@ void WebMiner::runSolo () {
             LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
             LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
             height = nextHeight;
+            this->saveChain ();
         }
         Poco::Thread::sleep ( 200 );
     }

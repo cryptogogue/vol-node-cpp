@@ -174,6 +174,13 @@ protected:
         Application::defineOptions ( options );
         
         options.addOption (
+            Poco::Util::Option ( "chain", "c", "path to the chain" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "chain" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
                 .required ( true )
                 .argument ( "value", true )
@@ -223,6 +230,7 @@ protected:
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
+        string chain        = configuration.getString ( "chain" );
         string genesis      = configuration.getString ( "genesis" );
         string keyfile      = configuration.getString ( "keyfile" );
         int port            = configuration.getInt ( "port", 9090 );
@@ -245,6 +253,7 @@ protected:
         theMiner.loadKey ( keyfile );
         theMiner.loadGenesis ( genesis );
         theMiner.setMinerID ( minerID );
+        theMiner.setChainPath ( chain );
         theMiner.start ();
 
         this->serve ( port );

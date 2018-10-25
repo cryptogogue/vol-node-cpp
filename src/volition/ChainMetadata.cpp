@@ -77,4 +77,20 @@ bool ChainMetadata::isParticipant ( size_t cycleID, string minerID ) const {
     return false;
 }
 
+//================================================================//
+// overrides
+//================================================================//
+
+//----------------------------------------------------------------//
+void ChainMetadata::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+
+    serializer.serialize ( "metadata", this->mCycleMetadata );
+}
+
+//----------------------------------------------------------------//
+void ChainMetadata::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    serializer.serialize ( "metadata", this->mCycleMetadata );
+}
+
 } // namespace Volition

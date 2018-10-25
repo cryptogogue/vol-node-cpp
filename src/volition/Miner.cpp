@@ -145,6 +145,28 @@ Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
+void Miner::saveChain () {
+
+    if ( !this->mChainPath.size ()) return;
+    
+    fstream outStream;
+    outStream.open ( this->mChainPath, ios_base::out );
+    Volition::ToJSONSerializer::toJSON ( *this, outStream );
+}
+
+//----------------------------------------------------------------//
+void Miner::setChainPath ( string path ) {
+
+    this->mChainPath = path;
+    
+    if ( Poco::File ( path ).exists ()) {
+        fstream inStream;
+        inStream.open ( path, ios_base::in );
+        Volition::FromJSONSerializer::fromJSON ( *this, inStream );
+    }
+}
+
+//----------------------------------------------------------------//
 void Miner::setGenesis ( const Block& block ) {
     
     this->mChain.reset ();
@@ -156,6 +178,24 @@ void Miner::updateChain ( const Chain& proposedChain ) {
     
     this->mChain.update ( this->mMetadata, proposedChain );
     this->pushBlock ( this->mChain, false );
+}
+
+//================================================================//
+// overrides
+//================================================================//
+
+//----------------------------------------------------------------//
+void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+    
+    serializer.serialize ( "chain", this->mChain );
+    serializer.serialize ( "metadata", this->mMetadata );
+}
+
+//----------------------------------------------------------------//
+void Miner::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    serializer.serialize ( "chain", this->mChain );
+    serializer.serialize ( "metadata", this->mMetadata );
 }
 
 } // namespace Volition

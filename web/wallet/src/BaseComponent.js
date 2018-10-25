@@ -23,6 +23,11 @@ class BaseComponent extends Component {
     }
 
     //----------------------------------------------------------------//
+    revocableFetch ( input, init ) {
+        return this.revocablePromise ( fetch ( input, init ));
+    }
+
+    //----------------------------------------------------------------//
     revocablePromise ( promise ) {
 
         let isCancelled = false;

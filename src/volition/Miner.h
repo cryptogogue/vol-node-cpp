@@ -9,6 +9,7 @@
 #include <volition/CryptoKey.h>
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
+#include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
 #include <volition/State.h>
 
@@ -20,7 +21,8 @@ class Block;
 //================================================================//
 // Miner
 //================================================================//
-class Miner {
+class Miner :
+    public AbstractSerializable {
 protected:
 
     string                                          mMinerID;
@@ -28,6 +30,8 @@ protected:
     CryptoKey                                       mKeyPair;
     list < shared_ptr < AbstractTransaction >>      mPendingTransactions;
     bool                                            mLazy;
+
+    string                                          mChainPath;
 
     Chain                                           mChain;
     ChainMetadata                                   mMetadata;
@@ -37,6 +41,11 @@ protected:
     Digest                  computeAllure           ( size_t cycleID ) const;
     size_t                  computeScore            ( const Digest& allure ) const;
     void                    pushBlock               ( Chain& chain, bool force );
+    void                    saveChain               ();
+
+    //----------------------------------------------------------------//
+    void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
@@ -47,6 +56,7 @@ public:
     string                  getMinerID              () const;
     const State&            getState                () const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
+    void                    setChainPath            ( string path );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );

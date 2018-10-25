@@ -5,6 +5,7 @@
 #define VOLITION_SERIALIZATION_SERIALIZABLESET_H
 
 #include <volition/serialization/AbstractSerializable.h>
+#include <volition/serialization/AbstractSerializableArray.h>
 #include <volition/serialization/AbstractSerializerFrom.h>
 #include <volition/serialization/AbstractSerializerTo.h>
 
@@ -26,10 +27,11 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
         
-        typename set < TYPE >::iterator it = this->begin ();
-        for ( size_t i = 0; it != this->end (); ++it, ++i ) {
-            TYPE value = *it;
+        size_t size = serializer.getSize ();
+        for ( size_t i = 0; i < size; ++i ) {
+            TYPE value;
             serializer.serialize ( i, value );
+            this->insert ( value );
         }
     }
     

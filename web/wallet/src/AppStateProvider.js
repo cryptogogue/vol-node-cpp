@@ -1,14 +1,19 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import * as storage             from './utils/storage';
-import React, { Component }     from 'react';
+import BaseComponent        from './BaseComponent';
+import * as storage         from './utils/storage';
+import React                from 'react';
 
 const STORE_ACCOUNTS        = 'vol_accounts';
 const STORE_NODES           = 'vol_nodes';
 const STORE_PASSWORD_HASH   = 'vol_password_hash';
 const STORE_SESSION         = 'vol_session';
 const STORE_TRANSACTIONS    = 'vol_transactions';
+
+const TRANSACTION_STATUS_PENDING    = 'pending';
+// const TRANSACTION_STATUS_SUBMITTED  = 'submitted';
+// const TRANSACTION_STATUS_CONFIRMED  = 'confirmed';
 
 const TheContext = React.createContext ();
 const AppStateConsumer = TheContext.Consumer;
@@ -21,7 +26,7 @@ function withAppState ( WrappedComponent ) {
         render () {
             return (
                 <AppStateConsumer>
-                    {({appState}) => (
+                    {({ appState }) => (
                         <WrappedComponent appState = { appState }{ ...this.props }/>
                     )}
                 </AppStateConsumer>
@@ -33,7 +38,7 @@ function withAppState ( WrappedComponent ) {
 //================================================================//
 // AppStateProvider
 //================================================================//
-class AppStateProvider extends Component {
+class AppStateProvider extends BaseComponent {
 
     //----------------------------------------------------------------//
     affirmNodeURL ( nodeURL ) {
@@ -57,61 +62,69 @@ class AppStateProvider extends Component {
     constructor ( props ) {
         super ( props );
 
+        this.nodes = {};
+        this.miners = [];
+        this.markets = [];
+
         this.state = this.loadState ();
 
-        // this.discoveryTimer = setTimeout ( this.discoverNetwork, 0 );
+        this.discoverNetwork ();
     }
 
     //----------------------------------------------------------------//
-    // DELETE account from local storage
     deleteStorage () {
         storage.clear ();
         this.setState ( this.makeClearState ());
     }
 
     //----------------------------------------------------------------//
-    // discoverNetwork () {
+    async discoverNetwork () {
 
-    //     console.log ( 'DISCOVER NETWORK' );
+        let discoverNode = async ( url ) => {
 
-    //     const { nodes } = this.state;
+            try {
+                const data = await ( await this.revocableFetch ( url )).json ();
 
-    //     let count = 0;
-    //     let top = nodes.length;
+                let node = {
+                    url: url,
+                    type: data.type,
+                };
+                this.nodes [ url ] = node;
 
-    //     let finish = () => {
-    //         if ( count >= top ) {
-    //             this.discoveryTimer = setTimeout ( this.discoverNetwork, 1000 );
-    //         }
-    //     }
+                if ( data.type === 'VOL_MINING_NODE' ) {
+                    this.miners.push ( node );
+                }
+                if ( data.type === 'VOL_PROVIDER' ) {
+                    this.markets.push ( node );
+                }
+            }
+            catch ( error ) {
+                console.log ( error );
+            }
+        }
 
-    //     for ( let i in nodes ) {
+        const { nodes } = this.state;
 
-    //         const nodeURL = nodes [ i ];
+        let promises = [];
+        for ( let i in nodes ) {
 
-    //         console.log ( 'NODE URL:', nodeURL );
+            let url = nodes [ i ];
 
-    //         fetch ( nodeURL )
-    //         .then (( response ) => {
+            if ( !( url in this.nodes )) {
+                promises.push ( discoverNode ( url ));
+            }
+        }
+        await Promise.all ( promises );
 
-    //             return response.json();
-    //         })
-    //         .then (( data ) => {
+        if ( promises.length ) {
+            this.setState ({
+                activeMinerCount: this.miners.length,
+                activeMarketCount: this.markets.length
+            });
+        }
 
-    //             console.log ( data );
-    //         }) 
-    //         .catch (( error ) => {
-
-    //             console.log ( error );
-    //         })
-    //         .finally (() => {
-    //             count++;
-    //             finish ();
-    //         });
-    //     }
-
-    //     finish ()
-    // }
+        this.revocableTimeout (() => { this.discoverNetwork ()}, 1000 );
+    }
 
     //----------------------------------------------------------------//
     getAccount ( accountId ) {
@@ -175,6 +188,8 @@ class AppStateProvider extends Component {
 
         let state = {
             accounts: {},
+            activeMarketCount: 0,
+            activeMinerCount: 0,
             session: {
                 isLoggedIn: false,
             },
@@ -193,8 +208,13 @@ class AppStateProvider extends Component {
     //----------------------------------------------------------------//
     pushTransaction ( transaction ) {
 
+        let entry = {
+            transaction:    transaction,
+            status:         TRANSACTION_STATUS_PENDING,
+        };
+
         let transactions = this.state.transactions.slice ( 0 );
-        transactions.push ( transaction );
+        transactions.push ( entry );
         storage.setItem ( STORE_TRANSACTIONS, transactions );
         this.setState ({ transactions : transactions });
     }

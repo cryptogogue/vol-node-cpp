@@ -6,6 +6,8 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
+#include <volition/serialization/AbstractSerializableArray.h>
+#include <volition/serialization/AbstractSerializablePtr.h>
 #include <volition/serialization/AbstractStringifiable.h>
 #include <volition/serialization/SerializerPropertyName.h>
 
@@ -26,7 +28,7 @@ public:
 protected:
 
     //----------------------------------------------------------------//
-    virtual size_t      AbstractSerializerFrom_getSize          () = 0;
+    virtual size_t      AbstractSerializerFrom_getSize          () const = 0;
     virtual bool        AbstractSerializerFrom_has              ( SerializerPropertyName name ) const = 0;
     virtual void        AbstractSerializerFrom_serialize        ( SerializerPropertyName name, u64& value ) const = 0;
     virtual void        AbstractSerializerFrom_serialize        ( SerializerPropertyName name, string& value ) const = 0;
@@ -38,7 +40,7 @@ protected:
 public:
     
     //----------------------------------------------------------------//
-    size_t getSize () {
+    size_t getSize () const {
         return this->AbstractSerializerFrom_getSize ();
     }
 

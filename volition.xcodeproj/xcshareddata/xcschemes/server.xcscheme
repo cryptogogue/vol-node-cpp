@@ -76,6 +76,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-c chain.json"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-s true"
             isEnabled = "YES">
          </CommandLineArgument>

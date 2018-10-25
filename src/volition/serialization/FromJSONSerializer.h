@@ -18,7 +18,7 @@ class FromJSONSerializer :
 protected:
 
     //----------------------------------------------------------------//
-    size_t AbstractSerializerFrom_getSize () override {
+    size_t AbstractSerializerFrom_getSize () const override {
         assert ( this->mObject || this->mArray );
         return this->mObject ? this->mObject->size () : this->mArray->size ();
     }

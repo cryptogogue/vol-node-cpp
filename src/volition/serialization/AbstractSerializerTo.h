@@ -6,6 +6,8 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
+#include <volition/serialization/AbstractSerializableArray.h>
+#include <volition/serialization/AbstractSerializablePtr.h>
 #include <volition/serialization/AbstractStringifiable.h>
 #include <volition/serialization/SerializerPropertyName.h>
 
@@ -18,7 +20,7 @@ class AbstractSerializerTo {
 protected:
 
     //----------------------------------------------------------------//
-    virtual bool        AbstractSerializerTo_isDigest       () = 0;
+    virtual bool        AbstractSerializerTo_isDigest       () const = 0;
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const u64& value ) = 0;
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const string& value ) = 0;
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;

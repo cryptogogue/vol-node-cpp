@@ -28,89 +28,60 @@ class AccountScreen extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    // Fetch account balance from the blockchain
-    getAccountBalance () {
+    async getAccountBalance () {
 
-        let miners = {};
-        let minerQueue = [];
+        let balanceHistogram = new Map ();
+        let bestNonce = 0;
 
-        let checkIsMiner = ( url ) => {
+        let updateBalance = async ( url ) => {
 
-            return new Promise (( resolve, reject ) => {
+            try {
+                const data = await ( await this.revocableFetch ( url + '/accounts/' + this.state.accountId )).json ();
 
-                if ( url in miners ) {
-                    resolve ( miners [ url ]);
-                    return;
-                }
+                if ( data.account && ( data.account.accountName === this.state.accountId )) {
 
-                let isMiner = false;
+                    let balance = data.account.balance;
+                    let nonce = data.account.nonce;
 
-                this.revocablePromise ( fetch ( url ))
-                .then (( response ) => { return response.json (); })
-                .then (( data ) => { isMiner = ( data.type === 'VOL_MINING_NODE' ); })
-                .catch (( error ) => {
-                    miners [ url ] = false;
-                    console.log ( error );
-                })
-                .finally (() => {
-                    miners [ url ] = isMiner;
-                    resolve ( isMiner );
-                });
-            });
-        }
+                    let balanceCount = balanceHistogram.has ( balance ) ? balanceHistogram.get ( balance ) : 0;
+                    balanceHistogram.set ( balance, balanceCount + 1 );
 
-        let updateBalance = ( url ) => {
-
-            return new Promise (( resolve, reject ) => {
-
-                let balance = false;
-                let nonce = false;
-
-                this.revocablePromise ( fetch ( url + '/accounts/' + this.state.accountId ))
-                .then (( response ) => { return response.json (); })
-                .then (( data ) => {
-                    if ( data.account && ( data.account.accountName === this.state.accountId )) {
-                        balance = data.account.balance;
-                        nonce = data.account.nonce;
-                        this.setState ({ balance: balance });
-                        this.setState ({ nonce: nonce });
-                    }
-                })
-                .catch (( error ) => { console.log ( error )})
-                .finally (() => {
-                    resolve ({ balance: balance, nonce: nonce });
-                });
-            });
-        }
-
-        let fetchBalance = async () => {
-
-            if ( minerQueue.length === 0 ) {
-                const { nodes } = this.props.appState.state;
-                for ( let i in nodes ) {
-
-                    const url = nodes [ i ];
-                    if ( await checkIsMiner ( url )) {
-                        minerQueue.push ( url );
+                    if ( bestNonce < nonce ) {
+                        bestNonce = nonce;
                     }
                 }
             }
-
-            if ( !this.state.accountId ) {
-                minerQueue = [];
+            catch ( error ) {
+                console.log ( error );
             }
-
-            if ( minerQueue.length > 0 ) {
-                const url = minerQueue.shift ();
-                await updateBalance ( url );
-            }
-
-            // it's possible to be a bit smarter about when this kicks off. but...
-            // not sure if it's worth the effort.
-            this.revocableTimeout (() => { fetchBalance (); }, 1000 );
         }
 
-        this.revocableTimeout (() => { fetchBalance (); }, 0 );
+        if ( this.state.accountId ) {
+
+            const { miners } = this.props.appState;
+
+            let promises = [];
+            for ( let i in miners ) {
+
+                let url = miners [ i ].url;
+                promises.push ( updateBalance ( url ));
+            }
+            await Promise.all ( promises );
+        
+            let bestBalanceCount = 0;
+            let bestBalance = -1;
+
+            balanceHistogram.forEach (( balanceCount, balance ) => {
+
+                if ( bestBalanceCount < balanceCount ) {
+                    bestBalance = balance;
+                }
+            });
+
+            this.setState ({ balance: bestBalance });
+            this.setState ({ nonce: bestNonce });
+        }
+        this.revocableTimeout (() => { this.getAccountBalance ()}, 1000 );
     }
 
     //----------------------------------------------------------------//
@@ -143,6 +114,11 @@ class AccountScreen extends BaseComponent {
                     <Grid.Column style = {{ maxWidth: 450 }}>
 
                         <NavigationBar navTitle = "Accounts"/>
+
+                        <div>
+                            <p>ACTIVE MINERS: { appState.state.activeMinerCount }</p>
+                            <p>ACTIVE MARKETS: { appState.state.activeMarketCount }</p>
+                        </div>
 
                         <div>
                             { this.renderAccountSelector ()}
@@ -257,10 +233,12 @@ class AccountScreen extends BaseComponent {
 
         let count = 0;
 
+        // transaction type     nonce       pending     rejected        confirmed
+
         return (
             <Segment>
-                { transactions.map (( transaction ) => {
-                    return (<p key = { count++ }>{ transaction.friendlyName }</p>);
+                { transactions.map (( entry ) => {
+                    return (<p key = { count++ }>{ entry.transaction.friendlyName }</p>);
                 })}
             </Segment>
         );

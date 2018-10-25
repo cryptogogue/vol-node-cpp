@@ -4,5 +4,6 @@ build/
 /doxydocs/
 /poco/
 xcuserdata/
+chain.json
 *.pbxuser
 *.perspectivev3
