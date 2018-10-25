@@ -62,9 +62,8 @@ class AppStateProvider extends BaseComponent {
     constructor ( props ) {
         super ( props );
 
-        this.nodes = {};
-        this.miners = [];
-        this.markets = [];
+        this.minerURLs = new Set ();
+        this.marketURLs = new Set ();
 
         this.state = this.loadState ();
 
@@ -80,25 +79,28 @@ class AppStateProvider extends BaseComponent {
     //----------------------------------------------------------------//
     async discoverNetwork () {
 
+        let removeNode = ( url ) => {
+            this.minerURLs.delete ( url );
+            this.marketURLs.delete ( url );
+        }
+
         let discoverNode = async ( url ) => {
 
             try {
                 const data = await ( await this.revocableFetch ( url )).json ();
 
-                let node = {
-                    url: url,
-                    type: data.type,
-                };
-                this.nodes [ url ] = node;
+                removeNode ( url );
 
                 if ( data.type === 'VOL_MINING_NODE' ) {
-                    this.miners.push ( node );
+                    this.minerURLs.add ( url );
                 }
                 if ( data.type === 'VOL_PROVIDER' ) {
-                    this.markets.push ( node );
+                    this.marketURLs.add ( url );
                 }
             }
             catch ( error ) {
+
+                removeNode ( url );
                 console.log ( error );
             }
         }
@@ -107,22 +109,17 @@ class AppStateProvider extends BaseComponent {
 
         let promises = [];
         for ( let i in nodes ) {
-
             let url = nodes [ i ];
-
-            if ( !( url in this.nodes )) {
-                promises.push ( discoverNode ( url ));
-            }
+            promises.push ( discoverNode ( url ));
         }
         await Promise.all ( promises );
 
         if ( promises.length ) {
             this.setState ({
-                activeMinerCount: this.miners.length,
-                activeMarketCount: this.markets.length
+                activeMinerCount: this.minerURLs.size,
+                activeMarketCount: this.marketURLs.size,
             });
         }
-
         this.revocableTimeout (() => { this.discoverNetwork ()}, 1000 );
     }
 
@@ -224,7 +221,7 @@ class AppStateProvider extends BaseComponent {
 
         const session = {
             isLoggedIn : true,
-        }
+        };
 
         storage.setItem ( STORE_PASSWORD_HASH, passwordHash );
         storage.setItem ( STORE_SESSION, session );

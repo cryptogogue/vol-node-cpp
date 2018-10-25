@@ -58,14 +58,12 @@ class AccountScreen extends BaseComponent {
 
         if ( this.state.accountId ) {
 
-            const { miners } = this.props.appState;
+            const { minerURLs } = this.props.appState;
 
             let promises = [];
-            for ( let i in miners ) {
-
-                let url = miners [ i ].url;
+            minerURLs.forEach (( url ) => {
                 promises.push ( updateBalance ( url ));
-            }
+            });
             await Promise.all ( promises );
         
             let bestBalanceCount = 0;

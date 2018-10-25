@@ -10,13 +10,12 @@ import React                        from 'react';
 import { Redirect }                 from 'react-router-dom';
 import { Header, Icon, Button }     from 'semantic-ui-react';
 
-const STATUS_SEARCHING_FOR_PROVIDERS    = 0;
+const STATUS_SEARCHING_FOR_BIDS         = 0;
 const STATUS_NO_PROVIDERS_FOUND         = 1;
-const STATUS_SEARCHING_FOR_BID          = 2;
-const STATUS_NO_BIDS_FOUND              = 3;
-const STATUS_FOUND_BID                  = 4;
-const STATUS_POSTING_TRANSACTION        = 5;
-const STATUS_DONE                       = 6;
+const STATUS_NO_BIDS_FOUND              = 2;
+const STATUS_FOUND_BID                  = 3;
+const STATUS_POSTING_TRANSACTION        = 4;
+const STATUS_DONE                       = 5;
 
 //================================================================//
 // NewAccountScreen
@@ -128,7 +127,7 @@ class NewAccountScreen extends BaseComponent {
             privateKey: privateKey,
             publicKey: publicKey,
             seedPhrase: mnemonic,
-            status: STATUS_SEARCHING_FOR_PROVIDERS,
+            status: STATUS_SEARCHING_FOR_BIDS,
             searchCount: 0,
             providers: [],
             bestBid: false,
@@ -136,7 +135,7 @@ class NewAccountScreen extends BaseComponent {
 
         this.miners = [];
 
-        this.revocableTimeout (() => { this.searchForProviders (); }, 0 );
+        this.revocableTimeout (() => { this.searchForBids (); }, 0 );
     }
 
     //----------------------------------------------------------------//
@@ -197,7 +196,6 @@ class NewAccountScreen extends BaseComponent {
                 <p>Private Key: { this.state.privateKey }</p>
                 <Header size = "small">You will not be able to recover your seed phrase and private key later</Header>
 
-                { this.renderProviders ()}
                 { this.renderBid ()}
                 { this.renderButton ()}
             </div>
@@ -205,28 +203,15 @@ class NewAccountScreen extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    renderProviders () {
-
-        const { status, providers } = this.state;
-
-        if ( status === STATUS_SEARCHING_FOR_PROVIDERS ) {
-            return (<Header>SEARCHING FOR PROVIDERS...</Header>);
-        }
-        else if ( status === STATUS_NO_PROVIDERS_FOUND ) {
-            return (<Header>NO PROVIDERS FOUND</Header>);
-        }
-        else if ( providers.length > 0 ) {
-            return (<Header>{ 'PROVIDERS: ' + providers.length }</Header>);
-        }
-    }
-
-    //----------------------------------------------------------------//
     renderBid () {
 
         const { status, bestBid } = this.state;
 
-        if ( status === STATUS_SEARCHING_FOR_BID ) {
+        if ( status === STATUS_SEARCHING_FOR_BIDS ) {
             return (<Header>SEARCHING FOR BIDS...</Header>);
+        }
+        else if ( status === STATUS_NO_PROVIDERS_FOUND ) {
+            return (<Header>NO PROVIDERS FOUND</Header>);
         }
         else if ( status === STATUS_NO_BIDS_FOUND ) {
             return (<Header>NO BIDS FOUND</Header>);
@@ -250,126 +235,61 @@ class NewAccountScreen extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    searchForBids () {
+    async searchForBids () {
 
-        console.log ( 'SEARCH FOR BIDS' );
+        const { marketURLs } = this.props.appState;
+
+        if ( marketURLs.size <= 0 ) {
+            this.setState ({ status: STATUS_NO_PROVIDERS_FOUND });
+            return;
+        }
 
         this.setState ({
-            status: STATUS_SEARCHING_FOR_BID,
+            status: STATUS_SEARCHING_FOR_BIDS,
             searchCount: 0,
         })
 
-        const nProviders = this.state.providers.length;
         let searchCount = 0;
-        let bestBid;
+        let bestBid = false;
 
-        let checkBid = ( url ) => {
-            
-            this.revocablePromise ( fetch ( url + '/bid' ))
-            .then (( response ) => { return response.json (); })
-            .then (( data ) => {
+        let checkBid = async ( url ) => {
 
-                if ( data.type === 'VOL_BID' ) {
-                    console.log ( 'FOUND A BID:', url )
+            try {
+                const data = await ( await this.revocableFetch ( url + '/bid')).json ();
+
+                if (( data.type === 'VOL_BID' ) && ( !bestBid  || ( data.volPrice <= bestBid.volPrice ))) {
                     bestBid = data;
                     bestBid.provider = url;
                 }
-            })
-            .catch (( error ) => { console.log ( error ); })
-            .finally (() => {
-                
-                this.setState ({ searchCount: searchCount++ });
+            }
+            catch ( error ) {
+                console.log ( error );
+            }
+            this.setState ({ searchCount: searchCount++ });
+        }
 
-                if ( searchCount >= nProviders ) {
+        let promises = [];
+        marketURLs.forEach (( url ) => {
+            promises.push ( checkBid ( url ));
+        });
+        await Promise.all ( promises );
+        
+        if ( bestBid ) {
 
-                    console.log ( 'DONE SEARCHING PROVIDERS FOR BID' );
+            let bid = {
+                volPrice:       bestBid.volPrice,
+                maxSale:        bestBid.maxSale,
+                accountPrice:   bestBid.accountPrice,
+                provider:       bestBid.provider,
+            };
 
-                    if ( bestBid ) {
-
-                        console.log ( 'FOUND BEST BID' );
-
-                        let bid = {
-                            volPrice:       bestBid.volPrice,
-                            maxSale:        bestBid.maxSale,
-                            accountPrice:   bestBid.accountPrice,
-                            provider:       bestBid.provider,
-                        };
-
-                        this.setState ({
-                            status: STATUS_FOUND_BID,
-                            bestBid: bid,
-                        });
-                    }
-                    else {
-                        this.setState ({ status: STATUS_NO_BIDS_FOUND })
-                    }
-                }
+            this.setState ({
+                status: STATUS_FOUND_BID,
+                bestBid: bid,
             });
         }
-
-        for ( let i in this.state.providers ) {
-            checkBid ( this.state.providers [ i ]);
-        }
-    }
-
-    //----------------------------------------------------------------//
-    searchForProviders () {
-
-        console.log ( 'SEARCH FOR PROVIDERS' );
-
-        this.setState ({ status: STATUS_SEARCHING_FOR_PROVIDERS })
-
-        let searchSet = {};
-        let visitedSet = {};
-        let searchCount = 0;
-
-        let checkProvider = ( url ) => {
-            
-            console.log ( 'HELLO FROM CHECK PROVIDER!', url );
-
-            if ( visitedSet [ url ]) return;
-
-            searchSet [ url ] = true;
-            visitedSet [ url ] = true;
-
-            this.revocablePromise ( fetch ( url ))
-            .then (( response ) => { return response.json (); })
-            .then (( data ) => {
-
-                if ( data.type === 'VOL_PROVIDER' ) {
-                    console.log ( 'FOUND A PROVIDER:', url )
-                    let providers = this.state.providers.splice ( 0 );
-                    providers.push ( url );
-                    this.setState ({ providers: providers });
-                }
-                else if ( data.type === 'VOL_MINING_NODE' ) {
-                    console.log ( 'FOUND A MINING NODE:', url );
-                    this.miners.push ( url );
-                }
-            })
-            .catch (( error ) => { console.log ( error ); })
-            .finally (() => {
-                
-                this.setState ({ searchCount: searchCount++ });
-
-                delete searchSet [ url ];
-
-                const remaining = Object.keys ( searchSet ).length;
-                if ( remaining === 0 ) {
-                
-                    if ( this.state.providers.length > 0 ) {
-                        this.searchForBids ();
-                    }
-                    else {
-                        this.setState ({ status: STATUS_NO_PROVIDERS_FOUND })
-                    }
-                }
-            });
-        }
-
-        const { nodes } = this.props.appState.state;
-        for ( let i in nodes ) {
-            checkProvider ( nodes [ i ]);
+        else {
+            this.setState ({ status: STATUS_NO_BIDS_FOUND })
         }
     }
 }
