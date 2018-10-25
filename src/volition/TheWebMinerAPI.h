@@ -25,7 +25,9 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         string accountName = this->getMatchString ( "accountName" );
-        const State& state = TheWebMiner::get ().getState ();
+        
+        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+        const State& state = scopedLock.getWebMiner ().getState ();
 
         VersionedValue < Account > account = state.getAccount ( accountName );
         if ( account ) {
@@ -93,10 +95,9 @@ public:
             
             u64 height = this->getMatchU64 ( "blockID" );
 
-            TheWebMiner& webMiner = TheWebMiner::get ();
-            Poco::ScopedLock < Poco::Mutex > scopedLock ( webMiner.getMutex ());
+            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+            const Chain& chain = scopedLock.getWebMiner ().getChain ();
 
-            const Chain& chain = webMiner.getChain ();
             VersionedValue < Block > block = chain.getBlock ( height );
             if ( block ) {
                 jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
@@ -122,9 +123,8 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-        TheWebMiner& webMiner = TheWebMiner::get ();
-        Poco::ScopedLock < Poco::Mutex > scopedLock ( webMiner.getMutex ());
-        const Chain& chain = webMiner.getChain ();
+        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+        const Chain& chain = scopedLock.getWebMiner ().getChain ();
         ToJSONSerializer::toJSON ( chain, jsonOut );
         
         return Poco::Net::HTTPResponse::HTTP_OK;
@@ -143,10 +143,10 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         
-        const TheWebMiner& theMiner = TheWebMiner::get ();
+        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         
         jsonOut.set ( "type", "VOL_MINING_NODE" );
-        jsonOut.set ( "minerID", theMiner.getMinerID ().c_str ());
+        jsonOut.set ( "minerID", scopedLock.getWebMiner ().getMinerID ().c_str ());
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
@@ -164,9 +164,9 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-        const TheWebMiner& theMiner                     = TheWebMiner::get ();
-        const State& state                              = theMiner.getState ();
-        const map < string, MinerInfo >& minerInfo      = state.getMiners ();
+        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+        const State& state = scopedLock.getWebMiner ().getState ();
+        const map < string, MinerInfo >& minerInfo = state.getMiners ();
         
         Poco::JSON::Object::Ptr minersJSON = new Poco::JSON::Object ();
         
@@ -201,7 +201,10 @@ public:
         unique_ptr < AbstractTransaction > transaction = factory.make ( typeInfo );
         if ( transaction ) {
             FromJSONSerializer::fromJSON ( *transaction, jsonIn );
-            TheWebMiner::get ().pushTransaction ( move ( transaction ));
+            
+            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+            scopedLock.getWebMiner ().pushTransaction ( move ( transaction ));
+            
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

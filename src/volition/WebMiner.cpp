@@ -92,7 +92,7 @@ void WebMiner::runMulti () {
     size_t height = 0;
     while ( !this->isStopped ()) {
             
-        Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
+        Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
         
         LOG_SCOPE_F ( INFO, "WEB: WebMiner::runMulti () - step" );
         
@@ -128,6 +128,8 @@ void WebMiner::runSolo () {
 
     size_t height = 0;
     while ( !this->isStopped ()) {
+    
+        Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
     
         LOG_SCOPE_F ( INFO, "WEB: WebMiner::runSolo () - step" );
         

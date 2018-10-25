@@ -33,4 +33,19 @@ Poco::Net::HTTPRequestHandler* TheWebMiner::createRequestHandler ( const Poco::N
     return this->mRouteTable.match ( request.getURI ());
 }
 
+//================================================================//
+// ScopedWebMinerLock
+//================================================================//
+
+//----------------------------------------------------------------//
+WebMiner& ScopedWebMinerLock::getWebMiner () {
+    return this->mWebMiner;
+}
+
+//----------------------------------------------------------------//
+ScopedWebMinerLock::ScopedWebMinerLock ( TheWebMiner& theWebMiner ) :
+    mScopedLock ( theWebMiner.mWebMiner.getMutex ()),
+    mWebMiner ( theWebMiner.mWebMiner ) {
+}
+
 } // namespace Volition

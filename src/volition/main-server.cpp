@@ -242,24 +242,30 @@ protected:
         string minerID      = to_string ( port );
     
         Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
-    
-        Volition::TheWebMiner& theMiner = Volition::TheWebMiner::get ();
+            
+        {
+            Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
+            Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
         
-        if ( solo ) {
-            theMiner.setLazy ( true );
-            theMiner.setSolo ( true );
+            if ( solo ) {
+                webMiner.setLazy ( true );
+                webMiner.setSolo ( true );
+            }
+            
+            webMiner.loadKey ( keyfile );
+            webMiner.loadGenesis ( genesis );
+            webMiner.setMinerID ( minerID );
+            webMiner.setChainPath ( chain );
+            webMiner.start ();
         }
-        
-        theMiner.loadKey ( keyfile );
-        theMiner.loadGenesis ( genesis );
-        theMiner.setMinerID ( minerID );
-        theMiner.setChainPath ( chain );
-        theMiner.start ();
 
         this->serve ( port );
         this->waitForTerminationRequest ();
 
-        theMiner.shutdown ();
+        {
+            Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
+            scopedLock.getWebMiner ().shutdown ();
+        }
         return Application::EXIT_OK;
     }
     
