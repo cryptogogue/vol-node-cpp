@@ -131,6 +131,7 @@ async function _postBid ( request, result ) {
         nonce = await _fetchNonce ();
 
         let transaction = {
+            
             'type':     'OPEN_ACCOUNT',
 
             'maker': {
@@ -141,8 +142,8 @@ async function _postBid ( request, result ) {
             },
 
             'accountName':  bid.accountName,
-            'amount':   bid.amount || 0,
-            'keyName':  bid.keyName,
+            'amount':       bid.amount || 1000,
+            'keyName':      bid.keyName,
             'key': {
                 'groupName':    'secp256k1',
                 'type':         'EC_HEX',

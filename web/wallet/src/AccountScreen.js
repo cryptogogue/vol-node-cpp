@@ -1,12 +1,11 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { withAppState }         from './AppStateProvider';
+import { withAppStateAndUser }  from './AppStateProvider';
 import BaseComponent            from './BaseComponent';
 import NavigationBar            from './NavigationBar';
 import NodeListView             from './NodeListView';
 import TransactionFormSelector  from './TransactionFormSelector';
 import React                    from 'react';
-import { Redirect }             from 'react-router-dom';
 import { Dropdown, Segment, Header, Icon, Divider, Modal, Grid } from 'semantic-ui-react';
 
 //================================================================//
@@ -19,7 +18,7 @@ class AccountScreen extends BaseComponent {
         super ( props );
 
         this.state = {
-            accountId : this.props.match.params && this.props.match.params.accountId,
+            targetAccountId : this.getAccountId (),
             balance : -1,
             nonce: -1,
         };
@@ -30,15 +29,18 @@ class AccountScreen extends BaseComponent {
     //----------------------------------------------------------------//
     async getAccountBalance () {
 
+        const accountId = this.getAccountId ();
+
         let balanceHistogram = new Map ();
         let bestNonce = 0;
 
         let updateBalance = async ( url ) => {
 
             try {
-                const data = await ( await this.revocableFetch ( url + '/accounts/' + this.state.accountId )).json ();
 
-                if ( data.account && ( data.account.accountName === this.state.accountId )) {
+                const data = await this.revocableFetchJSON ( url + '/accounts/' + accountId );
+
+                if ( data.account && ( data.account.accountName === accountId )) {
 
                     let balance = data.account.balance;
                     let nonce = data.account.nonce;
@@ -56,7 +58,7 @@ class AccountScreen extends BaseComponent {
             }
         }
 
-        if ( this.state.accountId ) {
+        if ( accountId ) {
 
             const { minerURLs } = this.props.appState;
 
@@ -64,22 +66,36 @@ class AccountScreen extends BaseComponent {
             minerURLs.forEach (( url ) => {
                 promises.push ( updateBalance ( url ));
             });
-            await Promise.all ( promises );
-        
-            let bestBalanceCount = 0;
-            let bestBalance = -1;
 
-            balanceHistogram.forEach (( balanceCount, balance ) => {
+            try {
 
-                if ( bestBalanceCount < balanceCount ) {
-                    bestBalance = balance;
-                }
-            });
+                await this.revocableAll ( promises );
 
-            this.setState ({ balance: bestBalance });
-            this.setState ({ nonce: bestNonce });
+                let bestBalanceCount = 0;
+                let bestBalance = -1;
+
+                balanceHistogram.forEach (( balanceCount, balance ) => {
+                    if ( bestBalanceCount < balanceCount ) {
+                        bestBalance = balance;
+                    }
+                });
+
+                this.setState ({ balance: bestBalance });
+                this.setState ({ nonce: bestNonce });
+
+                this.props.appState.finishTransaction ( accountId, bestNonce );
+            }
+            catch ( error ) {
+                console.log ( error );
+            }
         }
         this.revocableTimeout (() => { this.getAccountBalance ()}, 1000 );
+    }
+
+    //----------------------------------------------------------------//
+    getAccountId () {
+        let accountId = this.props.match.params && this.props.match.params.accountId;
+        return accountId && ( accountId.length > 0 ) && accountId;
     }
 
     //----------------------------------------------------------------//
@@ -88,32 +104,38 @@ class AccountScreen extends BaseComponent {
         const { appState } = this.props;
 
         // TODO: move redirects to a HOC
-        if ( !appState.hasUser ()) return ( <Redirect to = "/" />);
-        if ( !appState.isLoggedIn ()) return ( <Redirect to = "/login" />);
+        if ( !appState.hasUser ()) return this.redirect ( '/' );
+        if ( !appState.isLoggedIn ()) return this.redirect ( '/login' );
 
-        let targetAccountId = this.state.accountId;
-        const urlAccountId = this.props.match.params && this.props.match.params.accountId;
+        let targetAccountId = this.state.targetAccountId;
+        const accountId = this.getAccountId ();
 
         if ( !targetAccountId ) {
             const accountNames = Object.keys ( appState.state.accounts );
             targetAccountId = accountNames && accountNames.length && accountNames [ 0 ];
         }
 
-        if ( targetAccountId && ( targetAccountId !== urlAccountId )) {
-            return ( <Redirect to = { '/accounts/' + targetAccountId }/>);
+        if ( targetAccountId && ( targetAccountId !== accountId )) {
+            return this.redirect ( '/accounts/' + targetAccountId );
         }
 
         // TODO: nonce should come from account or from last known transaction
         const nonce = this.state.nonce < 0 ? 0 : this.state.nonce;
+
+        let userName;
+        if ( appState.state.userId.length > 0 ) {
+            userName = (<Header as = 'h2'>{ appState.state.userId }</Header>);
+        }
 
         return (
             <div>
                 <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
                     <Grid.Column style = {{ maxWidth: 450 }}>
 
-                        <NavigationBar navTitle = "Accounts"/>
+                        <NavigationBar navTitle = "Accounts" match = { this.props.match }/>
 
                         <div>
+                            { userName }
                             <p>ACTIVE MINERS: { appState.state.activeMinerCount }</p>
                             <p>ACTIVE MARKETS: { appState.state.activeMarketCount }</p>
                         </div>
@@ -125,12 +147,10 @@ class AccountScreen extends BaseComponent {
 
                         <Segment>
                             <TransactionFormSelector
-                                accountId = { targetAccountId }
+                                accountId = { accountId }
                                 nonce = { nonce }
                             />
                         </Segment>
-
-                        { this.renderTransactions ()}
 
                         <Segment>
                             <NodeListView/>
@@ -145,7 +165,7 @@ class AccountScreen extends BaseComponent {
     //----------------------------------------------------------------//
     renderAccountDetails () {
 
-        const accountId = this.props.match.params.accountId;
+        const accountId = this.getAccountId ();
         const { accounts, nodes } = this.props.appState.state;
         const account = ( accountId in accounts ) && accounts [ accountId ];
 
@@ -218,29 +238,35 @@ class AccountScreen extends BaseComponent {
                 search
                 selection
                 options = { options }
-                onChange = {( event, data ) => { this.setState ({ accountId : data.value, balance : -1 }); }}
+                onChange = {( event, data ) => {
+                    this.setState ({
+                        targetAccountId : data.value,
+                        balance : -1,
+                        nonce: -1
+                    });
+                }}
             />
         );
     }
 
     //----------------------------------------------------------------//
-    renderTransactions () {
+    // renderTransactions () {
 
-        const { transactions } = this.props.appState.state;
-        if ( transactions.length === 0 ) return;
+    //     const { transactions } = this.props.appState.state;
+    //     if ( transactions.length === 0 ) return;
 
-        let count = 0;
+    //     let count = 0;
 
-        // transaction type     nonce       pending     rejected        confirmed
+    //     // transaction type     nonce       pending     rejected        confirmed
 
-        return (
-            <Segment>
-                { transactions.map (( entry ) => {
-                    return (<p key = { count++ }>{ entry.transaction.friendlyName }</p>);
-                })}
-            </Segment>
-        );
-    }
+    //     return (
+    //         <Segment>
+    //             { transactions.map (( entry ) => {
+    //                 return (<p key = { count++ }>{ entry.transaction.friendlyName }</p>);
+    //             })}
+    //         </Segment>
+    //     );
+    // }
 }
 
-export default withAppState ( AccountScreen );
+export default withAppStateAndUser ( AccountScreen );

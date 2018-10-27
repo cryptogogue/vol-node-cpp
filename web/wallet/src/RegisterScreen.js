@@ -1,15 +1,15 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { withAppState }         from './AppStateProvider';
+import { withAppStateAndUser }  from './AppStateProvider';
+import BaseComponent            from './BaseComponent';
 import * as bcrypt              from 'bcryptjs';
-import React, { Component }     from 'react';
-import { Redirect }             from 'react-router-dom';
+import React                    from 'react';
 import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
 
 //================================================================//
 // RegisterScreen
 //================================================================//
-class RegisterScreen extends Component {
+class RegisterScreen extends BaseComponent {
 
     //----------------------------------------------------------------//
     constructor ( props ) {
@@ -51,7 +51,7 @@ class RegisterScreen extends Component {
         
         if ( appState.hasUser ()) {
             const to = appState.isLoggedIn () ? '/accounts' : '/login';
-            return (<Redirect to = { to }/>);
+            return this.redirect ( to );
         }
 
         let onChange        = ( event ) => { this.handleChange ( event )};
@@ -114,4 +114,4 @@ class RegisterScreen extends Component {
     }
 }
 
-export default withAppState ( RegisterScreen );
+export default withAppStateAndUser ( RegisterScreen );

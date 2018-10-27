@@ -96,7 +96,7 @@ const sendVOL = {
         'makerAccountName':         stringField ( 0 ),
         'makerKeyName':             stringField ( 1 ),
         'makerNonce':               integerField ( 2 ),
-        'recipientAccountName':     stringField ( 3 ),
+        'accountName':              stringField ( 3 ),
         'amount':                   integerField ( 4 ),
         'gratuity':                 integerField ( 5 ),
     },

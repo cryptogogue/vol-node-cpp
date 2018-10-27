@@ -43,8 +43,6 @@ class TransactionForm extends Component {
             fieldValues [ name ] = fieldValues [ name ] || null;
         });
 
-        console.log ( 'FIELD VALUES:', fieldValues );
-
         this.state = fieldValues;
     }
 

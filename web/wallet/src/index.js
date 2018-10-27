@@ -26,11 +26,21 @@ const App = () => (
             <hr />
             <AppStateProvider value = { this.state }>
                 <Switch>
+                    <Route exact path = "/:userId/accounts/new" component = { NewAccountScreen }/>
                     <Route exact path = "/accounts/new" component = { NewAccountScreen }/>
-                    <Route path = "/accounts/:accountId" component = { AccountScreen }/>
-                    <Route path = "/accounts" component = { AccountScreen }/>
+
+                    <Route exact path = "/:userId/accounts/:accountId" component = { AccountScreen }/>
+                    <Route exact path = "/accounts/:accountId" component = { AccountScreen }/>
+
+                    <Route exact path = "/:userId/accounts" component = { AccountScreen }/>
+                    <Route exact path = "/accounts" component = { AccountScreen }/>
+                    
+                    <Route exact path = "/:userId/login" component = { LoginScreen }/>
                     <Route exact path = "/login" component = { LoginScreen }/>
+
                     <Route exact path = "/stripe" component = { StripeTestScreen }/>
+
+                    <Route exact path = "/:userId/" component = { RegisterScreen }/>
                     <Route exact path = "/" component = { RegisterScreen }/>
                 </Switch>
             </AppStateProvider>

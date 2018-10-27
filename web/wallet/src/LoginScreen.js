@@ -1,15 +1,15 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { withAppState }         from './AppStateProvider';
+import { withAppStateAndUser }  from './AppStateProvider';
+import BaseComponent            from './BaseComponent';
 import * as bcrypt              from 'bcryptjs';
-import React, { Component }     from 'react';
-import { Redirect }             from 'react-router-dom';
+import React                    from 'react';
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 //================================================================//
 // LoginScreen
 //================================================================//
-class LoginScreen extends Component {
+class LoginScreen extends BaseComponent {
 
     //----------------------------------------------------------------//
     constructor ( props ) {
@@ -52,12 +52,11 @@ class LoginScreen extends Component {
 
         const { appState } = this.props;
         const { errorMessage, password } = this.state;
-
         const isEnabled = password.length > 0;
 
         // TODO: move redirects to a HOC
-        if ( !appState.hasUser ()) return ( <Redirect to = "/" />);
-        if ( appState.isLoggedIn ()) return ( <Redirect to = "/accounts" />);
+        if ( !appState.hasUser ()) return this.redirect ( '/' );
+        if ( appState.isLoggedIn ()) return this.redirect ( '/accounts' );
 
         let onChange        = ( event ) => { this.handleChange ( event )};
         let onSubmit        = () => { this.handleSubmit ()};
@@ -107,4 +106,4 @@ class LoginScreen extends Component {
         );
     }
 }
-export default withAppState ( LoginScreen );
+export default withAppStateAndUser ( LoginScreen );

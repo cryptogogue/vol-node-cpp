@@ -17,10 +17,6 @@ class TransactionFormSelector extends Component {
 
         // TODO: this is a placeholder; transaction schemas should come from
         // the server.
-        
-        // placeholder; eventuall this will be local to the form. because
-        // schemas will be pulled from the server and may be unique to
-        // the account.
         this.transactionSchemas = transactionSchemas ();
 
         this.state = {
@@ -34,23 +30,24 @@ class TransactionFormSelector extends Component {
 
         fieldValues.makerNonce = this.props.nonce;
 
-        let transaction = {
-            transactionType: schema.transactionType,
-            friendlyName: schema.friendlyName,
-            fieldValues: fieldValues,
-        }
-
         this.showForm ( false );
-        this.props.appState.pushTransaction ( transaction );
+        this.props.appState.startTransaction ( schema, fieldValues );
     }
 
     //----------------------------------------------------------------//
     render () {
 
+        const { appState, accountId, nonce }  = this.props;
+
+        const pendingTransaction = appState.getPendingTransaction ( accountId );
+        if ( pendingTransaction ) {
+            return this.renderPendingTransaction ( pendingTransaction );
+        }
+
         const isShowFormEnabled = (
-            this.props.accountId &&
-            ( this.props.accountId.length > 0 ) &&
-            ( this.props.nonce >= 0 )
+            accountId &&
+            ( accountId.length > 0 ) &&
+            ( nonce >= 0 )
         );
 
         if ( isShowFormEnabled && this.state.showForm ) {
@@ -67,7 +64,7 @@ class TransactionFormSelector extends Component {
 
                 transactionForm = (
                     <TransactionForm
-                        accountId = { this.props.accountId }
+                        accountId = { accountId }
                         schema = { this.transactionSchemas [ schemaIndex ]}
                         onSubmit = { onSubmit }
                     />
@@ -113,6 +110,14 @@ class TransactionFormSelector extends Component {
                 options = { options }
                 onChange = {( event, data ) => { this.selectForm ( data.value )}}
             />
+        );
+    }
+
+    //----------------------------------------------------------------//
+    renderPendingTransaction ( transaction ) {
+
+        return (
+            <p>{ transaction.friendlyName }</p>
         );
     }
 

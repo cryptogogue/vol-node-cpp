@@ -1,13 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { withAppState }             from './AppStateProvider';
+import { withAppStateAndUser }      from './AppStateProvider';
 import BaseComponent                from './BaseComponent';
 import { randomBytes }              from './utils/randomBytes';
 import * as bip39                   from 'bip39';
 import * as bitcoin                 from 'bitcoinjs-lib';
 import React                        from 'react';
-import { Redirect }                 from 'react-router-dom';
 import { Header, Icon, Button }     from 'semantic-ui-react';
 
 const STATUS_SEARCHING_FOR_BIDS         = 0;
@@ -23,7 +22,7 @@ const STATUS_DONE                       = 5;
 class NewAccountScreen extends BaseComponent {
     
     //----------------------------------------------------------------//
-    acceptBid () {
+    async acceptBid () {
 
         const bid = this.state.bestBid;
         if ( !bid ) return;
@@ -39,26 +38,23 @@ class NewAccountScreen extends BaseComponent {
             amount:         0,
         };
 
-        this.revocablePromise ( fetch ( bid.provider + '/bid', {
-            method : 'POST',
-            headers : { 'content-type': 'application/json' },
-            body : JSON.stringify ( order )
-        }))
-        .then (( response ) => {
+        try {
 
-            return response.json ();
-        })
-        .then (( data ) => {
+            let data = await this.revocableFetchJSON ( bid.provider + '/bid', {
+                method : 'POST',
+                headers : { 'content-type': 'application/json' },
+                body : JSON.stringify ( order )
+            });
 
             console.log ( 'GOT TRANSACTION' );
             console.log ( data );
             this.postTransaction ( data );
-        })
-        .catch (( error ) => {
+        }
+        catch ( error ) {
 
             // TODO: handle error
             console.log ( error );
-        });
+        }
     }
 
     //----------------------------------------------------------------//
@@ -139,52 +135,51 @@ class NewAccountScreen extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    postTransaction ( transaction ) {
+    async postTransaction ( transaction ) {
+
+        const { minerURLs } = this.props.appState;
 
         console.log ( 'POSTING TRANSACTION' );
-        console.log ( 'MINERS', this.miners );
+        console.log ( 'MINERS', minerURLs );
 
         this.setState ({ status: STATUS_POSTING_TRANSACTION })
 
-        const nMiners = this.miners.length;
-        let count = 0;
         let success = 0;
 
-        let postTransaction = ( url ) => {
+        let postTransaction = async ( url ) => {
             
             console.log ( 'POST TO MINER:', url );
 
-            this.revocablePromise ( fetch ( url + '/transactions', {
-                method : 'POST',
-                headers : { 'content-type': 'application/json' },
-                body : JSON.stringify ( transaction )
-            }))
-            .then (( response ) => { success++; })
-            .catch (( error ) => { console.log ( error ); })
-            .finally (() => {
-                
-                count++;
+            try {
+                await this.revocableFetch ( url + '/transactions', {
+                    method : 'POST',
+                    headers : { 'content-type': 'application/json' },
+                    body : JSON.stringify ( transaction )
+                });
 
-                if ( count >= nMiners ) {
-
-                    if ( success > 0 ) {
-                        this.props.appState.saveAccount ( this.state.accountId, this.state.privateKey, this.state.publicKey );
-                        this.setState ({ status: STATUS_DONE });
-                    }
-                    // TODO: handle failure
-                }
-            });
+                success++;
+            }
+            catch ( error ) {
+                console.log ( error );
+            }
         }
 
-        for ( let i in this.miners ) {
-            postTransaction ( this.miners [ i ]);
+        let promises = [];
+        minerURLs.forEach (( url ) => {
+            promises.push ( postTransaction ( url ));
+        });
+        await this.revocableAll ( promises );
+
+        if ( success > 0 ) {
+            this.props.appState.saveAccount ( this.state.accountId, this.state.privateKey, this.state.publicKey );
+            this.revocableSetState ({ status: STATUS_DONE });
         }
     }
 
     //----------------------------------------------------------------//
     render () {
 
-        if ( this.state.status === STATUS_DONE ) return (<Redirect to = { '/accounts/' + this.state.accountId }/>);
+        if ( this.state.status === STATUS_DONE ) return this.redirect ( '/accounts/' + this.state.accountId );
 
         return (
             <div>
@@ -294,4 +289,4 @@ class NewAccountScreen extends BaseComponent {
     }
 }
 
-export default withAppState ( NewAccountScreen );
+export default withAppStateAndUser ( NewAccountScreen );

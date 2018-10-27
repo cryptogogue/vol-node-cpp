@@ -20,6 +20,12 @@ export const getItem = ( k ) => {
 }
 
 //----------------------------------------------------------------//
+export const removeItem = ( k ) => {
+
+    localStorage.removeItem ( k );
+}
+
+//----------------------------------------------------------------//
 export const setItem = ( k, v ) => {
 
     try {

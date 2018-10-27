@@ -3,14 +3,15 @@
 import './NavigationBar.css';
 
 import { withAppState }         from './AppStateProvider';
-import React, { Component }     from 'react';
+import BaseComponent            from './BaseComponent';
+import React                    from 'react';
 import { Link }                 from 'react-router-dom';
 import { Dropdown, Menu }       from 'semantic-ui-react';
 
 //================================================================//
 // NavigationBar
 //================================================================//
-class NavigationBar extends Component {
+class NavigationBar extends BaseComponent {
 
     //----------------------------------------------------------------//
     constructor ( props ) {
@@ -31,8 +32,9 @@ class NavigationBar extends Component {
         const { appState, navTitle } = this.props;
         const { activeItem } = this.state;
 
-        let onClickDeleteStorage    = () => { appState.deleteStorage ()};
-        let onClickLogout           = () => { this.logout ()};
+        let onClickDeleteAllStorage     = () => { appState.deleteStorage ()};
+        let onClickDeleteUserStorage    = () => { appState.deleteUserStorage ()};
+        let onClickLogout               = () => { this.logout ()};
 
         return (
             <Menu>
@@ -48,9 +50,10 @@ class NavigationBar extends Component {
                 <Menu.Menu position = "right">
                     <Dropdown item icon = "settings">
                         <Dropdown.Menu>
-                            <Dropdown.Item icon = "add square" text = "Create Account" as = { Link } to = '/accounts/new' />
+                            <Dropdown.Item icon = "add square" text = "Create Account" as = { Link } to = { this.prefixURL ( '/accounts/new' )}/>
                             <Dropdown.Item icon = "log out" text = "Logout" onClick = { onClickLogout }/>
-                            <Dropdown.Item icon = "globe" text = "DEBUG: Delete Local Storage" onClick = { onClickDeleteStorage }/>
+                            <Dropdown.Item icon = "globe" text = "DEBUG: Delete User Storage" onClick = { onClickDeleteUserStorage }/>
+                            <Dropdown.Item icon = "globe" text = "DEBUG: Delete All Storage" onClick = { onClickDeleteAllStorage }/>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Menu.Menu>
