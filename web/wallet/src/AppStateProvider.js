@@ -200,6 +200,27 @@ class AppStateProvider extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
+    formatTransaction ( format, fieldValues ) {
+
+        let result = {};
+        Object.keys ( format ).forEach (( fieldName ) => {
+
+            const fieldSource = format [ fieldName ];
+            let fieldValue;
+
+            if (( typeof fieldSource ) === 'object' ) {
+                fieldValue = this.formatTransaction ( fieldSource, fieldValues );
+            }
+            else {
+                fieldValue = fieldValues [ fieldSource ];
+            }
+            result [ fieldName ] = fieldValue;
+        });
+
+        return result;
+    }
+
+    //----------------------------------------------------------------//
     getAccount ( accountId ) {
         const { accounts } = this.state;
         return ( accountId in accounts ) && accounts [ accountId ];
@@ -309,20 +330,12 @@ class AppStateProvider extends BaseComponent {
 
             try {
 
-                let body = Object.assign ({}, transaction.fieldValues );
+                console.log ( 'GONNA SEND US SOME TRANSACTIONS NOW' );
 
-                body.type = transaction.transactionType;
+                let body = this.formatTransaction ( transaction.schema.format, transaction.fieldValues );
+                body.type = transaction.schema.transactionType;
 
-                body.maker = {
-                    accountName:  body.makerAccountName,
-                    keyName:      body.makerKeyName,
-                    nonce:        body.makerNonce,
-                    gratuity:     body.gratuity,
-                }
-
-                delete body.makerAccountName;
-                delete body.makerKeyName;
-                delete body.makerNonce;
+                console.log ( body );
 
                 await this.revocableFetch ( url + '/transactions', {
                     method : 'POST',
@@ -434,10 +447,9 @@ class AppStateProvider extends BaseComponent {
     startTransaction ( schema, fieldValues ) {
 
         let transaction = {
-            transactionType:    schema.transactionType,
-            friendlyName:       schema.friendlyName,
             status:             TRANSACTION_STATUS_PENDING,
             submitted:          0,
+            schema:             schema,
             fieldValues:        fieldValues,
         }
 

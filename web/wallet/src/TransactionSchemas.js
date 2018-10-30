@@ -17,16 +17,31 @@ function stringField ( hashOrder ) {
 }
 
 //----------------------------------------------------------------//
+function makerFormat () {
+    return {
+        accountName:        'makerAccountName',
+        gratuity:           'gratuity',
+        keyName:            'makerKeyName',
+        nonce:              'makerNonce',
+    };
+}
+
+//----------------------------------------------------------------//
 const accountPolicy = {
     transactionType:    'ACCOUNT_POLICY',
     friendlyName:       'Account Policy',
     fields: {
-        'makerAccountName':         stringField ( 0 ),
-        'makerKeyName':             stringField ( 1 ),
-        'makerNonce':               integerField ( 2 ),
-        'policyName':               stringField ( 3 ),
-        'policy':                   stringField ( 4 ),
-        'gratuity':                 integerField ( 5 ),
+        makerAccountName:           stringField ( 0 ),
+        makerKeyName:               stringField ( 1 ),
+        makerNonce:                 integerField ( 2 ),
+        policyName:                 stringField ( 3 ),
+        policy:                     stringField ( 4 ),
+        gratuity:                   integerField ( 5 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+        policy:                     'policy',
+        policyName:                 'policyName',
     },
 }
 
@@ -35,13 +50,19 @@ const affirmKey = {
     transactionType:    'AFFIRM_KEY',
     friendlyName:       'Affirm Key',
     fields: {
-        'makerAccountName':         stringField ( 0 ),
-        'makerKeyName':             stringField ( 1 ),
-        'makerNonce':               integerField ( 2 ),
-        'keyName':                  stringField ( 3 ),
-        'key':                      stringField ( 4 ),
-        'keyPolicy':                stringField ( 5 ),
-        'gratuity':                 integerField ( 6 ),
+        makerAccountName:           stringField ( 0 ),
+        makerKeyName:               stringField ( 1 ),
+        makerNonce:                 integerField ( 2 ),
+        keyName:                    stringField ( 3 ),
+        key:                        stringField ( 4 ),
+        policyName:                 stringField ( 5 ),
+        gratuity:                   integerField ( 6 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+        key:                        'key',
+        keyName:                    'keyName',
+        policyName:                 'policyName',
     },
 }
 
@@ -50,12 +71,17 @@ const keyPolicy = {
     transactionType:    'KEY_POLICY',
     friendlyName:       'Key Policy',
     fields: {
-        'makerAccountName':         stringField ( 0 ),
-        'makerKeyName':             stringField ( 1 ),
-        'makerNonce':               integerField ( 2 ),
-        'policyName':               stringField ( 3 ),
-        'policy':                   stringField ( 4 ),
-        'gratuity':                 integerField ( 5 ),
+        makerAccountName:           stringField ( 0 ),
+        makerKeyName:               stringField ( 1 ),
+        makerNonce:                 integerField ( 2 ),
+        policyName:                 stringField ( 3 ),
+        policy:                     stringField ( 4 ),
+        gratuity:                   integerField ( 5 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+        policy:                     'policy',
+        policyName:                 'policyName',
     },
 }
 
@@ -64,14 +90,21 @@ const openAccount = {
     transactionType:    'OPEN_ACCOUNT',
     friendlyName:       'Open Account',
     fields: {
-        'makerAccountName':         stringField ( 0 ),
-        'makerKeyName':             stringField ( 1 ),
-        'makerNonce':               integerField ( 2 ),
-        'accountName':              stringField ( 3 ),
-        'keyName':                  stringField ( 4 ),
-        'key':                      stringField ( 5 ),
-        'amount':                   integerField ( 6 ),
-        'gratuity':                 integerField ( 7 ),
+        makerAccountName:           stringField ( 0 ),
+        makerKeyName:               stringField ( 1 ),
+        makerNonce:                 integerField ( 2 ),
+        accountName:                stringField ( 3 ),
+        keyName:                    stringField ( 4 ),
+        key:                        stringField ( 5 ),
+        amount:                     integerField ( 6 ),
+        gratuity:                   integerField ( 7 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+        accountName:                'accountName',
+        amount:                     'amount',
+        key:                        'key',
+        keyName:                    'keyName',
     },
 }
 
@@ -80,11 +113,15 @@ const registerMiner = {
     transactionType:    'REGISTER_MINER',
     friendlyName:       'Register Miner',
     fields: {
-        'makerAccountName':         stringField ( 0 ),
-        'makerKeyName':             stringField ( 1 ),
-        'makerNonce':               integerField ( 2 ),
-        'url':                      stringField ( 3 ),
-        'gratuity':                 integerField ( 4 ),
+        makerAccountName:           stringField ( 0 ),
+        makerKeyName:               stringField ( 1 ),
+        makerNonce:                 integerField ( 2 ),
+        url:                        stringField ( 3 ),
+        gratuity:                   integerField ( 4 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+        url:                        'url',
     },
 }
 
@@ -93,12 +130,17 @@ const sendVOL = {
     transactionType:    'SEND_VOL',
     friendlyName:       'Send VOL',
     fields: {
-        'makerAccountName':         stringField ( 0 ),
-        'makerKeyName':             stringField ( 1 ),
-        'makerNonce':               integerField ( 2 ),
-        'accountName':              stringField ( 3 ),
-        'amount':                   integerField ( 4 ),
-        'gratuity':                 integerField ( 5 ),
+        makerAccountName:           stringField ( 0 ),
+        makerKeyName:               stringField ( 1 ),
+        makerNonce:                 integerField ( 2 ),
+        accountName:                stringField ( 3 ),
+        amount:                     integerField ( 4 ),
+        gratuity:                   integerField ( 5 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+        accountName:                'accountName',
+        amount:                     'amount',
     },
 }
 

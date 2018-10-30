@@ -1,12 +1,3 @@
-Block signing
-Transaction format
-Transaction REST API
-Load genesis block
-    initial miner
-    initial wallet
-Register a mining account
-Provision a wallet
-Transfer VOL
 Mining reward
 command line wallet
 
@@ -43,17 +34,21 @@ if a user identity is stolen
 - publish proclamation
 - publish schema
 
-- anyone can publish a schema
-- must be adopted by at least one miner
-- reward schedule: time and signature
-- miners select what schema they want to mine
-- schema should have methods to indicate what assets are eligible for transformation
-- assets may be transformed in sets
+asset transformation rules
+f ( A ) -> B
+f ( A, B ) -> C
+f ( A, B+ ) -> C
+f ( A, B * N ) -> C
 
-OPEN_ACCOUNT
-    master key
+declare mining reward
+declare asset types
+declare data tables
+declare lua chunks
 
-IDENTIFY_KEY
-    identity key
+can always transfer an asset
+parameters - assets ( N, N or more)
+multistep (requires miner entropy)
+cost
+base asset + customization
 
 
