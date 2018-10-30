@@ -324,18 +324,12 @@ class AppStateProvider extends BaseComponent {
 
         const { transactions } = this.state;
 
-        let submitTransaction = async ( accountName, url ) => {
-
-            let transaction = transactions [ accountName ];
+        let submitTransaction = async ( transaction, url ) => {
 
             try {
 
-                console.log ( 'GONNA SEND US SOME TRANSACTIONS NOW' );
-
                 let body = this.formatTransaction ( transaction.schema.format, transaction.fieldValues );
                 body.type = transaction.schema.transactionType;
-
-                console.log ( body );
 
                 await this.revocableFetch ( url + '/transactions', {
                     method : 'POST',
@@ -350,9 +344,15 @@ class AppStateProvider extends BaseComponent {
 
         let promises = [];
         for ( let accountName in transactions ) {
-            this.minerURLs.forEach (( url ) => {
-                promises.push ( submitTransaction ( accountName, url ));
-            });
+
+            const transaction = transactions [ accountName ];
+
+            if ( transaction.status === TRANSACTION_STATUS_PENDING ) {
+                
+                this.minerURLs.forEach (( url ) => {
+                    promises.push ( submitTransaction ( transaction, url ));
+                });
+            }
         }
         await this.revocableAll ( promises );
 
