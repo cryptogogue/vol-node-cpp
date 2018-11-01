@@ -20,11 +20,9 @@ AbstractTransaction::~AbstractTransaction () {
 //----------------------------------------------------------------//
 bool AbstractTransaction::apply ( Ledger& ledger ) const {
 
-    const TransactionMakerSignature* makerSignature = this->mMakerSignature.get ();
-
-    if (( ledger.getVersion () == 0 ) || ( makerSignature && ledger.checkMakerSignature ( makerSignature ))) {
+    if (( ledger.getVersion () == 0 ) || ( this->AbstractTransaction_checkSignature ( ledger ))) {
         if ( this->AbstractTransaction_apply ( ledger )) {
-            ledger.consumeMakerSignature ( makerSignature );
+            this->AbstractTransaction_incrementNonce ( ledger );
             return true;
         }
     }
@@ -51,7 +49,6 @@ void AbstractTransaction::AbstractSerializable_serializeFrom ( const AbstractSer
     string type;
     
     serializer.serialize ( "type",      type );
-    serializer.serialize ( "maker",     this->mMakerSignature );
     
     assert ( type == this->typeString ());
 }
@@ -60,7 +57,6 @@ void AbstractTransaction::AbstractSerializable_serializeFrom ( const AbstractSer
 void AbstractTransaction::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "type",      this->typeString ());
-    serializer.serialize ( "maker",     this->mMakerSignature );
 }
 
 } // namespace Volition

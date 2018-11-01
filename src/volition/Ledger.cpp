@@ -48,23 +48,6 @@ bool Ledger::checkMakerSignature ( const TransactionMakerSignature* makerSignatu
 }
 
 //----------------------------------------------------------------//
-void Ledger::consumeMakerSignature ( const TransactionMakerSignature* makerSignature ) {
-
-    if ( makerSignature ) {
-
-        u64 nonce = makerSignature->getNonce ();
-        string accountName = makerSignature->getAccountName ();
-
-        VersionedValue < Account > account = this->getAccount ( accountName );
-        if ( account && ( account->mNonce <= nonce )) {
-            Account updatedAccount = *account;
-            updatedAccount.mNonce = nonce + 1;
-            this->setAccount ( accountName, updatedAccount );
-        }
-    }
-}
-
-//----------------------------------------------------------------//
 bool Ledger::deleteKey ( string accountName, string keyName ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
@@ -135,8 +118,6 @@ map < string, MinerInfo > Ledger::getMiners () const {
     return minerInfoMap;
 }
 
-
-
 //----------------------------------------------------------------//
 Ledger::MinerURLMap Ledger::getMinerURLs () const {
 
@@ -159,6 +140,23 @@ list < Schema > Ledger::getSchemas () const {
         schemaList.push_back ( schema );
     }
     return schemaList;
+}
+
+//----------------------------------------------------------------//
+void Ledger::incrementNonce ( const TransactionMakerSignature* makerSignature ) {
+
+    if ( makerSignature ) {
+
+        u64 nonce = makerSignature->getNonce ();
+        string accountName = makerSignature->getAccountName ();
+
+        VersionedValue < Account > account = this->getAccount ( accountName );
+        if ( account && ( account->mNonce <= nonce )) {
+            Account updatedAccount = *account;
+            updatedAccount.mNonce = nonce + 1;
+            this->setAccount ( accountName, updatedAccount );
+        }
+    }
 }
 
 //----------------------------------------------------------------//

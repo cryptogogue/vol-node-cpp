@@ -194,7 +194,6 @@ public:
     bool                            accountPolicy           ( string accountName, const Policy* policy );
     bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
     bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
-    void                            consumeMakerSignature   ( const TransactionMakerSignature* makerSignature );
     bool                            deleteKey               ( string accountName, string keyName );
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
@@ -203,6 +202,7 @@ public:
     map < string, MinerInfo >       getMiners               () const;
     MinerURLMap                     getMinerURLs            () const;
     list < Schema >                 getSchemas              () const;
+    void                            incrementNonce          ( const TransactionMakerSignature* makerSignature );
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
     bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
     bool                            publishSchema           ( string schemaName, string json, string lua );

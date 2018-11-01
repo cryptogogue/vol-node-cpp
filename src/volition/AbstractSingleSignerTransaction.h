@@ -31,6 +31,19 @@ protected:
     
         serializer.serialize ( "maker",     this->mMakerSignature );
     }
+    
+    //----------------------------------------------------------------//
+    bool AbstractTransaction_checkSignature ( Ledger& ledger ) const override {
+
+        const TransactionMakerSignature* makerSignature = this->mMakerSignature.get ();
+        return ( makerSignature && ledger.checkMakerSignature ( makerSignature ));
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
+
+        ledger.incrementNonce ( this->mMakerSignature.get ());
+    }
 };
 
 } // namespace Volition
