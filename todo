@@ -51,4 +51,7 @@ multistep (requires miner entropy)
 cost
 base asset + customization
 
+broad phase: type
+medium phase: keywords
+narrow phase: metadata
 

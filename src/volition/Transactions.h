@@ -219,6 +219,42 @@ public:
 };
 
 //================================================================//
+// PublishSchema
+//================================================================//
+class PublishSchema :
+    public AbstractTransaction {
+public:
+
+    TRANSACTION_TYPE ( "PUBLISH_SCHEMA" )
+    TRANSACTION_WEIGHT ( 1 )
+
+    string                                  mJSON;
+    string                                  mLua;
+
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "json",          this->mJSON );
+        serializer.serialize ( "lua",           this->mLua );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        
+        serializer.serialize ( "json",          this->mJSON );
+        serializer.serialize ( "lua",           this->mLua );
+    }
+
+    //----------------------------------------------------------------//
+    bool AbstractTransaction_apply ( State& state ) const override {
+    
+        return state.publishSchema ( this->mJSON, this->mLua );
+    }
+};
+
+//================================================================//
 // RegisterMiner
 //================================================================//
 class RegisterMiner :

@@ -14,9 +14,11 @@ namespace Volition {
 namespace Format {
 
     //----------------------------------------------------------------//
-    char*       vsnprintf_alloc     ( char* s, size_t n, const char* format, va_list arg );
-    void        write               ( string& str, const char* format, ... );
-    void        write_var           ( string& str, const char* format, va_list args );
+    char*           vsnprintf_alloc     ( char* s, size_t n, const char* format, va_list arg );
+    string          write               ( const char* format, ... );
+    string          write_ver           ( const char* format, va_list args );
+    void            write               ( string& str, const char* format, ... );
+    void            write_var           ( string& str, const char* format, va_list args );
 };
 
 } // namespace Volition

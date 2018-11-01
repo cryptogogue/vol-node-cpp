@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/Format.h>
 #include <volition/State.h>
 #include <volition/TransactionMakerSignature.h>
 
@@ -143,6 +144,24 @@ State::MinerURLMap State::getMinerURLs () const {
 }
 
 //----------------------------------------------------------------//
+string State::getSchemaKey ( int schemaCount ) {
+
+    return Format::write ( "%s%d", SCHEMA_PREFIX, schemaCount );
+}
+
+//----------------------------------------------------------------//
+list < Schema > State::getSchemas () const {
+
+    list < Schema > schemaList;
+    const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
+    for ( int i = 0; i < schemaCount; ++i ) {
+        const Schema& schema = this->getValue < Schema >( State::getSchemaKey ( i ));
+        schemaList.push_back ( schema );
+    }
+    return schemaList;
+}
+
+//----------------------------------------------------------------//
 bool State::keyPolicy ( string accountName, string policyName, const Policy* policy ) {
 
     return true;
@@ -177,6 +196,21 @@ string State::prefixKey ( string prefix, string key ) {
 }
 
 //----------------------------------------------------------------//
+bool State::publishSchema ( string json, string lua ) {
+
+    int schemaCount = this->getValue < int >( SCHEMA_COUNT );
+        
+    Schema schema;
+    schema.mJSON = json;
+    schema.mLua = lua;
+    
+    this->setValue < Schema >( State::getSchemaKey ( schemaCount ), schema );
+    this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
+    
+    return true;
+}
+
+//----------------------------------------------------------------//
 bool State::registerMiner ( string accountName, string keyName, string url ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
@@ -204,6 +238,7 @@ void State::reset () {
     this->clear ();
     this->setValue < set < string >>( MINERS, set < string > ());
     this->setValue < map < string, string >>( MINER_URLS, map < string, string > ());
+    this->setValue < int >( SCHEMA_COUNT, 0 );
 }
 
 //----------------------------------------------------------------//

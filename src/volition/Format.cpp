@@ -62,13 +62,32 @@ char* vsnprintf_alloc ( char* s, size_t n, const char* format, va_list arg ) {
 }
 
 //----------------------------------------------------------------//
+string write ( const char* format, ... ) {
+    
+    string str;
+    
+    va_list args;
+    va_start ( args, format );
+    write_var ( str, format, args );
+    va_end ( args );
+    
+    return str;
+}
+
+//----------------------------------------------------------------//
+string write_var ( const char* format, va_list args ) {
+
+    string str;
+    write_var ( str, format, args );
+    return str;
+}
+
+//----------------------------------------------------------------//
 void write ( string& str, const char* format, ... ) {
 
     va_list args;
     va_start ( args, format );
-    
     write_var ( str, format, args );
-    
     va_end ( args );
 }
 
