@@ -11,7 +11,7 @@
 #include <volition/ChainMetadata.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
-#include <volition/State.h>
+#include <volition/Ledger.h>
 
 namespace Volition {
 
@@ -54,7 +54,7 @@ public:
     void                    loadKey                 ( string keyfile, string password = "" );
     const Chain&            getChain                () const;
     string                  getMinerID              () const;
-    const State&            getState                () const;
+    const Ledger&           getLedger               () const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
     void                    setChainPath            ( string path );
     void                    setGenesis              ( const Block& block );

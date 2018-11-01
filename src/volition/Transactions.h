@@ -50,7 +50,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
         return true;
     }
 };
@@ -88,9 +88,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
-        return state.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey, this->mPolicyName );
+        return ledger.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey, this->mPolicyName );
     }
 };
 
@@ -133,10 +133,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
         assert ( this->mKey );
-        return state.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, this->mKey, this->mURL );
+        return ledger.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, this->mKey, this->mURL );
     }
 };
 
@@ -170,7 +170,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
         return true;
     }
 };
@@ -211,10 +211,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
         
         assert ( this->mKey );
-        return state.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, this->mKey );
+        return ledger.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, this->mKey );
     }
 };
 
@@ -248,9 +248,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
-        return state.publishSchema ( this->mJSON, this->mLua );
+        return ledger.publishSchema ( this->mJSON, this->mLua );
     }
 };
 
@@ -281,9 +281,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
-        return state.registerMiner ( this->mMakerSignature->getAccountName (), this->mMakerSignature->getKeyName (), this->mURL );
+        return ledger.registerMiner ( this->mMakerSignature->getAccountName (), this->mMakerSignature->getKeyName (), this->mURL );
     }
 };
 
@@ -317,9 +317,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( State& state ) const override {
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
         
-        return state.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
+        return ledger.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
     }
 };
 

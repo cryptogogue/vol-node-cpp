@@ -18,13 +18,13 @@ AbstractTransaction::~AbstractTransaction () {
 }
 
 //----------------------------------------------------------------//
-bool AbstractTransaction::apply ( State& state ) const {
+bool AbstractTransaction::apply ( Ledger& ledger ) const {
 
     const TransactionMakerSignature* makerSignature = this->mMakerSignature.get ();
 
-    if (( state.getVersion () == 0 ) || ( makerSignature && state.checkMakerSignature ( makerSignature ))) {
-        if ( this->AbstractTransaction_apply ( state )) {
-            state.consumeMakerSignature ( makerSignature );
+    if (( ledger.getVersion () == 0 ) || ( makerSignature && ledger.checkMakerSignature ( makerSignature ))) {
+        if ( this->AbstractTransaction_apply ( ledger )) {
+            ledger.consumeMakerSignature ( makerSignature );
             return true;
         }
     }

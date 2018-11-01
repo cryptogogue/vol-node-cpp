@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_STATE_H
-#define VOLITION_STATE_H
+#ifndef VOLITION_LEDGER_H
+#define VOLITION_LEDGER_H
 
 #include <volition/common.h>
 #include <volition/MinerInfo.h>
@@ -18,7 +18,7 @@ class TransactionMakerSignature;
 class KeyAndPolicy {
 private:
 
-    friend class State;
+    friend class Ledger;
     friend class Account;
     
     CryptoKey mKey;
@@ -41,7 +41,7 @@ public:
 class Account {
 private:
 
-    friend class State;
+    friend class Ledger;
     
     u64         mBalance;
     u64         mNonce;
@@ -82,7 +82,7 @@ public:
 class AccountKey {
 private:
 
-    friend class State;
+    friend class Ledger;
     
     VersionedValue < Account >  mAccount;
     const KeyAndPolicy*         mKeyAndPolicy;
@@ -104,9 +104,9 @@ public:
 };
 
 //================================================================//
-// State
+// Ledger
 //================================================================//
-class State :
+class Ledger :
     public VersionedStore {
 private:
 
@@ -146,9 +146,9 @@ public:
     bool                            registerMiner           ( string accountName, string keyName, string url );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
-                                    State                   ();
-                                    State                   ( State& other );
-                                    ~State                  ();
+                                    Ledger                  ();
+                                    Ledger                  ( Ledger& other );
+                                    ~Ledger                 ();
 };
 
 } // namespace Volition

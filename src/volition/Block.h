@@ -8,7 +8,7 @@
 
 #include <volition/AbstractTransaction.h>
 #include <volition/Signature.h>
-#include <volition/State.h>
+#include <volition/Ledger.h>
 #include <volition/TheTransactionFactory.h>
 #include <volition/serialization/Serialization.h>
 
@@ -37,8 +37,8 @@ private:
     //----------------------------------------------------------------//
     void                setCycleID                          ( size_t cycleID );
     void                setPreviousBlock                    ( const Block& prevBlock );
-    bool                verify                              ( const State& state ) const;
-    bool                verify                              ( const State& state, const CryptoKey& key ) const;
+    bool                verify                              ( const Ledger& ledger ) const;
+    bool                verify                              ( const Ledger& ledger, const CryptoKey& key ) const;
 
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -57,7 +57,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool                apply                               ( State& state ) const;
+    bool                apply                               ( Ledger& ledger ) const;
     static int          compare                             ( const Block& block0, const Block& block1 );
                         Block                               ();
                         Block                               ( string minerID, size_t cycleID, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );

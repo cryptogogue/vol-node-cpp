@@ -27,9 +27,9 @@ public:
         string accountName = this->getMatchString ( "accountName" );
         
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        const State& state = scopedLock.getWebMiner ().getState ();
+        const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
 
-        VersionedValue < Account > account = state.getAccount ( accountName );
+        VersionedValue < Account > account = ledger.getAccount ( accountName );
         if ( account ) {
             Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
             accountJSON->set ( "accountName", accountName.c_str ());
@@ -56,9 +56,9 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
 //        string accountName = this->getMatchString ( "accountName" );
-//        const State& state = TheWebMiner::get ().getState ();
+//        const state& ledger = TheWebMiner::get ().getLedger ();
 //
-//        VersionedValue < Account > account = state.getAccount ( accountName );
+//        VersionedValue < Account > account = ledger.getAccount ( accountName );
 //        if ( account ) {
 //
 //            map < string, CryptoKey > keys;
@@ -165,8 +165,8 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        const State& state = scopedLock.getWebMiner ().getState ();
-        const map < string, MinerInfo >& minerInfo = state.getMiners ();
+        const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+        const map < string, MinerInfo >& minerInfo = ledger.getMiners ();
         
         Poco::JSON::Object::Ptr minersJSON = new Poco::JSON::Object ();
         

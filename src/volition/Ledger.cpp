@@ -2,23 +2,23 @@
 // http://cryptogogue.com
 
 #include <volition/Format.h>
-#include <volition/State.h>
+#include <volition/Ledger.h>
 #include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
 
 //================================================================//
-// State
+// Ledger
 //================================================================//
 
 //----------------------------------------------------------------//
-bool State::accountPolicy ( string accountName, const Policy* policy ) {
+bool Ledger::accountPolicy ( string accountName, const Policy* policy ) {
 
     return true;
 }
 
 //----------------------------------------------------------------//
-bool State::affirmKey ( string accountName, string keyName, const CryptoKey& key, string policyName ) {
+bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& key, string policyName ) {
 
     VersionedValue < Account > account = this->getAccount ( accountName );
     if ( account ) {
@@ -34,7 +34,7 @@ bool State::affirmKey ( string accountName, string keyName, const CryptoKey& key
 }
 
 //----------------------------------------------------------------//
-bool State::checkMakerSignature ( const TransactionMakerSignature* makerSignature ) const {
+bool Ledger::checkMakerSignature ( const TransactionMakerSignature* makerSignature ) const {
 
     // TODO: actually check maker signature
 
@@ -48,7 +48,7 @@ bool State::checkMakerSignature ( const TransactionMakerSignature* makerSignatur
 }
 
 //----------------------------------------------------------------//
-void State::consumeMakerSignature ( const TransactionMakerSignature* makerSignature ) {
+void Ledger::consumeMakerSignature ( const TransactionMakerSignature* makerSignature ) {
 
     if ( makerSignature ) {
 
@@ -65,7 +65,7 @@ void State::consumeMakerSignature ( const TransactionMakerSignature* makerSignat
 }
 
 //----------------------------------------------------------------//
-bool State::deleteKey ( string accountName, string keyName ) {
+bool Ledger::deleteKey ( string accountName, string keyName ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
     if ( accountKey ) {
@@ -78,7 +78,7 @@ bool State::deleteKey ( string accountName, string keyName ) {
 }
 
 //----------------------------------------------------------------//
-bool State::genesisMiner ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url ) {
+bool Ledger::genesisMiner ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url ) {
 
     Account account;
 
@@ -90,7 +90,7 @@ bool State::genesisMiner ( string accountName, u64 amount, string keyName, const
 }
 
 //----------------------------------------------------------------//
-AccountKey State::getAccountKey ( string accountName, string keyName ) const {
+AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
 
     AccountKey accountKey;
     accountKey.mKeyAndPolicy = NULL;
@@ -106,19 +106,19 @@ AccountKey State::getAccountKey ( string accountName, string keyName ) const {
 }
 
 //----------------------------------------------------------------//
-VersionedValue < Account > State::getAccount ( string accountName ) const {
+VersionedValue < Account > Ledger::getAccount ( string accountName ) const {
 
     return VersionedValue < Account >( *this, ( prefixKey ( ACCOUNT, accountName )));
 }
 
 //----------------------------------------------------------------//
-VersionedValue < MinerInfo > State::getMinerInfo ( string accountName ) const {
+VersionedValue < MinerInfo > Ledger::getMinerInfo ( string accountName ) const {
 
     return VersionedValue < MinerInfo >( *this, ( prefixKey ( MINER_INFO, accountName )));
 }
 
 //----------------------------------------------------------------//
-map < string, MinerInfo > State::getMiners () const {
+map < string, MinerInfo > Ledger::getMiners () const {
 
     map < string, MinerInfo > minerInfoMap;
 
@@ -138,37 +138,37 @@ map < string, MinerInfo > State::getMiners () const {
 
 
 //----------------------------------------------------------------//
-State::MinerURLMap State::getMinerURLs () const {
+Ledger::MinerURLMap Ledger::getMinerURLs () const {
 
     return MinerURLMap ( *this, MINER_URLS );
 }
 
 //----------------------------------------------------------------//
-string State::getSchemaKey ( int schemaCount ) {
+string Ledger::getSchemaKey ( int schemaCount ) {
 
     return Format::write ( "%s%d", SCHEMA_PREFIX, schemaCount );
 }
 
 //----------------------------------------------------------------//
-list < Schema > State::getSchemas () const {
+list < Schema > Ledger::getSchemas () const {
 
     list < Schema > schemaList;
     const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
     for ( int i = 0; i < schemaCount; ++i ) {
-        const Schema& schema = this->getValue < Schema >( State::getSchemaKey ( i ));
+        const Schema& schema = this->getValue < Schema >( Ledger::getSchemaKey ( i ));
         schemaList.push_back ( schema );
     }
     return schemaList;
 }
 
 //----------------------------------------------------------------//
-bool State::keyPolicy ( string accountName, string policyName, const Policy* policy ) {
+bool Ledger::keyPolicy ( string accountName, string policyName, const Policy* policy ) {
 
     return true;
 }
 
 //----------------------------------------------------------------//
-bool State::openAccount ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key ) {
+bool Ledger::openAccount ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key ) {
 
     VersionedValue < Account > account = this->getAccount ( accountName );
     if ( account && ( account->mBalance >= amount )) {
@@ -190,13 +190,13 @@ bool State::openAccount ( string accountName, string recipientName, u64 amount, 
 }
 
 //----------------------------------------------------------------//
-string State::prefixKey ( string prefix, string key ) {
+string Ledger::prefixKey ( string prefix, string key ) {
 
     return prefix + "." + key;
 }
 
 //----------------------------------------------------------------//
-bool State::publishSchema ( string json, string lua ) {
+bool Ledger::publishSchema ( string json, string lua ) {
 
     int schemaCount = this->getValue < int >( SCHEMA_COUNT );
         
@@ -204,14 +204,14 @@ bool State::publishSchema ( string json, string lua ) {
     schema.mJSON = json;
     schema.mLua = lua;
     
-    this->setValue < Schema >( State::getSchemaKey ( schemaCount ), schema );
+    this->setValue < Schema >( Ledger::getSchemaKey ( schemaCount ), schema );
     this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
     
     return true;
 }
 
 //----------------------------------------------------------------//
-bool State::registerMiner ( string accountName, string keyName, string url ) {
+bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
     if ( accountKey ) {
@@ -233,7 +233,7 @@ bool State::registerMiner ( string accountName, string keyName, string url ) {
 }
 
 //----------------------------------------------------------------//
-void State::reset () {
+void Ledger::reset () {
 
     this->clear ();
     this->setValue < set < string >>( MINERS, set < string > ());
@@ -242,7 +242,7 @@ void State::reset () {
 }
 
 //----------------------------------------------------------------//
-bool State::sendVOL ( string accountName, string recipientName, u64 amount ) {
+bool Ledger::sendVOL ( string accountName, string recipientName, u64 amount ) {
 
     VersionedValue < Account > account      = this->getAccount ( accountName );
     VersionedValue < Account > recipient    = this->getAccount ( recipientName );
@@ -264,30 +264,30 @@ bool State::sendVOL ( string accountName, string recipientName, u64 amount ) {
 }
 
 //----------------------------------------------------------------//
-void State::setAccount ( string accountName, const Account& account ) {
+void Ledger::setAccount ( string accountName, const Account& account ) {
 
     this->setValue < Account >( prefixKey ( ACCOUNT, accountName ), account );
 }
 
 //----------------------------------------------------------------//
-void State::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
+void Ledger::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
 
     this->setValue < MinerInfo >( prefixKey ( ACCOUNT, accountName ), minerInfo );
 }
 
 //----------------------------------------------------------------//
-State::State () {
+Ledger::Ledger () {
 
     this->reset ();
 }
 
 //----------------------------------------------------------------//
-State::State ( State& other ) :
+Ledger::Ledger ( Ledger& other ) :
     VersionedStore ( other ) {
 }
 
 //----------------------------------------------------------------//
-State::~State () {
+Ledger::~Ledger () {
 }
 
 //================================================================//

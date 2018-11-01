@@ -6,7 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
-#include <volition/State.h>
+#include <volition/Ledger.h>
 
 namespace Volition {
 
@@ -74,7 +74,7 @@ public:
 //================================================================//
 class Chain :
     public AbstractSerializable,
-    public State {
+    public Ledger {
 private:
 
     //----------------------------------------------------------------//

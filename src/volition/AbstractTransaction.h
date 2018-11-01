@@ -5,7 +5,7 @@
 #define VOLITION_ABSTRACTTRANSACTION_H
 
 #include <volition/common.h>
-#include <volition/State.h>
+#include <volition/Ledger.h>
 #include <volition/TransactionMakerSignature.h>
 #include <volition/serialization/Serialization.h>
 
@@ -37,7 +37,7 @@ protected:
     void                    AbstractSerializable_serializeTo    ( AbstractSerializerTo& serializer ) const override;
 
     //----------------------------------------------------------------//
-    virtual bool            AbstractTransaction_apply           ( State& state ) const = 0;
+    virtual bool            AbstractTransaction_apply           ( Ledger& ledger ) const = 0;
     virtual string          AbstractTransaction_typeString      () const = 0;
     virtual size_t          AbstractTransaction_weight          () const = 0;
 
@@ -46,7 +46,7 @@ public:
     //----------------------------------------------------------------//
                             AbstractTransaction                 ();
                             ~AbstractTransaction                ();
-    bool                    apply                               ( State& state ) const;
+    bool                    apply                               ( Ledger& ledger ) const;
     string                  typeString                          () const;
     size_t                  weight                              () const;
 };

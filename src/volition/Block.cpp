@@ -12,14 +12,14 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Block::apply ( State& state ) const {
+bool Block::apply ( Ledger& ledger ) const {
 
-    if ( state.getVersion () != this->mHeight ) return false;
-    if ( !this->verify ( state )) return false;
+    if ( ledger.getVersion () != this->mHeight ) return false;
+    if ( !this->verify ( ledger )) return false;
 
     for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
         const AbstractTransaction& transaction = *this->mTransactions [ i ];
-        if ( !transaction.apply ( state )) {
+        if ( !transaction.apply ( ledger )) {
             return false;
         }
     }
@@ -153,12 +153,12 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const State& state ) const {
+bool Block::verify ( const Ledger& ledger ) const {
 
-    VersionedValue < MinerInfo > minerInfo = state.getMinerInfo ( this->mMinerID );
+    VersionedValue < MinerInfo > minerInfo = ledger.getMinerInfo ( this->mMinerID );
 
     if ( minerInfo ) {
-        return this->verify ( state, minerInfo->getPublicKey ());
+        return this->verify ( ledger, minerInfo->getPublicKey ());
     }
 
     // no miner info; must be the genesis block
@@ -167,11 +167,11 @@ bool Block::verify ( const State& state ) const {
     // check that it's the expected genesis block
     if ( !Poco::DigestEngine::constantTimeEquals ( TheContext::get ().getGenesisBlockDigest (), this->getSignature ().getDigest ())) return false;
 
-    return this->verify ( state, TheContext::get ().getGenesisBlockKey ());
+    return this->verify ( ledger, TheContext::get ().getGenesisBlockKey ());
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const State& state, const CryptoKey& key ) const {
+bool Block::verify ( const Ledger& ledger, const CryptoKey& key ) const {
 
     if ( this->mHeight > 0 ) {
 

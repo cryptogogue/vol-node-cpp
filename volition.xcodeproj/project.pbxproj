@@ -75,8 +75,8 @@
 		CD4E81A0210593BD007DA585 /* TheContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B34120D1182400300A96 /* TheContext.h */; };
 		CD4E81A1210593BD007DA585 /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3BB20E8950100705AEB /* Policy.cpp */; };
 		CD4E81A2210593BD007DA585 /* Policy.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3BC20E8950100705AEB /* Policy.h */; };
-		CD4E81A3210593BD007DA585 /* State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* State.cpp */; };
-		CD4E81A4210593BD007DA585 /* State.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B31520CCAD2400300A96 /* State.h */; };
+		CD4E81A3210593BD007DA585 /* Ledger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* Ledger.cpp */; };
+		CD4E81A4210593BD007DA585 /* Ledger.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B31520CCAD2400300A96 /* Ledger.h */; };
 		CD4E81A5210593CA007DA585 /* SyncChainTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */; };
 		CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */; };
 		CD4E81A7210593CA007DA585 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
@@ -583,8 +583,8 @@
 		CDBFD4AF218B7860002AB0C3 /* lzio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lzio.c; path = "3rd-party/lua-5.3.5/src/lzio.c"; sourceTree = "<group>"; };
 		CDBFD4B0218B7860002AB0C3 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = "3rd-party/lua-5.3.5/src/lzio.h"; sourceTree = "<group>"; };
 		CDC1388F212FCFDF004FA594 /* TestChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestChain.cpp; path = src/volition/gtest/TestChain.cpp; sourceTree = "<group>"; };
-		CDC2B31420CCAD2400300A96 /* State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = State.cpp; path = src/volition/State.cpp; sourceTree = "<group>"; };
-		CDC2B31520CCAD2400300A96 /* State.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = State.h; path = src/volition/State.h; sourceTree = "<group>"; };
+		CDC2B31420CCAD2400300A96 /* Ledger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger.cpp; path = src/volition/Ledger.cpp; sourceTree = "<group>"; };
+		CDC2B31520CCAD2400300A96 /* Ledger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger.h; path = src/volition/Ledger.h; sourceTree = "<group>"; };
 		CDC2B33520CE112F00300A96 /* Chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chain.cpp; path = src/volition/Chain.cpp; sourceTree = "<group>"; };
 		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/volition/Chain.h; sourceTree = "<group>"; };
 		CDC2B34120D1182400300A96 /* TheContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheContext.h; path = src/volition/TheContext.h; sourceTree = "<group>"; };
@@ -788,14 +788,14 @@
 				CDC2B33620CE112F00300A96 /* Chain.h */,
 				CD240D2B21360BD900FF8812 /* ChainMetadata.cpp */,
 				CD240D2C21360BD900FF8812 /* ChainMetadata.h */,
+				CDC2B31420CCAD2400300A96 /* Ledger.cpp */,
+				CDC2B31520CCAD2400300A96 /* Ledger.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
 				CDC2B34120D1182400300A96 /* TheContext.h */,
 				CD59F3BB20E8950100705AEB /* Policy.cpp */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
-				CDC2B31420CCAD2400300A96 /* State.cpp */,
-				CDC2B31520CCAD2400300A96 /* State.h */,
 			);
 			name = ledger;
 			sourceTree = "<group>";
@@ -1112,7 +1112,7 @@
 				CD4E8194210593A4007DA585 /* Signature.h in Headers */,
 				CD4E81B5210593E5007DA585 /* AbstractSerializerFrom.h in Headers */,
 				CD4E81A8210593CA007DA585 /* Miner.h in Headers */,
-				CD4E81A4210593BD007DA585 /* State.h in Headers */,
+				CD4E81A4210593BD007DA585 /* Ledger.h in Headers */,
 				CD4E81D02105941A007DA585 /* TransactionMakerSignature.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
@@ -1490,7 +1490,7 @@
 				CD73D82A2166D68700F43CC7 /* Cohort.cpp in Sources */,
 				CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */,
 				CD4E81A5210593CA007DA585 /* SyncChainTask.cpp in Sources */,
-				CD4E81A3210593BD007DA585 /* State.cpp in Sources */,
+				CD4E81A3210593BD007DA585 /* Ledger.cpp in Sources */,
 				CD4E81CD2105941A007DA585 /* TheTransactionFactory.cpp in Sources */,
 				CD4E81A7210593CA007DA585 /* Miner.cpp in Sources */,
 				CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */,

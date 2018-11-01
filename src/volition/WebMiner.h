@@ -9,7 +9,7 @@
 #include <volition/Block.h>
 #include <volition/Chain.h>
 #include <volition/Miner.h>
-#include <volition/State.h>
+#include <volition/Ledger.h>
 
 namespace Volition {
 

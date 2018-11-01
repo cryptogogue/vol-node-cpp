@@ -15,13 +15,13 @@ namespace Volition {
 //----------------------------------------------------------------//
 void Miner::addTransactions ( Chain& chain, Block& block ) {
 
-    State state;
-    state.takeSnapshot ( chain );
+    Ledger ledger;
+    ledger.takeSnapshot ( chain );
 
     list < shared_ptr < AbstractTransaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
     for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {
         shared_ptr < AbstractTransaction > transaction = *transactionIt;
-        if ( transaction->apply ( state )) {
+        if ( transaction->apply ( ledger )) {
             block.pushTransaction ( transaction );
         }
     }
@@ -61,7 +61,7 @@ string Miner::getMinerID () const {
 }
 
 //----------------------------------------------------------------//
-const State& Miner::getState () const {
+const Ledger& Miner::getLedger () const {
 
     return this->mChain;
 }

@@ -255,26 +255,26 @@ string Chain::print ( const ChainMetadata* metaData, const char* pre, const char
 //----------------------------------------------------------------//
 bool Chain::pushBlock ( const Block& block ) {
 
-    State state ( *this );
+    Ledger ledger ( *this );
     
-    if ( !state.hasValue < Cycle >( CYCLE_KEY )) {
-        assert ( state.getVersion () == 0 );
-        state.setValue < Cycle >( CYCLE_KEY, Cycle ());
+    if ( !ledger.hasValue < Cycle >( CYCLE_KEY )) {
+        assert ( ledger.getVersion () == 0 );
+        ledger.setValue < Cycle >( CYCLE_KEY, Cycle ());
     }
 
-    size_t baseCycleID = state.getValue < Cycle >( CYCLE_KEY ).mCycleID;
+    size_t baseCycleID = ledger.getValue < Cycle >( CYCLE_KEY ).mCycleID;
     
     if ( block.mCycleID != baseCycleID ) {
         assert ( block.mCycleID == ( baseCycleID + 1 ));
-        state.setValue < Cycle >( CYCLE_KEY, Cycle ( block.mCycleID, state.getVersion ()));
+        ledger.setValue < Cycle >( CYCLE_KEY, Cycle ( block.mCycleID, ledger.getVersion ()));
     }
     
-    bool result = block.apply ( state );
+    bool result = block.apply ( ledger );
 
     if ( result ) {
-        state.setValue < Block >( BLOCK_KEY, block );
-        state.pushVersion ();
-        this->takeSnapshot ( state );
+        ledger.setValue < Block >( BLOCK_KEY, block );
+        ledger.pushVersion ();
+        this->takeSnapshot ( ledger );
     }
     return result;
 }
@@ -282,7 +282,7 @@ bool Chain::pushBlock ( const Block& block ) {
 //----------------------------------------------------------------//
 void Chain::reset () {
 
-    this->State::reset ();
+    this->Ledger::reset ();
 }
 
 //----------------------------------------------------------------//
@@ -318,16 +318,16 @@ Chain::UpdateResult Chain::update ( ChainMetadata& metaData, const Block& block 
         // new block is an improvement *and* we can edit. so, truncate the chain and add the new block.
         
         // roll back to the point of divergence
-        Chain state;
-        state.takeSnapshot ( *this );
-        state.revert ( block.mHeight );
-        state.clearVersion ();
+        Chain ledger;
+        ledger.takeSnapshot ( *this );
+        ledger.revert ( block.mHeight );
+        ledger.clearVersion ();
         
-        bool result = state.pushBlock ( block );
+        bool result = ledger.pushBlock ( block );
         if ( !result ) return UpdateResult::UPDATE_RETRY; // block was rejected
 
-        // truncate the chain and grabs the revised state.
-        this->takeSnapshot ( state );
+        // truncate the chain and grabs the revised ledger.
+        this->takeSnapshot ( ledger );
         
         // truncate the metadata. we're keeping base cycle so we get the full
         // set of all active contributors known to the chain prior to truncation.
@@ -384,10 +384,10 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
     if ( overwrite ) {
         
         // roll back to the point of divergence
-        Chain state;
-        state.takeSnapshot ( *this );
-        state.revert ( diverge );
-        state.clearVersion ();
+        Chain ledger;
+        ledger.takeSnapshot ( *this );
+        ledger.revert ( diverge );
+        ledger.clearVersion ();
         
         // apply all the other chain's blocks
         VersionedStoreIterator fromIt ( other, diverge );
@@ -395,15 +395,15 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
             
             Block block = fromIt.getValue < Block >( BLOCK_KEY );
             
-            bool result = state.pushBlock ( block );
+            bool result = ledger.pushBlock ( block );
             if ( !result ) return;
         }
         
         // if we're here, then all the blocks were valid. go ahead and truncate
         // the chain and rebuild the metadata.
         
-        // this truncates the chain and grabs the revised state.
-        this->takeSnapshot ( state );
+        // this truncates the chain and grabs the revised ledger.
+        this->takeSnapshot ( ledger );
         
         // rewind back to diverge
         VersionedStoreIterator chainIt ( *this, diverge );
