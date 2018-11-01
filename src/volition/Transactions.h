@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransaction.h>
+#include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
 // ACCOUNT_POLICY (account, policy)
@@ -14,8 +15,12 @@
 // GENESIS_MINER ( account name, key name, url, amount)
 // KEY_POLICY (account, policy, policy name)
 // OPEN_ACCOUNT (account name, master key, key name)
+// PUBLISH_SCHEMA (json, lua)
 // REGISTER_MINER (account name, url)
+// SELL_ASSETS (assets, buyer, seller, amount)
+// SEND_ASSETS (assets, from, to)
 // SEND_VOL (from, to)
+// TRANSFORM_ASSETS (...)
 
 namespace Volition {
 namespace Transaction {
@@ -24,7 +29,7 @@ namespace Transaction {
 // AccountPolicy
 //================================================================//
 class AccountPolicy :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "ACCOUNT_POLICY" )
@@ -35,7 +40,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
@@ -43,7 +48,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
@@ -59,7 +64,7 @@ public:
 // AffirmKey
 //================================================================//
 class AffirmKey :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "AFFIRM_KEY" )
@@ -71,7 +76,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
@@ -80,7 +85,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
@@ -98,7 +103,7 @@ public:
 // GenesisMiner
 //================================================================//
 class GenesisMiner :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "GENESIS_MINER" )
@@ -112,7 +117,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -123,7 +128,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -144,7 +149,7 @@ public:
 // KeyPolicy
 //================================================================//
 class KeyPolicy :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "KEY_POLICY" )
@@ -155,7 +160,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
@@ -163,7 +168,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
@@ -179,7 +184,7 @@ public:
 // OpenAccount
 //================================================================//
 class OpenAccount :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "OPEN_ACCOUNT" )
@@ -192,7 +197,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -202,7 +207,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -222,27 +227,30 @@ public:
 // PublishSchema
 //================================================================//
 class PublishSchema :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "PUBLISH_SCHEMA" )
     TRANSACTION_WEIGHT ( 1 )
 
+    string                                  mSchemaName;
     string                                  mJSON;
     string                                  mLua;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
+        serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
         serializer.serialize ( "lua",           this->mLua );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
+        serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
         serializer.serialize ( "lua",           this->mLua );
     }
@@ -250,7 +258,7 @@ public:
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
-        return ledger.publishSchema ( this->mJSON, this->mLua );
+        return ledger.publishSchema ( this->mSchemaName, this->mJSON, this->mLua );
     }
 };
 
@@ -258,7 +266,7 @@ public:
 // RegisterMiner
 //================================================================//
 class RegisterMiner :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "REGISTER_MINER" )
@@ -268,14 +276,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "url",           this->mURL );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "url",           this->mURL );
     }
@@ -288,10 +296,95 @@ public:
 };
 
 //================================================================//
+// SellAsset
+//================================================================//
+class SellAssets :
+    public AbstractTransaction {
+public:
+
+    TRANSACTION_TYPE ( "SELL_ASSETS" )
+    TRANSACTION_WEIGHT ( 1 )
+
+    SerializableUniquePtr < TransactionMakerSignature >     mBuyerSignature;
+    SerializableUniquePtr < TransactionMakerSignature >     mSellerSignature;
+
+    SerializableVector < AssetIdentifier >                  mAssetIdentifiers;
+    SerializableVector < BulkAssetIdentifier >              mBulkAssetItdentifiers;
+
+    u64                                                     mPrice;
+
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "buyerSignature",            this->mBuyerSignature );
+        serializer.serialize ( "sellerSignature",           this->mSellerSignature );
+        serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
+        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
+        serializer.serialize ( "price",                     this->mPrice  );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        
+        serializer.serialize ( "buyerSignature",            this->mBuyerSignature );
+        serializer.serialize ( "sellerSignature",           this->mSellerSignature );
+        serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
+        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
+        serializer.serialize ( "price",                     this->mPrice  );
+    }
+
+    //----------------------------------------------------------------//
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+        
+        //return ledger.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
+        return false;
+    }
+};
+
+//================================================================//
+// SendAssets
+//================================================================//
+class SendAssets :
+    public AbstractSingleSignerTransaction {
+public:
+
+    TRANSACTION_TYPE ( "SEND_ASSETS" )
+    TRANSACTION_WEIGHT ( 1 )
+
+    SerializableVector < AssetIdentifier >          mAssetIdentifiers;
+    SerializableVector < BulkAssetIdentifier >      mBulkAssetItdentifiers;
+
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
+        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        
+        serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
+        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
+    }
+
+    //----------------------------------------------------------------//
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+        
+        //return ledger.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
+        return false;
+    }
+};
+
+//================================================================//
 // SendVOL
 //================================================================//
 class SendVOL :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "SEND_VOL" )
@@ -302,7 +395,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -310,7 +403,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -320,6 +413,46 @@ public:
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
         
         return ledger.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
+    }
+};
+
+//================================================================//
+// TransformAssets
+//================================================================//
+class TransformAssets :
+    public AbstractSingleSignerTransaction {
+public:
+
+    TRANSACTION_TYPE ( "TRANSFORM_ASSETS" )
+    TRANSACTION_WEIGHT ( 1 )
+
+    string                                  mSchemaName;
+    string                                  mRuleName;
+    SerializableVector < AssetIdentifier >  mAssetIdentifiers;
+
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "schemaName",            this->mSchemaName );
+        serializer.serialize ( "ruleName",              this->mRuleName );
+        serializer.serialize ( "assetIdentifiers",      this->mAssetIdentifiers  );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        
+        serializer.serialize ( "schemaName",            this->mSchemaName );
+        serializer.serialize ( "ruleName",              this->mRuleName );
+        serializer.serialize ( "assetIdentifiers",      this->mAssetIdentifiers  );
+    }
+
+    //----------------------------------------------------------------//
+    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+        
+        //return ledger.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
+        return false;
     }
 };
 

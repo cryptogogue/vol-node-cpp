@@ -196,7 +196,9 @@ string Ledger::prefixKey ( string prefix, string key ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::publishSchema ( string json, string lua ) {
+bool Ledger::publishSchema ( string schemaName, string json, string lua ) {
+
+    if ( this->hasValue < Schema >( schemaName )) return false;
 
     int schemaCount = this->getValue < int >( SCHEMA_COUNT );
         
@@ -204,7 +206,10 @@ bool Ledger::publishSchema ( string json, string lua ) {
     schema.mJSON = json;
     schema.mLua = lua;
     
-    this->setValue < Schema >( Ledger::getSchemaKey ( schemaCount ), schema );
+    string schemaKey = Ledger::getSchemaKey ( schemaCount );
+    
+    this->setValue < Schema >( schemaKey, schema );
+    this->setValue < string >( schemaName, schemaKey );
     this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
     
     return true;

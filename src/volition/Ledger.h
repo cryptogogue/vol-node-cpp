@@ -6,11 +6,74 @@
 
 #include <volition/common.h>
 #include <volition/MinerInfo.h>
+#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
 class Policy;
 class TransactionMakerSignature;
+
+//================================================================//
+// AssetIdentifier
+//================================================================//
+class AssetIdentifier :
+     public AbstractSerializable {
+private:
+
+    string      mClassName;             // class this asset is based on.
+    string      mSpecialization;        // identifier of the asset specialization (if any).
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "className",         this->mClassName );
+        serializer.serialize ( "specialization",    this->mSpecialization );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "className",         this->mClassName );
+        serializer.serialize ( "specialization",    this->mSpecialization );
+    }
+};
+
+//================================================================//
+// BulkAssetIdentifier
+//================================================================//
+class BulkAssetIdentifier :
+    public AbstractSerializable {
+private:
+
+    string      mClassName;             // class this asset is based on.
+    u64         mQuantity;              // quantity.
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "className",         this->mClassName );
+        serializer.serialize ( "quantity",          this->mQuantity );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "className",         this->mClassName );
+        serializer.serialize ( "quantity",          this->mQuantity );
+    }
+};
+
+
+//================================================================//
+// AssetSpecialization
+//================================================================//
+class AssetSpecialization {
+private:
+
+    string      mClass;                 // class this asset is based on.
+    string      mOwnerAccountName;      // account name of current owner.
+    string      mBody;
+};
 
 //================================================================//
 // KeyAndPolicy
@@ -142,7 +205,7 @@ public:
     list < Schema >                 getSchemas              () const;
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
     bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
-    bool                            publishSchema           ( string json, string lua );
+    bool                            publishSchema           ( string schemaName, string json, string lua );
     bool                            registerMiner           ( string accountName, string keyName, string url );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
