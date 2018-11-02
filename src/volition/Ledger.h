@@ -193,6 +193,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                            accountPolicy           ( string accountName, const Policy* policy );
+    bool                            awardAsset              ( string accountName, string schemaName, string assetName, int quantity );
     bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
     bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
     bool                            deleteKey               ( string accountName, string keyName );

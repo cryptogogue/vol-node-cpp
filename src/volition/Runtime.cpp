@@ -7,12 +7,41 @@
 
 namespace Volition {
 
-#define LEVELS1    12    // size of the first part of the stack
-#define LEVELS2    10    // size of the second part of the stack
+static const int LEVELS1 = 12;    // size of the first part of the stack
+static const int LEVELS2 = 10;    // size of the second part of the stack
+
+static const char* LUA_GLOBAL_LEDGER        = "LEDGER";
+static const char* LUA_GLOBAL_SCHEMA_NAME   = "SCHEMA_NAME";
+static const char* PUBLISH_FUNC_NAME        = "publish";
 
 //----------------------------------------------------------------//
-int             _lua_call       ( lua_State* L, int nargs, int nresults );
-int             _traceback      ( lua_State* L );
+Ledger*         _get_ledger         ( lua_State* L );
+string          _get_schema_name    ( lua_State* L );
+int             _lua_call           ( lua_State* L, int nargs, int nresults );
+int             _traceback          ( lua_State* L );
+
+//----------------------------------------------------------------//
+Ledger* _get_ledger ( lua_State* L ) {
+
+    lua_getglobal ( L, LUA_GLOBAL_LEDGER );
+    Ledger* ledger = ( Ledger* )lua_touserdata ( L, -1 );
+    lua_pop ( L, 1 );
+    
+    return ledger;
+}
+
+//----------------------------------------------------------------//
+string _get_schema_name ( lua_State* L ) {
+
+    lua_getglobal ( L, LUA_GLOBAL_SCHEMA_NAME );
+    string schemaName;
+    if ( lua_isstring ( L, -1 )) {
+        schemaName = lua_tostring ( L, -1 );
+    }
+    lua_pop ( L, 1 );
+    
+    return schemaName;
+}
 
 //----------------------------------------------------------------//
 int _lua_call ( lua_State* L, int nargs, int nresults ) {
@@ -141,7 +170,18 @@ int _traceback ( lua_State* L ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-int Runtime::_createAsset ( lua_State* L ) {
+int Runtime::_awardAsset ( lua_State* L ) {
+    
+    Ledger* ledger = _get_ledger ( L );
+    string schemaName = _get_schema_name ( L );
+    
+    assert ( ledger && ( schemaName.size () > 0 ));
+    
+    string accountName      = lua_tostring ( L, 1 );
+    string assetName        = lua_tostring ( L, 2 );
+    int quantity            = ( int )lua_tointeger ( L, 3 );
+
+    ledger->awardAsset ( schemaName, accountName, assetName, quantity );
 
     return 0;
 }
@@ -151,23 +191,26 @@ int Runtime::_createAsset ( lua_State* L ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Runtime::loadScript ( string lua ) {
+void Runtime::loadScript ( Ledger& ledger, string schemaName, string lua ) {
 
     assert ( this->mLuaState );
     
+    lua_pushlightuserdata ( this->mLuaState, &ledger );
+    lua_setglobal ( this->mLuaState, "LEDGER" );
+    
+    lua_pushstring ( this->mLuaState, schemaName.c_str ());
+    lua_setglobal ( this->mLuaState, "SCHEMA_NAME" );
+    
     luaL_loadbuffer ( this->mLuaState, lua.c_str (), lua.size (), "schema" );
     _lua_call ( this->mLuaState, 0, 0 );
-    //luaL_dostring ( this->mLuaState, lua.c_str ());
 }
 
 //----------------------------------------------------------------//
-void Runtime::miningReward ( Ledger& ledger, string rewardName ) {
+void Runtime::miningReward ( string rewardName ) {
 }
 
 //----------------------------------------------------------------//
-void Runtime::publish ( Ledger& ledger ) {
-
-     assert ( this->mLuaState );
+void Runtime::publish () {
 
     int type = lua_getglobal ( this->mLuaState, PUBLISH_FUNC_NAME );
     assert ( type == LUA_TFUNCTION );
@@ -176,7 +219,7 @@ void Runtime::publish ( Ledger& ledger ) {
 }
 
 //----------------------------------------------------------------//
-void Runtime::runRule ( Ledger& ledger, string ruleName, AssetIdentifier* assets, size_t nAssets ) {
+void Runtime::runRule ( string ruleName, AssetIdentifier* assets, size_t nAssets ) {
 }
 
 //----------------------------------------------------------------//
@@ -191,7 +234,7 @@ Runtime::Runtime () {
     lua_setglobal ( this->mLuaState, "print" );
     
     const luaL_Reg funcs [] = {
-        { "createAsset",    _createAsset },
+        { "awardAsset",     _awardAsset },
         { NULL, NULL }
     };
 

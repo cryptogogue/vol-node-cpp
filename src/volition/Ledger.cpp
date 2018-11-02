@@ -35,6 +35,12 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
 }
 
 //----------------------------------------------------------------//
+bool Ledger::awardAsset ( string accountName, string schemaName, string assetName, int quantity ) {
+
+    return false;
+}
+
+//----------------------------------------------------------------//
 bool Ledger::checkMakerSignature ( const TransactionMakerSignature* makerSignature ) const {
 
     // TODO: actually check maker signature
@@ -212,8 +218,8 @@ bool Ledger::publishSchema ( string schemaName, string json, string lua ) {
     this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
     
     Runtime runtime;
-    runtime.loadScript ( lua );
-    runtime.publish ( *this );
+    runtime.loadScript ( *this, schemaName, lua );
+    runtime.publish ();
     
     return true;
 }
