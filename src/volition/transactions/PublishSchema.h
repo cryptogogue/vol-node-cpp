@@ -16,7 +16,7 @@ namespace Transactions {
 // PublishSchema
 //================================================================//
 class PublishSchema :
-    public AbstractSingleSignerTransaction {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "PUBLISH_SCHEMA" )
@@ -28,7 +28,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
@@ -37,7 +37,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
@@ -48,6 +48,16 @@ public:
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
         return ledger.publishSchema ( this->mSchemaName, this->mJSON, this->mLua );
+    }
+    
+    //----------------------------------------------------------------//
+    bool AbstractTransaction_checkSignature  ( Ledger& ledger ) const override {
+
+        return true;
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
     }
 };
 

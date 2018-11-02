@@ -10,6 +10,7 @@
 
 namespace Volition {
 
+class Runtime;
 class Policy;
 class TransactionMakerSignature;
 

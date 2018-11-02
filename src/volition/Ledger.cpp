@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/Runtime.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/TransactionMakerSignature.h>
@@ -196,7 +197,7 @@ string Ledger::prefixKey ( string prefix, string key ) {
 //----------------------------------------------------------------//
 bool Ledger::publishSchema ( string schemaName, string json, string lua ) {
 
-    if ( this->hasValue < Schema >( schemaName )) return false;
+    if ( this->hasValue < string >( schemaName )) return false;
 
     int schemaCount = this->getValue < int >( SCHEMA_COUNT );
         
@@ -209,6 +210,10 @@ bool Ledger::publishSchema ( string schemaName, string json, string lua ) {
     this->setValue < Schema >( schemaKey, schema );
     this->setValue < string >( schemaName, schemaKey );
     this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
+    
+    Runtime runtime;
+    runtime.loadScript ( lua );
+    runtime.publish ( *this );
     
     return true;
 }

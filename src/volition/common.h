@@ -61,6 +61,8 @@
 #include <padamose/VersionedValue.h>
 #include <padamose/VersionedValueIterator.h>
 
+#include <lua.hpp>
+
 using namespace std;
 using namespace Padamose;
 
