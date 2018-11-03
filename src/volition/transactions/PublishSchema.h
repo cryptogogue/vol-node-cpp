@@ -7,7 +7,7 @@
 #include <volition/common.h>
 #include <volition/AbstractTransaction.h>
 #include <volition/AbstractSingleSignerTransaction.h>
-#include <volition/Policy.h>
+#include <volition/Schema.h>
 
 namespace Volition {
 namespace Transactions {
@@ -24,7 +24,6 @@ public:
 
     string                                  mSchemaName;
     string                                  mJSON;
-    string                                  mLua;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -32,7 +31,6 @@ public:
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
-        serializer.serialize ( "lua",           this->mLua );
     }
     
     //----------------------------------------------------------------//
@@ -41,13 +39,12 @@ public:
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
-        serializer.serialize ( "lua",           this->mLua );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
-        return ledger.publishSchema ( this->mSchemaName, this->mJSON, this->mLua );
+        return ledger.publishSchema ( this->mSchemaName, this->mJSON );
     }
     
     //----------------------------------------------------------------//

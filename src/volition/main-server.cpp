@@ -230,7 +230,7 @@ protected:
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
-        string chain        = configuration.getString ( "chain" );
+        string chain        = configuration.getString ( "chain", "" );
         string genesis      = configuration.getString ( "genesis" );
         string keyfile      = configuration.getString ( "keyfile" );
         int port            = configuration.getInt ( "port", 9090 );

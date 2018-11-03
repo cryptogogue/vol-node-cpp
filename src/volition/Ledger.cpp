@@ -1,9 +1,10 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/Runtime.h>
+#include <volition/Schema.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
+#include <volition/Schema.h>
 #include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
@@ -35,7 +36,7 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
 }
 
 //----------------------------------------------------------------//
-bool Ledger::awardAsset ( string accountName, string schemaName, string assetName, int quantity ) {
+bool Ledger::awardAsset ( Schema& schema, string accountName, string assetName, int quantity ) {
 
     return false;
 }
@@ -138,16 +139,16 @@ string Ledger::getSchemaKey ( int schemaCount ) {
 }
 
 //----------------------------------------------------------------//
-list < Schema > Ledger::getSchemas () const {
-
-    list < Schema > schemaList;
-    const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
-    for ( int i = 0; i < schemaCount; ++i ) {
-        const Schema& schema = this->getValue < Schema >( Ledger::getSchemaKey ( i ));
-        schemaList.push_back ( schema );
-    }
-    return schemaList;
-}
+//list < Schema > Ledger::getSchemas () const {
+//
+//    list < Schema > schemaList;
+//    const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
+//    for ( int i = 0; i < schemaCount; ++i ) {
+//        const Schema& schema = this->getValue < Schema >( Ledger::getSchemaKey ( i ));
+//        schemaList.push_back ( schema );
+//    }
+//    return schemaList;
+//}
 
 //----------------------------------------------------------------//
 void Ledger::incrementNonce ( const TransactionMakerSignature* makerSignature ) {
@@ -201,25 +202,22 @@ string Ledger::prefixKey ( string prefix, string key ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::publishSchema ( string schemaName, string json, string lua ) {
+bool Ledger::publishSchema ( string schemaName, string json ) {
 
     if ( this->hasValue < string >( schemaName )) return false;
 
-    int schemaCount = this->getValue < int >( SCHEMA_COUNT );
-        
     Schema schema;
-    schema.mJSON = json;
-    schema.mLua = lua;
+    FromJSONSerializer::fromJSON ( schema, json );
+
+    int schemaCount = this->getValue < int >( SCHEMA_COUNT );
     
     string schemaKey = Ledger::getSchemaKey ( schemaCount );
-    
-    this->setValue < Schema >( schemaKey, schema );
+
+    this->setValue < string >( schemaKey, json );
     this->setValue < string >( schemaName, schemaKey );
     this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
-    
-    Runtime runtime;
-    runtime.loadScript ( *this, schemaName, lua );
-    runtime.publish ();
+
+    schema.publish ( *this );
     
     return true;
 }

@@ -43,12 +43,41 @@ const NOT               = makeUnaryOp   ( 'NOT' );
 const NOT_EQUAL         = makeBinaryOp  ( 'NOT_EQUAL' );
 const OR                = makeBinaryOp  ( 'OR' );
 
+//----------------------------------------------------------------//
+function jsonEscape ( str ) {
+    return str
+        .replace ( /\\n/g, "\\n" )
+        .replace ( /\\'/g, "\\'" )
+        .replace ( /\\"/g, '\\"' )
+        .replace ( /\\&/g, "\\&" )
+        .replace ( /\\r/g, "\\r" )
+        .replace ( /\\t/g, "\\t" )
+        .replace ( /\\b/g, "\\b" )
+        .replace ( /\\f/g, "\\f" );
+};
+
+//----------------------------------------------------------------//
+function makeSchemaTransaction ( schema ) {
+
+    let lua = fs.readFileSync ( schema.lua, 'utf8' );
+    //lua = jsonEscape ( lua );
+    schema.lua = lua;
+
+    return {
+        type:   'PUBLISH_SCHEMA',
+        name:   schema.name,
+        json:   JSON.stringify ( schema ),
+    }
+}
+
 //================================================================//
 // schema
 //================================================================//
 let schema = {
 
-    name: 'VOLITION_TEST_SCHEMA',
+    name: 'TEST_SCHEMA',
+
+    lua: 'schema.lua',
 
     classes: {
 
@@ -97,4 +126,6 @@ let schema = {
     },
 }
 
-fs.writeFileSync ( 'schema.json', JSON.stringify ( schema, null, 4 ), 'utf8' );
+transaction = makeSchemaTransaction ( schema );
+
+fs.writeFileSync ( 'schema.json', JSON.stringify ( transaction, null, 4 ), 'utf8' );

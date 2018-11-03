@@ -3,44 +3,29 @@
 
 #include <volition/Format.h>
 #include <volition/Ledger.h>
-#include <volition/Runtime.h>
+#include <volition/Schema.h>
 
 namespace Volition {
 
 static const int LEVELS1 = 12;    // size of the first part of the stack
 static const int LEVELS2 = 10;    // size of the second part of the stack
 
-static const char* LUA_GLOBAL_LEDGER        = "LEDGER";
-static const char* LUA_GLOBAL_SCHEMA_NAME   = "SCHEMA_NAME";
+static const char* LUA_GLOBAL_SCHEMA        = "SCHEMA";
 static const char* PUBLISH_FUNC_NAME        = "publish";
 
 //----------------------------------------------------------------//
-Ledger*         _get_ledger         ( lua_State* L );
-string          _get_schema_name    ( lua_State* L );
+Schema*         _get_schema         ( lua_State* L );
 int             _lua_call           ( lua_State* L, int nargs, int nresults );
 int             _traceback          ( lua_State* L );
 
 //----------------------------------------------------------------//
-Ledger* _get_ledger ( lua_State* L ) {
+Schema* _get_schema ( lua_State* L ) {
 
-    lua_getglobal ( L, LUA_GLOBAL_LEDGER );
-    Ledger* ledger = ( Ledger* )lua_touserdata ( L, -1 );
+    lua_getglobal ( L, LUA_GLOBAL_SCHEMA );
+    Schema* schema = ( Schema* )lua_touserdata ( L, -1 );
     lua_pop ( L, 1 );
     
-    return ledger;
-}
-
-//----------------------------------------------------------------//
-string _get_schema_name ( lua_State* L ) {
-
-    lua_getglobal ( L, LUA_GLOBAL_SCHEMA_NAME );
-    string schemaName;
-    if ( lua_isstring ( L, -1 )) {
-        schemaName = lua_tostring ( L, -1 );
-    }
-    lua_pop ( L, 1 );
-    
-    return schemaName;
+    return schema;
 }
 
 //----------------------------------------------------------------//
@@ -170,60 +155,46 @@ int _traceback ( lua_State* L ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-int Runtime::_awardAsset ( lua_State* L ) {
-    
-    Ledger* ledger = _get_ledger ( L );
-    string schemaName = _get_schema_name ( L );
-    
-    assert ( ledger && ( schemaName.size () > 0 ));
-    
-    string accountName      = lua_tostring ( L, 1 );
-    string assetName        = lua_tostring ( L, 2 );
-    int quantity            = ( int )lua_tointeger ( L, 3 );
+int Schema::_awardAsset ( lua_State* L ) {
 
-    ledger->awardAsset ( schemaName, accountName, assetName, quantity );
+    Schema* self = _get_schema ( L );
+    Ledger* ledger = ( Ledger* )lua_touserdata ( L, 1 );
+    
+    assert ( ledger && self && ( self->mName.size () > 0 ));
+    
+    string accountName      = lua_tostring ( L, 2 );
+    string assetName        = lua_tostring ( L, 3 );
+    int quantity            = ( int )lua_tointeger ( L, 4 );
+
+    ledger->awardAsset ( *self, accountName, assetName, quantity );
 
     return 0;
 }
 
 //================================================================//
-// Runtime
+// Schema
 //================================================================//
 
 //----------------------------------------------------------------//
-void Runtime::loadScript ( Ledger& ledger, string schemaName, string lua ) {
-
-    assert ( this->mLuaState );
-    
-    lua_pushlightuserdata ( this->mLuaState, &ledger );
-    lua_setglobal ( this->mLuaState, "LEDGER" );
-    
-    lua_pushstring ( this->mLuaState, schemaName.c_str ());
-    lua_setglobal ( this->mLuaState, "SCHEMA_NAME" );
-    
-    luaL_loadbuffer ( this->mLuaState, lua.c_str (), lua.size (), "schema" );
-    _lua_call ( this->mLuaState, 0, 0 );
+void Schema::miningReward ( Ledger& ledger, string rewardName ) {
 }
 
 //----------------------------------------------------------------//
-void Runtime::miningReward ( string rewardName ) {
-}
-
-//----------------------------------------------------------------//
-void Runtime::publish () {
+void Schema::publish ( Ledger& ledger ) {
 
     int type = lua_getglobal ( this->mLuaState, PUBLISH_FUNC_NAME );
     assert ( type == LUA_TFUNCTION );
     
-    _lua_call ( this->mLuaState, 0, 0 );
+    lua_pushlightuserdata ( this->mLuaState, &ledger );
+    _lua_call ( this->mLuaState, 1, 0 );
 }
 
 //----------------------------------------------------------------//
-void Runtime::runRule ( string ruleName, AssetIdentifier* assets, size_t nAssets ) {
+void Schema::runRule ( Ledger& ledger, string ruleName, AssetIdentifier* assets, size_t nAssets ) {
 }
 
 //----------------------------------------------------------------//
-Runtime::Runtime () {
+Schema::Schema () {
     
     this->mLuaState = luaL_newstate ();
     
@@ -239,7 +210,10 @@ Runtime::Runtime () {
     };
 
     luaL_newlib ( this->mLuaState, funcs );
-    lua_setglobal ( this->mLuaState, "ledger" );
+    lua_setglobal ( this->mLuaState, "schema" );
+    
+    lua_pushlightuserdata ( this->mLuaState, this );
+    lua_setglobal ( this->mLuaState, LUA_GLOBAL_SCHEMA );
 }
 
 //================================================================//
@@ -247,5 +221,21 @@ Runtime::Runtime () {
 //================================================================//
 
 //----------------------------------------------------------------//
+void Schema::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+
+    string lua;
+    
+    serializer.serialize ( "name", this->mName );
+    serializer.serialize ( "lua", lua );
+    
+    luaL_loadbuffer ( this->mLuaState, lua.c_str (), lua.size (), "schema" );
+    _lua_call ( this->mLuaState, 0, 0 );
+}
+
+//----------------------------------------------------------------//
+void Schema::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    assert ( false ); // unsupported
+}
 
 } // namespace Volition

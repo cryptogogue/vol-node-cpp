@@ -159,7 +159,7 @@ void Miner::setChainPath ( string path ) {
 
     this->mChainPath = path;
     
-    if ( Poco::File ( path ).exists ()) {
+    if ( path.size () && Poco::File ( path ).exists ()) {
         fstream inStream;
         inStream.open ( path, ios_base::in );
         Volition::FromJSONSerializer::fromJSON ( *this, inStream );

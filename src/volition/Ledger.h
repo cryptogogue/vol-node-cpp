@@ -10,8 +10,8 @@
 
 namespace Volition {
 
-class Runtime;
 class Policy;
+class Schema;
 class TransactionMakerSignature;
 
 //================================================================//
@@ -158,16 +158,6 @@ private:
 };
 
 //================================================================//
-// Schema
-//================================================================//
-class Schema {
-public:
-
-    string      mJSON;
-    string      mLua;
-};
-
-//================================================================//
 // Ledger
 //================================================================//
 class Ledger :
@@ -193,7 +183,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                            accountPolicy           ( string accountName, const Policy* policy );
-    bool                            awardAsset              ( string accountName, string schemaName, string assetName, int quantity );
+    bool                            awardAsset              ( Schema& schema, string accountName, string assetName, int quantity );
     bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
     bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
     bool                            deleteKey               ( string accountName, string keyName );
@@ -203,11 +193,11 @@ public:
     VersionedValue < MinerInfo >    getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
     MinerURLMap                     getMinerURLs            () const;
-    list < Schema >                 getSchemas              () const;
+    //list < Schema >                 getSchemas              () const;
     void                            incrementNonce          ( const TransactionMakerSignature* makerSignature );
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
     bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
-    bool                            publishSchema           ( string schemaName, string json, string lua );
+    bool                            publishSchema           ( string schemaName, string json );
     bool                            registerMiner           ( string accountName, string keyName, string url );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
