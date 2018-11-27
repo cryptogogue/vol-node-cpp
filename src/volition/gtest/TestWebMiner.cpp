@@ -10,45 +10,16 @@
 using namespace Volition;
 
 //----------------------------------------------------------------//
-Poco::JSON::Object::Ptr httpGetJSON ( string url ) {
+Poco::JSON::Object::Ptr http ( string url, const std::string& method, string json ) {
 
     try {
+
+        //bool post = ( method == Poco::Net::HTTPRequest::HTTP_GET );
 
         Poco::URI uri ( url );
         std::string path ( uri.getPathAndQuery ());
 
-        Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
-
-        Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
-        session.setTimeout ( Poco::Timespan ( 1, 0 ));
-        session.sendRequest ( request );
-        
-        Poco::Net::HTTPResponse response;
-        std::istream& responseStream = session.receiveResponse ( response );
-        
-        if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
-            
-            Poco::JSON::Parser parser;
-            Poco::Dynamic::Var result = parser.parse ( responseStream );
-            return result.extract < Poco::JSON::Object::Ptr >();
-        }
-    }
-    catch ( Poco::Exception& exc ) {
-        string message = exc.message ();
-        LOG_F ( INFO, "%s", message.c_str ());
-    }
-    return NULL;
-}
-
-//----------------------------------------------------------------//
-Poco::JSON::Object::Ptr httpPostJSON ( string url, string json ) {
-
-    try {
-
-        Poco::URI uri ( url );
-        std::string path ( uri.getPathAndQuery ());
-
-        Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_POST, path, Poco::Net::HTTPMessage::HTTP_1_1 );
+        Poco::Net::HTTPRequest request ( method, path, Poco::Net::HTTPMessage::HTTP_1_1 );
         request.setContentType ( "application/json" );
         request.setContentLength ( json.size ());
 
@@ -73,6 +44,18 @@ Poco::JSON::Object::Ptr httpPostJSON ( string url, string json ) {
         LOG_F ( INFO, "%s", message.c_str ());
     }
     return NULL;
+}
+
+//----------------------------------------------------------------//
+Poco::JSON::Object::Ptr httpGetJSON ( string url ) {
+
+    return http ( url, Poco::Net::HTTPRequest::HTTP_GET, "" );
+}
+
+//----------------------------------------------------------------//
+Poco::JSON::Object::Ptr httpPostJSON ( string url, string json ) {
+
+    return http ( url, Poco::Net::HTTPRequest::HTTP_POST, json );
 }
 
 //----------------------------------------------------------------//
