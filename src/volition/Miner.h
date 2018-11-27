@@ -53,6 +53,7 @@ public:
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
     const Chain&            getChain                () const;
+    size_t                  getChainSize            () const;
     string                  getMinerID              () const;
     const Ledger&           getLedger               () const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );

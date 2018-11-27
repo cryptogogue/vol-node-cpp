@@ -55,6 +55,12 @@ const Chain& Miner::getChain () const {
 }
 
 //----------------------------------------------------------------//
+size_t Miner::getChainSize () const {
+
+    return this->mChain.size ();
+}
+
+//----------------------------------------------------------------//
 string Miner::getMinerID () const {
 
     return this->mMinerID;
