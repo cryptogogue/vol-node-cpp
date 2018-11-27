@@ -24,16 +24,21 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-        string accountName = this->getMatchString ( "accountName" );
+        try {
+            string accountName = this->getMatchString ( "accountName" );
         
-        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         
-        Inventory inventory = ledger.getInventory ( accountName );
+            Inventory inventory = ledger.getInventory ( accountName );
         
-        Poco::JSON::Object::Ptr inventoryJSON = ToJSONSerializer::toJSON ( inventory );
+            Poco::JSON::Object::Ptr inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         
-        jsonOut.set ( "inventory", inventoryJSON );
+            jsonOut.set ( "inventory", inventoryJSON );
+        }
+        catch ( ... ) {
+            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
+        }
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

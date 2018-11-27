@@ -14,9 +14,7 @@ namespace Volition {
 //================================================================//
 class AssetIdentifier :
      public AbstractSerializable {
-private:
-
-    friend class Ledger;
+public:
 
     string      mClassName;             // class this asset is based on.
     string      mSpecialization;        // identifier of the asset specialization (if any).
@@ -41,9 +39,7 @@ private:
 //================================================================//
 class BulkAssetIdentifier :
     public AbstractSerializable {
-private:
-
-    friend class Ledger;
+public:
 
     string      mClassName;             // class this asset is based on.
     u64         mQuantity;              // quantity.

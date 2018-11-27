@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <gtest/gtest.h>
+#include <volition/serialization/Serialization.h>
 #include <volition/simulation/Simulations.h>
 #include <volition/TheContext.h>
 #include <volition/TheWebMiner.h>
@@ -24,7 +25,7 @@ Poco::JSON::Object::Ptr http ( string url, const std::string& method, string jso
         request.setContentLength ( json.size ());
 
         Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
-        session.setTimeout ( Poco::Timespan ( 1, 0 ));
+        session.setTimeout ( Poco::Timespan ( 10, 0 ));
         
         std::ostream& requestStream = session.sendRequest ( request );
         requestStream << json;
@@ -94,11 +95,6 @@ Poco::JSON::Object::Ptr waitServer ( string url ) {
 
 //----------------------------------------------------------------//
 TEST ( WebMiner, small_simulation ) {
-    
-    string genesis      = "genesis.signed";
-    string keyfile      = "keys/pkey0.priv.json";
-    int port            = 9090;
-    string minerID      = to_string ( port );
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
@@ -109,40 +105,38 @@ TEST ( WebMiner, small_simulation ) {
         webMiner.setLazy ( true );
         webMiner.setSolo ( true );
         
-        webMiner.loadKey ( keyfile );
-        webMiner.loadGenesis ( genesis );
-        webMiner.setMinerID ( minerID );
+        webMiner.loadKey ( "keys/pkey0.priv.json" );
+        webMiner.loadGenesis ( "genesis.signed" );
+        webMiner.setMinerID ( "9090" );
         webMiner.start ();
     }
     
-    Poco::Net::HTTPServer server ( new WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams );
+    Poco::Net::HTTPServer server ( new WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
     server.start ();
 
     Poco::JSON::Object::Ptr json = httpGetJSON ( "http://127.0.0.1:9090/" );
-
     ASSERT_FALSE ( json.isNull ());
+    
     ASSERT_TRUE ( json->getValue < string >( "type" ) == "VOL_MINING_NODE" );
-    ASSERT_TRUE ( json->getValue < string >( "minerID" ) == minerID );
+    ASSERT_TRUE ( json->getValue < string >( "minerID" ) == "9090" );
 
     json = httpPostJSON ( "http://127.0.0.1:9090/transactions", loadFileAsString ( "test/send-vol-from-9090-to-9091.json" ));
-    
     ASSERT_FALSE ( json.isNull ());
-    
     waitChainSize ( 2 );
 
     json = httpGetJSON ( "http://127.0.0.1:9090/accounts/9090" );
-
     ASSERT_FALSE ( json.isNull ());
-    json = json->getObject ( "account" );
     
+    json = json->getObject ( "account" );
     ASSERT_FALSE ( json.isNull ());
+    
     ASSERT_TRUE ( json->getValue < string >( "accountName" ) == "9090" );
     ASSERT_TRUE ( json->getValue < int >( "balance" ) == 999900 );
     ASSERT_TRUE ( json->getValue < int >( "nonce" ) == 1 );
 
     json = httpGetJSON ( "http://127.0.0.1:9090/accounts/9091" );
-
     ASSERT_FALSE ( json.isNull ());
+    
     json = json->getObject ( "account" );
     
     ASSERT_FALSE ( json.isNull ());
@@ -150,9 +144,24 @@ TEST ( WebMiner, small_simulation ) {
     ASSERT_TRUE ( json->getValue < int >( "balance" ) == 1000100 );
     ASSERT_TRUE ( json->getValue < int >( "nonce" ) == 0 );
 
+    json = httpPostJSON ( "http://127.0.0.1:9090/transactions", loadFileAsString ( "test/publish-schema.json" ));
+    ASSERT_FALSE ( json.isNull ());
+    waitChainSize ( 3 );
+
+    json = httpGetJSON ( "http://127.0.0.1:9090/accounts/9090/inventory" );
+    ASSERT_FALSE ( json.isNull ());
+    
+    json = json->getObject ( "inventory" );
+    ASSERT_FALSE ( json.isNull ());
+    
+    Inventory inventory;
+    FromJSONSerializer::fromJSON ( inventory, *json );
+    
+    ASSERT_TRUE ( inventory.mAssets.size () == 1 );
+    ASSERT_TRUE ( inventory.mAssets.front ().mClassName == "pack" );
+    ASSERT_TRUE ( inventory.mAssets.front ().mQuantity == 1000 );
+
     server.stop ();
 
     TheWebMiner::get ().shutdown ();
-    
-    printf ( "SHUTDOWN!" );
 }
