@@ -83,7 +83,6 @@
 		CD4E81A8210593CA007DA585 /* Miner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36658A20EB3BE0000E0B43 /* Miner.h */; };
 		CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
 		CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36662D20F56D9A000E0B43 /* TheWebMiner.h */; };
-		CD4E81AB210593CA007DA585 /* TheWebMinerAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36663B20F5A5F3000E0B43 /* TheWebMinerAPI.h */; };
 		CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* WebMiner.cpp */; };
 		CD4E81AD210593CA007DA585 /* WebMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E1120C14460006E3B1C /* WebMiner.h */; };
 		CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
@@ -116,7 +115,7 @@
 		CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D813216546B400F43CC7 /* SerializerPropertyName.h */; };
 		CD73D8162165474000F43CC7 /* AbstractSerializerTo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */; };
-		CD73D819216576EE00F43CC7 /* AbstractSerializableArray.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D817216576EE00F43CC7 /* AbstractSerializableArray.h */; };
+		CD73D819216576EE00F43CC7 /* AbstractSerializableCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */; };
 		CD73D81A216576EE00F43CC7 /* AbstractSerializablePtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */; };
 		CD73D8282166D68700F43CC7 /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D81F2166D68700F43CC7 /* Analysis.cpp */; };
 		CD73D8292166D68700F43CC7 /* Analysis.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8202166D68700F43CC7 /* Analysis.h */; };
@@ -127,8 +126,20 @@
 		CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8252166D68700F43CC7 /* Simulation.cpp */; };
 		CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8262166D68700F43CC7 /* Simulation.h */; };
 		CD73D8302166D68700F43CC7 /* Simulations.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8272166D68700F43CC7 /* Simulations.h */; };
-		CD73D8322166E5CF00F43CC7 /* TestSimulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */; };
-		CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
+		CDB8B3C621AC7DB8004EE816 /* Inventory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3C421AC7DB8004EE816 /* Inventory.cpp */; };
+		CDB8B3C721AC7DB8004EE816 /* Inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Inventory.h */; };
+		CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C921AC7EBF004EE816 /* SerializableList.h */; };
+		CDB8B3CC21AC9CEC004EE816 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
+		CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */; };
+		CDB8B40221ACC874004EE816 /* AccountKeyListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F821ACC874004EE816 /* AccountKeyListHandler.h */; };
+		CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */; };
+		CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */; };
+		CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */; };
+		CDB8B40621ACC874004EE816 /* HTTPRequestHandlerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3FC21ACC874004EE816 /* HTTPRequestHandlerFactory.cpp */; };
+		CDB8B40721ACC874004EE816 /* HTTPRequestHandlerFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */; };
+		CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */; };
+		CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */; };
+		CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B40021ACC874004EE816 /* TransactionHandler.h */; };
 		CDBFD4EE218B78C4002AB0C3 /* lapi.c in Sources */ = {isa = PBXBuildFile; fileRef = CDBFD474218B7860002AB0C3 /* lapi.c */; };
 		CDBFD4EF218B78C4002AB0C3 /* lapi.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBFD475218B7860002AB0C3 /* lapi.h */; };
 		CDBFD4F0218B78C4002AB0C3 /* lauxlib.c in Sources */ = {isa = PBXBuildFile; fileRef = CDBFD476218B7860002AB0C3 /* lauxlib.c */; };
@@ -483,7 +494,6 @@
 		CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractAPIRequestHandler.cpp; path = src/volition/AbstractAPIRequestHandler.cpp; sourceTree = "<group>"; };
 		CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractAPIRequestHandler.h; path = src/volition/AbstractAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD36663720F595B2000E0B43 /* FNV1a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FNV1a.h; path = src/volition/FNV1a.h; sourceTree = "<group>"; };
-		CD36663B20F5A5F3000E0B43 /* TheWebMinerAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheWebMinerAPI.h; path = src/volition/TheWebMinerAPI.h; sourceTree = "<group>"; };
 		CD36664820F73027000E0B43 /* AbstractSerializable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractSerializable.h; path = src/volition/serialization/AbstractSerializable.h; sourceTree = "<group>"; };
 		CD36664920F7304C000E0B43 /* AbstractSerializerFrom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractSerializerFrom.h; path = src/volition/serialization/AbstractSerializerFrom.h; sourceTree = "<group>"; };
 		CD36664A20F730AA000E0B43 /* DigestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DigestSerializer.h; path = src/volition/serialization/DigestSerializer.h; sourceTree = "<group>"; };
@@ -518,7 +528,7 @@
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/volition/main-server.cpp"; sourceTree = "<group>"; };
 		CD73D813216546B400F43CC7 /* SerializerPropertyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerPropertyName.h; path = src/volition/serialization/SerializerPropertyName.h; sourceTree = "<group>"; };
 		CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializerTo.h; path = src/volition/serialization/AbstractSerializerTo.h; sourceTree = "<group>"; };
-		CD73D817216576EE00F43CC7 /* AbstractSerializableArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializableArray.h; path = src/volition/serialization/AbstractSerializableArray.h; sourceTree = "<group>"; };
+		CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializableCollection.h; path = src/volition/serialization/AbstractSerializableCollection.h; sourceTree = "<group>"; };
 		CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializablePtr.h; path = src/volition/serialization/AbstractSerializablePtr.h; sourceTree = "<group>"; };
 		CD73D81F2166D68700F43CC7 /* Analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Analysis.cpp; path = src/volition/simulation/Analysis.cpp; sourceTree = "<group>"; };
 		CD73D8202166D68700F43CC7 /* Analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Analysis.h; path = src/volition/simulation/Analysis.h; sourceTree = "<group>"; };
@@ -534,6 +544,20 @@
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDB8B3C421AC7DB8004EE816 /* Inventory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Inventory.cpp; path = src/volition/Inventory.cpp; sourceTree = "<group>"; };
+		CDB8B3C521AC7DB8004EE816 /* Inventory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Inventory.h; path = src/volition/Inventory.h; sourceTree = "<group>"; };
+		CDB8B3C921AC7EBF004EE816 /* SerializableList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableList.h; path = src/volition/serialization/SerializableList.h; sourceTree = "<group>"; };
+		CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestWebMiner.cpp; path = src/volition/gtest/TestWebMiner.cpp; sourceTree = "<group>"; };
+		CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountDetailsHandler.h; path = "src/volition/web-miner-api/AccountDetailsHandler.h"; sourceTree = "<group>"; };
+		CDB8B3F821ACC874004EE816 /* AccountKeyListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountKeyListHandler.h; path = "src/volition/web-miner-api/AccountKeyListHandler.h"; sourceTree = "<group>"; };
+		CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockDetailsHandler.h; path = "src/volition/web-miner-api/BlockDetailsHandler.h"; sourceTree = "<group>"; };
+		CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockListHandler.h; path = "src/volition/web-miner-api/BlockListHandler.h"; sourceTree = "<group>"; };
+		CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefaultHandler.h; path = "src/volition/web-miner-api/DefaultHandler.h"; sourceTree = "<group>"; };
+		CDB8B3FC21ACC874004EE816 /* HTTPRequestHandlerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HTTPRequestHandlerFactory.cpp; path = "src/volition/web-miner-api/HTTPRequestHandlerFactory.cpp"; sourceTree = "<group>"; };
+		CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPRequestHandlerFactory.h; path = "src/volition/web-miner-api/HTTPRequestHandlerFactory.h"; sourceTree = "<group>"; };
+		CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryHandler.h; path = "src/volition/web-miner-api/InventoryHandler.h"; sourceTree = "<group>"; };
+		CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerListHandler.h; path = "src/volition/web-miner-api/MinerListHandler.h"; sourceTree = "<group>"; };
+		CDB8B40021ACC874004EE816 /* TransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHandler.h; path = "src/volition/web-miner-api/TransactionHandler.h"; sourceTree = "<group>"; };
 		CDBFD470218B77E5002AB0C3 /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDBFD474218B7860002AB0C3 /* lapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lapi.c; path = "3rd-party/lua-5.3.5/src/lapi.c"; sourceTree = "<group>"; };
 		CDBFD475218B7860002AB0C3 /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = "3rd-party/lua-5.3.5/src/lapi.h"; sourceTree = "<group>"; };
@@ -769,13 +793,13 @@
 		CD0C3E0F20C14410006E3B1C /* miner */ = {
 			isa = PBXGroup;
 			children = (
+				CDB8B3CD21ACC33A004EE816 /* webMinerAPI */,
 				CD36658920EB3BE0000E0B43 /* Miner.cpp */,
 				CD36658A20EB3BE0000E0B43 /* Miner.h */,
 				CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */,
 				CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */,
 				CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */,
 				CD36662D20F56D9A000E0B43 /* TheWebMiner.h */,
-				CD36663B20F5A5F3000E0B43 /* TheWebMinerAPI.h */,
 				CD0C3E1020C14460006E3B1C /* WebMiner.cpp */,
 				CD0C3E1120C14460006E3B1C /* WebMiner.h */,
 			);
@@ -786,7 +810,7 @@
 			isa = PBXGroup;
 			children = (
 				CD36664820F73027000E0B43 /* AbstractSerializable.h */,
-				CD73D817216576EE00F43CC7 /* AbstractSerializableArray.h */,
+				CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */,
 				CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */,
 				CD36664920F7304C000E0B43 /* AbstractSerializerFrom.h */,
 				CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */,
@@ -794,6 +818,7 @@
 				CD36664A20F730AA000E0B43 /* DigestSerializer.h */,
 				CD36664B20F730AA000E0B43 /* FromJSONSerializer.h */,
 				CD36664E20F73FE4000E0B43 /* JSONSerializer.h */,
+				CDB8B3C921AC7EBF004EE816 /* SerializableList.h */,
 				CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */,
 				CD7791FC20F93B1E0058EBAC /* SerializableSet.h */,
 				CD7791FD20F93B1E0058EBAC /* SerializableVector.h */,
@@ -814,6 +839,8 @@
 				CDC2B33620CE112F00300A96 /* Chain.h */,
 				CD240D2B21360BD900FF8812 /* ChainMetadata.cpp */,
 				CD240D2C21360BD900FF8812 /* ChainMetadata.h */,
+				CDB8B3C421AC7DB8004EE816 /* Inventory.cpp */,
+				CDB8B3C521AC7DB8004EE816 /* Inventory.h */,
 				CDC2B31420CCAD2400300A96 /* Ledger.cpp */,
 				CDC2B31520CCAD2400300A96 /* Ledger.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
@@ -858,6 +885,7 @@
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestChain.cpp */,
 				CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */,
+				CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */,
 			);
 			name = gtest;
 			sourceTree = "<group>";
@@ -938,6 +966,31 @@
 				CDBFD470218B77E5002AB0C3 /* liblua.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CDB8B3CD21ACC33A004EE816 /* webMinerAPI */ = {
+			isa = PBXGroup;
+			children = (
+				CDB8B3E221ACC657004EE816 /* handlers */,
+				CDB8B3FC21ACC874004EE816 /* HTTPRequestHandlerFactory.cpp */,
+				CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */,
+			);
+			name = webMinerAPI;
+			sourceTree = "<group>";
+		};
+		CDB8B3E221ACC657004EE816 /* handlers */ = {
+			isa = PBXGroup;
+			children = (
+				CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */,
+				CDB8B3F821ACC874004EE816 /* AccountKeyListHandler.h */,
+				CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */,
+				CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */,
+				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
+				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
+				CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */,
+				CDB8B40021ACC874004EE816 /* TransactionHandler.h */,
+			);
+			name = handlers;
 			sourceTree = "<group>";
 		};
 		CDBFD473218B7854002AB0C3 /* lua */ = {
@@ -1127,28 +1180,33 @@
 			files = (
 				CDBFD538218B81BA002AB0C3 /* AbstractSingleSignerTransaction.h in Headers */,
 				CDBFD546218B8999002AB0C3 /* AccountPolicy.h in Headers */,
+				CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */,
 				CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */,
+				CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */,
 				CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */,
 				CD4E81CE2105941A007DA585 /* TheTransactionFactory.h in Headers */,
 				CD4E81B9210593E5007DA585 /* JSONSerializer.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
-				CD73D819216576EE00F43CC7 /* AbstractSerializableArray.h in Headers */,
+				CD73D819216576EE00F43CC7 /* AbstractSerializableCollection.h in Headers */,
 				CD240D2E21360BD900FF8812 /* ChainMetadata.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
 				CD73D81A216576EE00F43CC7 /* AbstractSerializablePtr.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
+				CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */,
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD4E81BA210593E5007DA585 /* SerializablePtr.h in Headers */,
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
+				CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */,
+				CDB8B3C721AC7DB8004EE816 /* Inventory.h in Headers */,
 				CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */,
+				CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */,
 				CDBFD54A218B8999002AB0C3 /* KeyPolicy.h in Headers */,
 				CDD36D012162A415004FC222 /* Format.h in Headers */,
-				CD4E81AB210593CA007DA585 /* TheWebMinerAPI.h in Headers */,
 				CDBFD54B218B8999002AB0C3 /* OpenAccount.h in Headers */,
 				CDBFD54D218B8999002AB0C3 /* RegisterMiner.h in Headers */,
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
@@ -1157,6 +1215,7 @@
 				CD73D8302166D68700F43CC7 /* Simulations.h in Headers */,
 				CDBFD551218B8999002AB0C3 /* TransformAssets.h in Headers */,
 				CDBFD547218B8999002AB0C3 /* AffirmKey.h in Headers */,
+				CDB8B40721ACC874004EE816 /* HTTPRequestHandlerFactory.h in Headers */,
 				CD73D82D2166D68700F43CC7 /* SimMiner.h in Headers */,
 				CD4E8198210593BD007DA585 /* Chain.h in Headers */,
 				CDBFD549218B8999002AB0C3 /* GenesisMiner.h in Headers */,
@@ -1171,16 +1230,20 @@
 				CD4E81A8210593CA007DA585 /* Miner.h in Headers */,
 				CD4E81A4210593BD007DA585 /* Ledger.h in Headers */,
 				CDBFD54F218B8999002AB0C3 /* SendAssets.h in Headers */,
+				CDB8B40221ACC874004EE816 /* AccountKeyListHandler.h in Headers */,
 				CD4E81D02105941A007DA585 /* TransactionMakerSignature.h in Headers */,
+				CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
 				CDBFD54E218B8999002AB0C3 /* SellAssets.h in Headers */,
 				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
+				CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */,
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
 				CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */,
 				CD73D82B2166D68700F43CC7 /* Cohort.h in Headers */,
+				CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1522,8 +1585,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CD73D8322166E5CF00F43CC7 /* TestSimulation.cpp in Sources */,
-				CDA06FFB21588EC3003FA0C3 /* TestChain.cpp in Sources */,
+				CDB8B3CC21AC9CEC004EE816 /* TestWebMiner.cpp in Sources */,
 				CDD36CD8215DA3A3004FC222 /* loguru.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1538,8 +1600,10 @@
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
+				CDB8B3C621AC7DB8004EE816 /* Inventory.cpp in Sources */,
 				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,
 				CDBFD559218BA145002AB0C3 /* Schema.cpp in Sources */,
+				CDB8B40621ACC874004EE816 /* HTTPRequestHandlerFactory.cpp in Sources */,
 				CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */,
 				CD4E81A1210593BD007DA585 /* Policy.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
@@ -2012,6 +2076,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BUD786NAA6;
 				EXECUTABLE_PREFIX = lib;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(INHERITED)",
 					"-w",
@@ -2030,6 +2095,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BUD786NAA6;
 				EXECUTABLE_PREFIX = lib;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(INHERITED)",
 					"-w",

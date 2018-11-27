@@ -61,12 +61,12 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializableArray& value ) const override {
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializableCollection& value ) const override {
     
         Poco::JSON::Array::Ptr array = this->getArray ( name );
         if ( array ) {
     
-            value.AbstractSerializableArray_resize ( array->size ());
+            value.AbstractSerializableCollection_resize ( array->size ());
     
             FromJSONSerializer serializer;
             serializer.mArray = array;

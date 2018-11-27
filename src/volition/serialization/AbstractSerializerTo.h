@@ -6,7 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
-#include <volition/serialization/AbstractSerializableArray.h>
+#include <volition/serialization/AbstractSerializableCollection.h>
 #include <volition/serialization/AbstractSerializablePtr.h>
 #include <volition/serialization/AbstractStringifiable.h>
 #include <volition/serialization/SerializerPropertyName.h>
@@ -24,7 +24,7 @@ protected:
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const u64& value ) = 0;
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const string& value ) = 0;
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;
-    virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializableArray& value ) = 0;
+    virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializableCollection& value ) = 0;
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializablePointer& value ) = 0;
     virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractStringifiable& value ) = 0;
 

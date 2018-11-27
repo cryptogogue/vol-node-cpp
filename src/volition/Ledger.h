@@ -5,6 +5,7 @@
 #define VOLITION_LEDGER_H
 
 #include <volition/common.h>
+#include <volition/Inventory.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
 
@@ -13,68 +14,6 @@ namespace Volition {
 class Policy;
 class Schema;
 class TransactionMakerSignature;
-
-//================================================================//
-// AssetIdentifier
-//================================================================//
-class AssetIdentifier :
-     public AbstractSerializable {
-private:
-
-    string      mClassName;             // class this asset is based on.
-    string      mSpecialization;        // identifier of the asset specialization (if any).
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "specialization",    this->mSpecialization );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "specialization",    this->mSpecialization );
-    }
-};
-
-//================================================================//
-// BulkAssetIdentifier
-//================================================================//
-class BulkAssetIdentifier :
-    public AbstractSerializable {
-private:
-
-    string      mClassName;             // class this asset is based on.
-    u64         mQuantity;              // quantity.
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "quantity",          this->mQuantity );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "quantity",          this->mQuantity );
-    }
-};
-
-
-//================================================================//
-// AssetSpecialization
-//================================================================//
-class AssetSpecialization {
-private:
-
-    string      mClass;                 // class this asset is based on.
-    string      mOwnerAccountName;      // account name of current owner.
-    string      mBody;
-};
 
 //================================================================//
 // KeyAndPolicy
@@ -171,7 +110,11 @@ private:
     static constexpr const char* SCHEMA_COUNT       = "schemaCount";
     static constexpr const char* SCHEMA_PREFIX      = "schema.";
 
+    static constexpr const char* INVENTORY_KEY_FMT_S        = "%s.inventory";
+    //static constexpr const char* ASSET_INSTANCE_KEY_FMT_SSD     = "%s.inventory.%s.%d";
+
     //----------------------------------------------------------------//
+    static string                   getInventoryKey         ( string accountName );
     static string                   getSchemaKey            ( int schemaCount );
     static string                   prefixKey               ( string prefix, string key );
     void                            setAccount              ( string accountName, const Account& account );
@@ -190,6 +133,7 @@ public:
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
     VersionedValue < Account >      getAccount              ( string accountName ) const;
+    Inventory                       getInventory            ( string accountName ) const;
     VersionedValue < MinerInfo >    getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
     MinerURLMap                     getMinerURLs            () const;

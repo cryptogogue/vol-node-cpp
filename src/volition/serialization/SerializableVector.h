@@ -14,15 +14,10 @@ namespace Volition {
 //================================================================//
 template < typename TYPE >
 class SerializableVector :
-    public AbstractSerializableArray,
+    public AbstractSerializableCollection,
     public vector < TYPE > {
     
 public:
-
-    //----------------------------------------------------------------//
-    void AbstractSerializableArray_resize ( size_t size ) override {
-        this->resize ( size );
-    }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -38,6 +33,11 @@ public:
         for ( size_t i = 0; i < size; ++i ) {
             serializer.serialize ( i, ( *this )[ i ]);
         }
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializableCollection_resize ( size_t size ) override {
+        this->resize ( size );
     }
 };
 

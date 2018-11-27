@@ -5,11 +5,12 @@
 #define VOLITION_SERIALIZATION_SERIALIZATION_H
 
 #include <volition/serialization/AbstractSerializable.h>
-#include <volition/serialization/AbstractSerializableArray.h>
+#include <volition/serialization/AbstractSerializableCollection.h>
 #include <volition/serialization/AbstractSerializablePtr.h>
 #include <volition/serialization/AbstractSerializerFrom.h>
 #include <volition/serialization/AbstractSerializerTo.h>
 #include <volition/serialization/AbstractStringifiable.h>
+#include <volition/serialization/SerializableList.h>
 #include <volition/serialization/SerializablePtr.h>
 #include <volition/serialization/SerializableSet.h>
 #include <volition/serialization/SerializerPropertyName.h>

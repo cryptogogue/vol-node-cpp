@@ -40,7 +40,7 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableArray& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableCollection& value ) override {
         value.serializeTo ( *this );
     }
     

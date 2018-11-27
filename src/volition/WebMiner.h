@@ -59,6 +59,7 @@ private:
 
     Poco::Mutex                         mMutex;
 
+    Poco::ThreadPool                    mTaskManagerThreadPool;
     Poco::TaskManager                   mTaskManager;
     set < string >                      mMinerSet;
     map < string, RemoteMiner >         mRemoteMiners;
@@ -69,7 +70,7 @@ private:
     //----------------------------------------------------------------//
     void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
     void            processQueue                ();
-    void            run                         () override;
+    void            runActivity                 ();
     void            runMulti                    ();
     void            runSolo                     ();
     void            startTasks                  ();

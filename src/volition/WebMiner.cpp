@@ -87,38 +87,49 @@ void WebMiner::processQueue () {
 }
 
 //----------------------------------------------------------------//
+void WebMiner::runActivity () {
+
+    if ( this->mSolo ) {
+        this->runSolo ();
+    }
+    else {
+        this->runMulti ();
+    }
+}
+
+//----------------------------------------------------------------//
 void WebMiner::runMulti () {
 
     size_t height = 0;
     while ( !this->isStopped ()) {
+        {
+            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
             
-        Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-        
-        LOG_SCOPE_F ( INFO, "WEB: WebMiner::runMulti () - step" );
-        
-        // process queue
-        this->processQueue ();
-        
-        // push block (if we've heard from everybody)
-        if ( this->mMinerSet.size () == 0 ) {
-            this->pushBlock ( this->mChain, true );
+            LOG_SCOPE_F ( INFO, "WEB: WebMiner::runMulti () - step" );
+            
+            // process queue
+            this->processQueue ();
+            
+            // push block (if we've heard from everybody)
+            if ( this->mMinerSet.size () == 0 ) {
+                this->pushBlock ( this->mChain, true );
+            }
+            
+            // report chain
+            size_t nextHeight = this->mChain.getVersion ();
+            if ( nextHeight != height ) {
+                LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
+                LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
+                height = nextHeight;
+                this->saveChain ();
+            }
+            
+            // update remote miners
+            this->updateMiners ();
+            
+            // kick off next batch of tasks
+            this->startTasks ();
         }
-        
-        // report chain
-        size_t nextHeight = this->mChain.getVersion ();
-        if ( nextHeight != height ) {
-            LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
-            LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
-            height = nextHeight;
-            this->saveChain ();
-        }
-        
-        // update remote miners
-        this->updateMiners ();
-        
-        // kick off next batch of tasks
-        this->startTasks ();
-
         Poco::Thread::sleep ( 200 );
     }
 }
@@ -128,19 +139,20 @@ void WebMiner::runSolo () {
 
     size_t height = 0;
     while ( !this->isStopped ()) {
-    
-        Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-    
-        LOG_SCOPE_F ( INFO, "WEB: WebMiner::runSolo () - step" );
+        {
+            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
         
-        this->pushBlock ( this->mChain, true );
-        
-        size_t nextHeight = this->mChain.getVersion ();
-        if ( nextHeight != height ) {
-            LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
-            LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
-            height = nextHeight;
-            this->saveChain ();
+            LOG_SCOPE_F ( INFO, "WEB: WebMiner::runSolo () - step" );
+            
+            this->pushBlock ( this->mChain, true );
+            
+            size_t nextHeight = this->mChain.getVersion ();
+            if ( nextHeight != height ) {
+                LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
+                LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
+                height = nextHeight;
+                this->saveChain ();
+            }
         }
         Poco::Thread::sleep ( 200 );
     }
@@ -155,8 +167,9 @@ void WebMiner::setSolo ( bool solo ) {
 //----------------------------------------------------------------//
 void WebMiner::shutdown () {
 
-    this->stop ();
+    this->mTaskManager.cancelAll ();
     this->mTaskManager.joinAll ();
+    this->stop ();
     this->wait ();
 }
 
@@ -199,7 +212,8 @@ void WebMiner::updateMiners () {
 
 //----------------------------------------------------------------//
 WebMiner::WebMiner () :
-    Poco::Activity < WebMiner >( this, &WebMiner::run ),
+    Poco::Activity < WebMiner >( this, &WebMiner::runActivity ),
+    mTaskManager ( this->mTaskManagerThreadPool ),
     mSolo ( false ) {
     
     this->mTaskManager.addObserver (
@@ -209,21 +223,6 @@ WebMiner::WebMiner () :
 
 //----------------------------------------------------------------//
 WebMiner::~WebMiner () {
-}
-
-//================================================================//
-// overrides
-//================================================================//
-
-//----------------------------------------------------------------//
-void WebMiner::run () {
-
-    if ( this->mSolo ) {
-        this->runSolo ();
-    }
-    else {
-        this->runMulti ();
-    }
 }
 
 } // namespace Volition

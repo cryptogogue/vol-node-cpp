@@ -42,8 +42,7 @@ void SyncChainTask::runTask () {
         session.setTimeout ( Poco::Timespan ( 1, 0 ));
         session.sendRequest ( request );
         
-        
-        if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
+        if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) { // wat?
         
             std::istream& jsonStream = session.receiveResponse ( response );
         

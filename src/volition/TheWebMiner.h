@@ -13,22 +13,19 @@ namespace Volition {
 // TheWebMiner
 //================================================================//
 class TheWebMiner :
-    public Singleton < TheWebMiner >,
-    public Poco::Net::HTTPRequestHandlerFactory {
+    public Singleton < TheWebMiner > {
 private:
 
     friend class ScopedWebMinerLock;
 
-    RouteTable  mRouteTable;
     WebMiner    mWebMiner;
-
-    //----------------------------------------------------------------//
-    Poco::Net::HTTPRequestHandler*      createRequestHandler        ( const Poco::Net::HTTPServerRequest& request ) override;
 
 public:
 
     //----------------------------------------------------------------//
+    void            shutdown                ();
                     TheWebMiner             ();
+                    ~TheWebMiner            ();
 };
 
 //================================================================//

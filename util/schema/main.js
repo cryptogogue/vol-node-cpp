@@ -102,7 +102,7 @@ let schema = {
     },
 
     rules: {
-
+ 
         openPack: {
             description:    'Open a booster pack.',
             qualifiers:     IS ( 'pack' ),

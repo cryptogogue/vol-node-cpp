@@ -128,14 +128,10 @@ Inventory Ledger::getInventory ( string accountName ) const {
 
     Inventory inventory;
     
-    try {
-        VersionedCollectionIterator < BulkAssetIdentifier > collectionIt ( *this, Ledger::getInventoryKey ( accountName ));
-        
-        for ( ; collectionIt; ++collectionIt ) {
-            inventory.mAssets.push_back ( *collectionIt );
-        }
-    }
-    catch ( VersionedCollectionNotFoundException ) {
+    VersionedCollectionIterator < BulkAssetIdentifier > collectionIt ( *this, Ledger::getInventoryKey ( accountName ));
+    
+    for ( ; collectionIt; ++collectionIt ) {
+        inventory.mAssets.push_back ( *collectionIt );
     }
     return inventory;
 }

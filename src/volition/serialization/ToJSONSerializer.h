@@ -44,7 +44,7 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableArray& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableCollection& value ) override {
     
         Poco::JSON::Array::Ptr array = new Poco::JSON::Array ();
         this->set ( name, array );

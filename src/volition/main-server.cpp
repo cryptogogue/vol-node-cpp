@@ -7,6 +7,7 @@
 #include <volition/Singleton.h>
 #include <volition/TheContext.h>
 #include <volition/TheWebMiner.h>
+#include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 
 //================================================================//
 // DefaultHandler
@@ -260,7 +261,7 @@ protected:
         }
 
         this->serve ( port );
-        this->waitForTerminationRequest ();
+        //this->waitForTerminationRequest ();
 
         {
             Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
@@ -298,7 +299,7 @@ protected:
     //----------------------------------------------------------------//
     void serve ( int port ) {
     
-        Poco::Net::HTTPServer server ( &Volition::TheWebMiner::get (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams );
+        Poco::Net::HTTPServer server ( new Volition::WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams );
         server.start ();
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.

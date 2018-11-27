@@ -168,7 +168,7 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableArray& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableCollection& value ) override {
     
         SortedDigestSerializer serializer ( make_unique < SortedDigestSerializerValueArray >());
         value.serializeTo ( serializer );
