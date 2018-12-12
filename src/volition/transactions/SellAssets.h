@@ -48,7 +48,7 @@ public:
         serializer.serialize ( "buyerSignature",            this->mBuyerSignature );
         serializer.serialize ( "sellerSignature",           this->mSellerSignature );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
-        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
+        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers );
         serializer.serialize ( "price",                     this->mPrice  );
     }
 
