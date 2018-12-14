@@ -79,7 +79,7 @@ class LoginScreen extends BaseComponent {
                 <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
                     <Grid.Column style={{ maxWidth: 450 }}>
                     <Header as="h2" color="teal" textAlign="center">
-                        Login to your account
+                        Login to your wallet.
                     </Header>
                     <Form size = "large" onSubmit = { onSubmit }>
                         <Segment stacked>

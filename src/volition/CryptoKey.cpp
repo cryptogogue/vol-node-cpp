@@ -3,6 +3,7 @@
 
 #include <volition/CryptoKey.h>
 #include <volition/FNV1a.h>
+#include <volition/Format.h>
 
 // bitaddress.org
 // private: KzvyiCGoxXMaraHf3HmtZsttox2U99VTPq9RTWyJqsTVdEZ9nYDV
@@ -49,6 +50,67 @@ void CryptoKey::elliptic ( string groupName ) {
 string CryptoKey::getGroupNameFromNID ( int nid ) {
 
     return Poco::Crypto::ECKey::getCurveName ( nid );
+}
+
+//----------------------------------------------------------------//
+CryptoKeyInfo CryptoKey::getInfo () const {
+
+    CryptoKeyInfo info;
+    info.mIsValid = false;
+    
+    switch ( this->mKeyPair->type ()) {
+        
+        case Poco::Crypto::KeyPair::KT_EC: {
+        
+            const Poco::Crypto::ECKey& pocoECKey = *this;
+            assert ( pocoECKey.impl ());
+            
+            EC_KEY* ecKey = pocoECKey.impl ()->getECKey ();
+            
+            info.mType = "EC_HEX";
+            
+            const EC_GROUP* ecGroup = EC_KEY_get0_group ( ecKey );
+            info.mGroupName = CryptoKey::getGroupNameFromNID ( EC_GROUP_get_curve_name ( ecGroup ));
+            
+            const EC_POINT* ecPubKey = EC_KEY_get0_public_key ( ecKey );
+            assert ( ecPubKey );
+            
+            char* ecPubKeyHex = EC_POINT_point2hex ( ecGroup , ecPubKey, POINT_CONVERSION_COMPRESSED, NULL );
+            info.mPubKeyHex  = ecPubKeyHex;
+            OPENSSL_free ( ecPubKeyHex );
+            
+            const BIGNUM* ecPrivKey = EC_KEY_get0_private_key ( ecKey );
+            if ( ecPrivKey ) {
+                char* ecPrivKeyHex = BN_bn2hex ( ecPrivKey );
+                info.mPrivKeyHex = ecPrivKeyHex;
+                OPENSSL_free ( ecPrivKeyHex );
+            }
+            info.mIsValid = true;
+            break;
+        }
+        case Poco::Crypto::KeyPair::KT_RSA: {
+            // TODO: RSA
+            info.mType = "RSA_PEM";
+            break;
+        }
+    }
+    return info;
+}
+
+
+
+//----------------------------------------------------------------//
+string CryptoKey::getKeyID () const {
+
+    CryptoKeyInfo info = this->getInfo ();
+    if ( !info.mIsValid ) return "";
+    
+    Poco::Crypto::DigestEngine digestEngine ( "SHA256" );
+    Poco::DigestOutputStream digestStream ( digestEngine );
+    digestStream << Format::toupper ( info.mPubKeyHex );
+    digestStream.close ();
+    
+    return Poco::Crypto::DigestEngine::digestToHex ( digestEngine.digest ());
 }
 
 //----------------------------------------------------------------//
@@ -198,46 +260,26 @@ void CryptoKey::AbstractSerializable_serializeFrom ( const AbstractSerializerFro
 //----------------------------------------------------------------//
 void CryptoKey::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
-    if ( !this->mKeyPair ) return;
-        
+    CryptoKeyInfo info = this->getInfo ();
+    if ( !info.mIsValid ) return;
+    
+    serializer.serialize < string >( "type", info.mType );
+    
     switch ( this->mKeyPair->type ()) {
         
         case Poco::Crypto::KeyPair::KT_EC: {
-        
-            const Poco::Crypto::ECKey& pocoECKey = *this;
-            assert ( pocoECKey.impl ());
             
-            EC_KEY* ecKey = pocoECKey.impl ()->getECKey ();
+            serializer.serialize < string >( "groupName", info.mGroupName );
+            serializer.serialize < string >( "publicKey", info.mPubKeyHex );
             
-            serializer.serialize < string >( "type", "EC_HEX" );
-            
-            const EC_GROUP* ecGroup = EC_KEY_get0_group ( ecKey );
-            string groupName = CryptoKey::getGroupNameFromNID ( EC_GROUP_get_curve_name ( ecGroup ));
-            serializer.serialize < string >( "groupName", groupName );
-            
-            const EC_POINT* ecPubKey = EC_KEY_get0_public_key ( ecKey );
-            assert ( ecPubKey );
-            
-            char* ecPubKeyHex = EC_POINT_point2hex ( ecGroup , ecPubKey, POINT_CONVERSION_COMPRESSED, NULL );
-            string ecPubKeyHexStr = ecPubKeyHex;
-            OPENSSL_free ( ecPubKeyHex );
-            
-            serializer.serialize < string >( "publicKey", ecPubKeyHexStr );
-            
-            const BIGNUM* ecPrivKey = EC_KEY_get0_private_key ( ecKey );
-            if ( ecPrivKey ) {
-                char* ecPrivKeyHex = BN_bn2hex ( ecPrivKey );
-                string ecPrivKeyHexStr = ecPrivKeyHex;
-                OPENSSL_free ( ecPrivKeyHex );
-                
-                serializer.serialize < string >( "privateKey", ecPrivKeyHexStr );
+            if ( info.mPrivKeyHex.size ()) {
+                serializer.serialize < string >( "privateKey", info.mPrivKeyHex );
             }
             
             break;
         }
-         case Poco::Crypto::KeyPair::KT_RSA: {
+        case Poco::Crypto::KeyPair::KT_RSA: {
             // TODO: RSA
-            serializer.serialize < string >( "type", "RSA_PEM" );
             break;
         }
     }

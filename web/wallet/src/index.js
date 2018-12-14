@@ -4,6 +4,7 @@ import 'semantic-ui-css/semantic.min.css';
 
 import AccountScreen            from './AccountScreen';
 import { AppStateProvider }     from './AppStateProvider';
+import ImportAccountScreen      from './ImportAccountScreen';
 import LoginScreen              from './LoginScreen';
 import NewAccountScreen         from './NewAccountScreen';
 import RegisterScreen           from './RegisterScreen';
@@ -26,6 +27,9 @@ const App = () => (
             <hr />
             <AppStateProvider value = { this.state }>
                 <Switch>
+                    <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
+                    <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
+
                     <Route exact path = "/:userId/accounts/new" component = { NewAccountScreen }/>
                     <Route exact path = "/accounts/new" component = { NewAccountScreen }/>
 

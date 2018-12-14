@@ -74,7 +74,7 @@ class RegisterScreen extends BaseComponent {
                 <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
                     <Grid.Column style = {{ maxWidth: 450 }}>
                         <Header as = "h2" color = "red" textAlign = "center">
-                            Register your account
+                            Choose a password for your wallet.
                         </Header>
                         <Form size = "large" onSubmit = { onSubmit }>
                             <Segment stacked>
@@ -100,13 +100,10 @@ class RegisterScreen extends BaseComponent {
                                 />
                                 { errorMessage && <span>{ errorMessage }</span>}
                                 <Button color = "red" fluid size = "large" disabled = { !isEnabled }>
-                                    Create Account
+                                    Create Password
                                 </Button>
                             </Segment>
                         </Form>
-                        <Message>
-                            Already have an account? <a>Import</a>
-                        </Message>
                     </Grid.Column>
                 </Grid>
             </div>

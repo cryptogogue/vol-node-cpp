@@ -70,6 +70,31 @@ function withAppStateAndUser ( WrappedComponent ) {
 class AppStateProvider extends BaseComponent {
 
     //----------------------------------------------------------------//
+    affirmAccountAndKey ( accountId, keyName, privateKey, publicKey ) {
+
+        let accounts = this.state.accounts;
+
+        let account = accounts [ accountId ] || { keys: {}};
+
+        let key = account.keys [ keyName ] || {};
+
+        key.privateKey = privateKey;
+        key.publicKey = publicKey;
+
+        account.keys [ keyName ] = key;
+
+        // Add new account to StateManager state
+        accounts = Object.assign ({[ accountId ] : account }, accounts );
+
+        // Save new account to local storage
+        this.setItem ( STORE_ACCOUNTS, accounts );
+
+        this.setState ({
+            accounts : accounts
+        });
+    }
+
+    //----------------------------------------------------------------//
     affirmNodeURL ( nodeURL ) {
 
         const idx = this.state.nodes.indexOf ( nodeURL );
@@ -93,6 +118,7 @@ class AppStateProvider extends BaseComponent {
 
         this.minerURLs = new Set ();
         this.marketURLs = new Set ();
+        this.urlBackoff = {};
 
         this.state = this.makeClearState ();
 
@@ -124,7 +150,9 @@ class AppStateProvider extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    async discoverNetwork () {
+    async discoverNetwork ( count ) {
+
+        count = count || 1;
 
         const { nodes } = this.state;
 
@@ -140,9 +168,14 @@ class AppStateProvider extends BaseComponent {
 
         let discoverNode = async ( url ) => {
 
+            let backoff = this.urlBackoff [ url ];
+            if ( backoff ) {
+                backoff.counter = backoff.counter + 1;
+                if ( backoff.counter < backoff.wait ) return;
+            }
+
             try {
                 const data = await this.revocableFetchJSON ( url );
-
                 removeNode ( url );
 
                 if ( data.type === 'VOL_MINING_NODE' ) {
@@ -151,9 +184,15 @@ class AppStateProvider extends BaseComponent {
                 if ( data.type === 'VOL_PROVIDER' ) {
                     this.marketURLs.add ( url );
                 }
+
+                delete this.urlBackoff [ url ];
             }
             catch ( error ) {
 
+                this.urlBackoff [ url ] = {
+                    counter: 0,
+                    wait : backoff ? backoff.wait * 2 : 1,
+                }
                 removeNode ( url );
                 console.log ( error );
             }
@@ -171,7 +210,21 @@ class AppStateProvider extends BaseComponent {
             activeMarketCount: this.marketURLs.size,
         });
 
-        this.revocableTimeout (() => { this.discoverNetwork ()}, 1000 );
+        this.revocableTimeout (() => { this.discoverNetwork ( count + 1 )}, 1000 );
+    }
+
+    //----------------------------------------------------------------//
+    findAccountIdByPublicKey ( publicKey ) {
+
+        const accounts = this.state.accounts;
+        for ( let accountId in accounts ) {
+            const account = accounts [ accountId ];
+            for ( let keyName in account.keys ) {
+                const key = account.keys [ keyName ];
+                if ( key.publicKey === publicKey ) return accountId;
+            }
+        }
+        return false;
     }
 
     //----------------------------------------------------------------//
@@ -367,6 +420,8 @@ class AppStateProvider extends BaseComponent {
         this.setItem ( STORE_PASSWORD_HASH, passwordHash );
         this.setItem ( STORE_SESSION, session );
 
+        // defaults
+        // TODO: remove
         const nodes = [
             'http://localhost:9090',
             'http://localhost:7777',
@@ -398,26 +453,7 @@ class AppStateProvider extends BaseComponent {
     //----------------------------------------------------------------//
     saveAccount ( accountId, privateKey, publicKey ) {
 
-        let account = {
-            keys : {
-                master : {
-                    privateKey : privateKey, // TODO: encrypt this with password
-                    publicKey : publicKey
-                }
-            },
-            isNew : true
-        };
-
-        // Add new account to StateManager state
-        let accounts = this.state.accounts;
-        accounts = Object.assign ({[ accountId ] : account }, accounts );
-
-        // Save new account to local storage
-        this.setItem ( STORE_ACCOUNTS, accounts );
-
-        this.setState ({
-            accounts : accounts
-        });
+        this.affirmAccountAndKey ( accountId, 'master', privateKey, publicKey );
     }
 
     //----------------------------------------------------------------//

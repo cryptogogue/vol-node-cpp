@@ -8,7 +8,9 @@
 #include <volition/web-miner-api/DefaultHandler.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 #include <volition/web-miner-api/InventoryHandler.h>
+#include <volition/web-miner-api/KeyDetailsHandler.h>
 #include <volition/web-miner-api/MinerListHandler.h>
+#include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TransactionHandler.h>
 
 namespace Volition {
@@ -26,7 +28,9 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >    ( "/accounts/:accountName/keys/?" );        // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >      ( "/blocks/:blockID/?" );                   // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >         ( "/blocks/?" );                            // GET
+    this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >        ( "/keys/:keyHash/?" );                     // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >         ( "/miners/?" );                            // GET
+    this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >         ( "/test/keyid/?" );                        // POST
     this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >       ( "/transactions/?" );                      // POST
 
     this->mRouteTable.setDefault < WebMinerAPI::DefaultHandler >            ();

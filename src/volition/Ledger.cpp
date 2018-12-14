@@ -22,13 +22,25 @@ bool Ledger::accountPolicy ( string accountName, const Policy* policy ) {
 //----------------------------------------------------------------//
 bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& key, string policyName ) {
 
+    string keyID = key.getKeyID ();
+    if ( keyID.size ()) return false;
+
+    string keyInfoPrefix = KEY_ID + keyID;
+    VersionedValue < KeyInfo > keyInfo ( *this, keyInfoPrefix );
+
+    if (( keyInfo ) && ( keyInfo->mAccountName != accountName )) return false;
+
     VersionedValue < Account > account = this->getAccount ( accountName );
     if ( account ) {
 
         if ( key ) {
+            
             Account updatedAccount = *account;
             updatedAccount.mKeys [ keyName ] = KeyAndPolicy ( key );
             this->setAccount ( accountName, updatedAccount );
+            
+            this->setValue < KeyInfo >( keyInfoPrefix, KeyInfo ( accountName, keyName ));
+            
             return true;
         }
     }
@@ -92,7 +104,18 @@ bool Ledger::genesisMiner ( string accountName, u64 amount, string keyName, cons
     account.mKeys [ keyName ] = KeyAndPolicy ( key );
     this->setAccount ( accountName, account );
 
+    string keyID = key.getKeyID ();
+    assert ( keyID.size ());
+
+    this->setValue < KeyInfo >( KEY_ID + keyID, KeyInfo ( accountName, keyName ));
+
     return this->registerMiner ( accountName, keyName, url );
+}
+
+//----------------------------------------------------------------//
+VersionedValue < Account > Ledger::getAccount ( string accountName ) const {
+
+    return VersionedValue < Account >( *this, ( prefixKey ( ACCOUNT, accountName )));
 }
 
 //----------------------------------------------------------------//
@@ -109,12 +132,6 @@ AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
         }
     }
     return accountKey;
-}
-
-//----------------------------------------------------------------//
-VersionedValue < Account > Ledger::getAccount ( string accountName ) const {
-
-    return VersionedValue < Account >( *this, ( prefixKey ( ACCOUNT, accountName )));
 }
 
 //----------------------------------------------------------------//
@@ -138,6 +155,12 @@ Inventory Ledger::getInventory ( string accountName ) const {
     catch ( VersionedCollectionNotFoundException ) {
     }
     return inventory;
+}
+
+//----------------------------------------------------------------//
+VersionedValue < KeyInfo > Ledger::getKeyInfo ( string keyID ) const {
+
+    return VersionedValue < KeyInfo >( *this, KEY_ID + keyID );
 }
 
 //----------------------------------------------------------------//

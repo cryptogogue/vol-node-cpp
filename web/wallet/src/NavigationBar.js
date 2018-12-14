@@ -51,6 +51,7 @@ class NavigationBar extends BaseComponent {
                     <Dropdown item icon = "settings">
                         <Dropdown.Menu>
                             <Dropdown.Item icon = "add square" text = "Create Account" as = { Link } to = { this.prefixURL ( '/accounts/new' )}/>
+                            <Dropdown.Item icon = "add square" text = "Import Account" as = { Link } to = { this.prefixURL ( '/accounts/import' )}/>
                             <Dropdown.Item icon = "log out" text = "Logout" onClick = { onClickLogout }/>
                             <Dropdown.Item icon = "globe" text = "DEBUG: Delete User Storage" onClick = { onClickDeleteUserStorage }/>
                             <Dropdown.Item icon = "globe" text = "DEBUG: Delete All Storage" onClick = { onClickDeleteAllStorage }/>

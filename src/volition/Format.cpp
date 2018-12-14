@@ -5,10 +5,34 @@
 
 namespace Volition {
 
+//----------------------------------------------------------------//
+int to_lower_int ( int _c ) {
+    return ( toupper ( _c ));
+}
+
+//----------------------------------------------------------------//
+int to_upper_int ( int _c ) {
+    return ( toupper ( _c ));
+}
+
 //================================================================//
 // Format
 //================================================================//
 namespace Format {
+
+//----------------------------------------------------------------//
+string tolower ( string str ) {
+
+    transform ( str.begin (), str.end (), str.begin (), ( char( * )( char ))to_lower_int );
+    return str;
+}
+
+//----------------------------------------------------------------//
+string toupper ( string str ) {
+
+    transform ( str.begin (), str.end (), str.begin (), ( char( * )( char ))to_upper_int );
+    return str;
+}
 
 //----------------------------------------------------------------//
 char* vsnprintf_alloc ( char* s, size_t n, const char* format, va_list arg ) {

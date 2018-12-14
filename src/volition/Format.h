@@ -14,6 +14,8 @@ namespace Volition {
 namespace Format {
 
     //----------------------------------------------------------------//
+    string          tolower             ( string str );
+    string          toupper             ( string str );
     char*           vsnprintf_alloc     ( char* s, size_t n, const char* format, va_list arg );
     string          write               ( const char* format, ... );
     string          write_ver           ( const char* format, va_list args );

@@ -16,6 +16,26 @@ class Schema;
 class TransactionMakerSignature;
 
 //================================================================//
+// KeyInfo
+//================================================================//
+class KeyInfo {
+public:
+    
+    string mAccountName;
+    string mKeyName;
+
+    //----------------------------------------------------------------//
+    KeyInfo () {
+    }
+    
+    //----------------------------------------------------------------//
+    KeyInfo ( string accountName, string keyName ) :
+        mAccountName ( accountName ),
+        mKeyName ( keyName ) {
+    }
+};
+
+//================================================================//
 // KeyAndPolicy
 //================================================================//
 class KeyAndPolicy {
@@ -104,6 +124,7 @@ class Ledger :
 private:
 
     static constexpr const char* ACCOUNT            = "account";
+    static constexpr const char* KEY_ID             = "keyID.";
     static constexpr const char* MINERS             = "miners";
     static constexpr const char* MINER_INFO         = "minerInfo";
     static constexpr const char* MINER_URLS         = "minerUrls";
@@ -131,9 +152,10 @@ public:
     bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
     bool                            deleteKey               ( string accountName, string keyName );
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
-    AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
     VersionedValue < Account >      getAccount              ( string accountName ) const;
+    AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
     Inventory                       getInventory            ( string accountName ) const;
+    VersionedValue < KeyInfo >      getKeyInfo              ( string keyID ) const;
     VersionedValue < MinerInfo >    getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
     MinerURLMap                     getMinerURLs            () const;
