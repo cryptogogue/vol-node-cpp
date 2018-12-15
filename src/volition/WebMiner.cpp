@@ -105,7 +105,7 @@ void WebMiner::runMulti () {
         {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
             
-            LOG_SCOPE_F ( INFO, "WEB: WebMiner::runMulti () - step" );
+            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runMulti () - step" );
             
             // process queue
             this->processQueue ();
@@ -118,8 +118,8 @@ void WebMiner::runMulti () {
             // report chain
             size_t nextHeight = this->mChain.getVersion ();
             if ( nextHeight != height ) {
-                LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
-                LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
                 height = nextHeight;
                 this->saveChain ();
             }
@@ -142,14 +142,14 @@ void WebMiner::runSolo () {
         {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
         
-            LOG_SCOPE_F ( INFO, "WEB: WebMiner::runSolo () - step" );
+            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
             
             this->pushBlock ( this->mChain, true );
             
             size_t nextHeight = this->mChain.getVersion ();
             if ( nextHeight != height ) {
-                LOG_F ( INFO, "WEB: height: %d", ( int )nextHeight );
-                LOG_F ( INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
                 height = nextHeight;
                 this->saveChain ();
             }

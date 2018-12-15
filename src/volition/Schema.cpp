@@ -31,13 +31,10 @@ Schema* _get_schema ( lua_State* L ) {
 //----------------------------------------------------------------//
 int _lua_call ( lua_State* L, int nargs, int nresults ) {
 
-    int top = lua_gettop ( L );
     int errIdx = lua_gettop ( L ) - nargs;
 
     lua_pushcfunction ( L, _traceback );
     lua_insert ( L, errIdx );
-
-    top = lua_gettop ( L );
 
     int status = lua_pcall ( L, nargs, nresults, errIdx );
 
@@ -79,7 +76,7 @@ int _print ( lua_State *L ) {
     }
     str.append ( "\n" );
     
-    LOG_F ( INFO, "LUA: %s", str.c_str ());
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA: %s", str.c_str ());
     
     return 0;
 }
@@ -89,7 +86,7 @@ int _traceback ( lua_State* L ) {
     
     if ( lua_isstring ( L, 1 )) {  // 'message' a string?
         const char* msg = lua_tostring ( L, 1 );
-        LOG_F ( INFO, "LUA.ERROR: %s", msg );
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA.ERROR: %s", msg );
     }
     
     int firstpart = 1;  /* still before eventual `...' */
@@ -145,7 +142,7 @@ int _traceback ( lua_State* L ) {
 
     out.append ( "\n" );
     
-    LOG_F ( INFO, "LUA.ERROR.STACKTRACE: %s", out.c_str ());
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA.ERROR.STACKTRACE: %s", out.c_str ());
 
     return 0;
 }

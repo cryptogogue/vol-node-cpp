@@ -24,10 +24,10 @@ bool Simulation::Simulation_control ( size_t step ) {
 //----------------------------------------------------------------//
 void Simulation::Simulation_report ( size_t step ) const {
 
-    LOG_F ( INFO, "SIM: ROUND: %d - ", ( int )step );
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "SIM: ROUND: %d - ", ( int )step );
     this->logTree ( "SIM: ", false, 1 );
     this->logMiners ( "SIM: " );
-    LOG_F ( INFO, "SIM:" );
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "SIM:" );
 }
 
 //----------------------------------------------------------------//

@@ -131,7 +131,7 @@ void TreeSummary::logTree ( string prefix, bool verbose, int maxDepth, int depth
             Format::write ( str, "%s", this->mMiners [ i ].c_str ());
         }
     }
-    LOG_F ( INFO, "%s%s", prefix.c_str (), str.c_str ());
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s%s", prefix.c_str (), str.c_str ());
     
     ++depth;
     list < TreeSummary >::const_iterator childrenIt = this->mChildren.begin ();
@@ -253,7 +253,7 @@ float Analysis::getLevelPercent ( size_t level ) const {
 //----------------------------------------------------------------//
 void Analysis::log ( string prefix, bool verbose, int maxDepth ) const {
 
-    LOG_F ( INFO, "%sPASS: %d, AVG: %g LEN: %d\n", prefix.c_str (), ( int )this->mPasses, this->mAverageIncrease, ( int )this->mChainLength );
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%sPASS: %d, AVG: %g LEN: %d\n", prefix.c_str (), ( int )this->mPasses, this->mAverageIncrease, ( int )this->mChainLength );
     this->logLevels ( prefix );
     this->logTree ( prefix, verbose, maxDepth );
 }
@@ -268,7 +268,7 @@ void Analysis::logLevels ( string prefix ) const {
         //Format::write ( str, "[branches: %d, percent: %g]", ( int )stats.mChains, percent );
         Format::write ( str, "[%.2f]", percent );
     }
-    LOG_F ( INFO, "%s%s", prefix.c_str (), str.c_str ());
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s%s", prefix.c_str (), str.c_str ());
 }
 
 //----------------------------------------------------------------//

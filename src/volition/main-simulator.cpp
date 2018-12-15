@@ -19,4 +19,17 @@ public:
     }
 };
 
-POCO_APP_MAIN ( ConsensusApp );
+//================================================================//
+// main
+//================================================================//
+
+//----------------------------------------------------------------//
+int main ( int argc, char** argv ) {
+
+    Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
+    Lognosis::init ( argc, argv );
+    LOG_F ( INFO, "Hello from main.cpp!" );
+
+    ConsensusApp app;
+    return app.run ( argc, argv );
+}

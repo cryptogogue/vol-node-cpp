@@ -54,8 +54,6 @@
 #include <Routing/Exceptions.h>
 #include <Routing/Router.h>
 
-#include <loguru.hpp>
-
 #include <padamose/VersionedCollectionIterator.h>
 #include <padamose/VersionedMap.h>
 #include <padamose/VersionedSet.h>
@@ -65,6 +63,8 @@
 #include <padamose/VersionedValueIterator.h>
 
 #include <lua.hpp>
+
+#include <lognosis/Logger.h>
 
 using namespace std;
 using namespace Padamose;
@@ -81,5 +81,7 @@ typedef signed char             s8;
 typedef signed short            s16;
 typedef signed int              s32;
 typedef signed long long        s64;
+
+#define VOL_FILTER_ROOT "volition"
 
 #endif

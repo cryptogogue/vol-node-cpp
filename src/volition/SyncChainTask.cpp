@@ -47,7 +47,7 @@ void SyncChainTask::runTask () {
             std::istream& jsonStream = session.receiveResponse ( response );
         
             //string jsonString ( istreambuf_iterator < char >( jsonStream ), {});
-            //LOG_F ( INFO, "JSON: %s", jsonString ());
+            //LGN_LOG ( VOL_FILTER_ROOT, INFO, "JSON: %s", jsonString ());
         
             Poco::JSON::Parser parser;
             Poco::Dynamic::Var result = parser.parse ( jsonStream );
@@ -62,7 +62,7 @@ void SyncChainTask::runTask () {
         }
     }
     catch ( Poco::Exception& exc ) {
-        LOG_F ( INFO, "%s", exc.message ().c_str ());
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", exc.message ().c_str ());
     }
 }
 

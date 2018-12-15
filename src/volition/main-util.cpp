@@ -147,6 +147,8 @@ int runApp ( int argc, char** argv, Poco::Util::Application* app ) {
 //----------------------------------------------------------------//
 int main ( int argc, char** argv ) {
 
+    Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
+
     assert ( argc >= 2 );
     string command = argv [ 1 ];
 

@@ -32,7 +32,7 @@ void SimMiner::log ( string prefix ) const {
 
     string name = this->mCohort ? this->mCohort->mName.c_str () : "";
 
-    LOG_F ( INFO, "%s[%s] %s", prefix.c_str (), name.c_str (), this->mChain.print ( this->mMetadata, "CHAIN: " ).c_str ());
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s[%s] %s", prefix.c_str (), name.c_str (), this->mChain.print ( this->mMetadata, "CHAIN: " ).c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -59,10 +59,10 @@ void SimMiner::resetMinerQueue () {
 //----------------------------------------------------------------//
 void SimMiner::step () {
 
-    LOG_SCOPE_F ( INFO, "SimMiner::step ()" );
+    LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "SimMiner::step ()" );
 
     int tag = ( int )( this->mSimulation.rand () & 0xffffffff );
-    LOG_F ( INFO, "0x%08x", tag );
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "0x%08x", tag );
 
     if ( this->mCohort && this->mCohort->mIsPaused ) return;
 
@@ -75,16 +75,16 @@ void SimMiner::step () {
     if ( !miner ) return;
 
     if ( this->mVerbose ) {
-        LOG_F ( INFO, " player: %s\n", this->mMinerID.c_str ());
-        LOG_F ( INFO, "%s", this->mChain.print ( this->mMetadata, "   CHAIN0: " ).c_str ());
-        LOG_F ( INFO, "%s", miner->mChain.print ( this->mMetadata, "   CHAIN1: " ).c_str ());
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, " player: %s\n", this->mMinerID.c_str ());
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->mChain.print ( this->mMetadata, "   CHAIN0: " ).c_str ());
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", miner->mChain.print ( this->mMetadata, "   CHAIN1: " ).c_str ());
     }
 
     this->updateChain ( miner->mChain );
 
     if ( this->mVerbose ) {
-        LOG_F ( INFO, "%s", this->mChain.print ( this->mMetadata, "     BEST: " ).c_str ());
-        LOG_F ( INFO, "\n" );
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->mChain.print ( this->mMetadata, "     BEST: " ).c_str ());
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "\n" );
     }
 }
 

@@ -299,7 +299,7 @@ protected:
     //----------------------------------------------------------------//
     void serve ( int port ) {
     
-        Poco::Net::HTTPServer server ( new Volition::WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams );
+        Poco::Net::HTTPServer server ( new Volition::WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams ());
         server.start ();
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
@@ -326,8 +326,8 @@ int main ( int argc, char** argv ) {
     setvbuf ( stdout, NULL, _IOLBF, 0 );
     setvbuf ( stderr, NULL, _IOLBF, 0 );
 
-    loguru::init ( argc, argv );
-    loguru::g_preamble = false;
+    Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
+    Lognosis::init ( argc, argv );
     LOG_F ( INFO, "Hello from main.cpp!" );
 
     ServerApp app;

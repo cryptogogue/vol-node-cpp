@@ -113,6 +113,10 @@
 		CD4E81D721059447007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
+		CD6C9AD821C4873A009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
+		CD6C9ADB21C48749009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
+		CD6C9ADE21C48756009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
+		CD6C9AE121C48762009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
 		CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D813216546B400F43CC7 /* SerializerPropertyName.h */; };
 		CD73D8162165474000F43CC7 /* AbstractSerializerTo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */; };
 		CD73D819216576EE00F43CC7 /* AbstractSerializableCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */; };
@@ -216,15 +220,11 @@
 		CDBFD551218B8999002AB0C3 /* TransformAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBFD545218B8999002AB0C3 /* TransformAssets.h */; };
 		CDBFD559218BA145002AB0C3 /* Schema.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDBFD557218BA145002AB0C3 /* Schema.cpp */; };
 		CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBFD558218BA145002AB0C3 /* Schema.h */; };
-		CDD36CD8215DA3A3004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
 		CDD36CE3215DA428004FC222 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD4215DA35E004FC222 /* libgtest.a */; };
 		CDD36CE4215DA429004FC222 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
 		CDD36CE7215DA444004FC222 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
 		CDD36CE8215DA44C004FC222 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
 		CDD36CE9215DA454004FC222 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
-		CDD36CFC215DA75C004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
-		CDD36CFD215DA75D004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
-		CDD36CFE215DA75E004FC222 /* loguru.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36CD7215DA3A3004FC222 /* loguru.cpp */; };
 		CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E6820C86FBA006E3B1C /* main-util.cpp */; };
 		CDD36D012162A415004FC222 /* Format.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD36D002162A415004FC222 /* Format.h */; };
 		CDD36D032162A496004FC222 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36D022162A496004FC222 /* Format.cpp */; };
@@ -311,6 +311,41 @@
 			proxyType = 1;
 			remoteGlobalIDString = CD4E817521059316007DA585;
 			remoteInfo = "lib-volition";
+		};
+		CD6C9AD421C48725009A3801 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CD4E818F21059316007DA585;
+			remoteInfo = "lib-lognosis";
+		};
+		CD6C9AD621C48731009A3801 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-lognosis";
+		};
+		CD6C9AD921C48743009A3801 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-lognosis";
+		};
+		CD6C9ADC21C4874F009A3801 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-lognosis";
+		};
+		CD6C9ADF21C4875D009A3801 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-lognosis";
 		};
 		CDBFD529218B78EC002AB0C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -527,6 +562,7 @@
 		CD5C62FA20B4F7B10038EE98 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/volition/common.h; sourceTree = "<group>"; };
 		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/volition/main-simulator.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/volition/main-server.cpp"; sourceTree = "<group>"; };
+		CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = lognosis.xcodeproj; path = "3rd-party/padamose/3rd-party/lognosis/lognosis.xcodeproj"; sourceTree = "<group>"; };
 		CD73D813216546B400F43CC7 /* SerializerPropertyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerPropertyName.h; path = src/volition/serialization/SerializerPropertyName.h; sourceTree = "<group>"; };
 		CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializerTo.h; path = src/volition/serialization/AbstractSerializerTo.h; sourceTree = "<group>"; };
 		CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializableCollection.h; path = src/volition/serialization/AbstractSerializableCollection.h; sourceTree = "<group>"; };
@@ -641,7 +677,6 @@
 		CDC2B34120D1182400300A96 /* TheContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheContext.h; path = src/volition/TheContext.h; sourceTree = "<group>"; };
 		CDC2B34220D1196900300A96 /* TheContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheContext.cpp; path = src/volition/TheContext.cpp; sourceTree = "<group>"; };
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
-		CDD36CD7215DA3A3004FC222 /* loguru.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = loguru.cpp; path = src/volition/loguru.cpp; sourceTree = "<group>"; };
 		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
 		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
@@ -681,6 +716,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */,
+				CD6C9ADE21C48756009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52E218B790E002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE9215DA454004FC222 /* libpadamose.a in Frameworks */,
 				CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */,
@@ -705,6 +741,7 @@
 			files = (
 				CD4E817221057E91007DA585 /* libcpprouter.a in Frameworks */,
 				CDD36CE3215DA428004FC222 /* libgtest.a in Frameworks */,
+				CD6C9AE121C48762009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52B218B78F4002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE4215DA429004FC222 /* libpadamose.a in Frameworks */,
 				CD4E81D421059435007DA585 /* libvolition.a in Frameworks */,
@@ -734,6 +771,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD6C9ADB21C48749009A3801 /* liblognosis.a in Frameworks */,
 				CDED584120BA2008003A2969 /* libcpprouter.a in Frameworks */,
 				CDBFD531218B7921002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE8215DA44C004FC222 /* libpadamose.a in Frameworks */,
@@ -772,6 +810,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDED588220BD1C5F003A2969 /* libcpprouter.a in Frameworks */,
+				CD6C9AD821C4873A009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD534218B7935002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE7215DA444004FC222 /* libpadamose.a in Frameworks */,
 				CD4E81D721059447007DA585 /* libvolition.a in Frameworks */,
@@ -928,6 +967,14 @@
 			name = src;
 			sourceTree = "<group>";
 		};
+		CD6C9AD121C48725009A3801 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CD6C9AD521C48725009A3801 /* liblognosis.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		CD6D7CCF21006C9F0005446F /* transaction */ = {
 			isa = PBXGroup;
 			children = (
@@ -946,7 +993,6 @@
 		CD9345B92093EB140077BAD4 = {
 			isa = PBXGroup;
 			children = (
-				CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */,
 				CDED581320BA1EF7003A2969 /* 3rd-party */,
 				CD4E816621057ADF007DA585 /* gtest */,
 				CDED589120BD1CAC003A2969 /* main */,
@@ -1111,7 +1157,9 @@
 		CDED581320BA1EF7003A2969 /* 3rd-party */ = {
 			isa = PBXGroup;
 			children = (
+				CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */,
 				CDBFD473218B7854002AB0C3 /* lua */,
+				CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */,
 				CDED581420BA1F02003A2969 /* simple-cpp-router */,
 			);
 			name = "3rd-party";
@@ -1168,7 +1216,6 @@
 		CDED589120BD1CAC003A2969 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				CDD36CD7215DA3A3004FC222 /* loguru.cpp */,
 				CD5C632420B524A30038EE98 /* main-server.cpp */,
 				CD5C632320B524A30038EE98 /* main-simulator.cpp */,
 				CD0C3E6820C86FBA006E3B1C /* main-util.cpp */,
@@ -1315,6 +1362,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				CD6C9ADD21C4874F009A3801 /* PBXTargetDependency */,
 				CDBFD52D218B7904002AB0C3 /* PBXTargetDependency */,
 				CDD36CE2215DA417004FC222 /* PBXTargetDependency */,
 				CD0C3E4020C86D88006E3B1C /* PBXTargetDependency */,
@@ -1337,6 +1385,7 @@
 			);
 			dependencies = (
 				CDD36CDA215DA3FD004FC222 /* PBXTargetDependency */,
+				CD6C9AE021C4875D009A3801 /* PBXTargetDependency */,
 				CDBFD52A218B78EC002AB0C3 /* PBXTargetDependency */,
 				CDD36CDC215DA3FD004FC222 /* PBXTargetDependency */,
 				CD4E8132210579C8007DA585 /* PBXTargetDependency */,
@@ -1375,6 +1424,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				CD6C9ADA21C48743009A3801 /* PBXTargetDependency */,
 				CDBFD530218B7919002AB0C3 /* PBXTargetDependency */,
 				CDD36CE0215DA410004FC222 /* PBXTargetDependency */,
 				CDED583F20BA2001003A2969 /* PBXTargetDependency */,
@@ -1430,6 +1480,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				CD6C9AD721C48731009A3801 /* PBXTargetDependency */,
 				CDBFD533218B792E002AB0C3 /* PBXTargetDependency */,
 				CDD36CDE215DA409004FC222 /* PBXTargetDependency */,
 				CDED587520BD1C5F003A2969 /* PBXTargetDependency */,
@@ -1490,6 +1541,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = CD6C9AD121C48725009A3801 /* Products */;
+					ProjectRef = CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */;
+				},
+				{
 					ProductGroup = CDD36CCB215DA35E004FC222 /* Products */;
 					ProjectRef = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
 				},
@@ -1509,6 +1564,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		CD6C9AD521C48725009A3801 /* liblognosis.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblognosis.a;
+			remoteRef = CD6C9AD421C48725009A3801 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		CDD36CD2215DA35E004FC222 /* padamose-gtest */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
@@ -1583,7 +1645,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */,
-				CDD36CFC215DA75C004FC222 /* loguru.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1593,7 +1654,6 @@
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
 				CDB8B3CC21AC9CEC004EE816 /* TestWebMiner.cpp in Sources */,
-				CDD36CD8215DA3A3004FC222 /* loguru.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1635,7 +1695,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */,
-				CDD36CFD215DA75D004FC222 /* loguru.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1697,7 +1756,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */,
-				CDD36CFE215DA75E004FC222 /* loguru.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1733,6 +1791,26 @@
 			isa = PBXTargetDependency;
 			target = CD4E817521059316007DA585 /* lib-volition */;
 			targetProxy = CD4E81DB21059463007DA585 /* PBXContainerItemProxy */;
+		};
+		CD6C9AD721C48731009A3801 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-lognosis";
+			targetProxy = CD6C9AD621C48731009A3801 /* PBXContainerItemProxy */;
+		};
+		CD6C9ADA21C48743009A3801 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-lognosis";
+			targetProxy = CD6C9AD921C48743009A3801 /* PBXContainerItemProxy */;
+		};
+		CD6C9ADD21C4874F009A3801 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-lognosis";
+			targetProxy = CD6C9ADC21C4874F009A3801 /* PBXContainerItemProxy */;
+		};
+		CD6C9AE021C4875D009A3801 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-lognosis";
+			targetProxy = CD6C9ADF21C4875D009A3801 /* PBXContainerItemProxy */;
 		};
 		CDBFD52A218B78EC002AB0C3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1965,7 +2043,7 @@
 					"3rd-party/simple-cpp-router/src",
 					"3rd-party/padamose/src",
 					"3rd-party/padamose/3rd-party/googletest/googletest/include",
-					"3rd-party/padamose/3rd-party/loguru",
+					"3rd-party/padamose/3rd-party/lognosis/src",
 					/usr/local/opt/openssl/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -2034,7 +2112,7 @@
 					"3rd-party/simple-cpp-router/src",
 					"3rd-party/padamose/src",
 					"3rd-party/padamose/3rd-party/googletest/googletest/include",
-					"3rd-party/padamose/3rd-party/loguru",
+					"3rd-party/padamose/3rd-party/lognosis/src",
 					/usr/local/opt/openssl/include,
 				);
 				LIBRARY_SEARCH_PATHS = (

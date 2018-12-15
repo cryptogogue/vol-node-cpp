@@ -7,8 +7,8 @@
 //----------------------------------------------------------------//
 int main ( int argc, char **argv ) {
 
-    loguru::init ( argc, argv );
-    loguru::g_preamble = false;
+    Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
+    Lognosis::init ( argc, argv );
 
     ::testing::InitGoogleTest ( &argc, argv );
     int result = RUN_ALL_TESTS ();
