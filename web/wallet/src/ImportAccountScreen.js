@@ -40,13 +40,8 @@ class ImportAccountScreen extends BaseComponent {
     //----------------------------------------------------------------//
     async handleSubmit () {
 
-        const { appState } = this.props;
-        const { phraseOrKey } = this.state;
-
-        console.log ( 'Importing', phraseOrKey );
-
         try {
-            const key = await crypto.loadKeyAsync ( phraseOrKey );
+            const key = await crypto.loadKeyAsync ( this.state.phraseOrKey );
             this.verifyKey ( key );
         }
         catch ( error ) {
@@ -176,7 +171,6 @@ class ImportAccountScreen extends BaseComponent {
             this.setState ({ searchCount: searchCount++ });
         }
 
-        let promises = [];
         appState.minerURLs.forEach ( async ( url ) => {
 
             await verify ( url );

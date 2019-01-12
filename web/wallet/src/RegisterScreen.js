@@ -4,7 +4,7 @@ import { withAppStateAndUser }  from './AppStateProvider';
 import BaseComponent            from './BaseComponent';
 import * as bcrypt              from 'bcryptjs';
 import React                    from 'react';
-import { Button, Form, Grid, Header, Message, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 //================================================================//
 // RegisterScreen
