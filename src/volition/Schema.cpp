@@ -220,9 +220,11 @@ Schema::Schema () {
 //----------------------------------------------------------------//
 void Schema::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
-    string lua;
-    
     serializer.serialize ( "name", this->mName );
+    serializer.serialize ( "classes", this->mClasses );
+    serializer.serialize ( "rules", this->mRules );
+    
+    string lua;
     serializer.serialize ( "lua", lua );
     
     luaL_loadbuffer ( this->mLuaState, lua.c_str (), lua.size (), "schema" );

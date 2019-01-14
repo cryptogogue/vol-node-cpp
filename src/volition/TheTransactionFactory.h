@@ -39,8 +39,9 @@ class TransactionFactory :
 public:
 
     //----------------------------------------------------------------//
-    unique_ptr < AbstractTransaction > SerializablePtrFactory_make ( const AbstractSerializableTypeInfo& typeInfo ) override {
-        return TheTransactionFactory::get ().create ( typeInfo.get ( "type" ));
+    unique_ptr < AbstractTransaction > SerializablePtrFactory_make ( const AbstractSerializerFrom& serializer ) override {
+        string type = serializer.serializeIn < string >( "type", "" );
+        return TheTransactionFactory::get ().create ( type );
     }
 };
 

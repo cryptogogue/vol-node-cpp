@@ -14,14 +14,19 @@ namespace Volition {
 //================================================================//
 template < typename TYPE >
 class SerializableVector :
-    public AbstractSerializableCollection,
+    public AbstractSerializable,
     public vector < TYPE > {
     
 public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        size_t size = this->size ();
+    
+        if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_INDEX ) return;
+        
+        size_t size = serializer.getSize ();
+        this->resize ( size );
+        
         for ( size_t i = 0; i < size; ++i ) {
             serializer.serialize ( i, ( *this )[ i ]);
         }
@@ -33,11 +38,6 @@ public:
         for ( size_t i = 0; i < size; ++i ) {
             serializer.serialize ( i, ( *this )[ i ]);
         }
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializableCollection_resize ( size_t size ) override {
-        this->resize ( size );
     }
 };
 

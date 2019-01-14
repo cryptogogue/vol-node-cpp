@@ -19,6 +19,43 @@ function makeBinaryOp ( opname ) {
 }
 
 //----------------------------------------------------------------//
+function makeConstOp ( opname ) {
+    return ( value ) => {
+
+        let type = typeof ( value );
+
+        return {
+            op:         opname,
+            type:       type.toUpperCase (),
+            value:      value,
+        };
+    };
+}
+
+//----------------------------------------------------------------//
+function makeFuncOp ( opname ) {
+    return ( ...args ) => {
+
+        let cleanArgs = [];
+
+        args.forEach ( function ( arg ) {
+
+            let argType = typeof ( arg );
+
+            if ( argType != 'object' ) {
+                arg = CONST ( arg );
+            }
+            cleanArgs.push ( arg );
+        });
+
+        return {
+            op:         opname,
+            args:       cleanArgs,
+        };
+    };
+}
+
+//----------------------------------------------------------------//
 function makeUnaryOp ( opname ) {
     return ( param ) => {
         return {
@@ -29,19 +66,25 @@ function makeUnaryOp ( opname ) {
 }
 
 //----------------------------------------------------------------//
+const ADD               = makeBinaryOp  ( 'ADD' );
 const AND               = makeBinaryOp  ( 'AND' );
-const CONST             = makeUnaryOp   ( 'CONST' );
+const CONST             = makeConstOp   ( 'CONST' );
+const DIV               = makeBinaryOp  ( 'DIV' );
 const EQUAL             = makeBinaryOp  ( 'EQUAL' );
-const FIELD             = makeUnaryOp   ( 'FIELD' );
-const GREATER_THAN      = makeBinaryOp  ( 'GREATER_THAN' );
+const FIELD             = makeFuncOp    ( 'FIELD' );
+const GREATER_THAN      = makeBinaryOp  ( 'GREATER' );
 const GREATER_OR_EQUAL  = makeBinaryOp  ( 'GREATER_OR_EQUAL' );
-const IN                = makeBinaryOp  ( 'IN' );
-const IS                = makeUnaryOp   ( 'IS' );
+const IN                = makeFuncOp    ( 'IN' );
+const IS                = makeFuncOp    ( 'IS' );
 const LESS_OR_EQUAL     = makeBinaryOp  ( 'LESS_OR_EQUAL' );
-const LESS_THAN         = makeBinaryOp  ( 'LESS_THAN' );
+const LESS_THAN         = makeBinaryOp  ( 'LESS' );
+const MOD               = makeBinaryOp  ( 'MOD' );
+const MUL               = makeBinaryOp  ( 'MUL' );
 const NOT               = makeUnaryOp   ( 'NOT' );
 const NOT_EQUAL         = makeBinaryOp  ( 'NOT_EQUAL' );
 const OR                = makeBinaryOp  ( 'OR' );
+const SUB               = makeBinaryOp  ( 'SUB' );
+const XOR               = makeBinaryOp  ( 'XOR' );
 
 //----------------------------------------------------------------//
 function jsonEscape ( str ) {

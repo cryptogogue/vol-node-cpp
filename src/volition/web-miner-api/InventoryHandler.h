@@ -32,7 +32,7 @@ public:
         
             Inventory inventory = ledger.getInventory ( accountName );
         
-            Poco::JSON::Object::Ptr inventoryJSON = ToJSONSerializer::toJSON ( inventory );
+            Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         
             jsonOut.set ( "inventory", inventoryJSON );
         }

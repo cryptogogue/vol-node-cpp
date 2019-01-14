@@ -1,23 +1,24 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_SERIALIZATION_ABSTRACTSERIALIZABLECOLLECTION_H
-#define VOLITION_SERIALIZATION_ABSTRACTSERIALIZABLECOLLECTION_H
+#ifndef VOLITION_SQUAPFACTORY_H
+#define VOLITION_SQUAPFACTORY_H
 
 #include <volition/common.h>
-#include <volition/serialization/AbstractSerializable.h>
+#include <volition/AbstractSquap.h>
+#include <volition/FNV1a.h>
 
 namespace Volition {
 
 //================================================================//
-// AbstractSerializableCollection
+// SquapFactory
 //================================================================//
-class AbstractSerializableCollection :
-    public AbstractSerializable {
+class SquapFactory :
+    public AbstractSerializablePtrFactory < AbstractSquap > {
 public:
 
     //----------------------------------------------------------------//
-    virtual void        AbstractSerializableCollection_resize       ( size_t size ) = 0;
+    unique_ptr < AbstractSquap > SerializablePtrFactory_make ( const AbstractSerializerFrom& serializer ) override;
 };
 
 } // namespace Volition

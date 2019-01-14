@@ -99,14 +99,14 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
         serializer.serialize ( "assets",            this->mAssets );
-        serializer.serialize ( "specialization",    this->mSpecializations );
+        serializer.serialize ( "specializations",   this->mSpecializations );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
         serializer.serialize ( "assets",            this->mAssets );
-        serializer.serialize ( "specialization",    this->mSpecializations );
+        serializer.serialize ( "specializations",   this->mSpecializations );
     }
 };
 

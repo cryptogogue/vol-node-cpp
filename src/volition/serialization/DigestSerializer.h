@@ -40,20 +40,6 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializableCollection& value ) override {
-        value.serializeTo ( *this );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializablePointer& value ) override {
-    
-        const AbstractSerializable* serializable = value.AbstractSerializablePointer_get ();
-        if ( serializable ) {
-            serializable->serializeTo ( *this );
-        }
-    }
-    
-    //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractStringifiable& value ) override {
         *this->mStream << value.toString ();
     }

@@ -7,28 +7,6 @@
 namespace Volition {
 
 //================================================================//
-// JSONSerializableTypeInfo
-//================================================================//
-class JSONSerializableTypeInfo :
-    public AbstractSerializableTypeInfo {
-protected:
-
-    const Poco::JSON::Object&   mObject;
-
-    //----------------------------------------------------------------//
-    string AbstractSerializableTypeInfo_get ( string key ) const {
-        return this->mObject.optValue < string >( key, "" );
-    }
-
-public:
-
-    //----------------------------------------------------------------//
-    JSONSerializableTypeInfo ( const Poco::JSON::Object& object ) :
-        mObject ( object ) {
-    }
-};
-
-//================================================================//
 // JSONSerializer
 //================================================================//
 template < typename ARRAY_TYPE, typename OBJECT_TYPE >
@@ -39,28 +17,48 @@ protected:
     OBJECT_TYPE*    mObject;
 
     //----------------------------------------------------------------//
+    operator bool () const {
+        return ( this->mArray || this->mObject );
+    }
+    
+    //----------------------------------------------------------------//
+    operator Poco::Dynamic::Var () const {
+        if ( this->mArray ) return this->mArray;
+        return this->mObject;
+    }
+
+    //----------------------------------------------------------------//
     JSONSerializer () :
         mObject ( NULL ),
         mArray ( NULL ) {
     }
 
     //----------------------------------------------------------------//
-    const Poco::JSON::Array::Ptr getArray ( SerializerPropertyName name ) const {
+    const Poco::Dynamic::Var get ( SerializerPropertyName name ) const {
     
         if ( this->mArray ) {
-            return this->mArray->getArray (( unsigned int )name.getIndex ());
+            return this->mArray->get (( unsigned int )name.getIndex ());
         }
-        return this->mObject->getArray ( name.getName ());
+        return this->mObject->get ( name.getName ());
     }
 
-    //----------------------------------------------------------------//
-    const Poco::JSON::Object::Ptr getObject ( SerializerPropertyName name ) const {
-    
-        if ( this->mArray ) {
-            return this->mArray->getObject (( unsigned int )name.getIndex ());
-        }
-        return this->mObject->getObject ( name.getName ());
-    }
+//    //----------------------------------------------------------------//
+//    const Poco::JSON::Array::Ptr getArray ( SerializerPropertyName name ) const {
+//
+//        if ( this->mArray ) {
+//            return this->mArray->getArray (( unsigned int )name.getIndex ());
+//        }
+//        return this->mObject->getArray ( name.getName ());
+//    }
+//
+//    //----------------------------------------------------------------//
+//    const Poco::JSON::Object::Ptr getObject ( SerializerPropertyName name ) const {
+//
+//        if ( this->mArray ) {
+//            return this->mArray->getObject (( unsigned int )name.getIndex ());
+//        }
+//        return this->mObject->getObject ( name.getName ());
+//    }
 
     //----------------------------------------------------------------//
     bool has ( SerializerPropertyName name ) const {
@@ -85,13 +83,19 @@ protected:
 
     //----------------------------------------------------------------//
     void set ( SerializerPropertyName name, const Poco::Dynamic::Var& value ) {
-    
-        assert ( this->mObject || this->mArray );
-    
-        if ( this->mArray ) {
+        
+        if ( name.isIndex ()) {
+            assert ( !this->mObject );
+            if ( !this->mArray ) {
+                this->mArray = new Poco::JSON::Array ();
+            }
             this->mArray->set (( unsigned int )name.getIndex (), value );
         }
         else {
+            assert ( !this->mArray );
+            if ( !this->mObject ) {
+                this->mObject = new Poco::JSON::Object ();
+            }
             this->mObject->set ( name.getName (), value );
         }
     }

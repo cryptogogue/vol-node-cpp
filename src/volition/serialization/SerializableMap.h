@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_SERIALIZATION_SERIALIZABLESET_H
-#define VOLITION_SERIALIZATION_SERIALIZABLESET_H
+#ifndef VOLITION_SERIALIZATION_SERIALIZABLEMAP_H
+#define VOLITION_SERIALIZATION_SERIALIZABLEMAP_H
 
 #include <volition/serialization/AbstractSerializerFrom.h>
 #include <volition/serialization/AbstractSerializerTo.h>
@@ -10,24 +10,29 @@
 namespace Volition {
 
 //================================================================//
-// SerializableSet
+// SerializableMap
 //================================================================//
-template < typename TYPE >
-class SerializableSet :
+template < typename KEY_TYPE, typename VAL_TYPE >
+class SerializableMap :
     public AbstractSerializable,
-    public set < TYPE > {
+    public map < KEY_TYPE, VAL_TYPE > {
 public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
         
-        if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_INDEX ) return;
+        if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_STRING ) return;
         
-        size_t size = serializer.getSize ();
+        SerializerKeys keys = serializer.getKeys ();
+        
+        size_t size = keys.getSize ();
         for ( size_t i = 0; i < size; ++i ) {
-            TYPE value;
-            serializer.serialize ( i, value );
-            this->insert ( value );
+        
+            SerializerPropertyName key = keys.getKey ( i );
+        
+            VAL_TYPE value;
+            serializer.serialize ( key, value );
+            ( *this )[ key.getName ()] = value;
         }
     }
     
@@ -38,9 +43,9 @@ public:
             // TODO: sort set elements and hash
         }
         else {
-            typename set < TYPE >::const_iterator it = this->begin ();
-            for ( size_t i = 0; it != this->end (); ++it, ++i ) {
-                serializer.serialize ( i, *it );
+            typename map < KEY_TYPE, VAL_TYPE >::const_iterator it = this->begin ();
+            for ( ; it != this->end (); ++it ) {
+                serializer.serialize ( it->first, it->second );
             }
         }
     }

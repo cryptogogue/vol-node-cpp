@@ -6,8 +6,55 @@
 
 #include <volition/common.h>
 #include <volition/Ledger.h>
+#include <volition/SquapFactory.h>
 
 namespace Volition {
+
+//================================================================//
+// SchemaClass
+//================================================================//
+class SchemaClass :
+     public AbstractSerializable {
+public:
+
+    string                              mDisplayName;       // friendly name for the class.
+    SerializableSet < string >          mKeyWords;          // array of keywords.
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "displayName",       this->mDisplayName );
+        serializer.serialize ( "keywords",          this->mKeyWords );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        assert ( false ); // unsupported
+    }
+};
+
+//================================================================//
+// SchemaRule
+//================================================================//
+class SchemaRule :
+     public AbstractSerializable {
+public:
+
+    string                                                                          mDescription;       // friendly description for the rule.
+    SerializableVector < SerializableSharedPtr < AbstractSquap, SquapFactory >>     mQualifiers;        // list of qualifier trees.
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "description",       this->mDescription );
+        serializer.serialize ( "qualifiers",        this->mQualifiers );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        assert ( false ); // unsupported
+    }
+};
 
 //================================================================//
 // Schema
@@ -20,6 +67,9 @@ private:
 
     string          mName;
     lua_State*      mLuaState;
+
+    SerializableMap < string, SchemaClass >     mClasses;
+    SerializableMap < string, SchemaRule >      mRules;
 
     //----------------------------------------------------------------//
     static int      _awardAsset         ( lua_State* L );

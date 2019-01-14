@@ -18,6 +18,36 @@ class FromJSONSerializer :
 protected:
 
     //----------------------------------------------------------------//
+    SerializerKeys AbstractSerializerFrom_getKeys () const override {
+    
+        if ( this->mArray ) {
+            return SerializerKeys ( this->mArray->size ());
+        }
+        
+        if ( this->mObject ) {
+        
+            vector < string > keys;
+            keys.reserve ( this->mObject->size ());
+        
+            Poco::JSON::Object::ConstIterator valueIt = this->mObject->begin ();
+            for ( ; valueIt != this->mObject->end (); ++valueIt ) {
+                keys.push_back ( valueIt->first );
+            }
+            return SerializerKeys ( keys );
+        }
+        
+        return SerializerKeys ();
+    }
+    
+    //----------------------------------------------------------------//
+    KeyType AbstractSerializerFrom_getKeyType () const override {
+    
+        if ( this->mArray ) return KEY_TYPE_INDEX;
+        if ( this->mObject ) return KEY_TYPE_STRING;
+        return KEY_TYPE_UNKNOWN;
+    }
+
+    //----------------------------------------------------------------//
     size_t AbstractSerializerFrom_getSize () const override {
         assert ( this->mObject || this->mArray );
         return this->mObject ? this->mObject->size () : this->mArray->size ();
@@ -54,34 +84,19 @@ protected:
     //----------------------------------------------------------------//
     void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializable& value ) const override {
     
-        Poco::JSON::Object::Ptr object = this->getObject ( name );
-        if ( object ) {
-            fromJSON ( value, *object );
-        }
-    }
+        if ( this->has ( name )) {
     
-    //----------------------------------------------------------------//
-    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializableCollection& value ) const override {
-    
-        Poco::JSON::Array::Ptr array = this->getArray ( name );
-        if ( array ) {
-    
-            value.AbstractSerializableCollection_resize ( array->size ());
-    
-            FromJSONSerializer serializer;
-            serializer.mArray = array;
-            value.serializeFrom ( serializer );
-        }
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractSerializablePointer& value ) const override {
-        
-        Poco::JSON::Object::Ptr object = this->getObject ( name );
-        if ( object ) {
-            JSONSerializableTypeInfo typeInfo ( *object );
-            value.AbstractSerializablePointer_make ( typeInfo );
-            fromJSON ( *value.AbstractSerializablePointer_get (), *object );
+            const Poco::Dynamic::Var member = this->get ( name );
+            assert ( member );
+            
+            const type_info& tinfo = member.type ();
+            
+            if ( tinfo == typeid ( Poco::JSON::Array::Ptr )) {
+                fromJSON ( value, *member.extract < Poco::JSON::Array::Ptr >());
+            }
+            else if ( tinfo == typeid ( Poco::JSON::Object::Ptr )) {
+                fromJSON ( value, *member.extract < Poco::JSON::Object::Ptr >());
+            }
         }
     }
     
@@ -92,6 +107,14 @@ protected:
     }
 
 public:
+
+    //----------------------------------------------------------------//
+    static void fromJSON ( AbstractSerializable& serializable, const Poco::JSON::Array& array ) {
+
+        FromJSONSerializer serializer;
+        serializer.mArray = &array;
+        serializable.serializeFrom ( serializer );
+    }
 
     //----------------------------------------------------------------//
     static void fromJSON ( AbstractSerializable& serializable, const Poco::JSON::Object& object ) {

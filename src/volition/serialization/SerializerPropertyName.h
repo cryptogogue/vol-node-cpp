@@ -35,6 +35,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    bool isIndex () const {
+        return this->mIsIndex;
+    }
+
+    //----------------------------------------------------------------//
     SerializerPropertyName ( size_t index ) :
         mIsIndex ( true ),
         mIndex ( index ) {

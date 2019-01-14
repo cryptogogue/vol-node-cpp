@@ -97,7 +97,6 @@
 		CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664A20F730AA000E0B43 /* DigestSerializer.h */; };
 		CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664B20F730AA000E0B43 /* FromJSONSerializer.h */; };
 		CD4E81B9210593E5007DA585 /* JSONSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664E20F73FE4000E0B43 /* JSONSerializer.h */; };
-		CD4E81BA210593E5007DA585 /* SerializablePtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */; };
 		CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7791FC20F93B1E0058EBAC /* SerializableSet.h */; };
 		CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7791FD20F93B1E0058EBAC /* SerializableVector.h */; };
 		CD4E81BD210593E5007DA585 /* Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664D20F73261000E0B43 /* Serialization.h */; };
@@ -119,8 +118,6 @@
 		CD6C9AE121C48762009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
 		CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D813216546B400F43CC7 /* SerializerPropertyName.h */; };
 		CD73D8162165474000F43CC7 /* AbstractSerializerTo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */; };
-		CD73D819216576EE00F43CC7 /* AbstractSerializableCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */; };
-		CD73D81A216576EE00F43CC7 /* AbstractSerializablePtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */; };
 		CD73D8282166D68700F43CC7 /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D81F2166D68700F43CC7 /* Analysis.cpp */; };
 		CD73D8292166D68700F43CC7 /* Analysis.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8202166D68700F43CC7 /* Analysis.h */; };
 		CD73D82A2166D68700F43CC7 /* Cohort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8212166D68700F43CC7 /* Cohort.cpp */; };
@@ -130,6 +127,18 @@
 		CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8252166D68700F43CC7 /* Simulation.cpp */; };
 		CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8262166D68700F43CC7 /* Simulation.h */; };
 		CD73D8302166D68700F43CC7 /* Simulations.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8272166D68700F43CC7 /* Simulations.h */; };
+		CD8BAE3421EBAF0B00B5040E /* SquapVal.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3021EBAF0B00B5040E /* SquapVal.h */; };
+		CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */; };
+		CD8BAE3B21EBC81900B5040E /* SerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3721EBC81900B5040E /* SerializablePtrFactory.h */; };
+		CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3821EBC81900B5040E /* SerializableSharedPtr.h */; };
+		CD8BAE3D21EBC81900B5040E /* SerializableUniquePtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3921EBC81900B5040E /* SerializableUniquePtr.h */; };
+		CD8BAE3F21EBCF5300B5040E /* SquapFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3E21EBCF5300B5040E /* SquapFactory.h */; };
+		CD8BAE4121EBD3A400B5040E /* AbstractSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4021EBD3A400B5040E /* AbstractSquap.h */; };
+		CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD8BAE4221EBD42000B5040E /* SquapFactory.cpp */; };
+		CD8BAE4521EBD46200B5040E /* BinarySquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4421EBD46200B5040E /* BinarySquap.h */; };
+		CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4621EBD46C00B5040E /* UnarySquap.h */; };
+		CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4821EBEB4100B5040E /* SerializableMap.h */; };
+		CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */; };
 		CDB8B3C721AC7DB8004EE816 /* Inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Inventory.h */; };
 		CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C921AC7EBF004EE816 /* SerializableList.h */; };
 		CDB8B3CC21AC9CEC004EE816 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
@@ -265,6 +274,8 @@
 		CDED588A20BD1C5F003A2969 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632320B524A30038EE98 /* main-simulator.cpp */; };
+		CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7981E21EC3010002C4D80 /* FuncSquap.h */; };
+		CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7982121EC30B6002C4D80 /* ConstSquap.h */; };
 		CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */; };
 		CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA235521C24AF300987232 /* TestKeyIDHandler.h */; };
 /* End PBXBuildFile section */
@@ -565,8 +576,6 @@
 		CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = lognosis.xcodeproj; path = "3rd-party/padamose/3rd-party/lognosis/lognosis.xcodeproj"; sourceTree = "<group>"; };
 		CD73D813216546B400F43CC7 /* SerializerPropertyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerPropertyName.h; path = src/volition/serialization/SerializerPropertyName.h; sourceTree = "<group>"; };
 		CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializerTo.h; path = src/volition/serialization/AbstractSerializerTo.h; sourceTree = "<group>"; };
-		CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializableCollection.h; path = src/volition/serialization/AbstractSerializableCollection.h; sourceTree = "<group>"; };
-		CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializablePtr.h; path = src/volition/serialization/AbstractSerializablePtr.h; sourceTree = "<group>"; };
 		CD73D81F2166D68700F43CC7 /* Analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Analysis.cpp; path = src/volition/simulation/Analysis.cpp; sourceTree = "<group>"; };
 		CD73D8202166D68700F43CC7 /* Analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Analysis.h; path = src/volition/simulation/Analysis.h; sourceTree = "<group>"; };
 		CD73D8212166D68700F43CC7 /* Cohort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cohort.cpp; path = src/volition/simulation/Cohort.cpp; sourceTree = "<group>"; };
@@ -577,9 +586,20 @@
 		CD73D8262166D68700F43CC7 /* Simulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Simulation.h; path = src/volition/simulation/Simulation.h; sourceTree = "<group>"; };
 		CD73D8272166D68700F43CC7 /* Simulations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Simulations.h; path = src/volition/simulation/Simulations.h; sourceTree = "<group>"; };
 		CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestSimulation.cpp; path = src/volition/gtest/TestSimulation.cpp; sourceTree = "<group>"; };
-		CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtr.h; path = src/volition/serialization/SerializablePtr.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
+		CD8BAE3021EBAF0B00B5040E /* SquapVal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SquapVal.h; path = src/volition/SquapVal.h; sourceTree = "<group>"; };
+		CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializablePtrFactory.h; path = src/volition/serialization/AbstractSerializablePtrFactory.h; sourceTree = "<group>"; };
+		CD8BAE3721EBC81900B5040E /* SerializablePtrFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtrFactory.h; path = src/volition/serialization/SerializablePtrFactory.h; sourceTree = "<group>"; };
+		CD8BAE3821EBC81900B5040E /* SerializableSharedPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSharedPtr.h; path = src/volition/serialization/SerializableSharedPtr.h; sourceTree = "<group>"; };
+		CD8BAE3921EBC81900B5040E /* SerializableUniquePtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableUniquePtr.h; path = src/volition/serialization/SerializableUniquePtr.h; sourceTree = "<group>"; };
+		CD8BAE3E21EBCF5300B5040E /* SquapFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SquapFactory.h; path = src/volition/SquapFactory.h; sourceTree = "<group>"; };
+		CD8BAE4021EBD3A400B5040E /* AbstractSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSquap.h; path = src/volition/AbstractSquap.h; sourceTree = "<group>"; };
+		CD8BAE4221EBD42000B5040E /* SquapFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SquapFactory.cpp; path = src/volition/SquapFactory.cpp; sourceTree = "<group>"; };
+		CD8BAE4421EBD46200B5040E /* BinarySquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinarySquap.h; path = src/volition/BinarySquap.h; sourceTree = "<group>"; };
+		CD8BAE4621EBD46C00B5040E /* UnarySquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnarySquap.h; path = src/volition/UnarySquap.h; sourceTree = "<group>"; };
+		CD8BAE4821EBEB4100B5040E /* SerializableMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableMap.h; path = src/volition/serialization/SerializableMap.h; sourceTree = "<group>"; };
+		CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerKeys.h; path = src/volition/serialization/SerializerKeys.h; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDB8B3C421AC7DB8004EE816 /* Inventory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Inventory.cpp; path = src/volition/Inventory.cpp; sourceTree = "<group>"; };
 		CDB8B3C521AC7DB8004EE816 /* Inventory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Inventory.h; path = src/volition/Inventory.h; sourceTree = "<group>"; };
@@ -706,6 +726,8 @@
 		CDED586120BA3981003A2969 /* libPocoXML.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoXML.a; path = poco/lib/libPocoXML.a; sourceTree = "<group>"; };
 		CDED586220BA3981003A2969 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
 		CDED589020BD1C5F003A2969 /* server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = server; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDF7981E21EC3010002C4D80 /* FuncSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuncSquap.h; path = src/volition/FuncSquap.h; sourceTree = "<group>"; };
+		CDF7982121EC30B6002C4D80 /* ConstSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConstSquap.h; path = src/volition/ConstSquap.h; sourceTree = "<group>"; };
 		CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyDetailsHandler.h; path = "src/volition/web-miner-api/KeyDetailsHandler.h"; sourceTree = "<group>"; };
 		CDFA235521C24AF300987232 /* TestKeyIDHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestKeyIDHandler.h; path = "src/volition/web-miner-api/TestKeyIDHandler.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -851,9 +873,8 @@
 		CD36664720F72F94000E0B43 /* serialization */ = {
 			isa = PBXGroup;
 			children = (
+				CD8BAE3521EBC80800B5040E /* ptr */,
 				CD36664820F73027000E0B43 /* AbstractSerializable.h */,
-				CD73D817216576EE00F43CC7 /* AbstractSerializableCollection.h */,
-				CD73D818216576EE00F43CC7 /* AbstractSerializablePtr.h */,
 				CD36664920F7304C000E0B43 /* AbstractSerializerFrom.h */,
 				CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */,
 				CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */,
@@ -861,10 +882,11 @@
 				CD36664B20F730AA000E0B43 /* FromJSONSerializer.h */,
 				CD36664E20F73FE4000E0B43 /* JSONSerializer.h */,
 				CDB8B3C921AC7EBF004EE816 /* SerializableList.h */,
-				CD7791FB20F93B1E0058EBAC /* SerializablePtr.h */,
+				CD8BAE4821EBEB4100B5040E /* SerializableMap.h */,
 				CD7791FC20F93B1E0058EBAC /* SerializableSet.h */,
 				CD7791FD20F93B1E0058EBAC /* SerializableVector.h */,
 				CD36664D20F73261000E0B43 /* Serialization.h */,
+				CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */,
 				CD73D813216546B400F43CC7 /* SerializerPropertyName.h */,
 				CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */,
 				CD36664C20F730AA000E0B43 /* ToJSONSerializer.h */,
@@ -887,8 +909,6 @@
 				CDC2B31520CCAD2400300A96 /* Ledger.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
-				CDBFD557218BA145002AB0C3 /* Schema.cpp */,
-				CDBFD558218BA145002AB0C3 /* Schema.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
 				CDC2B34120D1182400300A96 /* TheContext.h */,
 				CD59F3BB20E8950100705AEB /* Policy.cpp */,
@@ -959,6 +979,7 @@
 				CD0C3E0F20C14410006E3B1C /* miner */,
 				CDED587020BCDBD7003A2969 /* router */,
 				CD36664720F72F94000E0B43 /* serialization */,
+				CD8BAE2C21EBAEBE00B5040E /* schema */,
 				CDC2B31A20CE0F8400300A96 /* simulation */,
 				CD6D7CCF21006C9F0005446F /* transaction */,
 				CD4665AF20BFF62600A02D55 /* util */,
@@ -988,6 +1009,34 @@
 				CD59F3DA20E9BEC100705AEB /* TransactionMakerSignature.h */,
 			);
 			name = transaction;
+			sourceTree = "<group>";
+		};
+		CD8BAE2C21EBAEBE00B5040E /* schema */ = {
+			isa = PBXGroup;
+			children = (
+				CD8BAE4021EBD3A400B5040E /* AbstractSquap.h */,
+				CD8BAE4421EBD46200B5040E /* BinarySquap.h */,
+				CDF7982121EC30B6002C4D80 /* ConstSquap.h */,
+				CDBFD557218BA145002AB0C3 /* Schema.cpp */,
+				CDBFD558218BA145002AB0C3 /* Schema.h */,
+				CD8BAE4221EBD42000B5040E /* SquapFactory.cpp */,
+				CD8BAE3E21EBCF5300B5040E /* SquapFactory.h */,
+				CDF7981E21EC3010002C4D80 /* FuncSquap.h */,
+				CD8BAE3021EBAF0B00B5040E /* SquapVal.h */,
+				CD8BAE4621EBD46C00B5040E /* UnarySquap.h */,
+			);
+			name = schema;
+			sourceTree = "<group>";
+		};
+		CD8BAE3521EBC80800B5040E /* ptr */ = {
+			isa = PBXGroup;
+			children = (
+				CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */,
+				CD8BAE3721EBC81900B5040E /* SerializablePtrFactory.h */,
+				CD8BAE3821EBC81900B5040E /* SerializableSharedPtr.h */,
+				CD8BAE3921EBC81900B5040E /* SerializableUniquePtr.h */,
+			);
+			name = ptr;
 			sourceTree = "<group>";
 		};
 		CD9345B92093EB140077BAD4 = {
@@ -1240,36 +1289,42 @@
 				CD4E81B9210593E5007DA585 /* JSONSerializer.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,
-				CD73D819216576EE00F43CC7 /* AbstractSerializableCollection.h in Headers */,
 				CD240D2E21360BD900FF8812 /* ChainMetadata.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
-				CD73D81A216576EE00F43CC7 /* AbstractSerializablePtr.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
+				CD8BAE3421EBAF0B00B5040E /* SquapVal.h in Headers */,
+				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
 				CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */,
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
-				CD4E81BA210593E5007DA585 /* SerializablePtr.h in Headers */,
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
 				CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */,
 				CDB8B3C721AC7DB8004EE816 /* Inventory.h in Headers */,
 				CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */,
 				CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */,
+				CD8BAE3D21EBC81900B5040E /* SerializableUniquePtr.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransaction.h in Headers */,
 				CDBFD54A218B8999002AB0C3 /* KeyPolicy.h in Headers */,
 				CDD36D012162A415004FC222 /* Format.h in Headers */,
+				CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */,
 				CDBFD54B218B8999002AB0C3 /* OpenAccount.h in Headers */,
+				CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */,
 				CDBFD54D218B8999002AB0C3 /* RegisterMiner.h in Headers */,
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
 				CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */,
+				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,
 				CDBFD550218B8999002AB0C3 /* SendVOL.h in Headers */,
 				CD73D8302166D68700F43CC7 /* Simulations.h in Headers */,
 				CDBFD551218B8999002AB0C3 /* TransformAssets.h in Headers */,
 				CDBFD547218B8999002AB0C3 /* AffirmKey.h in Headers */,
 				CDB8B40721ACC874004EE816 /* HTTPRequestHandlerFactory.h in Headers */,
+				CD8BAE4121EBD3A400B5040E /* AbstractSquap.h in Headers */,
+				CD8BAE3B21EBC81900B5040E /* SerializablePtrFactory.h in Headers */,
 				CD73D82D2166D68700F43CC7 /* SimMiner.h in Headers */,
+				CD8BAE3F21EBCF5300B5040E /* SquapFactory.h in Headers */,
 				CD4E8198210593BD007DA585 /* Chain.h in Headers */,
 				CDBFD549218B8999002AB0C3 /* GenesisMiner.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
@@ -1287,13 +1342,17 @@
 				CDB8B40221ACC874004EE816 /* AccountKeyListHandler.h in Headers */,
 				CD4E81D02105941A007DA585 /* TransactionMakerSignature.h in Headers */,
 				CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */,
+				CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
 				CDBFD54E218B8999002AB0C3 /* SellAssets.h in Headers */,
 				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
+				CD8BAE4521EBD46200B5040E /* BinarySquap.h in Headers */,
 				CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */,
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,
+				CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
+				CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
 				CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */,
 				CD73D82B2166D68700F43CC7 /* Cohort.h in Headers */,
@@ -1673,6 +1732,7 @@
 				CD4E81CB2105941A007DA585 /* AbstractTransaction.cpp in Sources */,
 				CD4E81A1210593BD007DA585 /* Policy.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
+				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
 				CD240D2D21360BD900FF8812 /* ChainMetadata.cpp in Sources */,
 				CD73D82C2166D68700F43CC7 /* SimMiner.cpp in Sources */,
 				CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */,

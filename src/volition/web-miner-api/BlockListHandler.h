@@ -26,7 +26,9 @@ public:
 
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         const Chain& chain = scopedLock.getWebMiner ().getChain ();
-        ToJSONSerializer::toJSON ( chain, jsonOut );
+        Poco::Dynamic::Var blocks = ToJSONSerializer::toJSON ( chain );
+        
+        jsonOut.set ( "blocks", blocks );
         
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

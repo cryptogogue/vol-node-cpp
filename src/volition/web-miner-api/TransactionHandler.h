@@ -24,12 +24,11 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-        JSONSerializableTypeInfo typeInfo ( jsonIn );
-        TransactionFactory factory;
-        unique_ptr < AbstractTransaction > transaction = factory.make ( typeInfo );
+        SerializableUniquePtr < AbstractTransaction, TransactionFactory > transaction;
+        FromJSONSerializer::fromJSON ( transaction, jsonIn );
+
         if ( transaction ) {
-            FromJSONSerializer::fromJSON ( *transaction, jsonIn );
-            
+        
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             scopedLock.getWebMiner ().pushTransaction ( move ( transaction ));
             
