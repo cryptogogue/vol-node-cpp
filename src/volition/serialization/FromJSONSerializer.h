@@ -14,7 +14,7 @@ namespace Volition {
 //================================================================//
 class FromJSONSerializer :
     public AbstractSerializerFrom,
-    public JSONSerializer < const Poco::JSON::Array, const Poco::JSON::Object > {
+    public JSONSerializer < const Poco::JSON::Array, const Poco::JSON::Object, const FromJSONSerializer > {
 protected:
 
     //----------------------------------------------------------------//
@@ -44,7 +44,17 @@ protected:
     
         if ( this->mArray ) return KEY_TYPE_INDEX;
         if ( this->mObject ) return KEY_TYPE_STRING;
-        return KEY_TYPE_UNKNOWN;
+        return KEY_TYPE_NONE;
+    }
+
+    //----------------------------------------------------------------//
+    SerializerPropertyName AbstractSerializerFrom_getName () const override {
+        return this->mName;
+    }
+    
+    //----------------------------------------------------------------//
+    const AbstractSerializerFrom* AbstractSerializerFrom_getParent () const override {
+        return this->mParent;
     }
 
     //----------------------------------------------------------------//
@@ -56,6 +66,16 @@ protected:
     //----------------------------------------------------------------//
     bool AbstractSerializerFrom_has ( SerializerPropertyName name ) const override {
         return this->has ( name );
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, bool& value ) const override {
+        value = this->optValue < bool >( name, value );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, double& value ) const override {
+        value = this->optValue < double >( name, value );
     }
 
     //----------------------------------------------------------------//
@@ -97,13 +117,18 @@ protected:
             else if ( tinfo == typeid ( Poco::JSON::Object::Ptr )) {
                 fromJSON ( value, *member.extract < Poco::JSON::Object::Ptr >());
             }
+            else {
+                FromJSONSerializer serializer;
+                serializer.mParent = this;
+                serializer.mName = name;
+                value.serializeFrom ( serializer );
+            }
         }
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, AbstractStringifiable& value ) const override {
-    
-        value.fromString ( this->optValue < string >( name, "" ));
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, Variant& value ) const override {
+        value = Variant ( this->get ( name ));
     }
 
 public:

@@ -5,7 +5,6 @@
 #define VOLITION_TRANSACTIONS_SEND_ASSETS_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
@@ -21,6 +20,7 @@ public:
 
     TRANSACTION_TYPE ( "SEND_ASSETS" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     SerializableVector < AssetIdentifier >          mAssetIdentifiers;
     SerializableVector < BulkAssetIdentifier >      mBulkAssetItdentifiers;

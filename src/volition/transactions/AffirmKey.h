@@ -5,7 +5,6 @@
 #define VOLITION_TRANSACTIONS_AFFIRM_KEY_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
@@ -21,6 +20,7 @@ public:
 
     TRANSACTION_TYPE ( "AFFIRM_KEY" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     string      mKeyName;
     CryptoKey   mKey;

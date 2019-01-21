@@ -75,7 +75,7 @@ const FIELD             = makeFuncOp    ( 'FIELD' );
 const GREATER_THAN      = makeBinaryOp  ( 'GREATER' );
 const GREATER_OR_EQUAL  = makeBinaryOp  ( 'GREATER_OR_EQUAL' );
 const IN                = makeFuncOp    ( 'IN' );
-const IS                = makeFuncOp    ( 'IS' );
+const IS_ASSET          = makeFuncOp    ( 'IS_ASSET' );
 const LESS_OR_EQUAL     = makeBinaryOp  ( 'LESS_OR_EQUAL' );
 const LESS_THAN         = makeBinaryOp  ( 'LESS' );
 const MOD               = makeBinaryOp  ( 'MOD' );
@@ -85,6 +85,42 @@ const NOT_EQUAL         = makeBinaryOp  ( 'NOT_EQUAL' );
 const OR                = makeBinaryOp  ( 'OR' );
 const SUB               = makeBinaryOp  ( 'SUB' );
 const XOR               = makeBinaryOp  ( 'XOR' );
+
+const ARRAY             = 'ARRAY';
+const MUTABLE           = 'MUTABLE';
+const NUMBER            = 'NUMBER';
+const STRING            = 'STRING';
+
+const MEDIA_AUDIO       = 'MEDIA_AUDIO';
+const MEDIA_IMAGE       = 'MEDIA_IMAGE';
+const MEDIA_TEXT        = 'MEDIA_TEXT';
+const MEDIA_VIDEO       = 'MEDIA_VIDEO';
+
+const TEMPLATE = {}
+
+//----------------------------------------------------------------//
+TEMPLATE.NUMERIC_FIELD = function ( array, mutable ) {
+
+        return {
+            type:           'NUMERIC',
+            array:          array ? true : false,
+            mutable:        mutable ? true : false,
+        }
+}
+
+//----------------------------------------------------------------//
+TEMPLATE.STRING_FIELD = function ( array, mutable ) {
+
+        return {
+            type:           'STRING',
+            array:          array ? true : false,
+            mutable:        mutable ? true : false,
+        }
+}
+
+//================================================================//
+// DO IT
+//================================================================//
 
 //----------------------------------------------------------------//
 function jsonEscape ( str ) {
@@ -122,53 +158,91 @@ let schema = {
 
     lua: 'schema.lua',
 
-    classes: {
+    assetTemplates: {
 
-        pack: {
-            displayName:    'Booster Pack',
-        },
-        
-        common: {
-            displayName:    'Common',
-            keywords:       [ 'card', 'common' ],
+        base: {
+            fields: {
+                displayName:    TEMPLATE.STRING_FIELD (),
+            },
         },
 
-        rare: {
-            displayName:    'Rare',
-            keywords:       [ 'card', 'rare' ],
-        },
-
-        ultraRare: {
-            displayName:    'Ultra-Rare',
-            keywords:       [ 'card', 'ulraRare' ],
+        card: {
+            extends: 'base',
+            fields: {
+                keywords:       TEMPLATE.STRING_FIELD ( true ),
+            },
         },
     },
 
-    rules: {
+
+    assetDefinitions: {
+        
+        pack: {
+            implements: 'base',
+            fields: {
+                displayName:    'Booster Pack',
+            },
+        },
+
+        common: {
+            implements: 'base',
+            fields: {
+                displayName:    'Common',
+                keywords:       [ 'card', 'common' ],
+            },
+        },
+
+        rare: {
+            implements: 'base',
+            fields: {
+                displayName:    'Rare',
+                keywords:       [ 'card', 'rare' ],
+            },
+        },
+
+        ultraRare: {
+            base: 'base',
+            implements: {
+                displayName:    'Ultra-Rare',
+                keywords:       [ 'card', 'ulraRare' ],
+            },
+        },
+    },
+
+    methods: {
  
         openPack: {
             description:    'Open a booster pack.',
-            qualifiers:     IS ( 'pack' ),
+            weight:         1,
+            maturity:       2,
+            args: {
+                pack:       IS_ASSET ( 'pack' ),
+            }
         },
 
         makeRare: {
             description:    'Combine two commons to make a rare.',
-            qualifiers:     [
-                IS ( 'common' ),
-                IS ( 'common' ),
-            ],
+            weight:         1,
+            maturity:       2,
+            args:     {
+                common0:    IS_ASSET ( 'common' ),
+                common1:    IS_ASSET ( 'common' ),
+            },
         },
 
         makeUltraRare: {
             description:    'Combine two rares to make an ultra-rare.',
-            qualifiers:     [
-                IS ( 'rare' ),
-                IS ( 'rare' ),
-            ],
+            weight:         1,
+            maturity:       2,
+            args:     {
+                rare0:      IS_ASSET ( 'rare0' ),
+                rare1:      IS_ASSET ( 'rare1' ),
+            },
         },
     },
 }
 
 transaction = makeSchemaTransaction ( schema );
 
-fs.writeFileSync ( 'schema.json', JSON.stringify ( transaction, null, 4 ), 'utf8' );
+fs.writeFileSync ( 'schema.json', JSON.stringify ( schema, null, 4 ), 'utf8' );
+fs.writeFileSync ( 'publish-schema-transaction.json', JSON.stringify ( transaction, null, 4 ), 'utf8' );

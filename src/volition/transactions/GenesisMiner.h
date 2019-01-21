@@ -6,7 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransaction.h>
-#include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -21,6 +20,7 @@ public:
 
     TRANSACTION_TYPE ( "GENESIS_MINER" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     string      mAccountName;
     CryptoKey   mKey;
@@ -58,13 +58,13 @@ public:
     }
     
     //----------------------------------------------------------------//
-    bool AbstractTransaction_checkSignature  ( Ledger& ledger ) const override {
-
-        return ( ledger.getVersion () == 0 );
+    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
     }
     
     //----------------------------------------------------------------//
-    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
+    bool AbstractTransaction_verify  ( const Ledger& ledger ) const override {
+
+        return ( ledger.getVersion () == 0 );
     }
 };
 

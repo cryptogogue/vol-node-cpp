@@ -7,10 +7,11 @@
 #include <volition/common.h>
 
 #include <volition/AbstractTransaction.h>
-#include <volition/Signature.h>
+#include <volition/Entropy.h>
 #include <volition/Ledger.h>
-#include <volition/TheTransactionFactory.h>
 #include <volition/serialization/Serialization.h>
+#include <volition/Signature.h>
+#include <volition/TheTransactionFactory.h>
 
 namespace Volition {
 
@@ -24,6 +25,7 @@ private:
     friend class Context;
     friend class Chain;
     friend class Cycle;
+    friend class Ledger;
 
     string          mMinerID;
     u64             mCycleID;
@@ -32,9 +34,12 @@ private:
     Digest          mAllure; // digital signature of the hash of mCycleID
     Signature       mSignature;
 
+    // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
     SerializableVector < SerializableSharedPtr < AbstractTransaction, TransactionFactory >>     mTransactions;
 
     //----------------------------------------------------------------//
+    void                applyEntropy                        ( Ledger& ledger ) const;
+    size_t              applyTransactions                   ( Ledger& ledger ) const;
     void                setCycleID                          ( size_t cycleID );
     void                setPreviousBlock                    ( const Block& prevBlock );
     bool                verify                              ( const Ledger& ledger ) const;

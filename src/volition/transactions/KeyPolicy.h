@@ -5,7 +5,6 @@
 #define VOLITION_TRANSACTIONS_KEY_POLICY_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
@@ -21,6 +20,7 @@ public:
 
     TRANSACTION_TYPE ( "KEY_POLICY" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     string                                  mPolicyName;
     SerializableUniquePtr < Policy >        mPolicy;

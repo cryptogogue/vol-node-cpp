@@ -140,11 +140,36 @@ private:
 
     unique_ptr < AbstractSortedDigestSerializerContainer > mContainer;
 
+    SortedDigestSerializer*     mParent;
+    SerializerPropertyName      mName;
+
 protected:
+
+    //----------------------------------------------------------------//
+    SerializerPropertyName AbstractSerializerTo_getName () const override {
+        return this->mName;
+    }
+    
+    //----------------------------------------------------------------//
+    AbstractSerializerTo* AbstractSerializerTo_getParent () override {
+        return this->mParent;
+    }
 
     //----------------------------------------------------------------//
     bool AbstractSerializerTo_isDigest () const override {
         return true;
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const bool& value ) override {
+    
+        this->setValue ( name, make_unique < SortedDigestSerializerValue < bool >>( value ));
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const double& value ) override {
+    
+        this->setValue ( name, make_unique < SortedDigestSerializerValue < double >>( value ));
     }
 
     //----------------------------------------------------------------//
@@ -163,14 +188,12 @@ protected:
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
     
         SortedDigestSerializer serializer;
+        serializer.mParent = this;
+        serializer.mName = name;
         value.serializeTo ( serializer );
-        this->setValue ( name, move ( serializer.mContainer ));
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractStringifiable& value ) override {
-    
-        this->setValue ( name, make_unique < SortedDigestSerializerValue < string >>( value.toString ()));
+        if ( serializer.mContainer ) {
+            this->setValue ( name, move ( serializer.mContainer ));
+        }
     }
 
     //----------------------------------------------------------------//
@@ -185,6 +208,28 @@ protected:
             }
         }
         this->mContainer->setValue ( name, move ( value ));
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const Variant& value ) override {
+        
+        switch ( value.mType ) {
+        
+            case Variant::TYPE_BOOL:
+                this->setValue ( name, make_unique < SortedDigestSerializerValue < bool >>( value.mNumeric == 1 ));
+                break;
+            
+            case Variant::TYPE_NUMBER:
+                this->setValue ( name, make_unique < SortedDigestSerializerValue < double >>( value.mNumeric ));
+                break;
+            
+            case Variant::TYPE_STRING:
+                this->setValue ( name, make_unique < SortedDigestSerializerValue < string >>( value.mString ));
+                break;
+                
+            default:
+                break;
+        }
     }
 
 public:

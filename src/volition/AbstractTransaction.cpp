@@ -20,7 +20,8 @@ AbstractTransaction::~AbstractTransaction () {
 //----------------------------------------------------------------//
 bool AbstractTransaction::apply ( Ledger& ledger ) const {
 
-    if (( ledger.getVersion () == 0 ) || ( this->AbstractTransaction_checkSignature ( ledger ))) {
+    // if the trsnaction has a signer, verify () also checks the nonce that prevents from transactions being applied multiple times.
+    if (( ledger.getVersion () == 0 ) || ( this->verify ( ledger ))) {
         if ( this->AbstractTransaction_apply ( ledger )) {
             this->AbstractTransaction_incrementNonce ( ledger );
             return true;
@@ -30,13 +31,23 @@ bool AbstractTransaction::apply ( Ledger& ledger ) const {
 }
 
 //----------------------------------------------------------------//
+u64 AbstractTransaction::maturity () const {
+    return this->AbstractTransaction_maturity ();
+}
+
+//----------------------------------------------------------------//
 string AbstractTransaction::typeString () const {
     return this->AbstractTransaction_typeString ();
 }
 
 //----------------------------------------------------------------//
-size_t AbstractTransaction::weight () const {
+u64 AbstractTransaction::weight () const {
     return this->AbstractTransaction_weight ();
+}
+
+//----------------------------------------------------------------//
+bool AbstractTransaction::verify ( const Ledger& ledger ) const {
+    return this->AbstractTransaction_verify ( ledger );
 }
 
 //================================================================//

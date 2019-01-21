@@ -1,0 +1,18 @@
+{
+    "type":     "INVOKE_SCHEMA_METHOD",
+    "maker" : {
+        "accountName" : "9090",
+        "keyName" : "master",
+        "gratuity" : 0,
+        "nonce" : 0
+    },
+    "schemaName":           "TEST_SCHEMA",
+    "methodName":           "openPack",
+    "weight":               1,
+    "maturity":             2,
+    "assetIdentifiers":     [
+        {
+                "className":    "pack"
+        }
+    ]
+}

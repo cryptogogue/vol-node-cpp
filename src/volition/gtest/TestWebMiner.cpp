@@ -94,6 +94,68 @@ Poco::JSON::Object::Ptr waitServer ( string url ) {
 }
 
 //----------------------------------------------------------------//
+TEST ( WebMiner, asset_transformations ) {
+
+    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
+
+    {
+        Volition::ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+        Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
+
+        webMiner.setLazy ( true );
+        webMiner.setSolo ( true );
+        
+        webMiner.loadKey ( "keys/pkey0.priv.json" );
+        webMiner.loadGenesis ( "genesis.signed" );
+        webMiner.setMinerID ( "9090" );
+        webMiner.start ();
+    }
+    
+    Poco::Net::HTTPServer server ( new WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
+    server.start ();
+
+    Poco::JSON::Object::Ptr json = httpGetJSON ( "http://127.0.0.1:9090/" );
+    ASSERT_FALSE ( json.isNull ());
+    
+    ASSERT_TRUE ( json->getValue < string >( "type" ) == "VOL_MINING_NODE" );
+    ASSERT_TRUE ( json->getValue < string >( "minerID" ) == "9090" );
+
+    json = httpPostJSON ( "http://127.0.0.1:9090/transactions", loadFileAsString ( "test/publish-test-schema.json" ));
+    ASSERT_FALSE ( json.isNull ());
+    waitChainSize ( 2 );
+
+    json = httpGetJSON ( "http://127.0.0.1:9090/accounts/9090/inventory" );
+    ASSERT_FALSE ( json.isNull ());
+    
+    json = json->getObject ( "inventory" );
+    ASSERT_FALSE ( json.isNull ());
+    
+    Inventory inventory;
+    FromJSONSerializer::fromJSON ( inventory, *json );
+    
+    ASSERT_TRUE ( inventory.mAssets.size () == 1 );
+    ASSERT_TRUE ( inventory.mAssets.front ().mClassName == "pack" );
+    ASSERT_TRUE ( inventory.mAssets.front ().mQuantity == 1000 );
+
+    json = httpPostJSON ( "http://127.0.0.1:9090/transactions", loadFileAsString ( "test/open-pack-9090.json" ));
+    ASSERT_FALSE ( json.isNull ());
+    
+    json = httpPostJSON ( "http://127.0.0.1:9090/test/extendChain", "{}" );
+    ASSERT_FALSE ( json.isNull ());
+    
+    waitChainSize ( 3 );
+    
+    json = httpPostJSON ( "http://127.0.0.1:9090/test/extendChain", "{}" );
+    ASSERT_FALSE ( json.isNull ());
+    
+    waitChainSize ( 4 );
+
+    server.stop ();
+
+    TheWebMiner::get ().shutdown ();
+}
+
+//----------------------------------------------------------------//
 TEST ( WebMiner, small_simulation ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
@@ -143,23 +205,6 @@ TEST ( WebMiner, small_simulation ) {
     ASSERT_TRUE ( json->getValue < string >( "accountName" ) == "9091" );
     ASSERT_TRUE ( json->getValue < int >( "balance" ) == 1000100 );
     ASSERT_TRUE ( json->getValue < int >( "nonce" ) == 0 );
-
-    json = httpPostJSON ( "http://127.0.0.1:9090/transactions", loadFileAsString ( "test/publish-schema.json" ));
-    ASSERT_FALSE ( json.isNull ());
-    waitChainSize ( 3 );
-
-    json = httpGetJSON ( "http://127.0.0.1:9090/accounts/9090/inventory" );
-    ASSERT_FALSE ( json.isNull ());
-    
-    json = json->getObject ( "inventory" );
-    ASSERT_FALSE ( json.isNull ());
-    
-    Inventory inventory;
-    FromJSONSerializer::fromJSON ( inventory, *json );
-    
-    ASSERT_TRUE ( inventory.mAssets.size () == 1 );
-    ASSERT_TRUE ( inventory.mAssets.front ().mClassName == "pack" );
-    ASSERT_TRUE ( inventory.mAssets.front ().mQuantity == 1000 );
 
     server.stop ();
 

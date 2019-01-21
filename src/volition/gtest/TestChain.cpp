@@ -46,7 +46,7 @@ public:
     //----------------------------------------------------------------//
     void pushMinerGenesisTransaction ( Block& block ) {
         
-        unique_ptr < Transaction::GenesisMiner > genesisMinerTransaction = make_unique < Transaction::GenesisMiner >();
+        unique_ptr < Transactions::GenesisMiner > genesisMinerTransaction = make_unique < Transactions::GenesisMiner >();
         
         genesisMinerTransaction->mAccountName   = this->mMinerID;
         genesisMinerTransaction->mKey           = this->mKeyPair;

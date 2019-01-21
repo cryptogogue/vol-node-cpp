@@ -5,7 +5,6 @@
 #define VOLITION_TRANSACTIONS_OPEN_POLICY_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
@@ -21,6 +20,7 @@ public:
 
     TRANSACTION_TYPE ( "OPEN_ACCOUNT" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     string      mAccountName;   // user provided name of account
     CryptoKey   mKey;           // master key

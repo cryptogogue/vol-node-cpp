@@ -5,7 +5,6 @@
 #define VOLITION_TRANSACTIONS_PUBLISH_SCHEMA_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Schema.h>
 
@@ -16,18 +15,19 @@ namespace Transactions {
 // PublishSchema
 //================================================================//
 class PublishSchema :
-    public AbstractTransaction {
+    public AbstractSingleSignerTransaction {
 public:
 
     TRANSACTION_TYPE ( "PUBLISH_SCHEMA" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     string                                  mSchemaName;
     string                                  mJSON;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
@@ -35,7 +35,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "json",          this->mJSON );
@@ -44,13 +44,10 @@ public:
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
-        return ledger.publishSchema ( this->mSchemaName, this->mJSON );
-    }
-    
-    //----------------------------------------------------------------//
-    bool AbstractTransaction_checkSignature  ( Ledger& ledger ) const override {
-
-        return true;
+        Schema schema;
+        FromJSONSerializer::fromJSON ( schema, this->mJSON  );
+        
+        return ledger.publishSchema ( this->mSchemaName, schema );
     }
     
     //----------------------------------------------------------------//

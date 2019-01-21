@@ -20,58 +20,58 @@ public:
     SerializableSharedPtr < AbstractSquap, SquapFactory >   mRight;
     
     //----------------------------------------------------------------//
-    SquapVal AbstractSquap_evaluate () const override {
+    Variant AbstractSquap_evaluate () const override {
         
-        if ( !( this->mLeft && this->mRight )) return SquapVal ();
+        if ( !( this->mLeft && this->mRight )) return Variant ();
         
         const AbstractSquap& lval = *this->mLeft;
         const AbstractSquap& rval = *this->mRight;
         
         switch ( this->mOpCode ) {
             case AND:
-                return SquapVal::booleanAnd ( lval, rval );
+                return Variant::booleanAnd ( lval, rval );
                 
             case ADD:
-                return SquapVal::add ( lval, rval );
+                return Variant::add ( lval, rval );
                 
             case DIV:
-                return SquapVal::div ( lval, rval );
+                return Variant::div ( lval, rval );
                 
             case EQUAL:
-                return SquapVal::equal ( lval, rval );
+                return Variant::equal ( lval, rval );
                 
             case GREATER:
-                return SquapVal::greater ( lval, rval );
+                return Variant::greater ( lval, rval );
                 
             case GREATER_OR_EQUAL:
-                return SquapVal::greaterOrEqual ( lval, rval );
+                return Variant::greaterOrEqual ( lval, rval );
             
             case LESS:
-                return SquapVal::less ( lval, rval );
+                return Variant::less ( lval, rval );
             
             case LESS_OR_EQUAL:
-                return SquapVal::lessOrEqual ( lval, rval );
+                return Variant::lessOrEqual ( lval, rval );
                 
             case MOD:
-                return SquapVal::mod ( lval, rval );
+                return Variant::mod ( lval, rval );
                 
             case MUL:
-                return SquapVal::mul ( lval, rval );
+                return Variant::mul ( lval, rval );
                 
             case NOT_EQUAL:
-                return SquapVal::notEqual ( lval, rval );
+                return Variant::notEqual ( lval, rval );
                 
             case OR:
-                return SquapVal::booleanOr ( lval, rval );
+                return Variant::booleanOr ( lval, rval );
                 
             case SUB:
-                return SquapVal::sub ( lval, rval );
+                return Variant::sub ( lval, rval );
                 
             case XOR:
-                return SquapVal::booleanXor ( lval, rval );
+                return Variant::booleanXor ( lval, rval );
             
             default:
-                return SquapVal ();
+                return Variant ();
         };
     }
     

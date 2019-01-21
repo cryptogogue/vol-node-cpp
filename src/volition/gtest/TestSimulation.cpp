@@ -20,6 +20,6 @@ TEST ( Simulation, simple_simulation ) {
     
     Volition::Simulation::SimpleSimulation simulation;
     simulation.run ( 256 );
-    float percent = simulation.getAnalysis ().getLevelPercent ( 0 );
+//    float percent = simulation.getAnalysis ().getLevelPercent ( 0 );
     ASSERT_TRUE ( simulation.getAnalysis ().getLevelPercent ( 0 ) >= 0.9 );
 }

@@ -6,7 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
-#include <volition/serialization/AbstractStringifiable.h>
 #include <volition/serialization/SerializerPropertyName.h>
 
 namespace Volition {
@@ -18,13 +17,27 @@ class AbstractSerializerTo {
 protected:
 
     //----------------------------------------------------------------//
-    virtual bool        AbstractSerializerTo_isDigest       () const = 0;
-    virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const u64& value ) = 0;
-    virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const string& value ) = 0;
-    virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;
-    virtual void        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractStringifiable& value ) = 0;
+    virtual SerializerPropertyName      AbstractSerializerTo_getName        () const = 0;
+    virtual AbstractSerializerTo*       AbstractSerializerTo_getParent      () = 0;
+    virtual bool                        AbstractSerializerTo_isDigest       () const = 0;
+    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const bool& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const double& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const u64& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const string& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const Variant& value ) = 0;
 
 public:
+    
+    //----------------------------------------------------------------//
+    SerializerPropertyName getName () const {
+        return AbstractSerializerTo_getName ();
+    }
+    
+    //----------------------------------------------------------------//
+    AbstractSerializerTo* getParent () {
+        return AbstractSerializerTo_getParent ();
+    }
     
     //----------------------------------------------------------------//
     bool isDigest () {

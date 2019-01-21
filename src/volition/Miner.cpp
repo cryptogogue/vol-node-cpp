@@ -21,7 +21,9 @@ void Miner::addTransactions ( Chain& chain, Block& block ) {
     list < shared_ptr < AbstractTransaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
     for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {
         shared_ptr < AbstractTransaction > transaction = *transactionIt;
-        if ( transaction->apply ( ledger )) {
+        
+        // TODO: don't need to fully apply; should just check nonce and then sig
+        if ( transaction->verify ( ledger )) {
             block.pushTransaction ( transaction );
         }
     }
@@ -49,6 +51,12 @@ size_t Miner::computeScore ( const Digest& allure ) const {
 }
 
 //----------------------------------------------------------------//
+void Miner::extendChain () {
+
+    this->pushBlock ( this->mChain, true );
+}
+
+//----------------------------------------------------------------//
 const Chain& Miner::getChain () const {
 
     return this->mChain;
@@ -61,15 +69,21 @@ size_t Miner::getChainSize () const {
 }
 
 //----------------------------------------------------------------//
-string Miner::getMinerID () const {
+bool Miner::getLazy () const {
 
-    return this->mMinerID;
+    return this->mLazy;
 }
 
 //----------------------------------------------------------------//
 const Ledger& Miner::getLedger () const {
 
     return this->mChain;
+}
+
+//----------------------------------------------------------------//
+string Miner::getMinerID () const {
+
+    return this->mMinerID;
 }
 
 //----------------------------------------------------------------//

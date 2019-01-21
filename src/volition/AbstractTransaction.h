@@ -18,9 +18,15 @@ namespace Volition {
     }
 
 #define TRANSACTION_WEIGHT(weight)                              \
-    static constexpr size_t WEIGHT = weight;                    \
-    size_t AbstractTransaction_weight () const override {       \
+    static constexpr u64 WEIGHT = weight;                       \
+    u64 AbstractTransaction_weight () const override {          \
         return WEIGHT;                                          \
+    }
+
+#define TRANSACTION_MATURITY(maturity)                          \
+    static constexpr u64 MATURITY = maturity;                   \
+    u64 AbstractTransaction_maturity () const override {        \
+        return MATURITY;                                        \
     }
 
 //================================================================//
@@ -36,10 +42,12 @@ protected:
 
     //----------------------------------------------------------------//
     virtual bool            AbstractTransaction_apply               ( Ledger& ledger ) const = 0;
-    virtual bool            AbstractTransaction_checkSignature      ( Ledger& ledger ) const = 0;
+//    virtual bool            AbstractTransaction_checkSignature      ( const Ledger& ledger ) const = 0;
     virtual void            AbstractTransaction_incrementNonce      ( Ledger& ledger ) const = 0;
+    virtual u64             AbstractTransaction_maturity            () const = 0;
     virtual string          AbstractTransaction_typeString          () const = 0;
-    virtual size_t          AbstractTransaction_weight              () const = 0;
+    virtual u64             AbstractTransaction_weight              () const = 0;
+    virtual bool            AbstractTransaction_verify              ( const Ledger& ledger ) const = 0;
 
 public:
 
@@ -47,8 +55,10 @@ public:
                             AbstractTransaction                     ();
                             ~AbstractTransaction                    ();
     bool                    apply                                   ( Ledger& ledger ) const;
+    u64                     maturity                                () const;
     string                  typeString                              () const;
-    size_t                  weight                                  () const;
+    u64                     weight                                  () const;
+    bool                    verify                                  ( const Ledger& ledger ) const;
 };
 
 } // namespace Volition

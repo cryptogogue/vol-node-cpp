@@ -6,7 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransaction.h>
-#include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -21,6 +20,7 @@ public:
 
     TRANSACTION_TYPE ( "SELL_ASSETS" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     SerializableUniquePtr < TransactionMakerSignature >     mBuyerSignature;
     SerializableUniquePtr < TransactionMakerSignature >     mSellerSignature;
@@ -60,19 +60,19 @@ public:
     }
     
     //----------------------------------------------------------------//
-    bool AbstractTransaction_checkSignature  ( Ledger& ledger ) const override {
+    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
+
+        ledger.incrementNonce ( this->mBuyerSignature.get ());
+        ledger.incrementNonce ( this->mSellerSignature.get ());
+    }
+    
+    //----------------------------------------------------------------//
+    bool AbstractTransaction_verify  ( const Ledger& ledger ) const override {
 
         const TransactionMakerSignature* buyerSignature = this->mBuyerSignature.get ();
         const TransactionMakerSignature* sellerSignature = this->mSellerSignature.get ();
         
         return ( buyerSignature && sellerSignature && ledger.checkMakerSignature ( buyerSignature ) && ledger.checkMakerSignature ( sellerSignature ));
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
-
-        ledger.incrementNonce ( this->mBuyerSignature.get ());
-        ledger.incrementNonce ( this->mSellerSignature.get ());
     }
 };
 

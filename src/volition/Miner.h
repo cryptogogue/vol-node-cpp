@@ -35,7 +35,7 @@ protected:
 
     Chain                                           mChain;
     ChainMetadata                                   mMetadata;
-    
+        
     //----------------------------------------------------------------//
     void                    addTransactions         ( Chain& chain, Block& block );
     Digest                  computeAllure           ( size_t cycleID ) const;
@@ -50,12 +50,14 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+    void                    extendChain             ();
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
     const Chain&            getChain                () const;
     size_t                  getChainSize            () const;
-    string                  getMinerID              () const;
+    bool                    getLazy                 () const;
     const Ledger&           getLedger               () const;
+    string                  getMinerID              () const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
     void                    setChainPath            ( string path );
     void                    setGenesis              ( const Block& block );

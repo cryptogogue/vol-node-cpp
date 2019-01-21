@@ -90,7 +90,6 @@ private:
 
 public:
 
-    static constexpr const char* BLOCK_KEY      = "block";
     static constexpr const char* CYCLE_KEY      = "cycle";
 
     enum class UpdateResult {
@@ -108,8 +107,6 @@ public:
     size_t                      countBlocks         ( size_t cycleIdx ) const;
     size_t                      countCycles         () const;
     ChainPlacement              findNextCycle       ( ChainMetadata& metaData, string minerID ) const;
-    VersionedValue < Block >    getBlock            ( size_t height ) const;
-    VersionedValue < Block >    getTopBlock         () const;
     void                        prepareForPush      ( ChainMetadata& metaData, const ChainPlacement& placement, Block& block );
     string                      print               ( const char* pre = NULL, const char* post = NULL ) const;
     string                      print               ( const ChainMetadata& metaData, const char* pre = NULL, const char* post = NULL ) const;

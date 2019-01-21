@@ -22,5 +22,6 @@
 #include <volition/serialization/FromJSONSerializer.h>
 #include <volition/serialization/SortedDigestSerializer.h>
 #include <volition/serialization/ToJSONSerializer.h>
+#include <volition/serialization/Variant.h>
 
 #endif

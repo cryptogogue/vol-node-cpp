@@ -19,11 +19,11 @@ public:
     SerializableSharedPtr < AbstractSquap, SquapFactory >   mOperand;
     
     //----------------------------------------------------------------//
-    SquapVal AbstractSquap_evaluate () const override {
+    Variant AbstractSquap_evaluate () const override {
         
         assert ( this->mOpCode == NOT );
-        if ( this->mOperand ) return SquapVal::booleanNot ( !this->mOperand );
-        return SquapVal ();
+        if ( this->mOperand ) return Variant::booleanNot ( !this->mOperand );
+        return Variant ();
     }
     
     //----------------------------------------------------------------//

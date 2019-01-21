@@ -4,14 +4,16 @@
 #ifndef VOLITION_SERIALIZATION_ABSTRACTSTRINGIFIABLE_H
 #define VOLITION_SERIALIZATION_ABSTRACTSTRINGIFIABLE_H
 
-#include <volition/common.h>
+#include <volition/serialization/AbstractSerializerFrom.h>
+#include <volition/serialization/AbstractSerializerTo.h>
 
 namespace Volition {
 
 //================================================================//
 // AbstractStringifiable
 //================================================================//
-class AbstractStringifiable {
+class AbstractStringifiable :
+    virtual public AbstractSerializable {
 protected:
 
     //----------------------------------------------------------------//
@@ -58,6 +60,26 @@ public:
     //----------------------------------------------------------------//
     operator string () const {
         return this->toString ();
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        const AbstractSerializerFrom* parent = serializer.getParent ();
+        if ( parent ) {
+            string value;
+            parent->serialize ( serializer.getName (), value );
+            this->fromString ( value );
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        AbstractSerializerTo* parent = serializer.getParent ();
+        if ( parent ) {
+            parent->serialize ( serializer.getName (), this->toString ());
+        }
     }
 };
 

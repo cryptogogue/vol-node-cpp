@@ -6,7 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
-#include <volition/serialization/AbstractStringifiable.h>
 
 namespace Volition {
 
@@ -40,6 +39,12 @@ public:
     }
 
     //----------------------------------------------------------------//
+    SerializerPropertyName () :
+        mIsIndex ( true ),
+        mIndex (( size_t )-1 ) {
+    }
+
+    //----------------------------------------------------------------//
     SerializerPropertyName ( size_t index ) :
         mIsIndex ( true ),
         mIndex ( index ) {
@@ -48,12 +53,14 @@ public:
     //----------------------------------------------------------------//
     SerializerPropertyName ( const char* name ) :
         mIsIndex ( false ),
+        mIndex ( 0 ),
         mName ( name ) {
     }
     
     //----------------------------------------------------------------//
     SerializerPropertyName ( string name ) :
         mIsIndex ( false ),
+        mIndex ( 0 ),
         mName ( name ) {
     }
 };

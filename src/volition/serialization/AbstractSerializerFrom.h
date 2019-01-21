@@ -6,9 +6,9 @@
 
 #include <volition/common.h>
 #include <volition/serialization/AbstractSerializable.h>
-#include <volition/serialization/AbstractStringifiable.h>
 #include <volition/serialization/SerializerKeys.h>
 #include <volition/serialization/SerializerPropertyName.h>
+#include <volition/serialization/Variant.h>
 
 namespace Volition {
 
@@ -27,20 +27,24 @@ public:
     enum KeyType {
         KEY_TYPE_INDEX,
         KEY_TYPE_STRING,
-        KEY_TYPE_UNKNOWN,
+        KEY_TYPE_NONE,
     };
 
 protected:
 
     //----------------------------------------------------------------//
-    virtual SerializerKeys      AbstractSerializerFrom_getKeys          () const = 0;
-    virtual KeyType             AbstractSerializerFrom_getKeyType       () const = 0;
-    virtual size_t              AbstractSerializerFrom_getSize          () const = 0;
-    virtual bool                AbstractSerializerFrom_has              ( SerializerPropertyName name ) const = 0;
-    virtual void                AbstractSerializerFrom_serialize        ( SerializerPropertyName name, u64& value ) const = 0;
-    virtual void                AbstractSerializerFrom_serialize        ( SerializerPropertyName name, string& value ) const = 0;
-    virtual void                AbstractSerializerFrom_serialize        ( SerializerPropertyName name, AbstractSerializable& value ) const = 0;
-    virtual void                AbstractSerializerFrom_serialize        ( SerializerPropertyName name, AbstractStringifiable& value ) const = 0;
+    virtual SerializerKeys                  AbstractSerializerFrom_getKeys          () const = 0;
+    virtual KeyType                         AbstractSerializerFrom_getKeyType       () const = 0;
+    virtual SerializerPropertyName          AbstractSerializerFrom_getName          () const = 0;
+    virtual const AbstractSerializerFrom*   AbstractSerializerFrom_getParent        () const = 0;
+    virtual size_t                          AbstractSerializerFrom_getSize          () const = 0;
+    virtual bool                            AbstractSerializerFrom_has              ( SerializerPropertyName name ) const = 0;
+    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, bool& value ) const = 0;
+    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, double& value ) const = 0;
+    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, u64& value ) const = 0;
+    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, string& value ) const = 0;
+    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, AbstractSerializable& value ) const = 0;
+    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, Variant& value ) const = 0;
 
 public:
     
@@ -55,10 +59,20 @@ public:
     }
     
     //----------------------------------------------------------------//
+    SerializerPropertyName getName () const {
+        return AbstractSerializerFrom_getName ();
+    }
+    
+    //----------------------------------------------------------------//
+    const AbstractSerializerFrom* getParent () const {
+        return AbstractSerializerFrom_getParent ();
+    }
+    
+    //----------------------------------------------------------------//
     size_t getSize () const {
         return this->AbstractSerializerFrom_getSize ();
     }
-
+    
     //----------------------------------------------------------------//
     template < typename TYPE >
     void serialize ( SerializerPropertyName name, TYPE& value ) const {

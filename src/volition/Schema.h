@@ -11,20 +11,22 @@
 namespace Volition {
 
 //================================================================//
-// SchemaClass
+// SchemaAssetTemplateField
 //================================================================//
-class SchemaClass :
+class SchemaAssetTemplateField :
      public AbstractSerializable {
 public:
 
-    string                              mDisplayName;       // friendly name for the class.
-    SerializableSet < string >          mKeyWords;          // array of keywords.
+    string              mType;
+    bool                mArray;
+    bool                mMutable;
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "displayName",       this->mDisplayName );
-        serializer.serialize ( "keywords",          this->mKeyWords );
+        serializer.serialize ( "type",              this->mType );
+        serializer.serialize ( "array",             this->mArray );
+        serializer.serialize ( "mutable",           this->mMutable );
     }
     
     //----------------------------------------------------------------//
@@ -34,20 +36,70 @@ public:
 };
 
 //================================================================//
-// SchemaRule
+// SchemaAssetTemplate
 //================================================================//
-class SchemaRule :
+class SchemaAssetTemplate :
      public AbstractSerializable {
 public:
 
-    string                                                                          mDescription;       // friendly description for the rule.
-    SerializableVector < SerializableSharedPtr < AbstractSquap, SquapFactory >>     mQualifiers;        // list of qualifier trees.
+    string                                                  mExtends;
+    SerializableMap < string, SchemaAssetTemplateField >    mFields;
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "extends",           this->mExtends );
+        serializer.serialize ( "fields",            this->mFields );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        assert ( false ); // unsupported
+    }
+};
+
+//================================================================//
+// SchemaAsset
+//================================================================//
+class SchemaAsset :
+     public AbstractSerializable {
+public:
+
+    string                                                      mImplements;
+    SerializableMap < string, SerializableVector < Variant >>   mFields;
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "implements",        this->mImplements );
+        serializer.serialize ( "fields",            this->mFields );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        assert ( false ); // unsupported
+    }
+};
+
+//================================================================//
+// SchemaMethod
+//================================================================//
+class SchemaMethod :
+     public AbstractSerializable {
+public:
+
+    string                                                                              mDescription;       // friendly description for the rule.
+    u64                                                                                 mWeight;
+    u64                                                                                 mMaturity;
+    SerializableMap < string, SerializableSharedPtr < AbstractSquap, SquapFactory >>    mArgs;        // list of qualifier trees.
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
         serializer.serialize ( "description",       this->mDescription );
-        serializer.serialize ( "qualifiers",        this->mQualifiers );
+        serializer.serialize ( "weight",            this->mWeight );
+        serializer.serialize ( "maturity",          this->mMaturity );
+        serializer.serialize ( "args",              this->mArgs );
     }
     
     //----------------------------------------------------------------//
@@ -64,29 +116,28 @@ class Schema :
 private:
 
     friend class Ledger;
+    friend class SchemaLua;
 
     string          mName;
-    lua_State*      mLuaState;
 
-    SerializableMap < string, SchemaClass >     mClasses;
-    SerializableMap < string, SchemaRule >      mRules;
+    SerializableMap < string, SchemaAssetTemplate >     mAssetTemplates;
+    SerializableMap < string, SchemaAsset >             mAssetDefinitions;
+    SerializableMap < string, SchemaMethod >            mMethods;
 
-    //----------------------------------------------------------------//
-    static int      _awardAsset         ( lua_State* L );
-
-    //----------------------------------------------------------------//
-    void            miningReward        ( Ledger& ledger, string rewardName );
-    void            publish             ( Ledger& ledger );
-    void            runRule             ( Ledger& ledger, string ruleName, AssetIdentifier* assets, size_t nAssets );
+    string          mLua;
 
     //----------------------------------------------------------------//
-    void            AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void            AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    const SchemaMethod*     getMethod           ( string name ) const;
+
+    //----------------------------------------------------------------//
+    void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
     //----------------------------------------------------------------//
-                    Schema             ();
+                            Schema              ();
+    bool                    verifyMethod        ( string methodName, u64 weight, u64 maturity ) const;
 };
 
 } // namespace Volition

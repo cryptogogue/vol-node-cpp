@@ -1,10 +1,10 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/Schema.h>
+#include <volition/Block.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
-#include <volition/Schema.h>
+#include <volition/SchemaLua.h>
 #include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
@@ -135,6 +135,23 @@ AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
 }
 
 //----------------------------------------------------------------//
+VersionedValue < Block > Ledger::getBlock ( size_t height ) const {
+
+    VersionedStore snapshot ( *this );
+    if ( height < snapshot.getVersion ()) {
+        snapshot.revert ( height );
+    }
+    return VersionedValue < Block >( snapshot, BLOCK_KEY );
+}
+
+//----------------------------------------------------------------//
+Entropy Ledger::getEntropy () {
+
+    VersionedValue < Entropy > entropy ( *this, ENTROPY );
+    return entropy ? *entropy : Entropy ();
+}
+
+//----------------------------------------------------------------//
 string Ledger::getInventoryKey ( string accountName ) {
 
     return Format::write ( INVENTORY_KEY_FMT_S, accountName.c_str ());
@@ -200,6 +217,18 @@ string Ledger::getSchemaKey ( int schemaCount ) {
 }
 
 //----------------------------------------------------------------//
+string Ledger::getSchemaNameKey ( string schemaName ) {
+
+    return Format::write ( "%s%s", SCHEMA_PREFIX, schemaName.c_str ());
+}
+
+//----------------------------------------------------------------//
+VersionedValue < Schema > Ledger::getSchema ( string schemaName ) const {
+
+    return VersionedValue < Schema >( *this, Ledger::getSchemaNameKey ( schemaName ));
+}
+
+//----------------------------------------------------------------//
 //list < Schema > Ledger::getSchemas () const {
 //
 //    list < Schema > schemaList;
@@ -210,6 +239,19 @@ string Ledger::getSchemaKey ( int schemaCount ) {
 //    }
 //    return schemaList;
 //}
+
+//----------------------------------------------------------------//
+VersionedValue < Block > Ledger::getTopBlock () const {
+
+    return VersionedValue < Block >( *this, BLOCK_KEY );
+}
+
+//----------------------------------------------------------------//
+UnfinishedBlockList Ledger::getUnfinished () {
+
+    VersionedValue < UnfinishedBlockList > unfinished ( *this, UNFINISHED );
+    return unfinished ? *unfinished : UnfinishedBlockList ();
+}
 
 //----------------------------------------------------------------//
 void Ledger::incrementNonce ( const TransactionMakerSignature* makerSignature ) {
@@ -232,6 +274,21 @@ void Ledger::incrementNonce ( const TransactionMakerSignature* makerSignature ) 
 bool Ledger::keyPolicy ( string accountName, string policyName, const Policy* policy ) {
 
     return true;
+}
+
+//----------------------------------------------------------------//
+Ledger::Ledger () {
+
+    this->reset ();
+}
+
+//----------------------------------------------------------------//
+Ledger::Ledger ( Ledger& other ) :
+    VersionedStore ( other ) {
+}
+
+//----------------------------------------------------------------//
+Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
@@ -263,22 +320,22 @@ string Ledger::prefixKey ( string prefix, string key ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::publishSchema ( string schemaName, string json ) {
+bool Ledger::publishSchema ( string schemaName, const Schema& schema ) {
 
-    if ( this->hasValue < string >( schemaName )) return false;
+    schemaName = Ledger::getSchemaNameKey ( schemaName );
 
-    Schema schema;
-    FromJSONSerializer::fromJSON ( schema, json );
+    if ( this->hasValue < Schema >( schemaName )) return false;
 
     int schemaCount = this->getValue < int >( SCHEMA_COUNT );
     
     string schemaKey = Ledger::getSchemaKey ( schemaCount );
 
-    this->setValue < string >( schemaKey, json );
-    this->setValue < string >( schemaName, schemaKey );
+    this->setValue < string >( schemaKey, schemaName );
+    this->setValue < Schema >( schemaName, schema );
     this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
 
-    schema.publish ( *this );
+    SchemaLua schemaLua ( schema );
+    schemaLua.publish ( *this );
     
     return true;
 }
@@ -343,24 +400,27 @@ void Ledger::setAccount ( string accountName, const Account& account ) {
 }
 
 //----------------------------------------------------------------//
+void Ledger::setBlock ( const Block& block ) {
+    assert ( block.mHeight == this->getVersion ());
+    this->setValue < Block >( BLOCK_KEY, block );
+}
+
+//----------------------------------------------------------------//
+void Ledger::setEntropy ( const Entropy& entropy ) {
+
+    this->setValue < Entropy >( ENTROPY, entropy );
+}
+
+//----------------------------------------------------------------//
 void Ledger::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
 
     this->setValue < MinerInfo >( prefixKey ( ACCOUNT, accountName ), minerInfo );
 }
 
 //----------------------------------------------------------------//
-Ledger::Ledger () {
+void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
-    this->reset ();
-}
-
-//----------------------------------------------------------------//
-Ledger::Ledger ( Ledger& other ) :
-    VersionedStore ( other ) {
-}
-
-//----------------------------------------------------------------//
-Ledger::~Ledger () {
+    this->setValue < UnfinishedBlockList >( UNFINISHED, unfinished );
 }
 
 //================================================================//

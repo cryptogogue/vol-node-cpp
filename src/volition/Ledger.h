@@ -5,15 +5,38 @@
 #define VOLITION_LEDGER_H
 
 #include <volition/common.h>
+#include <volition/Entropy.h>
 #include <volition/Inventory.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
+class Block;
 class Policy;
 class Schema;
 class TransactionMakerSignature;
+
+//================================================================//
+// UnfinishedBlock
+//================================================================//
+class UnfinishedBlock {
+public:
+
+    size_t      mBlockID;       // ID of the block containing unfinished transactions
+    size_t      mMaturity;      // Height of the chain when transactions should be applied
+};
+
+//================================================================//
+// UnfinishedBlockList
+//================================================================//
+class UnfinishedBlockList {
+public:
+
+    typedef list < UnfinishedBlock >::const_iterator    Iterator;
+
+    list < UnfinishedBlock >    mBlocks;
+};
 
 //================================================================//
 // KeyInfo
@@ -121,22 +144,28 @@ private:
 //================================================================//
 class Ledger :
     public VersionedStore {
-private:
+public:
 
     static constexpr const char* ACCOUNT            = "account";
+    static constexpr const char* BLOCK_KEY          = "block";
     static constexpr const char* KEY_ID             = "keyID.";
+    static constexpr const char* ENTROPY            = "entropy";
     static constexpr const char* MINERS             = "miners";
     static constexpr const char* MINER_INFO         = "minerInfo";
     static constexpr const char* MINER_URLS         = "minerUrls";
     static constexpr const char* SCHEMA_COUNT       = "schemaCount";
     static constexpr const char* SCHEMA_PREFIX      = "schema.";
+    static constexpr const char* UNFINISHED         = "unfinished";
 
     static constexpr const char* INVENTORY_KEY_FMT_S        = "%s.inventory";
     //static constexpr const char* ASSET_INSTANCE_KEY_FMT_SSD     = "%s.inventory.%s.%d";
 
+protected:
+
     //----------------------------------------------------------------//
     static string                   getInventoryKey         ( string accountName );
     static string                   getSchemaKey            ( int schemaCount );
+    static string                   getSchemaNameKey        ( string schemaName );
     static string                   prefixKey               ( string prefix, string key );
     void                            setAccount              ( string accountName, const Account& account );
     void                            setMinerInfo            ( string accountName, const MinerInfo& minerInfo );
@@ -154,19 +183,27 @@ public:
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     VersionedValue < Account >      getAccount              ( string accountName ) const;
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
+    VersionedValue < Block >        getBlock                ( size_t height ) const;
+    VersionedValue < Block >        getTopBlock             () const;
+    Entropy                         getEntropy              ();
     Inventory                       getInventory            ( string accountName ) const;
     VersionedValue < KeyInfo >      getKeyInfo              ( string keyID ) const;
     VersionedValue < MinerInfo >    getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
     MinerURLMap                     getMinerURLs            () const;
+    VersionedValue < Schema >       getSchema               ( string schemaName ) const;
     //list < Schema >                 getSchemas              () const;
+    UnfinishedBlockList             getUnfinished           ();
     void                            incrementNonce          ( const TransactionMakerSignature* makerSignature );
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
     bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
-    bool                            publishSchema           ( string schemaName, string json );
+    bool                            publishSchema           ( string schemaName, const Schema& schema );
     bool                            registerMiner           ( string accountName, string keyName, string url );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
+    void                            setBlock                ( const Block& block );
+    void                            setEntropy              ( const Entropy& entropy );
+    void                            setUnfinished           ( const UnfinishedBlockList& unfinished );
                                     Ledger                  ();
                                     Ledger                  ( Ledger& other );
                                     ~Ledger                 ();

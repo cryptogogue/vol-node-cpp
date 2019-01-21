@@ -68,7 +68,7 @@ void SimMiner::step () {
 
     if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
         this->resetMinerQueue ();
-        this->pushBlock ( this->mChain, true );
+        this->extendChain ();
     }
     
     const SimMiner* miner = this->nextMiner ();

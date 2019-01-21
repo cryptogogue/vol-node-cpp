@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_INVENTORYHANDLER_H
-#define VOLITION_WEBMINERAPI_INVENTORYHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_EXTENDCHAINHANDLER_H
+#define VOLITION_WEBMINERAPI_EXTENDCHAINHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
@@ -13,40 +13,25 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// InventoryHandler
+// ExtendChainHandler
 //================================================================//
-class InventoryHandler :
+class ExtendChainHandler :
     public AbstractAPIRequestHandler {
 public:
 
-    SUPPORTED_HTTP_METHODS ( HTTP_GET )
+    SUPPORTED_HTTP_METHODS ( HTTP_POST )
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-        try {
-            string accountName = this->getMatchString ( "accountName" );
-        
+        try {        
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-        
-            Inventory inventory = ledger.getInventory ( accountName );
-        
-            Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
-        
-            jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Object::Ptr >());
+            WebMiner& webMiner = scopedLock.getWebMiner ();
             
-            try {
-                stringstream outStream;
-                jsonOut.stringify ( outStream, 4, -1 );
-                outStream.flush ();
-                
-                printf ( "%s\n", outStream.str ().c_str ());
-            }
-            catch ( Poco::Exception e ) {
-            
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "EXCEPT" );
-            }
+            bool lazy = webMiner.getLazy ();
+            webMiner.setLazy ( false );
+            webMiner.extendChain ();
+            webMiner.setLazy ( lazy );
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

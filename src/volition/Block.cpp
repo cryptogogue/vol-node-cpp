@@ -17,13 +17,98 @@ bool Block::apply ( Ledger& ledger ) const {
     if ( ledger.getVersion () != this->mHeight ) return false;
     if ( !this->verify ( ledger )) return false;
 
-    for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
-        const AbstractTransaction& transaction = *this->mTransactions [ i ];
-        if ( !transaction.apply ( ledger )) {
-            return false;
+    // some transactions need to be applied later.
+    // we need to avaluate if they are legal now.
+    // then process them once we have the entropy.
+    
+    // before applying the block, we need to apply the entropy.
+    // then, get the list of blocks with transactions due on the current version.
+    // apply those transactions and remove them from the pending list.
+    // then, as we push the block, if it has pending transactions, add them.
+    // if a block is removed or added from the list, flag it.
+    // if it's been flagged, record it in the ledger at the end.
+
+    // apply the entrpty up front.
+    this->applyEntropy ( ledger );
+
+    // process unfinished blocks.
+    UnfinishedBlockList unfinished = ledger.getUnfinished ();
+    bool unfinishedChanged = false;
+    
+    UnfinishedBlockList nextUnfinished;
+    UnfinishedBlockList::Iterator unfinishedBlockIt = unfinished.mBlocks.cbegin ();
+    for ( ; unfinishedBlockIt != unfinished.mBlocks.end (); ++unfinishedBlockIt ) {
+        UnfinishedBlock unfinishedBlock = *unfinishedBlockIt;
+        
+        if ( unfinishedBlock.mMaturity == this->mHeight ) {
+            
+            VersionedValue < Block > block = ledger.getBlock ( unfinishedBlock.mBlockID );
+            assert ( block );
+            
+            size_t nextMaturity = block->applyTransactions ( ledger );
+            
+            if ( nextMaturity > this->mHeight ) {
+            
+                unfinishedBlock.mMaturity = nextMaturity;
+                nextUnfinished.mBlocks.push_back ( unfinishedBlock );
+            }
+            
+            unfinishedChanged = true;
         }
     }
+
+    // apply block.
+    size_t nextMaturity = this->applyTransactions ( ledger );
+    if ( nextMaturity > this->mHeight ) {
+    
+        UnfinishedBlock unfinishedBlock;
+        unfinishedBlock.mBlockID = this->mHeight;
+        unfinishedBlock.mMaturity = nextMaturity;
+        nextUnfinished.mBlocks.push_back ( unfinishedBlock );
+        
+        unfinishedChanged = true;
+    }
+    
+    // check pending block list, and apply if changed.
+    if ( unfinishedChanged ) {
+        ledger.setUnfinished ( nextUnfinished );
+    }
+    
+    ledger.setBlock ( *this );
+    
     return true;
+}
+
+//----------------------------------------------------------------//
+size_t Block::applyTransactions ( Ledger& ledger ) const {
+
+    size_t nextMaturity = this->mHeight;
+    size_t height = ledger.getVersion ();
+
+    if ( ledger.getVersion () >= this->mHeight ) {
+        
+        // apply block transactions.
+        for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
+            const AbstractTransaction& transaction = *this->mTransactions [ i ];
+            
+            size_t transactionMaturity = this->mHeight + transaction.maturity ();
+            if ( transactionMaturity == height ) {
+                transaction.apply ( ledger );
+            }
+            
+            if ( nextMaturity < transactionMaturity ) {
+                nextMaturity = transactionMaturity;
+            }
+        }
+    }
+    return nextMaturity;
+}
+
+//----------------------------------------------------------------//
+void Block::applyEntropy ( Ledger& ledger ) const {
+
+    Entropy entropy ( this->mAllure.toString ());
+    ledger.setEntropy ( entropy );
 }
 
 //----------------------------------------------------------------//

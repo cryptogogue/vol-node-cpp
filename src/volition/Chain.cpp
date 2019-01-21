@@ -108,22 +108,6 @@ ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) 
 }
 
 //----------------------------------------------------------------//
-VersionedValue < Block > Chain::getBlock ( size_t height ) const {
-
-    VersionedStore snapshot ( *this );
-    if ( height < snapshot.getVersion ()) {
-        snapshot.revert ( height );
-    }
-    return VersionedValue < Block >( snapshot, BLOCK_KEY );
-}
-
-//----------------------------------------------------------------//
-VersionedValue < Block > Chain::getTopBlock () const {
-
-    return VersionedValue < Block >( *this, BLOCK_KEY );
-}
-
-//----------------------------------------------------------------//
 Cycle Chain::getTopCycle () const {
 
     return this->getValue < Cycle >( CYCLE_KEY );
@@ -272,7 +256,6 @@ bool Chain::pushBlock ( const Block& block ) {
     bool result = block.apply ( ledger );
 
     if ( result ) {
-        ledger.setValue < Block >( BLOCK_KEY, block );
         ledger.pushVersion ();
         this->takeSnapshot ( ledger );
     }

@@ -16,18 +16,18 @@ class ConstSquap :
      public AbstractSquap {
 public:
 
-    SquapVal    mValue;
+    Variant    mValue;
     
     //----------------------------------------------------------------//
-    SquapVal AbstractSquap_evaluate () const override {
+    Variant AbstractSquap_evaluate () const override {
         
         return this->mValue;
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "value",         this->mValue );
+        
+        serializer.serialize < Variant >( "value", this->mValue );
     }
     
     //----------------------------------------------------------------//

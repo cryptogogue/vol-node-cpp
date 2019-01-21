@@ -20,8 +20,28 @@ private:
 protected:
 
     //----------------------------------------------------------------//
+    SerializerPropertyName AbstractSerializerTo_getName () const override {
+        return SerializerPropertyName ();
+    }
+    
+    //----------------------------------------------------------------//
+    AbstractSerializerTo* AbstractSerializerTo_getParent () override {
+        return this;
+    }
+
+    //----------------------------------------------------------------//
     bool AbstractSerializerTo_isDigest () const override {
         return true;
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const bool& value ) override {
+        *this->mStream << value;
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const double& value ) override {
+        *this->mStream << value;
     }
 
     //----------------------------------------------------------------//
@@ -38,10 +58,27 @@ protected:
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
         value.serializeTo ( *this );
     }
-    
+
     //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractStringifiable& value ) override {
-        *this->mStream << value.toString ();
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const Variant& value ) override {
+        
+        switch ( value.mType ) {
+            
+            case Variant::TYPE_BOOL:
+                *this->mStream << ( bool )( value.mNumeric == 1 );
+                break;
+            
+            case Variant::TYPE_NUMBER:
+                *this->mStream << value.mNumeric;
+                break;
+            
+            case Variant::TYPE_STRING:
+                *this->mStream << value.mString;
+                break;
+                
+            default:
+                break;
+        }
     }
 
 public:

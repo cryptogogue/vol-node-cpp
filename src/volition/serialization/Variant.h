@@ -1,20 +1,18 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_SQUAPVAL_H
-#define VOLITION_SQUAPVAL_H
+#ifndef VOLITION_SERIALIZATION_VARIANTL_H
+#define VOLITION_SERIALIZATION_VARIANTL_H
 
 #include <volition/common.h>
 #include <volition/FNV1a.h>
-#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
 //================================================================//
-// SquapVal
+// Variant
 //================================================================//
-class SquapVal :
-    public AbstractSerializable {
+class Variant {
 public:
 
     enum Type {
@@ -24,9 +22,9 @@ public:
         TYPE_UNDEFINED,
     };
 
-    double      mNumber;
-    string      mString;
     Type        mType;
+    double      mNumeric;
+    string      mString;
     
     //----------------------------------------------------------------//
     operator bool () const {
@@ -34,7 +32,7 @@ public:
         switch ( this->mType ) {
             case TYPE_BOOL:
             case TYPE_NUMBER:
-                return ( this->mNumber != 0 );
+                return ( this->mNumeric != 0 );
             
             case TYPE_STRING:
                 return ( this->mString.size () > 0 );
@@ -46,234 +44,246 @@ public:
     }
     
     //----------------------------------------------------------------//
-    static SquapVal add ( const SquapVal& lval, const SquapVal& rval ) {
+    Variant& operator = (const Variant& other ) {
+        
+        memcpy ( this, &other, sizeof ( Variant ));
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    static Variant add ( const Variant& lval, const Variant& rval ) {
 
         if (( lval.mType == TYPE_NUMBER ) && ( rval.mType == TYPE_NUMBER )) {
-            return SquapVal ( lval.mNumber + rval.mNumber );
+            return Variant ( lval.mNumeric + rval.mNumeric );
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal booleanAnd ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant booleanAnd ( const Variant& lval, const Variant& rval ) {
     
-        return SquapVal ( lval && rval );
+        return Variant ( lval && rval );
     }
     
     //----------------------------------------------------------------//
-    static SquapVal booleanNot ( const SquapVal& operand ) {
+    static Variant booleanNot ( const Variant& operand ) {
     
-        return SquapVal ( !operand );
+        return Variant ( !operand );
     }
     
     //----------------------------------------------------------------//
-    static SquapVal booleanOr ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant booleanOr ( const Variant& lval, const Variant& rval ) {
     
-        return SquapVal ( lval || rval );
+        return Variant ( lval || rval );
     }
     
     //----------------------------------------------------------------//
-    static SquapVal booleanXor ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant booleanXor ( const Variant& lval, const Variant& rval ) {
     
         bool lbool = ( bool )lval;
         bool rbool = ( bool )rval;
         
-        return SquapVal (( lbool != rbool ) && ( lbool || rbool ));
+        return Variant (( lbool != rbool ) && ( lbool || rbool ));
     }
     
     //----------------------------------------------------------------//
-    static SquapVal div ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant div ( const Variant& lval, const Variant& rval ) {
     
         if (( lval.mType == TYPE_NUMBER ) && ( rval.mType == TYPE_NUMBER )) {
-            return SquapVal ( lval.mNumber / rval.mNumber );
+            return Variant ( lval.mNumeric / rval.mNumeric );
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal equal ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant equal ( const Variant& lval, const Variant& rval ) {
     
         if ( lval.mType == rval.mType ) {
             switch ( lval.mType ) {
                 case TYPE_BOOL:
                 case TYPE_NUMBER:
-                    return SquapVal ( lval.mNumber == rval.mNumber );
+                    return Variant ( lval.mNumeric == rval.mNumeric );
                 
                 case TYPE_STRING:
-                    return SquapVal ( lval.mString == rval.mString );
+                    return Variant ( lval.mString == rval.mString );
                     
                 default:
                     break;
             }
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal greater ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant greater ( const Variant& lval, const Variant& rval ) {
     
         if ( lval.mType == rval.mType ) {
             switch ( lval.mType ) {
                 case TYPE_BOOL:
                 case TYPE_NUMBER:
-                    return SquapVal ( lval.mNumber > rval.mNumber );
+                    return Variant ( lval.mNumeric > rval.mNumeric );
                 
                 case TYPE_STRING:
-                    return SquapVal ( lval.mString > rval.mString );
+                    return Variant ( lval.mString > rval.mString );
                 
                 default:
                     break;
             }
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal greaterOrEqual ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant greaterOrEqual ( const Variant& lval, const Variant& rval ) {
     
         if ( lval.mType == rval.mType ) {
             switch ( lval.mType ) {
                 case TYPE_BOOL:
                 case TYPE_NUMBER:
-                    return SquapVal ( lval.mNumber >= rval.mNumber );
+                    return Variant ( lval.mNumeric >= rval.mNumeric );
                 
                 case TYPE_STRING:
-                    return SquapVal ( lval.mString >= rval.mString );
+                    return Variant ( lval.mString >= rval.mString );
                 
                 default:
                     break;
             }
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal less ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant less ( const Variant& lval, const Variant& rval ) {
     
         if ( lval.mType == rval.mType ) {
             switch ( lval.mType ) {
                 case TYPE_BOOL:
                 case TYPE_NUMBER:
-                    return SquapVal ( lval.mNumber < rval.mNumber );
+                    return Variant ( lval.mNumeric < rval.mNumeric );
                 
                 case TYPE_STRING:
-                    return SquapVal ( lval.mString < rval.mString );
+                    return Variant ( lval.mString < rval.mString );
                 
                 default:
                     break;
             }
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal lessOrEqual ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant lessOrEqual ( const Variant& lval, const Variant& rval ) {
     
         if ( lval.mType == rval.mType ) {
             switch ( lval.mType ) {
                 case TYPE_BOOL:
                 case TYPE_NUMBER:
-                    return SquapVal ( lval.mNumber <= rval.mNumber );
+                    return Variant ( lval.mNumeric <= rval.mNumeric );
                 
                 case TYPE_STRING:
-                    return SquapVal ( lval.mString <= rval.mString );
+                    return Variant ( lval.mString <= rval.mString );
                 
                 default:
                     break;
             }
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal mod ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant mod ( const Variant& lval, const Variant& rval ) {
     
         if (( lval.mType == TYPE_NUMBER ) && ( rval.mType == TYPE_NUMBER )) {
-            return SquapVal ( fmod ( lval.mNumber, rval.mNumber ));
+            return Variant ( fmod ( lval.mNumeric, rval.mNumeric ));
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal mul ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant mul ( const Variant& lval, const Variant& rval ) {
     
         if (( lval.mType == TYPE_NUMBER ) && ( rval.mType == TYPE_NUMBER )) {
-            return SquapVal ( lval.mNumber * rval.mNumber );
+            return Variant ( lval.mNumeric * rval.mNumeric );
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal notEqual ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant notEqual ( const Variant& lval, const Variant& rval ) {
     
         if ( lval.mType == rval.mType ) {
             switch ( lval.mType ) {
                 case TYPE_BOOL:
                 case TYPE_NUMBER:
-                    return SquapVal ( lval.mNumber != rval.mNumber );
+                    return Variant ( lval.mNumeric != rval.mNumeric );
                 
                 case TYPE_STRING:
-                    return SquapVal ( lval.mString != rval.mString );
+                    return Variant ( lval.mString != rval.mString );
                 
                 default:
                     break;
             }
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    static SquapVal sub ( const SquapVal& lval, const SquapVal& rval ) {
+    static Variant sub ( const Variant& lval, const Variant& rval ) {
     
         if (( lval.mType == TYPE_NUMBER ) && ( rval.mType == TYPE_NUMBER )) {
-            return SquapVal ( lval.mNumber - rval.mNumber );
+            return Variant ( lval.mNumeric - rval.mNumeric );
         }
-        return SquapVal ();
+        return Variant ();
     }
     
     //----------------------------------------------------------------//
-    SquapVal () :
+    Variant () :
         mType ( TYPE_UNDEFINED ),
-        mNumber ( 0 ) {
+        mNumeric ( 0 ) {
     }
     
     //----------------------------------------------------------------//
-    SquapVal ( bool value ) :
+    Variant ( const Variant& variant ) :
+        mType ( variant.mType ),
+        mNumeric ( variant.mNumeric ),
+        mString ( variant.mString ) {
+    }
+    
+    //----------------------------------------------------------------//
+    Variant ( bool value ) :
         mType ( TYPE_BOOL ),
-        mNumber ( value ? 1 : 0 ) {
+        mNumeric ( value ? 1 : 0 ) {
     }
     
     //----------------------------------------------------------------//
-    SquapVal ( double value ) :
+    Variant ( double value ) :
         mType ( TYPE_NUMBER ),
-        mNumber ( value ) {
+        mNumeric ( value ) {
     }
     
     //----------------------------------------------------------------//
-    SquapVal ( string value ) :
+    Variant ( string value ) :
         mType ( TYPE_STRING ),
         mString ( value ) {
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    Variant ( Poco::Dynamic::Var var ) :
+        mType ( TYPE_UNDEFINED ),
+        mNumeric ( 0 ) {
     
-        string type = serializer.serializeIn < string >( "type", "" );
-        assert ( type.size ());
-        
-        switch ( FNV1a::hash_64 ( type.c_str ())) {
-            case FNV1a::const_hash_64 ( "NUMBER" ):
-                //*this = SquapVal ( serializer.serializeIn < double >( "value", 0 ));
-                break;
-            case FNV1a::const_hash_64 ( "STRING" ):
-                *this = SquapVal ( serializer.serializeIn < string >( "value", "" ));
-                break;
+        if ( var.isNumeric ()) {
+            this->mType = TYPE_NUMBER;
+            this->mNumeric = var.extract < double >();
         }
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        assert ( false ); // unsupported
+        else if ( var.isBoolean ()) {
+            this->mType = TYPE_BOOL;
+            this->mNumeric = var.extract < bool >() ? 1 : 0;
+        }
+        else if ( var.isString ()) {
+            this->mType = TYPE_STRING;
+            this->mString = var.extract < string >();
+        }
     }
 };
 

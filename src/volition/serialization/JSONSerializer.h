@@ -4,17 +4,21 @@
 #ifndef VOLITION_SERIALIZATION_JSONSERIALIZER_H
 #define VOLITION_SERIALIZATION_JSONSERIALIZER_H
 
+#include <volition/serialization/Variant.h>
+
 namespace Volition {
 
 //================================================================//
 // JSONSerializer
 //================================================================//
-template < typename ARRAY_TYPE, typename OBJECT_TYPE >
+template < typename ARRAY_TYPE, typename OBJECT_TYPE, typename PARENT_TYPE >
 class JSONSerializer {
 protected:
     
-    ARRAY_TYPE*     mArray;
-    OBJECT_TYPE*    mObject;
+    ARRAY_TYPE*             mArray;
+    OBJECT_TYPE*            mObject;
+    PARENT_TYPE*            mParent;
+    SerializerPropertyName  mName;
 
     //----------------------------------------------------------------//
     operator bool () const {
@@ -30,7 +34,8 @@ protected:
     //----------------------------------------------------------------//
     JSONSerializer () :
         mObject ( NULL ),
-        mArray ( NULL ) {
+        mArray ( NULL ),
+        mParent ( NULL ) {
     }
 
     //----------------------------------------------------------------//
@@ -41,24 +46,6 @@ protected:
         }
         return this->mObject->get ( name.getName ());
     }
-
-//    //----------------------------------------------------------------//
-//    const Poco::JSON::Array::Ptr getArray ( SerializerPropertyName name ) const {
-//
-//        if ( this->mArray ) {
-//            return this->mArray->getArray (( unsigned int )name.getIndex ());
-//        }
-//        return this->mObject->getArray ( name.getName ());
-//    }
-//
-//    //----------------------------------------------------------------//
-//    const Poco::JSON::Object::Ptr getObject ( SerializerPropertyName name ) const {
-//
-//        if ( this->mArray ) {
-//            return this->mArray->getObject (( unsigned int )name.getIndex ());
-//        }
-//        return this->mObject->getObject ( name.getName ());
-//    }
 
     //----------------------------------------------------------------//
     bool has ( SerializerPropertyName name ) const {
@@ -75,10 +62,21 @@ protected:
     
         assert ( this->mObject || this->mArray );
     
+        Poco::Dynamic::Var value;
+    
         if ( this->mArray ) {
-            return this->mArray->optElement (( unsigned int )name.getIndex (), fallback );
+            value = this->mArray->get ( ( unsigned int )name.getIndex ());
         }
-        return this->mObject->optValue ( name.getName (), fallback );
+        value = this->mObject->get ( name.getName ());
+        
+        if ( !value.isEmpty ()) {
+            try {
+                return value.convert < TYPE >();
+            }
+            catch ( ... ) {
+            }
+        }
+        return fallback;
     }
 
     //----------------------------------------------------------------//

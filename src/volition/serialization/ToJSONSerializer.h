@@ -14,8 +14,18 @@ namespace Volition {
 //================================================================//
 class ToJSONSerializer :
     public AbstractSerializerTo,
-    public JSONSerializer < Poco::JSON::Array, Poco::JSON::Object > {
+    public JSONSerializer < Poco::JSON::Array, Poco::JSON::Object, ToJSONSerializer > {
 protected:
+
+    //----------------------------------------------------------------//
+    SerializerPropertyName AbstractSerializerTo_getName () const override {
+        return this->mName;
+    }
+    
+    //----------------------------------------------------------------//
+    AbstractSerializerTo* AbstractSerializerTo_getParent () override {
+        return this->mParent;
+    }
 
     //----------------------------------------------------------------//
     bool AbstractSerializerTo_isDigest () const override {
@@ -23,8 +33,17 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const u64& value ) override {
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const bool& value ) override {
+        this->set ( name, value );
+    }
     
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const double& value ) override {
+        this->set ( name, value );
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const u64& value ) override {
         this->set ( name, ( int )value );
     
     // TODO:
@@ -40,12 +59,38 @@ protected:
     
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
-        this->set ( name, toJSON ( value ));
+    
+        ToJSONSerializer serializer;
+        serializer.mParent = this;
+        serializer.mName = name;
+        value.serializeTo ( serializer );
+        
+        if ( serializer ) {
+            this->set ( name, toJSON ( value ));
+        }
     }
-
+    
     //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractStringifiable& value ) override {
-        this->set ( name, value.toString ().c_str ());
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const Variant& value ) override {
+        this->set ( name, value );
+        
+        switch ( value.mType ) {
+        
+            case Variant::TYPE_BOOL:
+                this->set ( name, value.mNumeric == 1 );
+                break;
+            
+            case Variant::TYPE_NUMBER:
+                this->set ( name, value.mNumeric );
+                break;
+            
+            case Variant::TYPE_STRING:
+                this->set ( name, value.mString );
+                break;
+                
+            default:
+                break;
+        }
     }
 
 public:
@@ -55,7 +100,11 @@ public:
 
         ToJSONSerializer serializer;
         serializable.serializeTo ( serializer );
-        return serializer;
+        
+        if ( serializer.mArray ) {
+            return Poco::JSON::Array::Ptr ( serializer.mArray );
+        }
+        return Poco::JSON::Object::Ptr ( serializer.mObject );
     }
 
     //----------------------------------------------------------------//

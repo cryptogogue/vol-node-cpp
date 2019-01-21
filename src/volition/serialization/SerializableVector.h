@@ -22,13 +22,22 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_INDEX ) return;
+        if ( serializer.getKeyType () == AbstractSerializerFrom::KEY_TYPE_INDEX ) {
         
-        size_t size = serializer.getSize ();
-        this->resize ( size );
-        
-        for ( size_t i = 0; i < size; ++i ) {
-            serializer.serialize ( i, ( *this )[ i ]);
+            size_t size = serializer.getSize ();
+            this->resize ( size );
+            
+            for ( size_t i = 0; i < size; ++i ) {
+                serializer.serialize ( i, ( *this )[ i ]);
+            }
+        }
+        else {
+            
+            const AbstractSerializerFrom* parent = serializer.getParent ();
+            if ( parent ) {
+                this->resize ( 1 );
+                parent->serialize ( serializer.getName (), ( *this )[ 0 ]);
+            }
         }
     }
     

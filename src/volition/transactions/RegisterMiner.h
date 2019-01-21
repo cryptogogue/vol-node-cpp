@@ -5,7 +5,6 @@
 #define VOLITION_TRANSACTIONS_REGISTER_MINER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/AbstractSingleSignerTransaction.h>
 #include <volition/Policy.h>
 
@@ -21,6 +20,7 @@ public:
 
     TRANSACTION_TYPE ( "REGISTER_MINER" )
     TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_MATURITY ( 0 )
 
     string                                  mURL;
 

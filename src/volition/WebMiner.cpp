@@ -112,7 +112,7 @@ void WebMiner::runMulti () {
             
             // push block (if we've heard from everybody)
             if ( this->mMinerSet.size () == 0 ) {
-                this->pushBlock ( this->mChain, true );
+                this->extendChain ();
             }
             
             // report chain
@@ -141,13 +141,12 @@ void WebMiner::runSolo () {
     while ( !this->isStopped ()) {
         {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-        
-            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
-            
-            this->pushBlock ( this->mChain, true );
+                    
+            this->extendChain ();
             
             size_t nextHeight = this->mChain.getVersion ();
             if ( nextHeight != height ) {
+                LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain.print ( this->mMetadata ).c_str ());
                 height = nextHeight;

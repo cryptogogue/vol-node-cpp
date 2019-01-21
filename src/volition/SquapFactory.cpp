@@ -16,38 +16,49 @@ namespace Volition {
 //----------------------------------------------------------------//
 unique_ptr < AbstractSquap > SquapFactory::SerializablePtrFactory_make ( const AbstractSerializerFrom& serializer ) {
     
-    string opname = serializer.serializeIn < string >( "op", "" );
+    string opName = serializer.serializeIn < string >( "op", "" );
+    AbstractSquap::OpCode opCode = ( AbstractSquap::OpCode )FNV1a::hash_64 ( opName.c_str ());
     
-    switch ( FNV1a::hash_64 ( opname.c_str ())) {
-        case FNV1a::const_hash_64 ( "ADD" ):
-        case FNV1a::const_hash_64 ( "AND" ):
-        case FNV1a::const_hash_64 ( "EQUAL" ):
-        case FNV1a::const_hash_64 ( "DIV" ):
-        case FNV1a::const_hash_64 ( "GREATER" ):
-        case FNV1a::const_hash_64 ( "GREATER_OR_EQUAL" ):
-        case FNV1a::const_hash_64 ( "LESS_OR_EQUAL" ):
-        case FNV1a::const_hash_64 ( "LESS" ):
-        case FNV1a::const_hash_64 ( "MOD" ):
-        case FNV1a::const_hash_64 ( "MUL" ):
-        case FNV1a::const_hash_64 ( "NOT_EQUAL" ):
-        case FNV1a::const_hash_64 ( "OR" ):
-        case FNV1a::const_hash_64 ( "SUB" ):
-        case FNV1a::const_hash_64 ( "XOR" ):
-            return make_unique < BinarySquap >();
+    unique_ptr < AbstractSquap > squap;
+    
+    switch ( opCode ) {
+        case AbstractSquap::ADD:
+        case AbstractSquap::AND:
+        case AbstractSquap::EQUAL:
+        case AbstractSquap::DIV:
+        case AbstractSquap::GREATER:
+        case AbstractSquap::GREATER_OR_EQUAL:
+        case AbstractSquap::LESS_OR_EQUAL:
+        case AbstractSquap::LESS:
+        case AbstractSquap::MOD:
+        case AbstractSquap::MUL:
+        case AbstractSquap::NOT_EQUAL:
+        case AbstractSquap::OR:
+        case AbstractSquap::SUB:
+        case AbstractSquap::XOR:
+            squap = make_unique < BinarySquap >();
+            break;
         
-        case FNV1a::const_hash_64 ( "CONST" ):
-            return make_unique < ConstSquap >();
+        case AbstractSquap::CONST:
+            squap =  make_unique < ConstSquap >();
+            break;
         
-        case FNV1a::const_hash_64 ( "FIELD" ):
-        case FNV1a::const_hash_64 ( "IS" ):
-        case FNV1a::const_hash_64 ( "IN" ):
-            return make_unique < FuncSquap >();
+        case AbstractSquap::FIELD:
+        case AbstractSquap::IS_ASSET:
+        case AbstractSquap::IN:
+            squap =  make_unique < FuncSquap >();
+            break;
         
-        case FNV1a::const_hash_64 ( "NOT" ):
-            return make_unique < UnarySquap >();
+        case AbstractSquap::NOT:
+            squap =  make_unique < UnarySquap >();
+            break;
     }
     
-    return NULL;
+    if ( squap ) {
+        squap->setOpCode ( opCode );
+    }
+    
+    return squap;
 }
 
 } // namespace Volition

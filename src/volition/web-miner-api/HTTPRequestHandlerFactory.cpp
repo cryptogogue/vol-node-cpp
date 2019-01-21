@@ -6,6 +6,7 @@
 #include <volition/web-miner-api/BlockDetailsHandler.h>
 #include <volition/web-miner-api/BlockListHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
+#include <volition/web-miner-api/ExtendChainHandler.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 #include <volition/web-miner-api/InventoryHandler.h>
 #include <volition/web-miner-api/KeyDetailsHandler.h>
@@ -30,9 +31,9 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >         ( "/blocks/?" );                            // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >        ( "/keys/:keyHash/?" );                     // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >         ( "/miners/?" );                            // GET
+    this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >       ( "/test/extendChain/?" );                  // POST
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >         ( "/test/keyid/?" );                        // POST
     this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >       ( "/transactions/?" );                      // POST
-
     this->mRouteTable.setDefault < WebMinerAPI::DefaultHandler >            ();
 }
 
