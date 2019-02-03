@@ -43,6 +43,9 @@ public:
             // TODO: sort set elements and hash
         }
         else {
+        
+            serializer.affirmObject ();
+        
             typename map < KEY_TYPE, VAL_TYPE >::const_iterator it = this->begin ();
             for ( ; it != this->end (); ++it ) {
                 serializer.serialize ( it->first, it->second );

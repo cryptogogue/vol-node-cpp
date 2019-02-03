@@ -18,6 +18,16 @@ class ToJSONSerializer :
 protected:
 
     //----------------------------------------------------------------//
+    void AbstractSerializerTo_affirmArray () override {
+        this->affirmJSONArray ();
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_affirmObject () override {
+        this->affirmJSONObject ();
+    }
+
+    //----------------------------------------------------------------//
     SerializerPropertyName AbstractSerializerTo_getName () const override {
         return this->mName;
     }

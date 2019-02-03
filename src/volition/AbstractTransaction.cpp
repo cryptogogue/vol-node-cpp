@@ -20,7 +20,7 @@ AbstractTransaction::~AbstractTransaction () {
 //----------------------------------------------------------------//
 bool AbstractTransaction::apply ( Ledger& ledger ) const {
 
-    // if the trsnaction has a signer, verify () also checks the nonce that prevents from transactions being applied multiple times.
+    // if the transaction has a signer, verify () also checks the nonce that prevents from transactions being applied multiple times.
     if (( ledger.getVersion () == 0 ) || ( this->verify ( ledger ))) {
         if ( this->AbstractTransaction_apply ( ledger )) {
             this->AbstractTransaction_incrementNonce ( ledger );

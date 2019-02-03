@@ -49,10 +49,6 @@ public:
         
         return ledger.publishSchema ( this->mSchemaName, schema );
     }
-    
-    //----------------------------------------------------------------//
-    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
-    }
 };
 
 } // namespace Transactions

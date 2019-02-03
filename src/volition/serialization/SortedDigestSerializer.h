@@ -146,6 +146,14 @@ private:
 protected:
 
     //----------------------------------------------------------------//
+    void AbstractSerializerTo_affirmArray () override {
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_affirmObject () override {
+    }
+
+    //----------------------------------------------------------------//
     SerializerPropertyName AbstractSerializerTo_getName () const override {
         return this->mName;
     }

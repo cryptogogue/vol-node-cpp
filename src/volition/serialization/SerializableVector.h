@@ -43,6 +43,9 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.affirmArray ();
+    
         size_t size = this->size ();
         for ( size_t i = 0; i < size; ++i ) {
             serializer.serialize ( i, ( *this )[ i ]);

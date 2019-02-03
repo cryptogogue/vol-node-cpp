@@ -32,10 +32,19 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    JSONSerializer () :
-        mObject ( NULL ),
-        mArray ( NULL ),
-        mParent ( NULL ) {
+    void affirmJSONArray () {
+        assert ( !this->mObject );
+        if ( !this->mArray ) {
+            this->mArray = new Poco::JSON::Array ();
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    void affirmJSONObject () {
+        assert ( !this->mArray );
+        if ( !this->mObject ) {
+            this->mObject = new Poco::JSON::Object ();
+        }
     }
 
     //----------------------------------------------------------------//
@@ -44,6 +53,7 @@ protected:
         if ( this->mArray ) {
             return this->mArray->get (( unsigned int )name.getIndex ());
         }
+        assert ( this->mObject );
         return this->mObject->get ( name.getName ());
     }
 
@@ -53,7 +63,15 @@ protected:
         if ( this->mArray ) {
             return name.getIndex () < this->mArray->size ();
         }
+        assert ( this->mObject );
         return this->mObject->has ( name.getName ());
+    }
+    
+    //----------------------------------------------------------------//
+    JSONSerializer () :
+        mObject ( NULL ),
+        mArray ( NULL ),
+        mParent ( NULL ) {
     }
 
     //----------------------------------------------------------------//
@@ -67,7 +85,10 @@ protected:
         if ( this->mArray ) {
             value = this->mArray->get ( ( unsigned int )name.getIndex ());
         }
-        value = this->mObject->get ( name.getName ());
+        else {
+            assert ( this->mObject );
+            value = this->mObject->get ( name.getName ());
+        }
         
         if ( !value.isEmpty ()) {
             try {
@@ -83,17 +104,11 @@ protected:
     void set ( SerializerPropertyName name, const Poco::Dynamic::Var& value ) {
         
         if ( name.isIndex ()) {
-            assert ( !this->mObject );
-            if ( !this->mArray ) {
-                this->mArray = new Poco::JSON::Array ();
-            }
+            this->affirmJSONArray ();
             this->mArray->set (( unsigned int )name.getIndex (), value );
         }
         else {
-            assert ( !this->mArray );
-            if ( !this->mObject ) {
-                this->mObject = new Poco::JSON::Object ();
-            }
+            this->affirmJSONObject ();
             this->mObject->set ( name.getName (), value );
         }
     }

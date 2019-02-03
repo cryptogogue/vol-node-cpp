@@ -17,6 +17,8 @@ class AbstractSerializerTo {
 protected:
 
     //----------------------------------------------------------------//
+    virtual void                        AbstractSerializerTo_affirmArray    () = 0;
+    virtual void                        AbstractSerializerTo_affirmObject   () = 0;
     virtual SerializerPropertyName      AbstractSerializerTo_getName        () const = 0;
     virtual AbstractSerializerTo*       AbstractSerializerTo_getParent      () = 0;
     virtual bool                        AbstractSerializerTo_isDigest       () const = 0;
@@ -28,6 +30,16 @@ protected:
     virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const Variant& value ) = 0;
 
 public:
+    
+    //----------------------------------------------------------------//
+    void affirmArray () {
+        this->AbstractSerializerTo_affirmArray ();
+    }
+    
+    //----------------------------------------------------------------//
+    void affirmObject () {
+        this->AbstractSerializerTo_affirmObject ();
+    }
     
     //----------------------------------------------------------------//
     SerializerPropertyName getName () const {

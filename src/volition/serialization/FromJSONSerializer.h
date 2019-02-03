@@ -107,15 +107,19 @@ protected:
         if ( this->has ( name )) {
     
             const Poco::Dynamic::Var member = this->get ( name );
-            assert ( member );
+            assert ( !member.isEmpty ());
             
             const type_info& tinfo = member.type ();
             
             if ( tinfo == typeid ( Poco::JSON::Array::Ptr )) {
-                fromJSON ( value, *member.extract < Poco::JSON::Array::Ptr >());
+                Poco::JSON::Array::Ptr array = member.extract < Poco::JSON::Array::Ptr >();
+                assert ( array );
+                fromJSON ( value, *array );
             }
             else if ( tinfo == typeid ( Poco::JSON::Object::Ptr )) {
-                fromJSON ( value, *member.extract < Poco::JSON::Object::Ptr >());
+                Poco::JSON::Object::Ptr object = member.extract < Poco::JSON::Object::Ptr >();
+                assert ( object );
+                fromJSON ( value, *object );
             }
             else {
                 FromJSONSerializer serializer;

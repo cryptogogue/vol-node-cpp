@@ -38,6 +38,9 @@ public:
             // TODO: sort set elements and hash
         }
         else {
+        
+            serializer.affirmArray ();
+        
             typename list < TYPE >::const_iterator it = this->begin ();
             for ( size_t i = 0; it != this->end (); ++it, ++i ) {
                 serializer.serialize ( i, *it );

@@ -28,7 +28,7 @@ bool Block::apply ( Ledger& ledger ) const {
     // if a block is removed or added from the list, flag it.
     // if it's been flagged, record it in the ledger at the end.
 
-    // apply the entrpty up front.
+    // apply the entropy up front.
     this->applyEntropy ( ledger );
 
     // process unfinished blocks.
