@@ -60,7 +60,7 @@ class ImportAccountScreen extends BaseComponent {
         if ( this.state.status === STATUS_DONE ) return this.redirect ( '/accounts/' + this.state.accountId );
 
         
-        const { accountId, errorMessage, phraseOrKey } = this.state;
+        const { errorMessage, phraseOrKey } = this.state;
 
         const inputEnabled = hasMiners;
         const submitEnabled = inputEnabled && ( phraseOrKey.length > 0 );

@@ -217,7 +217,7 @@ string Ledger::getSchemaKey ( int schemaCount ) {
 }
 
 //----------------------------------------------------------------//
-string Ledger::getSchemaNameKey ( string schemaName ) {
+string Ledger::getSchemaKey ( string schemaName ) {
 
     return Format::write ( "%s%s", SCHEMA_PREFIX, schemaName.c_str ());
 }
@@ -225,20 +225,21 @@ string Ledger::getSchemaNameKey ( string schemaName ) {
 //----------------------------------------------------------------//
 VersionedValue < Schema > Ledger::getSchema ( string schemaName ) const {
 
-    return VersionedValue < Schema >( *this, Ledger::getSchemaNameKey ( schemaName ));
+    return VersionedValue < Schema >( *this, Ledger::getSchemaKey ( schemaName ));
 }
 
 //----------------------------------------------------------------//
-//list < Schema > Ledger::getSchemas () const {
-//
-//    list < Schema > schemaList;
-//    const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
-//    for ( int i = 0; i < schemaCount; ++i ) {
-//        const Schema& schema = this->getValue < Schema >( Ledger::getSchemaKey ( i ));
-//        schemaList.push_back ( schema );
-//    }
-//    return schemaList;
-//}
+list < Schema > Ledger::getSchemas () const {
+
+    list < Schema > schemaList;
+    const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
+    for ( int i = 0; i < schemaCount; ++i ) {
+        string name = this->getValue < string >( Ledger::getSchemaKey ( i ));
+        const Schema& schema = this->getValue < Schema >( name );
+        schemaList.push_back ( schema );
+    }
+    return schemaList;
+}
 
 //----------------------------------------------------------------//
 VersionedValue < Block > Ledger::getTopBlock () const {
@@ -322,7 +323,7 @@ string Ledger::prefixKey ( string prefix, string key ) {
 //----------------------------------------------------------------//
 bool Ledger::publishSchema ( string schemaName, const Schema& schema ) {
 
-    schemaName = Ledger::getSchemaNameKey ( schemaName );
+    schemaName = Ledger::getSchemaKey ( schemaName );
 
     if ( this->hasValue < Schema >( schemaName )) return false;
 

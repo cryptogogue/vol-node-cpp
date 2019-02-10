@@ -1,11 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
+const assert    = require ( 'assert' );
 const fs        = require ( 'fs' );
-
-// const CONTENT_AUDIO     = 'audio';
-// const CONTENT_IMAGE     = 'image';
-// const CONTENT_TEXT      = 'text';
-// const CONTENT_VIDEO     = 'video';
 
 //----------------------------------------------------------------//
 function makeBinaryOp ( opname ) {
@@ -68,16 +64,16 @@ function makeUnaryOp ( opname ) {
 //----------------------------------------------------------------//
 const ADD               = makeBinaryOp  ( 'ADD' );
 const AND               = makeBinaryOp  ( 'AND' );
+const ASSET_TYPE        = makeFuncOp    ( 'ASSET_TYPE' );
 const CONST             = makeConstOp   ( 'CONST' );
 const DIV               = makeBinaryOp  ( 'DIV' );
 const EQUAL             = makeBinaryOp  ( 'EQUAL' );
 const FIELD             = makeFuncOp    ( 'FIELD' );
-const GREATER_THAN      = makeBinaryOp  ( 'GREATER' );
+const GREATER           = makeBinaryOp  ( 'GREATER' );
 const GREATER_OR_EQUAL  = makeBinaryOp  ( 'GREATER_OR_EQUAL' );
 const IN                = makeFuncOp    ( 'IN' );
-const IS_ASSET          = makeFuncOp    ( 'IS_ASSET' );
+const LESS              = makeBinaryOp  ( 'LESS' );
 const LESS_OR_EQUAL     = makeBinaryOp  ( 'LESS_OR_EQUAL' );
-const LESS_THAN         = makeBinaryOp  ( 'LESS' );
 const MOD               = makeBinaryOp  ( 'MOD' );
 const MUL               = makeBinaryOp  ( 'MUL' );
 const NOT               = makeUnaryOp   ( 'NOT' );
@@ -95,28 +91,6 @@ const MEDIA_AUDIO       = 'MEDIA_AUDIO';
 const MEDIA_IMAGE       = 'MEDIA_IMAGE';
 const MEDIA_TEXT        = 'MEDIA_TEXT';
 const MEDIA_VIDEO       = 'MEDIA_VIDEO';
-
-const TEMPLATE = {}
-
-//----------------------------------------------------------------//
-TEMPLATE.NUMERIC_FIELD = function ( array, mutable ) {
-
-        return {
-            type:           'NUMERIC',
-            array:          array ? true : false,
-            mutable:        mutable ? true : false,
-        }
-}
-
-//----------------------------------------------------------------//
-TEMPLATE.STRING_FIELD = function ( array, mutable ) {
-
-        return {
-            type:           'STRING',
-            array:          array ? true : false,
-            mutable:        mutable ? true : false,
-        }
-}
 
 //================================================================//
 // DO IT
@@ -149,100 +123,269 @@ function makeSchemaTransaction ( schema ) {
     }
 }
 
+const SCHEMA_BUILDER_ADDING_SCHEMA                  = 'SCHEMA_BUILDER_ADDING_SCHEMA';
+const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION        = 'ADDING_ASSET_DEFINITION';
+const SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE          = 'ADDING_ASSET_TEMPLATE';
+const SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD    = 'ADDING_ASSET_TEMPLATE_FIELD';
+const SCHEMA_BUILDER_ADDING_METHOD                  = 'ADDING_ASSET_METHOD';
+
+//================================================================//
+// SchemaBuilder
+//================================================================//
+class SchemaBuilder {
+
+    //----------------------------------------------------------------//
+    array ( base ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
+        this.top ().array = true;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    assetArg ( name, qualifier ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ));
+        this.top ().assetArgs [ name ] = qualifier;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    assetDefinition ( name, base ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_ASSET_DEFINITION,
+            {
+                extends:    base,
+                fields:     {},
+            },
+            ( schema, assetDefinition ) => {
+                schema.assetDefinitions [ name ] = assetDefinition;
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    assetTemplate ( name ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE,
+            {
+                fields:     {},
+            },
+            ( schema, assetTemplate ) => {
+                schema.assetTemplates [ name ] = assetTemplate;
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    constArg ( name, qualifier ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ));
+        this.top ().constArgs [ name ] = qualifier;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    constraint ( name, description, qualifier ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ));
+        this.top ().constraints.push ({
+            description:    description,
+            constraint:     qualifier,
+        });
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    constructor ( name, lua ) {
+
+        this.stack = [];
+
+        this.schema = {
+            name:   name,
+            lua:    lua,
+            assetTemplates:     {},
+            assetDefinitions:   {},
+            methods:            {},
+        };
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_SCHEMA,
+            this.schema
+        );
+    }
+
+    //----------------------------------------------------------------//
+    done () {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+        return this.schema;
+    }
+
+    //----------------------------------------------------------------//
+    extends ( base ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE ));
+        this.top ().extends = base;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    field ( name, value ) {
+
+        if ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE )) {
+
+            let field = {
+                type:           'STRING',
+                array:          false,
+                mutable:        false,
+            }
+
+            this.push (
+                SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD,
+                field,
+                ( assetTemplate, field ) => {
+                    assetTemplate.fields [ name ] = field;
+                }
+            );
+            return this;
+        }
+
+        if ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION )) {
+
+            this.top ().fields [ name ] = value;
+            return this;
+        }
+
+        assert ( false );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    method ( name, weight, maturity, description ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_METHOD,
+            {
+                weight:         weight,
+                maturity:       maturity,
+                description:    description,
+                assetArgs:      {},
+                constArgs:      {},
+                constraints:    [],
+            },
+            ( schema, method ) => {
+                schema.methods [ name ] = method;
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    numeric ( base ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
+        this.top ().type = 'NUMERIC';
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    mutable ( base ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
+        this.top ().mutable = true;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    popTo ( state ) {
+
+        let found = false;
+        for ( let i in this.stack ) {
+            if ( this.stack [ i ].state === state ) {
+                found = true;
+                break;
+            }
+        }
+        if ( !found ) return false;
+
+        let i = this.stack.length - 1;
+        while ( this.stack [ i ].state !== state ) {
+            this.stack [ i ].resolve ( this.stack [ i - 1 ].container, this.stack [ i ].container );
+            this.stack.pop ();
+            i--;
+        }
+        return true;
+    }
+
+    //----------------------------------------------------------------//
+    push ( state, container, resolve ) {
+
+        this.stack.push ({
+            state:          state,
+            container:      container,
+            resolve:        resolve,
+        });
+    }
+
+    //----------------------------------------------------------------//
+    top () {
+        return this.stack [ this.stack.length - 1 ].container;
+    }
+}
+
+
 //================================================================//
 // schema
 //================================================================//
-let schema = {
+let schema = new SchemaBuilder ( 'TEST_SCHEMA', 'schema.lua' )
 
-    name: 'TEST_SCHEMA',
-
-    lua: 'schema.lua',
-
-    assetTemplates: {
-
-        base: {
-            fields: {
-                displayName:    TEMPLATE.STRING_FIELD (),
-            },
-        },
-
-        card: {
-            extends: 'base',
-            fields: {
-                keywords:       TEMPLATE.STRING_FIELD ( true ),
-            },
-        },
-    },
-
-
-    assetDefinitions: {
-        
-        pack: {
-            implements: 'base',
-            fields: {
-                displayName:    'Booster Pack',
-            },
-        },
-
-        common: {
-            implements: 'base',
-            fields: {
-                displayName:    'Common',
-                keywords:       [ 'card', 'common' ],
-            },
-        },
-
-        rare: {
-            implements: 'base',
-            fields: {
-                displayName:    'Rare',
-                keywords:       [ 'card', 'rare' ],
-            },
-        },
-
-        ultraRare: {
-            base: 'base',
-            implements: {
-                displayName:    'Ultra-Rare',
-                keywords:       [ 'card', 'ulraRare' ],
-            },
-        },
-    },
-
-    methods: {
+    //----------------------------------------------------------------//
+    .assetTemplate ( 'base' )
+        .field ( 'displayName' )
  
-        openPack: {
-            description:    'Open a booster pack.',
-            weight:         1,
-            maturity:       2,
-            args: {
-                pack:       IS_ASSET ( 'pack' ),
-            }
-        },
+    .assetTemplate ( 'card' ).extends ( 'base' )
+        .field ( 'keywords' ).array ()
 
-        makeRare: {
-            description:    'Combine two commons to make a rare.',
-            weight:         1,
-            maturity:       2,
-            args:     {
-                common0:    IS_ASSET ( 'common' ),
-                common1:    IS_ASSET ( 'common' ),
-            },
-        },
+    //----------------------------------------------------------------//
+    .assetDefinition ( 'pack', 'base' )
+        .field ( 'displayName', 'Booster Pack' )
+ 
+    .assetDefinition ( 'common', 'card' )
+        .field ( 'displayName', 'Common' )
+        .field ( 'keywords', [ 'card', 'common' ])
+ 
+    .assetDefinition ( 'rare', 'card' )
+        .field ( 'displayName', 'Rare' )
+        .field ( 'keywords', [ 'card', 'rare' ])
+ 
+    .assetDefinition ( 'ulraRare', 'card' )
+        .field ( 'displayName', 'Ultra-Rare' )
+        .field ( 'keywords', [ 'card', 'ultra-rare' ])
 
-        makeUltraRare: {
-            description:    'Combine two rares to make an ultra-rare.',
-            weight:         1,
-            maturity:       2,
-            args:     {
-                rare0:      IS_ASSET ( 'rare0' ),
-                rare1:      IS_ASSET ( 'rare1' ),
-            },
-        },
-    },
-}
+    //----------------------------------------------------------------//
+    .method ( 'makeRare', 1, 2, 'Combine two commons to make a rare.' )
+        .assetArg ( 'common0', ASSET_TYPE ( 'common' ))
+        .assetArg ( 'common1', ASSET_TYPE ( 'common' ))
 
-transaction = makeSchemaTransaction ( schema );
+    .method ( 'makeUltraRare', 1, 2, 'Combine two rares to make an ultra-rare.' )
+        .assetArg ( 'rare0', ASSET_TYPE ( 'rare' ))
+        .assetArg ( 'rare1', ASSET_TYPE ( 'rare' ))
+
+    .method ( 'openPack', 1, 2, 'Open a booster pack.' )
+        .assetArg ( 'pack', ASSET_TYPE ( 'pack' ))
+
+    .done ()
 
 fs.writeFileSync ( 'schema.json', JSON.stringify ( schema, null, 4 ), 'utf8' );
-fs.writeFileSync ( 'publish-schema-transaction.json', JSON.stringify ( transaction, null, 4 ), 'utf8' );
+//fs.writeFileSync ( 'publish-schema-transaction.json', JSON.stringify ( makeSchemaTransaction ( schema ), null, 4 ), 'utf8' );

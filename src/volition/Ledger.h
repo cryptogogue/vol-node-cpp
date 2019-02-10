@@ -165,7 +165,7 @@ protected:
     //----------------------------------------------------------------//
     static string                   getInventoryKey         ( string accountName );
     static string                   getSchemaKey            ( int schemaCount );
-    static string                   getSchemaNameKey        ( string schemaName );
+    static string                   getSchemaKey            ( string schemaName );
     static string                   prefixKey               ( string prefix, string key );
     void                            setAccount              ( string accountName, const Account& account );
     void                            setMinerInfo            ( string accountName, const MinerInfo& minerInfo );
@@ -192,7 +192,7 @@ public:
     map < string, MinerInfo >       getMiners               () const;
     MinerURLMap                     getMinerURLs            () const;
     VersionedValue < Schema >       getSchema               ( string schemaName ) const;
-    //list < Schema >                 getSchemas              () const;
+    list < Schema >                 getSchemas              () const;
     UnfinishedBlockList             getUnfinished           ();
     void                            incrementNonce          ( const TransactionMakerSignature* makerSignature );
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );

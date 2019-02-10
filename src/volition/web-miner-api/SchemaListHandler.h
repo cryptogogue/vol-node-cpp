@@ -1,11 +1,12 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_INVENTORYHANDLER_H
-#define VOLITION_WEBMINERAPI_INVENTORYHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_SCHEMALISTHANDLER_H
+#define VOLITION_WEBMINERAPI_SCHEMALISTHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
+#include <volition/Schema.h>
 #include <volition/TheTransactionFactory.h>
 #include <volition/TheWebMiner.h>
 
@@ -13,9 +14,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// InventoryHandler
+// SchemaListHandler
 //================================================================//
-class InventoryHandler :
+class SchemaListHandler :
     public AbstractAPIRequestHandler {
 public:
 
@@ -25,16 +26,19 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         try {
-            string accountName = this->getMatchString ( "accountName" );
-        
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         
-            Inventory inventory = ledger.getInventory ( accountName );
-        
-            Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
-        
-            jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Object::Ptr >());
+            list < Schema > schemas = ledger.getSchemas ();
+            list < Schema >::const_iterator schemaIt = schemas.cbegin ();
+            
+            Poco::JSON::Array::Ptr jsonArray = new Poco::JSON::Array ();
+            for ( int i = 0; schemaIt != schemas.cend (); ++i, ++schemaIt ) {
+                const Schema& schema = *schemaIt;
+                jsonArray->set ( i, ToJSONSerializer::toJSON ( schema ));
+            }
+            
+            jsonOut.set ( "schemas", jsonArray );
             
 //            try {
 //                stringstream outStream;

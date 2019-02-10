@@ -83,7 +83,7 @@ public:
         bool lbool = ( bool )lval;
         bool rbool = ( bool )rval;
         
-        return Variant (( lbool != rbool ) && ( lbool || rbool ));
+        return Variant ( lbool != rbool );
     }
     
     //----------------------------------------------------------------//

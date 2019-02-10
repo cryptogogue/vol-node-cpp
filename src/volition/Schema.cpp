@@ -49,7 +49,11 @@ void Schema::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& 
 //----------------------------------------------------------------//
 void Schema::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
-    assert ( false ); // unsupported
+    serializer.serialize ( "name",              this->mName );
+    serializer.serialize ( "assetTemplates",    this->mAssetTemplates );
+    serializer.serialize ( "assetDefinitions",  this->mAssetDefinitions );
+    serializer.serialize ( "methods",           this->mMethods );
+    serializer.serialize ( "lua",               this->mLua );
 }
 
 } // namespace Volition

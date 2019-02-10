@@ -84,7 +84,10 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        assert ( false ); // unsupported
+        AbstractSquap::AbstractSerializable_serializeTo ( serializer );
+        
+        serializer.serialize ( "left",          this->mLeft );
+        serializer.serialize ( "right",         this->mRight );
     }
 };
 

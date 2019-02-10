@@ -1,6 +1,6 @@
 {
     "name": "TEST_SCHEMA",
-    "lua": "\n----------------------------------------------------------------\nfunction publish ( ledger )\n    schema.awardAsset ( ledger, '9090', 'pack', 1000 )\nend\n\n\n----------------------------------------------------------------\nfunction openPack ( ledger, pack )\nend\n\n----------------------------------------------------------------\nfunction makeRare ( ledger, common0, common1 )\nend\n\n----------------------------------------------------------------\nfunction makeUltraRare ( ledger, rare0, rare1 )\nend\n",
+    "lua": "schema.lua",
     "assetTemplates": {
         "base": {
             "fields": {
@@ -12,25 +12,25 @@
             }
         },
         "card": {
-            "extends": "base",
             "fields": {
                 "keywords": {
                     "type": "STRING",
                     "array": true,
                     "mutable": false
                 }
-            }
+            },
+            "extends": "base"
         }
     },
     "assetDefinitions": {
         "pack": {
-            "implements": "base",
+            "extends": "base",
             "fields": {
                 "displayName": "Booster Pack"
             }
         },
         "common": {
-            "implements": "base",
+            "extends": "card",
             "fields": {
                 "displayName": "Common",
                 "keywords": [
@@ -40,7 +40,7 @@
             }
         },
         "rare": {
-            "implements": "base",
+            "extends": "card",
             "fields": {
                 "displayName": "Rare",
                 "keywords": [
@@ -49,42 +49,25 @@
                 ]
             }
         },
-        "ultraRare": {
-            "base": "base",
-            "implements": {
+        "ulraRare": {
+            "extends": "card",
+            "fields": {
                 "displayName": "Ultra-Rare",
                 "keywords": [
                     "card",
-                    "ulraRare"
+                    "ultra-rare"
                 ]
             }
         }
     },
     "methods": {
-        "openPack": {
-            "description": "Open a booster pack.",
-            "weight": 1,
-            "maturity": 2,
-            "args": {
-                "pack": {
-                    "op": "IS_ASSET",
-                    "args": [
-                        {
-                            "op": "CONST",
-                            "type": "STRING",
-                            "value": "pack"
-                        }
-                    ]
-                }
-            }
-        },
         "makeRare": {
-            "description": "Combine two commons to make a rare.",
             "weight": 1,
             "maturity": 2,
-            "args": {
+            "description": "Combine two commons to make a rare.",
+            "assetArgs": {
                 "common0": {
-                    "op": "IS_ASSET",
+                    "op": "ASSET_TYPE",
                     "args": [
                         {
                             "op": "CONST",
@@ -94,7 +77,7 @@
                     ]
                 },
                 "common1": {
-                    "op": "IS_ASSET",
+                    "op": "ASSET_TYPE",
                     "args": [
                         {
                             "op": "CONST",
@@ -103,34 +86,57 @@
                         }
                     ]
                 }
-            }
+            },
+            "constArgs": {},
+            "constraints": []
         },
         "makeUltraRare": {
-            "description": "Combine two rares to make an ultra-rare.",
             "weight": 1,
             "maturity": 2,
-            "args": {
+            "description": "Combine two rares to make an ultra-rare.",
+            "assetArgs": {
                 "rare0": {
-                    "op": "IS_ASSET",
+                    "op": "ASSET_TYPE",
                     "args": [
                         {
                             "op": "CONST",
                             "type": "STRING",
-                            "value": "rare0"
+                            "value": "rare"
                         }
                     ]
                 },
                 "rare1": {
-                    "op": "IS_ASSET",
+                    "op": "ASSET_TYPE",
                     "args": [
                         {
                             "op": "CONST",
                             "type": "STRING",
-                            "value": "rare1"
+                            "value": "rare"
                         }
                     ]
                 }
-            }
+            },
+            "constArgs": {},
+            "constraints": []
+        },
+        "openPack": {
+            "weight": 1,
+            "maturity": 2,
+            "description": "Open a booster pack.",
+            "assetArgs": {
+                "pack": {
+                    "op": "ASSET_TYPE",
+                    "args": [
+                        {
+                            "op": "CONST",
+                            "type": "STRING",
+                            "value": "pack"
+                        }
+                    ]
+                }
+            },
+            "constArgs": {},
+            "constraints": []
         }
     }
 }

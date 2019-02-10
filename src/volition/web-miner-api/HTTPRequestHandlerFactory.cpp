@@ -11,6 +11,7 @@
 #include <volition/web-miner-api/InventoryHandler.h>
 #include <volition/web-miner-api/KeyDetailsHandler.h>
 #include <volition/web-miner-api/MinerListHandler.h>
+#include <volition/web-miner-api/SchemaListHandler.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TransactionHandler.h>
 
@@ -31,6 +32,7 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >         ( "/blocks/?" );                            // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >        ( "/keys/:keyHash/?" );                     // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >         ( "/miners/?" );                            // GET
+    this->mRouteTable.addEndpoint < WebMinerAPI::SchemaListHandler >        ( "/schemas/?" );                           // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >       ( "/test/extendChain/?" );                  // POST
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >         ( "/test/keyid/?" );                        // POST
     this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >       ( "/transactions/?" );                      // POST

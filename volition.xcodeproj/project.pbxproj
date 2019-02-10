@@ -27,6 +27,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		CD09ED752207D82500B09249 /* SchemaListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaListHandler.h */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
 		CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
@@ -527,6 +528,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD09ED742207D82500B09249 /* SchemaListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaListHandler.h; path = "src/volition/web-miner-api/SchemaListHandler.h"; sourceTree = "<group>"; };
 		CD0C3E1020C14460006E3B1C /* WebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebMiner.cpp; path = src/volition/WebMiner.cpp; sourceTree = "<group>"; };
 		CD0C3E1120C14460006E3B1C /* WebMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebMiner.h; path = src/volition/WebMiner.h; sourceTree = "<group>"; };
 		CD0C3E1420C14E8A006E3B1C /* TheTransactionFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheTransactionFactory.cpp; path = src/volition/TheTransactionFactory.cpp; sourceTree = "<group>"; };
@@ -1104,6 +1106,7 @@
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
 				CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */,
 				CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */,
+				CD09ED742207D82500B09249 /* SchemaListHandler.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CDB8B40021ACC874004EE816 /* TransactionHandler.h */,
 			);
@@ -1349,6 +1352,7 @@
 				CDBFD549218B8999002AB0C3 /* GenesisMiner.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
 				CD4E81A0210593BD007DA585 /* TheContext.h in Headers */,
+				CD09ED752207D82500B09249 /* SchemaListHandler.h in Headers */,
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,
 				CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */,
 				CDBFD54C218B8999002AB0C3 /* PublishSchema.h in Headers */,
