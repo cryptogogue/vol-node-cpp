@@ -1,9 +1,8 @@
 {
-  "name": "volition-schema-util",
+  "name": "volition-schema-builder",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "dotenv": "^6.1.0",
     "npm": "^6.4.1"
   },
   "scripts": {
