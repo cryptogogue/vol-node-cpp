@@ -2,9 +2,12 @@
 
 import { withAppStateAndUser }  from './AppStateProvider';
 import BaseComponent            from './BaseComponent';
+import MethodFormSelector       from './MethodFormSelector';
+import NavigationBar            from './NavigationBar';
 import React                    from 'react';
-import { Schema }               from './utils/schema';
-// import { Dropdown, Segment, Header, Icon, Divider, Modal, Grid } from 'semantic-ui-react';
+import { Inventory }            from 'volition-schema-builder';
+
+import { Dropdown, Segment, Header, Icon, Divider, Modal, Grid } from 'semantic-ui-react';
 
 //================================================================//
 // InventoryScreen
@@ -17,10 +20,8 @@ class InventoryScreen extends BaseComponent {
 
         this.state = {
             assets : [],
-            schema: {},
+            hasInventory: false,
         };
-
-        this.schema = new Schema ();
         this.fetchInventory ();
     }
 
@@ -47,29 +48,17 @@ class InventoryScreen extends BaseComponent {
 
             if ( schemaJSON.schemas ) {
 
-                schemaJSON.schemas.forEach (( template ) => {
-                    this.schema.applyTemplate ( template );
-                });
-
                 // just grab the first schema for now
-                this.setState ({ schema : schemaJSON.schemas [ 0 ]});
+                const schemaTemplate = schemaJSON.schemas [ 0 ];
 
                 const inventoryJSON = await this.revocableFetchJSON ( url + '/accounts/' + accountId + '/inventory' );
 
+                console.log ( inventoryJSON );
+
                 if ( inventoryJSON.inventory ) {
-
-                    let inventory = inventoryJSON.inventory;
-                    let assets = inventory.assets;
-                    
-                    const binding = this.schema.processInventory ( inventory );
-                    console.log ( 'BINDING', binding );
-
-                    for ( let i in assets ) {
-                        let asset = assets [ i ];
-                        asset.methodNames = [];
-                        //asset.methodNames = this.schema.getMethodNamesForAsset ( asset, inventory );
-                    }
-                    this.setState ({ assets : assets });
+                    let assets = inventoryJSON.inventory.assets;
+                    this.inventory = new Inventory ( schemaTemplate, assets );
+                    this.setState ({ assets : assets, hasInventory : true });
                 }
             }
         }
@@ -88,26 +77,36 @@ class InventoryScreen extends BaseComponent {
     render () {
 
         const { assets } = this.state;
+        const inventory = this.inventory;
 
-        // let methodList;
-        // if ( schema && schema.methods ) {
-        //     methodList = Object.keys ( schema.methods ).map (( methodName ) => {
-        //         return (<p key = { 'method.' + methodName }>method: { methodName }</p>);
-        //     });
-        // }
+        // return (
+        //     <div>
+        //         { assets.map (( asset, i ) => {
+        //             return (
+        //                 <div key = { 'asset' + i }>
+        //                 <div>{ asset.className } x { asset.quantity }</div>
+        //                 { asset.methodNames.map (( methodName, j ) => {
+        //                     return <div key = { asset.className + '.method.' + j }>{ '....' + methodName }</div>
+        //                 })}
+        //                 </div>
+        //             );
+        //         })}
+        //     </div>
+        // );
 
         return (
             <div>
-                { assets.map (( asset, i ) => {
-                    return (
-                        <div key = { 'asset' + i }>
-                        <div>{ asset.className } x { asset.quantity }</div>
-                        { asset.methodNames.map (( methodName, j ) => {
-                            return <div key = { asset.className + '.method.' + j }>{ '....' + methodName }</div>
-                        })}
-                        </div>
-                    );
-                })}
+                <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
+                    <Grid.Column style = {{ maxWidth: 450 }}>
+
+                        <NavigationBar navTitle = "Inventory" match = { this.props.match }/>
+
+                        <Segment>
+                            <MethodFormSelector inventory = { inventory }/>
+                        </Segment>
+
+                    </Grid.Column>
+                </Grid>
             </div>
         );
     }

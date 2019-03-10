@@ -5,18 +5,18 @@
         "base": {
             "fields": {
                 "displayName": {
-                    "type": "STRING",
                     "array": false,
-                    "mutable": false
+                    "mutable": false,
+                    "type": "STRING"
                 }
             }
         },
         "card": {
             "fields": {
                 "keywords": {
-                    "type": "STRING",
                     "array": true,
-                    "mutable": false
+                    "mutable": false,
+                    "type": "STRING"
                 }
             },
             "extends": "base"
@@ -68,23 +68,11 @@
             "assetArgs": {
                 "common0": {
                     "op": "ASSET_TYPE",
-                    "args": [
-                        {
-                            "op": "CONST",
-                            "type": "STRING",
-                            "value": "common"
-                        }
-                    ]
+                    "value": "common"
                 },
                 "common1": {
                     "op": "ASSET_TYPE",
-                    "args": [
-                        {
-                            "op": "CONST",
-                            "type": "STRING",
-                            "value": "common"
-                        }
-                    ]
+                    "value": "common"
                 }
             },
             "constArgs": {},
@@ -97,23 +85,11 @@
             "assetArgs": {
                 "rare0": {
                     "op": "ASSET_TYPE",
-                    "args": [
-                        {
-                            "op": "CONST",
-                            "type": "STRING",
-                            "value": "rare"
-                        }
-                    ]
+                    "value": "rare"
                 },
                 "rare1": {
                     "op": "ASSET_TYPE",
-                    "args": [
-                        {
-                            "op": "CONST",
-                            "type": "STRING",
-                            "value": "rare"
-                        }
-                    ]
+                    "value": "rare"
                 }
             },
             "constArgs": {},
@@ -126,13 +102,7 @@
             "assetArgs": {
                 "pack": {
                     "op": "ASSET_TYPE",
-                    "args": [
-                        {
-                            "op": "CONST",
-                            "type": "STRING",
-                            "value": "pack"
-                        }
-                    ]
+                    "value": "pack"
                 }
             },
             "constArgs": {},

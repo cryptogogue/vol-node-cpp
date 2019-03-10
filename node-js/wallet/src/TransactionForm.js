@@ -57,7 +57,7 @@ class TransactionForm extends Component {
             typedValue = ( type === 'number' ) ? Number ( value ) : String ( value );
         }
 
-        this.setState ({ [ event.target.name ]: typedValue });
+        this.setState ({[ event.target.name ]: typedValue });
     }
 
     //----------------------------------------------------------------//

@@ -2,9 +2,9 @@
 
 const assert            = require ( 'assert' );
 const fs                = require ( 'fs' );
-const schemaBuilder     = require ( 'volition-schema-builder' );
+const buildSchema       = require ( 'volition-schema-builder' ).buildSchema;
 
-const op = schemaBuilder.op;
+const op = buildSchema.op;
 
 //================================================================//
 // DO IT
@@ -40,14 +40,14 @@ function makeSchemaTransaction ( schema ) {
 //================================================================//
 // schema
 //================================================================//
-let schema = schemaBuilder ( 'TEST_SCHEMA', 'schema.lua' )
+let schema = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
 
     //----------------------------------------------------------------//
     .assetTemplate ( 'base' )
-        .field ( 'displayName' )
+        .field ( 'displayName' ).string ()
  
     .assetTemplate ( 'card' ).extends ( 'base' )
-        .field ( 'keywords' ).array ()
+        .field ( 'keywords' ).string ().array ()
 
     //----------------------------------------------------------------//
     .assetDefinition ( 'pack', 'base' )

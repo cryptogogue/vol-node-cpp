@@ -1,7 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
 const Inventory         = require ( './inventory' ).Inventory;
-const Schema            = require ( './schema' ).Schema;
 
 const schemaBuilder     = require ( './schema-builder' );
 const op                = schemaBuilder.op;
@@ -48,41 +47,39 @@ test ( 'define schema', () => {
 
         .done ()
 
-    let schema = new Schema ();
-    schema.applyTemplate ( schemaTemplate );
+    let assets = [
+        { className: 'pack', quantity: 1 },
+        { className: 'common', quantity: 2 },
+        { className: 'rare', quantity: 2 },
+        { className: 'ultraRare', quantity: 1 },
+    ];
 
-    let inventory = new Inventory ( schema );
-
-    inventory.addItem ( 'pack', 1 );
-    inventory.addItem ( 'common', 2 );
-    inventory.addItem ( 'rare', 2 );
-    inventory.addItem ( 'ultraRare', 1 );
+    let inventory = new Inventory ( schemaTemplate, assets );
 
     // test binding analysis
-    let binding = schema.processInventory ( inventory );
 
     // all of the schema methods should be valid for this inventory.
-    expect ( binding.methodBindings [ 'makeRare' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'makeUltraRare' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'openPack' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'makeRare' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'makeUltraRare' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'openPack' ].valid ).toBe ( true );
 
     // 'makeRare' only valid on two commons.
-    expect ( 'makeRare' in binding.assetBindings [ 'pack' ].methodBindings ).toBe ( false );
-    expect ( 'makeRare' in binding.assetBindings [ 'common' ].methodBindings ).toBe ( true );
-    expect ( 'makeRare' in binding.assetBindings [ 'rare' ].methodBindings ).toBe ( false );
-    expect ( 'makeRare' in binding.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
+    expect ( 'makeRare' in inventory.assetBindings [ 'pack' ].methodBindings ).toBe ( false );
+    expect ( 'makeRare' in inventory.assetBindings [ 'common' ].methodBindings ).toBe ( true );
+    expect ( 'makeRare' in inventory.assetBindings [ 'rare' ].methodBindings ).toBe ( false );
+    expect ( 'makeRare' in inventory.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
 
     // 'makeUltraRare' only valid on two rares.
-    expect ( 'makeUltraRare' in binding.assetBindings [ 'pack' ].methodBindings ).toBe ( false );
-    expect ( 'makeUltraRare' in binding.assetBindings [ 'common' ].methodBindings ).toBe ( false );
-    expect ( 'makeUltraRare' in binding.assetBindings [ 'rare' ].methodBindings ).toBe ( true );
-    expect ( 'makeUltraRare' in binding.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
+    expect ( 'makeUltraRare' in inventory.assetBindings [ 'pack' ].methodBindings ).toBe ( false );
+    expect ( 'makeUltraRare' in inventory.assetBindings [ 'common' ].methodBindings ).toBe ( false );
+    expect ( 'makeUltraRare' in inventory.assetBindings [ 'rare' ].methodBindings ).toBe ( true );
+    expect ( 'makeUltraRare' in inventory.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
 
     // 'openPack' only valid on packs.
-    expect ( 'openPack' in binding.assetBindings [ 'pack' ].methodBindings ).toBe ( true );
-    expect ( 'openPack' in binding.assetBindings [ 'common' ].methodBindings ).toBe ( false );
-    expect ( 'openPack' in binding.assetBindings [ 'rare' ].methodBindings ).toBe ( false );
-    expect ( 'openPack' in binding.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
+    expect ( 'openPack' in inventory.assetBindings [ 'pack' ].methodBindings ).toBe ( true );
+    expect ( 'openPack' in inventory.assetBindings [ 'common' ].methodBindings ).toBe ( false );
+    expect ( 'openPack' in inventory.assetBindings [ 'rare' ].methodBindings ).toBe ( false );
+    expect ( 'openPack' in inventory.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
 });
 
 //----------------------------------------------------------------//
@@ -196,61 +193,60 @@ test ( 'test operators', () => {
 
     // console.log ( JSON.stringify ( schemaTemplate, null, 4 ));
 
-    let schema = new Schema ();
-    schema.applyTemplate ( schemaTemplate );
+    let assets = [
+        { className: 'testAsset', quantity: 1 },
+    ];
 
-    let inventory = new Inventory ( schema );
-    inventory.addItem ( 'testAsset', 1 );
+    let inventory = new Inventory ( schemaTemplate, assets );
 
     // test binding analysis
-    let binding = schema.processInventory ( inventory );
 
     // all of the schema methods should be valid for this inventory.
-    expect ( binding.methodBindings [ 'assetType' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'numericEqual' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'stringEqual' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'numericNotEqual' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'stringNotEqual' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'numericGreater' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'numericGreaterOrEqual' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'numericLess' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'numericLessOrEqual' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'numericIn' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'stringIn' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'logicalAnd' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'logicalNotAnd' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'logicalOr' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'logicalNot' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'logicalXor' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'logicalNotXor' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'assetType' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'numericEqual' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'stringEqual' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'numericNotEqual' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'stringNotEqual' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'numericGreater' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'numericGreaterOrEqual' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'numericLess' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'numericLessOrEqual' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'numericIn' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'stringIn' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'logicalAnd' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'logicalNotAnd' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'logicalOr' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'logicalNot' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'logicalXor' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'logicalNotXor' ].valid ).toBe ( true );
 
-    expect ( binding.methodBindings [ 'add' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'div' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'mod' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'mul' ].valid ).toBe ( true );
-    expect ( binding.methodBindings [ 'sub' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'add' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'div' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'mod' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'mul' ].valid ).toBe ( true );
+    expect ( inventory.methodBindings [ 'sub' ].valid ).toBe ( true );
 
-    expect ( 'assetType' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericEqual' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'stringEqual' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericNotEqual' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'stringNotEqual' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericGreater' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericGreaterOrEqual' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericLess' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericLessOrEqual' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericIn' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'stringIn' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalAnd' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalNotAnd' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalOr' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalNot' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalXor' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalNotXor' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'assetType' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'numericEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'stringEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'numericNotEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'stringNotEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'numericGreater' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'numericGreaterOrEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'numericLess' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'numericLessOrEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'numericIn' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'stringIn' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'logicalAnd' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'logicalNotAnd' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'logicalOr' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'logicalNot' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'logicalXor' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'logicalNotXor' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
 
-    expect ( 'add' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'div' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'mod' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'mul' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'sub' in binding.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'add' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'div' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'mod' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'mul' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( 'sub' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
 });
