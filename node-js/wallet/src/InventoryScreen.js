@@ -1,13 +1,16 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { withAppStateAndUser }  from './AppStateProvider';
-import BaseComponent            from './BaseComponent';
-import MethodFormSelector       from './MethodFormSelector';
-import NavigationBar            from './NavigationBar';
-import React                    from 'react';
-import { Inventory }            from 'volition-schema-builder';
+import { withAppStateAndUser }          from './AppStateProvider';
+import BaseComponent                    from './BaseComponent';
+import MethodFormSelector               from './MethodFormSelector';
+import NavigationBar                    from './NavigationBar';
+import React                            from 'react';
+import { Inventory, buildSchema }       from 'volition-schema-builder';
+import { Segment, Grid } from 'semantic-ui-react';
 
-import { Dropdown, Segment, Header, Icon, Divider, Modal, Grid } from 'semantic-ui-react';
+const op = buildSchema.op;
+
+const TEST = true;
 
 //================================================================//
 // InventoryScreen
@@ -22,7 +25,62 @@ class InventoryScreen extends BaseComponent {
             assets : [],
             hasInventory: false,
         };
-        this.fetchInventory ();
+
+        if ( TEST ) {
+
+            let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
+
+                //----------------------------------------------------------------//
+                .assetTemplate ( 'base' )
+                    .field ( 'displayName' ).string ()
+            
+                .assetTemplate ( 'card' ).extends ( 'base' )
+                    .field ( 'keywords' ).string ().array ()
+
+                //----------------------------------------------------------------//
+                .assetDefinition ( 'pack', 'base' )
+                    .field ( 'displayName', 'Booster Pack' )
+            
+                .assetDefinition ( 'common', 'card' )
+                    .field ( 'displayName', 'Common' )
+                    .field ( 'keywords', [ 'card', 'common' ])
+            
+                .assetDefinition ( 'rare', 'card' )
+                    .field ( 'displayName', 'Rare' )
+                    .field ( 'keywords', [ 'card', 'rare' ])
+            
+                .assetDefinition ( 'ulraRare', 'card' )
+                    .field ( 'displayName', 'Ultra-Rare' )
+                    .field ( 'keywords', [ 'card', 'ultra-rare' ])
+
+                //----------------------------------------------------------------//
+                .method ( 'makeRare', 1, 2, 'Combine two commons to make a rare.' )
+                    .assetArg ( 'common0', op.ASSET_TYPE ( 'common' ))
+                    .assetArg ( 'common1', op.ASSET_TYPE ( 'common' ))
+
+                .method ( 'makeUltraRare', 1, 2, 'Combine two rares to make an ultra-rare.' )
+                    .assetArg ( 'rare0', op.ASSET_TYPE ( 'rare' ))
+                    .assetArg ( 'rare1', op.ASSET_TYPE ( 'rare' ))
+
+                .method ( 'openPack', 1, 2, 'Open a booster pack.' )
+                    .assetArg ( 'pack', op.ASSET_TYPE ( 'pack' ))
+
+                .done ()
+
+            let assets = [
+                { className: 'pack', quantity: 1 },
+                { className: 'common', quantity: 2 },
+                { className: 'rare', quantity: 2 },
+                { className: 'ultraRare', quantity: 1 },
+            ];
+
+            this.inventory = new Inventory ( schemaTemplate, assets );
+            this.state.assets = assets;
+            this.state.hasInventory = true;
+        }
+        else {
+            this.fetchInventory ();
+        }
     }
 
     //----------------------------------------------------------------//
@@ -76,23 +134,7 @@ class InventoryScreen extends BaseComponent {
     //----------------------------------------------------------------//
     render () {
 
-        const { assets } = this.state;
         const inventory = this.inventory;
-
-        // return (
-        //     <div>
-        //         { assets.map (( asset, i ) => {
-        //             return (
-        //                 <div key = { 'asset' + i }>
-        //                 <div>{ asset.className } x { asset.quantity }</div>
-        //                 { asset.methodNames.map (( methodName, j ) => {
-        //                     return <div key = { asset.className + '.method.' + j }>{ '....' + methodName }</div>
-        //                 })}
-        //                 </div>
-        //             );
-        //         })}
-        //     </div>
-        // );
 
         return (
             <div>

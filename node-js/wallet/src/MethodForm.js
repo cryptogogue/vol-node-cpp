@@ -2,7 +2,10 @@
 
 import { withAppState }             from './AppStateProvider';
 import React, { Component }         from 'react';
-import { Button, Form, Segment } from 'semantic-ui-react';
+import { Button, Form, List, Segment, Select } from 'semantic-ui-react';
+
+const ASSET_FORM_FIELD_TYPE = 'asset';
+const CLEAR_DROPDOWN_TEXT = '--';
 
 //================================================================//
 // MethodForm
@@ -30,58 +33,84 @@ class MethodForm extends Component {
     constructor ( props ) {
         super ( props );
 
-        const { formFields } = this.props;
+        const { inventory, methodName } = this.props;
 
+        this.formFields = inventory.getMethodFormFields ( methodName );
+
+        let assetSet = {};
         let fieldValues = {};
-        for ( let fieldName in formFields ) {
+        for ( let fieldName in this.formFields ) {
+
             fieldValues [ fieldName ] = null;
+
+            const formField = this.formFields [ fieldName ];
+            if ( formField.type === ASSET_FORM_FIELD_TYPE ) {
+                for ( let i in formField.options ) {
+                    assetSet [ formField.options [ i ]] = true;
+                }
+            }
+        }
+
+        this.ingredients = {};
+        for ( let assetName in assetSet ) {
+            let asset = inventory.assets [ assetName ];
+            this.ingredients [ assetName ] = {
+                quantity:   asset.quantity,
+                utilized: 0,
+            };
         }
 
         this.state = fieldValues;
     }
 
     //----------------------------------------------------------------//
-    handleChange ( event ) {
-        
-        let typedValue = null;
-        const value = event.target.value;
+    handleChange ( fieldName, value ) {
 
-        if ( value && ( value.length > 0 )) {
-            const type = event.target.type;
-            typedValue = ( type === 'number' ) ? Number ( value ) : String ( value );
+        const prevValue = this.state [ fieldName ];
+        const valueOrNull = value === CLEAR_DROPDOWN_TEXT ? null : value ;
+
+        if ( prevValue !== null ) {
+            this.ingredients [ prevValue ].utilized--;
         }
 
-        this.setState ({[ event.target.name ]: typedValue });
+        if ( valueOrNull !== null ) {
+            this.ingredients [ valueOrNull ].utilized++;
+        }
+
+        this.setState ({[ fieldName ]: valueOrNull });
     }
 
     //----------------------------------------------------------------//
     makeFormInputForField ( fieldName, formField ) {
 
-        let onChange = ( event ) => { this.handleChange ( event )};
+        let onChange = ( event, payload ) => { this.handleChange ( fieldName, payload.value )};
 
         let value = this.state [ fieldName ] === null ? '' : this.state [ fieldName ];
 
-        if ( formField.type === 'asset' ) {
+        if ( formField.type === ASSET_FORM_FIELD_TYPE ) {
 
             const options = formField.options;
 
-            // if ( accountKeyNames.length <= 1 ) return;
+            const select = [];
+            for ( let i in options ) {
+                const assetName = options [ i ];
+                const ingredient = this.ingredients [ assetName ];
+                const disabled = ( ingredient.quantity - ingredient.utilizer ) > 0;
+                select.push ({ key: i, text: assetName, value: assetName, disabled: disabled });
+            }
+            select.push ({ key: options.length, text: CLEAR_DROPDOWN_TEXT, value: CLEAR_DROPDOWN_TEXT });
 
             return (
                 <div key = { fieldName }>
                     <Form.Input
                         fluid
-                        list = 'listOfAssetOptions'
-                        placeholder = 'Asset'
+                        control = { Select }
+                        options = { select }
+                        placeholder = { fieldName }
                         name = { fieldName }
-                        value = { options [ 0 ]}
+                        value = { this.state [ fieldName ] || '' }
                         onChange = { onChange }
                     />
-                    <datalist id = 'listOfAssetOptions'>
-                        { options.map (( assetName, index ) =>
-                            <option key = { assetName } value = { assetName }/>
-                        )}
-                    </datalist>
                 </div>
             );
         }
@@ -105,7 +134,8 @@ class MethodForm extends Component {
     //----------------------------------------------------------------//
     render () {
 
-        const { formFields } = this.props;
+        const formFields = this.formFields;
+        const ingredients = this.ingredients;
 
         // add the fields in order
         let fields = [];
@@ -122,9 +152,19 @@ class MethodForm extends Component {
             this.props.onSubmit ( Object.assign ({}, this.state ))
         };
 
+        let ingredientListItems = [];
+        for ( let assetName in ingredients ) {
+            let ingredient = ingredients [ assetName ];
+            let available = ingredient.quantity - ingredient.utilized;
+            if  ( available > 0 ) {
+                ingredientListItems.push (<List.Item key = { assetName }>{ assetName + ' x' + ( ingredient.quantity - ingredient.utilized )}</List.Item>);
+            }
+        }
+
         return (
             <Form size = "large">
                 <Segment stacked>
+                    <List>{ ingredientListItems }</List>
                     { fields }
                     <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickSend }>
                         OK

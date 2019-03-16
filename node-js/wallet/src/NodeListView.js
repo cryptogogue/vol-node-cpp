@@ -55,13 +55,16 @@ class NodeListView extends Component {
         let onClickClear    = () => { this.clearNodeURLs ()};
         let onChange        = ( event ) => { this.handleChange ( event )};
 
+        let urlList = [];
+        for ( let idx in nodes ) {
+            urlList.push (<p key = { 'url' + idx }>{ nodes [ idx ]}</p>)
+        }
+
         return (
 
             <div>
 
-                { nodes.map (( url, idx ) => {
-                    return (<p key = { 'url' + idx }>{ url }</p>);
-                })}
+                { urlList }
 
                 <Form size = "large">
                     <Segment stacked>

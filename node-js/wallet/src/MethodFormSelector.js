@@ -2,7 +2,6 @@
 
 import { withAppState }                 from './AppStateProvider';
 import MethodForm                       from './MethodForm';
-import { transactionSchemas }           from './TransactionSchemas';
 import React, { Component }             from 'react';
 import { Button, Divider, Dropdown }    from 'semantic-ui-react';
 
@@ -31,7 +30,10 @@ class MethodFormSelector extends Component {
             let methods = [];
 
             for ( let methodName in inventory.methodBindings ) {
-                methods.push ( methodName );
+                const methodBinding = inventory.methodBindings [ methodName ];
+                if ( methodBinding.valid ) {
+                    methods.push ( methodName );
+                }
             }
             return { methods: methods };
         }
@@ -53,11 +55,6 @@ class MethodFormSelector extends Component {
         const { methods }  = this.state;
         const { inventory } = this.props;
 
-        // const pendingTransaction = appState.getPendingTransaction ( accountId );
-        // if ( pendingTransaction ) {
-        //     return this.renderPendingTransaction ( pendingTransaction );
-        // }
-
         const hasMethods = ( methods.length > 0 );
 
         if ( hasMethods && this.state.showForm ) {
@@ -70,7 +67,8 @@ class MethodFormSelector extends Component {
 
                 methodForm = (
                     <MethodForm
-                        formFields = { inventory.getMethodFormFields ( methods [ methodIndex ])}
+                        methodName = { methods [ methodIndex ]}
+                        inventory = { inventory }
                         onSubmit = {( fieldValues ) => { this.handleSubmit ( fieldValues )}}
                     />
                 );
@@ -117,14 +115,6 @@ class MethodFormSelector extends Component {
                 onChange = {( event, data ) => { this.selectForm ( data.value )}}
             />
         );
-    }
-
-    //----------------------------------------------------------------//
-    renderPendingTransaction ( transaction ) {
-
-        // return (
-        //     <p>{ transaction.friendlyName }</p>
-        // );
     }
 
     //----------------------------------------------------------------//

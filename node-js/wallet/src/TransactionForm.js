@@ -2,7 +2,7 @@
 
 import { withAppState }             from './AppStateProvider';
 import React, { Component }         from 'react';
-import { Button, Form, Segment } from 'semantic-ui-react';
+import { Button, Form, Segment, Select } from 'semantic-ui-react';
 
 //================================================================//
 // TransactionForm
@@ -74,23 +74,26 @@ class TransactionForm extends Component {
 
             const accountKeyNames = this.props.appState.getAccountKeyNames ( this.props.accountId );
 
-            if ( accountKeyNames.length <= 1 ) return;
+            //if ( accountKeyNames.length <= 1 ) return;
+
+            const select = [];
+            for ( let i in accountKeyNames ) {
+                const keyName = accountKeyNames [ i ];
+                select.push ({ key: i, text: keyName, value: keyName });
+            }
 
             return (
+
                 <div key = { name }>
                     <Form.Input
                         fluid
-                        list = 'listOfKeys'
+                        control = { Select }
+                        options = { select }
                         placeholder = 'Account Key'
                         name = { name }
                         value = { value }
                         onChange = { onChange }
                     />
-                    <datalist id = 'listOfKeys'>
-                        { accountKeyNames.map (( keyName, index ) =>
-                            <option key = { keyName } value = { keyName }/>
-                        )}
-                    </datalist>
                 </div>
             );
         }
