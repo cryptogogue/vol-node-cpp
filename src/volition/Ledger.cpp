@@ -26,11 +26,11 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
     if ( keyID.size ()) return false;
 
     string keyInfoPrefix = KEY_ID + keyID;
-    VersionedValue < KeyInfo > keyInfo ( *this, keyInfoPrefix );
+    shared_ptr < KeyInfo > keyInfo = this->getJSONSerializableObject < KeyInfo >( keyInfoPrefix );
 
-    if (( keyInfo ) && ( keyInfo->mAccountName != accountName )) return false;
+    if ( keyInfo && ( keyInfo->mAccountName != accountName )) return false;
 
-    VersionedValue < Account > account = this->getAccount ( accountName );
+    shared_ptr < Account > account = this->getAccount ( accountName );
     if ( account ) {
 
         if ( key ) {
@@ -39,7 +39,7 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
             updatedAccount.mKeys [ keyName ] = KeyAndPolicy ( key );
             this->setAccount ( accountName, updatedAccount );
             
-            this->setValue < KeyInfo >( keyInfoPrefix, KeyInfo ( accountName, keyName ));
+            this->setJSONSerializableObject < KeyInfo >( keyInfoPrefix, KeyInfo ( accountName, keyName ));
             
             return true;
         }
@@ -55,7 +55,7 @@ bool Ledger::awardAsset ( Schema& schema, string accountName, string assetName, 
     BulkAssetIdentifier bulkIdentifier;
 
     if ( inventoryCollection.hasKey ( assetName )) {
-        bulkIdentifier = inventoryCollection.getValue < BulkAssetIdentifier >( assetName );
+        FromJSONSerializer::fromJSONString ( bulkIdentifier, inventoryCollection.getValue < string >( assetName ));
         bulkIdentifier.mQuantity += quantity;
     }
     else {
@@ -63,7 +63,7 @@ bool Ledger::awardAsset ( Schema& schema, string accountName, string assetName, 
         bulkIdentifier.mQuantity = quantity;
     }
     
-    inventoryCollection.setValue < BulkAssetIdentifier >( assetName, bulkIdentifier );
+    inventoryCollection.setValue < string >( assetName, ToJSONSerializer::toJSONString ( bulkIdentifier ));
 
     return true;
 }
@@ -74,7 +74,7 @@ bool Ledger::checkMakerSignature ( const TransactionMakerSignature* makerSignatu
     // TODO: actually check maker signature
 
     if ( makerSignature ) {
-        VersionedValue < Account > account = this->getAccount ( makerSignature->getAccountName ());
+        shared_ptr < Account > account = this->getAccount ( makerSignature->getAccountName ());
         if ( account ) {
             return ( account->mNonce == makerSignature->getNonce ());
         }
@@ -107,15 +107,15 @@ bool Ledger::genesisMiner ( string accountName, u64 amount, string keyName, cons
     string keyID = key.getKeyID ();
     assert ( keyID.size ());
 
-    this->setValue < KeyInfo >( KEY_ID + keyID, KeyInfo ( accountName, keyName ));
+    this->setJSONSerializableObject < KeyInfo >( KEY_ID + keyID, KeyInfo ( accountName, keyName ));
 
     return this->registerMiner ( accountName, keyName, url );
 }
 
 //----------------------------------------------------------------//
-VersionedValue < Account > Ledger::getAccount ( string accountName ) const {
+shared_ptr < Account > Ledger::getAccount ( string accountName ) const {
 
-    return VersionedValue < Account >( *this, ( prefixKey ( ACCOUNT, accountName )));
+    return this->getJSONSerializableObject < Account >( prefixKey ( ACCOUNT, accountName ));
 }
 
 //----------------------------------------------------------------//
@@ -135,20 +135,20 @@ AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
 }
 
 //----------------------------------------------------------------//
-VersionedValue < Block > Ledger::getBlock ( size_t height ) const {
+shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
 
     VersionedStore snapshot ( *this );
     if ( height < snapshot.getVersion ()) {
         snapshot.revert ( height );
     }
-    return VersionedValue < Block >( snapshot, BLOCK_KEY );
+    return Ledger::getJSONSerializableObject < Block >( snapshot, BLOCK_KEY );
 }
 
 //----------------------------------------------------------------//
-Entropy Ledger::getEntropy () {
+Entropy Ledger::getEntropy () const {
 
-    VersionedValue < Entropy > entropy ( *this, ENTROPY );
-    return entropy ? *entropy : Entropy ();
+    string entropy = this->getValueOrFallback < string >( ENTROPY, "" );
+    return entropy.size () > 0 ? Entropy ( entropy ) : Entropy ();
 }
 
 //----------------------------------------------------------------//
@@ -163,10 +163,12 @@ Inventory Ledger::getInventory ( string accountName ) const {
     Inventory inventory;
     
     try {
-        VersionedCollectionIterator < BulkAssetIdentifier > collectionIt ( *this, Ledger::getInventoryKey ( accountName ));
+        VersionedCollectionIterator < string > collectionIt ( *this, Ledger::getInventoryKey ( accountName ));
         
         for ( ; collectionIt; ++collectionIt ) {
-            inventory.mAssets.push_back ( *collectionIt );
+            BulkAssetIdentifier assetIdentifier;
+            FromJSONSerializer::fromJSONString ( assetIdentifier, *collectionIt );
+            inventory.mAssets.push_back ( assetIdentifier );
         }
     }
     catch ( VersionedCollectionNotFoundException ) {
@@ -175,15 +177,15 @@ Inventory Ledger::getInventory ( string accountName ) const {
 }
 
 //----------------------------------------------------------------//
-VersionedValue < KeyInfo > Ledger::getKeyInfo ( string keyID ) const {
+shared_ptr < KeyInfo > Ledger::getKeyInfo ( string keyID ) const {
 
-    return VersionedValue < KeyInfo >( *this, KEY_ID + keyID );
+    return this->getJSONSerializableObject < KeyInfo >( KEY_ID + keyID );
 }
 
 //----------------------------------------------------------------//
-VersionedValue < MinerInfo > Ledger::getMinerInfo ( string accountName ) const {
+shared_ptr < MinerInfo > Ledger::getMinerInfo ( string accountName ) const {
 
-    return VersionedValue < MinerInfo >( *this, ( prefixKey ( MINER_INFO, accountName )));
+    return this->getJSONSerializableObject < MinerInfo >( prefixKey ( MINER_INFO, accountName ));
 }
 
 //----------------------------------------------------------------//
@@ -191,13 +193,15 @@ map < string, MinerInfo > Ledger::getMiners () const {
 
     map < string, MinerInfo > minerInfoMap;
 
-    const set < string >& miners = this->getValue < set < string >>( MINERS );
-    set < string >::const_iterator minerIt = miners.cbegin ();
-    for ( ; minerIt != miners.cend (); ++minerIt ) {
+    shared_ptr < SerializableSet < string >> miners = this->getJSONSerializableObject < SerializableSet < string >>( MINERS );
+    assert ( miners );
+    
+    set < string >::const_iterator minerIt = miners->cbegin ();
+    for ( ; minerIt != miners->cend (); ++minerIt ) {
     
         const string& minerID = *minerIt;
         
-        VersionedValue < MinerInfo > minerInfo = this->getMinerInfo ( minerID );
+        shared_ptr < MinerInfo > minerInfo = this->getMinerInfo ( minerID );
         assert ( minerInfo );
         minerInfoMap [ minerID ] = *minerInfo;
     }
@@ -205,9 +209,9 @@ map < string, MinerInfo > Ledger::getMiners () const {
 }
 
 //----------------------------------------------------------------//
-Ledger::MinerURLMap Ledger::getMinerURLs () const {
+shared_ptr < Ledger::MinerURLMap > Ledger::getMinerURLs () const {
 
-    return MinerURLMap ( *this, MINER_URLS );
+    return this->getJSONSerializableObject < MinerURLMap >( MINER_URLS );
 }
 
 //----------------------------------------------------------------//
@@ -223,9 +227,9 @@ string Ledger::getSchemaKey ( string schemaName ) {
 }
 
 //----------------------------------------------------------------//
-VersionedValue < Schema > Ledger::getSchema ( string schemaName ) const {
+shared_ptr < Schema > Ledger::getSchema ( string schemaName ) const {
 
-    return VersionedValue < Schema >( *this, Ledger::getSchemaKey ( schemaName ));
+    return this->getJSONSerializableObject < Schema >( Ledger::getSchemaKey ( schemaName ));
 }
 
 //----------------------------------------------------------------//
@@ -235,22 +239,23 @@ list < Schema > Ledger::getSchemas () const {
     const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
     for ( int i = 0; i < schemaCount; ++i ) {
         string name = this->getValue < string >( Ledger::getSchemaKey ( i ));
-        const Schema& schema = this->getValue < Schema >( name );
-        schemaList.push_back ( schema );
+        shared_ptr < Schema > schema = this->getJSONSerializableObject < Schema >( name );
+        assert ( schema );
+        schemaList.push_back ( *schema );
     }
     return schemaList;
 }
 
 //----------------------------------------------------------------//
-VersionedValue < Block > Ledger::getTopBlock () const {
+shared_ptr < Block > Ledger::getTopBlock () const {
 
-    return VersionedValue < Block >( *this, BLOCK_KEY );
+    return this->getJSONSerializableObject < Block >( BLOCK_KEY );
 }
 
 //----------------------------------------------------------------//
 UnfinishedBlockList Ledger::getUnfinished () {
 
-    VersionedValue < UnfinishedBlockList > unfinished ( *this, UNFINISHED );
+    shared_ptr < UnfinishedBlockList > unfinished = this->getJSONSerializableObject < UnfinishedBlockList >( UNFINISHED );
     return unfinished ? *unfinished : UnfinishedBlockList ();
 }
 
@@ -262,7 +267,7 @@ void Ledger::incrementNonce ( const TransactionMakerSignature* makerSignature ) 
         u64 nonce = makerSignature->getNonce ();
         string accountName = makerSignature->getAccountName ();
 
-        VersionedValue < Account > account = this->getAccount ( accountName );
+        shared_ptr < Account > account = this->getAccount ( accountName );
         if ( account && ( account->mNonce <= nonce )) {
             Account updatedAccount = *account;
             updatedAccount.mNonce = nonce + 1;
@@ -295,7 +300,7 @@ Ledger::~Ledger () {
 //----------------------------------------------------------------//
 bool Ledger::openAccount ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key ) {
 
-    VersionedValue < Account > account = this->getAccount ( accountName );
+    shared_ptr < Account > account = this->getAccount ( accountName );
     if ( account && ( account->mBalance >= amount )) {
 
         if ( this->getAccount ( recipientName )) return false;
@@ -325,14 +330,14 @@ bool Ledger::publishSchema ( string schemaName, const Schema& schema ) {
 
     schemaName = Ledger::getSchemaKey ( schemaName );
 
-    if ( this->hasValue < Schema >( schemaName )) return false;
+    if ( this->hasValue ( schemaName )) return false;
 
     int schemaCount = this->getValue < int >( SCHEMA_COUNT );
     
     string schemaKey = Ledger::getSchemaKey ( schemaCount );
 
     this->setValue < string >( schemaKey, schemaName );
-    this->setValue < Schema >( schemaName, schema );
+    this->setJSONSerializableObject < Schema >( schemaName, schema );
     this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
 
     SchemaLua schemaLua ( schema );
@@ -347,16 +352,20 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
     if ( accountKey ) {
 
-        this->setValue < MinerInfo >( prefixKey ( MINER_INFO, accountName ), MinerInfo ( accountName, url, accountKey.mKeyAndPolicy->mKey ));
+        this->setJSONSerializableObject < MinerInfo >( prefixKey ( MINER_INFO, accountName ), MinerInfo ( accountName, url, accountKey.mKeyAndPolicy->mKey ));
         
         // TODO: find an efficient way to do all this
-        map < string, string > minerURLs = this->getValue < map < string, string >>( MINER_URLS );
-        minerURLs [ accountName ] = url;
-        this->setValue < map < string, string >>( MINER_URLS, minerURLs );
+        shared_ptr < SerializableMap < string, string >> minerURLs = this->getJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS );
+        assert ( minerURLs );
+        
+        ( *minerURLs )[ accountName ] = url;
+        this->setJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS, *minerURLs );
 
-        set < string > miners = this->getValue < set < string >>( MINERS );
-        miners.insert ( accountName );
-        this->setValue < set < string >>( MINERS, miners );
+        shared_ptr < SerializableSet < string >> miners = this->getJSONSerializableObject < SerializableSet < string >>( MINERS );
+        assert ( miners );
+        
+        miners->insert ( accountName );
+        this->setJSONSerializableObject < SerializableSet < string >>( MINERS, *miners );
 
         return true;
     }
@@ -367,16 +376,16 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
 void Ledger::reset () {
 
     this->clear ();
-    this->setValue < set < string >>( MINERS, set < string > ());
-    this->setValue < map < string, string >>( MINER_URLS, map < string, string > ());
+    this->setJSONSerializableObject < SerializableSet < string >>( MINERS, SerializableSet < string > ());
+    this->setJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS, SerializableMap < string, string > ());
     this->setValue < int >( SCHEMA_COUNT, 0 );
 }
 
 //----------------------------------------------------------------//
 bool Ledger::sendVOL ( string accountName, string recipientName, u64 amount ) {
 
-    VersionedValue < Account > account      = this->getAccount ( accountName );
-    VersionedValue < Account > recipient    = this->getAccount ( recipientName );
+    shared_ptr < Account > account      = this->getAccount ( accountName );
+    shared_ptr < Account > recipient    = this->getAccount ( recipientName );
 
     if ( account && recipient && ( account->mBalance >= amount )) {
     
@@ -397,31 +406,31 @@ bool Ledger::sendVOL ( string accountName, string recipientName, u64 amount ) {
 //----------------------------------------------------------------//
 void Ledger::setAccount ( string accountName, const Account& account ) {
 
-    this->setValue < Account >( prefixKey ( ACCOUNT, accountName ), account );
+    this->setJSONSerializableObject < Account >( prefixKey ( ACCOUNT, accountName ), account );
 }
 
 //----------------------------------------------------------------//
 void Ledger::setBlock ( const Block& block ) {
     assert ( block.mHeight == this->getVersion ());
-    this->setValue < Block >( BLOCK_KEY, block );
+    this->setJSONSerializableObject < Block >( BLOCK_KEY, block );
 }
 
 //----------------------------------------------------------------//
-void Ledger::setEntropy ( const Entropy& entropy ) {
+void Ledger::setEntropyString ( string entropy ) {
 
-    this->setValue < Entropy >( ENTROPY, entropy );
+    this->setValue < string >( ENTROPY, entropy );
 }
 
 //----------------------------------------------------------------//
 void Ledger::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
 
-    this->setValue < MinerInfo >( prefixKey ( ACCOUNT, accountName ), minerInfo );
+    this->setJSONSerializableObject < MinerInfo >( prefixKey ( ACCOUNT, accountName ), minerInfo );
 }
 
 //----------------------------------------------------------------//
 void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
-    this->setValue < UnfinishedBlockList >( UNFINISHED, unfinished );
+    this->setJSONSerializableObject < UnfinishedBlockList >( UNFINISHED, unfinished );
 }
 
 //================================================================//

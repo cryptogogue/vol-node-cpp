@@ -27,7 +27,7 @@ public:
 //        string accountName = this->getMatchString ( "accountName" );
 //        const state& ledger = TheWebMiner::get ().getLedger ();
 //
-//        VersionedValue < Account > account = ledger.getAccount ( accountName );
+//        shared_ptr < Account > account = ledger.getAccount ( accountName );
 //        if ( account ) {
 //
 //            map < string, CryptoKey > keys;

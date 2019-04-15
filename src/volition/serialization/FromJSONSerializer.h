@@ -158,19 +158,22 @@ public:
 
         Poco::JSON::Parser parser;
         Poco::Dynamic::Var result = parser.parse ( inStream );
-        Poco::JSON::Object::Ptr object = result.extract < Poco::JSON::Object::Ptr >();
-
-        fromJSON ( serializable, *object );
+        
+        if ( result.type () == typeid ( Poco::JSON::Object::Ptr )) {
+            Poco::JSON::Object::Ptr object = result.extract < Poco::JSON::Object::Ptr >();
+            fromJSON ( serializable, *object );
+        }
+        else if ( result.type () == typeid ( Poco::JSON::Array::Ptr )) {
+            Poco::JSON::Array::Ptr array = result.extract < Poco::JSON::Array::Ptr >();
+            fromJSON ( serializable, *array );
+        }
     }
 
     //----------------------------------------------------------------//
-    static void fromJSON ( AbstractSerializable& serializable, string json ) {
+    static void fromJSONString ( AbstractSerializable& serializable, string json ) {
 
-        Poco::JSON::Parser parser;
-        Poco::Dynamic::Var result = parser.parse ( json );
-        Poco::JSON::Object::Ptr object = result.extract < Poco::JSON::Object::Ptr >();
-
-        fromJSON ( serializable, *object );
+        istringstream str ( json );
+        FromJSONSerializer::fromJSON ( serializable, str );
     }
 };
 

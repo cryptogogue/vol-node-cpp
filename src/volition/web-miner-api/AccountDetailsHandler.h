@@ -29,7 +29,7 @@ public:
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
 
-        VersionedValue < Account > account = ledger.getAccount ( accountName );
+        shared_ptr < Account > account = ledger.getAccount ( accountName );
         if ( account ) {
             Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
             accountJSON->set ( "accountName", accountName.c_str ());

@@ -122,16 +122,22 @@ public:
 
         Poco::Dynamic::Var json = toJSON ( serializable );
         
-        Poco::JSON::Object::Ptr object = json.extract < Poco::JSON::Object::Ptr >();
-        if ( object ) {
+        if ( json.type () == typeid ( Poco::JSON::Object::Ptr )) {
+            Poco::JSON::Object::Ptr object = json.extract < Poco::JSON::Object::Ptr >();
             object->stringify ( outStream, indent, step );
         }
-        else {
+        else if ( json.type () == typeid ( Poco::JSON::Array::Ptr )) {
             Poco::JSON::Array::Ptr array = json.extract < Poco::JSON::Array::Ptr >();
-            if ( array ) {
-                array->stringify ( outStream, indent, step );
-            }
+            array->stringify ( outStream, indent, step );
         }
+    }
+    
+    //----------------------------------------------------------------//
+    static string toJSONString ( const AbstractSerializable& serializable ) {
+
+        stringstream strStream;
+        ToJSONSerializer::toJSON ( serializable, strStream, 0 );
+        return strStream.str ();
     }
 };
 

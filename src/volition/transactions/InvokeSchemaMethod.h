@@ -51,7 +51,7 @@ public:
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
         
-        VersionedValue < Schema > schema = ledger.getSchema ( this->mSchemaName );
+        shared_ptr < Schema > schema = ledger.getSchema ( this->mSchemaName );
         if ( !schema ) return false;
         
         // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of SchemaLua objects later to speed things up.
@@ -76,7 +76,7 @@ public:
         
         if ( AbstractSingleSignerTransaction::AbstractTransaction_verify ( ledger )) {
         
-            VersionedValue < Schema > schema = ledger.getSchema ( this->mSchemaName );
+            shared_ptr < Schema > schema = ledger.getSchema ( this->mSchemaName );
             if ( schema ) {
                 return schema->verifyMethod ( this->mMethodName, this->mWeight, this->mMaturity );
             }

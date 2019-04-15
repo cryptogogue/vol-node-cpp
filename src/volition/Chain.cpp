@@ -20,8 +20,6 @@ bool Chain::canPush ( string minerID, bool force ) const {
 
 //----------------------------------------------------------------//
 Chain::Chain () {
-
-    this->reset ();
 }
 
 //----------------------------------------------------------------//
@@ -37,15 +35,16 @@ size_t Chain::countBlocks () const {
 //----------------------------------------------------------------//
 size_t Chain::countBlocks ( size_t cycleIdx ) const {
 
-    VersionedValueIterator < Cycle > cycleIt ( *this, CYCLE_KEY );
+    VersionedValueIterator < string > cycleIt ( *this, CYCLE_KEY );
     size_t top = this->getVersion ();
 
     for ( ; cycleIt; cycleIt.prev ()) {
-        const Cycle& cycle = *cycleIt;
-        if ( cycle.mCycleID == cycleIdx ) {
-            return top - cycle.mBase;
+        shared_ptr < Cycle > cycle = Ledger::getJSONSerializableObject < Cycle >( cycleIt, CYCLE_KEY );
+        assert ( cycle );
+        if ( cycle->mCycleID == cycleIdx ) {
+            return top - cycle->mBase;
         }
-        top = cycle.mBase;
+        top = cycle->mBase;
     }
     return top - 0;
 }
@@ -53,7 +52,7 @@ size_t Chain::countBlocks ( size_t cycleIdx ) const {
 //----------------------------------------------------------------//
 size_t Chain::countCycles () const {
 
-    if ( this->hasValue < Cycle >( CYCLE_KEY )) {
+    if ( this->hasValue ( CYCLE_KEY )) {
         const Cycle& cycle = this->getTopCycle ();
         return cycle.mCycleID + 1;
     }
@@ -63,7 +62,7 @@ size_t Chain::countCycles () const {
 //----------------------------------------------------------------//
 ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) const {
 
-    if ( !this->hasValue < Cycle >( CYCLE_KEY )) {
+    if ( !this->hasValue ( CYCLE_KEY )) {
         return ChainPlacement ( Cycle (), true );
     }
 
@@ -82,16 +81,17 @@ ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) 
 
         // start at the last cycle and count backward until we find a the best cycle.
         // the most recent cycle can always be edited, though may not be 'improved.'
-        VersionedValueIterator < Cycle > cycleIt ( *this, CYCLE_KEY );
+        VersionedValueIterator < string > cycleIt ( *this, CYCLE_KEY );
         
         for ( ; cycleIt; cycleIt.prev ()) {
         
-            const Cycle& cycle = *cycleIt;
+            shared_ptr < Cycle > cycle = Ledger::getJSONSerializableObject < Cycle >( cycleIt, CYCLE_KEY );
+            assert ( cycle );
         
-            if ( metaData.canEdit ( cycle.mCycleID, minerID )) {
+            if ( metaData.canEdit ( cycle->mCycleID, minerID )) {
             
-                if ( this->willImprove ( metaData, cycle, minerID )) {
-                    bestCycle = cycle;
+                if ( this->willImprove ( metaData, *cycle, minerID )) {
+                    bestCycle = *cycle;
                     foundCycle = true;
                 }
             }
@@ -110,15 +110,20 @@ ChainPlacement Chain::findNextCycle ( ChainMetadata& metaData, string minerID ) 
 //----------------------------------------------------------------//
 Cycle Chain::getTopCycle () const {
 
-    return this->getValue < Cycle >( CYCLE_KEY );
+    shared_ptr < Cycle > cycle = this->getJSONSerializableObject < Cycle >( CYCLE_KEY );
+    assert ( cycle );
+    return *cycle;
 }
 
 //----------------------------------------------------------------//
 bool Chain::isInCycle ( const Cycle& cycle, string minerID ) const {
 
     VersionedStoreIterator chainIt ( *this, cycle.mBase );
-    for ( ; chainIt && ( chainIt.getValue < Cycle >( CYCLE_KEY ).mCycleID == cycle.mCycleID ); chainIt.next ()) {
-        if ( chainIt.getValue < Block >( BLOCK_KEY ).mMinerID == minerID ) return true;
+    // TODO: rewrite this loop
+    for ( ; chainIt && ( Ledger::getJSONSerializableObject < Cycle >( chainIt, CYCLE_KEY )->mCycleID == cycle.mCycleID ); chainIt.next ()) {
+        shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, BLOCK_KEY );
+        assert ( block );
+        if ( block->mMinerID == minerID ) return true;
     }
     return false;
 }
@@ -129,10 +134,11 @@ void Chain::newCycle () {
     Cycle cycle;
     cycle.mBase = this->getVersion ();
     if ( cycle.mBase > 0 ) {
-        const Cycle prevCycle = this->getValue < Cycle >( CYCLE_KEY );
-        cycle.mCycleID = prevCycle.mCycleID + 1;
+        shared_ptr < Cycle > prevCycle = this->getJSONSerializableObject < Cycle >( CYCLE_KEY );
+        assert ( prevCycle );
+        cycle.mCycleID = prevCycle->mCycleID + 1;
     }
-    this->setValue < Cycle >( CYCLE_KEY, cycle );
+    this->setJSONSerializableObject < Cycle >( CYCLE_KEY, cycle );
 }
 
 //----------------------------------------------------------------//
@@ -149,8 +155,11 @@ void Chain::prepareForPush ( ChainMetadata& metaData, const ChainPlacement& plac
         size_t score = block.getScore ();
         VersionedStoreIterator chainIt ( *this, truncate );
         for ( ; chainIt && ( !chainIt.isCurrent ()) && ( truncate < top ); chainIt.next (), ++truncate ) {
-            const Block& block = chainIt.getValue < Block >( BLOCK_KEY );
-            if (( block.mCycleID > cycle.mCycleID ) || ( chainIt.getValue < Block >( BLOCK_KEY ).getScore () > score )) break;
+            // TODO: rewrite this
+            shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, BLOCK_KEY );
+            assert ( block );
+            
+            if (( block->mCycleID > cycle.mCycleID ) || ( block->getScore () > score )) break;
         }
         this->revert ( truncate );
         this->clearVersion ();
@@ -160,8 +169,10 @@ void Chain::prepareForPush ( ChainMetadata& metaData, const ChainPlacement& plac
     
     size_t version = this->getVersion ();
     if ( version > 0 ) {
-        const Block prevBlock = this->getValue < Block >( BLOCK_KEY, version - 1 );
-        block.setPreviousBlock ( prevBlock );
+        VersionedStoreIterator prevVersion ( *this, version - 1 );
+        shared_ptr < Block > prevBlock = Ledger::getJSONSerializableObject < Block >( prevVersion, BLOCK_KEY );
+        assert ( prevBlock );
+        block.setPreviousBlock ( *prevBlock );
     }
 }
 
@@ -191,12 +202,14 @@ string Chain::print ( const ChainMetadata* metaData, const char* pre, const char
     
     VersionedStoreIterator chainIt ( *this, 0 );
     
-    Cycle prevCycle = chainIt.getValue < Cycle >( CYCLE_KEY );
+    shared_ptr < Cycle > prevCycle = Ledger::getJSONSerializableObject < Cycle >( chainIt, CYCLE_KEY );
+    assert ( prevCycle );
     
     for ( ; chainIt && ( !chainIt.isCurrent ()); chainIt.next ()) {
-        Cycle cycle = chainIt.getValue < Cycle >( CYCLE_KEY );
+        shared_ptr < Cycle > cycle = Ledger::getJSONSerializableObject < Cycle >( chainIt, CYCLE_KEY );
+        assert ( cycle );
         
-        if (( cycleCount == 0 ) || ( cycle.mCycleID != prevCycle.mCycleID )) {
+        if (( cycleCount == 0 ) || ( cycle->mCycleID != prevCycle->mCycleID )) {
         
             if ( cycleCount > 0 ) {
                 if ( cycleCount > 1 ) {
@@ -211,15 +224,16 @@ string Chain::print ( const ChainMetadata* metaData, const char* pre, const char
             blockCount = 0;
         }
         
-        const Block& block = chainIt.getValue < Block >( BLOCK_KEY );
+        shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, BLOCK_KEY );
+        assert ( block );
     
         if ( blockCount > 0 ) {
             Format::write ( str, "," );
         }
         
-        Format::write ( str, "%s", block.mHeight == 0  ? "." : block.getMinerID ().c_str ());
+        Format::write ( str, "%s", block->mHeight == 0  ? "." : block->getMinerID ().c_str ());
         blockCount++;
-        prevCycle = cycle;
+        *prevCycle = *cycle;
     }
     
     if ( cycleCount > 1 ) {
@@ -241,16 +255,18 @@ bool Chain::pushBlock ( const Block& block ) {
 
     Ledger ledger ( *this );
     
-    if ( !ledger.hasValue < Cycle >( CYCLE_KEY )) {
+    if ( !ledger.hasValue ( CYCLE_KEY )) {
         assert ( ledger.getVersion () == 0 );
-        ledger.setValue < Cycle >( CYCLE_KEY, Cycle ());
+        ledger.setJSONSerializableObject < Cycle >( CYCLE_KEY, Cycle ());
     }
 
-    size_t baseCycleID = ledger.getValue < Cycle >( CYCLE_KEY ).mCycleID;
+    shared_ptr < Cycle > baseCycle = ledger.getJSONSerializableObject < Cycle >( CYCLE_KEY );
+    assert ( baseCycle );
+    size_t baseCycleID = baseCycle->mCycleID;
     
     if ( block.mCycleID != baseCycleID ) {
         assert ( block.mCycleID == ( baseCycleID + 1 ));
-        ledger.setValue < Cycle >( CYCLE_KEY, Cycle ( block.mCycleID, ledger.getVersion ()));
+        ledger.setJSONSerializableObject < Cycle >( CYCLE_KEY, Cycle ( block.mCycleID, ledger.getVersion ()));
     }
     
     bool result = block.apply ( ledger );
@@ -280,19 +296,20 @@ Chain::UpdateResult Chain::update ( ChainMetadata& metaData, const Block& block 
     // rewind to block height.
     VersionedStoreIterator chainIt ( *this, block.mHeight );
 
-    const Block& original = chainIt.getValue < Block >( BLOCK_KEY );
+    shared_ptr < Block > original = Ledger::getJSONSerializableObject < Block >( chainIt, BLOCK_KEY );
+    assert ( original );
 
     // if the block matches... do nothing. next block.
-    if ( block == original ) return UpdateResult::UPDATE_EQUALS;
+    if ( block == *original ) return UpdateResult::UPDATE_EQUALS;
     
     // check to see if the previous block matches
-    if ( block.mPrevDigest == original.mPrevDigest ) {
+    if ( block.mPrevDigest == original->mPrevDigest ) {
         
         // it's preceded by a match (hashes match), so let's see if it's a better block.
-        int compare = Block::compare ( original, block );
+        int compare = Block::compare ( *original, block );
         assert ( compare != 0 );
         
-        if (( compare < 0 ) || ( !metaData.canEdit ( original.mCycleID, block.mMinerID ))) {
+        if (( compare < 0 ) || ( !metaData.canEdit ( original->mCycleID, block.mMinerID ))) {
         
             // rejected or can't edit, so try again
             return UpdateResult::UPDATE_RETRY;
@@ -342,18 +359,21 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
         
         if ( chainIt0 && ( !chainIt0.isCurrent ())) {
             
-            const Block& block0 = chainIt0.getValue < Block >( BLOCK_KEY );
-            const Block& block1 = chainIt1.getValue < Block >( BLOCK_KEY );
+            shared_ptr < Block > block0 = Ledger::getJSONSerializableObject < Block >( chainIt0, BLOCK_KEY );
+            shared_ptr < Block > block1 = Ledger::getJSONSerializableObject < Block >( chainIt1, BLOCK_KEY );
+        
+            assert ( block0 );
+            assert ( block1 );
         
             if ( diverged == false ) {
                 diverge = height;
                 diverged = ( block0 != block1 );
             }
             
-            int compare = Block::compare ( block0, block1 );
+            int compare = Block::compare ( *block0, *block1 );
             
             if ( compare != 0 ) {
-                overwrite = (( compare > 0 ) && ( metaData.canEdit ( block0.mCycleID, block1.mMinerID )));
+                overwrite = (( compare > 0 ) && ( metaData.canEdit ( block0->mCycleID, block1->mMinerID )));
                 break;
             }
         }
@@ -376,9 +396,10 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
         VersionedStoreIterator fromIt ( other, diverge );
         for ( ; fromIt && ( !fromIt.isCurrent ()); fromIt.next ()) {
             
-            Block block = fromIt.getValue < Block >( BLOCK_KEY );
+            shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( fromIt, BLOCK_KEY );
+            assert ( block );
             
-            bool result = ledger.pushBlock ( block );
+            bool result = ledger.pushBlock ( *block );
             if ( !result ) return;
         }
         
@@ -392,7 +413,8 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
         VersionedStoreIterator chainIt ( *this, diverge );
         
         // save the base cycle ID for later
-        size_t baseCycleID = chainIt.hasValue < Cycle >( CYCLE_KEY ) ? chainIt.getValue < Cycle >( CYCLE_KEY ).mCycleID : 0;
+        shared_ptr < Cycle > baseCycle = Ledger::getJSONSerializableObject < Cycle >( chainIt, CYCLE_KEY );
+        size_t baseCycleID = baseCycle ? baseCycle->mCycleID : 0;
         
         // truncate the metadata. we're keeping base cycle so we get the full
         // set of all active contributors known to the chain prior to truncation.
@@ -400,8 +422,9 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
         
         for ( ; chainIt && ( !chainIt.isCurrent ()); chainIt.next ()) {
         
-            Block block = chainIt.getValue < Block >( BLOCK_KEY );
-            metaData.affirmParticipant ( block.mCycleID, block.mMinerID );
+            shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, BLOCK_KEY );
+            assert ( block );
+            metaData.affirmParticipant ( block->mCycleID, block->mMinerID );
         }
     }
 }
@@ -441,7 +464,9 @@ void Chain::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer 
     size_t top = this->getVersion ();
     VersionedStoreIterator chainIt ( *this, 0 );
     for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
-        blocks.push_back ( chainIt.getValue < Block >( BLOCK_KEY ));
+        shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, BLOCK_KEY );
+        assert ( block );
+        blocks.push_back ( *block );
     }
     serializer.serialize ( "blocks", blocks );
 }

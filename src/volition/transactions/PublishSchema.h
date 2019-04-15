@@ -45,7 +45,7 @@ public:
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
     
         Schema schema;
-        FromJSONSerializer::fromJSON ( schema, this->mJSON  );
+        FromJSONSerializer::fromJSONString ( schema, this->mJSON  );
         
         return ledger.publishSchema ( this->mSchemaName, schema );
     }

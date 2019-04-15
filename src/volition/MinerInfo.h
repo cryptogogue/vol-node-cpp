@@ -12,7 +12,8 @@ namespace Volition {
 //================================================================//
 // MinerInfo
 //================================================================//
-class MinerInfo {
+class MinerInfo :
+    public AbstractSerializable {
 private:
 
     string                  mMinerID;
@@ -29,6 +30,22 @@ public:
                             MinerInfo           ( string minerID, string url, const CryptoKey& publicKey );
                             MinerInfo           ( const MinerInfo& minerInfo );
                             ~MinerInfo          ();
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "minerID",           this->mMinerID );
+        serializer.serialize ( "url",               this->mURL );
+        serializer.serialize ( "publicKey",         this->mPublicKey );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "minerID",           this->mMinerID );
+        serializer.serialize ( "url",               this->mURL );
+        serializer.serialize ( "publicKey",         this->mPublicKey );
+    }
 };
 
 } // namespace Volition

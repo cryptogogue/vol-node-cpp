@@ -26,8 +26,9 @@ public:
         
         VersionedStoreIterator chainIt ( chain, 0 );
         for ( ; chainIt && ( !chainIt.isCurrent ()); chainIt.next ()) {
-            const Block& block = chainIt.getValue < Block >( Chain::BLOCK_KEY );
-            this->mMetaData.affirmParticipant ( block.getCycleID (), block.getMinerID ());
+            shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, Chain::BLOCK_KEY );
+            assert ( block );
+            this->mMetaData.affirmParticipant ( block->getCycleID (), block->getMinerID ());
         }
         
         ASSERT_TRUE ( chain.canPush ( this->mMinerID, true ));

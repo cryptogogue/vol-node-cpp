@@ -29,9 +29,10 @@ void Tree::addChain ( const Chain& chain ) {
     
     size_t top = chain.getVersion ();
     for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
-        const Block& block = chainIt.getValue < Block >( Chain::BLOCK_KEY );
+        shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, Chain::BLOCK_KEY );
+        assert ( block );
         
-        string minerID      = block.getMinerID ();
+        string minerID      = block->getMinerID ();
         cursor              = &cursor->mChildren [ minerID ];
         cursor->mMinerID    = minerID;
     }

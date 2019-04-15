@@ -31,7 +31,7 @@ public:
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Chain& chain = scopedLock.getWebMiner ().getChain ();
 
-            VersionedValue < Block > block = chain.getBlock ( height );
+            shared_ptr < Block > block = chain.getBlock ( height );
             if ( block ) {
                 jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
                 return Poco::Net::HTTPResponse::HTTP_OK;

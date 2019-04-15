@@ -20,28 +20,57 @@ class TransactionMakerSignature;
 //================================================================//
 // UnfinishedBlock
 //================================================================//
-class UnfinishedBlock {
+class UnfinishedBlock :
+    public AbstractSerializable {
 public:
 
-    size_t      mBlockID;       // ID of the block containing unfinished transactions
-    size_t      mMaturity;      // Height of the chain when transactions should be applied
+    u64         mBlockID;       // ID of the block containing unfinished transactions
+    u64         mMaturity;      // Height of the chain when transactions should be applied
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "blockID",       this->mBlockID );
+        serializer.serialize ( "maturity",      this->mMaturity );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "blockID",       this->mBlockID );
+        serializer.serialize ( "maturity",      this->mMaturity );
+    }
 };
 
 //================================================================//
 // UnfinishedBlockList
 //================================================================//
-class UnfinishedBlockList {
+class UnfinishedBlockList :
+    public AbstractSerializable {
 public:
 
-    typedef list < UnfinishedBlock >::const_iterator    Iterator;
+    typedef SerializableList < UnfinishedBlock >::const_iterator    Iterator;
 
-    list < UnfinishedBlock >    mBlocks;
+    SerializableList < UnfinishedBlock >    mBlocks;
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "blocks",      this->mBlocks );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "blocks",      this->mBlocks );
+    }
 };
 
 //================================================================//
 // KeyInfo
 //================================================================//
-class KeyInfo {
+class KeyInfo :
+    public AbstractSerializable {
 public:
     
     string mAccountName;
@@ -56,12 +85,27 @@ public:
         mAccountName ( accountName ),
         mKeyName ( keyName ) {
     }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "accountName",       this->mAccountName );
+        serializer.serialize ( "keyName",           this->mKeyName );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "accountName",       this->mAccountName );
+        serializer.serialize ( "keyName",           this->mKeyName );
+    }
 };
 
 //================================================================//
 // KeyAndPolicy
 //================================================================//
-class KeyAndPolicy {
+class KeyAndPolicy :
+    public AbstractSerializable {
 private:
 
     friend class Ledger;
@@ -79,12 +123,25 @@ public:
     KeyAndPolicy ( const CryptoKey& key ) :
         mKey ( key ) {
     }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "key",               this->mKey );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "key",               this->mKey );
+    }
 };
 
 //================================================================//
 // Account
 //================================================================//
-class Account {
+class Account :
+    public AbstractSerializable {
 private:
 
     friend class Ledger;
@@ -92,7 +149,7 @@ private:
     u64         mBalance;
     u64         mNonce;
 
-    map < string, KeyAndPolicy >  mKeys;
+    SerializableMap < string, KeyAndPolicy >  mKeys;
 
 public:
 
@@ -120,6 +177,22 @@ public:
     u64 getNonce () const {
         return this->mNonce;
     }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "balance",           this->mBalance );
+        serializer.serialize ( "nonce",             this->mNonce );
+        serializer.serialize ( "keys",              this->mKeys );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "balance",           this->mBalance );
+        serializer.serialize ( "nonce",             this->mNonce );
+        serializer.serialize ( "keys",              this->mKeys );
+    }
 };
 
 //================================================================//
@@ -130,8 +203,8 @@ private:
 
     friend class Ledger;
     
-    VersionedValue < Account >  mAccount;
-    const KeyAndPolicy*         mKeyAndPolicy;
+    shared_ptr < Account >  mAccount;
+    const KeyAndPolicy*     mKeyAndPolicy;
     
     //----------------------------------------------------------------//
     operator bool () const {
@@ -172,7 +245,7 @@ protected:
 
 public:
 
-    typedef VersionedValue < map < string, string >> MinerURLMap;
+    typedef SerializableMap < string, string > MinerURLMap;
 
     //----------------------------------------------------------------//
     bool                            accountPolicy           ( string accountName, const Policy* policy );
@@ -181,17 +254,17 @@ public:
     bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
     bool                            deleteKey               ( string accountName, string keyName );
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
-    VersionedValue < Account >      getAccount              ( string accountName ) const;
+    shared_ptr < Account >          getAccount              ( string accountName ) const;
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
-    VersionedValue < Block >        getBlock                ( size_t height ) const;
-    VersionedValue < Block >        getTopBlock             () const;
-    Entropy                         getEntropy              ();
+    shared_ptr < Block >            getBlock                ( size_t height ) const;
+    shared_ptr < Block >            getTopBlock             () const;
+    Entropy                         getEntropy              () const;
     Inventory                       getInventory            ( string accountName ) const;
-    VersionedValue < KeyInfo >      getKeyInfo              ( string keyID ) const;
-    VersionedValue < MinerInfo >    getMinerInfo            ( string accountName ) const;
+    shared_ptr < KeyInfo >          getKeyInfo              ( string keyID ) const;
+    shared_ptr < MinerInfo >        getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
-    MinerURLMap                     getMinerURLs            () const;
-    VersionedValue < Schema >       getSchema               ( string schemaName ) const;
+    shared_ptr < MinerURLMap >      getMinerURLs            () const;
+    shared_ptr < Schema >           getSchema               ( string schemaName ) const;
     list < Schema >                 getSchemas              () const;
     UnfinishedBlockList             getUnfinished           ();
     void                            incrementNonce          ( const TransactionMakerSignature* makerSignature );
@@ -202,11 +275,39 @@ public:
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
     void                            setBlock                ( const Block& block );
-    void                            setEntropy              ( const Entropy& entropy );
+    void                            setEntropyString        ( string entropy );
     void                            setUnfinished           ( const UnfinishedBlockList& unfinished );
                                     Ledger                  ();
                                     Ledger                  ( Ledger& other );
                                     ~Ledger                 ();
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    shared_ptr < TYPE > getJSONSerializableObject ( string key ) const {
+
+        return Ledger::getJSONSerializableObject < TYPE >( *this, key );
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    static shared_ptr < TYPE > getJSONSerializableObject ( const VersionedStoreSnapshot& snapshot, string key ) {
+    
+        string json = snapshot.getValueOrFallback < string >( key, "" );
+        if ( json.size () > 0 ) {
+            shared_ptr < TYPE > object = make_shared < TYPE >();
+            FromJSONSerializer::fromJSONString ( *object, json );
+            return object;
+        }
+        return NULL;
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    void setJSONSerializableObject ( string key, const TYPE& object ) {
+    
+        string json = ToJSONSerializer::toJSONString ( object );
+        this->setValue < string >( key, json );
+    }
 };
 
 } // namespace Volition

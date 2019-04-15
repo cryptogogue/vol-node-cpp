@@ -18,7 +18,8 @@ class ChainPlacement;
 //================================================================//
 // Cycle
 //================================================================//
-class Cycle {
+class Cycle :
+    public AbstractSerializable {
 private:
 
     friend class Chain;
@@ -39,6 +40,20 @@ public:
     Cycle ( size_t cycleID, size_t base ) :
         mCycleID ( cycleID ),
         mBase ( base ) {
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "cycleID",       this->mCycleID );
+        serializer.serialize ( "base",          this->mBase );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "cycleID",       this->mCycleID );
+        serializer.serialize ( "base",          this->mBase );
     }
 };
 

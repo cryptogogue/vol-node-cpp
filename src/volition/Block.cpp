@@ -42,7 +42,7 @@ bool Block::apply ( Ledger& ledger ) const {
         
         if ( unfinishedBlock.mMaturity == this->mHeight ) {
             
-            VersionedValue < Block > block = ledger.getBlock ( unfinishedBlock.mBlockID );
+            shared_ptr < Block > block = ledger.getBlock ( unfinishedBlock.mBlockID );
             assert ( block );
             
             size_t nextMaturity = block->applyTransactions ( ledger );
@@ -107,8 +107,7 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
 //----------------------------------------------------------------//
 void Block::applyEntropy ( Ledger& ledger ) const {
 
-    Entropy entropy ( this->mAllure.toString ());
-    ledger.setEntropy ( entropy );
+    ledger.setEntropyString ( this->mAllure.toString ());
 }
 
 //----------------------------------------------------------------//
@@ -240,7 +239,7 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 //----------------------------------------------------------------//
 bool Block::verify ( const Ledger& ledger ) const {
 
-    VersionedValue < MinerInfo > minerInfo = ledger.getMinerInfo ( this->mMinerID );
+    shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( this->mMinerID );
 
     if ( minerInfo ) {
         return this->verify ( ledger, minerInfo->getPublicKey ());
