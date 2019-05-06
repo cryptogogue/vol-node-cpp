@@ -31,5 +31,6 @@ int main ( int argc, char** argv ) {
     LOG_F ( INFO, "Hello from main.cpp!" );
 
     ConsensusApp app;
-    return app.run ( argc, argv );
+    app.init ( argc, argv );
+    return app.run ();
 }

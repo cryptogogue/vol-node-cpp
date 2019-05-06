@@ -346,6 +346,7 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
 
     if ( other.getVersion () == 0 ) return;
     
+    // compare both chains, starting from the top
     VersionedStoreIterator chainIt0 ( *this, 0 );
     VersionedStoreIterator chainIt1 ( other, 0 );
     
@@ -353,18 +354,22 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
     size_t diverge = 0;
     bool overwrite = false;
     
+    // step along the chains, until either runs out
     for ( ; chainIt1 && ( !chainIt1.isCurrent ()); chainIt0.next (), chainIt1.next ()) {
         
+        // current height of iterator
         size_t height = chainIt1.getVersion ();
         
         if ( chainIt0 && ( !chainIt0.isCurrent ())) {
             
             shared_ptr < Block > block0 = Ledger::getJSONSerializableObject < Block >( chainIt0, BLOCK_KEY );
             shared_ptr < Block > block1 = Ledger::getJSONSerializableObject < Block >( chainIt1, BLOCK_KEY );
-        
+            
             assert ( block0 );
             assert ( block1 );
-        
+            
+            // diverge is the point where the chains diverge (i.e. the fork).
+            // only set it once - there is only one fork.
             if ( diverged == false ) {
                 diverge = height;
                 diverged = ( block0 != block1 );
@@ -373,6 +378,7 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
             int compare = Block::compare ( *block0, *block1 );
             
             if ( compare != 0 ) {
+                assert ( height > 0 ); // genesis blocks *must* match
                 overwrite = (( compare > 0 ) && ( metaData.canEdit ( block0->mCycleID, block1->mMinerID )));
                 break;
             }
@@ -390,10 +396,11 @@ void Chain::update ( ChainMetadata& metaData, const Chain& other ) {
         Chain ledger;
         ledger.takeSnapshot ( *this );
         ledger.revert ( diverge );
-        ledger.clearVersion ();
+        ledger.pushVersion ();
+//        ledger.clearVersion ();
         
         // apply all the other chain's blocks
-        VersionedStoreIterator fromIt ( other, diverge );
+        VersionedStoreIterator fromIt ( other, diverge + 1 );
         for ( ; fromIt && ( !fromIt.isCurrent ()); fromIt.next ()) {
             
             shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( fromIt, BLOCK_KEY );

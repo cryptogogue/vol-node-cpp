@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CDED582C20BA1FCE003A2969"
-               BuildableName = "libcpprouter.a"
+               BuildableName = "libsimplecpprouter.a"
                BlueprintName = "lib-simple-cpp-router"
                ReferencedContainer = "container:volition.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CDED582C20BA1FCE003A2969"
-            BuildableName = "libcpprouter.a"
+            BuildableName = "libsimplecpprouter.a"
             BlueprintName = "lib-simple-cpp-router"
             ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CDED582C20BA1FCE003A2969"
-            BuildableName = "libcpprouter.a"
+            BuildableName = "libsimplecpprouter.a"
             BlueprintName = "lib-simple-cpp-router"
             ReferencedContainer = "container:volition.xcodeproj">
          </BuildableReference>
