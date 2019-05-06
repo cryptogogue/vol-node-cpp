@@ -29,7 +29,7 @@
 /* Begin PBXBuildFile section */
 		CD09ED752207D82500B09249 /* SchemaListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaListHandler.h */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
-		CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
+		CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
 		CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CD0C3E5A20C86D88006E3B1C /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
@@ -59,7 +59,7 @@
 		CD4E815A210579C8007DA585 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CD4E815B210579C8007DA585 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
 		CD4E815C210579C8007DA585 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
-		CD4E817221057E91007DA585 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
+		CD4E817221057E91007DA585 /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
 		CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816B21057DD1007DA585 /* main-gtest.cpp */; };
 		CD4E8190210593A4007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
 		CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80D72102BB57007DA585 /* CryptoKey.h */; };
@@ -139,6 +139,14 @@
 		CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4621EBD46C00B5040E /* UnarySquap.h */; };
 		CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4821EBEB4100B5040E /* SerializableMap.h */; };
 		CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */; };
+		CD9FE6AD22699CCF009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
+		CD9FE6AE22699CCF009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
+		CD9FE6B322699D51009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
+		CD9FE6B422699D51009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
+		CD9FE6B922699D69009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
+		CD9FE6BA22699D69009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
+		CD9FE6BF22699D82009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
+		CD9FE6C022699D82009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CDB8B3C721AC7DB8004EE816 /* Inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Inventory.h */; };
 		CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C921AC7EBF004EE816 /* SerializableList.h */; };
 		CDB8B3CC21AC9CEC004EE816 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
@@ -250,7 +258,7 @@
 		CDED583B20BA1FE0003A2969 /* RegexConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582220BA1F4E003A2969 /* RegexConverter.h */; };
 		CDED583C20BA1FE0003A2969 /* StringTokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */; };
 		CDED583D20BA1FE0003A2969 /* StringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED582420BA1F4E003A2969 /* StringTokenizer.h */; };
-		CDED584120BA2008003A2969 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
+		CDED584120BA2008003A2969 /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
 		CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
 		CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
@@ -263,7 +271,7 @@
 		CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
 		CDED587920BD1C5F003A2969 /* main-server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632420B524A30038EE98 /* main-server.cpp */; };
 		CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
-		CDED588220BD1C5F003A2969 /* libcpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libcpprouter.a */; };
+		CDED588220BD1C5F003A2969 /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
 		CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
 		CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
@@ -365,6 +373,76 @@
 			proxyType = 1;
 			remoteGlobalIDString = CD4E817521059316007DA585;
 			remoteInfo = "lib-lognosis";
+		};
+		CD9FE6A222699CC0009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
+			remoteInfo = "lib-hiredis";
+		};
+		CD9FE6A422699CC0009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE62222669323009B4144;
+			remoteInfo = "lib-reproc";
+		};
+		CD9FE6A922699CC0009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CD9FE5F8226673FD009B4144;
+			remoteInfo = "lib-hiredis";
+		};
+		CD9FE6AB22699CC0009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CD9FE63B22669323009B4144;
+			remoteInfo = "lib-reproc";
+		};
+		CD9FE6AF22699D3B009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
+			remoteInfo = "lib-hiredis";
+		};
+		CD9FE6B122699D3B009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE62222669323009B4144;
+			remoteInfo = "lib-reproc";
+		};
+		CD9FE6B522699D64009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
+			remoteInfo = "lib-hiredis";
+		};
+		CD9FE6B722699D64009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE62222669323009B4144;
+			remoteInfo = "lib-reproc";
+		};
+		CD9FE6BB22699D7C009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
+			remoteInfo = "lib-hiredis";
+		};
+		CD9FE6BD22699D7C009B4144 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE62222669323009B4144;
+			remoteInfo = "lib-reproc";
 		};
 		CDBFD529218B78EC002AB0C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -719,7 +797,7 @@
 		CDED582220BA1F4E003A2969 /* RegexConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegexConverter.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/RegexConverter.h"; sourceTree = "<group>"; };
 		CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringTokenizer.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.cpp"; sourceTree = "<group>"; };
 		CDED582420BA1F4E003A2969 /* StringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringTokenizer.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.h"; sourceTree = "<group>"; };
-		CDED582D20BA1FCE003A2969 /* libcpprouter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcpprouter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsimplecpprouter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDED584220BA2131003A2969 /* RouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RouteTable.cpp; path = src/volition/RouteTable.cpp; sourceTree = "<group>"; };
 		CDED584320BA2131003A2969 /* RouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RouteTable.h; path = src/volition/RouteTable.h; sourceTree = "<group>"; };
 		CDED585920BA3981003A2969 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
@@ -750,10 +828,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD0C3E5720C86D88006E3B1C /* libcpprouter.a in Frameworks */,
+				CD9FE6B922699D69009B4144 /* libhiredis.a in Frameworks */,
 				CD6C9ADE21C48756009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52E218B790E002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE9215DA454004FC222 /* libpadamose.a in Frameworks */,
+				CD9FE6BA22699D69009B4144 /* libreproc.a in Frameworks */,
+				CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */,
 				CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */,
 				CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */,
 				CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */,
@@ -774,11 +854,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD4E817221057E91007DA585 /* libcpprouter.a in Frameworks */,
+				CD9FE6BF22699D82009B4144 /* libhiredis.a in Frameworks */,
 				CDD36CE3215DA428004FC222 /* libgtest.a in Frameworks */,
 				CD6C9AE121C48762009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52B218B78F4002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE4215DA429004FC222 /* libpadamose.a in Frameworks */,
+				CD9FE6C022699D82009B4144 /* libreproc.a in Frameworks */,
+				CD4E817221057E91007DA585 /* libsimplecpprouter.a in Frameworks */,
 				CD4E81D421059435007DA585 /* libvolition.a in Frameworks */,
 				CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */,
 				CD4E8152210579C8007DA585 /* libcrypto.a in Frameworks */,
@@ -806,10 +888,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD9FE6B322699D51009B4144 /* libhiredis.a in Frameworks */,
 				CD6C9ADB21C48749009A3801 /* liblognosis.a in Frameworks */,
-				CDED584120BA2008003A2969 /* libcpprouter.a in Frameworks */,
 				CDBFD531218B7921002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE8215DA44C004FC222 /* libpadamose.a in Frameworks */,
+				CD9FE6B422699D51009B4144 /* libreproc.a in Frameworks */,
+				CDED584120BA2008003A2969 /* libsimplecpprouter.a in Frameworks */,
 				CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */,
 				CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */,
 				CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */,
@@ -844,10 +928,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDED588220BD1C5F003A2969 /* libcpprouter.a in Frameworks */,
+				CD9FE6AD22699CCF009B4144 /* libhiredis.a in Frameworks */,
 				CD6C9AD821C4873A009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD534218B7935002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE7215DA444004FC222 /* libpadamose.a in Frameworks */,
+				CD9FE6AE22699CCF009B4144 /* libreproc.a in Frameworks */,
+				CDED588220BD1C5F003A2969 /* libsimplecpprouter.a in Frameworks */,
 				CD4E81D721059447007DA585 /* libvolition.a in Frameworks */,
 				CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */,
 				CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */,
@@ -1072,7 +1158,7 @@
 			isa = PBXGroup;
 			children = (
 				CD9345C22093EB140077BAD4 /* simulator */,
-				CDED582D20BA1FCE003A2969 /* libcpprouter.a */,
+				CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */,
 				CDED589020BD1C5F003A2969 /* server */,
 				CD0C3E6720C86D88006E3B1C /* util */,
 				CD4E8161210579C8007DA585 /* volition-gtest */,
@@ -1216,7 +1302,9 @@
 			children = (
 				CDD36CD2215DA35E004FC222 /* padamose-gtest */,
 				CDD36CD4215DA35E004FC222 /* libgtest.a */,
+				CD9FE6AA22699CC0009B4144 /* libhiredis.a */,
 				CDD36CD6215DA35E004FC222 /* libpadamose.a */,
+				CD9FE6AC22699CC0009B4144 /* libreproc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1444,9 +1532,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				CD9FE6B622699D64009B4144 /* PBXTargetDependency */,
 				CD6C9ADD21C4874F009A3801 /* PBXTargetDependency */,
 				CDBFD52D218B7904002AB0C3 /* PBXTargetDependency */,
 				CDD36CE2215DA417004FC222 /* PBXTargetDependency */,
+				CD9FE6B822699D64009B4144 /* PBXTargetDependency */,
 				CD0C3E4020C86D88006E3B1C /* PBXTargetDependency */,
 				CD4E81DC21059463007DA585 /* PBXTargetDependency */,
 			);
@@ -1466,10 +1556,12 @@
 			buildRules = (
 			);
 			dependencies = (
+				CD9FE6BC22699D7C009B4144 /* PBXTargetDependency */,
 				CDD36CDA215DA3FD004FC222 /* PBXTargetDependency */,
 				CD6C9AE021C4875D009A3801 /* PBXTargetDependency */,
 				CDBFD52A218B78EC002AB0C3 /* PBXTargetDependency */,
 				CDD36CDC215DA3FD004FC222 /* PBXTargetDependency */,
+				CD9FE6BE22699D7C009B4144 /* PBXTargetDependency */,
 				CD4E8132210579C8007DA585 /* PBXTargetDependency */,
 				CD4E81D32105942B007DA585 /* PBXTargetDependency */,
 			);
@@ -1506,9 +1598,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				CD9FE6B022699D3B009B4144 /* PBXTargetDependency */,
 				CD6C9ADA21C48743009A3801 /* PBXTargetDependency */,
 				CDBFD530218B7919002AB0C3 /* PBXTargetDependency */,
 				CDD36CE0215DA410004FC222 /* PBXTargetDependency */,
+				CD9FE6B222699D3B009B4144 /* PBXTargetDependency */,
 				CDED583F20BA2001003A2969 /* PBXTargetDependency */,
 				CD4E81D921059450007DA585 /* PBXTargetDependency */,
 			);
@@ -1548,7 +1642,7 @@
 			);
 			name = "lib-simple-cpp-router";
 			productName = "lib-simple-cpp-router";
-			productReference = CDED582D20BA1FCE003A2969 /* libcpprouter.a */;
+			productReference = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		CDED587420BD1C5F003A2969 /* server */ = {
@@ -1562,9 +1656,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				CD9FE6A322699CC0009B4144 /* PBXTargetDependency */,
 				CD6C9AD721C48731009A3801 /* PBXTargetDependency */,
 				CDBFD533218B792E002AB0C3 /* PBXTargetDependency */,
 				CDD36CDE215DA409004FC222 /* PBXTargetDependency */,
+				CD9FE6A522699CC0009B4144 /* PBXTargetDependency */,
 				CDED587520BD1C5F003A2969 /* PBXTargetDependency */,
 				CD4E81D62105943F007DA585 /* PBXTargetDependency */,
 			);
@@ -1651,6 +1747,20 @@
 			fileType = archive.ar;
 			path = liblognosis.a;
 			remoteRef = CD6C9AD421C48725009A3801 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CD9FE6AA22699CC0009B4144 /* libhiredis.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libhiredis.a;
+			remoteRef = CD9FE6A922699CC0009B4144 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CD9FE6AC22699CC0009B4144 /* libreproc.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libreproc.a;
+			remoteRef = CD9FE6AB22699CC0009B4144 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		CDD36CD2215DA35E004FC222 /* padamose-gtest */ = {
@@ -1897,6 +2007,46 @@
 			isa = PBXTargetDependency;
 			name = "lib-lognosis";
 			targetProxy = CD6C9ADF21C4875D009A3801 /* PBXContainerItemProxy */;
+		};
+		CD9FE6A322699CC0009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-hiredis";
+			targetProxy = CD9FE6A222699CC0009B4144 /* PBXContainerItemProxy */;
+		};
+		CD9FE6A522699CC0009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-reproc";
+			targetProxy = CD9FE6A422699CC0009B4144 /* PBXContainerItemProxy */;
+		};
+		CD9FE6B022699D3B009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-hiredis";
+			targetProxy = CD9FE6AF22699D3B009B4144 /* PBXContainerItemProxy */;
+		};
+		CD9FE6B222699D3B009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-reproc";
+			targetProxy = CD9FE6B122699D3B009B4144 /* PBXContainerItemProxy */;
+		};
+		CD9FE6B622699D64009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-hiredis";
+			targetProxy = CD9FE6B522699D64009B4144 /* PBXContainerItemProxy */;
+		};
+		CD9FE6B822699D64009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-reproc";
+			targetProxy = CD9FE6B722699D64009B4144 /* PBXContainerItemProxy */;
+		};
+		CD9FE6BC22699D7C009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-hiredis";
+			targetProxy = CD9FE6BB22699D7C009B4144 /* PBXContainerItemProxy */;
+		};
+		CD9FE6BE22699D7C009B4144 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-reproc";
+			targetProxy = CD9FE6BD22699D7C009B4144 /* PBXContainerItemProxy */;
 		};
 		CDBFD52A218B78EC002AB0C3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2296,7 +2446,7 @@
 					"$(INHERITED)",
 					"-w",
 				);
-				PRODUCT_NAME = cpprouter;
+				PRODUCT_NAME = simplecpprouter;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -2314,7 +2464,7 @@
 					"$(INHERITED)",
 					"-w",
 				);
-				PRODUCT_NAME = cpprouter;
+				PRODUCT_NAME = simplecpprouter;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;

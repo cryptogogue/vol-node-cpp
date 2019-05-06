@@ -167,22 +167,21 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::saveChain () {
 
-    if ( !this->mChainPath.size ()) return;
-    
-    fstream outStream;
-    outStream.open ( this->mChainPath, ios_base::out );
-    Volition::ToJSONSerializer::toJSON ( *this, outStream );
+    if ( this->mPersistenceProvider ) {
+        this->mChain.persist ( this->mPersistenceProvider, MASTER_BRANCH );
+        this->mPersistenceProvider->flush ();
+    }
 }
 
 //----------------------------------------------------------------//
-void Miner::setChainPath ( string path ) {
+void Miner::setPersistenceProvider ( shared_ptr < AbstractPersistenceProvider > persistence ) {
 
-    this->mChainPath = path;
-    
-    if ( path.size () && Poco::File ( path ).exists ()) {
-        fstream inStream;
-        inStream.open ( path, ios_base::in );
-        Volition::FromJSONSerializer::fromJSON ( *this, inStream );
+    this->mPersistenceProvider = persistence;
+    if ( persistence ) {
+        this->mChain.takeSnapshot ( persistence, MASTER_BRANCH );
+    }
+    else {
+        this->mChain.clear ();
     }
 }
 

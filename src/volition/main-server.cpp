@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <padamose/padamose.h>
 #include <volition/Block.h>
 #include <volition/TheTransactionFactory.h>
 #include <volition/RouteTable.h>
@@ -174,12 +175,12 @@ protected:
     void defineOptions ( Poco::Util::OptionSet& options ) override {
         Application::defineOptions ( options );
         
-        options.addOption (
-            Poco::Util::Option ( "chain", "c", "path to the chain" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "chain" )
-        );
+//        options.addOption (
+//            Poco::Util::Option ( "chain", "c", "path to the chain" )
+//                .required ( false )
+//                .argument ( "value", true )
+//                .binding ( "chain" )
+//        );
         
         options.addOption (
             Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
@@ -217,6 +218,34 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "redis-conf", "rc", "path to the redis conf" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "redis-conf" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "redis-host", "rh", "redis hostname" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "redis-host" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "redis-folder", "rf", "path to the redis folder" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "redis-folder" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "redis-port", "rp", "redis port" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "redis-port" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "solo", "s", "operate in solo mode" )
                 .required ( false )
                 .argument ( "value" )
@@ -231,11 +260,14 @@ protected:
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
-        string chain        = configuration.getString ( "chain", "" );
         string genesis      = configuration.getString ( "genesis" );
         string keyfile      = configuration.getString ( "keyfile" );
         int port            = configuration.getInt ( "port", 9090 );
         string nodelist     = configuration.getString ( "nodelist", "" );
+        string redisConf    = configuration.getString ( "redis-conf", "./redis.conf" );
+        string redisHost    = configuration.getString ( "redis-conf", "127.0.0.1" );
+        string redisFolder  = configuration.getString ( "redis-folder", "./redis" );
+        int redisPort       = configuration.getInt ( "redis-port", 0 );
         bool solo           = configuration.getBool ( "solo", false );
     
         LOG_F ( INFO, "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
@@ -243,7 +275,21 @@ protected:
         string minerID      = to_string ( port );
     
         Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
+        
+        Padamose::RedisServerProc redisServerProc;
+        shared_ptr < StringStorePersistenceProvider > persistenceProvider;
+        
+        if ( redisPort != 0 ) {
+            redisServerProc.start ( redisFolder, redisConf, redisHost, redisPort );
+            assert ( redisServerProc.getStatus () != RedisServerProc::NOT_RUNNING );
             
+            shared_ptr < RedisStringStore > stringStore = redisServerProc.makeStringStore ();
+            assert ( stringStore );
+            
+            persistenceProvider = make_shared < StringStorePersistenceProvider >( stringStore );
+        }
+
+        
         {
             Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
             Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
@@ -253,10 +299,14 @@ protected:
                 webMiner.setSolo ( true );
             }
             
+            webMiner.setPersistenceProvider ( persistenceProvider );
+            
+            if ( webMiner.getChainSize () == 0 ) {
+                webMiner.loadGenesis ( genesis );
+            }
+            
             webMiner.loadKey ( keyfile );
-            webMiner.loadGenesis ( genesis );
             webMiner.setMinerID ( minerID );
-            webMiner.setChainPath ( chain );
             webMiner.start ();
         }
 

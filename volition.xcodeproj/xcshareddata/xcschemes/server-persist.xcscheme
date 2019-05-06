@@ -76,7 +76,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-c chain.json"
+            argument = "-rp 9393"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -84,6 +84,13 @@
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "PATH"
+            value = "PATH=${PATH}:/usr/local/bin"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
          <AdditionalOption
             key = "DYLD_INSERT_LIBRARIES"

@@ -25,13 +25,15 @@ class Miner :
     public AbstractSerializable {
 protected:
 
+    static constexpr const char* MASTER_BRANCH      = "master";
+
     string                                          mMinerID;
 
     CryptoKey                                       mKeyPair;
     list < shared_ptr < AbstractTransaction >>      mPendingTransactions;
     bool                                            mLazy;
 
-    string                                          mChainPath;
+    shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
 
     Chain                                           mChain;
     ChainMetadata                                   mMetadata;
@@ -59,7 +61,7 @@ public:
     const Ledger&           getLedger               () const;
     string                  getMinerID              () const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
-    void                    setChainPath            ( string path );
+    void                    setPersistenceProvider  ( shared_ptr < AbstractPersistenceProvider > persistence );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );
