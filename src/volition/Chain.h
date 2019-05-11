@@ -11,78 +11,7 @@
 namespace Volition {
 
 class Block;
-class Cycle;
 class ChainMetadata;
-class ChainPlacement;
-
-//================================================================//
-// Cycle
-//================================================================//
-class Cycle :
-    public AbstractSerializable {
-private:
-
-    friend class Chain;
-    friend class ChainPlacement;
-
-    u64     mCycleID;
-    u64     mBase; // verion where cycle starts
-
-public:
-    
-    //----------------------------------------------------------------//
-    Cycle () :
-        mCycleID ( 0 ),
-        mBase ( 0 ) {
-    }
-
-    //----------------------------------------------------------------//
-    Cycle ( size_t cycleID, size_t base ) :
-        mCycleID ( cycleID ),
-        mBase ( base ) {
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "cycleID",       this->mCycleID );
-        serializer.serialize ( "base",          this->mBase );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "cycleID",       this->mCycleID );
-        serializer.serialize ( "base",          this->mBase );
-    }
-};
-
-//================================================================//
-// ChainPlacement
-//================================================================//
-class ChainPlacement {
-private:
-
-    friend class Chain;
-    friend class Cycle;
-
-    bool            mNewCycle;
-    Cycle           mCycle;
-
-    //----------------------------------------------------------------//
-    ChainPlacement ( const Cycle& cycle, bool newCycle ) :
-        mNewCycle ( newCycle ),
-        mCycle ( cycle ) {
-    }
-
-public:
-
-    //----------------------------------------------------------------//
-    size_t getCycleID () const {
-
-        return this->mCycle.mCycleID + ( this->mNewCycle ? 1 : 0 );
-    }
-};
 
 //================================================================//
 // Chain
@@ -93,19 +22,13 @@ class Chain :
 private:
 
     //----------------------------------------------------------------//
-    Cycle                       getTopCycle         () const;
-    bool                        isInCycle           ( const Cycle& cycle, string minerID ) const;
-    void                        newCycle            ();
-    string                      print               ( const ChainMetadata* metaData, const char* pre, const char* post ) const;
-    bool                        willImprove         ( ChainMetadata& metaData, const Cycle& cycle, string minerID ) const;
+    static int                  compareSegment      ( const Chain& chain0, const Chain& chain1, size_t base, size_t n );
 
     //----------------------------------------------------------------//
     void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
     void                        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
-
-    static constexpr const char* CYCLE_KEY      = "cycle";
 
     enum class UpdateResult {
         UPDATE_ACCEPTED,
@@ -115,21 +38,16 @@ public:
     };
 
     //----------------------------------------------------------------//
-    bool                        canPush             ( string minerID, bool force ) const;
-                                Chain               ();
-                                ~Chain              ();
-    size_t                      countBlocks         () const;
-    size_t                      countBlocks         ( size_t cycleIdx ) const;
-    size_t                      countCycles         () const;
-    ChainPlacement              findNextCycle       ( ChainMetadata& metaData, string minerID ) const;
-    void                        prepareForPush      ( ChainMetadata& metaData, const ChainPlacement& placement, Block& block );
-    string                      print               ( const char* pre = NULL, const char* post = NULL ) const;
-    string                      print               ( const ChainMetadata& metaData, const char* pre = NULL, const char* post = NULL ) const;
-    bool                        pushBlock           ( const Block& block );
-    void                        reset               ();
-    size_t                      size                () const;
-    UpdateResult                update              ( ChainMetadata& metaData, const Block& block );
-    void                        update              ( ChainMetadata& metaData, const Chain& other );
+    bool                checkMiners         ( string miners ) const;
+    static int          compare             ( const Chain& chain0, const Chain& chain1, u64 now, u64 window );
+                        Chain               ();
+                        ~Chain              ();
+    size_t              countBlocks         () const;
+    size_t              countBlocks         ( size_t cycleIdx ) const;
+    string              print               ( const char* pre = NULL, const char* post = NULL ) const;
+    bool                pushBlock           ( const Block& block );
+    void                reset               ();
+    size_t              size                () const;
 };
 
 } // namespace Volition

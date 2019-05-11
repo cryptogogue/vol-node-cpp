@@ -35,15 +35,16 @@ protected:
 
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
 
-    Chain                                           mChain;
-    ChainMetadata                                   mMetadata;
-        
+    u64                                             mNow;
+    
+    shared_ptr < Chain >                            mBestBranch;
+    set < shared_ptr < Chain >>                     mBranches;
+    
     //----------------------------------------------------------------//
     void                    addTransactions         ( Chain& chain, Block& block );
-    Digest                  computeAllure           ( size_t cycleID ) const;
-    size_t                  computeScore            ( const Digest& allure ) const;
-    void                    pushBlock               ( Chain& chain, bool force );
+    void                    extendChain             ( Chain& chain );
     void                    saveChain               ();
+    void                    submitChainRecurse      ( const Chain& chain, size_t blockID );
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -51,15 +52,23 @@ protected:
 
 public:
 
+    enum class SubmissionResponse {
+        ACCEPTED = 0,
+        RESUBMIT_EARLIER,
+    };
+
     //----------------------------------------------------------------//
-    void                    extendChain             ();
+    bool                    checkBestBranch         ( string miners ) const;
+    size_t                  countBranches           () const;
+    void                    extend                  ();
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
-    const Chain&            getChain                () const;
-    size_t                  getChainSize            () const;
+    const Chain*            getBestBranch           () const;
+    size_t                  getLongestBranchSize    () const;
     bool                    getLazy                 () const;
     const Ledger&           getLedger               () const;
     string                  getMinerID              () const;
+    bool                    hasBranch               ( string miners ) const;
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
     void                    setPersistenceProvider  ( shared_ptr < AbstractPersistenceProvider > persistence );
     void                    setGenesis              ( const Block& block );
@@ -67,7 +76,11 @@ public:
     void                    setMinerID              ( string minerID );
                             Miner                   ();
     virtual                 ~Miner                  ();
-    void                    updateChain             ( const Chain& proposedChain );
+    void                    selectBranch            ();
+    void                    setTime                 ( u64 time );
+    void                    step                    ( u64 step );
+    SubmissionResponse      submitBlock             ( const Block& block );
+    void                    submitChain             ( const Chain& chain );
 };
 
 } // namespace Volition

@@ -112,22 +112,25 @@ void Block::applyEntropy ( Ledger& ledger ) const {
 
 //----------------------------------------------------------------//
 Block::Block () :
-    mCycleID ( 0 ),
-    mHeight ( 0 ) {
+    mHeight ( 0 ),
+    mTime ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-Block::Block ( string minerID, size_t cycleID, const CryptoKey& key, string hashAlgorithm ) :
+Block::Block ( string minerID, u64 now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm ) :
     mMinerID ( minerID ),
-    mCycleID ( cycleID ),
-    mHeight ( 0 ) {
+    mHeight ( 0 ),
+    mTime ( now ) {
     
-    Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-    Poco::DigestOutputStream signatureStream ( signature );
-    signatureStream << this->mCycleID;
-    signatureStream.close ();
-    
-    this->mAllure = signature.signature ();
+    if ( prevBlock ) {
+        
+        this->mHeight = prevBlock->mHeight + 1;
+        this->mPrevDigest = prevBlock->mSignature.getDigest ();
+        
+        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
+        this->computeAllure ( signature );
+        this->mAllure = signature.signature ();
+    }
 }
 
 //----------------------------------------------------------------//
@@ -140,34 +143,29 @@ int Block::compare ( const Block& block0, const Block& block1 ) {
     assert ( block0.mHeight == block1.mHeight );
 
     if ( block0 != block1 ) {
-    
-        if ( block0.mCycleID != block1.mCycleID ) {
         
-            if ( block0.mCycleID < block1.mCycleID ) return -1;
-            if ( block0.mCycleID > block1.mCycleID ) return 1;
-        }
-        else {
+        size_t score0 = block0.getScore ();
+        size_t score1 = block1.getScore ();
         
-            size_t score0 = block0.getScore ();
-            size_t score1 = block1.getScore ();
-            
-            if ( score0 < score1 ) return -1;
-            if ( score0 > score1 ) return 1;
-        }
+        if ( score0 < score1 ) return -1;
+        if ( score0 > score1 ) return 1;
     }
     return 0;
+}
+
+//----------------------------------------------------------------//
+void Block::computeAllure ( Poco::Crypto::ECDSADigestEngine& signature ) const {
+
+    Poco::DigestOutputStream signatureStream ( signature );
+    signatureStream << this->mHeight;
+    signatureStream << this->mPrevDigest;
+    signatureStream.close ();
 }
 
 //----------------------------------------------------------------//
 size_t Block::countTransactions () const {
 
     return this->mTransactions.size ();
-}
-
-//----------------------------------------------------------------//
-size_t Block::getCycleID () const {
-
-    return this->mCycleID;
 }
 
 //----------------------------------------------------------------//
@@ -195,19 +193,32 @@ size_t Block::getScore () const {
         string allureString = Poco::DigestEngine::digestToHex ( this->mAllure );
         return std::hash < string >{}( allureString );
     }
-    return strtol ( this->mMinerID.c_str (), 0, 10 );
+    
+    if ( this->mHeight == 0 ) return 0;
+    
+    size_t modulo = TheContext::get ().getScoringModulo ();
+    size_t height = ( this->mHeight - 1 ) % modulo;
+    size_t minerID = strtol ( this->mMinerID.c_str (), 0, 10 );
+    
+    return height <= minerID ? minerID - height : (( modulo - height ) + minerID );
+}
+
+//----------------------------------------------------------------//
+u64 Block::getTime () const {
+
+    return this->mTime;
+}
+
+//----------------------------------------------------------------//
+bool Block::isParent ( const Block& block ) const {
+
+    return ( this->mSignature.getDigest () == block.mPrevDigest );
 }
 
 //----------------------------------------------------------------//
 void Block::pushTransaction ( shared_ptr < AbstractTransaction > transaction ) {
 
     this->mTransactions.push_back ( transaction );
-}
-
-//----------------------------------------------------------------//
-void Block::setCycleID ( size_t cycleID ) {
-
-    this->mCycleID = cycleID;
 }
 
 //----------------------------------------------------------------//
@@ -259,12 +270,11 @@ bool Block::verify ( const Ledger& ledger, const CryptoKey& key ) const {
 
     if ( this->mHeight > 0 ) {
 
+        // verify allure
         string hashAlgorithm = this->mSignature.getHashAlgorithm ();
 
         Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-        Poco::DigestOutputStream signatureStream ( signature );
-        signatureStream << this->mCycleID;
-        signatureStream.close ();
+        this->computeAllure ( signature );
 
         if ( !signature.verify ( this->mAllure )) {
             return false;
@@ -281,7 +291,7 @@ bool Block::verify ( const Ledger& ledger, const CryptoKey& key ) const {
 void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     
     serializer.serialize ( "height",        this->mHeight );
-    serializer.serialize ( "cycleID",       this->mCycleID );
+    serializer.serialize ( "time",          this->mTime );
     
     if ( this->mHeight > 0 ) {
         serializer.serialize ( "minerID",       this->mMinerID );
@@ -297,7 +307,7 @@ void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
 void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "height",        this->mHeight );
-    serializer.serialize ( "cycleID",       this->mCycleID );
+    serializer.serialize ( "time",          this->mTime );
     
     if ( this->mHeight > 0 ) {
         serializer.serialize ( "minerID",       this->mMinerID );

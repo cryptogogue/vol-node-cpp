@@ -24,11 +24,11 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
-        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        const Chain& chain = scopedLock.getWebMiner ().getChain ();
-        Poco::Dynamic::Var blocks = ToJSONSerializer::toJSON ( chain );
-        
-        jsonOut.set ( "blocks", blocks );
+//        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+//        const Chain& chain = scopedLock.getWebMiner ().getChain ();
+//        Poco::Dynamic::Var blocks = ToJSONSerializer::toJSON ( chain );
+//        
+//        jsonOut.set ( "blocks", blocks );
         
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

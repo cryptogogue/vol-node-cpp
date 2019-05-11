@@ -32,8 +32,21 @@ TheContext::ScoringMode TheContext::getScoringMode () const {
 }
 
 //----------------------------------------------------------------//
+size_t TheContext::getScoringModulo () const {
+
+    return this->mScoringModulo;
+}
+
+//----------------------------------------------------------------//
+u64 TheContext::getWindow () const {
+
+    return this->mWindow;
+}
+
+//----------------------------------------------------------------//
 TheContext::TheContext () :
-    mScoringMode ( ScoringMode::ALLURE ) {
+    mScoringMode ( ScoringMode::ALLURE ),
+    mScoringModulo ( 0 ) {
 
     Poco::JSON::Object::Ptr object = new Poco::JSON::Object ();
     object->set ( "type", "EC_PEM" );
@@ -57,9 +70,16 @@ void TheContext::setGenesisBlockKey ( const CryptoKey& key ) {
 }
 
 //----------------------------------------------------------------//
-void TheContext::setScoringMode ( ScoringMode scoringMode ) {
+void TheContext::setScoringMode ( ScoringMode scoringMode, size_t modulo ) {
 
     this->mScoringMode = scoringMode;
+    this->mScoringModulo = modulo;
+}
+
+//----------------------------------------------------------------//
+void TheContext::setWindow ( u64 window ) {
+
+    this->mWindow = window;
 }
 
 } // namespace Volition

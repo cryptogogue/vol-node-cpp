@@ -30,7 +30,7 @@ public:
             
             bool lazy = webMiner.getLazy ();
             webMiner.setLazy ( false );
-            webMiner.extendChain ();
+            webMiner.extend ();
             webMiner.setLazy ( lazy );
         }
         catch ( ... ) {

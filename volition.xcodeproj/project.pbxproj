@@ -41,8 +41,6 @@
 		CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CD0C3E6120C86D88006E3B1C /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
 		CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
-		CD240D2D21360BD900FF8812 /* ChainMetadata.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD240D2B21360BD900FF8812 /* ChainMetadata.cpp */; };
-		CD240D2E21360BD900FF8812 /* ChainMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = CD240D2C21360BD900FF8812 /* ChainMetadata.h */; };
 		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
@@ -149,7 +147,6 @@
 		CD9FE6C022699D82009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CDB8B3C721AC7DB8004EE816 /* Inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Inventory.h */; };
 		CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C921AC7EBF004EE816 /* SerializableList.h */; };
-		CDB8B3CC21AC9CEC004EE816 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */; };
 		CDB8B40221ACC874004EE816 /* AccountKeyListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F821ACC874004EE816 /* AccountKeyListHandler.h */; };
 		CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */; };
@@ -286,8 +283,7 @@
 		CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7982121EC30B6002C4D80 /* ConstSquap.h */; };
 		CDF8AD4D21EFD64B000E285F /* Variant.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD4C21EFD64B000E285F /* Variant.h */; };
 		CDF8AD5021F29045000E285F /* ExtendChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */; };
-		CDF8AD5121F2CFCB000E285F /* TestSimulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */; };
-		CDF8AD5221F2CFCE000E285F /* TestChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestChain.cpp */; };
+		CDF8AD5221F2CFCE000E285F /* TestMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestMiner.cpp */; };
 		CDF8AD5621F2D106000E285F /* Transactions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5521F2D106000E285F /* Transactions.h */; };
 		CDF8AD5821F39969000E285F /* Entropy.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5721F39969000E285F /* Entropy.h */; };
 		CDF8AD5C21F52B34000E285F /* SchemaLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDF8AD5A21F52B34000E285F /* SchemaLua.cpp */; };
@@ -619,8 +615,6 @@
 		CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncChainTask.h; path = src/volition/SyncChainTask.h; sourceTree = "<group>"; };
 		CD0C3E6720C86D88006E3B1C /* util */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = util; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD0C3E6820C86FBA006E3B1C /* main-util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-util.cpp"; path = "src/volition/main-util.cpp"; sourceTree = "<group>"; };
-		CD240D2B21360BD900FF8812 /* ChainMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChainMetadata.cpp; path = src/volition/ChainMetadata.cpp; sourceTree = "<group>"; };
-		CD240D2C21360BD900FF8812 /* ChainMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChainMetadata.h; path = src/volition/ChainMetadata.h; sourceTree = "<group>"; };
 		CD36658920EB3BE0000E0B43 /* Miner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Miner.cpp; path = src/volition/Miner.cpp; sourceTree = "<group>"; };
 		CD36658A20EB3BE0000E0B43 /* Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.h; path = src/volition/Miner.h; sourceTree = "<group>"; };
 		CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheWebMiner.cpp; path = src/volition/TheWebMiner.cpp; sourceTree = "<group>"; };
@@ -774,7 +768,7 @@
 		CDBFD545218B8999002AB0C3 /* InvokeSchemaMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InvokeSchemaMethod.h; path = src/volition/transactions/InvokeSchemaMethod.h; sourceTree = "<group>"; };
 		CDBFD557218BA145002AB0C3 /* Schema.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Schema.cpp; path = src/volition/Schema.cpp; sourceTree = "<group>"; };
 		CDBFD558218BA145002AB0C3 /* Schema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Schema.h; path = src/volition/Schema.h; sourceTree = "<group>"; };
-		CDC1388F212FCFDF004FA594 /* TestChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestChain.cpp; path = src/volition/gtest/TestChain.cpp; sourceTree = "<group>"; };
+		CDC1388F212FCFDF004FA594 /* TestMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestMiner.cpp; path = src/volition/gtest/TestMiner.cpp; sourceTree = "<group>"; };
 		CDC2B31420CCAD2400300A96 /* Ledger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger.cpp; path = src/volition/Ledger.cpp; sourceTree = "<group>"; };
 		CDC2B31520CCAD2400300A96 /* Ledger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger.h; path = src/volition/Ledger.h; sourceTree = "<group>"; };
 		CDC2B33520CE112F00300A96 /* Chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chain.cpp; path = src/volition/Chain.cpp; sourceTree = "<group>"; };
@@ -1001,8 +995,6 @@
 				CD46659D20BE908300A02D55 /* Block.h */,
 				CDC2B33520CE112F00300A96 /* Chain.cpp */,
 				CDC2B33620CE112F00300A96 /* Chain.h */,
-				CD240D2B21360BD900FF8812 /* ChainMetadata.cpp */,
-				CD240D2C21360BD900FF8812 /* ChainMetadata.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
 				CDB8B3C521AC7DB8004EE816 /* Inventory.h */,
 				CDC2B31420CCAD2400300A96 /* Ledger.cpp */,
@@ -1045,7 +1037,7 @@
 			isa = PBXGroup;
 			children = (
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
-				CDC1388F212FCFDF004FA594 /* TestChain.cpp */,
+				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
 				CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */,
 				CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */,
 			);
@@ -1395,7 +1387,6 @@
 				CD4E81B9210593E5007DA585 /* JSONSerializer.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,
-				CD240D2E21360BD900FF8812 /* ChainMetadata.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
@@ -1845,9 +1836,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CDF8AD5221F2CFCE000E285F /* TestChain.cpp in Sources */,
-				CDF8AD5121F2CFCB000E285F /* TestSimulation.cpp in Sources */,
-				CDB8B3CC21AC9CEC004EE816 /* TestWebMiner.cpp in Sources */,
+				CDF8AD5221F2CFCE000E285F /* TestMiner.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1869,7 +1858,6 @@
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* SchemaLua.cpp in Sources */,
-				CD240D2D21360BD900FF8812 /* ChainMetadata.cpp in Sources */,
 				CD73D82C2166D68700F43CC7 /* SimMiner.cpp in Sources */,
 				CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */,
 				CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */,

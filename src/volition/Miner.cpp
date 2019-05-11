@@ -30,42 +30,95 @@ void Miner::addTransactions ( Chain& chain, Block& block ) {
 }
 
 //----------------------------------------------------------------//
-Digest Miner::computeAllure ( size_t cycleID ) const {
+bool Miner::checkBestBranch ( string miners ) const {
 
-    Poco::Crypto::ECDSADigestEngine signature ( this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
-    Poco::DigestOutputStream signatureStream ( signature );
-    signatureStream << cycleID;
-    signatureStream.close ();
+    assert ( this->mBestBranch );
+    return this->mBestBranch->checkMiners ( miners );
+}
+
+//----------------------------------------------------------------//
+size_t Miner::countBranches () const {
+
+    return this->mBranches.size ();
+}
+
+//----------------------------------------------------------------//
+void Miner::extend () {
     
-    return signature.signature ();
-}
-
-//----------------------------------------------------------------//
-size_t Miner::computeScore ( const Digest& allure ) const {
-
-    if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
-        string allureString = Poco::DigestEngine::digestToHex ( allure );
-        return std::hash < string >{}( allureString );
+    set < shared_ptr < Chain >>::iterator branchIt = this->mBranches.begin ();
+    for ( ; branchIt != this->mBranches.end (); ++branchIt ) {
+        shared_ptr < Chain > chain = *branchIt;
+        this->extendChain ( *chain );
     }
-    return strtol ( this->mMinerID.c_str (), 0, 10 );
 }
 
 //----------------------------------------------------------------//
-void Miner::extendChain () {
+void Miner::extendChain ( Chain& chain ) {
 
-    this->pushBlock ( this->mChain, true );
+    u64 minTime = this->mNow - TheContext::get ().getWindow ();
+
+    size_t nBlocks = chain.countBlocks ();
+    size_t top = nBlocks;
+    
+    for ( size_t i = nBlocks; i > 1; --i ) {
+        
+        // we can replace any block more recent than the current time minus the time window.
+        shared_ptr < Block > rivalBlock = chain.getBlock ( i - 1 );
+        if ( rivalBlock->getTime () < minTime ) break;
+        if ( rivalBlock->getMinerID () == this->mMinerID ) break; // don't overwrite own block.
+        
+        // prepare test block
+        shared_ptr < Block > prevBlock = chain.getBlock ( i - 2 );
+        Block testBlock ( this->mMinerID, this->mNow, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+        
+        if ( Block::compare ( testBlock, *rivalBlock ) <= 0 ) {
+            top = i - 1;
+        }
+    }
+    
+    Chain fork ( chain );
+    if ( top < nBlocks ) {
+        fork.revert ( top - 1 );
+        fork.pushVersion ();
+    }
+    
+    shared_ptr < Block > prevBlock = fork.getTopBlock ();
+    assert ( prevBlock );
+    
+    Block block ( this->mMinerID, this->mNow, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+    this->addTransactions ( fork, block );
+    
+    if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
+    
+        block.sign ( this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+        bool result = fork.pushBlock ( block );
+        assert ( result );
+        
+        chain.takeSnapshot ( fork );
+    }
 }
 
 //----------------------------------------------------------------//
-const Chain& Miner::getChain () const {
+const Chain* Miner::getBestBranch () const {
 
-    return this->mChain;
+    return this->mBestBranch.get ();
 }
 
 //----------------------------------------------------------------//
-size_t Miner::getChainSize () const {
-
-    return this->mChain.size ();
+size_t Miner::getLongestBranchSize () const {
+    
+    size_t max = 0;
+    
+    set < shared_ptr < Chain >>::const_iterator branchIt = this->mBranches.cbegin ();
+    for ( ; branchIt != this->mBranches.cend (); ++branchIt ) {
+        shared_ptr < const Chain > comp = *branchIt;
+        
+        size_t nBlocks = comp->countBlocks ();
+        if ( max < nBlocks ) {
+            max = nBlocks;
+        }
+    }
+    return max;
 }
 
 //----------------------------------------------------------------//
@@ -77,13 +130,25 @@ bool Miner::getLazy () const {
 //----------------------------------------------------------------//
 const Ledger& Miner::getLedger () const {
 
-    return this->mChain;
+    assert ( this->mBestBranch );
+    return *this->mBestBranch;
 }
 
 //----------------------------------------------------------------//
 string Miner::getMinerID () const {
 
     return this->mMinerID;
+}
+
+//----------------------------------------------------------------//
+bool Miner::hasBranch ( string miners ) const {
+
+    set < shared_ptr < Chain >>::const_iterator branchIt = this->mBranches.cbegin ();
+    for ( ; branchIt != this->mBranches.cend (); ++branchIt ) {
+        shared_ptr < const Chain > branch = *branchIt;
+        if ( branch->checkMiners ( miners )) return true;
+    }
+    return false;
 }
 
 //----------------------------------------------------------------//
@@ -109,35 +174,6 @@ void Miner::loadKey ( string keyfile, string password ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::pushBlock ( Chain& chain, bool force ) {
-
-    if ( chain.canPush ( this->mMinerID, force )) {
-
-        // find the cycle (including a new cycle) that the block should be placed in.
-        ChainPlacement placement = chain.findNextCycle ( this->mMetadata, this->mMinerID );
-        
-        // this also computes the allure for that cycle.
-        Block block ( this->mMinerID, placement.getCycleID (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
-        
-        Chain fork ( chain );
-        fork.prepareForPush ( this->mMetadata, placement, block );
-        
-        // do this *after* prepare
-        this->addTransactions ( fork, block );
-        
-        if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
-            
-            block.sign ( this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
-            bool result = fork.pushBlock ( block );
-            assert ( result );
-            
-            this->mMetadata.affirmParticipant ( block.getCycleID (), block.getMinerID ());
-            chain.takeSnapshot ( fork );
-        }
-    }
-}
-
-//----------------------------------------------------------------//
 void Miner::pushTransaction ( shared_ptr < AbstractTransaction > transaction ) {
 
     this->mPendingTransactions.push_back ( transaction );
@@ -157,7 +193,8 @@ void Miner::setMinerID ( string minerID ) {
 
 //----------------------------------------------------------------//
 Miner::Miner () :
-    mLazy ( false ) {
+    mLazy ( false ),
+    mNow ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -167,36 +204,129 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::saveChain () {
 
-    if ( this->mPersistenceProvider ) {
-        this->mChain.persist ( this->mPersistenceProvider, MASTER_BRANCH );
-        this->mPersistenceProvider->flush ();
-    }
+//    if ( this->mPersistenceProvider ) {
+//        this->mChain.persist ( this->mPersistenceProvider, MASTER_BRANCH );
+//        this->mPersistenceProvider->flush ();
+//    }
 }
 
 //----------------------------------------------------------------//
 void Miner::setPersistenceProvider ( shared_ptr < AbstractPersistenceProvider > persistence ) {
 
-    this->mPersistenceProvider = persistence;
-    if ( persistence ) {
-        this->mChain.takeSnapshot ( persistence, MASTER_BRANCH );
-    }
-    else {
-        this->mChain.clear ();
-    }
+//    this->mPersistenceProvider = persistence;
+//    if ( persistence ) {
+//        this->mChain.takeSnapshot ( persistence, MASTER_BRANCH );
+//    }
+//    else {
+//        this->mBranches;
+//    }
 }
 
 //----------------------------------------------------------------//
 void Miner::setGenesis ( const Block& block ) {
     
-    this->mChain.reset ();
-    this->mChain.pushBlock ( block );
+    this->mBranches.clear ();
+    shared_ptr < Chain > chain = make_shared < Chain >();
+    chain->pushBlock ( block );
+    this->mBranches.insert ( chain );
+    
+    this->mBestBranch = chain;
 }
 
 //----------------------------------------------------------------//
-void Miner::updateChain ( const Chain& proposedChain ) {
+void Miner::selectBranch () {
+   
+    shared_ptr < Chain > bestBranch;
+   
+    if ( this->mBranches.size ()) {
     
-    this->mChain.update ( this->mMetadata, proposedChain );
-    this->pushBlock ( this->mChain, false );
+        set < shared_ptr < Chain >>::iterator branchIt = this->mBranches.begin ();
+        bestBranch = *branchIt;
+        
+        for ( ++branchIt ; branchIt != this->mBranches.end (); ++branchIt ) {
+            shared_ptr < Chain > comp = *branchIt;
+            
+            if ( Chain::compare ( *bestBranch, *comp, this->mNow, TheContext::get ().getWindow ()) > 0 ) {
+                bestBranch = comp;
+            }
+        }
+    }
+    this->mBestBranch = bestBranch;
+    assert ( this->mBestBranch );
+}
+
+//----------------------------------------------------------------//
+void Miner::setTime ( u64 time ) {
+
+    this->mNow = time;
+}
+
+//----------------------------------------------------------------//
+void Miner::step ( u64 step ) {
+
+    this->mNow += step;
+}
+
+//----------------------------------------------------------------//
+Miner::SubmissionResponse Miner::submitBlock ( const Block& block ) {
+
+    size_t blockHeight = block.getHeight ();
+    
+    assert ( blockHeight > 0 ); // TODO: handle this
+
+    set < shared_ptr < Chain >>::iterator branchIt = this->mBranches.begin ();
+    for ( ; branchIt != this->mBranches.end (); ++branchIt ) {
+    
+        shared_ptr < Chain > chain = *branchIt;
+        size_t chainHeight = chain->countBlocks ();
+        if ( blockHeight <= chainHeight ) {
+            
+            shared_ptr < Block > prevBlock = chain->getBlock ( blockHeight - 1 );
+            assert ( prevBlock );
+            if ( prevBlock->isParent ( block )) {
+                
+                if ( blockHeight == chainHeight ) {
+                    chain->pushBlock ( block );
+                }
+                else {
+                    shared_ptr < Chain > fork = make_shared < Chain >( *chain );
+                    fork->revert ( blockHeight );
+                    fork->pushBlock ( block );
+                    this->mBranches.insert ( fork );
+                }
+                return SubmissionResponse::ACCEPTED;
+            }
+        }
+    }
+    return SubmissionResponse::RESUBMIT_EARLIER;
+}
+
+//----------------------------------------------------------------//
+void Miner::submitChain ( const Chain& chain ) {
+
+    size_t nBlocks = chain.countBlocks ();
+    if ( nBlocks > 0 ) {
+        this->submitChainRecurse ( chain, nBlocks - 1 );
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::submitChainRecurse ( const Chain& chain, size_t blockID ) {
+
+    shared_ptr < Block > block = chain.getBlock ( blockID );
+    assert ( block );
+    
+    if ( blockID == 0 ) {
+        // TODO: handle genesis block
+        return;
+    }
+    
+    SubmissionResponse response = this->submitBlock ( *block );
+    if ( response == SubmissionResponse::RESUBMIT_EARLIER ) {
+        this->submitChainRecurse ( chain, blockID - 1 );
+        response = this->submitBlock ( *block );
+    }
+    assert ( response == SubmissionResponse::ACCEPTED );
 }
 
 //================================================================//
@@ -206,15 +336,13 @@ void Miner::updateChain ( const Chain& proposedChain ) {
 //----------------------------------------------------------------//
 void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     
-    serializer.serialize ( "chain", this->mChain );
-    serializer.serialize ( "metadata", this->mMetadata );
+//    serializer.serialize ( "chain", this->mChain );
 }
 
 //----------------------------------------------------------------//
 void Miner::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
-    serializer.serialize ( "chain", this->mChain );
-    serializer.serialize ( "metadata", this->mMetadata );
+//    serializer.serialize ( "chain", this->mChain );
 }
 
 } // namespace Volition

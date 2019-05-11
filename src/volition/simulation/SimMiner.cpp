@@ -30,9 +30,8 @@ const SimMiner* SimMiner::nextMiner () {
 //----------------------------------------------------------------//
 void SimMiner::log ( string prefix ) const {
 
-    string name = this->mCohort ? this->mCohort->mName.c_str () : "";
-
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s[%s] %s", prefix.c_str (), name.c_str (), this->mChain.print ( this->mMetadata, "CHAIN: " ).c_str ());
+//    string name = this->mCohort ? this->mCohort->mName.c_str () : "";
+//    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s[%s] %s", prefix.c_str (), name.c_str (), this->mChain.print ( "CHAIN: " ).c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -59,33 +58,35 @@ void SimMiner::resetMinerQueue () {
 //----------------------------------------------------------------//
 void SimMiner::step () {
 
-    LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "SimMiner::step ()" );
-
-    int tag = ( int )( this->mSimulation.rand () & 0xffffffff );
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "0x%08x", tag );
-
-    if ( this->mCohort && this->mCohort->mIsPaused ) return;
-
-    if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
-        this->resetMinerQueue ();
-        this->extendChain ();
-    }
-    
-    const SimMiner* miner = this->nextMiner ();
-    if ( !miner ) return;
-
-    if ( this->mVerbose ) {
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, " player: %s\n", this->mMinerID.c_str ());
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->mChain.print ( this->mMetadata, "   CHAIN0: " ).c_str ());
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", miner->mChain.print ( this->mMetadata, "   CHAIN1: " ).c_str ());
-    }
-
-    this->updateChain ( miner->mChain );
-
-    if ( this->mVerbose ) {
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->mChain.print ( this->mMetadata, "     BEST: " ).c_str ());
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "\n" );
-    }
+//    LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "SimMiner::step ()" );
+//
+//    int tag = ( int )( this->mSimulation.rand () & 0xffffffff );
+//    LGN_LOG ( VOL_FILTER_ROOT, INFO, "0x%08x", tag );
+//
+//    if ( this->mCohort && this->mCohort->mIsPaused ) return;
+//
+//    if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
+//        this->resetMinerQueue ();
+//        this->extendChain ();
+//    }
+//    
+//    // grab the next miner to query
+//    const SimMiner* miner = this->nextMiner ();
+//    if ( !miner ) return;
+//
+//    if ( this->mVerbose ) {
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, " player: %s\n", this->mMinerID.c_str ());
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->mChain.print ( "   CHAIN0: " ).c_str ());
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", miner->mChain.print ( "   CHAIN1: " ).c_str ());
+//    }
+//
+//    // update current chain using next miner's chain as reference
+//    this->updateChain ( miner->mChain );
+//
+//    if ( this->mVerbose ) {
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->mChain.print ( "     BEST: " ).c_str ());
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "\n" );
+//    }
 }
 
 //----------------------------------------------------------------//

@@ -200,39 +200,39 @@ Simulation::~Simulation () {
 //----------------------------------------------------------------//
 void Simulation::step ( size_t step ) {
 
-    int nMiners = this->countMiners ();
-    int cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
-
-    for ( int i = 0; i < cycles; ++i ) {
-
-        map < SimMiner*, int > schedule;
-
-        for ( int j = 0; j < nMiners; ++j ) {
-            SimMiner& miner = *this->mMiners [ j ];
-            schedule [ &miner ] = miner.mFrequency;
-        }
-
-        while ( schedule.size ()) {
-
-            map < SimMiner*, int >::iterator scheduleIt = next ( schedule.begin (), this->rand () % schedule.size ());
-
-            if ( !this->drop ()) {
-                scheduleIt->first->step ();
-            }
-
-            scheduleIt->second -= 1;
-            if ( scheduleIt->second <= 0 ) {
-                schedule.erase ( scheduleIt );
-            }
-        }
-    }
-    
-    Tree tree;
-    for ( int i = 0; i < nMiners; ++i ) {
-        tree.addChain ( this->mMiners [ i ]->mChain );
-    }
-    this->mAnalysis.update ( tree );
-    this->Simulation_report ( step );
+//    int nMiners = this->countMiners ();
+//    int cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
+//
+//    for ( int i = 0; i < cycles; ++i ) {
+//
+//        map < SimMiner*, int > schedule;
+//
+//        for ( int j = 0; j < nMiners; ++j ) {
+//            SimMiner& miner = *this->mMiners [ j ];
+//            schedule [ &miner ] = miner.mFrequency;
+//        }
+//
+//        while ( schedule.size ()) {
+//
+//            map < SimMiner*, int >::iterator scheduleIt = next ( schedule.begin (), this->rand () % schedule.size ());
+//
+//            if ( !this->drop ()) {
+//                scheduleIt->first->step ();
+//            }
+//
+//            scheduleIt->second -= 1;
+//            if ( scheduleIt->second <= 0 ) {
+//                schedule.erase ( scheduleIt );
+//            }
+//        }
+//    }
+//    
+//    Tree tree;
+//    for ( int i = 0; i < nMiners; ++i ) {
+//        tree.addChain ( this->mMiners [ i ]->mChain );
+//    }
+//    this->mAnalysis.update ( tree );
+//    this->Simulation_report ( step );
 }
 
 } // namespace Simulator
