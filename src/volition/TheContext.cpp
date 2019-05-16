@@ -38,15 +38,16 @@ size_t TheContext::getScoringModulo () const {
 }
 
 //----------------------------------------------------------------//
-u64 TheContext::getWindow () const {
+double TheContext::getWindow () const {
 
-    return this->mWindow;
+    return this->mRewriteWindowInSeconds;
 }
 
 //----------------------------------------------------------------//
 TheContext::TheContext () :
     mScoringMode ( ScoringMode::ALLURE ),
-    mScoringModulo ( 0 ) {
+    mScoringModulo ( 0 ),
+    mRewriteWindowInSeconds ( 0 ) {
 
     Poco::JSON::Object::Ptr object = new Poco::JSON::Object ();
     object->set ( "type", "EC_PEM" );
@@ -77,9 +78,9 @@ void TheContext::setScoringMode ( ScoringMode scoringMode, size_t modulo ) {
 }
 
 //----------------------------------------------------------------//
-void TheContext::setWindow ( u64 window ) {
+void TheContext::setWindow ( double window ) {
 
-    this->mWindow = window;
+    this->mRewriteWindowInSeconds = window;
 }
 
 } // namespace Volition

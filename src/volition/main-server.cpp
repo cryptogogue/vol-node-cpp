@@ -301,7 +301,7 @@ protected:
             
             webMiner.setPersistenceProvider ( persistenceProvider );
             
-            if ( webMiner.getChainSize () == 0 ) {
+            if ( webMiner.getBestBranch () == NULL ) {
                 webMiner.loadGenesis ( genesis );
             }
             

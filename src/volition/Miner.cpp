@@ -43,19 +43,18 @@ size_t Miner::countBranches () const {
 }
 
 //----------------------------------------------------------------//
-void Miner::extend () {
+void Miner::extend ( bool force ) {
     
-    set < shared_ptr < Chain >>::iterator branchIt = this->mBranches.begin ();
-    for ( ; branchIt != this->mBranches.end (); ++branchIt ) {
-        shared_ptr < Chain > chain = *branchIt;
-        this->extendChain ( *chain );
+    assert ( this->mBestBranch );
+    Chain& chain = *this->mBestBranch;
+    
+    time_t now = this->getTime ();
+    
+    if ( !force ) {
+        shared_ptr < Block > topBlock = chain.getTopBlock ();
+        assert ( topBlock );
+        if (( this->mMinerID == topBlock->getMinerID ()) && topBlock->isInRewriteWindow ( now )) return;
     }
-}
-
-//----------------------------------------------------------------//
-void Miner::extendChain ( Chain& chain ) {
-
-    u64 minTime = this->mNow - TheContext::get ().getWindow ();
 
     size_t nBlocks = chain.countBlocks ();
     size_t top = nBlocks;
@@ -64,12 +63,12 @@ void Miner::extendChain ( Chain& chain ) {
         
         // we can replace any block more recent than the current time minus the time window.
         shared_ptr < Block > rivalBlock = chain.getBlock ( i - 1 );
-        if ( rivalBlock->getTime () < minTime ) break;
+        if ( !rivalBlock->isInRewriteWindow ( now )) break;
         if ( rivalBlock->getMinerID () == this->mMinerID ) break; // don't overwrite own block.
         
         // prepare test block
         shared_ptr < Block > prevBlock = chain.getBlock ( i - 2 );
-        Block testBlock ( this->mMinerID, this->mNow, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+        Block testBlock ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
         
         if ( Block::compare ( testBlock, *rivalBlock ) <= 0 ) {
             top = i - 1;
@@ -85,7 +84,7 @@ void Miner::extendChain ( Chain& chain ) {
     shared_ptr < Block > prevBlock = fork.getTopBlock ();
     assert ( prevBlock );
     
-    Block block ( this->mMinerID, this->mNow, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+    Block block ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
     this->addTransactions ( fork, block );
     
     if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
@@ -141,6 +140,12 @@ string Miner::getMinerID () const {
 }
 
 //----------------------------------------------------------------//
+time_t Miner::getTime () const {
+
+    return Miner_getTime ();
+}
+
+//----------------------------------------------------------------//
 bool Miner::hasBranch ( string miners ) const {
 
     set < shared_ptr < Chain >>::const_iterator branchIt = this->mBranches.cbegin ();
@@ -193,8 +198,7 @@ void Miner::setMinerID ( string minerID ) {
 
 //----------------------------------------------------------------//
 Miner::Miner () :
-    mLazy ( false ),
-    mNow ( 0 ) {
+    mLazy ( false ) {
 }
 
 //----------------------------------------------------------------//
@@ -240,31 +244,21 @@ void Miner::selectBranch () {
    
     if ( this->mBranches.size ()) {
     
+        time_t now = this->getTime ();
+    
         set < shared_ptr < Chain >>::iterator branchIt = this->mBranches.begin ();
         bestBranch = *branchIt;
         
         for ( ++branchIt ; branchIt != this->mBranches.end (); ++branchIt ) {
             shared_ptr < Chain > comp = *branchIt;
             
-            if ( Chain::compare ( *bestBranch, *comp, this->mNow, TheContext::get ().getWindow ()) > 0 ) {
+            if ( Chain::compare ( *bestBranch, *comp, now ) > 0 ) {
                 bestBranch = comp;
             }
         }
     }
     this->mBestBranch = bestBranch;
     assert ( this->mBestBranch );
-}
-
-//----------------------------------------------------------------//
-void Miner::setTime ( u64 time ) {
-
-    this->mNow = time;
-}
-
-//----------------------------------------------------------------//
-void Miner::step ( u64 step ) {
-
-    this->mNow += step;
 }
 
 //----------------------------------------------------------------//
@@ -289,10 +283,14 @@ Miner::SubmissionResponse Miner::submitBlock ( const Block& block ) {
                     chain->pushBlock ( block );
                 }
                 else {
-                    shared_ptr < Chain > fork = make_shared < Chain >( *chain );
-                    fork->revert ( blockHeight );
-                    fork->pushBlock ( block );
-                    this->mBranches.insert ( fork );
+                    shared_ptr < Block > rival = chain->getBlock ( blockHeight );
+                    if ( block != *rival ) {
+                        shared_ptr < Chain > fork = make_shared < Chain >( *chain );
+                        fork->revert ( blockHeight - 1);
+                        fork->pushVersion ();
+                        fork->pushBlock ( block );
+                        this->mBranches.insert ( fork );
+                    }
                 }
                 return SubmissionResponse::ACCEPTED;
             }
@@ -305,7 +303,7 @@ Miner::SubmissionResponse Miner::submitBlock ( const Block& block ) {
 void Miner::submitChain ( const Chain& chain ) {
 
     size_t nBlocks = chain.countBlocks ();
-    if ( nBlocks > 0 ) {
+    if ( nBlocks > 1 ) {
         this->submitChainRecurse ( chain, nBlocks - 1 );
     }
 }
@@ -318,6 +316,7 @@ void Miner::submitChainRecurse ( const Chain& chain, size_t blockID ) {
     
     if ( blockID == 0 ) {
         // TODO: handle genesis block
+        assert ( false );
         return;
     }
     
@@ -343,6 +342,14 @@ void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
 void Miner::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
 //    serializer.serialize ( "chain", this->mChain );
+}
+
+//----------------------------------------------------------------//
+time_t Miner::Miner_getTime () const {
+
+    time_t now;
+    time ( &now );
+    return now;
 }
 
 } // namespace Volition

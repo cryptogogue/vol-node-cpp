@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/Format.h>
 #include <volition/TheContext.h>
 #include <volition/TheTransactionFactory.h>
 
@@ -117,7 +118,7 @@ Block::Block () :
 }
 
 //----------------------------------------------------------------//
-Block::Block ( string minerID, u64 now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm ) :
+Block::Block ( string minerID, time_t now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm ) :
     mMinerID ( minerID ),
     mHeight ( 0 ),
     mTime ( now ) {
@@ -127,9 +128,12 @@ Block::Block ( string minerID, u64 now, const Block* prevBlock, const CryptoKey&
         this->mHeight = prevBlock->mHeight + 1;
         this->mPrevDigest = prevBlock->mSignature.getDigest ();
         
+        // TODO: allure should be generated using an RFC6979 deterministic signature.
+        // use a sample hash for now.
         Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
         this->computeAllure ( signature );
-        this->mAllure = signature.signature ();
+        //this->mAllure = signature.signature ();
+        this->mAllure = signature.digest ();
     }
 }
 
@@ -144,11 +148,26 @@ int Block::compare ( const Block& block0, const Block& block1 ) {
 
     if ( block0 != block1 ) {
         
-        size_t score0 = block0.getScore ();
-        size_t score1 = block1.getScore ();
+        if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
         
-        if ( score0 < score1 ) return -1;
-        if ( score0 > score1 ) return 1;
+            string allure0 = Poco::DigestEngine::digestToHex ( block0.mAllure );
+            string allure1 = Poco::DigestEngine::digestToHex ( block1.mAllure );
+            
+//            printf ( "allure0: %s\n", allure0.c_str ());
+//            printf ( "allure1: %s\n", allure1.c_str ());
+            
+            assert ( allure0 != allure1 );
+            
+            return allure0.compare ( allure1 ) < 0 ? -1 : 1;
+        }
+        else {
+        
+            size_t score0 = block0.getScore ();
+            size_t score1 = block1.getScore ();
+            
+            if ( score0 < score1 ) return -1;
+            if ( score0 > score1 ) return 1;
+        }
     }
     return 0;
 }
@@ -157,6 +176,7 @@ int Block::compare ( const Block& block0, const Block& block1 ) {
 void Block::computeAllure ( Poco::Crypto::ECDSADigestEngine& signature ) const {
 
     Poco::DigestOutputStream signatureStream ( signature );
+    signatureStream << this->mMinerID;
     signatureStream << this->mHeight;
     signatureStream << this->mPrevDigest;
     signatureStream.close ();
@@ -189,10 +209,10 @@ string Block::getMinerID () const {
 //----------------------------------------------------------------//
 size_t Block::getScore () const {
 
-    if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
-        string allureString = Poco::DigestEngine::digestToHex ( this->mAllure );
-        return std::hash < string >{}( allureString );
-    }
+//    if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
+//        string allureString = Poco::DigestEngine::digestToHex ( this->mAllure );
+//        return std::hash < string >{}( allureString );
+//    }
     
     if ( this->mHeight == 0 ) return 0;
     
@@ -207,6 +227,14 @@ size_t Block::getScore () const {
 u64 Block::getTime () const {
 
     return this->mTime;
+}
+
+//----------------------------------------------------------------//
+bool Block::isInRewriteWindow ( time_t now ) const {
+
+    double window = TheContext::get ().getWindow ();
+    double diff = difftime ( now, this->mTime );
+    return diff < window;
 }
 
 //----------------------------------------------------------------//
@@ -268,18 +296,18 @@ bool Block::verify ( const Ledger& ledger ) const {
 //----------------------------------------------------------------//
 bool Block::verify ( const Ledger& ledger, const CryptoKey& key ) const {
 
-    if ( this->mHeight > 0 ) {
-
-        // verify allure
-        string hashAlgorithm = this->mSignature.getHashAlgorithm ();
-
-        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-        this->computeAllure ( signature );
-
-        if ( !signature.verify ( this->mAllure )) {
-            return false;
-        }
-    }
+//    if ( this->mHeight > 0 ) {
+//
+//        // verify allure
+//        string hashAlgorithm = this->mSignature.getHashAlgorithm ();
+//
+//        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
+//        this->computeAllure ( signature );
+//
+//        if ( !signature.verify ( this->mAllure )) {
+//            return false;
+//        }
+//    }
     return key.verify ( this->mSignature, *this );
 }
 
@@ -291,7 +319,10 @@ bool Block::verify ( const Ledger& ledger, const CryptoKey& key ) const {
 void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     
     serializer.serialize ( "height",        this->mHeight );
-    serializer.serialize ( "time",          this->mTime );
+    
+    string iso8601;
+    serializer.serialize ( "time", iso8601 );
+    this->mTime = Format::fromISO8601 ( iso8601 );
     
     if ( this->mHeight > 0 ) {
         serializer.serialize ( "minerID",       this->mMinerID );
@@ -305,9 +336,11 @@ void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
 
 //----------------------------------------------------------------//
 void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
-
+    
     serializer.serialize ( "height",        this->mHeight );
-    serializer.serialize ( "time",          this->mTime );
+    
+    string iso8601 = Format::toISO8601 ( this->mTime );
+    serializer.serialize ( "time", iso8601 );
     
     if ( this->mHeight > 0 ) {
         serializer.serialize ( "minerID",       this->mMinerID );

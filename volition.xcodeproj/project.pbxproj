@@ -126,6 +126,7 @@
 		CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D8252166D68700F43CC7 /* Simulation.cpp */; };
 		CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8262166D68700F43CC7 /* Simulation.h */; };
 		CD73D8302166D68700F43CC7 /* Simulations.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8272166D68700F43CC7 /* Simulations.h */; };
+		CD85B1CC228D3C7D000C2A54 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */; };
 		CD8BAE3B21EBC81900B5040E /* SerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3721EBC81900B5040E /* SerializablePtrFactory.h */; };
 		CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3821EBC81900B5040E /* SerializableSharedPtr.h */; };
@@ -283,7 +284,6 @@
 		CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7982121EC30B6002C4D80 /* ConstSquap.h */; };
 		CDF8AD4D21EFD64B000E285F /* Variant.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD4C21EFD64B000E285F /* Variant.h */; };
 		CDF8AD5021F29045000E285F /* ExtendChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */; };
-		CDF8AD5221F2CFCE000E285F /* TestMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC1388F212FCFDF004FA594 /* TestMiner.cpp */; };
 		CDF8AD5621F2D106000E285F /* Transactions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5521F2D106000E285F /* Transactions.h */; };
 		CDF8AD5821F39969000E285F /* Entropy.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5721F39969000E285F /* Entropy.h */; };
 		CDF8AD5C21F52B34000E285F /* SchemaLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDF8AD5A21F52B34000E285F /* SchemaLua.cpp */; };
@@ -669,6 +669,7 @@
 		CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestSimulation.cpp; path = src/volition/gtest/TestSimulation.cpp; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
+		CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFormatUtils.cpp; path = src/volition/gtest/TestFormatUtils.cpp; sourceTree = "<group>"; };
 		CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializablePtrFactory.h; path = src/volition/serialization/AbstractSerializablePtrFactory.h; sourceTree = "<group>"; };
 		CD8BAE3721EBC81900B5040E /* SerializablePtrFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializablePtrFactory.h; path = src/volition/serialization/SerializablePtrFactory.h; sourceTree = "<group>"; };
 		CD8BAE3821EBC81900B5040E /* SerializableSharedPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSharedPtr.h; path = src/volition/serialization/SerializableSharedPtr.h; sourceTree = "<group>"; };
@@ -1037,6 +1038,7 @@
 			isa = PBXGroup;
 			children = (
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
+				CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
 				CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */,
 				CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */,
@@ -1835,8 +1837,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD85B1CC228D3C7D000C2A54 /* TestFormatUtils.cpp in Sources */,
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CDF8AD5221F2CFCE000E285F /* TestMiner.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

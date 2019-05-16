@@ -21,6 +21,27 @@ int to_upper_int ( int _c ) {
 namespace Format {
 
 //----------------------------------------------------------------//
+time_t fromISO8601 ( string iso8601 ) {
+
+    time_t t = 0;
+    if ( iso8601.size ()) {
+        struct tm time;
+        memset ( &time, 0, sizeof ( struct tm ));
+        strptime ( iso8601.c_str (), "%FT%T%Z", &time );
+        t = mktime ( &time ) - timezone;
+    }
+    return t;
+}
+
+//----------------------------------------------------------------//
+string toISO8601 ( time_t iso8601 ) {
+
+    char timestamp [ 32 ];
+    strftime ( timestamp, sizeof ( timestamp ), "%FT%T%Z", gmtime ( &iso8601 ));
+    return timestamp;
+}
+
+//----------------------------------------------------------------//
 string tolower ( string str ) {
 
     transform ( str.begin (), str.end (), str.begin (), ( char( * )( char ))to_lower_int );

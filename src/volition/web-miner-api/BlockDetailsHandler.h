@@ -26,16 +26,16 @@ public:
 
         try {
             
-//            u64 height = this->getMatchU64 ( "blockID" );
-//
-//            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-//            const Chain& chain = scopedLock.getWebMiner ().getChain ();
-//
-//            shared_ptr < Block > block = chain.getBlock ( height );
-//            if ( block ) {
-//                jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
-//                return Poco::Net::HTTPResponse::HTTP_OK;
-//            }
+            u64 height = this->getMatchU64 ( "blockID" );
+
+            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+            const Chain& chain = *scopedLock.getWebMiner ().getBestBranch ();
+
+            shared_ptr < Block > block = chain.getBlock ( height );
+            if ( block ) {
+                jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
+                return Poco::Net::HTTPResponse::HTTP_OK;
+            }
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

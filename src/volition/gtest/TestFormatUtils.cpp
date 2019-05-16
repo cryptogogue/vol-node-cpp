@@ -2,8 +2,7 @@
 // http://cryptogogue.com
 
 #include <gtest/gtest.h>
-#include <volition/simulation/Simulations.h>
-#include <volition/TheContext.h>
+#include <volition/Format.h>
 
 using namespace Volition;
 
@@ -16,9 +15,12 @@ using namespace Volition;
 //}
 
 //----------------------------------------------------------------//
-TEST ( Simulation, simple_simulation ) {
+TEST ( Format, iso8601 ) {
     
-    Volition::Simulation::SimpleSimulation simulation;
-    simulation.run ( 10000 );
-    ASSERT_TRUE ( simulation.getAnalysis ().getLevelPercent ( 0 ) >= 0.9 );
+    time_t in;
+    time ( &in );
+    string iso8601 = Format::toISO8601 ( in );
+    time_t out = Format::fromISO8601 ( iso8601 );
+
+    ASSERT_TRUE ( in == out );
 }

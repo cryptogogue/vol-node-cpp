@@ -34,21 +34,20 @@ protected:
     bool                                            mLazy;
 
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
-
-    u64                                             mNow;
     
     shared_ptr < Chain >                            mBestBranch;
     set < shared_ptr < Chain >>                     mBranches;
     
     //----------------------------------------------------------------//
     void                    addTransactions         ( Chain& chain, Block& block );
-    void                    extendChain             ( Chain& chain );
+    void                    extendChain             ( Chain& chain, u64 minTime );
     void                    saveChain               ();
     void                    submitChainRecurse      ( const Chain& chain, size_t blockID );
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    virtual time_t          Miner_getTime                           () const;
 
 public:
 
@@ -60,15 +59,16 @@ public:
     //----------------------------------------------------------------//
     bool                    checkBestBranch         ( string miners ) const;
     size_t                  countBranches           () const;
-    void                    extend                  ();
-    void                    loadGenesis             ( string path );
-    void                    loadKey                 ( string keyfile, string password = "" );
+    void                    extend                  ( bool force = false );
     const Chain*            getBestBranch           () const;
     size_t                  getLongestBranchSize    () const;
     bool                    getLazy                 () const;
     const Ledger&           getLedger               () const;
     string                  getMinerID              () const;
+    time_t                  getTime                 () const;
     bool                    hasBranch               ( string miners ) const;
+    void                    loadGenesis             ( string path );
+    void                    loadKey                 ( string keyfile, string password = "" );
     void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
     void                    setPersistenceProvider  ( shared_ptr < AbstractPersistenceProvider > persistence );
     void                    setGenesis              ( const Block& block );
@@ -77,8 +77,6 @@ public:
                             Miner                   ();
     virtual                 ~Miner                  ();
     void                    selectBranch            ();
-    void                    setTime                 ( u64 time );
-    void                    step                    ( u64 step );
     SubmissionResponse      submitBlock             ( const Block& block );
     void                    submitChain             ( const Chain& chain );
 };

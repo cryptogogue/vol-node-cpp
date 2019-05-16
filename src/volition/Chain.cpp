@@ -5,6 +5,7 @@
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
 #include <volition/Format.h>
+#include <volition/TheContext.h>
 
 namespace Volition {
 
@@ -41,7 +42,7 @@ bool Chain::checkMiners ( string miners ) const {
 }
 
 //----------------------------------------------------------------//
-int Chain::compare ( const Chain& chain0, const Chain& chain1, u64 now, u64 window ) {
+int Chain::compare ( const Chain& chain0, const Chain& chain1, time_t now ) {
 
     size_t height0 = chain0.countBlocks ();
     size_t height1 = chain1.countBlocks ();
@@ -49,7 +50,7 @@ int Chain::compare ( const Chain& chain0, const Chain& chain1, u64 now, u64 wind
     size_t minHeight = height0 < height1 ? height0 : height1;    
     size_t forkHeight = minHeight;
     
-    u64 minTime = now;
+    time_t minTime = now;
     
     do {
         forkHeight--;
@@ -61,9 +62,10 @@ int Chain::compare ( const Chain& chain0, const Chain& chain1, u64 now, u64 wind
     
         if ( *block0 == *block1 ) break;
         
-        u64 time0 = block0->getTime ();
-        u64 time1 = block1->getTime ();
+        time_t time0 = block0->getTime ();
+        time_t time1 = block1->getTime ();
         
+        // TODO: is this safe?
         minTime = time0 < minTime ? time0 : minTime;
         minTime = time1 < minTime ? time1 : minTime;
     }
@@ -71,8 +73,8 @@ int Chain::compare ( const Chain& chain0, const Chain& chain1, u64 now, u64 wind
 
     assert ( forkHeight < minHeight ); // TODO: handle gracefully
     
-    // TODO: mayb use time of top block (instead of current time)
-    u64 evalCount = (( now - minTime ) / window ) + 1;
+    // TODO: maybe use time of top block (instead of current time)
+    u64 evalCount = ( difftime ( now, minTime ) / TheContext::get ().getWindow ()) + 1;
 
     // only need to compare blocks up through evalCount, starting just after the fork
     int result = Chain::compareSegment ( chain0, chain1, forkHeight + 1, evalCount );
@@ -121,65 +123,29 @@ size_t Chain::countBlocks () const {
 //----------------------------------------------------------------//
 string Chain::print ( const char* pre, const char* post ) const {
 
-    return "";
+    string str;
 
-//    string str;
-//
-//    if ( pre ) {
-//        Format::write ( str, "%s", pre );
-//    }
-//
-//    size_t cycleCount = 0;
-//    size_t blockCount = 0;
-//
-//    VersionedStoreIterator chainIt ( *this, 0 );
-//
-//    shared_ptr < Cycle > prevCycle = Ledger::getJSONSerializableObject < Cycle >( chainIt, CYCLE_KEY );
-//    assert ( prevCycle );
-//
-//    for ( ; chainIt && ( !chainIt.isCurrent ()); chainIt.next ()) {
-//        shared_ptr < Cycle > cycle = Ledger::getJSONSerializableObject < Cycle >( chainIt, CYCLE_KEY );
-//        assert ( cycle );
-//
-//        if (( cycleCount == 0 ) || ( cycle->mCycleID != prevCycle->mCycleID )) {
-//
-//            if ( cycleCount > 0 ) {
-//                if ( cycleCount > 1 ) {
-//                    Format::write ( str, " (%d)]", ( int )( metaData ? metaData->countParticipants ( cycleCount - 1 ) : blockCount ));
-//                }
-//                else {
-//                    Format::write ( str, "]" );
-//                }
-//            }
-//            Format::write ( str, "[" );
-//            cycleCount++;
-//            blockCount = 0;
-//        }
-//
-//        shared_ptr < Block > block = Ledger::getJSONSerializableObject < Block >( chainIt, BLOCK_KEY );
-//        assert ( block );
-//
-//        if ( blockCount > 0 ) {
-//            Format::write ( str, "," );
-//        }
-//
-//        Format::write ( str, "%s", block->mHeight == 0  ? "." : block->getMinerID ().c_str ());
-//        blockCount++;
-//        *prevCycle = *cycle;
-//    }
-//
-//    if ( cycleCount > 1 ) {
-//        Format::write ( str, " (%d)]", ( int )( metaData ? metaData->countParticipants ( cycleCount - 1 ) : blockCount ));
-//    }
-//    else {
-//        Format::write ( str, "]" );
-//    }
-//
-//    if ( post ) {
-//        Format::write ( str, "%s", post );
-//    }
-//
-//    return str;
+    if ( pre ) {
+        Format::write ( str, "%s", pre );
+    }
+
+    size_t nBlocks = this->countBlocks ();
+    if ( nBlocks ) {
+    
+        Format::write ( str, "-" );
+    
+        for ( size_t i = 1; i < nBlocks; ++i ) {
+            shared_ptr < Block > block = this->getBlock ( i );
+            assert ( block );
+            Format::write ( str, ",%s", block->mMinerID.c_str ());
+        }
+    }
+
+    if ( post ) {
+        Format::write ( str, "%s", post );
+    }
+    
+    return str;
 }
 
 //----------------------------------------------------------------//

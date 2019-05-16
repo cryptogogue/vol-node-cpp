@@ -39,7 +39,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                checkMiners         ( string miners ) const;
-    static int          compare             ( const Chain& chain0, const Chain& chain1, u64 now, u64 window );
+    static int          compare             ( const Chain& chain0, const Chain& chain1, time_t now );
                         Chain               ();
                         ~Chain              ();
     size_t              countBlocks         () const;

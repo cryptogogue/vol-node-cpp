@@ -13,7 +13,7 @@ public:
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) override {
     
-        Volition::Simulation::SmallSimulation simulation;
+        Volition::Simulation::SimpleSimulation simulation ( 16 );
         simulation.run ();
         return EXIT_OK;
     }

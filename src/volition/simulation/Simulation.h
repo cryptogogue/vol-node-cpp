@@ -8,6 +8,7 @@
 #include <volition/Singleton.h>
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/SimMiner.h>
+#include <volition/TheContext.h>
 
 namespace Volition {
 namespace Simulation {
@@ -33,6 +34,7 @@ private:
     int                                     mCyclesPerStep;
     bool                                    mRandomizeScore;
     default_random_engine                   mRand;
+    u64                                     mStepSize;
     
     //----------------------------------------------------------------//
     bool                drop                    ();
@@ -52,7 +54,7 @@ public:
     int                 countMiners             () const;
     const Analysis&     getAnalysis             () const;
     const SimMiner&     getMiner                ( int minerID ) const;
-    void                initMiners              ( int nMiners );
+    void                initMiners              ( int nMiners, TheContext::ScoringMode scoringMode = TheContext::ScoringMode::ALLURE, double window = 600, double stepSize = 6 );
     void                logMiners               ( string prefix ) const;
     void                logTree                 ( string prefix, bool verbose = false, int maxDepth = 0 ) const;
     size_t              rand                    ();
@@ -63,6 +65,7 @@ public:
     void                setDropRate             ( float percentage );
     void                setPlayerVerbose        ( int minerID, bool verbose );
     void                setScoreRandomizer      ( bool randomize );
+    void                setStepSize             ( u64 stepSize );
                         Simulation              ();
     virtual             ~Simulation             ();
 };

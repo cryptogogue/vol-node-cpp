@@ -33,7 +33,7 @@ private:
     ScoringMode     mScoringMode;
     size_t          mScoringModulo;
     
-    u64             mWindow;
+    double          mRewriteWindowInSeconds;
 
 public:
 
@@ -44,12 +44,12 @@ public:
     const CryptoKey&    getGenesisBlockKey          () const;
     ScoringMode         getScoringMode              () const;
     size_t              getScoringModulo            () const;
-    u64                 getWindow                   () const;
+    double              getWindow                   () const;
                         TheContext                  ();
     void                setGenesisBlockDigest       ( const Digest& digest );
     void                setGenesisBlockKey          ( const CryptoKey& key );
     void                setScoringMode              ( ScoringMode scoringMode, size_t modulo = 0 );
-    void                setWindow                   ( u64 window );
+    void                setWindow                   ( double window );
 };
 
 } // namespace Volition

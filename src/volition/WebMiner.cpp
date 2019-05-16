@@ -47,43 +47,39 @@ void WebMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
 //----------------------------------------------------------------//
 void WebMiner::processQueue () {
 
-//    for ( ; this->mBlockQueue.size (); this->mBlockQueue.pop_front ()) {
-//        const BlockQueueEntry& entry = *this->mBlockQueue.front ().get ();
-//        RemoteMiner& remoteMiner = this->mRemoteMiners [ entry.mMinerID ];
-//
-//        if ( entry.mHasBlock ) {
-//
-//            remoteMiner.mCurrentBlock = entry.mBlock.getHeight ();
-//
-//            Chain::UpdateResult result = this->mChain.update ( this->mMetadata, entry.mBlock );
-//
-//            switch ( result ) {
-//
-//                case Chain::UpdateResult::UPDATE_ACCEPTED:
-//                case Chain::UpdateResult::UPDATE_EQUALS:
-//                    remoteMiner.mCurrentBlock++;
-//                    break;
-//
-//                case Chain::UpdateResult::UPDATE_RETRY:
-//                    break;
-//
-//                case Chain::UpdateResult::UPDATE_REWIND:
-//                    if ( remoteMiner.mCurrentBlock > 0 ) {
-//                        remoteMiner.mCurrentBlock--;
-//                    }
-//                    break;
-//
-//                default:
-//                    assert ( false );
-//            }
-//        }
-//
-//        if ( this->mMinerSet.find ( entry.mMinerID ) != this->mMinerSet.end ()) {
-//            this->mMinerSet.erase ( entry.mMinerID );
-//        }
-//
-//        remoteMiner.mWaitingForTask = false;
-//    }
+    for ( ; this->mBlockQueue.size (); this->mBlockQueue.pop_front ()) {
+        const BlockQueueEntry& entry = *this->mBlockQueue.front ().get ();
+        RemoteMiner& remoteMiner = this->mRemoteMiners [ entry.mMinerID ];
+
+        if ( entry.mHasBlock ) {
+
+            remoteMiner.mCurrentBlock = entry.mBlock.getHeight ();
+
+            SubmissionResponse result = this->submitBlock ( entry.mBlock );
+
+            switch ( result ) {
+
+                case SubmissionResponse::ACCEPTED:
+                    remoteMiner.mCurrentBlock++;
+                    break;
+
+                case SubmissionResponse::RESUBMIT_EARLIER:
+                    if ( remoteMiner.mCurrentBlock > 0 ) {
+                        remoteMiner.mCurrentBlock--;
+                    }
+                    break;
+
+                default:
+                    assert ( false );
+            }
+        }
+
+        if ( this->mMinerSet.find ( entry.mMinerID ) != this->mMinerSet.end ()) {
+            this->mMinerSet.erase ( entry.mMinerID );
+        }
+
+        remoteMiner.mWaitingForTask = false;
+    }
 }
 
 //----------------------------------------------------------------//
@@ -100,61 +96,60 @@ void WebMiner::runActivity () {
 //----------------------------------------------------------------//
 void WebMiner::runMulti () {
 
-//    size_t height = 0;
-//    while ( !this->isStopped ()) {
-//        {
-//            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-//
-//            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runMulti () - step" );
-//
-//            // process queue
-//            this->processQueue ();
-//
-//            // push block (if we've heard from everybody)
-//            if ( this->mMinerSet.size () == 0 ) {
-//                this->extendChain ();
-//            }
-//
-//            // report chain
-//            size_t nextHeight = this->mChain.getVersion ();
-//            if ( nextHeight != height ) {
-//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
-//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain.print ().c_str ());
-//                height = nextHeight;
-//                this->saveChain ();
-//            }
-//
-//            // update remote miners
-//            this->updateMiners ();
-//
-//            // kick off next batch of tasks
-//            this->startTasks ();
-//        }
-//        Poco::Thread::sleep ( 200 );
-//    }
+    size_t height = 0;
+    while ( !this->isStopped ()) {
+        {
+            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
+
+            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runMulti () - step" );
+
+            // process queue
+            this->processQueue ();
+            this->selectBranch ();
+            this->extend ( this->mMinerSet.size () == 0 ); // force push if we processed all others
+
+            // report chain
+            const Chain& chain = *this->getBestBranch ();
+            size_t nextHeight = chain.countBlocks ();
+            if ( nextHeight != height ) {
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
+                height = nextHeight;
+                this->saveChain ();
+            }
+
+            // update remote miners
+            this->updateMiners ();
+
+            // kick off next batch of tasks
+            this->startTasks ();
+        }
+        Poco::Thread::sleep ( 200 );
+    }
 }
 
 //----------------------------------------------------------------//
 void WebMiner::runSolo () {
 
-//    size_t height = 0;
-//    while ( !this->isStopped ()) {
-//        {
-//            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-//
-//            this->extendChain ();
-//
-//            size_t nextHeight = this->mChain.getVersion ();
-//            if ( nextHeight != height ) {
-//                LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
-//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
-//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain.print ().c_str ());
-//                height = nextHeight;
-//                this->saveChain ();
-//            }
-//        }
-//        Poco::Thread::sleep ( 200 );
-//    }
+    size_t height = 0;
+    while ( !this->isStopped ()) {
+        {
+            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
+
+            this->extend ( true );
+
+            const Chain& chain = *this->getBestBranch ();
+            size_t nextHeight = chain.countBlocks ();
+            if ( nextHeight != height ) {
+                LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
+                height = nextHeight;
+                this->saveChain ();
+            }
+        }
+        Poco::Thread::sleep ( 200 );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -198,15 +193,15 @@ void WebMiner::startTasks () {
 //----------------------------------------------------------------//
 void WebMiner::updateMiners () {
 
-//    map < string, MinerInfo > miners = this->mChain.getMiners ();
-//    
-//    map < string, MinerInfo >::iterator minerIt = miners.begin ();
-//    for ( ; minerIt != miners.end (); ++minerIt ) {
-//        MinerInfo& minerInfo = minerIt->second;
-//        if ( minerIt->first != this->mMinerID ) {
-//            this->mRemoteMiners [ minerIt->first ].mURL = minerInfo.getURL (); // affirm
-//        }
-//    }
+    map < string, MinerInfo > miners = this->getBestBranch ()->getMiners ();
+    
+    map < string, MinerInfo >::iterator minerIt = miners.begin ();
+    for ( ; minerIt != miners.end (); ++minerIt ) {
+        MinerInfo& minerInfo = minerIt->second;
+        if ( minerIt->first != this->mMinerID ) {
+            this->mRemoteMiners [ minerIt->first ].mURL = minerInfo.getURL (); // affirm
+        }
+    }
 }
 
 //----------------------------------------------------------------//

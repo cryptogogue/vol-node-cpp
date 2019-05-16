@@ -28,6 +28,8 @@ private:
     int                     mFrequency;
     bool                    mVerbose;
 
+    time_t                  mNow;
+
     size_t                  mMinerCursor; // where we are in the check
     vector < int >          mMinerQueue; // miner ID's to check
 
@@ -35,14 +37,19 @@ private:
     void                pushGenesisTransaction      ( Block& block ) const;
     const SimMiner*     nextMiner                   ();
     void                resetMinerQueue             ();
+    void                setTime                     ( time_t time );
+    void                step                        ( double stepInSeconds );
+
+    //----------------------------------------------------------------//
+    time_t              Miner_getTime               () const override;
 
 public:
 
     //----------------------------------------------------------------//
     void                log                         ( string prefix ) const;
-    void                step                        ();
                         SimMiner                    ( Simulation& simulation );
                         ~SimMiner                   ();
+    void                update                      ();
 };
 
 } // namespace Simulator

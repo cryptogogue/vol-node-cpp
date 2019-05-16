@@ -202,14 +202,12 @@ class SimpleSimulation :
 public:
 
     //----------------------------------------------------------------//
-    SimpleSimulation () {
+    SimpleSimulation ( int miners = 16 ) {
     
-        TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
-    
-        this->initMiners ( 16 );
-        this->applyCohort ( this->mNormal, "NORM", 0, 16 );
+        this->initMiners ( miners, TheContext::ScoringMode::ALLURE );
+        this->applyCohort ( this->mNormal, "NORM", 0, miners );
         
-        //this->mNormal.setVerbose ( true );
+        this->mNormal.setVerbose ( true );
     }
 
     //================================================================//
@@ -271,10 +269,8 @@ public:
 
     //----------------------------------------------------------------//
     SmallSimulation () {
-    
-        TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
-    
-        this->initMiners ( 4 );
+        
+        this->initMiners ( 4, TheContext::ScoringMode::INTEGER );
         this->applyCohort ( this->mNormal, "NORM", 0, 4 );
         
         this->mNormal.setVerbose ( true );
@@ -300,7 +296,7 @@ public:
     //----------------------------------------------------------------//
     TenKSimulation () {
     
-        this->initMiners ( 10000 );
+        this->initMiners ( 10000, TheContext::ScoringMode::INTEGER );
         this->applyCohort ( this->mNormal, "NORM", 0, 10000 );
     }
 

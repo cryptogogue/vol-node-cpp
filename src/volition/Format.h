@@ -14,6 +14,8 @@ namespace Volition {
 namespace Format {
 
     //----------------------------------------------------------------//
+    time_t          fromISO8601         ( string iso8601 );
+    string          toISO8601           ( time_t iso8601 );
     string          tolower             ( string str );
     string          toupper             ( string str );
     char*           vsnprintf_alloc     ( char* s, size_t n, const char* format, va_list arg );

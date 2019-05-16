@@ -69,7 +69,12 @@ const SimMiner& Simulation::getMiner ( int minerID ) const {
 }
 
 //----------------------------------------------------------------//
-void Simulation::initMiners ( int nMiners ) {
+void Simulation::initMiners ( int nMiners, TheContext::ScoringMode scoringMode, double window, double stepSize ) {
+
+    TheContext::get ().setScoringMode ( scoringMode, nMiners );
+    TheContext::get ().setWindow ( window );
+
+    this->mStepSize = stepSize;
 
     if ( !this->mGenesisKey ) {
         this->mGenesisKey.elliptic ( CryptoKey::DEFAULT_EC_GROUP_NAME );
@@ -81,6 +86,9 @@ void Simulation::initMiners ( int nMiners ) {
     this->mMiners.clear ();
     this->mMiners.resize ( nMiners );
 
+    time_t now;
+    time ( &now );
+
     for ( int i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ] = make_unique < SimMiner >( *this );
         SimMiner& miner = *this->mMiners [ i ];
@@ -88,6 +96,7 @@ void Simulation::initMiners ( int nMiners ) {
         stringstream minerIDStream;
         minerIDStream << i;
         miner.setMinerID ( minerIDStream.str ());
+        miner.setTime ( now );
         
         miner.pushGenesisTransaction ( genesisBlock );
     }
@@ -190,7 +199,14 @@ void Simulation::setScoreRandomizer ( bool randomize ) {
 }
 
 //----------------------------------------------------------------//
-Simulation::Simulation () {
+void Simulation::setStepSize ( u64 stepSize ) {
+
+    this->mStepSize = stepSize;
+}
+
+//----------------------------------------------------------------//
+Simulation::Simulation () :
+    mStepSize ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -200,39 +216,41 @@ Simulation::~Simulation () {
 //----------------------------------------------------------------//
 void Simulation::step ( size_t step ) {
 
-//    int nMiners = this->countMiners ();
-//    int cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
-//
-//    for ( int i = 0; i < cycles; ++i ) {
-//
-//        map < SimMiner*, int > schedule;
-//
-//        for ( int j = 0; j < nMiners; ++j ) {
-//            SimMiner& miner = *this->mMiners [ j ];
-//            schedule [ &miner ] = miner.mFrequency;
-//        }
-//
-//        while ( schedule.size ()) {
-//
-//            map < SimMiner*, int >::iterator scheduleIt = next ( schedule.begin (), this->rand () % schedule.size ());
-//
-//            if ( !this->drop ()) {
-//                scheduleIt->first->step ();
-//            }
-//
-//            scheduleIt->second -= 1;
-//            if ( scheduleIt->second <= 0 ) {
-//                schedule.erase ( scheduleIt );
-//            }
-//        }
-//    }
-//    
-//    Tree tree;
-//    for ( int i = 0; i < nMiners; ++i ) {
-//        tree.addChain ( this->mMiners [ i ]->mChain );
-//    }
-//    this->mAnalysis.update ( tree );
-//    this->Simulation_report ( step );
+    int nMiners = this->countMiners ();
+    int cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
+
+    for ( int i = 0; i < cycles; ++i ) {
+
+        map < SimMiner*, int > schedule;
+
+        for ( int j = 0; j < nMiners; ++j ) {
+            SimMiner& miner = *this->mMiners [ j ];
+            schedule [ &miner ] = miner.mFrequency;
+        }
+
+        while ( schedule.size ()) {
+
+            map < SimMiner*, int >::iterator scheduleIt = next ( schedule.begin (), this->rand () % schedule.size ());
+
+            SimMiner* miner = scheduleIt->first;
+            if ( !this->drop ()) {
+                miner->update ();
+            }
+            miner->step ( this->mStepSize ); // advance time
+
+            scheduleIt->second -= 1;
+            if ( scheduleIt->second <= 0 ) {
+                schedule.erase ( scheduleIt );
+            }
+        }
+    }
+    
+    Tree tree;
+    for ( int i = 0; i < nMiners; ++i ) {
+        tree.addChain ( *this->mMiners [ i ]->getBestBranch ());
+    }
+    this->mAnalysis.update ( tree );
+    this->Simulation_report ( step );
 }
 
 } // namespace Simulator
