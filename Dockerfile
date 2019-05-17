@@ -33,8 +33,12 @@ COPY . /app
 
 RUN ls -l && \
     cmake . && \
-    make
+    make && \
+    make install && \
+    cd .. && \
+    rm -r app
 
 RUN ls -al
 
-CMD which cmake
+ENTRYPOINT [ "volition" ]
+CMD [ "-p", "9090", "-s", "true", "-k", "secrets/pkey.priv.json", "-g", "secrets/genesis.signed" ]

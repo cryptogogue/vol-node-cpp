@@ -106,4 +106,4 @@ target_link_libraries ( volition
     ${CMAKE_DL_LIBS}
 )
 
-#install ( TARGETS volition DESTINATION bin )
+install ( TARGETS volition DESTINATION bin )
