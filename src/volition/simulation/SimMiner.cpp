@@ -2,10 +2,10 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
-#include <volition/Cohort.h>
-#include <volition/TheContext.h>
+#include <volition/simulation/Cohort.h>
 #include <volition/simulation/SimMiner.h>
 #include <volition/simulation/Simulation.h>
+#include <volition/TheContext.h>
 #include <volition/transactions/GenesisMiner.h>
 
 namespace Volition {

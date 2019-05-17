@@ -3,18 +3,29 @@ project ( volition )
 
 set ( CMAKE_CXX_STANDARD 17 )
 
-add_library ( libvolition "" )
+get_filename_component ( VOLITION_ROOT "./" ABSOLUTE )
 
-target_include_directories ( libvolition
-    PRIVATE 
-        src/
-        3rd-party/lua-5.3.5/src/
-        3rd-party/padamose/src/
-        3rd-party/padamose/3rd-party/lognosis/src/
-        3rd-party/simple-cpp-router/src/
+add_subdirectory ( 3rd-party/padamose EXCLUDE_FROM_ALL )
+add_subdirectory ( cmake/lua EXCLUDE_FROM_ALL )
+add_subdirectory ( cmake/simple-cpp-router EXCLUDE_FROM_ALL )
+
+set ( VOLITION_INCLUDES 
+    src/
+    3rd-party/lua-5.3.5/src/
+    3rd-party/padamose/src/
+    3rd-party/padamose/3rd-party/lognosis/src
+    3rd-party/padamose/3rd-party/lognosis/3rd-party
+    3rd-party/padamose/3rd-party/reproc/reproc/include/
+    3rd-party/padamose/3rd-party/reproc/reproc++/include/
+    3rd-party/simple-cpp-router/src/
+    /usr/local/opt/openssl/include/
 )
 
-target_sources ( libvolition
+add_library ( volition-lib "" )
+
+target_include_directories ( volition-lib PRIVATE ${VOLITION_INCLUDES} )
+
+target_sources ( volition-lib
     PRIVATE
         src/volition/AbstractAPIRequestHandler.cpp
         src/volition/AbstractRequestHandler.cpp
@@ -24,12 +35,7 @@ target_sources ( libvolition
         src/volition/ChainMetadata.cpp
         src/volition/CryptoKey.cpp
         src/volition/Format.cpp
-        src/volition/Inventory.cpp
         src/volition/Ledger.cpp
-        src/volition/loguru.cpp
-        src/volition/main-server.cpp
-        src/volition/main-simulator.cpp
-        src/volition/main-util.cpp
         src/volition/Miner.cpp
         src/volition/MinerInfo.cpp
         src/volition/Policy.cpp
@@ -44,91 +50,59 @@ target_sources ( libvolition
         src/volition/TheWebMiner.cpp
         src/volition/TransactionMakerSignature.cpp
         src/volition/WebMiner.cpp
-    PUBLIC
-        src/volition/AbstractAPIRequestHandler.h
-        src/volition/AbstractRequestHandler.h
-        src/volition/AbstractSingleSignerTransaction.h
-        src/volition/AbstractSquap.h
-        src/volition/AbstractTransaction.h
-        src/volition/BinarySquap.h
-        src/volition/Block.h
-        src/volition/Chain.h
-        src/volition/ChainMetadata.h
-        src/volition/common.h
-        src/volition/ConstSquap.h
-        src/volition/CryptoKey.h
-        src/volition/Digest.h
-        src/volition/Entropy.h
-        src/volition/Factory.h
-        src/volition/FNV1a.h
-        src/volition/Format.h
-        src/volition/FuncSquap.h
-        src/volition/Inventory.h
-        src/volition/Ledger.h
-        src/volition/Miner.h
-        src/volition/MinerInfo.h
-        src/volition/Policy.h
-        src/volition/RouteTable.h
-        src/volition/Schema.h
-        src/volition/SchemaLua.h
-        src/volition/Signature.h
-        src/volition/Singleton.h
-        src/volition/SquapFactory.h
-        src/volition/SyncChainTask.h
-        src/volition/TheContext.h
-        src/volition/TheTransactionFactory.h
-        src/volition/TheWebMiner.h
-        src/volition/TransactionMakerSignature.h
-        src/volition/Transactions.h
-        src/volition/UnarySquap.h
-        src/volition/WebMiner.h
-        src/volition/serialization/AbstractSerializable.h
-        src/volition/serialization/AbstractSerializablePtrFactory.h
-        src/volition/serialization/AbstractSerializerFrom.h
-        src/volition/serialization/AbstractSerializerTo.h
-        src/volition/serialization/AbstractStringifiable.h
-        src/volition/serialization/DigestSerializer.h
-        src/volition/serialization/FromJSONSerializer.h
-        src/volition/serialization/JSONSerializer.h
-        src/volition/serialization/SerializableList.h
-        src/volition/serialization/SerializableMap.h
-        src/volition/serialization/SerializablePtrFactory.h
-        src/volition/serialization/SerializableSet.h
-        src/volition/serialization/SerializableSharedPtr.h
-        src/volition/serialization/SerializableUniquePtr.h
-        src/volition/serialization/SerializableVector.h
-        src/volition/serialization/Serialization.h
-        src/volition/serialization/SerializerKeys.h
-        src/volition/serialization/SerializerPropertyName.h
-        src/volition/serialization/SortedDigestSerializer.h
-        src/volition/serialization/ToJSONSerializer.h
-        src/volition/serialization/Variant.h
-        src/volition/transactions/AccountPolicy.h
-        src/volition/transactions/AffirmKey.h
-        src/volition/transactions/GenesisMiner.h
-        src/volition/transactions/InvokeSchemaMethod.h
-        src/volition/transactions/KeyPolicy.h
-        src/volition/transactions/OpenAccount.h
-        src/volition/transactions/PublishSchema.h
-        src/volition/transactions/RegisterMiner.h
-        src/volition/transactions/SellAssets.h
-        src/volition/transactions/SendAssets.h
-        src/volition/transactions/SendVOL.h
-        src/volition/transactions/TransformAssets.h
+        src/volition/simulation/Analysis.cpp
+        src/volition/simulation/Cohort.cpp
+        src/volition/simulation/SimMiner.cpp
+        src/volition/simulation/Simulation.cpp
         src/volition/web-miner-api/HTTPRequestHandlerFactory.cpp
-        src/volition/web-miner-api/AccountDetailsHandler.h
-        src/volition/web-miner-api/AccountKeyListHandler.h
-        src/volition/web-miner-api/BlockDetailsHandler.h
-        src/volition/web-miner-api/BlockListHandler.h
-        src/volition/web-miner-api/DefaultHandler.h
-        src/volition/web-miner-api/ExtendChainHandler.h
-        src/volition/web-miner-api/HTTPRequestHandlerFactory.h
-        src/volition/web-miner-api/InventoryHandler.h
-        src/volition/web-miner-api/KeyDetailsHandler.h
-        src/volition/web-miner-api/MinerListHandler.h
-        src/volition/web-miner-api/SchemaListHandler.h
-        src/volition/web-miner-api/TestKeyIDHandler.h
-        src/volition/web-miner-api/TransactionHandler.h
 )
 
-install ( TARGETS libvolition DESTINATION bin )
+install ( TARGETS volition-lib EXPORT libvolition ARCHIVE DESTINATION lib)
+install ( DIRECTORY src/volition/ DESTINATION include/volition FILES_MATCHING PATTERN "*.h" )
+
+add_executable ( volition "" )
+
+add_dependencies ( volition
+    hiredis
+    lognosis
+    lua
+    padamose
+    reproc
+    reproc++
+    routing
+    volition-lib
+)
+
+target_include_directories ( volition PRIVATE ${VOLITION_INCLUDES} )
+
+target_sources ( volition
+    PRIVATE
+        src/volition/main-server.cpp
+)
+
+#include ( cmake/cmake-modules/FindOpenSSL.cmake )
+find_package ( OpenSSL REQUIRED )
+
+target_link_libraries ( volition
+    ${OPENSSL_LIBRARIES}
+    hiredis
+    lua
+    lognosis
+    reproc
+    reproc++
+    routing
+    padamose
+    PocoCrypto
+    PocoEncodings
+    PocoFoundation
+    PocoJSON
+    PocoNet
+    PocoNetSSL
+    PocoRedis
+    PocoUtil
+    PocoXML
+    PocoZip
+    volition-lib
+)
+
+#install ( TARGETS volition DESTINATION bin )

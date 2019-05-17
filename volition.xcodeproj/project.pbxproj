@@ -2266,6 +2266,7 @@
 					"3rd-party/padamose/src",
 					"3rd-party/padamose/3rd-party/googletest/googletest/include",
 					"3rd-party/padamose/3rd-party/lognosis/src",
+					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -2334,6 +2335,7 @@
 					"3rd-party/padamose/src",
 					"3rd-party/padamose/3rd-party/googletest/googletest/include",
 					"3rd-party/padamose/3rd-party/lognosis/src",
+					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
