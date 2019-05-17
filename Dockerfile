@@ -36,9 +36,10 @@ RUN ls -l && \
     make && \
     make install && \
     cd .. && \
-    rm -r app
+    rm -r app && \
+    /sbin/ldconfig -v
 
 RUN ls -al
 
 ENTRYPOINT [ "volition" ]
-CMD [ "-p", "9090", "-s", "true", "-k", "secrets/pkey.priv.json", "-g", "secrets/genesis.signed" ]
+CMD [ "-p", "9090", "-s", "true", "-k", "var/lib/volition/pkey0.priv.json", "-g", "var/lib/volition/genesis.signed" ]

@@ -57,8 +57,8 @@ target_sources ( volition-lib
         src/volition/web-miner-api/HTTPRequestHandlerFactory.cpp
 )
 
-install ( TARGETS volition-lib EXPORT libvolition ARCHIVE DESTINATION lib)
-install ( DIRECTORY src/volition/ DESTINATION include/volition FILES_MATCHING PATTERN "*.h" )
+#install ( TARGETS volition-lib EXPORT libvolition ARCHIVE DESTINATION lib)
+#install ( DIRECTORY src/volition/ DESTINATION include/volition FILES_MATCHING PATTERN "*.h" )
 
 add_executable ( volition "" )
 
@@ -106,4 +106,5 @@ target_link_libraries ( volition
     ${CMAKE_DL_LIBS}
 )
 
+install ( TARGETS hiredis )
 install ( TARGETS volition DESTINATION bin )
