@@ -84,14 +84,14 @@ target_sources ( volition
 find_package ( OpenSSL REQUIRED )
 
 target_link_libraries ( volition
-    ${OPENSSL_LIBRARIES}
-    hiredis
+    volition-lib
     lua
+    padamose
+    hiredis
     lognosis
     reproc
     reproc++
     routing
-    padamose
     PocoCrypto
     PocoEncodings
     PocoFoundation
@@ -102,7 +102,8 @@ target_link_libraries ( volition
     PocoUtil
     PocoXML
     PocoZip
-    volition-lib
+    ${OPENSSL_LIBRARIES}
+    ${CMAKE_DL_LIBS}
 )
 
 #install ( TARGETS volition DESTINATION bin )
