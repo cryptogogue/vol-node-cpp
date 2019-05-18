@@ -25,6 +25,7 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         try {
+        
             string accountName = this->getMatchString ( "accountName" );
         
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
@@ -35,18 +36,6 @@ public:
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         
             jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Object::Ptr >());
-            
-//            try {
-//                stringstream outStream;
-//                jsonOut.stringify ( outStream, 4, -1 );
-//                outStream.flush ();
-//                
-//                printf ( "%s\n", outStream.str ().c_str ());
-//            }
-//            catch ( Poco::Exception e ) {
-//            
-//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "EXCEPT" );
-//            }
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

@@ -25,7 +25,7 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
 
         try {
-            
+        
             u64 height = this->getMatchU64 ( "blockID" );
 
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());

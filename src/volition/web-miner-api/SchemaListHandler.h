@@ -39,18 +39,6 @@ public:
             }
             
             jsonOut.set ( "schemas", jsonArray );
-            
-//            try {
-//                stringstream outStream;
-//                jsonOut.stringify ( outStream, 4, -1 );
-//                outStream.flush ();
-//                
-//                printf ( "%s\n", outStream.str ().c_str ());
-//            }
-//            catch ( Poco::Exception e ) {
-//            
-//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "EXCEPT" );
-//            }
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

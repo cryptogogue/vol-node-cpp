@@ -24,26 +24,19 @@ public:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-//        string accountName = this->getMatchString ( "accountName" );
-//        const state& ledger = TheWebMiner::get ().getLedger ();
-//
-//        shared_ptr < Account > account = ledger.getAccount ( accountName );
-//        if ( account ) {
-//
-//            map < string, CryptoKey > keys;
-//            account->getKeys ( keys );
-//
-//            Poco::JSON::Object::Ptr keysJSON = new Poco::JSON::Object ();
-//
-//            map < string, CryptoKey >::iterator keyIt = keys.begin ();
-//            for ( ; keyIt != keys.end (); ++keyIt ) {
-//                Poco::JSON::Object::Ptr keyJSON = ToJSONSerializer::toJSON ( keyIt->second );
-//                keysJSON->set ( keyIt->first, keyJSON );
-//            }
-//
-//            jsonOut.set ( "accountKeys", keysJSON );
-//            return Poco::Net::HTTPResponse::HTTP_OK;
-//        }
+        string accountName = this->getMatchString ( "accountName" );
+
+        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+        const Chain& chain = *scopedLock.getWebMiner ().getBestBranch ();
+
+        shared_ptr < Account > account = chain.getAccount ( accountName );
+        if ( account ) {
+
+            SerializableMap < string, CryptoKey > keys;
+            account->getKeys ( keys );
+            jsonOut.set ( "accountKeys", ToJSONSerializer::toJSON ( keys ));
+            return Poco::Net::HTTPResponse::HTTP_OK;
+        }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };
