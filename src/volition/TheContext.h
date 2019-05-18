@@ -38,13 +38,13 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    int                 compare                     ( const Block& block0, const Block& block1 );
-    string              getCurve                    () const;
     const Digest&       getGenesisBlockDigest       () const;
     const CryptoKey&    getGenesisBlockKey          () const;
     ScoringMode         getScoringMode              () const;
     size_t              getScoringModulo            () const;
     double              getWindow                   () const;
+    bool                hasGenesisBlockDigest       () const;
+    bool                hasGenesisBlockKey          () const;
                         TheContext                  ();
     void                setGenesisBlockDigest       ( const Digest& digest );
     void                setGenesisBlockKey          ( const CryptoKey& key );

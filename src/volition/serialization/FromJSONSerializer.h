@@ -5,7 +5,6 @@
 #define VOLITION_SERIALIZATION_FROMJSONSERIALIZER_H
 
 #include <volition/serialization/AbstractSerializerFrom.h>
-#include <volition/serialization/JSONSerializer.h>
 
 namespace Volition {
 
@@ -13,9 +12,14 @@ namespace Volition {
 // FromJSONSerializer
 //================================================================//
 class FromJSONSerializer :
-    public AbstractSerializerFrom,
-    public JSONSerializer < const Poco::JSON::Array, const Poco::JSON::Object, const FromJSONSerializer > {
+    public AbstractSerializerFrom {
 protected:
+
+    const Poco::JSON::Array*    mArray;
+    const Poco::JSON::Object*   mObject;
+    const FromJSONSerializer*   mParent;
+    
+    SerializerPropertyName      mName;
 
     //----------------------------------------------------------------//
     SerializerKeys AbstractSerializerFrom_getKeys () const override {
@@ -135,7 +139,60 @@ protected:
         value = Variant ( this->get ( name ));
     }
 
+    //----------------------------------------------------------------//
+    const Poco::Dynamic::Var get ( SerializerPropertyName name ) const {
+    
+        if ( this->mArray ) {
+            return this->mArray->get (( unsigned int )name.getIndex ());
+        }
+        assert ( this->mObject );
+        return this->mObject->get ( name.getName ());
+    }
+
+    //----------------------------------------------------------------//
+    bool has ( SerializerPropertyName name ) const {
+    
+        if ( this->mArray ) {
+            return name.getIndex () < this->mArray->size ();
+        }
+        assert ( this->mObject );
+        return this->mObject->has ( name.getName ());
+    }
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    TYPE optValue ( SerializerPropertyName name, const TYPE& fallback ) const {
+    
+        assert ( this->mObject || this->mArray );
+    
+        Poco::Dynamic::Var value;
+    
+        if ( this->mArray ) {
+            value = this->mArray->get ( ( unsigned int )name.getIndex ());
+        }
+        else {
+            assert ( this->mObject );
+            value = this->mObject->get ( name.getName ());
+        }
+        
+        if ( !value.isEmpty ()) {
+            try {
+                return value.convert < TYPE >();
+            }
+            catch ( ... ) {
+            }
+        }
+        return fallback;
+    }
+
 public:
+
+    //----------------------------------------------------------------//
+    FromJSONSerializer () :
+        mObject ( NULL ),
+        mArray ( NULL ),
+        mParent ( NULL ) {
+    }
 
     //----------------------------------------------------------------//
     static void fromJSON ( AbstractSerializable& serializable, const Poco::JSON::Array& array ) {
@@ -154,19 +211,25 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static void fromJSON ( AbstractSerializable& serializable, const Poco::Dynamic::Var& var ) {
+
+        if ( var.type () == typeid ( Poco::JSON::Object::Ptr )) {
+            Poco::JSON::Object::Ptr object = var.extract < Poco::JSON::Object::Ptr >();
+            fromJSON ( serializable, *object );
+        }
+        else if ( var.type () == typeid ( Poco::JSON::Array::Ptr )) {
+            Poco::JSON::Array::Ptr array = var.extract < Poco::JSON::Array::Ptr >();
+            fromJSON ( serializable, *array );
+        }
+    }
+
+    //----------------------------------------------------------------//
     static void fromJSON ( AbstractSerializable& serializable, istream& inStream ) {
 
         Poco::JSON::Parser parser;
         Poco::Dynamic::Var result = parser.parse ( inStream );
         
-        if ( result.type () == typeid ( Poco::JSON::Object::Ptr )) {
-            Poco::JSON::Object::Ptr object = result.extract < Poco::JSON::Object::Ptr >();
-            fromJSON ( serializable, *object );
-        }
-        else if ( result.type () == typeid ( Poco::JSON::Array::Ptr )) {
-            Poco::JSON::Array::Ptr array = result.extract < Poco::JSON::Array::Ptr >();
-            fromJSON ( serializable, *array );
-        }
+        FromJSONSerializer::fromJSON ( serializable, result );
     }
 
     //----------------------------------------------------------------//

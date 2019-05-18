@@ -6,8 +6,11 @@
 
 namespace Volition {
 
-static const char* PUBLIC_KEY_PEM       = "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEzfUD/qtmfa4H2NJ+vriC8SNm0bUe8dMx\nBlOig2FzzOZE1iVu3u1Tgvvr4MsYmY2KYxOt+zHWcT5DlSKmrmaQqw==\n-----END PUBLIC KEY-----\n";
-static const char* DIGEST_STRING        = "9a67ce9a8ccbe4e8491f0c572da5aa390ae636f53403f6fce08943e710998654";
+//static const string PUBLIC_KEY_PEM        = "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEzfUD/qtmfa4H2NJ+vriC8SNm0bUe8dMx\nBlOig2FzzOZE1iVu3u1Tgvvr4MsYmY2KYxOt+zHWcT5DlSKmrmaQqw==\n-----END PUBLIC KEY-----\n";
+//static const string char* DIGEST_STRING   = "9a67ce9a8ccbe4e8491f0c572da5aa390ae636f53403f6fce08943e710998654";
+
+static const string PUBLIC_KEY_PEM;
+static const string DIGEST_STRING;
 
 //================================================================//
 // TheContext
@@ -44,18 +47,32 @@ double TheContext::getWindow () const {
 }
 
 //----------------------------------------------------------------//
+bool TheContext::hasGenesisBlockDigest () const {
+    return ( DIGEST_STRING.size () > 0 );
+}
+
+//----------------------------------------------------------------//
+bool TheContext::hasGenesisBlockKey () const {
+     return ( PUBLIC_KEY_PEM.size () > 0 );
+}
+
+//----------------------------------------------------------------//
 TheContext::TheContext () :
     mScoringMode ( ScoringMode::ALLURE ),
     mScoringModulo ( 0 ),
     mRewriteWindowInSeconds ( 0 ) {
 
-    Poco::JSON::Object::Ptr object = new Poco::JSON::Object ();
-    object->set ( "type", "EC_PEM" );
-    object->set ( "publicKey", PUBLIC_KEY_PEM );
+    if ( TheContext::hasGenesisBlockKey ()) {
+        Poco::JSON::Object::Ptr object = new Poco::JSON::Object ();
+        object->set ( "type", "EC_PEM" );
+        object->set ( "publicKey", PUBLIC_KEY_PEM );
 
-    FromJSONSerializer::fromJSON ( this->mKey, *object );
+        FromJSONSerializer::fromJSON ( this->mKey, *object );
+    }
     
-    this->mDigest = DIGEST_STRING;
+    if ( TheContext::hasGenesisBlockDigest ()) {
+        this->mDigest = DIGEST_STRING;
+    }
 }
 
 //----------------------------------------------------------------//

@@ -45,7 +45,7 @@ public:
         string password     = configuration.getString ( "password", "" );
         
         Volition::CryptoKey keyPair;
-        
+
         if ( Poco::File ( keyfile ).exists ()) {
             fstream inStream;
             inStream.open ( keyfile, ios_base::in );
@@ -54,9 +54,10 @@ public:
         else {
             keyPair.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
         }
-                
-        Poco::JSON::Object::Ptr object = Volition::ToJSONSerializer::toJSON ( keyPair );
-        
+
+        Poco::Dynamic::Var var = Volition::ToJSONSerializer::toJSON ( keyPair );
+        Poco::JSON::Object::Ptr object = var.extract < Poco::JSON::Object::Ptr >();
+
         fstream jsonOutStream;
         jsonOutStream.open ( keyfile + ".json", ios_base::out );
         object->stringify ( jsonOutStream, 4 );
@@ -108,10 +109,10 @@ public:
         fstream keyStream;
         keyStream.open ( keyfile, ios_base::in );
         Volition::FromJSONSerializer::fromJSON ( keyPair, keyStream );
-        
+
         fstream inStream;
         inStream.open ( inpath, ios_base::in );
-        
+
         Volition::Block block;
         Volition::FromJSONSerializer::fromJSON ( block, inStream );
         block.sign ( keyPair );

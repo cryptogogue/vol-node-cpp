@@ -3,10 +3,11 @@
 
 #include <padamose/padamose.h>
 #include <volition/Block.h>
-#include <volition/TheTransactionFactory.h>
+#include <volition/FileSys.h>
 #include <volition/RouteTable.h>
 #include <volition/Singleton.h>
 #include <volition/TheContext.h>
+#include <volition/TheTransactionFactory.h>
 #include <volition/TheWebMiner.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 
@@ -270,8 +271,6 @@ protected:
         int redisPort       = configuration.getInt ( "redis-port", 0 );
         bool solo           = configuration.getBool ( "solo", false );
     
-        LOG_F ( INFO, "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
-    
         string minerID      = to_string ( port );
     
         Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
@@ -288,13 +287,13 @@ protected:
             
             persistenceProvider = make_shared < StringStorePersistenceProvider >( stringStore );
         }
-
         
         {
             Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
             Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
         
             if ( solo ) {
+                LOG_F ( INFO, "LAZY and SOLO" );
                 webMiner.setLazy ( true );
                 webMiner.setSolo ( true );
             }
@@ -302,16 +301,27 @@ protected:
             webMiner.setPersistenceProvider ( persistenceProvider );
             
             if ( webMiner.getBestBranch () == NULL ) {
+                LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
+                if ( !Volition::FileSys::exists ( genesis )) {
+                    LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+                    return Application::EXIT_CONFIG;
+                }
                 webMiner.loadGenesis ( genesis );
             }
             
+            LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
+            if ( !Volition::FileSys::exists ( keyfile )) {
+                LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+                return Application::EXIT_CONFIG;
+            }
             webMiner.loadKey ( keyfile );
+            
+            LOG_F ( INFO, "MINER ID: %s", keyfile.c_str ());
             webMiner.setMinerID ( minerID );
             webMiner.start ();
         }
 
         this->serve ( port );
-        //this->waitForTerminationRequest ();
 
         {
             Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
@@ -348,9 +358,11 @@ protected:
     
     //----------------------------------------------------------------//
     void serve ( int port ) {
-    
+        
         Poco::Net::HTTPServer server ( new Volition::WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams ());
         server.start ();
+
+        LOG_F ( INFO, "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
         // need to find out how to stop POCO from doing this. in the meantime, this hack.
@@ -378,7 +390,7 @@ int main ( int argc, char** argv ) {
 
     Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
     Lognosis::init ( argc, argv );
-    LOG_F ( INFO, "Hello from main.cpp!" );
+    LOG_F ( INFO, "\nHello from VOLITION main.cpp!\n" );
 
     ServerApp app;
     return app.run ( argc, argv );

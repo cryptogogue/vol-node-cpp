@@ -281,20 +281,27 @@ bool Block::verify ( const Ledger& ledger ) const {
     shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( this->mMinerID );
 
     if ( minerInfo ) {
-        return this->verify ( ledger, minerInfo->getPublicKey ());
+        return this->verify ( minerInfo->getPublicKey ());
     }
 
     // no miner info; must be the genesis block
     if ( this->mHeight > 0 ) return false; // genesis block must be height 0
 
-    // check that it's the expected genesis block
-    if ( !Poco::DigestEngine::constantTimeEquals ( TheContext::get ().getGenesisBlockDigest (), this->getSignature ().getDigest ())) return false;
+    TheContext& theContext = TheContext::get ();
 
-    return this->verify ( ledger, TheContext::get ().getGenesisBlockKey ());
+    if ( theContext.hasGenesisBlockDigest ()) {
+        if ( !Poco::DigestEngine::constantTimeEquals ( theContext.getGenesisBlockDigest (), this->getSignature ().getDigest ())) return false;
+    }
+
+    if ( theContext.hasGenesisBlockKey ()) {
+        if ( !this->verify ( theContext.getGenesisBlockKey ())) return false;
+    }
+    
+    return true;
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const Ledger& ledger, const CryptoKey& key ) const {
+bool Block::verify ( const CryptoKey& key ) const {
 
 //    if ( this->mHeight > 0 ) {
 //
@@ -343,6 +350,7 @@ void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer 
     serializer.serialize ( "time", iso8601 );
     
     if ( this->mHeight > 0 ) {
+        
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
         serializer.serialize ( "allure",        this->mAllure );

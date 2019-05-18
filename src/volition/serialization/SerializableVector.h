@@ -28,7 +28,7 @@ public:
             this->resize ( size );
             
             for ( size_t i = 0; i < size; ++i ) {
-                serializer.serialize ( i, ( *this )[ i ]);
+                serializer.serialize ( i, this->data ()[ i ]);
             }
         }
         else {
@@ -36,7 +36,7 @@ public:
             const AbstractSerializerFrom* parent = serializer.getParent ();
             if ( parent ) {
                 this->resize ( 1 );
-                parent->serialize ( serializer.getName (), ( *this )[ 0 ]);
+                parent->serialize ( serializer.getName (), this->data ()[ 0 ]);
             }
         }
     }

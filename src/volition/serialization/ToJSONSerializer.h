@@ -5,7 +5,6 @@
 #define VOLITION_SERIALIZATION_TOJSONSERIALIZER_H
 
 #include <volition/serialization/AbstractSerializerTo.h>
-#include <volition/serialization/JSONSerializer.h>
 
 namespace Volition {
 
@@ -13,9 +12,19 @@ namespace Volition {
 // ToJSONSerializer
 //================================================================//
 class ToJSONSerializer :
-    public AbstractSerializerTo,
-    public JSONSerializer < Poco::JSON::Array, Poco::JSON::Object, ToJSONSerializer > {
+    public AbstractSerializerTo {
 protected:
+
+    Poco::JSON::Array::Ptr      mArray;
+    Poco::JSON::Object::Ptr     mObject;
+    ToJSONSerializer*           mParent;
+    
+    SerializerPropertyName      mName;
+
+    //----------------------------------------------------------------//
+    operator bool () const {
+        return ( this->mArray || this->mObject );
+    }
 
     //----------------------------------------------------------------//
     void AbstractSerializerTo_affirmArray () override {
@@ -103,7 +112,41 @@ protected:
         }
     }
 
+    //----------------------------------------------------------------//
+    void affirmJSONArray () {
+        assert ( !this->mObject );
+        if ( !this->mArray ) {
+            this->mArray = new Poco::JSON::Array ();
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    void affirmJSONObject () {
+        assert ( !this->mArray );
+        if ( !this->mObject ) {
+            this->mObject = new Poco::JSON::Object ();
+        }
+    }
+
+    //----------------------------------------------------------------//
+    void set ( SerializerPropertyName name, const Poco::Dynamic::Var& value ) {
+        
+        if ( name.isIndex ()) {
+            this->affirmJSONArray ();
+            this->mArray->set (( unsigned int )name.getIndex (), value );
+        }
+        else {
+            this->affirmJSONObject ();
+            this->mObject->set ( name.getName (), value );
+        }
+    }
+
 public:
+
+    //----------------------------------------------------------------//
+    ToJSONSerializer () :
+        mParent ( NULL ) {
+    }
 
     //----------------------------------------------------------------//
     static Poco::Dynamic::Var toJSON ( const AbstractSerializable& serializable ) {

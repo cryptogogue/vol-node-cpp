@@ -1,11 +1,11 @@
 {
-    "cycleID" : 0,
     "height" : 0,
     "signature" : {
-        "digest" : "9a67ce9a8ccbe4e8491f0c572da5aa390ae636f53403f6fce08943e710998654",
+        "digest" : "8bf02fcd60b45321f2ba4ac407a1d7e4fc8a92bf36e761ed6e5eb01f6e02a242",
         "hashAlgorithm" : "SHA256",
-        "signature" : "3046022100a0e337ecb05376ad7571ee79cc7ad4ef70bb905d9fdc8c1628cc02e0bde69159022100fd8a63e015d05833c094a0c70e6f54b50a0ce5bcaee0e34b04bd0f1d9736afe7"
+        "signature" : "304402201090102ce74d18131c5f740bb7f356177dd4a853adfa666edc9601ea641a26fa0220691d6e68cafe8009d078c4417566c024117fb23689c54c6c75fe2931daee54c7"
     },
+    "time" : "1970-01-01T00:00:00UTC",
     "transactions" : [
         {
             "accountName" : "9090",

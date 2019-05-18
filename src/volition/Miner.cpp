@@ -161,10 +161,10 @@ void Miner::loadGenesis ( string path ) {
 
     fstream inStream;
     inStream.open ( path, ios_base::in );
+    assert ( inStream.is_open ());
 
     Block block;
     FromJSONSerializer::fromJSON ( block, inStream );
-
     this->setGenesis ( block );
 }
 
@@ -175,6 +175,8 @@ void Miner::loadKey ( string keyfile, string password ) {
 
     fstream inStream;
     inStream.open ( keyfile, ios_base::in );
+    assert ( inStream.is_open ());
+    
     Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
 }
 
@@ -231,9 +233,10 @@ void Miner::setGenesis ( const Block& block ) {
     
     this->mBranches.clear ();
     shared_ptr < Chain > chain = make_shared < Chain >();
-    chain->pushBlock ( block );
+    bool result = chain->pushBlock ( block );
+    assert ( result );
+        
     this->mBranches.insert ( chain );
-    
     this->mBestBranch = chain;
 }
 

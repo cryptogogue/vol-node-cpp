@@ -42,7 +42,7 @@ private:
     void                computeAllure                       ( Poco::Crypto::ECDSADigestEngine& signature ) const;
     void                setPreviousBlock                    ( const Block& prevBlock );
     bool                verify                              ( const Ledger& ledger ) const;
-    bool                verify                              ( const Ledger& ledger, const CryptoKey& key ) const;
+    bool                verify                              ( const CryptoKey& key ) const;
 
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;

@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sys/stat.h>
 #include <typeinfo>
 #include <vector>
 
