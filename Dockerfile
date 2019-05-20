@@ -31,7 +31,6 @@ RUN git clone -b poco-1.9.1 https://github.com/pocoproject/poco \
     && cmake                \
         -DDISABLE_CPP11=ON  \
         -DDISABLE_CPP14=ON  \
-        -DENABLE_NETSSL=ON  \
         -DENABLE_MONGODB=OFF \
         -DENABLE_REDIS=OFF  \
         -DENABLE_PDF=OFF    \
@@ -43,7 +42,7 @@ RUN git clone -b poco-1.9.1 https://github.com/pocoproject/poco \
         -DENABLE_PAGECOMPILER=OFF \
         -DENABLE_PAGECOMPILER_FILE2PAGE=OFF \
         .                   \
-    && make -j4             \
+    && make -j4 VERBOSE=1   \
     && make install         \
     && cd ..                \
     && rm -r poco
