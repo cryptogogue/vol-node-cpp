@@ -316,7 +316,7 @@ protected:
             }
             webMiner.loadKey ( keyfile );
             
-            LOG_F ( INFO, "MINER ID: %s", keyfile.c_str ());
+            LOG_F ( INFO, "MINER ID: %s", minerID.c_str ());
             webMiner.setMinerID ( minerID );
             webMiner.start ();
         }
@@ -362,7 +362,11 @@ protected:
         Poco::Net::HTTPServer server ( new Volition::WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams ());
         server.start ();
 
-        LOG_F ( INFO, "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+        LOG_F ( INFO, "\nSERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+
+//        Poco::Thread::sleep ( 3000 );
+//        server.stop ();
+//        return;
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
         // need to find out how to stop POCO from doing this. in the meantime, this hack.

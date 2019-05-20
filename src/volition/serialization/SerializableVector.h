@@ -16,8 +16,19 @@ template < typename TYPE >
 class SerializableVector :
     public AbstractSerializable,
     public vector < TYPE > {
-    
 public:
+    
+    //----------------------------------------------------------------//
+    SerializableVector& operator = ( const vector < TYPE >& other ) {
+        vector < TYPE >::operator = ( other );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableVector& operator = ( const SerializableVector < TYPE >& other ) {
+        vector < TYPE >::operator = ( other );
+        return *this;
+    }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -50,6 +61,20 @@ public:
         for ( size_t i = 0; i < size; ++i ) {
             serializer.serialize ( i, ( *this )[ i ]);
         }
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableVector () {
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableVector ( const vector < TYPE >& other ) :
+        vector < TYPE >( other ) {
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableVector ( const SerializableVector < TYPE >& other ) :
+        vector < TYPE >( other ) {
     }
 };
 

@@ -19,6 +19,18 @@ class SerializableSet :
 public:
     
     //----------------------------------------------------------------//
+    SerializableSet& operator = ( const set < TYPE >& other ) {
+        set < TYPE >::operator = ( other );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableSet& operator = ( const SerializableSet < TYPE >& other ) {
+        set < TYPE >::operator = ( other );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
         
         if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_INDEX ) return;
@@ -46,6 +58,20 @@ public:
                 serializer.serialize ( i, *it );
             }
         }
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableSet () {
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableSet ( const set < TYPE >& other ) :
+        set < TYPE >( other ) {
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableSet ( const SerializableSet < TYPE >& other ) :
+        set < TYPE >( other ) {
     }
 };
 

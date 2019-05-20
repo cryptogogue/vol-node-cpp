@@ -46,7 +46,10 @@ public:
     //----------------------------------------------------------------//
     Variant& operator = (const Variant& other ) {
         
-        memcpy ( this, &other, sizeof ( Variant ));
+        this->mType     = other.mType;
+        this->mNumeric  = other.mNumeric;
+        this->mString   = other.mString;
+        
         return *this;
     }
     
@@ -284,6 +287,10 @@ public:
             this->mType = TYPE_STRING;
             this->mString = var.extract < string >();
         }
+    }
+    
+    //----------------------------------------------------------------//
+    ~Variant () {
     }
 };
 

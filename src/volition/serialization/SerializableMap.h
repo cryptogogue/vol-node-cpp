@@ -19,6 +19,18 @@ class SerializableMap :
 public:
     
     //----------------------------------------------------------------//
+    SerializableMap& operator = ( const map < KEY_TYPE, VAL_TYPE >& other ) {
+        map < KEY_TYPE, VAL_TYPE >::operator = ( other );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableMap& operator = ( const SerializableMap < KEY_TYPE, VAL_TYPE >& other ) {
+        map < KEY_TYPE, VAL_TYPE >::operator = ( other );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
         
         if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_STRING ) return;
@@ -51,6 +63,20 @@ public:
                 serializer.serialize ( it->first, it->second );
             }
         }
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableMap () {
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableMap ( const map < KEY_TYPE, VAL_TYPE >& other ) :
+        map < KEY_TYPE, VAL_TYPE >( other ) {
+    }
+    
+    //----------------------------------------------------------------//
+    SerializableMap ( const SerializableMap < KEY_TYPE, VAL_TYPE >& other ) :
+        map < KEY_TYPE, VAL_TYPE >( other ) {
     }
 };
 

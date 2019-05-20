@@ -154,10 +154,13 @@ public:
         ToJSONSerializer serializer;
         serializable.serializeTo ( serializer );
         
-        if ( serializer.mArray ) {
-            return Poco::JSON::Array::Ptr ( serializer.mArray );
+        if ( serializer ) {
+            if ( serializer.mArray ) {
+                return Poco::JSON::Array::Ptr ( serializer.mArray );
+            }
+            return Poco::JSON::Object::Ptr ( serializer.mObject );
         }
-        return Poco::JSON::Object::Ptr ( serializer.mObject );
+        return Poco::Dynamic::Var ();
     }
 
     //----------------------------------------------------------------//

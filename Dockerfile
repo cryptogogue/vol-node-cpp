@@ -6,9 +6,9 @@ WORKDIR /app
 RUN    apt-get update       \
     && apt-get -y --no-install-recommends install \
         ca-certificates     \
-        clang               \
+        gcc                 \
+        g++                 \
         git                 \
-        libssl-dev          \
         make                \
         openssl             \
                             \
@@ -18,24 +18,48 @@ RUN    apt-get update       \
     && make -j4             \
     && make install         \
     && cd ..                \
-    && rm -r cmake          \
-                            \
-    && git clone -b poco-1.9.1 https://github.com/pocoproject/poco \
+    && rm -r cmake
+
+RUN git clone -b OpenSSL_1_1_1b https://github.com/openssl/openssl.git \
+    && cd openssl           \
+    && ./config             \
+    && make                 \
+    && make install
+
+RUN git clone -b poco-1.9.1 https://github.com/pocoproject/poco \
     && cd poco              \
-    && cmake -DPOCO_ENABLE_SQL_MYSQL=OFF -DPOCO_ENABLE_SQL_POSTGRESQL=OFF -DPOCO_ENABLE_SQL_ODBC=OFF -DPOCO_ENABLE_NETSSL=ON . \
+    && cmake                \
+        -DDISABLE_CPP11=ON  \
+        -DDISABLE_CPP14=ON  \
+        -DENABLE_NETSSL=ON  \
+        -DENABLE_MONGODB=OFF \
+        -DENABLE_REDIS=OFF  \
+        -DENABLE_PDF=OFF    \
+        -DENABLE_DATA=OFF   \
+        -DENABLE_DATA_SQLITE=OFF \
+        -DENABLE_DATA_MYSQL=OFF \
+        -DENABLE_DATA_POSTGRESQL=OFF \
+        -DENABLE_DATA_ODBC=OFF \
+        -DENABLE_PAGECOMPILER=OFF \
+        -DENABLE_PAGECOMPILER_FILE2PAGE=OFF \
+        .                   \
     && make -j4             \
     && make install         \
     && cd ..                \
     && rm -r poco
 
+RUN    apt-get update       \
+    && apt-get -y --no-install-recommends install \
+        valgrind
+
 COPY . /app
 
-RUN    cmake .              \
-    && make -j4             \
+RUN cmake .                 \
+    && make -j4 VERBOSE=1   \
     && make install         \
-    && cd ..                \
-    && rm -r app            \
-    && /sbin/ldconfig -v
+    && /sbin/ldconfig -v    \
+    && cd ..
+#    && rm -r app
 
 ENTRYPOINT [ "volition" ]
 CMD [ "-p", "9090", "-s", "true", "-k", "/var/lib/volition/keys/pkey0.priv.json", "-g", "/var/lib/volition/genesis.signed" ]
