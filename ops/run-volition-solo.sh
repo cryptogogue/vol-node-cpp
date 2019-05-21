@@ -1,6 +1,11 @@
 #!/bin/bash
 
-docker run --rm --name volition-node \
+{
+    docker network create --driver bridge volition || true
+} &> /dev/null
+
+docker run -d --rm --name volition-node \
+    --network="volition" \
     -p "9090:9090" \
     -v ${PWD}:/var/lib/volition \
     volition/node \

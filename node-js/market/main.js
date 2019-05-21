@@ -84,6 +84,24 @@ function _fetchNonce () {
 }
 
 //----------------------------------------------------------------//
+function _fetchStatus () {
+
+    return new Promise (( resolve, reject ) => {
+
+        console.log ( 'FETCH STATUS' );
+
+        fetch ( MINER_URL + '/' )
+        .then (( response ) => { return response.json (); })
+        .then (( data ) => {
+            resolve ( data )
+        })
+        .catch (( error ) => {
+            reject ( error );
+        });
+    });
+}
+
+//----------------------------------------------------------------//
 async function _getBid ( request, result ) {
 
     const message = {
@@ -99,11 +117,16 @@ async function _getBid ( request, result ) {
 //----------------------------------------------------------------//
 async function _getStatus ( request, result ) {
 
-    const message = {
-        type: 'VOL_PROVIDER',
-    };
+    console.log ( 'MINER URL:', MINER_URL );
 
-    result.json ( message );
+    const status = await _fetchStatus ();
+    result.json ( status );
+
+    // const message = {
+    //     type: 'VOL_PROVIDER',
+    // };
+
+    // result.json ( message );
 }
 
 //----------------------------------------------------------------//
