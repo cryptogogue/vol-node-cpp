@@ -6,6 +6,7 @@ process.on ( 'uncaughtException', function ( err ) {
 });
 
 require ( 'dotenv' ).config ();
+//dotenv.config ();
 
 const PORT                  = process.env.PORT;
 const MAKER_NAME            = process.env.MAKER_NAME;

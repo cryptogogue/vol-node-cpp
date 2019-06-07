@@ -55,3 +55,30 @@ broad phase: type
 medium phase: keywords
 narrow phase: metadata
 
+----------------------------------------------------------------
+
+rework asset tracking - no generics; every asset to be unique
+    decide on final asset identifier format
+    implement asset customization
+implement queue of transactions in wallet - rebuild state dynamically (from node)
+    rethink state handling in wallet
+template cards using SVG and mustache
+svg barcode
+card modification through crafting
+variable-size transactions (multiple crafting commands per transaction)
+expand schema to include svg templates AND placeholder asset templates
+finalize schema
+
+wallet
+    collection screen
+        filtering
+        printing
+        indicate craftability
+    crafting model
+    rendering svg
+
+validator app - sample
+
+VOL:ETH
+onboarding
+bearer bond vs oracles
