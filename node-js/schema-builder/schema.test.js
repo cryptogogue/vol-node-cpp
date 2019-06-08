@@ -15,7 +15,7 @@ test ( 'define schema', () => {
             .field ( 'displayName' ).string ()
      
         .assetTemplate ( 'card' ).extends ( 'base' )
-            .field ( 'keywords' ).string ().array ()
+            .field ( 'keywords' ).string ()
 
         //----------------------------------------------------------------//
         .assetDefinition ( 'pack', 'base' )
@@ -23,15 +23,15 @@ test ( 'define schema', () => {
      
         .assetDefinition ( 'common', 'card' )
             .field ( 'displayName', 'Common' )
-            .field ( 'keywords', [ 'card', 'common' ])
+            .field ( 'keywords', 'card common' )
      
         .assetDefinition ( 'rare', 'card' )
             .field ( 'displayName', 'Rare' )
-            .field ( 'keywords', [ 'card', 'rare' ])
+            .field ( 'keywords', 'card rare' )
      
         .assetDefinition ( 'ulraRare', 'card' )
             .field ( 'displayName', 'Ultra-Rare' )
-            .field ( 'keywords', [ 'card', 'ultra-rare' ])
+            .field ( 'keywords', 'card ultra-rare' )
 
         //----------------------------------------------------------------//
         .method ( 'makeRare', 1, 2, 'Combine two commons to make a rare.' )
@@ -91,15 +91,11 @@ test ( 'test operators', () => {
         .assetTemplate ( 'testTemplate' )
             .field ( 'numberField' ).numeric ()
             .field ( 'stringField' ).string ()
-            .field ( 'numberArrayField' ).numeric ().array ()
-            .field ( 'stringArrayField' ).string ().array ()
 
         //----------------------------------------------------------------//
         .assetDefinition ( 'testAsset', 'testTemplate' )
             .field ( 'numberField', 123 )
             .field ( 'stringField', 'oneTwoThree' )
-            .field ( 'numberArrayField', [ 1, 2, 3 ])
-            .field ( 'stringArrayField', [ 'one', 'two', 'three' ])
 
         //----------------------------------------------------------------//
         .method ( 'assetType', 1, 2, '' )
@@ -129,12 +125,6 @@ test ( 'test operators', () => {
 
         .method ( 'numericLessOrEqual', 1, 2, '' )
             .assetArg ( 'arg0', op.LESS_OR_EQUAL ( op.FIELD ( 'numberField' ), 123 ))
-
-        .method ( 'numericIn', 1, 2, '' )
-            .assetArg ( 'arg0', op.IN ( op.FIELD ( 'numberArrayField' ), 2 ))
-
-        .method ( 'stringIn', 1, 2, '' )
-            .assetArg ( 'arg0', op.IN ( op.FIELD ( 'stringArrayField' ), 'two' ))
 
         .method ( 'logicalAnd', 1, 2, '' )
             .assetArg ( 'arg0', op.AND (
@@ -211,8 +201,6 @@ test ( 'test operators', () => {
     expect ( inventory.methodBindings [ 'numericGreaterOrEqual' ].valid ).toBe ( true );
     expect ( inventory.methodBindings [ 'numericLess' ].valid ).toBe ( true );
     expect ( inventory.methodBindings [ 'numericLessOrEqual' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'numericIn' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'stringIn' ].valid ).toBe ( true );
     expect ( inventory.methodBindings [ 'logicalAnd' ].valid ).toBe ( true );
     expect ( inventory.methodBindings [ 'logicalNotAnd' ].valid ).toBe ( true );
     expect ( inventory.methodBindings [ 'logicalOr' ].valid ).toBe ( true );
@@ -235,8 +223,6 @@ test ( 'test operators', () => {
     expect ( 'numericGreaterOrEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
     expect ( 'numericLess' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
     expect ( 'numericLessOrEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericIn' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'stringIn' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
     expect ( 'logicalAnd' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
     expect ( 'logicalNotAnd' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
     expect ( 'logicalOr' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );

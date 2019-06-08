@@ -28,6 +28,7 @@ unique_ptr < AbstractSquap > SquapFactory::SerializablePtrFactory_make ( const A
         case AbstractSquap::DIV:
         case AbstractSquap::GREATER:
         case AbstractSquap::GREATER_OR_EQUAL:
+        case AbstractSquap::KEYWORD:
         case AbstractSquap::LESS_OR_EQUAL:
         case AbstractSquap::LESS:
         case AbstractSquap::MOD:
@@ -45,7 +46,6 @@ unique_ptr < AbstractSquap > SquapFactory::SerializablePtrFactory_make ( const A
         
         case AbstractSquap::ASSET_TYPE:
         case AbstractSquap::FIELD:
-        case AbstractSquap::IN:
             squap =  make_unique < FuncSquap >();
             break;
         

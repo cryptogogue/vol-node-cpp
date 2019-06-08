@@ -198,7 +198,7 @@ protected:
         SortedDigestSerializer serializer;
         serializer.mParent = this;
         serializer.mName = name;
-        value.serializeTo ( serializer );
+        value.serialize ( serializer );
         if ( serializer.mContainer ) {
             this->setValue ( name, move ( serializer.mContainer ));
         }
@@ -246,7 +246,7 @@ public:
     static void hash ( const AbstractSerializable& serializable, Poco::DigestOutputStream& digestStream ) {
 
         SortedDigestSerializer serializer;
-        serializable.serializeTo ( serializer );
+        serializable.serialize ( serializer );
         serializer.mContainer->digest ( digestStream );
     }
 };

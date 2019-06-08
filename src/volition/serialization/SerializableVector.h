@@ -43,7 +43,7 @@ public:
             }
         }
         else {
-            
+
             const AbstractSerializerFrom* parent = serializer.getParent ();
             if ( parent ) {
                 this->resize ( 1 );

@@ -47,7 +47,7 @@ let schema = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
         .field ( 'displayName' ).string ()
  
     .assetTemplate ( 'card' ).extends ( 'base' )
-        .field ( 'keywords' ).string ().array ()
+        .field ( 'keywords' ).string ()
 
     //----------------------------------------------------------------//
     .assetDefinition ( 'pack', 'base' )
@@ -55,15 +55,15 @@ let schema = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
  
     .assetDefinition ( 'common', 'card' )
         .field ( 'displayName', 'Common' )
-        .field ( 'keywords', [ 'card', 'common' ])
+        .field ( 'keywords', 'card common' )
  
     .assetDefinition ( 'rare', 'card' )
         .field ( 'displayName', 'Rare' )
-        .field ( 'keywords', [ 'card', 'rare' ])
+        .field ( 'keywords', 'card rare' )
  
     .assetDefinition ( 'ulraRare', 'card' )
         .field ( 'displayName', 'Ultra-Rare' )
-        .field ( 'keywords', [ 'card', 'ultra-rare' ])
+        .field ( 'keywords', 'card ultra-rare' )
 
     //----------------------------------------------------------------//
     .method ( 'makeRare', 1, 2, 'Combine two commons to make a rare.' )

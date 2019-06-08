@@ -28,7 +28,7 @@ public:
         FIELD               = FNV1a::const_hash_64 ( "FIELD" ),
         GREATER             = FNV1a::const_hash_64 ( "GREATER" ),
         GREATER_OR_EQUAL    = FNV1a::const_hash_64 ( "GREATER_OR_EQUAL" ),
-        IN                  = FNV1a::const_hash_64 ( "IN" ),
+        KEYWORD             = FNV1a::const_hash_64 ( "KEYWORD" ),
         LESS                = FNV1a::const_hash_64 ( "LESS" ),
         LESS_OR_EQUAL       = FNV1a::const_hash_64 ( "LESS_OR_EQUAL" ),
         MOD                 = FNV1a::const_hash_64 ( "MOD" ),
@@ -69,7 +69,7 @@ public:
             case FIELD:                 return "FIELD";
             case GREATER:               return "GREATER";
             case GREATER_OR_EQUAL:      return "GREATER_OR_EQUAL";
-            case IN:                    return "IN";
+            case KEYWORD:               return "KEYWORD";
             case LESS:                  return "LESS";
             case LESS_OR_EQUAL:         return "LESS_OR_EQUAL";
             case MOD:                   return "MOD";

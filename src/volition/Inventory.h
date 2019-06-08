@@ -12,103 +12,35 @@ namespace Volition {
 //================================================================//
 // AssetIdentifier
 //================================================================//
-class AssetIdentifier :
+class Asset :
      public AbstractSerializable {
 public:
 
-    string      mClassName;             // class this asset is based on.
-    string      mSpecialization;        // identifier of the asset specialization (if any).
+    string                                  mType;
+    string                                  mOwner;
+    SerializableMap < string, Variant >     mFields;
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "specialization",    this->mSpecialization );
+        serializer.serialize ( "type",              this->mType );
+        serializer.serialize ( "owner",             this->mOwner );
+        serializer.serialize ( "fields",            this->mFields );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "specialization",    this->mSpecialization );
-    }
-};
-
-//================================================================//
-// BulkAssetIdentifier
-//================================================================//
-class BulkAssetIdentifier :
-    public AbstractSerializable {
-public:
-
-    string      mClassName;             // class this asset is based on.
-    u64         mQuantity;              // quantity.
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "quantity",          this->mQuantity );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "quantity",          this->mQuantity );
-    }
-};
-
-
-//================================================================//
-// AssetSpecialization
-//================================================================//
-class AssetSpecialization :
-    public AbstractSerializable {
-private:
-
-    string      mClassName;             // class this asset is based on.
-    string      mBody;
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "body",              this->mBody );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "className",         this->mClassName );
-        serializer.serialize ( "body",              this->mBody );
+        serializer.serialize ( "type",              this->mType );
+        serializer.serialize ( "owner",             this->mOwner );
+        serializer.serialize ( "fields",            this->mFields );
     }
 };
 
 //================================================================//
 // Inventory
 //================================================================//
-class Inventory :
-    public AbstractSerializable {
-public:
-
-    SerializableList < BulkAssetIdentifier >    mAssets;
-    SerializableList < AssetSpecialization >    mSpecializations;
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "assets",            this->mAssets );
-        serializer.serialize ( "specializations",   this->mSpecializations );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "assets",            this->mAssets );
-        serializer.serialize ( "specializations",   this->mSpecializations );
-    }
-};
+typedef SerializableVector < Asset > Inventory;
 
 } // namespace Volition
 #endif

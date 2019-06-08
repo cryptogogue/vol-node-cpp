@@ -17,24 +17,41 @@ class SchemaAssetTemplateField :
      public AbstractSerializable {
 public:
 
-    string              mType;
-    bool                mArray;
-    bool                mMutable;
+    enum Type : u64 {
+        NUMERIC             = FNV1a::const_hash_64 ( "NUMERIC" ),
+        STRING              = FNV1a::const_hash_64 ( "STRING" ),
+    };
+
+    Type    mType;
+    bool    mMutable;
+    
+    //----------------------------------------------------------------//
+    static string getTypeName ( Type type ) {
+    
+        switch ( type ) {
+            case NUMERIC:       return "NUMERIC";
+            case STRING:        return "STRING";
+        }
+        return "";
+    }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "type",              this->mType );
-        serializer.serialize ( "array",             this->mArray );
-        serializer.serialize ( "mutable",           this->mMutable );
+        string typeStr;
+        serializer.serialize ( "type", typeStr );
+        this->mType = ( Type )FNV1a::hash_64 ( typeStr.c_str ());
+    
+        serializer.serialize ( "mutable", this->mMutable );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
-        serializer.serialize ( "type",              this->mType );
-        serializer.serialize ( "array",             this->mArray );
-        serializer.serialize ( "mutable",           this->mMutable );
+        string typeStr = SchemaAssetTemplateField::getTypeName ( this->mType );
+        
+        serializer.serialize ( "type",      typeStr );
+        serializer.serialize ( "mutable",   this->mMutable );
     }
 };
 
@@ -45,8 +62,10 @@ class SchemaAssetTemplate :
      public AbstractSerializable {
 public:
 
-    string                                                  mExtends;
-    SerializableMap < string, SchemaAssetTemplateField >    mFields;
+    typedef SerializableMap < string, SchemaAssetTemplateField > Fields;
+
+    string      mExtends;
+    Fields      mFields;
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -64,14 +83,16 @@ public:
 };
 
 //================================================================//
-// SchemaAsset
+// SchemaAssetDefinition
 //================================================================//
-class SchemaAsset :
+class SchemaAssetDefinition :
      public AbstractSerializable {
 public:
 
-    string                                                      mImplements;
-    SerializableMap < string, SerializableVector < Variant >>   mFields;
+    typedef SerializableMap < string, Variant > Fields;
+
+    string      mImplements;    // name of template
+    Fields      mFields;        // default values for fields
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -164,16 +185,22 @@ private:
     friend class Ledger;
     friend class SchemaLua;
 
-    string          mName;
+    typedef SerializableMap < string, SchemaAssetTemplate >     AssetTemplates;
+    typedef SerializableMap < string, SchemaAssetDefinition >   AssetDefinitions;
+    typedef SerializableMap < string, SchemaMethod >            Methods;
 
-    SerializableMap < string, SchemaAssetTemplate >     mAssetTemplates;
-    SerializableMap < string, SchemaAsset >             mAssetDefinitions;
-    SerializableMap < string, SchemaMethod >            mMethods;
+    string                  mName;
 
-    string          mLua;
+    AssetTemplates          mAssetTemplates;
+    AssetDefinitions        mAssetDefinitions;
+    Methods                 mMethods;
+
+    string                  mLua;
 
     //----------------------------------------------------------------//
+    void                    composeTemplate     ( string name, SchemaAssetTemplate& assetTemplate ) const;
     const SchemaMethod*     getMethod           ( string name ) const;
+    SchemaAssetTemplate     getTemplate         ( string name ) const;
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;

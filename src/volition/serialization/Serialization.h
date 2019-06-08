@@ -16,8 +16,10 @@
 #include <volition/serialization/SerializableSharedPtr.h>
 #include <volition/serialization/SerializableUniquePtr.h>
 #include <volition/serialization/SerializableVector.h>
+#include <volition/serialization/SerializableVectorOrSingle.h>
 #include <volition/serialization/SerializerKeys.h>
 #include <volition/serialization/SerializerPropertyName.h>
+
 #include <volition/serialization/DigestSerializer.h>
 #include <volition/serialization/FromJSONSerializer.h>
 #include <volition/serialization/SortedDigestSerializer.h>

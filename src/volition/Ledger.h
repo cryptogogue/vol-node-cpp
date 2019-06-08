@@ -226,22 +226,25 @@ public:
     static constexpr const char* MINERS             = "miners";
     static constexpr const char* MINER_INFO         = "minerInfo";
     static constexpr const char* MINER_URLS         = "minerUrls";
-    static constexpr const char* SCHEMA_COUNT       = "schemaCount";
-    static constexpr const char* SCHEMA_PREFIX      = "schema.";
     static constexpr const char* UNFINISHED         = "unfinished";
 
-    static constexpr const char* INVENTORY_KEY_FMT_S        = "%s.inventory";
     //static constexpr const char* ASSET_INSTANCE_KEY_FMT_SSD     = "%s.inventory.%s.%d";
 
 protected:
 
     //----------------------------------------------------------------//
-    static string                   getInventoryKey         ( string accountName );
-    static string                   getSchemaKey            ( int schemaCount );
-    static string                   getSchemaKey            ( string schemaName );
-    static string                   prefixKey               ( string prefix, string key );
-    void                            setAccount              ( string accountName, const Account& account );
-    void                            setMinerInfo            ( string accountName, const MinerInfo& minerInfo );
+    static string                   formatKeyForAccountInventory    ( string accountName );
+    static string                   formatKeyForAsset               ( string assetType, size_t index );
+    static string                   formatKeyForAssetCounter        ( string assetType );
+    static string                   formatKeyForAssetDefinition     ( string assetType );
+    static string                   formatKeyForAssetField          ( string assetType, size_t index, string fieldName );
+    static string                   formatKeyForAssetTemplate       ( string assetType );
+    static string                   formatKeyForSchemaCount         ();
+    static string                   formatSchemaKey                 ( int schemaCount );
+    static string                   formatSchemaKey                 ( string schemaName );
+    static string                   prefixKey                       ( string prefix, string key );
+    void                            setAccount                      ( string accountName, const Account& account );
+    void                            setMinerInfo                    ( string accountName, const MinerInfo& minerInfo );
 
 public:
 
@@ -256,6 +259,7 @@ public:
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     shared_ptr < Account >          getAccount              ( string accountName ) const;
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
+    shared_ptr < Asset >            getAsset                ( string assetType, size_t index ) const;
     shared_ptr < Block >            getBlock                ( size_t height ) const;
     shared_ptr < Block >            getTopBlock             () const;
     Entropy                         getEntropy              () const;

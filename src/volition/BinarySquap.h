@@ -46,6 +46,9 @@ public:
             case GREATER_OR_EQUAL:
                 return Variant::greaterOrEqual ( lval, rval );
             
+            case KEYWORD:
+                return false; // TODO: squap
+            
             case LESS:
                 return Variant::less ( lval, rval );
             

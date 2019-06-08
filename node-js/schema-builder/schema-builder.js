@@ -99,7 +99,7 @@ const op = {
     FIELD:              makeIndexOp     ( 'FIELD' ),
     GREATER:            makeBinaryOp    ( 'GREATER' ),
     GREATER_OR_EQUAL:   makeBinaryOp    ( 'GREATER_OR_EQUAL' ),
-    IN:                 makeBinaryOp    ( 'IN' ),
+    KEYWORD:            makeBinaryOp    ( 'KEYWORD' ),
     LESS:               makeBinaryOp    ( 'LESS' ),
     LESS_OR_EQUAL:      makeBinaryOp    ( 'LESS_OR_EQUAL' ),
     MOD:                makeBinaryOp    ( 'MOD' ),
@@ -111,10 +111,12 @@ const op = {
     XOR:                makeBinaryOp    ( 'XOR' ),
 }
 
-const ARRAY             = 'ARRAY';
 const MUTABLE           = 'MUTABLE';
 const NUMBER            = 'NUMBER';
 const STRING            = 'STRING';
+
+const TYPE_NUMERIC      = 'NUMERIC';
+const TYPE_STRING       = 'STRING';
 
 const MEDIA_AUDIO       = 'MEDIA_AUDIO';
 const MEDIA_IMAGE       = 'MEDIA_IMAGE';
@@ -133,14 +135,6 @@ const SCHEMA_BUILDER_ADDING_METHOD                  = 'ADDING_ASSET_METHOD';
 class SchemaBuilder {
 
     //----------------------------------------------------------------//
-    array ( base ) {
-
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
-        this.top ().array = true;
-        return this;
-    }
-
-    //----------------------------------------------------------------//
     assetArg ( name, qualifier ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ));
@@ -156,8 +150,8 @@ class SchemaBuilder {
         this.push (
             SCHEMA_BUILDER_ADDING_ASSET_DEFINITION,
             {
-                extends:    base,
-                fields:     {},
+                implements:     base,
+                fields:         {},
             },
             ( schema, assetDefinition ) => {
                 schema.assetDefinitions [ name ] = assetDefinition;
@@ -301,7 +295,7 @@ class SchemaBuilder {
     numeric ( base ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
-        this.top ().type = 'NUMERIC';
+        this.top ().type = TYPE_NUMERIC;
         return this;
     }
 
@@ -348,7 +342,7 @@ class SchemaBuilder {
     string ( base ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
-        this.top ().type = 'STRING';
+        this.top ().type = TYPE_STRING;
         return this;
     }
 

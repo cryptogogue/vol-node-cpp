@@ -31,7 +31,7 @@ public:
     //----------------------------------------------------------------//
     void            miningReward                ( Ledger& ledger, string rewardName );
     void            publish                     ( Ledger& ledger );
-    bool            runMethod                   ( Ledger& ledger, string methodName, u64 weight, u64 maturity, const AssetIdentifier* assets, size_t nAssets );
+    bool            runMethod                   ( Ledger& ledger, string methodName, u64 weight, u64 maturity, const string* assets, size_t nAssets );
                     SchemaLua                   ( const Schema& schema );
                     ~SchemaLua                  ();
 };

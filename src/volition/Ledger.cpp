@@ -50,20 +50,22 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
 //----------------------------------------------------------------//
 bool Ledger::awardAsset ( Schema& schema, string accountName, string assetName, int quantity ) {
 
-    VersionedMap inventoryCollection ( *this, Ledger::getInventoryKey ( accountName ));
+    if ( quantity == 0 ) return true;
 
-    BulkAssetIdentifier bulkIdentifier;
+    // TODO: replace with true set (keys with no values)
+    VersionedMap inventoryCollection ( *this, Ledger::formatKeyForAccountInventory ( accountName ));
 
-    if ( inventoryCollection.hasKey ( assetName )) {
-        FromJSONSerializer::fromJSONString ( bulkIdentifier, inventoryCollection.getValue < string >( assetName ));
-        bulkIdentifier.mQuantity += quantity;
+    string keyForAssetCounter = Ledger::formatKeyForAssetCounter ( assetName );
+    if ( !this->hasValue ( keyForAssetCounter )) return false;
+    size_t assetCount = this->getValue < size_t >( keyForAssetCounter );
+
+    for ( int i = 0; i < quantity; ++i, ++assetCount ) {
+        string keyForAsset = Ledger::formatKeyForAsset ( assetName, assetCount );
+        inventoryCollection.setValue < bool >( keyForAsset, true ); // TODO: replace with true set (keys with no values)
+        this->setValue < string >( keyForAsset, accountName ); // TODO: replace with account ID
     }
-    else {
-        bulkIdentifier.mClassName = assetName;
-        bulkIdentifier.mQuantity = quantity;
-    }
-    
-    inventoryCollection.setValue < string >( assetName, ToJSONSerializer::toJSONString ( bulkIdentifier ));
+
+    this->setValue < size_t >( keyForAssetCounter, assetCount );
 
     return true;
 }
@@ -93,6 +95,60 @@ bool Ledger::deleteKey ( string accountName, string keyName ) {
         return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForAccountInventory ( string accountName ) {
+
+    return Format::write ( "account.%s.inventory", accountName.c_str ());
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForAsset ( string assetType, size_t index ) {
+
+    return Format::write ( "asset.%s.%d", assetType.c_str (), index );
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForAssetCounter ( string assetType ) {
+
+    return Format::write ( "asset.%s.count", assetType.c_str ());
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForAssetDefinition ( string assetType ) {
+
+    return Format::write ( "asset.%s.definition", assetType.c_str ());
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForAssetField ( string assetType, size_t index, string fieldName ) {
+
+    return Format::write ( "asset.%s.%d.%s", assetType.c_str (), index, fieldName.c_str ());
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForAssetTemplate ( string assetType ) {
+
+    return Format::write ( "asset.%s.template", assetType.c_str ());
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForSchemaCount () {
+
+    return "schema.count";
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatSchemaKey ( int schemaCount ) {
+
+    return Format::write ( "schema.%d", schemaCount );
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatSchemaKey ( string schemaName ) {
+
+    return Format::write ( "schema.%s", schemaName.c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -135,6 +191,51 @@ AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < Asset > Ledger::getAsset ( string assetType, size_t index ) const {
+
+    string keyForAsset = Ledger::formatKeyForAsset ( assetType, index );
+    if ( !this->hasValue ( keyForAsset )) return NULL;
+
+    string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( assetType );
+    shared_ptr < SchemaAssetDefinition > assetDefinition = this->getJSONSerializableObject < SchemaAssetDefinition >( keyForAssetDefinition );
+    if ( !assetDefinition ) return NULL;
+    
+    string keyForAssetTemplate = Ledger::formatKeyForAssetTemplate ( assetType );
+    shared_ptr < SchemaAssetTemplate > assetTemplate = this->getJSONSerializableObject < SchemaAssetTemplate >( keyForAssetTemplate );
+    if ( !assetTemplate ) return NULL;
+    
+    shared_ptr < Asset > asset = make_shared < Asset >();
+    asset->mType    = assetType;
+    asset->mOwner   = this->getValue < string >( keyForAsset );
+    asset->mFields  = assetDefinition->mFields; // default fields
+    
+    // get any field overrides
+    SchemaAssetTemplate::Fields::const_iterator fieldIt = assetTemplate->mFields.cbegin ();
+    for ( ; fieldIt != assetTemplate->mFields.cend (); ++fieldIt ) {
+        
+        const SchemaAssetTemplateField& field = fieldIt->second;
+        if ( field.mMutable ) {
+    
+            string fieldName = fieldIt->first;
+            string keyForAssetField = this->formatKeyForAssetField ( assetType, index, fieldName );
+            
+            Variant value = asset->mFields [ fieldName ];
+            
+            switch ( field.mType ) {
+                case SchemaAssetTemplateField::Type::NUMERIC:
+                    value = this->getValueOrFallback < double >( keyForAssetField, value.mNumeric );
+                    break;
+                case SchemaAssetTemplateField::Type::STRING:
+                    value = this->getValueOrFallback < string >( keyForAssetField, value.mString );
+                    break;
+            }
+            asset->mFields [ fieldName ] = value;
+        }
+    }
+    return asset;
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
 
     VersionedStore snapshot ( *this );
@@ -152,27 +253,21 @@ Entropy Ledger::getEntropy () const {
 }
 
 //----------------------------------------------------------------//
-string Ledger::getInventoryKey ( string accountName ) {
-
-    return Format::write ( INVENTORY_KEY_FMT_S, accountName.c_str ());
-}
-
-//----------------------------------------------------------------//
 Inventory Ledger::getInventory ( string accountName ) const {
 
     Inventory inventory;
     
-    try {
-        VersionedCollectionIterator < string > collectionIt ( *this, Ledger::getInventoryKey ( accountName ));
-        
-        for ( ; collectionIt; ++collectionIt ) {
-            BulkAssetIdentifier assetIdentifier;
-            FromJSONSerializer::fromJSONString ( assetIdentifier, *collectionIt );
-            inventory.mAssets.push_back ( assetIdentifier );
-        }
-    }
-    catch ( VersionedCollectionNotFoundException ) {
-    }
+//    try {
+//        VersionedCollectionIterator < string > collectionIt ( *this, Ledger::formatInventoryKey ( accountName ));
+//        
+//        for ( ; collectionIt; ++collectionIt ) {
+//            BulkAssetIdentifier assetIdentifier;
+//            FromJSONSerializer::fromJSONString ( assetIdentifier, *collectionIt );
+//            inventory.mAssets.push_back ( assetIdentifier );
+//        }
+//    }
+//    catch ( VersionedCollectionNotFoundException ) {
+//    }
     return inventory;
 }
 
@@ -215,30 +310,18 @@ shared_ptr < Ledger::MinerURLMap > Ledger::getMinerURLs () const {
 }
 
 //----------------------------------------------------------------//
-string Ledger::getSchemaKey ( int schemaCount ) {
-
-    return Format::write ( "%s%d", SCHEMA_PREFIX, schemaCount );
-}
-
-//----------------------------------------------------------------//
-string Ledger::getSchemaKey ( string schemaName ) {
-
-    return Format::write ( "%s%s", SCHEMA_PREFIX, schemaName.c_str ());
-}
-
-//----------------------------------------------------------------//
 shared_ptr < Schema > Ledger::getSchema ( string schemaName ) const {
 
-    return this->getJSONSerializableObject < Schema >( Ledger::getSchemaKey ( schemaName ));
+    return this->getJSONSerializableObject < Schema >( Ledger::formatSchemaKey ( schemaName ));
 }
 
 //----------------------------------------------------------------//
 list < Schema > Ledger::getSchemas () const {
 
     list < Schema > schemaList;
-    const int schemaCount = this->getValue < int >( SCHEMA_COUNT );
+    const int schemaCount = this->getValue < int >( Ledger::formatKeyForSchemaCount ());
     for ( int i = 0; i < schemaCount; ++i ) {
-        string name = this->getValue < string >( Ledger::getSchemaKey ( i ));
+        string name = this->getValue < string >( Ledger::formatSchemaKey ( i ));
         shared_ptr < Schema > schema = this->getJSONSerializableObject < Schema >( name );
         assert ( schema );
         schemaList.push_back ( *schema );
@@ -328,17 +411,40 @@ string Ledger::prefixKey ( string prefix, string key ) {
 //----------------------------------------------------------------//
 bool Ledger::publishSchema ( string schemaName, const Schema& schema ) {
 
-    schemaName = Ledger::getSchemaKey ( schemaName );
+    schemaName = Ledger::formatSchemaKey ( schemaName );
 
     if ( this->hasValue ( schemaName )) return false;
 
-    int schemaCount = this->getValue < int >( SCHEMA_COUNT );
+    string keyForSchemaCount = Ledger::formatKeyForSchemaCount ();
+
+    int schemaCount = this->getValue < int >( keyForSchemaCount );
     
-    string schemaKey = Ledger::getSchemaKey ( schemaCount );
+    string schemaKey = Ledger::formatSchemaKey ( schemaCount );
 
     this->setValue < string >( schemaKey, schemaName );
     this->setJSONSerializableObject < Schema >( schemaName, schema );
-    this->setValue < int >( SCHEMA_COUNT, schemaCount + 1 );
+    this->setValue < int >( keyForSchemaCount, schemaCount + 1 );
+
+    Schema::AssetDefinitions::const_iterator assetIt = schema.mAssetDefinitions.cbegin ();
+    for ( ; assetIt != schema.mAssetDefinitions.cend (); ++assetIt ) {
+    
+        string assetType = assetIt->first;
+        const SchemaAssetDefinition& assetDefinition = assetIt->second;
+    
+        // start the asset ID counter at zero
+        string keyForAssetCounter = Ledger::formatKeyForAssetCounter ( assetType );
+        if ( this->hasValue ( keyForAssetCounter )) return false;
+        this->setValue < size_t >( keyForAssetCounter, 0 );
+    
+        // store the fully composed template for easy access later
+        SchemaAssetTemplate assetTemplate = schema.getTemplate ( assetDefinition.mImplements );
+        string keyForAssetTemplate = Ledger::formatKeyForAssetTemplate ( assetType );
+        this->setJSONSerializableObject < SchemaAssetTemplate >( keyForAssetTemplate, assetTemplate );
+    
+        // store the definition for easy access later
+        string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( assetType );
+        this->setJSONSerializableObject < SchemaAssetDefinition >( keyForAssetDefinition, assetDefinition );
+    }
 
     SchemaLua schemaLua ( schema );
     schemaLua.publish ( *this );
@@ -378,7 +484,7 @@ void Ledger::reset () {
     this->clear ();
     this->setJSONSerializableObject < SerializableSet < string >>( MINERS, SerializableSet < string > ());
     this->setJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS, SerializableMap < string, string > ());
-    this->setValue < int >( SCHEMA_COUNT, 0 );
+    this->setValue < int >( Ledger::formatKeyForSchemaCount (), 0 );
 }
 
 //----------------------------------------------------------------//

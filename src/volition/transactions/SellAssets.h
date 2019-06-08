@@ -25,9 +25,7 @@ public:
     SerializableUniquePtr < TransactionMakerSignature >     mBuyerSignature;
     SerializableUniquePtr < TransactionMakerSignature >     mSellerSignature;
 
-    SerializableVector < AssetIdentifier >                  mAssetIdentifiers;
-    SerializableVector < BulkAssetIdentifier >              mBulkAssetItdentifiers;
-
+    SerializableVector < string >                           mAssetIdentifiers;
     u64                                                     mPrice;
 
     //----------------------------------------------------------------//
@@ -37,7 +35,6 @@ public:
         serializer.serialize ( "buyerSignature",            this->mBuyerSignature );
         serializer.serialize ( "sellerSignature",           this->mSellerSignature );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
-        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
         serializer.serialize ( "price",                     this->mPrice  );
     }
     
@@ -48,7 +45,6 @@ public:
         serializer.serialize ( "buyerSignature",            this->mBuyerSignature );
         serializer.serialize ( "sellerSignature",           this->mSellerSignature );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
-        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers );
         serializer.serialize ( "price",                     this->mPrice  );
     }
 

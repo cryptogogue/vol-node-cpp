@@ -24,7 +24,7 @@ public:
     string                                  mMethodName;
     u64                                     mWeight;
     u64                                     mMaturity;
-    SerializableVector < AssetIdentifier >  mAssetIdentifiers;
+    SerializableVector < string >           mAssetIdentifiers;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {

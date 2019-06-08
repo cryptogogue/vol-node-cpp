@@ -12,6 +12,25 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+void Schema::composeTemplate ( string name, SchemaAssetTemplate& assetTemplate ) const {
+
+    if ( name.size () == 0 ) return;
+
+    AssetTemplates::const_iterator templateIt = this->mAssetTemplates.find ( name );
+    if ( templateIt != this->mAssetTemplates.cend ()) {
+        const SchemaAssetTemplate& sourceTemplate = templateIt->second;
+        
+        this->composeTemplate ( sourceTemplate.mExtends, assetTemplate );
+        assetTemplate.mExtends = sourceTemplate.mExtends;
+        
+        SchemaAssetTemplate::Fields::const_iterator fieldIt = sourceTemplate.mFields.cbegin ();
+        for ( ; fieldIt != sourceTemplate.mFields.cend (); ++fieldIt ) {
+            assetTemplate.mFields [ fieldIt->first ] = fieldIt->second;
+        }
+    }
+}
+
+//----------------------------------------------------------------//
 const SchemaMethod* Schema::getMethod ( string name ) const {
 
     SerializableMap < string, SchemaMethod >::const_iterator methodIt = this->mMethods.find ( name );
@@ -19,6 +38,14 @@ const SchemaMethod* Schema::getMethod ( string name ) const {
         return &methodIt->second;
     }
     return NULL;
+}
+
+//----------------------------------------------------------------//
+SchemaAssetTemplate Schema::getTemplate ( string name ) const {
+
+    SchemaAssetTemplate assetTemplate;
+    this->composeTemplate ( name, assetTemplate );
+    return assetTemplate;
 }
 
 //----------------------------------------------------------------//

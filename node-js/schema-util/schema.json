@@ -14,7 +14,7 @@
         "card": {
             "fields": {
                 "keywords": {
-                    "array": true,
+                    "array": false,
                     "mutable": false,
                     "type": "STRING"
                 }
@@ -24,39 +24,30 @@
     },
     "assetDefinitions": {
         "pack": {
-            "extends": "base",
+            "implements": "base",
             "fields": {
                 "displayName": "Booster Pack"
             }
         },
         "common": {
-            "extends": "card",
+            "implements": "card",
             "fields": {
                 "displayName": "Common",
-                "keywords": [
-                    "card",
-                    "common"
-                ]
+                "keywords": "card common"
             }
         },
         "rare": {
-            "extends": "card",
+            "implements": "card",
             "fields": {
                 "displayName": "Rare",
-                "keywords": [
-                    "card",
-                    "rare"
-                ]
+                "keywords": "card rare"
             }
         },
         "ulraRare": {
-            "extends": "card",
+            "implements": "card",
             "fields": {
                 "displayName": "Ultra-Rare",
-                "keywords": [
-                    "card",
-                    "ultra-rare"
-                ]
+                "keywords": "card ultra-rare"
             }
         }
     },

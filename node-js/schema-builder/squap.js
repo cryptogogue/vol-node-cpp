@@ -209,13 +209,27 @@ class GreaterOrEqualSquap extends AbstractBinarySquap {
 //================================================================//
 // InSquap
 //================================================================//
-class InSquap extends AbstractBinarySquap {
+// class InSquap extends AbstractBinarySquap {
+
+//     //----------------------------------------------------------------//
+//     eval ( opArgs ) {
+//         const leftVal = this.left.eval ( opArgs );
+//         const rightVal = this.right.eval ( opArgs );
+//         return ( leftVal.includes && leftVal.includes ( rightVal )) === true;
+//     }
+// }
+
+//================================================================//
+// KeywordSquap
+//================================================================//
+class KeywordSquap extends AbstractBinarySquap {
 
     //----------------------------------------------------------------//
     eval ( opArgs ) {
-        const leftVal = this.left.eval ( opArgs );
-        const rightVal = this.right.eval ( opArgs );
-        return ( leftVal.includes && leftVal.includes ( rightVal )) === true;
+        // const leftVal = this.left.eval ( opArgs );
+        // const rightVal = this.right.eval ( opArgs );
+        // return ( leftVal.includes && leftVal.includes ( rightVal )) === true;
+        return false;
     }
 }
 

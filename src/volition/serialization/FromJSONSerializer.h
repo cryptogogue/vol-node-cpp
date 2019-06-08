@@ -129,7 +129,7 @@ protected:
                 FromJSONSerializer serializer;
                 serializer.mParent = this;
                 serializer.mName = name;
-                value.serializeFrom ( serializer );
+                value.serialize ( serializer );
             }
         }
     }
@@ -199,7 +199,7 @@ public:
 
         FromJSONSerializer serializer;
         serializer.mArray = &array;
-        serializable.serializeFrom ( serializer );
+        serializable.serialize ( serializer );
     }
 
     //----------------------------------------------------------------//
@@ -207,7 +207,7 @@ public:
 
         FromJSONSerializer serializer;
         serializer.mObject = &object;
-        serializable.serializeFrom ( serializer );
+        serializable.serialize ( serializer );
     }
 
     //----------------------------------------------------------------//

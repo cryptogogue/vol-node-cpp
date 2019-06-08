@@ -22,15 +22,13 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    SerializableVector < AssetIdentifier >          mAssetIdentifiers;
-    SerializableVector < BulkAssetIdentifier >      mBulkAssetItdentifiers;
+    SerializableVector < string >   mAssetIdentifiers;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
-        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
     }
     
     //----------------------------------------------------------------//
@@ -38,7 +36,6 @@ public:
         AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
-        serializer.serialize ( "bulkAssetIdentifiers",      this->mBulkAssetItdentifiers  );
     }
 
     //----------------------------------------------------------------//
