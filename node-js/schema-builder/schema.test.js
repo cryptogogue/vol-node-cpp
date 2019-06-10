@@ -11,25 +11,18 @@ test ( 'define schema', () => {
     let schemaTemplate = schemaBuilder ( 'TEST_SCHEMA', 'schema.lua' )
 
         //----------------------------------------------------------------//
-        .assetTemplate ( 'base' )
-            .field ( 'displayName' ).string ()
-     
-        .assetTemplate ( 'card' ).extends ( 'base' )
-            .field ( 'keywords' ).string ()
-
-        //----------------------------------------------------------------//
-        .assetDefinition ( 'pack', 'base' )
+        .definition ( 'pack' )
             .field ( 'displayName', 'Booster Pack' )
      
-        .assetDefinition ( 'common', 'card' )
+        .definition ( 'common' )
             .field ( 'displayName', 'Common' )
             .field ( 'keywords', 'card common' )
      
-        .assetDefinition ( 'rare', 'card' )
+        .definition ( 'rare' )
             .field ( 'displayName', 'Rare' )
             .field ( 'keywords', 'card rare' )
      
-        .assetDefinition ( 'ulraRare', 'card' )
+        .definition ( 'ultraRare' )
             .field ( 'displayName', 'Ultra-Rare' )
             .field ( 'keywords', 'card ultra-rare' )
 
@@ -47,39 +40,47 @@ test ( 'define schema', () => {
 
         .done ()
 
-    let assets = [
-        { className: 'pack', quantity: 1 },
-        { className: 'common', quantity: 2 },
-        { className: 'rare', quantity: 2 },
-        { className: 'ultraRare', quantity: 1 },
-    ];
+    let inventory = new Inventory ( schemaTemplate );
 
-    let inventory = new Inventory ( schemaTemplate, assets );
+    const pack0         = inventory.addTestAsset ( 'pack' );
+    const common0       = inventory.addTestAsset ( 'common' );
+    const common1       = inventory.addTestAsset ( 'common' );
+    const rare0         = inventory.addTestAsset ( 'rare' );
+    const rare1         = inventory.addTestAsset ( 'rare' );
+    const ultraRare0    = inventory.addTestAsset ( 'ultraRare' );
+
+    inventory.process ();
 
     // test binding analysis
 
     // all of the schema methods should be valid for this inventory.
-    expect ( inventory.methodBindings [ 'makeRare' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'makeUltraRare' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'openPack' ].valid ).toBe ( true );
+    expect ( inventory.methodIsValid ( 'makeRare' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'makeUltraRare' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'openPack' )).toBe ( true );
 
     // 'makeRare' only valid on two commons.
-    expect ( 'makeRare' in inventory.assetBindings [ 'pack' ].methodBindings ).toBe ( false );
-    expect ( 'makeRare' in inventory.assetBindings [ 'common' ].methodBindings ).toBe ( true );
-    expect ( 'makeRare' in inventory.assetBindings [ 'rare' ].methodBindings ).toBe ( false );
-    expect ( 'makeRare' in inventory.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeRare', pack0 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeRare', common0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'makeRare', common1 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'makeRare', rare0 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeRare', rare1 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeRare', ultraRare0 )).toBe ( false );
 
     // 'makeUltraRare' only valid on two rares.
-    expect ( 'makeUltraRare' in inventory.assetBindings [ 'pack' ].methodBindings ).toBe ( false );
-    expect ( 'makeUltraRare' in inventory.assetBindings [ 'common' ].methodBindings ).toBe ( false );
-    expect ( 'makeUltraRare' in inventory.assetBindings [ 'rare' ].methodBindings ).toBe ( true );
-    expect ( 'makeUltraRare' in inventory.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeUltraRare', pack0 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeUltraRare', common0 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeUltraRare', common1 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'makeUltraRare', rare0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'makeUltraRare', rare1 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'makeUltraRare', ultraRare0 )).toBe ( false );
 
     // 'openPack' only valid on packs.
-    expect ( 'openPack' in inventory.assetBindings [ 'pack' ].methodBindings ).toBe ( true );
-    expect ( 'openPack' in inventory.assetBindings [ 'common' ].methodBindings ).toBe ( false );
-    expect ( 'openPack' in inventory.assetBindings [ 'rare' ].methodBindings ).toBe ( false );
-    expect ( 'openPack' in inventory.assetBindings [ 'ultraRare' ].methodBindings ).toBe ( false );
+    expect ( inventory.methodIsValid ( 'openPack', pack0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'openPack', common0 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'openPack', common1 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'openPack', rare0 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'openPack', rare1 )).toBe ( false );
+    expect ( inventory.methodIsValid ( 'openPack', ultraRare0 )).toBe ( false );
 });
 
 //----------------------------------------------------------------//
@@ -88,12 +89,7 @@ test ( 'test operators', () => {
     let schemaTemplate = schemaBuilder ( 'TEST_SCHEMA', 'schema.lua' )
 
         //----------------------------------------------------------------//
-        .assetTemplate ( 'testTemplate' )
-            .field ( 'numberField' ).numeric ()
-            .field ( 'stringField' ).string ()
-
-        //----------------------------------------------------------------//
-        .assetDefinition ( 'testAsset', 'testTemplate' )
+        .definition ( 'testAsset' )
             .field ( 'numberField', 123 )
             .field ( 'stringField', 'oneTwoThree' )
 
@@ -181,58 +177,56 @@ test ( 'test operators', () => {
 
         .done ()
 
-    // console.log ( JSON.stringify ( schemaTemplate, null, 4 ));
+    let inventory = new Inventory ( schemaTemplate );
 
-    let assets = [
-        { className: 'testAsset', quantity: 1 },
-    ];
+    const testAsset0 = inventory.addTestAsset ( 'testAsset' );
 
-    let inventory = new Inventory ( schemaTemplate, assets );
+    inventory.process ();
 
     // test binding analysis
 
     // all of the schema methods should be valid for this inventory.
-    expect ( inventory.methodBindings [ 'assetType' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'numericEqual' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'stringEqual' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'numericNotEqual' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'stringNotEqual' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'numericGreater' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'numericGreaterOrEqual' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'numericLess' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'numericLessOrEqual' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'logicalAnd' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'logicalNotAnd' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'logicalOr' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'logicalNot' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'logicalXor' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'logicalNotXor' ].valid ).toBe ( true );
+    expect ( inventory.methodIsValid ( 'assetType' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericEqual' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'stringEqual' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericNotEqual' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'stringNotEqual' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericGreater' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericGreaterOrEqual' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericLess' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericLessOrEqual' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalAnd' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalNotAnd' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalOr' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalNot' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalXor' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalNotXor' )).toBe ( true );
 
-    expect ( inventory.methodBindings [ 'add' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'div' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'mod' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'mul' ].valid ).toBe ( true );
-    expect ( inventory.methodBindings [ 'sub' ].valid ).toBe ( true );
+    expect ( inventory.methodIsValid ( 'add' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'div' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'mod' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'mul' )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'sub' )).toBe ( true );
 
-    expect ( 'assetType' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'stringEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericNotEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'stringNotEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericGreater' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericGreaterOrEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericLess' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'numericLessOrEqual' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalAnd' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalNotAnd' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalOr' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalNot' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalXor' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'logicalNotXor' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( inventory.methodIsValid ( 'assetType', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericEqual', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'stringEqual', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericNotEqual', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'stringNotEqual', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericGreater', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericGreaterOrEqual', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericLess', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'numericLessOrEqual', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalAnd', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalNotAnd', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalOr', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalNot', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalXor', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'logicalNotXor', testAsset0 )).toBe ( true );
 
-    expect ( 'add' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'div' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'mod' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'mul' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
-    expect ( 'sub' in inventory.assetBindings [ 'testAsset' ].methodBindings ).toBe ( true );
+    expect ( inventory.methodIsValid ( 'add', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'div', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'mod', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'mul', testAsset0 )).toBe ( true );
+    expect ( inventory.methodIsValid ( 'sub', testAsset0 )).toBe ( true );
 });

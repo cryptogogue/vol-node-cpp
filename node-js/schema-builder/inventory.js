@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-const Schema            = require ( './schema' ).Schema;
+const assert        = require ( 'assert' );
+const Schema        = require ( './schema' ).Schema;
 
 //================================================================//
 // Inventory
@@ -8,44 +9,47 @@ const Schema            = require ( './schema' ).Schema;
 class Inventory {
 
     //----------------------------------------------------------------//
-    addItem ( className, quantity, specialization ) {
+    addAsset ( assetID, asset ) {
 
-        this.schema.checkItem ( className, specialization );
-
-        if ( !( className in this.assets )) {
-            this.assets [ className ] = {
-                quantity:           0,
-                specializations:    [],
-            }
+        let typeName = asset.type;
+        if ( !this.assetTypeCounters.hasOwnProperty ( typeName )) {
+            this.assetTypeCounters [ typeName ] = 0;
         }
 
-        const asset = this.assets [ className ];
-        asset.quantity += quantity;
-        if ( specialization ) {
-            asset.specializations.push ( specialization );
-        }
+        this.assets [ assetID ] = asset;
+        this.assetTypeCounters [ typeName ]++;
     }
 
     //----------------------------------------------------------------//
-    constructor ( schemaTemplate, assets, specializations ) {
+    addTestAsset ( typeName ) {
+
+        let count = 0;
+        if ( this.assetTypeCounters.hasOwnProperty ( typeName )) {
+            count = this.assetTypeCounters [ typeName ];
+        }
+
+        let asset = this.schema.newAsset ( typeName );
+        assert ( Boolean ( asset ));
+
+        let assetID = `assets.${ typeName }.${ count }`;
+        this.addAsset ( assetID, asset );
+        return assetID;
+    }
+
+    //----------------------------------------------------------------//
+    constructor ( schemaTemplate, assets ) {
 
         if ( !schemaTemplate ) throw 'Provide a valid schema';
 
         this.schema = new Schema ();
         this.schema.applyTemplate ( schemaTemplate );
 
+        this.assetTypeCounters = {};
+
         this.assets = {};
-        for ( let i in assets ) {
-            let asset = assets [ i ];
-            this.addItem ( asset.className, asset.quantity );
+        for ( let assetID in assets ) {
+            this.addAsset ( assetID, asset );
         }
-
-        let binding = this.schema.processInventory ( this );
-
-        console.log ( 'BINDING:', binding );
-
-        this.methodBindings = binding.methodBindings;
-        this.assetBindings = binding.assetBindings;
     }
 
     //----------------------------------------------------------------//
@@ -73,6 +77,25 @@ class Inventory {
             formFields [ argname ] = formField;
         }
         return formFields;
+    }
+
+    //----------------------------------------------------------------//
+    methodIsValid ( methodName, assetID ) {
+
+        if ( assetID ) {
+            let methodBinding = this.methodBindingsByAssetID [ assetID ][ methodName ];
+            return methodBinding ? methodBinding.valid : false;
+        }
+        return this.methodBindingsByName [ methodName ].valid;
+    }
+
+    //----------------------------------------------------------------//
+    process () {
+
+        let binding = this.schema.processInventory ( this );
+
+        this.methodBindingsByAssetID    = binding.methodBindingsByAssetID;
+        this.methodBindingsByName       = binding.methodBindingsByName;
     }
 }
 

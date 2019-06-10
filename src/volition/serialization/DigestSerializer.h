@@ -67,28 +67,6 @@ protected:
         value.serialize ( *this );
     }
 
-    //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const Variant& value ) override {
-        
-        switch ( value.mType ) {
-            
-            case Variant::TYPE_BOOL:
-                *this->mStream << ( bool )( value.mNumeric == 1 );
-                break;
-            
-            case Variant::TYPE_NUMBER:
-                *this->mStream << value.mNumeric;
-                break;
-            
-            case Variant::TYPE_STRING:
-                *this->mStream << value.mString;
-                break;
-                
-            default:
-                break;
-        }
-    }
-
 public:
 
     //----------------------------------------------------------------//

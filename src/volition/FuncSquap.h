@@ -19,9 +19,9 @@ public:
     SerializableVector < SerializableSharedPtr < AbstractSquap, SquapFactory >>     mArgs;
     
     //----------------------------------------------------------------//
-    Variant AbstractSquap_evaluate () const override {
+    AssetFieldValue AbstractSquap_evaluate () const override {
         
-        return Variant ();
+        return AssetFieldValue ();
     }
     
     //----------------------------------------------------------------//

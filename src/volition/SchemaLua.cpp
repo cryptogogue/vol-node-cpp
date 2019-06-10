@@ -200,7 +200,7 @@ void SchemaLua::publish ( Ledger& ledger ) {
 //----------------------------------------------------------------//
 bool SchemaLua::runMethod ( Ledger& ledger, string methodName, u64 weight, u64 maturity, const string* assets, size_t nAssets ) {
 
-    const SchemaMethod* method = this->mSchema.getMethod ( methodName );
+    const AssetMethod* method = this->mSchema.getMethod ( methodName );
     if ( !( method && ( method->mWeight == weight ) && ( method->mMaturity == maturity ))) return false;
 
     return true;

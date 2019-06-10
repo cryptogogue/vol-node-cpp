@@ -6,12 +6,14 @@
 
 #include <volition/common.h>
 #include <volition/Entropy.h>
-#include <volition/Inventory.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
+class Asset;
+class AssetFieldValue;
+class AssetIdentifier;
 class Block;
 class Policy;
 class Schema;
@@ -234,11 +236,10 @@ protected:
 
     //----------------------------------------------------------------//
     static string                   formatKeyForAccountInventory    ( string accountName );
-    static string                   formatKeyForAsset               ( string assetType, size_t index );
+    static string                   formatKeyForAsset               ( const AssetIdentifier& identifier );
     static string                   formatKeyForAssetCounter        ( string assetType );
     static string                   formatKeyForAssetDefinition     ( string assetType );
-    static string                   formatKeyForAssetField          ( string assetType, size_t index, string fieldName );
-    static string                   formatKeyForAssetTemplate       ( string assetType );
+    static string                   formatKeyForAssetField          ( const AssetIdentifier& identifier, string fieldName );
     static string                   formatKeyForSchemaCount         ();
     static string                   formatSchemaKey                 ( int schemaCount );
     static string                   formatSchemaKey                 ( string schemaName );
@@ -259,11 +260,11 @@ public:
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     shared_ptr < Account >          getAccount              ( string accountName ) const;
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
-    shared_ptr < Asset >            getAsset                ( string assetType, size_t index ) const;
+    shared_ptr < Asset >            getAsset                ( const AssetIdentifier& identifier ) const;
     shared_ptr < Block >            getBlock                ( size_t height ) const;
     shared_ptr < Block >            getTopBlock             () const;
     Entropy                         getEntropy              () const;
-    Inventory                       getInventory            ( string accountName ) const;
+//    Inventory                       getInventory            ( string accountName ) const;
     shared_ptr < KeyInfo >          getKeyInfo              ( string keyID ) const;
     shared_ptr < MinerInfo >        getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
@@ -278,6 +279,7 @@ public:
     bool                            registerMiner           ( string accountName, string keyName, string url );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
+    bool                            setAssetFieldValue      ( const AssetIdentifier& identifier, string fieldName, const AssetFieldValue& field );
     void                            setBlock                ( const Block& block );
     void                            setEntropyString        ( string entropy );
     void                            setUnfinished           ( const UnfinishedBlockList& unfinished );

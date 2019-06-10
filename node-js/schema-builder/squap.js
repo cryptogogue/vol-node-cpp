@@ -111,10 +111,7 @@ class AssetTypeSquap extends AbstractIndexSquap {
         const arg           = opArgs.assets [ this.paramID || 0 ];
         const className     = this.value;
 
-        if ( arg && className ) {
-            return opArgs.schema.isType ( arg.className, className );
-        }
-        return false;
+        return ( arg.type === className );
     }
 }
 
@@ -126,13 +123,12 @@ class ConstSquap extends AbstractSquap {
     //----------------------------------------------------------------//
     constructor ( template ) {
         super ( template );
-        this.type = template.type;
-        this.value = template.value;
+        this.const = template.const;
     }
 
     //----------------------------------------------------------------//
     eval ( opArgs ) {
-        return this.value;
+        return this.const.value;
     }
 }
 
@@ -173,8 +169,8 @@ class FieldSquap extends AbstractIndexSquap {
         const arg           = opArgs.assets [ this.paramID || 0 ];
         const fieldName     = this.value;
 
-        if ( arg && fieldName ) {
-            return opArgs.schema.getField ( arg.className, fieldName );
+        if ( arg.fields.hasOwnProperty ( fieldName )) {
+            return arg.fields [ fieldName ].value;
         }
         return false;
     }

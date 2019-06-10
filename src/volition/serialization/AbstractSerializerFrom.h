@@ -8,7 +8,6 @@
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/serialization/SerializerKeys.h>
 #include <volition/serialization/SerializerPropertyName.h>
-#include <volition/serialization/Variant.h>
 
 namespace Volition {
 
@@ -44,7 +43,6 @@ protected:
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, u64& value ) const = 0;
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, string& value ) const = 0;
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, AbstractSerializable& value ) const = 0;
-    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, Variant& value ) const = 0;
 
 public:
     

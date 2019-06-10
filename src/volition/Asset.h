@@ -1,24 +1,27 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_INVENTORY_H
-#define VOLITION_INVENTORY_H
+#ifndef VOLITION_ASSET_H
+#define VOLITION_ASSET_H
 
 #include <volition/common.h>
+#include <volition/AssetFieldValue.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
 //================================================================//
-// AssetIdentifier
+// Asset
 //================================================================//
 class Asset :
      public AbstractSerializable {
 public:
 
-    string                                  mType;
-    string                                  mOwner;
-    SerializableMap < string, Variant >     mFields;
+    typedef SerializableMap < string, AssetFieldValue > Fields;
+
+    string      mType;
+    string      mOwner;
+    Fields      mFields;
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -36,11 +39,6 @@ public:
         serializer.serialize ( "fields",            this->mFields );
     }
 };
-
-//================================================================//
-// Inventory
-//================================================================//
-typedef SerializableVector < Asset > Inventory;
 
 } // namespace Volition
 #endif

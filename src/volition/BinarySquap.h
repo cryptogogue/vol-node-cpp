@@ -20,61 +20,61 @@ public:
     SerializableSharedPtr < AbstractSquap, SquapFactory >   mRight;
     
     //----------------------------------------------------------------//
-    Variant AbstractSquap_evaluate () const override {
+    AssetFieldValue AbstractSquap_evaluate () const override {
         
-        if ( !( this->mLeft && this->mRight )) return Variant ();
+        if ( !( this->mLeft && this->mRight )) return AssetFieldValue ();
         
         const AbstractSquap& lval = *this->mLeft;
         const AbstractSquap& rval = *this->mRight;
         
         switch ( this->mOpCode ) {
             case AND:
-                return Variant::booleanAnd ( lval, rval );
+                return AssetFieldValue::booleanAnd ( lval, rval );
                 
             case ADD:
-                return Variant::add ( lval, rval );
+                return AssetFieldValue::add ( lval, rval );
                 
             case DIV:
-                return Variant::div ( lval, rval );
+                return AssetFieldValue::div ( lval, rval );
                 
             case EQUAL:
-                return Variant::equal ( lval, rval );
+                return AssetFieldValue::equal ( lval, rval );
                 
             case GREATER:
-                return Variant::greater ( lval, rval );
+                return AssetFieldValue::greater ( lval, rval );
                 
             case GREATER_OR_EQUAL:
-                return Variant::greaterOrEqual ( lval, rval );
+                return AssetFieldValue::greaterOrEqual ( lval, rval );
             
             case KEYWORD:
                 return false; // TODO: squap
             
             case LESS:
-                return Variant::less ( lval, rval );
+                return AssetFieldValue::less ( lval, rval );
             
             case LESS_OR_EQUAL:
-                return Variant::lessOrEqual ( lval, rval );
+                return AssetFieldValue::lessOrEqual ( lval, rval );
                 
             case MOD:
-                return Variant::mod ( lval, rval );
+                return AssetFieldValue::mod ( lval, rval );
                 
             case MUL:
-                return Variant::mul ( lval, rval );
+                return AssetFieldValue::mul ( lval, rval );
                 
             case NOT_EQUAL:
-                return Variant::notEqual ( lval, rval );
+                return AssetFieldValue::notEqual ( lval, rval );
                 
             case OR:
-                return Variant::booleanOr ( lval, rval );
+                return AssetFieldValue::booleanOr ( lval, rval );
                 
             case SUB:
-                return Variant::sub ( lval, rval );
+                return AssetFieldValue::sub ( lval, rval );
                 
             case XOR:
-                return Variant::booleanXor ( lval, rval );
+                return AssetFieldValue::booleanXor ( lval, rval );
             
             default:
-                return Variant ();
+                return AssetFieldValue ();
         };
     }
     

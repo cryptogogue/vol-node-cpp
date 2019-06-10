@@ -1,5 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
+const assert            = require ( 'assert' );
 const MultiCounter      = require ( './multiCounter' ).MultiCounter;
 const squap             = require ( './squap' );
 
@@ -9,13 +10,11 @@ const squap             = require ( './squap' );
 class SchemaMethod {
 
     //----------------------------------------------------------------//
-    bindAsset ( schema, assetBinding, methodBinding ) {
-
-        //console.log ( 'BIND ASSET:', this.name, assetBinding.className );
+    bindAsset ( schema, assetID, asset, methodBinding, methodBindingsForAssetID ) {
 
         let opArgs = {
             schema:     schema,
-            assets:     [ assetBinding ],
+            assets:     [ asset ],
         }
 
         for ( let argname in this.assetArgs ) {
@@ -23,9 +22,8 @@ class SchemaMethod {
             if ( this.assetArgs [ argname ].eval ( opArgs )) {
 
                 // console.log ( 'EVAL OK' );
-
-                assetBinding.methodBindings [ this.name ] = methodBinding;
-                methodBinding.assetBindings [ argname ].push ( assetBinding );
+                methodBinding.assetIDsByArgName [ argname ].push ( assetID );
+                methodBindingsForAssetID [ this.name ] = methodBinding;
             }
         }
     }
@@ -56,11 +54,11 @@ class SchemaMethod {
     newBinding () {
 
         let binding = {
-            assetBindings: {},
+            assetIDsByArgName: {},
             valid: false,
         };
         for ( let argname in this.assetArgs ) {
-            binding.assetBindings [ argname ] = [];
+            binding.assetIDsByArgName [ argname ] = [];
         }
         return binding;
     }
@@ -74,46 +72,36 @@ class SchemaMethod {
 
         const nArgs = Object.keys ( assetArgs ).length;
         let multiCounter = new MultiCounter ( nArgs );
-        let indexedArgNames = [];
-        let indexedArgLists = [];
+        let argListsByIndex = [];
+        let argCount = 0;
         
         // build the tables and initialize the counter.
-        for ( let argname in assetArgs ) {
+        for ( let argName in assetArgs ) {
 
-            const argList = methodBinding.assetBindings [ argname ];
-            if ( argList.length === 0 ) return; // bail; method cannever be valid.
+            const argList = methodBinding.assetIDsByArgName [ argName ];
+            if ( argList.length === 0 ) return; // bail; method can never be valid.
 
-            multiCounter.setLimit ( indexedArgNames.length, argList.length );
-            indexedArgNames.push ( argname );
-            indexedArgLists.push ( argList );
+            multiCounter.setLimit ( argCount, argList.length );
+            argListsByIndex.push ( argList );
+            argCount++
         }
 
-        // TODO: we eventually need to prune our invalid asset bindings
+        // TODO: we eventually need to prune out invalid asset bindings
 
         // try every permutation of args until a valid configuration is found.
         for ( ; multiCounter.cycles < 1; multiCounter.increment ()) {
 
-            let visited = {}; // object to hold visited asset args.
+            let visitedAssetIDs = {}; // object to hold visited asset args.
             let passed = 0;
 
             for ( let i = 0; i < nArgs; ++i, ++passed ) {
 
                 //const argname = indexedArgNames [ i ];
-                const argList       = indexedArgLists [ i ];
-                const assetBinding  = argList [ multiCounter.count ( i )];
-                const className     = assetBinding.className;
+                const argList       = argListsByIndex [ i ];
+                const assetID       = argList [ multiCounter.count ( i )];
 
-                if ( !( assetBinding.className in visited )) {
-                    visited [ className ] = 0;
-                }
-                const visitedCount = visited [ className ];
-
-                // TODO: add more early outs.
-
-                // if we've used up all the asset type, bail.
-                if ( visitedCount >= assetBinding.quantity ) break;
-
-                visited [ className ] = visitedCount + 1;
+                if ( visitedAssetIDs [ assetID ] === true ) break;
+                visitedAssetIDs [ assetID ] = true;
             }
 
             if ( passed === nArgs ) {
@@ -134,23 +122,14 @@ class Schema {
     //----------------------------------------------------------------//
     applyTemplate ( template ) {
 
-        //console.log ( 'APPLYING SCHEMA TEMPLATE:', template.name );
-
         const name = template.name;
 
         if ( this.applied [ name ]) return;
         this.applied [ name ] = true;
 
         // build an asset table for quick reference
-        for ( let className in template.assetDefinitions ) {
-
-            const definition = template.assetDefinitions [ className ];
-
-            // TODO: illegal for assets to overwrite each other
-            this.assets [ className ] = {
-                template:       template.assetTemplates [ definition.extends ],
-                definition:     definition,
-            }
+        for ( let typeName in template.definitions ) {
+            this.definitions [ typeName ] = template.definitions [ typeName ]; // TODO: deep copy
         }
 
         for ( let methodName in template.methods ) {
@@ -159,97 +138,63 @@ class Schema {
     }
 
     //----------------------------------------------------------------//
-    checkItem ( itemName, specialization ) {
-
-        // TODO: write me
-        return true;
-    }
-
-    //----------------------------------------------------------------//
     constructor () {
 
-        this.applied = {};  // table of schema names that have already been applied
-        this.methods = {};  // table of all available methods
-        this.assets = {};   // table of all known asset types
+        this.applied        = {}; // table of schema names that have already been applied
+        this.methods        = {}; // table of all available methods
+        this.definitions    = {}; // table of all known asset types
     }
 
     //----------------------------------------------------------------//
-    getField ( className, fieldName ) {
+    newAsset ( typeName ) {
 
-        if ( className in this.assets ) {
-            return this.assets [ className ].definition.fields [ fieldName ];
+        let definition = this.definitions [ typeName ];
+        assert ( Boolean ( definition ));
 
-            // TODO: handle inheritance
+        let asset = {
+            type:       typeName,
+            fields:     {},
+        };
+
+        for ( let fieldName in definition.fields ) {
+
+            let field = definition.fields [ fieldName ];
+
+            asset.fields [ fieldName ] = {
+                mutable:    field.mutable,
+                type:       field.type,
+                value:      field.value,
+            };
         }
-        return undefined;
-    }
-
-    //----------------------------------------------------------------//
-    isType ( className, other ) {
-
-        //console.log ( 'IS TYPE', className, other );
-        //return true;
-
-        if ( className in this.assets ) {
-            if ( className === other ) return true;
-
-            // TODO: handle inheritance
-        }
-        return false;
+        return asset;
     }
 
     //----------------------------------------------------------------//
     processInventory ( inventory ) {
 
-        // for each item
-        //     has the item been consumed?
-        //     what are all the possible recipes?
-
-        // for each recipe
-        //     what is the set of items yielding at least one valid outcome?
-        //     item may qualify as one or more params
-        //     for each param, list of qualified items
-
-
-        // distibute all items to recipes that they qualify for
-        // add each active recipe to each item
-        // process each recipe to determine if it is active
-
-        // recalculate when items are consumed (will change other recipes)
-        // inventory items identified by reference?
-
-        //console.log ( 'PROCESS INVENTORY' );
-
         let binding = {
-            assetBindings: {},
-            methodBindings: {},
-        }
-
-        // generate all the empty asset bindings.
-        for ( let className in inventory.assets ) {
-
-            const asset = inventory.assets [ className ];
-
-            binding.assetBindings [ className ] = {
-                className: className,
-                quantity: asset.quantity,
-                methodBindings: {},
-            };
+            methodBindingsByAssetID: {},
+            methodBindingsByName: {},
         }
 
         // generate all the empty method bindings.
         for ( let methodName in this.methods ) {
-
-            binding.methodBindings [ methodName ] = this.methods [ methodName ].newBinding ();
+            binding.methodBindingsByName [ methodName ] = this.methods [ methodName ].newBinding ();
         }
 
         // bind each asset and each method...
-        for ( let assetType in inventory.assets ) {
+        for ( let assetID in inventory.assets ) {
+
+            binding.methodBindingsByAssetID [ assetID ] = {};
+
             for ( let methodName in this.methods ) {
+
                 this.methods [ methodName ].bindAsset (
                     this,
-                    binding.assetBindings [ assetType ],
-                    binding.methodBindings [ methodName ]
+                    assetID,
+                    inventory.assets [ assetID ],
+                    binding.methodBindingsByName [ methodName ],
+                    binding.methodBindingsByAssetID [ assetID ]
                 );
             }
         }
@@ -260,7 +205,7 @@ class Schema {
         for ( let methodName in this.methods ) {
 
             // create a relationship if the asset qualifies.
-            this.methods [ methodName ].validate ( binding.methodBindings [ methodName ]);
+            this.methods [ methodName ].validate ( binding.methodBindingsByName [ methodName ]);
         }
 
         return binding;

@@ -5,6 +5,8 @@
 #define VOLITION_ABSTRACTSQUAP_H
 
 #include <volition/common.h>
+#include <volition/AssetFieldValue.h>
+#include <volition/FNV1a.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -43,16 +45,16 @@ public:
     OpCode      mOpCode;
     
     //----------------------------------------------------------------//
-    virtual Variant     AbstractSquap_evaluate      () const = 0;
+    virtual AssetFieldValue     AbstractSquap_evaluate      () const = 0;
     
     //----------------------------------------------------------------//
-    operator Variant () const {
+    operator AssetFieldValue () const {
     
         return this->evaluate ();
     }
     
     //----------------------------------------------------------------//
-    Variant evaluate () const {
+    AssetFieldValue evaluate () const {
         return this->AbstractSquap_evaluate ();
     }
 

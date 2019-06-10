@@ -16,25 +16,25 @@ class ConstSquap :
      public AbstractSquap {
 public:
 
-    Variant    mValue;
+    AssetFieldValue     mConst;
     
     //----------------------------------------------------------------//
-    Variant AbstractSquap_evaluate () const override {
+    AssetFieldValue AbstractSquap_evaluate () const override {
         
-        return this->mValue;
+        return this->mConst;
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         
-        serializer.serialize < Variant >( "value", this->mValue );
+        serializer.serialize < AssetFieldValue >( "const", this->mConst );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractSquap::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize < Variant >( "value", this->mValue );
+        serializer.serialize < AssetFieldValue >( "const", this->mConst );
     }
 };
 

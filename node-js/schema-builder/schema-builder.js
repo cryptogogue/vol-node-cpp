@@ -1,7 +1,51 @@
 /* eslint-disable no-whitespace-before-property */
 
-const assert    = require ( 'assert' );
-const fs        = require ( 'fs' );
+const assert            = require ( 'assert' );
+const fs                = require ( 'fs' );
+
+const MUTABLE           = 'MUTABLE';
+const NUMBER            = 'NUMBER';
+const STRING            = 'STRING';
+
+const TYPE_BOOLEAN      = 'BOOLEAN';
+const TYPE_NUMERIC      = 'NUMERIC';
+const TYPE_STRING       = 'STRING';
+const TYPE_UNDEFINED    = 'UNDEFINED';
+
+const MEDIA_AUDIO       = 'MEDIA_AUDIO';
+const MEDIA_IMAGE       = 'MEDIA_IMAGE';
+const MEDIA_TEXT        = 'MEDIA_TEXT';
+const MEDIA_VIDEO       = 'MEDIA_VIDEO';
+
+const SCHEMA_BUILDER_ADDING_SCHEMA                  = 'SCHEMA_BUILDER_ADDING_SCHEMA';
+const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION        = 'ADDING_ASSET_DEFINITION';
+const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD  = 'ADDING_ASSET_DEFINITION_FIELD';
+const SCHEMA_BUILDER_ADDING_METHOD                  = 'ADDING_ASSET_METHOD';
+
+//----------------------------------------------------------------//
+function makeAssetFieldValue ( value ) {
+    
+    let type = TYPE_UNDEFINED;
+
+    switch ( typeof ( value )) {
+        case 'boolean':
+            type = TYPE_BOOLEAN;
+            break;
+        case 'number':
+            type = TYPE_NUMERIC;
+            break;
+        case 'string':
+            type = TYPE_STRING;
+            break;
+        default:
+            assert ( false );
+    }
+
+    return {
+        type:       type,
+        value:      value,
+    }
+}
 
 //----------------------------------------------------------------//
 function makeBinaryOp ( opname ) {
@@ -17,13 +61,9 @@ function makeBinaryOp ( opname ) {
 //----------------------------------------------------------------//
 function makeConstOp ( opname ) {
     return ( value ) => {
-
-        let type = typeof ( value );
-
         return {
             op:         opname,
-            type:       type.toUpperCase (),
-            value:      value,
+            const:      makeAssetFieldValue ( value ),
         };
     };
 }
@@ -111,24 +151,6 @@ const op = {
     XOR:                makeBinaryOp    ( 'XOR' ),
 }
 
-const MUTABLE           = 'MUTABLE';
-const NUMBER            = 'NUMBER';
-const STRING            = 'STRING';
-
-const TYPE_NUMERIC      = 'NUMERIC';
-const TYPE_STRING       = 'STRING';
-
-const MEDIA_AUDIO       = 'MEDIA_AUDIO';
-const MEDIA_IMAGE       = 'MEDIA_IMAGE';
-const MEDIA_TEXT        = 'MEDIA_TEXT';
-const MEDIA_VIDEO       = 'MEDIA_VIDEO';
-
-const SCHEMA_BUILDER_ADDING_SCHEMA                  = 'SCHEMA_BUILDER_ADDING_SCHEMA';
-const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION        = 'ADDING_ASSET_DEFINITION';
-const SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE          = 'ADDING_ASSET_TEMPLATE';
-const SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD    = 'ADDING_ASSET_TEMPLATE_FIELD';
-const SCHEMA_BUILDER_ADDING_METHOD                  = 'ADDING_ASSET_METHOD';
-
 //================================================================//
 // SchemaBuilder
 //================================================================//
@@ -143,45 +165,19 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    assetDefinition ( name, base ) {
+    definition ( name ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
 
         this.push (
             SCHEMA_BUILDER_ADDING_ASSET_DEFINITION,
             {
-                implements:     base,
                 fields:         {},
             },
-            ( schema, assetDefinition ) => {
-                schema.assetDefinitions [ name ] = assetDefinition;
+            ( schema, definition ) => {
+                schema.definitions [ name ] = definition;
             }
         );
-        return this;
-    }
-
-    //----------------------------------------------------------------//
-    assetTemplate ( name ) {
-
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
-
-        this.push (
-            SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE,
-            {
-                fields:     {},
-            },
-            ( schema, assetTemplate ) => {
-                schema.assetTemplates [ name ] = assetTemplate;
-            }
-        );
-        return this;
-    }
-
-    //----------------------------------------------------------------//
-    boolean ( base ) {
-
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
-        this.top ().type = 'BOOL';
         return this;
     }
 
@@ -210,11 +206,10 @@ class SchemaBuilder {
         this.stack = [];
 
         this.schema = {
-            name:   name,
-            lua:    lua,
-            assetTemplates:     {},
-            assetDefinitions:   {},
-            methods:            {},
+            name:           name,
+            lua:            lua,
+            definitions:    {},
+            methods:        {},
         };
 
         this.push (
@@ -241,31 +236,18 @@ class SchemaBuilder {
     //----------------------------------------------------------------//
     field ( name, value ) {
 
-        if ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE )) {
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION ));
 
-            let field = {
-                array:          false,
-                mutable:        false,
+        let field = makeAssetFieldValue ( value );
+        field.mutable = false;
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD,
+            field,
+            ( definition, field ) => {
+                definition.fields [ name ] = field;
             }
-
-            this.push (
-                SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD,
-                field,
-                ( assetTemplate, field ) => {
-                    assert ( 'type' in field );
-                    assetTemplate.fields [ name ] = field;
-                }
-            );
-            return this;
-        }
-
-        if ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION )) {
-
-            this.top ().fields [ name ] = value;
-            return this;
-        }
-
-        assert ( false );
+        );
         return this;
     }
 
@@ -292,17 +274,9 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    numeric ( base ) {
-
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
-        this.top ().type = TYPE_NUMERIC;
-        return this;
-    }
-
-    //----------------------------------------------------------------//
     mutable ( base ) {
 
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD ));
         this.top ().mutable = true;
         return this;
     }

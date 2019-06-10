@@ -133,11 +133,6 @@ protected:
             }
         }
     }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, Variant& value ) const override {
-        value = Variant ( this->get ( name ));
-    }
 
     //----------------------------------------------------------------//
     const Poco::Dynamic::Var get ( SerializerPropertyName name ) const {

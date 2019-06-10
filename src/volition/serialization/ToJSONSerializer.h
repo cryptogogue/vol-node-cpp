@@ -88,29 +88,6 @@ protected:
             this->set ( name, toJSON ( value ));
         }
     }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const Variant& value ) override {
-        this->set ( name, value );
-        
-        switch ( value.mType ) {
-        
-            case Variant::TYPE_BOOL:
-                this->set ( name, value.mNumeric == 1 );
-                break;
-            
-            case Variant::TYPE_NUMBER:
-                this->set ( name, value.mNumeric );
-                break;
-            
-            case Variant::TYPE_STRING:
-                this->set ( name, value.mString );
-                break;
-                
-            default:
-                break;
-        }
-    }
 
     //----------------------------------------------------------------//
     void affirmJSONArray () {

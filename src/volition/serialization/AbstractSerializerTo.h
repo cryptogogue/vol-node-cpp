@@ -27,7 +27,6 @@ protected:
     virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const u64& value ) = 0;
     virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const string& value ) = 0;
     virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;
-    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const Variant& value ) = 0;
 
 public:
     

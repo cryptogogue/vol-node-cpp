@@ -218,28 +218,6 @@ protected:
         this->mContainer->setValue ( name, move ( value ));
     }
 
-    //----------------------------------------------------------------//
-    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const Variant& value ) override {
-        
-        switch ( value.mType ) {
-        
-            case Variant::TYPE_BOOL:
-                this->setValue ( name, make_unique < SortedDigestSerializerValue < bool >>( value.mNumeric == 1 ));
-                break;
-            
-            case Variant::TYPE_NUMBER:
-                this->setValue ( name, make_unique < SortedDigestSerializerValue < double >>( value.mNumeric ));
-                break;
-            
-            case Variant::TYPE_STRING:
-                this->setValue ( name, make_unique < SortedDigestSerializerValue < string >>( value.mString ));
-                break;
-                
-            default:
-                break;
-        }
-    }
-
 public:
 
     //----------------------------------------------------------------//
