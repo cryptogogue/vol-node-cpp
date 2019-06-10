@@ -92,10 +92,14 @@ test ( 'test operators', () => {
         .definition ( 'testAsset' )
             .field ( 'numberField', 123 )
             .field ( 'stringField', 'oneTwoThree' )
+            .field ( 'keywordField', 'one two three' )
 
         //----------------------------------------------------------------//
         .method ( 'assetType', 1, 2, '' )
             .assetArg ( 'arg0', op.ASSET_TYPE ( 'testAsset' ))
+
+        .method ( 'keyword', 1, 2, '' )
+            .assetArg ( 'arg0', op.KEYWORD ( op.FIELD ( 'keywordField' ), 'two' ))
 
         //----------------------------------------------------------------//
         .method ( 'numericEqual', 1, 2, '' )

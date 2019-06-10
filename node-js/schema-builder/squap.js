@@ -203,29 +203,15 @@ class GreaterOrEqualSquap extends AbstractBinarySquap {
 }
 
 //================================================================//
-// InSquap
-//================================================================//
-// class InSquap extends AbstractBinarySquap {
-
-//     //----------------------------------------------------------------//
-//     eval ( opArgs ) {
-//         const leftVal = this.left.eval ( opArgs );
-//         const rightVal = this.right.eval ( opArgs );
-//         return ( leftVal.includes && leftVal.includes ( rightVal )) === true;
-//     }
-// }
-
-//================================================================//
 // KeywordSquap
 //================================================================//
 class KeywordSquap extends AbstractBinarySquap {
 
     //----------------------------------------------------------------//
     eval ( opArgs ) {
-        // const leftVal = this.left.eval ( opArgs );
-        // const rightVal = this.right.eval ( opArgs );
-        // return ( leftVal.includes && leftVal.includes ( rightVal )) === true;
-        return false;
+        const leftVal       = this.left.eval ( opArgs );
+        const rightVal      = this.right.eval ( opArgs );
+        return ( leftVal.split ( ' ' ).indexOf ( rightVal ) >= 0 );
     }
 }
 
@@ -357,7 +343,7 @@ const factoryTable = {
     FIELD:              ( template ) => new FieldSquap ( template ),
     GREATER:            ( template ) => new GreaterSquap ( template ),
     GREATER_OR_EQUAL:   ( template ) => new GreaterOrEqualSquap ( template ),
-    IN:                 ( template ) => new InSquap ( template ),
+    KEYWORD:            ( template ) => new KeywordSquap ( template ),
     LESS:               ( template ) => new LessSquap ( template ),
     LESS_OR_EQUAL:      ( template ) => new LessOrEqualSquap ( template ),
     MOD:                ( template ) => new ModSquap ( template ),
