@@ -22,8 +22,8 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                                  mSchemaName;
-    string                                  mJSON;
+    string      mSchemaName;
+    string      mJSON;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {

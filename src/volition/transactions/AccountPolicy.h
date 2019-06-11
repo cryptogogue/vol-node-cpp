@@ -22,8 +22,8 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                                  mPolicyName;
-    SerializableUniquePtr < Policy >        mPolicy;
+    string                              mPolicyName;
+    SerializableUniquePtr < Policy >    mPolicy;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {

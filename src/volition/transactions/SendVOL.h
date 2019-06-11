@@ -22,8 +22,8 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                                  mAccountName; // receiving account
-    u64                                     mAmount;
+    string      mAccountName; // receiving account
+    u64         mAmount;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
