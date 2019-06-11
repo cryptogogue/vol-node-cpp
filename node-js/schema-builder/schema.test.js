@@ -27,15 +27,15 @@ test ( 'define schema', () => {
             .field ( 'keywords', 'card ultra-rare' )
 
         //----------------------------------------------------------------//
-        .method ( 'makeRare', 1, 2, 'Combine two commons to make a rare.' )
+        .method ( 'makeRare', 'Combine two commons to make a rare.' )
             .assetArg ( 'common0', op.ASSET_TYPE ( 'common' ))
             .assetArg ( 'common1', op.ASSET_TYPE ( 'common' ))
 
-        .method ( 'makeUltraRare', 1, 2, 'Combine two rares to make an ultra-rare.' )
+        .method ( 'makeUltraRare', 'Combine two rares to make an ultra-rare.' )
             .assetArg ( 'rare0', op.ASSET_TYPE ( 'rare' ))
             .assetArg ( 'rare1', op.ASSET_TYPE ( 'rare' ))
 
-        .method ( 'openPack', 1, 2, 'Open a booster pack.' )
+        .method ( 'openPack', 'Open a booster pack.' )
             .assetArg ( 'pack', op.ASSET_TYPE ( 'pack' ))
 
         .done ()
@@ -95,44 +95,44 @@ test ( 'test operators', () => {
             .field ( 'keywordField', 'one two three' )
 
         //----------------------------------------------------------------//
-        .method ( 'assetType', 1, 2, '' )
+        .method ( 'assetType' )
             .assetArg ( 'arg0', op.ASSET_TYPE ( 'testAsset' ))
 
-        .method ( 'keyword', 1, 2, '' )
+        .method ( 'keyword' )
             .assetArg ( 'arg0', op.KEYWORD ( op.FIELD ( 'keywordField' ), 'two' ))
 
         //----------------------------------------------------------------//
-        .method ( 'numericEqual', 1, 2, '' )
+        .method ( 'numericEqual' )
             .assetArg ( 'arg0', op.EQUAL ( op.FIELD ( 'numberField' ), 123 ))
 
-        .method ( 'stringEqual', 1, 2, '' )
+        .method ( 'stringEqual' )
             .assetArg ( 'arg0', op.EQUAL ( op.FIELD ( 'stringField' ), 'oneTwoThree' ))
 
-        .method ( 'numericNotEqual', 1, 2, '' )
+        .method ( 'numericNotEqual' )
             .assetArg ( 'arg0', op.NOT_EQUAL ( op.FIELD ( 'numberField' ), 321 ))
 
-        .method ( 'stringNotEqual', 1, 2, '' )
+        .method ( 'stringNotEqual' )
             .assetArg ( 'arg0', op.NOT_EQUAL ( op.FIELD ( 'stringField' ), 'threeTwoOne' ))
 
-        .method ( 'numericGreater', 1, 2, '' )
+        .method ( 'numericGreater' )
             .assetArg ( 'arg0', op.GREATER ( op.FIELD ( 'numberField' ), 100 ))
 
-        .method ( 'numericGreaterOrEqual', 1, 2, '' )
+        .method ( 'numericGreaterOrEqual' )
             .assetArg ( 'arg0', op.GREATER_OR_EQUAL ( op.FIELD ( 'numberField' ), 123 ))
 
-        .method ( 'numericLess', 1, 2, '' )
+        .method ( 'numericLess' )
             .assetArg ( 'arg0', op.LESS ( op.FIELD ( 'numberField' ), 200 ))
 
-        .method ( 'numericLessOrEqual', 1, 2, '' )
+        .method ( 'numericLessOrEqual' )
             .assetArg ( 'arg0', op.LESS_OR_EQUAL ( op.FIELD ( 'numberField' ), 123 ))
 
-        .method ( 'logicalAnd', 1, 2, '' )
+        .method ( 'logicalAnd' )
             .assetArg ( 'arg0', op.AND (
                 op.EQUAL ( op.FIELD ( 'numberField' ), 123 ),                   // true
                 op.EQUAL ( op.FIELD ( 'stringField' ), 'oneTwoThree' )          // true
             )
         )
-        .method ( 'logicalNotAnd', 1, 2, '' )
+        .method ( 'logicalNotAnd' )
             .assetArg ( 'arg0', op.NOT (
                 op.AND (
                     op.EQUAL ( op.FIELD ( 'numberField' ), 123 ),               // true
@@ -140,22 +140,22 @@ test ( 'test operators', () => {
                 )
             )
         )
-        .method ( 'logicalOr', 1, 2, '' )
+        .method ( 'logicalOr' )
             .assetArg ( 'arg0', op.OR (
                 op.EQUAL ( op.FIELD ( 'numberField' ), 123 ),                   // true
                 op.EQUAL ( op.FIELD ( 'stringField' ), 'threeTwoOne' )          // false
             )
         )
-        .method ( 'logicalNot', 1, 2, '' )
+        .method ( 'logicalNot' )
             .assetArg ( 'arg0', op.NOT ( op.EQUAL ( op.FIELD ( 'numberField' ), 321 )))
 
-        .method ( 'logicalXor', 1, 2, '' )
+        .method ( 'logicalXor' )
             .assetArg ( 'arg0', op.XOR (
                 op.EQUAL ( op.FIELD ( 'numberField' ), 123 ),                   // true
                 op.EQUAL ( op.FIELD ( 'stringField' ), 'threeTwoOne' )          // false
             )
         )
-        .method ( 'logicalNotXor', 1, 2, '' )
+        .method ( 'logicalNotXor' )
             .assetArg ( 'arg0', op.NOT (
                 op.XOR (
                     op.EQUAL ( op.FIELD ( 'numberField' ), 123 ),               // true
@@ -164,19 +164,19 @@ test ( 'test operators', () => {
             )
         )
 
-        .method ( 'add', 1, 2, '' )
+        .method ( 'add' )
             .assetArg ( 'arg0', op.EQUAL ( op.ADD ( op.FIELD ( 'numberField' ), 2 ), 125 ))
 
-        .method ( 'div', 1, 2, '' )
+        .method ( 'div' )
             .assetArg ( 'arg0', op.EQUAL ( op.DIV ( op.FIELD ( 'numberField' ), 2 ), 61.5 ))
 
-        .method ( 'mod', 1, 2, '' )
+        .method ( 'mod' )
             .assetArg ( 'arg0', op.EQUAL ( op.MOD ( op.FIELD ( 'numberField' ), 120 ), 3 ))
 
-        .method ( 'mul', 1, 2, '' )
+        .method ( 'mul' )
             .assetArg ( 'arg0', op.EQUAL ( op.MUL ( op.FIELD ( 'numberField' ), 2 ), 246 ))
 
-        .method ( 'sub', 1, 2, '' )
+        .method ( 'sub' )
             .assetArg ( 'arg0', op.EQUAL ( op.SUB ( op.FIELD ( 'numberField' ), 3 ), 120 ))
 
         .done ()

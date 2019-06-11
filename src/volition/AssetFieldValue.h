@@ -318,6 +318,21 @@ public:
     }
     
     //----------------------------------------------------------------//
+    bool isBool () const {
+        return ( this->mType == Type::TYPE_BOOL );
+    }
+    
+    //----------------------------------------------------------------//
+    bool isNumber () const {
+        return ( this->mType == Type::TYPE_NUMBER );
+    }
+    
+    //----------------------------------------------------------------//
+    bool isString () const {
+        return ( this->mType == Type::TYPE_STRING );
+    }
+    
+    //----------------------------------------------------------------//
     void serializeValue ( const AbstractSerializerFrom& serializer, string key ) {
     
         switch ( this->mType ) {
@@ -353,6 +368,24 @@ public:
             default:
                 break;
         }
+    }
+    
+    //----------------------------------------------------------------//
+    bool strictBoolean () const {
+        assert ( this->mType == Type::TYPE_BOOL );
+        return ( this->mNumeric != 0 );
+    }
+    
+    //----------------------------------------------------------------//
+    bool strictNumber () const {
+        assert ( this->mType == Type::TYPE_NUMBER );
+        return this->mNumeric;
+    }
+    
+    //----------------------------------------------------------------//
+    string strictString () const {
+        assert ( this->mType == Type::TYPE_STRING );
+        return this->mString;
     }
     
     //----------------------------------------------------------------//

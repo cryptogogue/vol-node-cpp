@@ -20,13 +20,25 @@ public:
     typedef SerializableMap < string, AssetFieldValue > Fields;
 
     string      mType;
+    size_t      mIndex;
     string      mOwner;
     Fields      mFields;
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue getField ( string name ) const {
+    
+        Fields::const_iterator fieldIt = this->mFields.find ( name );
+        if ( fieldIt != this->mFields.cend ()) {
+            return fieldIt->second;
+        }
+        return AssetFieldValue ();
+    }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
         serializer.serialize ( "type",              this->mType );
+        serializer.serialize ( "index",             this->mIndex );
         serializer.serialize ( "owner",             this->mOwner );
         serializer.serialize ( "fields",            this->mFields );
     }
@@ -35,6 +47,7 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
         serializer.serialize ( "type",              this->mType );
+        serializer.serialize ( "index",             this->mIndex );
         serializer.serialize ( "owner",             this->mOwner );
         serializer.serialize ( "fields",            this->mFields );
     }

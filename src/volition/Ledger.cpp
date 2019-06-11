@@ -3,10 +3,12 @@
 
 #include <volition/Asset.h>
 #include <volition/AssetIdentifier.h>
+#include <volition/AssetMethod.h>
+#include <volition/AssetMethodInvocation.h>
 #include <volition/Block.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
-#include <volition/SchemaLua.h>
+#include <volition/LuaContext.h>
 #include <volition/TransactionMakerSignature.h>
 
 namespace Volition {
@@ -50,19 +52,19 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
 }
 
 //----------------------------------------------------------------//
-bool Ledger::awardAsset ( Schema& schema, string accountName, string assetName, int quantity ) {
+bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
 
     if ( quantity == 0 ) return true;
 
     // TODO: replace with true set (keys with no values)
     VersionedMap inventoryCollection ( *this, Ledger::formatKeyForAccountInventory ( accountName ));
 
-    string keyForAssetCounter = Ledger::formatKeyForAssetCounter ( assetName );
+    string keyForAssetCounter = Ledger::formatKeyForAssetCounter ( assetType );
     if ( !this->hasValue ( keyForAssetCounter )) return false;
     size_t assetCount = this->getValue < size_t >( keyForAssetCounter );
 
     for ( int i = 0; i < quantity; ++i, ++assetCount ) {
-        string keyForAsset = Ledger::formatKeyForAsset ( AssetIdentifier ( assetName, assetCount ));
+        string keyForAsset = Ledger::formatKeyForAsset ( AssetIdentifier ( assetType, assetCount ));
         inventoryCollection.setValue < bool >( keyForAsset, true ); // TODO: replace with true set (keys with no values)
         this->setValue < string >( keyForAsset, accountName ); // TODO: replace with account ID
     }
@@ -127,6 +129,12 @@ string Ledger::formatKeyForAssetDefinition ( string assetType ) {
 string Ledger::formatKeyForAssetField ( const AssetIdentifier& identifier, string fieldName ) {
 
     return Format::write ( "asset.%s.%d.%s", identifier.mType.c_str (), identifier.mIndex, fieldName.c_str ());
+}
+
+//----------------------------------------------------------------//
+string Ledger::formatKeyForAssetMethod ( string methodName ) {
+
+    return Format::write ( "method.%s", methodName.c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -198,6 +206,7 @@ shared_ptr < Asset > Ledger::getAsset ( const AssetIdentifier& identifier ) cons
     
     shared_ptr < Asset > asset = make_shared < Asset >();
     asset->mType    = identifier.mType;
+    asset->mIndex   = identifier.mIndex;
     asset->mOwner   = this->getValue < string >( keyForAsset );
     
     // copy the fields and apply any overrides
@@ -268,6 +277,12 @@ Entropy Ledger::getEntropy () const {
 shared_ptr < KeyInfo > Ledger::getKeyInfo ( string keyID ) const {
 
     return this->getJSONSerializableObject < KeyInfo >( KEY_ID + keyID );
+}
+
+//----------------------------------------------------------------//
+shared_ptr < AssetMethod > Ledger::getMethod ( string methodName ) const {
+
+    return this->getJSONSerializableObject < AssetMethod >( Ledger::formatKeyForAssetMethod ( methodName ));
 }
 
 //----------------------------------------------------------------//
@@ -353,6 +368,20 @@ void Ledger::incrementNonce ( const TransactionMakerSignature* makerSignature ) 
 }
 
 //----------------------------------------------------------------//
+bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocation ) {
+
+    shared_ptr < AssetMethod > method = this->getMethod ( invocation.mMethodName );
+    if ( !( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ))) return false;
+
+    string keyForAccount = Ledger::prefixKey ( ACCOUNT, accountName );
+    if ( !this->hasValue ( keyForAccount )) return false;
+
+    // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
+    LuaContext lua ( method->mLua );
+    return lua.invoke ( *this, accountName, *method, invocation );
+}
+
+//----------------------------------------------------------------//
 bool Ledger::keyPolicy ( string accountName, string policyName, const Policy* policy ) {
 
     return true;
@@ -402,7 +431,9 @@ string Ledger::prefixKey ( string prefix, string key ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::publishSchema ( string schemaName, const Schema& schema ) {
+bool Ledger::publishSchema ( string accountName, string schemaName, const Schema& schema ) {
+
+    // TODO: check account permissions
 
     schemaName = Ledger::formatSchemaKey ( schemaName );
 
@@ -410,13 +441,13 @@ bool Ledger::publishSchema ( string schemaName, const Schema& schema ) {
 
     string keyForSchemaCount = Ledger::formatKeyForSchemaCount ();
 
-    int schemaCount = this->getValue < int >( keyForSchemaCount );
+    int schemaIndex = this->getValue < int >( keyForSchemaCount );
     
-    string schemaKey = Ledger::formatSchemaKey ( schemaCount );
+    string schemaKey = Ledger::formatSchemaKey ( schemaIndex );
 
     this->setValue < string >( schemaKey, schemaName );
     this->setJSONSerializableObject < Schema >( schemaName, schema );
-    this->setValue < int >( keyForSchemaCount, schemaCount + 1 );
+    this->setValue < int >( keyForSchemaCount, schemaIndex + 1 );
 
     Schema::Definitions::const_iterator definitionIt = schema.mDefinitions.cbegin ();
     for ( ; definitionIt != schema.mDefinitions.cend (); ++definitionIt ) {
@@ -434,8 +465,20 @@ bool Ledger::publishSchema ( string schemaName, const Schema& schema ) {
         this->setJSONSerializableObject < AssetDefinition >( keyForAssetDefinition, definition );
     }
 
-    SchemaLua schemaLua ( schema );
-    schemaLua.publish ( *this );
+    Schema::Methods::const_iterator methodIt = schema.mMethods.cbegin ();
+    for ( ; methodIt != schema.mMethods.cend (); ++methodIt ) {
+    
+        string methodName = methodIt->first;
+        const AssetMethod& method = methodIt->second;
+        
+        // store the method for easy access later
+        string keyForAssetMethod = Ledger::formatKeyForAssetMethod ( methodName );
+        if ( this->hasValue ( keyForAssetMethod )) return false; // can't overwrite methods
+        this->setJSONSerializableObject < AssetMethod >( keyForAssetMethod, method );
+    }
+
+    LuaContext lua ( schema.mLua );
+    lua.invoke ( *this, accountName );
     
     return true;
 }
@@ -553,6 +596,13 @@ void Ledger::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
 void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
     this->setJSONSerializableObject < UnfinishedBlockList >( UNFINISHED, unfinished );
+}
+
+//----------------------------------------------------------------//
+bool Ledger::verify ( const AssetMethodInvocation& invocation ) const {
+
+    shared_ptr < AssetMethod > method = this->getMethod ( invocation.mMethodName );
+    return ( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ));
 }
 
 //================================================================//

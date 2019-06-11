@@ -3,6 +3,7 @@
 
 #include <volition/BinarySquap.h>
 #include <volition/ConstSquap.h>
+#include <volition/IndexSquap.h>
 #include <volition/FuncSquap.h>
 #include <volition/SquapFactory.h>
 #include <volition/UnarySquap.h>
@@ -46,7 +47,7 @@ unique_ptr < AbstractSquap > SquapFactory::SerializablePtrFactory_make ( const A
         
         case AbstractSquap::ASSET_TYPE:
         case AbstractSquap::FIELD:
-            squap =  make_unique < FuncSquap >();
+            squap =  make_unique < IndexSquap >();
             break;
         
         case AbstractSquap::NOT:

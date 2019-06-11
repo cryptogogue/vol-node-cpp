@@ -14,6 +14,8 @@ namespace Volition {
 class Asset;
 class AssetFieldValue;
 class AssetIdentifier;
+class AssetMethod;
+class AssetMethodInvocation;
 class Block;
 class Policy;
 class Schema;
@@ -240,6 +242,7 @@ protected:
     static string                   formatKeyForAssetCounter        ( string assetType );
     static string                   formatKeyForAssetDefinition     ( string assetType );
     static string                   formatKeyForAssetField          ( const AssetIdentifier& identifier, string fieldName );
+    static string                   formatKeyForAssetMethod         ( string methodName );
     static string                   formatKeyForSchemaCount         ();
     static string                   formatSchemaKey                 ( int schemaCount );
     static string                   formatSchemaKey                 ( string schemaName );
@@ -253,29 +256,34 @@ public:
 
     //----------------------------------------------------------------//
     bool                            accountPolicy           ( string accountName, const Policy* policy );
-    bool                            awardAsset              ( Schema& schema, string accountName, string assetName, int quantity );
+    bool                            awardAsset              ( string accountName, string assetType, int quantity );
     bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
     bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
     bool                            deleteKey               ( string accountName, string keyName );
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     shared_ptr < Account >          getAccount              ( string accountName ) const;
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
+    shared_ptr < Asset >            getAsset                ( string assetID ) const;
     shared_ptr < Asset >            getAsset                ( const AssetIdentifier& identifier ) const;
     shared_ptr < Block >            getBlock                ( size_t height ) const;
-    shared_ptr < Block >            getTopBlock             () const;
     Entropy                         getEntropy              () const;
-//    Inventory                       getInventory            ( string accountName ) const;
     shared_ptr < KeyInfo >          getKeyInfo              ( string keyID ) const;
+    shared_ptr < AssetMethod >      getMethod               ( string methodName ) const;
     shared_ptr < MinerInfo >        getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
     shared_ptr < MinerURLMap >      getMinerURLs            () const;
     shared_ptr < Schema >           getSchema               ( string schemaName ) const;
     list < Schema >                 getSchemas              () const;
+    shared_ptr < Block >            getTopBlock             () const;
     UnfinishedBlockList             getUnfinished           ();
     void                            incrementNonce          ( const TransactionMakerSignature* makerSignature );
+    bool                            invoke                  ( string accountName, const AssetMethodInvocation& invocation );
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
+                                    Ledger                  ();
+                                    Ledger                  ( Ledger& other );
+                                    ~Ledger                 ();
     bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
-    bool                            publishSchema           ( string schemaName, const Schema& schema );
+    bool                            publishSchema           ( string accountName, string schemaName, const Schema& schema );
     bool                            registerMiner           ( string accountName, string keyName, string url );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
@@ -283,9 +291,7 @@ public:
     void                            setBlock                ( const Block& block );
     void                            setEntropyString        ( string entropy );
     void                            setUnfinished           ( const UnfinishedBlockList& unfinished );
-                                    Ledger                  ();
-                                    Ledger                  ( Ledger& other );
-                                    ~Ledger                 ();
+    bool                            verify                  ( const AssetMethodInvocation& invocation ) const;
 
     //----------------------------------------------------------------//
     template < typename TYPE >

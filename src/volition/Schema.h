@@ -20,30 +20,33 @@ class Schema :
 private:
 
     friend class Ledger;
-    friend class SchemaLua;
+    friend class LuaContext;
 
     typedef SerializableMap < string, AssetDefinition >     Definitions;
     typedef SerializableMap < string, AssetMethod >         Methods;
 
     string                  mName;
-
     Definitions             mDefinitions;
     Methods                 mMethods;
-
     string                  mLua;
 
     //----------------------------------------------------------------//
-    const AssetMethod*      getMethod               ( string name ) const;
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+
+        serializer.serialize ( "name",              this->mName );
+        serializer.serialize ( "definitions",       this->mDefinitions );
+        serializer.serialize ( "methods",           this->mMethods );
+        serializer.serialize ( "lua",               this->mLua );
+    }
 
     //----------------------------------------------------------------//
-    void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
-public:
-
-    //----------------------------------------------------------------//
-                            Schema                  ();
-    bool                    verifyMethod            ( string methodName, u64 weight, u64 maturity ) const;
+        serializer.serialize ( "name",              this->mName );
+        serializer.serialize ( "definitions",       this->mDefinitions );
+        serializer.serialize ( "methods",           this->mMethods );
+        serializer.serialize ( "lua",               this->mLua );
+    }
 };
 
 } // namespace Volition

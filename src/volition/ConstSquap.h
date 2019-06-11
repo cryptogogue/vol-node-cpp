@@ -19,7 +19,7 @@ public:
     AssetFieldValue     mConst;
     
     //----------------------------------------------------------------//
-    AssetFieldValue AbstractSquap_evaluate () const override {
+    AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
         return this->mConst;
     }

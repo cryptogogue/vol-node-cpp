@@ -23,6 +23,19 @@ const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD  = 'ADDING_ASSET_DEFINITION_F
 const SCHEMA_BUILDER_ADDING_METHOD                  = 'ADDING_ASSET_METHOD';
 
 //----------------------------------------------------------------//
+// function jsonEscape ( str ) {
+//     return str
+//         .replace ( /\\n/g, "\\n" )
+//         .replace ( /\\'/g, "\\'" )
+//         .replace ( /\\"/g, '\\"' )
+//         .replace ( /\\&/g, "\\&" )
+//         .replace ( /\\r/g, "\\r" )
+//         .replace ( /\\t/g, "\\t" )
+//         .replace ( /\\b/g, "\\b" )
+//         .replace ( /\\f/g, "\\f" );
+// }
+
+//----------------------------------------------------------------//
 function makeAssetFieldValue ( value ) {
     
     let type = TYPE_UNDEFINED;
@@ -95,7 +108,7 @@ function makeConstOp ( opname ) {
 function makeIndexOp ( opname ) {
     return ( arg0, arg1 ) => {
 
-        // index args are always assumed to be literals for now.
+        // index args are always assumed to be string literals for now.
         // can add support for operator args later. if we need it.
 
         if ( arg0 && arg1 ) {
@@ -201,13 +214,13 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    constructor ( name, lua ) {
+    constructor ( name ) {
 
         this.stack = [];
 
         this.schema = {
             name:           name,
-            lua:            lua,
+            lua:            '',
             definitions:    {},
             methods:        {},
         };
@@ -252,19 +265,48 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    method ( name, weight, maturity, description ) {
+    lua ( lua ) {
+
+        // pop to adding method first
+        assert (
+            this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ) ||
+            this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA )
+        );
+        this.top ().lua = lua;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    luaFile ( filename ) {
+        // pop to adding method first
+        assert (
+            this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ) ||
+            this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA )
+        );
+
+        let lua = fs.readFileSync ( filename, 'utf8' );
+        assert ( lua );
+        //lua = jsonEscape ( lua );
+
+        this.top ().lua = lua;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    method ( name, description ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
 
         this.push (
             SCHEMA_BUILDER_ADDING_METHOD,
             {
-                weight:         weight,
-                maturity:       maturity,
-                description:    description,
+                weight:         1,
+                maturity:       0,
+                description:    description || '',
                 assetArgs:      {},
                 constArgs:      {},
                 constraints:    [],
+                lua:            '',
             },
             ( schema, method ) => {
                 schema.methods [ name ] = method;

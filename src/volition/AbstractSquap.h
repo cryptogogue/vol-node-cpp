@@ -5,13 +5,43 @@
 #define VOLITION_ABSTRACTSQUAP_H
 
 #include <volition/common.h>
+#include <volition/Asset.h>
 #include <volition/AssetFieldValue.h>
+#include <volition/AssetIdentifier.h>
 #include <volition/FNV1a.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
 // Schema QUAlifier oPerator
+
+//================================================================//
+// SquapEvaluationContext
+//================================================================//
+class SquapEvaluationContext {
+private:
+
+    typedef SerializableMap < string, AssetIdentifier > AssetParams;
+    typedef SerializableMap < string, AssetFieldValue > ConstParams;
+
+    const Asset*        mAsset;
+    AssetFieldValue     mConst;
+
+public:
+
+    //----------------------------------------------------------------//
+    const Asset* getAsset () const {
+        if ( this->mAsset ) {
+            return this->mAsset;
+        }
+        return NULL;
+    };
+
+    //----------------------------------------------------------------//
+    SquapEvaluationContext ( const Asset& asset ) :
+        mAsset ( &asset ) {
+    }
+};
 
 //================================================================//
 // AbstractSquap
@@ -45,17 +75,11 @@ public:
     OpCode      mOpCode;
     
     //----------------------------------------------------------------//
-    virtual AssetFieldValue     AbstractSquap_evaluate      () const = 0;
+    virtual AssetFieldValue     AbstractSquap_evaluate      ( const SquapEvaluationContext& context ) const = 0;
     
     //----------------------------------------------------------------//
-    operator AssetFieldValue () const {
-    
-        return this->evaluate ();
-    }
-    
-    //----------------------------------------------------------------//
-    AssetFieldValue evaluate () const {
-        return this->AbstractSquap_evaluate ();
+    AssetFieldValue evaluate ( const SquapEvaluationContext& context ) const {
+        return this->AbstractSquap_evaluate ( context );
     }
 
     //----------------------------------------------------------------//

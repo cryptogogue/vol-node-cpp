@@ -47,7 +47,7 @@ public:
         Schema schema;
         FromJSONSerializer::fromJSONString ( schema, this->mJSON  );
         
-        return ledger.publishSchema ( this->mSchemaName, schema );
+        return ledger.publishSchema ( this->mMakerSignature->getAccountName (), this->mSchemaName, schema );
     }
 };
 

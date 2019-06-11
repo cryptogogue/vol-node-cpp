@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_UNARYSQUAP_H
-#define VOLITION_UNARYSQUAP_H
+#ifndef VOLITION_INDEXSQUAP_H
+#define VOLITION_INDEXSQUAP_H
 
 #include <volition/common.h>
 #include <volition/SquapFactory.h>
@@ -10,34 +10,48 @@
 namespace Volition {
 
 //================================================================//
-// UnarySquap
+// IndexSquap
 //================================================================//
-class UnarySquap :
+class IndexSquap :
      public AbstractSquap {
 public:
 
-    SerializableSharedPtr < AbstractSquap, SquapFactory >   mOperand;
+    string  mArgName; // unused for now
+    string  mIndexer;
     
     //----------------------------------------------------------------//
     AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
-        if ( this->mOperand && ( this->mOpCode == NOT )) {
-            return AssetFieldValue::booleanNot ( !this->mOperand->evaluate ( context ));
-        }
-        return AssetFieldValue (); // undefined
+        // TODO: right now, only supporting single assets
+        const Asset* asset = context.getAsset ();
+        if ( !asset ) return AssetFieldValue ();
+        
+        switch ( this->mOpCode ) {
+            
+            case ASSET_TYPE:
+                return ( asset->mType == this->mIndexer );
+
+            case FIELD:
+                return asset->getField ( this->mIndexer );
+
+            default:
+                return AssetFieldValue ();
+        };
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "operand",       this->mOperand );
+        serializer.serialize ( "paramID",       this->mArgName );
+        serializer.serialize ( "value",         this->mIndexer );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractSquap::AbstractSerializable_serializeTo ( serializer );
-     
-        serializer.serialize ( "operand",       this->mOperand );
+        
+        serializer.serialize ( "paramID",       this->mArgName );
+        serializer.serialize ( "value",         this->mIndexer );
     }
 };
 

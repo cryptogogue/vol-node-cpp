@@ -57,9 +57,11 @@ narrow phase: metadata
 
 ----------------------------------------------------------------
 
-rework asset tracking - no generics; every asset to be unique
-    decide on final asset identifier format
-    implement asset customization
+DONE: rework asset tracking - no generics; every asset to be unique
+DONE: decide on final asset identifier format
+
+implement asset customization
+
 implement queue of transactions in wallet - rebuild state dynamically (from node)
     rethink state handling in wallet
 template cards using SVG and mustache
@@ -67,15 +69,16 @@ svg barcode
 card modification through crafting
 variable-size transactions (multiple crafting commands per transaction)
 expand schema to include svg templates AND placeholder asset templates
-finalize schema
+finalize schema - where do resources
+node network monitor service - paid
 
 wallet
     collection screen
         filtering
         printing
         indicate craftability
-    crafting model
-    rendering svg
+    crafting screen
+    rendering svg for print
 
 validator app - sample
 
