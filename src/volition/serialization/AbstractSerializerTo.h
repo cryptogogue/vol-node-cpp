@@ -16,6 +16,8 @@ namespace Volition {
 class AbstractSerializerTo {
 protected:
 
+    typedef std::function < void ( AbstractSerializerTo& )> SerializationFunc;
+
     //----------------------------------------------------------------//
     virtual void                        AbstractSerializerTo_affirmArray    () = 0;
     virtual void                        AbstractSerializerTo_affirmObject   () = 0;
@@ -27,6 +29,7 @@ protected:
     virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const u64& value ) = 0;
     virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const string& value ) = 0;
     virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) = 0;
 
 public:
     
@@ -38,6 +41,11 @@ public:
     //----------------------------------------------------------------//
     void affirmObject () {
         this->AbstractSerializerTo_affirmObject ();
+    }
+    
+    //----------------------------------------------------------------//
+    void context ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) {
+        this->AbstractSerializerTo_serialize ( name, serializeFunc );
     }
     
     //----------------------------------------------------------------//

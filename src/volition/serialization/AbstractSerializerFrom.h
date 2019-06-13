@@ -31,6 +31,8 @@ public:
 
 protected:
 
+    typedef std::function < void ( const AbstractSerializerFrom& )> SerializationFunc;
+
     //----------------------------------------------------------------//
     virtual SerializerKeys                  AbstractSerializerFrom_getKeys          () const = 0;
     virtual KeyType                         AbstractSerializerFrom_getKeyType       () const = 0;
@@ -43,8 +45,14 @@ protected:
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, u64& value ) const = 0;
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, string& value ) const = 0;
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, AbstractSerializable& value ) const = 0;
+    virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) const = 0;
 
 public:
+    
+    //----------------------------------------------------------------//
+    void context ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) const {
+        this->AbstractSerializerFrom_serialize ( name, serializeFunc );
+    }
     
     //----------------------------------------------------------------//
     SerializerKeys getKeys () const {

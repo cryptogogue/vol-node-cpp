@@ -110,29 +110,56 @@ protected:
     
         if ( this->has ( name )) {
     
+            FromJSONSerializer serializer;
+            serializer.mParent = this;
+            serializer.mName = name;
+    
             const Poco::Dynamic::Var member = this->get ( name );
             assert ( !member.isEmpty ());
-            
+           
             const type_info& tinfo = member.type ();
-            
+           
             if ( tinfo == typeid ( Poco::JSON::Array::Ptr )) {
                 Poco::JSON::Array::Ptr array = member.extract < Poco::JSON::Array::Ptr >();
                 assert ( array );
-                fromJSON ( value, *array );
+                serializer.mArray = array;
             }
             else if ( tinfo == typeid ( Poco::JSON::Object::Ptr )) {
                 Poco::JSON::Object::Ptr object = member.extract < Poco::JSON::Object::Ptr >();
                 assert ( object );
-                fromJSON ( value, *object );
+                serializer.mObject = object;
             }
-            else {
-                FromJSONSerializer serializer;
-                serializer.mParent = this;
-                serializer.mName = name;
-                value.serialize ( serializer );
-            }
+            value.serialize ( serializer );
         }
     }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializerFrom_serialize ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) const override {
+    
+        if ( this->has ( name )) {
+    
+            FromJSONSerializer serializer;
+            serializer.mParent = this;
+            serializer.mName = name;
+    
+            const Poco::Dynamic::Var member = this->get ( name );
+            assert ( !member.isEmpty ());
+           
+            const type_info& tinfo = member.type ();
+           
+            if ( tinfo == typeid ( Poco::JSON::Array::Ptr )) {
+                Poco::JSON::Array::Ptr array = member.extract < Poco::JSON::Array::Ptr >();
+                assert ( array );
+                serializer.mArray = array;
+            }
+            else if ( tinfo == typeid ( Poco::JSON::Object::Ptr )) {
+                Poco::JSON::Object::Ptr object = member.extract < Poco::JSON::Object::Ptr >();
+                assert ( object );
+                serializer.mObject = object;
+            }
+            serializeFunc ( serializer );
+        }
+    };
 
     //----------------------------------------------------------------//
     const Poco::Dynamic::Var get ( SerializerPropertyName name ) const {

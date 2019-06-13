@@ -203,6 +203,18 @@ protected:
             this->setValue ( name, move ( serializer.mContainer ));
         }
     }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) override {
+    
+        SortedDigestSerializer serializer;
+        serializer.mParent = this;
+        serializer.mName = name;
+        serializeFunc ( serializer );
+        if ( serializer.mContainer ) {
+            this->setValue ( name, move ( serializer.mContainer ));
+        }
+    }
 
     //----------------------------------------------------------------//
     void setValue ( SerializerPropertyName name, unique_ptr < AbstractSortedDigestSerializerValue > value ) {

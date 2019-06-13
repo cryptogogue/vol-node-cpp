@@ -83,11 +83,19 @@ protected:
         serializer.mParent = this;
         serializer.mName = name;
         value.serialize ( serializer );
+
+        this->set ( serializer );
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) override {
+    
+        ToJSONSerializer serializer;
+        serializer.mParent = this;
+        serializer.mName = name;
+        serializeFunc ( serializer );
         
-        if ( serializer ) {
-            Poco::Dynamic::Var var = serializer.mArray ? ( Poco::Dynamic::Var )serializer.mArray : ( Poco::Dynamic::Var )serializer.mObject;
-            this->set ( name, var );
-        }
+        this->set ( serializer );
     }
 
     //----------------------------------------------------------------//
@@ -103,6 +111,15 @@ protected:
         assert ( !this->mArray );
         if ( !this->mObject ) {
             this->mObject = new Poco::JSON::Object ();
+        }
+    }
+
+    //----------------------------------------------------------------//
+    void set ( const ToJSONSerializer& serializer ) {
+        
+        if ( serializer ) {
+            Poco::Dynamic::Var var = serializer.mArray ? ( Poco::Dynamic::Var )serializer.mArray : ( Poco::Dynamic::Var )serializer.mObject;
+            this->set ( serializer.mName, var );
         }
     }
 

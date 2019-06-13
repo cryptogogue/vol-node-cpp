@@ -67,6 +67,11 @@ protected:
         value.serialize ( *this );
     }
 
+    //----------------------------------------------------------------//
+    void AbstractSerializerTo_serialize ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) override {
+        serializeFunc ( *this );
+    }
+
 public:
 
     //----------------------------------------------------------------//
