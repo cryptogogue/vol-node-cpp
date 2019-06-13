@@ -114,10 +114,10 @@
 		CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */; };
 		CD63A1C422AC6B4100D5C801 /* AssetDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */; };
 		CD63A1C822AC6BEA00D5C801 /* AssetMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1C722AC6BEA00D5C801 /* AssetMethod.h */; };
-		CD63A1CC22AC718500D5C801 /* AssetIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1CB22AC718500D5C801 /* AssetIdentifier.h */; };
 		CD63A1CE22AC88A000D5C801 /* AssetFieldValue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1CD22AC88A000D5C801 /* AssetFieldValue.h */; };
 		CD63A1D122AF750000D5C801 /* IndexSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1D022AF750000D5C801 /* IndexSquap.h */; };
 		CD63A1D322AF892800D5C801 /* AssetMethodInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */; };
+		CD63A1DB22B2244600D5C801 /* Account.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1DA22B2244600D5C801 /* Account.h */; };
 		CD6C9AD821C4873A009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
 		CD6C9ADB21C48749009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
 		CD6C9ADE21C48756009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
@@ -664,10 +664,10 @@
 		CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDetailsHandler.h; path = "src/volition/web-miner-api/AssetDetailsHandler.h"; sourceTree = "<group>"; };
 		CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDefinition.h; path = src/volition/AssetDefinition.h; sourceTree = "<group>"; };
 		CD63A1C722AC6BEA00D5C801 /* AssetMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetMethod.h; path = src/volition/AssetMethod.h; sourceTree = "<group>"; };
-		CD63A1CB22AC718500D5C801 /* AssetIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetIdentifier.h; path = src/volition/AssetIdentifier.h; sourceTree = "<group>"; };
 		CD63A1CD22AC88A000D5C801 /* AssetFieldValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetFieldValue.h; path = src/volition/AssetFieldValue.h; sourceTree = "<group>"; };
 		CD63A1D022AF750000D5C801 /* IndexSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IndexSquap.h; path = src/volition/IndexSquap.h; sourceTree = "<group>"; };
 		CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetMethodInvocation.h; path = src/volition/AssetMethodInvocation.h; sourceTree = "<group>"; };
+		CD63A1DA22B2244600D5C801 /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Account.h; path = src/volition/Account.h; sourceTree = "<group>"; };
 		CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = lognosis.xcodeproj; path = "3rd-party/padamose/3rd-party/lognosis/lognosis.xcodeproj"; sourceTree = "<group>"; };
 		CD73D813216546B400F43CC7 /* SerializerPropertyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerPropertyName.h; path = src/volition/serialization/SerializerPropertyName.h; sourceTree = "<group>"; };
 		CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializerTo.h; path = src/volition/serialization/AbstractSerializerTo.h; sourceTree = "<group>"; };
@@ -1005,10 +1005,10 @@
 		CD4665AA20BFE49000A02D55 /* ledger */ = {
 			isa = PBXGroup;
 			children = (
+				CD63A1DA22B2244600D5C801 /* Account.h */,
 				CDB8B3C521AC7DB8004EE816 /* Asset.h */,
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CD63A1CD22AC88A000D5C801 /* AssetFieldValue.h */,
-				CD63A1CB22AC718500D5C801 /* AssetIdentifier.h */,
 				CD63A1C722AC6BEA00D5C801 /* AssetMethod.h */,
 				CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
@@ -1418,6 +1418,7 @@
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
+				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
 				CDF8AD5D21F52B34000E285F /* LuaContext.h in Headers */,
@@ -1459,7 +1460,6 @@
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,
 				CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */,
 				CDBFD54C218B8999002AB0C3 /* PublishSchema.h in Headers */,
-				CD63A1CC22AC718500D5C801 /* AssetIdentifier.h in Headers */,
 				CD4E81AD210593CA007DA585 /* WebMiner.h in Headers */,
 				CD63A1D122AF750000D5C801 /* IndexSquap.h in Headers */,
 				CD73D8162165474000F43CC7 /* AbstractSerializerTo.h in Headers */,

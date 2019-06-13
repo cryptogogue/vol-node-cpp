@@ -69,6 +69,60 @@ public:
     }
     
     //----------------------------------------------------------------//
+    AssetFieldValue () :
+        mType ( TYPE_UNDEFINED ),
+        mNumeric ( 0 ) {
+    }
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue ( const AssetFieldValue& variant ) :
+        mType ( variant.mType ),
+        mNumeric ( variant.mNumeric ),
+        mString ( variant.mString ) {
+    }
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue ( bool value ) :
+        mType ( TYPE_BOOL ),
+        mNumeric ( value ? 1 : 0 ) {
+    }
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue ( double value ) :
+        mType ( TYPE_NUMBER ),
+        mNumeric ( value ) {
+    }
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue ( string value ) :
+        mType ( TYPE_STRING ),
+        mString ( value ) {
+    }
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue ( Poco::Dynamic::Var var ) :
+        mType ( TYPE_UNDEFINED ),
+        mNumeric ( 0 ) {
+    
+        if ( var.isNumeric ()) {
+            this->mType = TYPE_NUMBER;
+            this->mNumeric = var.extract < double >();
+        }
+        else if ( var.isBoolean ()) {
+            this->mType = TYPE_BOOL;
+            this->mNumeric = var.extract < bool >() ? 1 : 0;
+        }
+        else if ( var.isString ()) {
+            this->mType = TYPE_STRING;
+            this->mString = var.extract < string >();
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    ~AssetFieldValue () {
+    }
+    
+    //----------------------------------------------------------------//
     static AssetFieldValue booleanAnd ( const AssetFieldValue& lval, const AssetFieldValue& rval ) {
     
         return AssetFieldValue ( lval && rval );
@@ -180,6 +234,21 @@ public:
     }
     
     //----------------------------------------------------------------//
+    bool isBool () const {
+        return ( this->mType == Type::TYPE_BOOL );
+    }
+    
+    //----------------------------------------------------------------//
+    bool isNumber () const {
+        return ( this->mType == Type::TYPE_NUMBER );
+    }
+    
+    //----------------------------------------------------------------//
+    bool isString () const {
+        return ( this->mType == Type::TYPE_STRING );
+    }
+    
+    //----------------------------------------------------------------//
     static AssetFieldValue less ( const AssetFieldValue& lval, const AssetFieldValue& rval ) {
     
         if ( lval.mType == rval.mType ) {
@@ -255,85 +324,9 @@ public:
     }
     
     //----------------------------------------------------------------//
-    static AssetFieldValue sub ( const AssetFieldValue& lval, const AssetFieldValue& rval ) {
+    void serializeValue ( const AbstractSerializerFrom& serializer, Type type, string key ) {
     
-        if (( lval.mType == TYPE_NUMBER ) && ( rval.mType == TYPE_NUMBER )) {
-            return AssetFieldValue ( lval.mNumeric - rval.mNumeric );
-        }
-        return AssetFieldValue ();
-    }
-    
-    //----------------------------------------------------------------//
-    AssetFieldValue () :
-        mType ( TYPE_UNDEFINED ),
-        mNumeric ( 0 ) {
-    }
-    
-    //----------------------------------------------------------------//
-    AssetFieldValue ( const AssetFieldValue& variant ) :
-        mType ( variant.mType ),
-        mNumeric ( variant.mNumeric ),
-        mString ( variant.mString ) {
-    }
-    
-    //----------------------------------------------------------------//
-    AssetFieldValue ( bool value ) :
-        mType ( TYPE_BOOL ),
-        mNumeric ( value ? 1 : 0 ) {
-    }
-    
-    //----------------------------------------------------------------//
-    AssetFieldValue ( double value ) :
-        mType ( TYPE_NUMBER ),
-        mNumeric ( value ) {
-    }
-    
-    //----------------------------------------------------------------//
-    AssetFieldValue ( string value ) :
-        mType ( TYPE_STRING ),
-        mString ( value ) {
-    }
-    
-    //----------------------------------------------------------------//
-    AssetFieldValue ( Poco::Dynamic::Var var ) :
-        mType ( TYPE_UNDEFINED ),
-        mNumeric ( 0 ) {
-    
-        if ( var.isNumeric ()) {
-            this->mType = TYPE_NUMBER;
-            this->mNumeric = var.extract < double >();
-        }
-        else if ( var.isBoolean ()) {
-            this->mType = TYPE_BOOL;
-            this->mNumeric = var.extract < bool >() ? 1 : 0;
-        }
-        else if ( var.isString ()) {
-            this->mType = TYPE_STRING;
-            this->mString = var.extract < string >();
-        }
-    }
-    
-    //----------------------------------------------------------------//
-    ~AssetFieldValue () {
-    }
-    
-    //----------------------------------------------------------------//
-    bool isBool () const {
-        return ( this->mType == Type::TYPE_BOOL );
-    }
-    
-    //----------------------------------------------------------------//
-    bool isNumber () const {
-        return ( this->mType == Type::TYPE_NUMBER );
-    }
-    
-    //----------------------------------------------------------------//
-    bool isString () const {
-        return ( this->mType == Type::TYPE_STRING );
-    }
-    
-    //----------------------------------------------------------------//
-    void serializeValue ( const AbstractSerializerFrom& serializer, string key ) {
+        this->mType = type;
     
         switch ( this->mType ) {
             case Type::TYPE_BOOL:
@@ -369,7 +362,7 @@ public:
                 break;
         }
     }
-    
+
     //----------------------------------------------------------------//
     bool strictBoolean () const {
         assert ( this->mType == Type::TYPE_BOOL );
@@ -389,13 +382,22 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static AssetFieldValue sub ( const AssetFieldValue& lval, const AssetFieldValue& rval ) {
+    
+        if (( lval.mType == TYPE_NUMBER ) && ( rval.mType == TYPE_NUMBER )) {
+            return AssetFieldValue ( lval.mNumeric - rval.mNumeric );
+        }
+        return AssetFieldValue ();
+    }
+    
+    //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         
         string typeStr;
         serializer.serialize ( "type", typeStr );
         this->mType = ( Type )FNV1a::hash_64 ( typeStr.c_str ());
         
-        this->serializeValue ( serializer, "value" );
+        this->serializeValue ( serializer, this->mType, "value" );
     }
     
     //----------------------------------------------------------------//

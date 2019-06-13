@@ -209,7 +209,7 @@ bool LuaContext::invoke ( Ledger& ledger, string accountName, const AssetMethod&
     for ( ; assetParamIt != invocation.mAssetParams.cend (); ++assetParamIt ) {
     
         string paramName = assetParamIt->first;
-        const AssetIdentifier& assetID = assetParamIt->second;
+        Asset::Index assetID = assetParamIt->second;
     
         shared_ptr < Asset > asset = ledger.getAsset ( assetID );
         if ( !( asset && method.qualifyAssetArg ( paramName, *asset ))) return false;

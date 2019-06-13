@@ -22,6 +22,9 @@ public:
     
     typedef SerializableVector < AssetMethodInvocation > Invocations;
 
+    static const u64 MIN_WEIGHT     = 1;
+    static const u64 MIN_MATURITY   = 0;
+
     u64             mWeight;
     u64             mMaturity;
 
@@ -72,11 +75,22 @@ public:
         
         if ( AbstractSingleSignerTransaction::AbstractTransaction_verify ( ledger )) {
         
+            u64 totalWeight = MIN_WEIGHT;
+            u64 maxMaturity = MIN_MATURITY;
+        
             Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
             for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
                 if ( !ledger.verify ( *invocationIt )) return false;
+                totalWeight += invocationIt->mWeight;
+                
+                if ( maxMaturity < invocationIt->mMaturity ) {
+                    maxMaturity = invocationIt->mMaturity;
+                }
             }
-            // TODO: verify weights and maturity against transaction's
+            
+            if ( this->mWeight < totalWeight ) return false;
+            if ( this->mMaturity < maxMaturity ) return false;
+            
             return true;
         }
         return false;

@@ -85,7 +85,8 @@ protected:
         value.serialize ( serializer );
         
         if ( serializer ) {
-            this->set ( name, toJSON ( value ));
+            Poco::Dynamic::Var var = serializer.mArray ? ( Poco::Dynamic::Var )serializer.mArray : ( Poco::Dynamic::Var )serializer.mObject;
+            this->set ( name, var );
         }
     }
 

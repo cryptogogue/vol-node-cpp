@@ -5,7 +5,6 @@
 #define VOLITION_WEBMINERAPI_ASSETDETAILSHANDLER_H
 
 #include <volition/Asset.h>
-#include <volition/AssetIdentifier.h>
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionFactory.h>
@@ -28,13 +27,12 @@ public:
     
         try {
         
-            string assetType    = this->getMatchString ( "assetType" );
-            u64 index           = this->getMatchU64 ( "index" );
+            Asset::Index index = this->getMatchU64 ( "index" );
             
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         
-            shared_ptr < Asset > asset = ledger.getAsset ( AssetIdentifier ( assetType, ( size_t )index ));
+            shared_ptr < Asset > asset = ledger.getAsset ( index );
             
             if ( asset ) {
                 Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );

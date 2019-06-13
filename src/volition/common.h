@@ -57,10 +57,9 @@
 
 #include <padamose/VersionedCollectionIterator.h>
 #include <padamose/VersionedMap.h>
-#include <padamose/VersionedSet.h>
+#include <padamose/VersionedList.h>
 #include <padamose/VersionedStore.h>
 #include <padamose/VersionedStoreIterator.h>
-#include <padamose/VersionedValue.h>
 #include <padamose/VersionedValueIterator.h>
 
 #include <lua.hpp>

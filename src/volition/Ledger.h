@@ -5,15 +5,15 @@
 #define VOLITION_LEDGER_H
 
 #include <volition/common.h>
+#include <volition/Account.h>
+#include <volition/Asset.h>
 #include <volition/Entropy.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
-class Asset;
 class AssetFieldValue;
-class AssetIdentifier;
 class AssetMethod;
 class AssetMethodInvocation;
 class Block;
@@ -71,152 +71,6 @@ public:
 };
 
 //================================================================//
-// KeyInfo
-//================================================================//
-class KeyInfo :
-    public AbstractSerializable {
-public:
-    
-    string mAccountName;
-    string mKeyName;
-
-    //----------------------------------------------------------------//
-    KeyInfo () {
-    }
-    
-    //----------------------------------------------------------------//
-    KeyInfo ( string accountName, string keyName ) :
-        mAccountName ( accountName ),
-        mKeyName ( keyName ) {
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "accountName",       this->mAccountName );
-        serializer.serialize ( "keyName",           this->mKeyName );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "accountName",       this->mAccountName );
-        serializer.serialize ( "keyName",           this->mKeyName );
-    }
-};
-
-//================================================================//
-// KeyAndPolicy
-//================================================================//
-class KeyAndPolicy :
-    public AbstractSerializable {
-private:
-
-    friend class Ledger;
-    friend class Account;
-    
-    CryptoKey mKey;
-
-public:
-
-    //----------------------------------------------------------------//
-    KeyAndPolicy () {
-    }
-    
-    //----------------------------------------------------------------//
-    KeyAndPolicy ( const CryptoKey& key ) :
-        mKey ( key ) {
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "key",               this->mKey );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "key",               this->mKey );
-    }
-};
-
-//================================================================//
-// Account
-//================================================================//
-class Account :
-    public AbstractSerializable {
-private:
-
-    friend class Ledger;
-    
-    u64         mBalance;
-    u64         mNonce;
-
-    SerializableMap < string, KeyAndPolicy >  mKeys;
-
-public:
-
-    //----------------------------------------------------------------//
-    Account () :
-        mBalance ( 0 ),
-        mNonce ( 0 ) {
-    }
-
-    //----------------------------------------------------------------//
-    u64 getBalance () const {
-        return this->mBalance;
-    }
-
-    //----------------------------------------------------------------//
-    void getKeys ( map < string, CryptoKey >& keys ) const {
-    
-        map < string, KeyAndPolicy >::const_iterator keyIt = this->mKeys.cbegin ();
-        for ( ; keyIt != this->mKeys.end (); ++keyIt ) {
-            keys [ keyIt->first ] = keyIt->second.mKey;
-        }
-    }
-    
-    //----------------------------------------------------------------//
-    u64 getNonce () const {
-        return this->mNonce;
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "balance",           this->mBalance );
-        serializer.serialize ( "nonce",             this->mNonce );
-        serializer.serialize ( "keys",              this->mKeys );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "balance",           this->mBalance );
-        serializer.serialize ( "nonce",             this->mNonce );
-        serializer.serialize ( "keys",              this->mKeys );
-    }
-};
-
-//================================================================//
-// AccountKey
-//================================================================//
-class AccountKey {
-private:
-
-    friend class Ledger;
-    
-    shared_ptr < Account >  mAccount;
-    const KeyAndPolicy*     mKeyAndPolicy;
-    
-    //----------------------------------------------------------------//
-    operator bool () const {
-        return ( this->mAccount && this->mKeyAndPolicy );
-    }
-};
-
-//================================================================//
 // Ledger
 //================================================================//
 class Ledger :
@@ -232,16 +86,24 @@ public:
     static constexpr const char* MINER_URLS         = "minerUrls";
     static constexpr const char* UNFINISHED         = "unfinished";
 
+    static constexpr const char* ACCOUNT_HEAD       = "head";
+    static constexpr const char* ACCOUNT_TAIL       = "tail";
+
+    static constexpr const char* ASSET_NEXT         = "next";
+    static constexpr const char* ASSET_OWNER        = "owner";
+    static constexpr const char* ASSET_PREV         = "prev";
+    static constexpr const char* ASSET_TYPE         = "type";
+
     //static constexpr const char* ASSET_INSTANCE_KEY_FMT_SSD     = "%s.inventory.%s.%d";
 
 protected:
 
     //----------------------------------------------------------------//
-    static string                   formatKeyForAccountInventory    ( string accountName );
-    static string                   formatKeyForAsset               ( const AssetIdentifier& identifier );
-    static string                   formatKeyForAssetCounter        ( string assetType );
+    static string                   formatKeyForAccount             ( string accountName, string member );
+    static string                   formatKeyForAsset               ( Asset::Index index, string member );
+    static string                   formatKeyForAssetCounter        ();
     static string                   formatKeyForAssetDefinition     ( string assetType );
-    static string                   formatKeyForAssetField          ( const AssetIdentifier& identifier, string fieldName );
+    static string                   formatKeyForAssetField          ( Asset::Index index, string fieldName );
     static string                   formatKeyForAssetMethod         ( string methodName );
     static string                   formatKeyForSchemaCount         ();
     static string                   formatSchemaKey                 ( int schemaCount );
@@ -264,9 +126,10 @@ public:
     shared_ptr < Account >          getAccount              ( string accountName ) const;
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
     shared_ptr < Asset >            getAsset                ( string assetID ) const;
-    shared_ptr < Asset >            getAsset                ( const AssetIdentifier& identifier ) const;
+    shared_ptr < Asset >            getAsset                ( Asset::Index index ) const;
     shared_ptr < Block >            getBlock                ( size_t height ) const;
     Entropy                         getEntropy              () const;
+    SerializableList < Asset >      getInventory            ( string accountName ) const;
     shared_ptr < KeyInfo >          getKeyInfo              ( string keyID ) const;
     shared_ptr < AssetMethod >      getMethod               ( string methodName ) const;
     shared_ptr < MinerInfo >        getMinerInfo            ( string accountName ) const;
@@ -287,7 +150,7 @@ public:
     bool                            registerMiner           ( string accountName, string keyName, string url );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
-    bool                            setAssetFieldValue      ( const AssetIdentifier& identifier, string fieldName, const AssetFieldValue& field );
+    bool                            setAssetFieldValue      ( Asset::Index index, string fieldName, const AssetFieldValue& field );
     void                            setBlock                ( const Block& block );
     void                            setEntropyString        ( string entropy );
     void                            setUnfinished           ( const UnfinishedBlockList& unfinished );

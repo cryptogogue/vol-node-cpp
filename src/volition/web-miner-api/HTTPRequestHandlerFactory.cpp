@@ -29,7 +29,7 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountDetailsHandler >    ( "/accounts/:accountName/?" );             // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryHandler >         ( "/accounts/:accountName/inventory/?" );   // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >    ( "/accounts/:accountName/keys/?" );        // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >      ( "/assets/:assetType/:index/?" );          // GET
+    this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >      ( "/assets/:index/?" );                     // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >      ( "/blocks/:blockID/?" );                   // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >         ( "/blocks/?" );                            // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >        ( "/keys/:keyHash/?" );                     // GET

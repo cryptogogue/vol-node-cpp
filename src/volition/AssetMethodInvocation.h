@@ -5,7 +5,6 @@
 #define VOLITION_ASSETMETHODINVOCATION_H
 
 #include <volition/common.h>
-#include <volition/AssetIdentifier.h>
 #include <volition/AssetFieldValue.h>
 
 namespace Volition {
@@ -17,7 +16,7 @@ class AssetMethodInvocation :
     public AbstractSerializable {
 public:
 
-    typedef SerializableMap < string, AssetIdentifier > AssetParams;
+    typedef SerializableMap < string, Asset::Index > AssetParams;
     typedef SerializableMap < string, AssetFieldValue > ConstParams;
 
     string          mMethodName;

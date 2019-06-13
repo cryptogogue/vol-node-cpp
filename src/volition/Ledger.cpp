@@ -2,7 +2,6 @@
 // http://cryptogogue.com
 
 #include <volition/Asset.h>
-#include <volition/AssetIdentifier.h>
 #include <volition/AssetMethod.h>
 #include <volition/AssetMethodInvocation.h>
 #include <volition/Block.h>
@@ -56,20 +55,54 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
 
     if ( quantity == 0 ) return true;
 
-    // TODO: replace with true set (keys with no values)
-    VersionedMap inventoryCollection ( *this, Ledger::formatKeyForAccountInventory ( accountName ));
+    string keyForAssetCounter = Ledger::formatKeyForAssetCounter ();
+    Asset::Index firstAssetIndex = this->getValue < Asset::Index >( keyForAssetCounter );
 
-    string keyForAssetCounter = Ledger::formatKeyForAssetCounter ( assetType );
-    if ( !this->hasValue ( keyForAssetCounter )) return false;
-    size_t assetCount = this->getValue < size_t >( keyForAssetCounter );
+    // update head
+    string keyForAccountHead = Ledger::formatKeyForAccount( accountName, ACCOUNT_HEAD );
+    Asset::Index accountHeadIndex = this->getValueOrFallback < Asset::Index >( keyForAccountHead, Asset::NULL_ASSET_ID );
 
-    for ( int i = 0; i < quantity; ++i, ++assetCount ) {
-        string keyForAsset = Ledger::formatKeyForAsset ( AssetIdentifier ( assetType, assetCount ));
-        inventoryCollection.setValue < bool >( keyForAsset, true ); // TODO: replace with true set (keys with no values)
-        this->setValue < string >( keyForAsset, accountName ); // TODO: replace with account ID
+    if ( accountHeadIndex == Asset::NULL_ASSET_ID ) {
+        this->setValue < Asset::Index >( keyForAccountHead, firstAssetIndex );
     }
 
-    this->setValue < size_t >( keyForAssetCounter, assetCount );
+    // update tail
+    string keyForAccountTail = Ledger::formatKeyForAccount( accountName, ACCOUNT_TAIL );
+    Asset::Index accountTailIndex = this->getValueOrFallback < Asset::Index >( keyForAccountTail, Asset::NULL_ASSET_ID );
+    
+    if ( accountTailIndex != Asset::NULL_ASSET_ID ) {
+        this->setValue < Asset::Index >( Ledger::formatKeyForAsset ( accountTailIndex, ASSET_PREV ), firstAssetIndex );
+    }
+    this->setValue < Asset::Index >( keyForAccountTail, accountTailIndex );
+    
+    accountTailIndex = ( firstAssetIndex + quantity ) - 1;
+    
+    // now add the assets
+    for ( Asset::Index i = firstAssetIndex; i <= accountTailIndex; ++i ) {
+        
+        this->setValue < string >( Ledger::formatKeyForAsset ( i, ASSET_OWNER ), accountName );
+        this->setValue < string >( Ledger::formatKeyForAsset ( i, ASSET_TYPE ), assetType );
+        
+        string keyForAssetPrev = Ledger::formatKeyForAsset ( i, ASSET_PREV );
+        string keyForAssetNext = Ledger::formatKeyForAsset ( i, ASSET_NEXT );
+        
+        if ( i == firstAssetIndex ) {
+            this->setValue < Asset::Index >( keyForAssetPrev, Asset::NULL_ASSET_ID );
+        }
+        else {
+            this->setValue < Asset::Index >( keyForAssetPrev, i - 1 );
+        }
+        
+        if ( i < accountTailIndex ) {
+            this->setValue < Asset::Index >( keyForAssetNext, i + 1 );
+        }
+        else {
+            this->setValue < Asset::Index >( keyForAssetNext, Asset::NULL_ASSET_ID );
+        }
+    }
+    
+    // increment total asset count
+    this->setValue < size_t >( keyForAssetCounter, accountTailIndex + 1 );
 
     return true;
 }
@@ -102,21 +135,23 @@ bool Ledger::deleteKey ( string accountName, string keyName ) {
 }
 
 //----------------------------------------------------------------//
-string Ledger::formatKeyForAccountInventory ( string accountName ) {
+string Ledger::formatKeyForAccount ( string accountName, string member ) {
 
-    return Format::write ( "account.%s.inventory", accountName.c_str ());
+    assert ( member.size () > 0 );
+    return Format::write ( "asset.%s.%s", accountName.c_str (), member.c_str ());
 }
 
 //----------------------------------------------------------------//
-string Ledger::formatKeyForAsset ( const AssetIdentifier& identifier ) {
+string Ledger::formatKeyForAsset ( Asset::Index index, string member ) {
 
-    return Format::write ( "asset.%s.%d", identifier.mType.c_str (), identifier.mIndex );
+    assert ( member.size () > 0 );
+    return Format::write ( "asset.%d.%s", index, member.c_str ());
 }
 
 //----------------------------------------------------------------//
-string Ledger::formatKeyForAssetCounter ( string assetType ) {
+string Ledger::formatKeyForAssetCounter () {
 
-    return Format::write ( "asset.%s.count", assetType.c_str ());
+    return Format::write ( "asset.count" );
 }
 
 //----------------------------------------------------------------//
@@ -126,9 +161,9 @@ string Ledger::formatKeyForAssetDefinition ( string assetType ) {
 }
 
 //----------------------------------------------------------------//
-string Ledger::formatKeyForAssetField ( const AssetIdentifier& identifier, string fieldName ) {
+string Ledger::formatKeyForAssetField ( Asset::Index index, string fieldName ) {
 
-    return Format::write ( "asset.%s.%d.%s", identifier.mType.c_str (), identifier.mIndex, fieldName.c_str ());
+    return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -195,19 +230,22 @@ AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Asset > Ledger::getAsset ( const AssetIdentifier& identifier ) const {
+shared_ptr < Asset > Ledger::getAsset ( Asset::Index index ) const {
 
-    string keyForAsset = Ledger::formatKeyForAsset ( identifier );
-    if ( !this->hasValue ( keyForAsset )) return NULL;
+    string keyForAssetOwner = Ledger::formatKeyForAsset ( index, ASSET_OWNER );
+    if ( !this->hasValue ( keyForAssetOwner )) return NULL;
 
-    string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( identifier.mType );
+    string keyForAssetType = Ledger::formatKeyForAsset ( index, ASSET_TYPE );
+    string typeName = this->getValue < string >( keyForAssetType );
+
+    string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( typeName );
     shared_ptr < AssetDefinition > assetDefinition = this->getJSONSerializableObject < AssetDefinition >( keyForAssetDefinition );
     if ( !assetDefinition ) return NULL;
     
-    shared_ptr < Asset > asset = make_shared < Asset >();
-    asset->mType    = identifier.mType;
-    asset->mIndex   = identifier.mIndex;
-    asset->mOwner   = this->getValue < string >( keyForAsset );
+    shared_ptr < Asset > asset = make_shared < Asset >( assetDefinition );
+    asset->mType    = typeName;
+    asset->mIndex   = index;
+    asset->mOwner   = this->getValue < string >( keyForAssetOwner );
     
     // copy the fields and apply any overrides
     AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
@@ -252,6 +290,25 @@ Entropy Ledger::getEntropy () const {
 
     string entropy = this->getValueOrFallback < string >( ENTROPY, "" );
     return entropy.size () > 0 ? Entropy ( entropy ) : Entropy ();
+}
+
+//----------------------------------------------------------------//
+SerializableList < Asset > Ledger::getInventory ( string accountName ) const {
+
+    SerializableList < Asset > assets;
+
+    string keyForAccountHeadIndex = this->formatKeyForAccount ( accountName, ACCOUNT_HEAD );
+    Asset::Index cursor = this->getValue < Asset::Index >( keyForAccountHeadIndex );
+    
+    while ( cursor != Asset::NULL_ASSET_ID ) {
+    
+        shared_ptr < Asset > asset = this->getAsset ( cursor );
+        assert ( asset );
+        assets.push_back ( *asset );
+    
+        cursor = this->getValue < Asset::Index >( Ledger::formatKeyForAsset ( cursor, ASSET_NEXT ));
+    }
+    return assets;
 }
 
 //----------------------------------------------------------------//
@@ -455,11 +512,6 @@ bool Ledger::publishSchema ( string accountName, string schemaName, const Schema
         string typeName = definitionIt->first;
         const AssetDefinition& definition = definitionIt->second;
     
-        // start the asset ID counter at zero
-        string keyForAssetCounter = Ledger::formatKeyForAssetCounter ( typeName );
-        if ( this->hasValue ( keyForAssetCounter )) return false;
-        this->setValue < size_t >( keyForAssetCounter, 0 );
-    
         // store the definition for easy access later
         string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( typeName );
         this->setJSONSerializableObject < AssetDefinition >( keyForAssetDefinition, definition );
@@ -516,6 +568,7 @@ void Ledger::reset () {
     this->setJSONSerializableObject < SerializableSet < string >>( MINERS, SerializableSet < string > ());
     this->setJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS, SerializableMap < string, string > ());
     this->setValue < int >( Ledger::formatKeyForSchemaCount (), 0 );
+    this->setValue < Asset::Index >( Ledger::formatKeyForAssetCounter (), 0 );
 }
 
 //----------------------------------------------------------------//
@@ -547,14 +600,16 @@ void Ledger::setAccount ( string accountName, const Account& account ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::setAssetFieldValue ( const AssetIdentifier& identifier, string fieldName, const AssetFieldValue& field ) {
+bool Ledger::setAssetFieldValue ( Asset::Index index, string fieldName, const AssetFieldValue& field ) {
 
     // make sure the asset exists
-    string keyForAsset = Ledger::formatKeyForAsset ( identifier );
-    if ( !this->hasValue ( keyForAsset )) return false;
+    string keyForAssetType = Ledger::formatKeyForAsset ( index, ASSET_TYPE );
+    if ( !this->hasValue ( keyForAssetType )) return false;
+
+    string assetType = this->getValue < string >( keyForAssetType );
 
     // make sure the field exists
-    string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( identifier.mType );
+    string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( assetType );
     shared_ptr < AssetDefinition > assetDefinition = this->getJSONSerializableObject < AssetDefinition >( keyForAssetDefinition );
     if ( !assetDefinition ) return false;
     if ( !assetDefinition->hasMutableField ( fieldName, field.getType ())) return false;

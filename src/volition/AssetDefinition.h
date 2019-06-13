@@ -20,6 +20,11 @@ public:
     bool    mMutable;
 
     //----------------------------------------------------------------//
+    AssetDefinitionField () :
+        mMutable ( false ) {
+    }
+
+    //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AssetFieldValue::AbstractSerializable_serializeFrom ( serializer );
         
@@ -44,6 +49,16 @@ public:
     typedef SerializableMap < string, AssetDefinitionField > Fields;
 
     Fields      mFields;        // default values for fields
+    
+    //----------------------------------------------------------------//
+    AssetDefinitionField getField ( string fieldName ) const {
+    
+        Fields::const_iterator fieldsIt = this->mFields.find ( fieldName );
+        if ( fieldsIt != this->mFields.cend ()) {
+            return fieldsIt->second;
+        }
+        return AssetDefinitionField ();
+    }
     
     //----------------------------------------------------------------//
     bool hasMutableField ( string name, AssetFieldValue::Type type ) const {

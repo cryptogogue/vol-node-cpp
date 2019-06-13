@@ -7,7 +7,6 @@
 #include <volition/common.h>
 #include <volition/Asset.h>
 #include <volition/AssetFieldValue.h>
-#include <volition/AssetIdentifier.h>
 #include <volition/FNV1a.h>
 #include <volition/serialization/Serialization.h>
 
@@ -21,7 +20,7 @@ namespace Volition {
 class SquapEvaluationContext {
 private:
 
-    typedef SerializableMap < string, AssetIdentifier > AssetParams;
+    typedef SerializableMap < string, Asset::Index > AssetParams;
     typedef SerializableMap < string, AssetFieldValue > ConstParams;
 
     const Asset*        mAsset;

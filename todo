@@ -59,17 +59,18 @@ narrow phase: metadata
 
 DONE: rework asset tracking - no generics; every asset to be unique
 DONE: decide on final asset identifier format
+DONE: implement asset customization (assets to be customized via methods)
+DONE: card modification through crafting
+DONE: variable-size transactions (multiple crafting commands per transaction)
 
-implement asset customization
+implement way to expire transactions
 
 implement queue of transactions in wallet - rebuild state dynamically (from node)
     rethink state handling in wallet
 template cards using SVG and mustache
 svg barcode
-card modification through crafting
-variable-size transactions (multiple crafting commands per transaction)
 expand schema to include svg templates AND placeholder asset templates
-finalize schema - where do resources
+finalize schema - where do resources live?
 node network monitor service - paid
 
 wallet

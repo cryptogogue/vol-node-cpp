@@ -26,16 +26,16 @@ public:
     
         try {
         
-//            string accountName = this->getMatchString ( "accountName" );
-//        
-//            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-//            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-//        
-//            Inventory inventory = ledger.getInventory ( accountName );
-//        
-//            Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
-//        
-//            jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Object::Ptr >());
+            string accountName = this->getMatchString ( "accountName" );
+        
+            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
+            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+        
+            SerializableList < Asset > inventory = ledger.getInventory ( accountName );
+        
+            Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
+        
+            jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Array::Ptr >());
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
