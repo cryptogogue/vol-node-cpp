@@ -37,7 +37,7 @@ let schema = buildSchema ( 'TEST_SCHEMA' )
         .field ( 'displayName', 'Rare' )
         .field ( 'keywords', 'card rare' )
  
-    .definition ( 'ulraRare' )
+    .definition ( 'ultraRare' )
         .field ( 'displayName', 'Ultra-Rare' )
         .field ( 'keywords', 'card ultra-rare' )
 

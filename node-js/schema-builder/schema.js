@@ -10,7 +10,7 @@ const squap             = require ( './squap' );
 class SchemaMethod {
 
     //----------------------------------------------------------------//
-    bindAsset ( schema, assetID, asset, methodBinding, methodBindingsForAssetID ) {
+    bindAsset ( schema, asset, methodBinding, methodBindingsForAssetByMethodName ) {
 
         let opArgs = {
             schema:     schema,
@@ -22,8 +22,8 @@ class SchemaMethod {
             if ( this.assetArgs [ argname ].eval ( opArgs )) {
 
                 // console.log ( 'EVAL OK' );
-                methodBinding.assetIDsByArgName [ argname ].push ( assetID );
-                methodBindingsForAssetID [ this.name ] = methodBinding;
+                methodBinding.assetIDsByArgName [ argname ].push ( asset.assetID );
+                methodBindingsForAssetByMethodName [ this.name ] = methodBinding;
             }
         }
     }
@@ -146,25 +146,20 @@ class Schema {
     }
 
     //----------------------------------------------------------------//
-    newAsset ( typeName ) {
+    newAsset ( assetID, typeName ) {
 
         let definition = this.definitions [ typeName ];
         assert ( Boolean ( definition ));
 
         let asset = {
             type:       typeName,
+            assetID:    assetID,
             fields:     {},
         };
 
         for ( let fieldName in definition.fields ) {
-
             let field = definition.fields [ fieldName ];
-
-            asset.fields [ fieldName ] = {
-                mutable:    field.mutable,
-                type:       field.type,
-                value:      field.value,
-            };
+            asset.fields [ fieldName ] = field.value;
         }
         return asset;
     }
@@ -191,7 +186,6 @@ class Schema {
 
                 this.methods [ methodName ].bindAsset (
                     this,
-                    assetID,
                     inventory.assets [ assetID ],
                     binding.methodBindingsByName [ methodName ],
                     binding.methodBindingsByAssetID [ assetID ]

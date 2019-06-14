@@ -28,55 +28,49 @@ class InventoryScreen extends BaseComponent {
 
         if ( TEST ) {
 
-            let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
+            let schemaTemplate = buildSchema ( 'TEST_SCHEMA' )
 
                 //----------------------------------------------------------------//
-                .assetTemplate ( 'base' )
-                    .field ( 'displayName' ).string ()
-            
-                .assetTemplate ( 'card' ).extends ( 'base' )
-                    .field ( 'keywords' ).string ().array ()
-
-                //----------------------------------------------------------------//
-                .assetDefinition ( 'pack', 'base' )
+                .definition ( 'pack' )
                     .field ( 'displayName', 'Booster Pack' )
-            
-                .assetDefinition ( 'common', 'card' )
+             
+                .definition ( 'common' )
                     .field ( 'displayName', 'Common' )
-                    .field ( 'keywords', [ 'card', 'common' ])
-            
-                .assetDefinition ( 'rare', 'card' )
+                    .field ( 'keywords', 'card common' )
+             
+                .definition ( 'rare' )
                     .field ( 'displayName', 'Rare' )
-                    .field ( 'keywords', [ 'card', 'rare' ])
-            
-                .assetDefinition ( 'ulraRare', 'card' )
+                    .field ( 'keywords', 'card rare' )
+             
+                .definition ( 'ultraRare' )
                     .field ( 'displayName', 'Ultra-Rare' )
-                    .field ( 'keywords', [ 'card', 'ultra-rare' ])
+                    .field ( 'keywords', 'card ultra-rare' )
 
                 //----------------------------------------------------------------//
-                .method ( 'makeRare', 1, 2, 'Combine two commons to make a rare.' )
+                .method ( 'makeRare', 'Combine two commons to make a rare.' )
                     .assetArg ( 'common0', op.ASSET_TYPE ( 'common' ))
                     .assetArg ( 'common1', op.ASSET_TYPE ( 'common' ))
 
-                .method ( 'makeUltraRare', 1, 2, 'Combine two rares to make an ultra-rare.' )
+                .method ( 'makeUltraRare', 'Combine two rares to make an ultra-rare.' )
                     .assetArg ( 'rare0', op.ASSET_TYPE ( 'rare' ))
                     .assetArg ( 'rare1', op.ASSET_TYPE ( 'rare' ))
 
-                .method ( 'openPack', 1, 2, 'Open a booster pack.' )
+                .method ( 'openPack', 'Open a booster pack.' )
                     .assetArg ( 'pack', op.ASSET_TYPE ( 'pack' ))
 
                 .done ()
 
-            let assets = [
-                { className: 'pack', quantity: 1 },
-                { className: 'common', quantity: 2 },
-                { className: 'rare', quantity: 2 },
-                { className: 'ultraRare', quantity: 1 },
-            ];
+            this.inventory = new Inventory ( schemaTemplate );
 
-            this.inventory = new Inventory ( schemaTemplate, assets );
-            this.state.assets = assets;
-            this.state.hasInventory = true;
+            this.inventory.addTestAssets ( 'pack', 1 );
+            this.inventory.addTestAssets ( 'common', 2 );
+            this.inventory.addTestAssets ( 'rare', 2 );
+            this.inventory.addTestAssets ( 'ultraRare', 1 );
+
+            this.inventory.process ();
+
+            //this.state.assets = assets;
+            //this.state.hasInventory = true;
         }
         else {
             this.fetchInventory ();

@@ -36,8 +36,8 @@ class MethodForm extends Component {
         const { inventory, methodName } = this.props;
 
         this.formFields = inventory.getMethodFormFields ( methodName );
+        this.ingredients = {};
 
-        let assetSet = {};
         let fieldValues = {};
         for ( let fieldName in this.formFields ) {
 
@@ -46,18 +46,17 @@ class MethodForm extends Component {
             const formField = this.formFields [ fieldName ];
             if ( formField.type === ASSET_FORM_FIELD_TYPE ) {
                 for ( let i in formField.options ) {
-                    assetSet [ formField.options [ i ]] = true;
+
+                    let assetID     = formField.options [ i ];
+                    let asset       = inventory.assets [ assetID ];
+
+                    this.ingredients [ assetID ] = {
+                        asset:          inventory.assets [ assetID ],
+                        utilized:       false,
+                        displayName:    `${ assetID }: ${ asset.fields.displayName || asset.type }`,
+                    }
                 }
             }
-        }
-
-        this.ingredients = {};
-        for ( let assetName in assetSet ) {
-            let asset = inventory.assets [ assetName ];
-            this.ingredients [ assetName ] = {
-                quantity:   asset.quantity,
-                utilized: 0,
-            };
         }
 
         this.state = fieldValues;
@@ -70,11 +69,11 @@ class MethodForm extends Component {
         const valueOrNull = value === CLEAR_DROPDOWN_TEXT ? null : value ;
 
         if ( prevValue !== null ) {
-            this.ingredients [ prevValue ].utilized--;
+            this.ingredients [ prevValue ].utilized = false;
         }
 
         if ( valueOrNull !== null ) {
-            this.ingredients [ valueOrNull ].utilized++;
+            this.ingredients [ valueOrNull ].utilized = true;
         }
 
         this.setState ({[ fieldName ]: valueOrNull });
@@ -93,10 +92,10 @@ class MethodForm extends Component {
 
             const select = [];
             for ( let i in options ) {
-                const assetName = options [ i ];
-                const ingredient = this.ingredients [ assetName ];
-                const disabled = ( ingredient.quantity - ingredient.utilizer ) > 0;
-                select.push ({ key: i, text: assetName, value: assetName, disabled: disabled });
+                const assetID = options [ i ];
+                const ingredient = this.ingredients [ assetID ];
+                const disabled = ingredient.utilized
+                select.push ({ key: i, text: ingredient.displayName, value: assetID, disabled: disabled });
             }
             select.push ({ key: options.length, text: CLEAR_DROPDOWN_TEXT, value: CLEAR_DROPDOWN_TEXT });
 
@@ -153,11 +152,12 @@ class MethodForm extends Component {
         };
 
         let ingredientListItems = [];
-        for ( let assetName in ingredients ) {
-            let ingredient = ingredients [ assetName ];
-            let available = ingredient.quantity - ingredient.utilized;
-            if  ( available > 0 ) {
-                ingredientListItems.push (<List.Item key = { assetName }>{ assetName + ' x' + ( ingredient.quantity - ingredient.utilized )}</List.Item>);
+        for ( let assetID in ingredients ) {
+            
+            let ingredient = ingredients [ assetID ];
+
+            if  ( !ingredient.utilized ) {
+                ingredientListItems.push (<List.Item key = { assetID }>{ ingredient.displayName }</List.Item>);
             }
         }
 

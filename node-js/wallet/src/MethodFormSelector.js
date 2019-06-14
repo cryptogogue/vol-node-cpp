@@ -29,8 +29,8 @@ class MethodFormSelector extends Component {
 
             let methods = [];
 
-            for ( let methodName in inventory.methodBindings ) {
-                const methodBinding = inventory.methodBindings [ methodName ];
+            for ( let methodName in inventory.methodBindingsByName ) {
+                const methodBinding = inventory.methodBindingsByName [ methodName ];
                 if ( methodBinding.valid ) {
                     methods.push ( methodName );
                 }
@@ -65,11 +65,14 @@ class MethodFormSelector extends Component {
 
             if ( 0 <= methodIndex ) {
 
+                const methodName = methods [ methodIndex ];
+
                 methodForm = (
                     <MethodForm
-                        methodName = { methods [ methodIndex ]}
-                        inventory = { inventory }
-                        onSubmit = {( fieldValues ) => { this.handleSubmit ( fieldValues )}}
+                        key         = { methodName }
+                        methodName  = { methodName }
+                        inventory   = { inventory }
+                        onSubmit    = {( fieldValues ) => { this.handleSubmit ( fieldValues )}}
                     />
                 );
             }

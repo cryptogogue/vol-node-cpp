@@ -170,7 +170,7 @@ class FieldSquap extends AbstractIndexSquap {
         const fieldName     = this.value;
 
         if ( arg.fields.hasOwnProperty ( fieldName )) {
-            return arg.fields [ fieldName ].value;
+            return arg.fields [ fieldName ];
         }
         return false;
     }

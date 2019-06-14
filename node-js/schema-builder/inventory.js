@@ -9,31 +9,31 @@ const Schema        = require ( './schema' ).Schema;
 class Inventory {
 
     //----------------------------------------------------------------//
-    addAsset ( assetID, asset ) {
+    addAsset ( asset ) {
 
-        let typeName = asset.type;
-        if ( !this.assetTypeCounters.hasOwnProperty ( typeName )) {
-            this.assetTypeCounters [ typeName ] = 0;
-        }
-
-        this.assets [ assetID ] = asset;
-        this.assetTypeCounters [ typeName ]++;
+        this.assets [ asset.assetID ] = asset;
+        this.assetCounter++;
     }
 
     //----------------------------------------------------------------//
     addTestAsset ( typeName ) {
 
-        let count = 0;
-        if ( this.assetTypeCounters.hasOwnProperty ( typeName )) {
-            count = this.assetTypeCounters [ typeName ];
-        }
+        let assetID = String ( this.assetCounter );
+        this.assetCounter++;
 
-        let asset = this.schema.newAsset ( typeName );
+        let asset = this.schema.newAsset ( assetID, typeName );
         assert ( Boolean ( asset ));
+        this.addAsset ( asset );
 
-        let assetID = `assets.${ typeName }.${ count }`;
-        this.addAsset ( assetID, asset );
         return assetID;
+    }
+
+    //----------------------------------------------------------------//
+    addTestAssets ( typeName, count ) {
+
+        for ( let i = 0; i < count; ++i ) {
+            this.addTestAsset ( typeName );
+        }
     }
 
     //----------------------------------------------------------------//
@@ -44,11 +44,11 @@ class Inventory {
         this.schema = new Schema ();
         this.schema.applyTemplate ( schemaTemplate );
 
-        this.assetTypeCounters = {};
-
+        this.assetCounter = 0;
         this.assets = {};
+
         for ( let assetID in assets ) {
-            this.addAsset ( assetID, asset );
+            this.addAsset ( assets [ assetID ]);
         }
     }
 
@@ -56,26 +56,28 @@ class Inventory {
     getMethodFormFields ( methodName ) {
 
         // we'll need the method template (from the schema) *and* the binding
-        const methodBinding = this.methodBindings [ methodName ];
+        const methodBinding = this.methodBindingsByName [ methodName ];
 
         // form fields, by name
         let formFields = {};
 
         // for each asset field, set the type and the list of qualified assets
-        for ( let argname in methodBinding.assetBindings ) {
+        for ( let argname in methodBinding.assetIDsByArgName ) {
 
             let formField = {
                 type: 'asset',
                 options: [],
             }
 
-            let assetBindings = methodBinding.assetBindings [ argname ];
-            for ( let i in assetBindings ) {
-                formField.options.push ( assetBindings [ i ].className );
+            let assetIDsForArg = methodBinding.assetIDsByArgName [ argname ];
+            for ( let i in assetIDsForArg ) {
+                let assetID = assetIDsForArg [ i ];
+                formField.options.push ( assetID );
             }
 
             formFields [ argname ] = formField;
         }
+
         return formFields;
     }
 
