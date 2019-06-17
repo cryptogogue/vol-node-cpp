@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { LocalStore, useLocalStore }    from './stores/LocalStore';
-import { extendObservable }             from "mobx";
+import { observable }                   from "mobx";
 import { observer }                     from "mobx-react";
 import React                            from 'react';
 
@@ -10,15 +10,13 @@ import React                            from 'react';
 //================================================================//
 class MobXTestScreenStore extends LocalStore {
 
+    @observable selection = '';
+
     //----------------------------------------------------------------//
     constructor () {
         super ();
-
         this.values = [ 'foo', 'doop', 'moop' ];
-
-        extendObservable ( this, {
-            selection: this.values [ 0 ],
-        });
+        this.selection = this.values [ 0 ];
     }
 }
 
@@ -27,7 +25,7 @@ class MobXTestScreenStore extends LocalStore {
 //================================================================//
 const MobXTestScreen = observer (( props ) => {
 
-    const store = useLocalStore ( new MobXTestScreenStore ());
+    const store = useLocalStore (() => new MobXTestScreenStore ());
 
     const onKeyDown = ( e ) => {
         const values = store.values
