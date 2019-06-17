@@ -1,27 +1,15 @@
 /* eslint-disable no-whitespace-before-property */
 
-import React, { Component }     from 'react';
-import { Redirect }             from 'react-router-dom';
+import React            from 'react';
+import { Redirect }     from 'react-router-dom';
 
 //================================================================//
-// BaseComponent
+// LocalStore
 //================================================================//
-class BaseComponent extends Component {
+export class LocalStore {
 
     //----------------------------------------------------------------//
-    componentWillUnmount () {
-
-        this.revoked = true;
-
-        this.revocables.forEach (( revoke ) => {
-            revoke ();
-        });
-        this.revocables.clear ();
-    }
-
-    //----------------------------------------------------------------//
-    constructor ( props ) {
-        super ( props );
+    constructor () {
 
         this.revocables = new Map (); // need to use a propet set to contain objects
         this.revoked = false;
@@ -105,13 +93,6 @@ class BaseComponent extends Component {
     };
 
     //----------------------------------------------------------------//
-    revocableSetState ( value ) {
-        if ( !this.revoked ) {
-            this.setState ( value );
-        }
-    }
-
-    //----------------------------------------------------------------//
     revocableTimeout ( callback, delay ) {
         
         if ( this.revoked ) return;
@@ -127,6 +108,42 @@ class BaseComponent extends Component {
         });
         return timeout;
     }
+
+    //----------------------------------------------------------------//
+    shutdownAndRevokeAll () {
+
+        this.revoked = true;
+
+        this.revocables.forEach (( revoke ) => {
+            revoke ();
+        });
+        this.revocables.clear ();
+    }
 }
 
-export default BaseComponent
+//================================================================//
+// hooks
+//================================================================//
+
+//----------------------------------------------------------------//
+export function useLocalStore ( factory ) {
+
+    const storeRef = React.useRef ();
+    storeRef.current = storeRef.current || factory ();
+
+    React.useEffect (
+        () => {
+
+            const current = storeRef.current;
+
+            return () => {
+                if ( current.shutdownAndRevokeAll ) {
+                    current.shutdownAndRevokeAll ();
+                }
+            };
+        },
+        []
+    );
+
+    return storeRef.current;
+}

@@ -3,26 +3,40 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "ajv": "^6.5.4",
+    "ajv": "^6.10.0",
     "bcryptjs": "^2.4.3",
-    "bip39": "^2.5.0",
+    "bip39": "^2.6.0",
     "bitcoinjs-lib": "^3.3.2",
-    "js-crypto-key-utils": "^0.5.7",
-    "npm": "^6.5.0",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
-    "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.4",
-    "react-stripe-elements": "^2.0.1",
-    "secp256k1": "^3.5.2",
-    "semantic-ui-css": "^2.3.3",
+    "js-crypto-key-utils": "^0.5.15",
+    "mobx": "^5.10.1",
+    "mobx-react": "^6.0.3",
+    "npm": "^6.9.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "3.0.1",
+    "react-stripe-elements": "^2.0.3",
+    "secp256k1": "^3.7.1",
+    "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.82.0",
-    "validator": "^10.8.0"
+    "validator": "^10.11.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

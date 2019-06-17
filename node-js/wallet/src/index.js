@@ -7,6 +7,8 @@ import { AppStateProvider }     from './AppStateProvider';
 import ImportAccountScreen      from './ImportAccountScreen';
 import InventoryScreen          from './InventoryScreen';
 import LoginScreen              from './LoginScreen';
+import MobXInventoryScreen      from './MobXInventoryScreen';
+import MobXTestScreen           from './MobXTestScreen';
 import NewAccountScreen         from './NewAccountScreen';
 import RegisterScreen           from './RegisterScreen';
 import registerServiceWorker    from './utils/registerServiceWorker';
@@ -26,7 +28,7 @@ const App = () => (
                 <li><Link to = "/stripe">Stripe</Link></li>
             </ul>
             <hr />
-            <AppStateProvider value = { this.state }>
+            <AppStateProvider>
                 <Switch>
                     <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
                     <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
@@ -46,6 +48,8 @@ const App = () => (
                     <Route exact path = "/:userId/login" component = { LoginScreen }/>
                     <Route exact path = "/login" component = { LoginScreen }/>
 
+                    <Route exact path = "/mobx" component = { MobXTestScreen }/>
+                    <Route exact path = "/mobx/inventory" component = { MobXInventoryScreen }/>
                     <Route exact path = "/stripe" component = { StripeTestScreen }/>
 
                     <Route exact path = "/:userId/" component = { RegisterScreen }/>
