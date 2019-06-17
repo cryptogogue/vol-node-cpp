@@ -122,6 +122,8 @@ class Schema {
     //----------------------------------------------------------------//
     applyTemplate ( template ) {
 
+        if ( !template ) return;
+
         const name = template.name;
 
         if ( this.applied [ name ]) return;

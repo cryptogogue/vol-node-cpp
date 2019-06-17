@@ -37,12 +37,15 @@ class Inventory {
     }
 
     //----------------------------------------------------------------//
-    constructor ( schemaTemplate, assets ) {
+    applyTemplate ( template ) {
+        this.schema.applyTemplate ( template );
+    }
 
-        if ( !schemaTemplate ) throw 'Provide a valid schema';
+    //----------------------------------------------------------------//
+    constructor ( template, assets ) {
 
         this.schema = new Schema ();
-        this.schema.applyTemplate ( schemaTemplate );
+        this.applyTemplate ( template );
 
         this.assetCounter = 0;
         this.assets = {};

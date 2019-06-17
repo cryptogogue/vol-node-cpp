@@ -2,6 +2,11 @@
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 
+import { configure } from 'mobx';
+configure ({
+    enforceActions:     'always',
+});
+
 import AccountScreen            from './AccountScreen';
 import { AppStateProvider }     from './AppStateProvider';
 import ImportAccountScreen      from './ImportAccountScreen';

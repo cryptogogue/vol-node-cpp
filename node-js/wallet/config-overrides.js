@@ -14,6 +14,7 @@ module.exports = override (
         disableEsLint (),
         addDecoratorsLegacy (),
         ...addBabelPlugins (
+        "jsx-control-statements",
         "babel-plugin-styled-components"
     ),
     fixBabelImports ( "react-app-rewire-mobx", {

@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { LocalStore, useLocalStore }    from './stores/LocalStore';
-import { observable }                   from "mobx";
+import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
 import React                            from 'react';
 
@@ -10,13 +10,25 @@ import React                            from 'react';
 //================================================================//
 class MobXTestScreenStore extends LocalStore {
 
-    @observable selection = '';
+    @observable index = 0;
 
     //----------------------------------------------------------------//
-    constructor () {
+    constructor ( values ) {
         super ();
-        this.values = [ 'foo', 'doop', 'moop' ];
-        this.selection = this.values [ 0 ];
+        this.values = values;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    select ( index ) {
+        if (( index < 0 ) || ( index >= this.values.length )) return;
+        this.index = index;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get selection () {
+        return this.values [ this.index ];
     }
 }
 
@@ -25,38 +37,47 @@ class MobXTestScreenStore extends LocalStore {
 //================================================================//
 const MobXTestScreen = observer (( props ) => {
 
-    const store = useLocalStore (() => new MobXTestScreenStore ());
+    const store = useLocalStore (() => new MobXTestScreenStore ([ 'foo', 'doop', 'moop' ]));
 
     const onKeyDown = ( e ) => {
-        const values = store.values
-        const idx = values.indexOf ( store.selection )
-        if ( e.keyCode === 38 && idx > 0 ) {
-            store.selection = values [ idx - 1 ];
+        if ( e.keyCode === 38 ) {
+            store.select ( store.index - 1 );
         }
-        else if ( e.keyCode === 40 && idx < values.length -1 ) {
-            store.selection = values [ idx + 1 ];
+        else if ( e.keyCode === 40 ) {
+            store.select ( store.index + 1 );
         }
     }
 
-    const onSelect = ( value ) => {
-        console.log ( 'ON SELECT', value );
-        store.selection = value
+    const onSelect = ( index ) => {
+        console.log ( 'ON SELECT', index );
+        store.select ( index );
     }
 
+    const selection = store.selection;
+
+    // also using JSX-Control-Statements plugin
     return (
         <div>
+            <Choose>
+                <When condition = { selection === 'moop' }>
+                    <h3>{ 'Hooray! You selected the winning option!' }</h3>
+                </When>
+                <Otherwise>
+                    <h3>{ 'Pick one...' }</h3>
+                </Otherwise>
+            </Choose>
             <ul onKeyDown = {( e ) => onKeyDown ( e )} tabIndex = { 0 }>
-                { store.values.map ( value =>
+                { store.values.map (( value, index ) =>
                     <li
-                        className   = { value === store.selection ? 'selected' : '' }
-                        key         = { value }
-                        onClick     = {() => onSelect ( value )}
+                        className   = { value === selection ? 'selected' : '' }
+                        key         = { index }
+                        onClick     = {() => onSelect ( index )}
                     >
                         { value }
                     </li> 
                 )}  
             </ul>
-            { store.selection }
+            { selection }
         </div>
     );
 });
