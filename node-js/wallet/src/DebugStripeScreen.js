@@ -9,9 +9,9 @@ import { Elements, StripeProvider } from 'react-stripe-elements';
 const STRIPE_SETTINGS   = 'vol_stripe_settings';
 
 //================================================================//
-// StripeTestScreen
+// DebugStripeScreen
 //================================================================//
-class StripeTestScreen extends Component {
+class DebugStripeScreen extends Component {
 
     //----------------------------------------------------------------//
     constructor ( props ) {
@@ -122,4 +122,4 @@ class StripeTestScreen extends Component {
         );
     }
 }
-export default StripeTestScreen;
+export default DebugStripeScreen;

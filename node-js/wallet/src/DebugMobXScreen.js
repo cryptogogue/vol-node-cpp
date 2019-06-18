@@ -6,9 +6,9 @@ import { observer }                     from "mobx-react";
 import React                            from 'react';
 
 //================================================================//
-// MobXTestScreen
+// DebugMobXScreenStore
 //================================================================//
-class MobXTestScreenStore extends LocalStore {
+class DebugMobXScreenStore extends LocalStore {
 
     @observable index = 0;
 
@@ -33,11 +33,11 @@ class MobXTestScreenStore extends LocalStore {
 }
 
 //================================================================//
-// MobXTestScreen
+// DebugMobXScreen
 //================================================================//
-const MobXTestScreen = observer (( props ) => {
+const DebugMobXScreen = observer (( props ) => {
 
-    const store = useLocalStore (() => new MobXTestScreenStore ([ 'foo', 'doop', 'moop' ]));
+    const store = useLocalStore (() => new DebugMobXScreenStore ([ 'foo', 'doop', 'moop' ]));
 
     const onKeyDown = ( e ) => {
         if ( e.keyCode === 38 ) {
@@ -82,4 +82,4 @@ const MobXTestScreen = observer (( props ) => {
     );
 });
 
-export default MobXTestScreen;
+export default DebugMobXScreen;

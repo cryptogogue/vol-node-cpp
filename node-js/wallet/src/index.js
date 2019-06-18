@@ -9,18 +9,18 @@ configure ({
 
 import AccountScreen            from './AccountScreen';
 import { AppStateProvider }     from './AppStateProvider';
+import CraftingScreen           from './CraftingScreen';
+import DebugInventoryScreen     from './DebugInventoryScreen';
+import DebugMobXScreen          from './DebugMobXScreen';
+import DebugStripeScreen        from './DebugStripeScreen';
 import ImportAccountScreen      from './ImportAccountScreen';
-import InventoryScreen          from './InventoryScreen';
 import LoginScreen              from './LoginScreen';
-import MobXInventoryScreen      from './MobXInventoryScreen';
-import MobXTestScreen           from './MobXTestScreen';
 import NewAccountScreen         from './NewAccountScreen';
 import RegisterScreen           from './RegisterScreen';
 import registerServiceWorker    from './utils/registerServiceWorker';
 import React                    from 'react';
 import ReactDOM                 from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
-import StripeTestScreen         from './StripeTestScreen';
 
 //----------------------------------------------------------------//
 const App = () => (
@@ -44,8 +44,8 @@ const App = () => (
                     <Route exact path = "/:userId/accounts/:accountId" component = { AccountScreen }/>
                     <Route exact path = "/accounts/:accountId" component = { AccountScreen }/>
 
-                    <Route exact path = "/:userId/accounts/:accountId/inventory" component = { InventoryScreen }/>
-                    <Route exact path = "/accounts/:accountId/inventory" component = { InventoryScreen }/>
+                    <Route exact path = "/:userId/accounts/:accountId/crafting" component = { CraftingScreen }/>
+                    <Route exact path = "/accounts/:accountId/crafting" component = { CraftingScreen }/>
 
                     <Route exact path = "/:userId/accounts" component = { AccountScreen }/>
                     <Route exact path = "/accounts" component = { AccountScreen }/>
@@ -53,9 +53,9 @@ const App = () => (
                     <Route exact path = "/:userId/login" component = { LoginScreen }/>
                     <Route exact path = "/login" component = { LoginScreen }/>
 
-                    <Route exact path = "/mobx" component = { MobXTestScreen }/>
-                    <Route exact path = "/mobx/inventory" component = { MobXInventoryScreen }/>
-                    <Route exact path = "/stripe" component = { StripeTestScreen }/>
+                    <Route exact path = "/debug/inventory" component = { DebugInventoryScreen }/>
+                    <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
+                    <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
 
                     <Route exact path = "/:userId/" component = { RegisterScreen }/>
                     <Route exact path = "/" component = { RegisterScreen }/>

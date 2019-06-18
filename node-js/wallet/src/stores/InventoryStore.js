@@ -1,8 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { Binding, Schema }                          from 'volition-schema-builder';
-import { LocalStore }                               from './LocalStore';
-import { action, extendObservable, observable }     from "mobx";
+import { Binding, Schema }                                  from 'volition-schema-builder';
+import { LocalStore }                                       from './LocalStore';
+import { action, computed, extendObservable, observable }   from "mobx";
 
 //================================================================//
 // InventoryStore
@@ -71,5 +71,19 @@ export class InventoryStore extends LocalStore {
         }
 
         this.binding = this.schema.generateBinding ( this.assets );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    validMethods () {
+
+        let methods = [];
+        const bindingsByName = this.binding.methodBindingsByName;
+        for ( let name in bindingsByName ) {
+            if ( bindingsByName [ name ].valid ) {
+                methods.push ( name );
+            }
+        }
+        return methods;
     }
 }

@@ -16,31 +16,27 @@ class Binding {
     }
 
     //----------------------------------------------------------------//
-    getMethodFormFields ( methodName ) {
+    getMethodParamBindings ( methodName ) {
 
         // we'll need the method template (from the schema) *and* the binding
         const methodBinding = this.methodBindingsByName [ methodName ];
 
         // form fields, by name
-        let formFields = {};
+        let paramBindings = {};
 
         // for each asset field, set the type and the list of qualified assets
         for ( let argname in methodBinding.assetIDsByArgName ) {
 
-            let formField = {
-                type: 'asset',
-                options: [],
-            }
-
+            let options = [];
             let assetIDsForArg = methodBinding.assetIDsByArgName [ argname ];
             for ( let i in assetIDsForArg ) {
                 let assetID = assetIDsForArg [ i ];
-                formField.options.push ( assetID );
+                options.push ( assetID );
             }
-            formFields [ argname ] = formField;
+            paramBindings [ argname ] = options;
         }
 
-        return formFields;
+        return paramBindings;
     }
 
     //----------------------------------------------------------------//

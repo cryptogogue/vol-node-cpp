@@ -7,9 +7,9 @@ import React                from 'react';
 import { List }             from 'semantic-ui-react';
 
 //================================================================//
-// MobXInventoryScreen
+// DebugInventoryScreen
 //================================================================//
-const MobXInventoryScreen = observer (( props ) => {
+const DebugInventoryScreen = observer (( props ) => {
 
     console.log ( 'RENDER INVENTORY SCREEN' )
 
@@ -55,4 +55,4 @@ const MobXInventoryScreen = observer (( props ) => {
     );
 });
 
-export default MobXInventoryScreen;
+export default DebugInventoryScreen;
