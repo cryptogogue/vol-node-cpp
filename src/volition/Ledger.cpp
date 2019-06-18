@@ -71,11 +71,11 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
     Asset::Index accountTailIndex = this->getValueOrFallback < Asset::Index >( keyForAccountTail, Asset::NULL_ASSET_ID );
     
     if ( accountTailIndex != Asset::NULL_ASSET_ID ) {
-        this->setValue < Asset::Index >( Ledger::formatKeyForAsset ( accountTailIndex, ASSET_PREV ), firstAssetIndex );
+        this->setValue < Asset::Index >( Ledger::formatKeyForAsset ( accountTailIndex, ASSET_NEXT ), firstAssetIndex );
     }
-    this->setValue < Asset::Index >( keyForAccountTail, accountTailIndex );
-    
+    Asset::Index firstElementPrev = accountTailIndex;
     accountTailIndex = ( firstAssetIndex + quantity ) - 1;
+    this->setValue < Asset::Index >( keyForAccountTail, accountTailIndex );
     
     // now add the assets
     for ( Asset::Index i = firstAssetIndex; i <= accountTailIndex; ++i ) {
@@ -87,7 +87,7 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
         string keyForAssetNext = Ledger::formatKeyForAsset ( i, ASSET_NEXT );
         
         if ( i == firstAssetIndex ) {
-            this->setValue < Asset::Index >( keyForAssetPrev, Asset::NULL_ASSET_ID );
+            this->setValue < Asset::Index >( keyForAssetPrev, firstElementPrev );
         }
         else {
             this->setValue < Asset::Index >( keyForAssetPrev, i - 1 );

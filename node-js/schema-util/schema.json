@@ -1,6 +1,6 @@
 {
     "name": "TEST_SCHEMA",
-    "lua": "\nfunction main ( ledger, caller )\n    print ( 'publish schema', caller )\n    awardAsset ( ledger, caller, 'pack', 1000 )\nend\n",
+    "lua": "\nfunction main ( ledger, caller )\n    print ( 'publish schema', caller )\n    awardAsset ( ledger, caller, 'pack', 1 )\n    awardAsset ( ledger, caller, 'common', 2 )\n    awardAsset ( ledger, caller, 'rare', 2 )\n    awardAsset ( ledger, caller, 'ultraRare', 1 )\nend\n",
     "definitions": {
         "pack": {
             "fields": {
@@ -39,7 +39,7 @@
                 }
             }
         },
-        "ulraRare": {
+        "ultraRare": {
             "fields": {
                 "displayName": {
                     "type": "STRING",
