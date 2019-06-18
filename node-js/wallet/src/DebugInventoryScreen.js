@@ -13,7 +13,7 @@ const DebugInventoryScreen = observer (( props ) => {
 
     console.log ( 'RENDER INVENTORY SCREEN' )
 
-    const store = useLocalStore (() => new InventoryStore ( '9090', 'http://localhost:9090' ));
+    const store = useLocalStore (() => new InventoryStore ());
 
     if ( store.loading === true ) {
         return (<div>{ 'LOADING' }</div>);

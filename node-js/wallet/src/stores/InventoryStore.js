@@ -1,8 +1,10 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { Binding, Schema }                                  from 'volition-schema-builder';
+import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
 import { LocalStore }                                       from './LocalStore';
 import { action, computed, extendObservable, observable }   from "mobx";
+
+const DEBUG = true;
 
 //================================================================//
 // InventoryStore
@@ -19,7 +21,12 @@ export class InventoryStore extends LocalStore {
     constructor ( accountID, minerURL ) {
         super ();
 
-        this.fetchInventory ( accountID, minerURL );
+        if ( DEBUG || ( !( accountID && minerURL ))) {
+            this.useDebugInventory ();
+        }
+        else {
+            this.fetchInventory ( accountID, minerURL );
+        }
     }
 
     //----------------------------------------------------------------//
@@ -40,7 +47,7 @@ export class InventoryStore extends LocalStore {
 
     //----------------------------------------------------------------//
     @action
-    finishLoading ( template, assets ) {
+    finishLoading () {
 
         this.loading = false;
     }
@@ -71,6 +78,62 @@ export class InventoryStore extends LocalStore {
         }
 
         this.binding = this.schema.generateBinding ( this.assets );
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    useDebugInventory () {
+
+        const op = buildSchema.op;
+
+        let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
+
+            //----------------------------------------------------------------//
+            .definition ( 'pack' )
+                .field ( 'displayName', 'Booster Pack' )
+         
+            .definition ( 'common' )
+                .field ( 'displayName', 'Common' )
+                .field ( 'keywords', 'card common' )
+         
+            .definition ( 'rare' )
+                .field ( 'displayName', 'Rare' )
+                .field ( 'keywords', 'card rare' )
+         
+            .definition ( 'ultraRare' )
+                .field ( 'displayName', 'Ultra-Rare' )
+                .field ( 'keywords', 'card ultra-rare' )
+
+            //----------------------------------------------------------------//
+            .method ( 'makeRare', 'Combine two commons to make a rare.' )
+                .assetArg ( 'common0', op.ASSET_TYPE ( 'common' ))
+                .assetArg ( 'common1', op.ASSET_TYPE ( 'common' ))
+
+            .method ( 'makeUltraRare', 'Combine two rares to make an ultra-rare.' )
+                .assetArg ( 'rare0', op.ASSET_TYPE ( 'rare' ))
+                .assetArg ( 'rare1', op.ASSET_TYPE ( 'rare' ))
+
+            .method ( 'openPack', 'Open a booster pack.' )
+                .assetArg ( 'pack', op.ASSET_TYPE ( 'pack' ))
+
+            .done ()
+
+        let schema = new Schema ( schemaTemplate );
+
+        let assets = {};
+
+        const pack0         = schema.addTestAsset ( assets, 'pack' );
+        const common0       = schema.addTestAsset ( assets, 'common' );
+        const common1       = schema.addTestAsset ( assets, 'common' );
+        const rare0         = schema.addTestAsset ( assets, 'rare' );
+        const rare1         = schema.addTestAsset ( assets, 'rare' );
+        const ultraRare0    = schema.addTestAsset ( assets, 'ultraRare' );
+
+        this.schema = schema;
+        this.assets = assets;
+        this.binding = schema.generateBinding ( assets );
+
+        this.finishLoading ();
     }
 
     //----------------------------------------------------------------//
