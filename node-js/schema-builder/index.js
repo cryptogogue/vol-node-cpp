@@ -2,13 +2,13 @@
 
 const schema    = require ( './schema' );
 
-const Inventory         = require ( './inventory' ).Inventory;
+const Binding           = require ( './binding' ).Binding;
 const Schema            = require ( './schema' ).Schema;
 const buildSchema       = require ( './schema-builder' );
 const op                = buildSchema.op;
 
 var exports = module.exports = {
-    Inventory:      Inventory,
+    Binding:        Binding,
     Schema:         Schema,
     buildSchema:    buildSchema,
 }

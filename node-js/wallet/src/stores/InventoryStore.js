@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { Inventory }                                from 'volition-schema-builder';
+import { Binding, Schema }                          from 'volition-schema-builder';
 import { LocalStore }                               from './LocalStore';
 import { action, extendObservable, observable }     from "mobx";
 
@@ -9,40 +9,27 @@ import { action, extendObservable, observable }     from "mobx";
 //================================================================//
 export class InventoryStore extends LocalStore {
 
-    @observable loading = true;
-    @observable inventory = new Inventory ();
+    @observable loading     = true;
 
-    //----------------------------------------------------------------//
-    @action
-    applyTemplate ( template ) {
-
-        this.inventory.applyTemplate ( template );
-    }
+    @observable assets      = {};
+    @observable schema      = new Schema (); // empty schema
+    @observable binding     = new Binding (); // empty binding
 
     //----------------------------------------------------------------//
     constructor ( accountID, minerURL ) {
         super ();
 
-        this.fetchInventory ( '9090', 'http://localhost:9090' );
+        this.fetchInventory ( accountID, minerURL );
     }
 
     //----------------------------------------------------------------//
     async fetchInventory ( accountID, minerURL ) {
 
         try {
-
             const schemaJSON = await this.revocableFetchJSON ( minerURL + '/schemas/' );
+            const inventoryJSON = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory' );
 
-            if ( schemaJSON.schemas ) {
-
-                for ( let i in schemaJSON.schemas ) {
-                    this.applyTemplate ( schemaJSON.schemas [ i ]);
-                }
-
-                const inventoryJSON = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory' );
-
-                this.updateInventory ( inventoryJSON.inventory ); 
-            }
+            this.update ( schemaJSON.schemas, inventoryJSON.inventory );
             this.finishLoading ();
         }
         catch ( error ) {
@@ -59,14 +46,30 @@ export class InventoryStore extends LocalStore {
     }
 
     //----------------------------------------------------------------//
+    getCraftingMethodBindings () {
+        return this.binding.methodBindingsByName;
+    }
+
+    //----------------------------------------------------------------//
+    getCraftingMethodBindingsForAssetID ( assetID ) {
+        return this.binding.methodBindingsByAssetID [ assetID ];
+    }
+
+    //----------------------------------------------------------------//
     @action
-    updateInventory ( assets ) {
+    update ( templates, assets ) {
 
-        if ( !assets ) return;
-
-        for ( let i in assets ) {
-            this.inventory.addAsset ( assets [ i ]);
+        if ( templates ) {
+            this.schema = new Schema ();
+            for ( let i in templates ) {
+                this.schema.applyTemplate ( templates [ i ]);
+            }
         }
-        this.inventory.process ();
+
+        if ( assets ) {
+            this.assets = assets;
+        }
+
+        this.binding = this.schema.generateBinding ( this.assets );
     }
 }

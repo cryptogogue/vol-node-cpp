@@ -4,55 +4,15 @@ const assert        = require ( 'assert' );
 const Schema        = require ( './schema' ).Schema;
 
 //================================================================//
-// Inventory
+// Binding
 //================================================================//
-class Inventory {
+class Binding {
 
     //----------------------------------------------------------------//
-    addAsset ( asset ) {
+    constructor ( methodBindingsByName, methodBindingsByAssetID ) {
 
-        this.assets [ asset.assetID ] = asset;
-        this.assetCounter++;
-    }
-
-    //----------------------------------------------------------------//
-    addTestAsset ( typeName ) {
-
-        let assetID = String ( this.assetCounter );
-        this.assetCounter++;
-
-        let asset = this.schema.newAsset ( assetID, typeName );
-        assert ( Boolean ( asset ));
-        this.addAsset ( asset );
-
-        return assetID;
-    }
-
-    //----------------------------------------------------------------//
-    addTestAssets ( typeName, count ) {
-
-        for ( let i = 0; i < count; ++i ) {
-            this.addTestAsset ( typeName );
-        }
-    }
-
-    //----------------------------------------------------------------//
-    applyTemplate ( template ) {
-        this.schema.applyTemplate ( template );
-    }
-
-    //----------------------------------------------------------------//
-    constructor ( template, assets ) {
-
-        this.schema = new Schema ();
-        this.applyTemplate ( template );
-
-        this.assetCounter = 0;
-        this.assets = {};
-
-        for ( let assetID in assets ) {
-            this.addAsset ( assets [ assetID ]);
-        }
+        this.methodBindingsByName       = methodBindingsByName || {};
+        this.methodBindingsByAssetID    = methodBindingsByAssetID || {};
     }
 
     //----------------------------------------------------------------//
@@ -77,7 +37,6 @@ class Inventory {
                 let assetID = assetIDsForArg [ i ];
                 formField.options.push ( assetID );
             }
-
             formFields [ argname ] = formField;
         }
 
@@ -93,17 +52,8 @@ class Inventory {
         }
         return this.methodBindingsByName [ methodName ].valid;
     }
-
-    //----------------------------------------------------------------//
-    process () {
-
-        let binding = this.schema.processInventory ( this );
-
-        this.methodBindingsByAssetID    = binding.methodBindingsByAssetID;
-        this.methodBindingsByName       = binding.methodBindingsByName;
-    }
 }
 
 var exports = module.exports = {
-    Inventory:      Inventory,
+    Binding:    Binding,
 }
