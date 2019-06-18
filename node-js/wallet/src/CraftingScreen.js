@@ -1,11 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 
+import { AppStateContext }      from './AppStateProvider';
 import CraftingFormSelector     from './CraftingFormSelector';
 import NavigationBar            from './NavigationBar';
 import { useLocalStore }        from './stores/LocalStore';
 import { InventoryStore }       from './stores/InventoryStore';
 import { observer }             from "mobx-react";
-import React                    from 'react';
+import React, { useContext }    from 'react';
 import { Segment, Grid }        from 'semantic-ui-react';
 
 //================================================================//
@@ -14,9 +15,11 @@ import { Segment, Grid }        from 'semantic-ui-react';
 const CraftingScreen = observer (( props ) => {
 
     const accountId = props.match.params.accountId;
-    //const { minerURLs } = this.props.appState;
 
-    const inventory = useLocalStore (() => new InventoryStore ( accountId, 'http://localhost:9090' ));
+    // don't use context just now; needs a rewrite
+    //const { appState } = useContext ( AppStateContext );
+
+    const inventory = useLocalStore (() => new InventoryStore ( accountId, 'http://localhost:9090' )); // TODO: get URL from context after rewrite
 
     return (
         <div>

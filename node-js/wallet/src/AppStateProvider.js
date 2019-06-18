@@ -14,8 +14,8 @@ const STORE_TRANSACTIONS    = '.vol_transactions';
 const TRANSACTION_STATUS_PENDING    = 'pending';
 const TRANSACTION_STATUS_DONE       = 'done';
 
-const TheContext = React.createContext ();
-const AppStateConsumer = TheContext.Consumer;
+const AppStateContext = React.createContext ();
+const AppStateConsumer = AppStateContext.Consumer;
 
 //----------------------------------------------------------------//
 function withAppState ( WrappedComponent ) {
@@ -293,6 +293,12 @@ class AppStateProvider extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
+    getMinerURL () {
+
+        return this.state.nodes [ 0 ]; // this is a hack for now (until we redo the config)
+    }
+
+    //----------------------------------------------------------------//
     getPendingTransaction ( accountId ) {
 
         if ( !( accountId in this.state.transactions )) return;
@@ -443,10 +449,10 @@ class AppStateProvider extends BaseComponent {
     //----------------------------------------------------------------//
     render () {
         return (
-            <TheContext.Provider
+            <AppStateContext.Provider
                 value = {{ appState: this }}>
                 { this.props.children }
-            </TheContext.Provider>
+            </AppStateContext.Provider>
         )
     }
 
@@ -501,4 +507,4 @@ class AppStateProvider extends BaseComponent {
     }
 }
 
-export { AppStateProvider, AppStateConsumer, withAppState, withAppStateAndUser };
+export { AppStateProvider, AppStateConsumer, AppStateContext, withAppState, withAppStateAndUser };
