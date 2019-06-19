@@ -10,6 +10,7 @@ configure ({
 import AccountScreen            from './AccountScreen';
 import { AppStateProvider }     from './AppStateProvider';
 import CraftingScreen           from './CraftingScreen';
+import DebugHandlebarsScreen    from './DebugHandlebarsScreen';
 import DebugInventoryScreen     from './DebugInventoryScreen';
 import DebugMobXScreen          from './DebugMobXScreen';
 import DebugStripeScreen        from './DebugStripeScreen';
@@ -53,6 +54,7 @@ const App = () => (
                     <Route exact path = "/:userId/login" component = { LoginScreen }/>
                     <Route exact path = "/login" component = { LoginScreen }/>
 
+                    <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
                     <Route exact path = "/debug/inventory" component = { DebugInventoryScreen }/>
                     <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
                     <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
