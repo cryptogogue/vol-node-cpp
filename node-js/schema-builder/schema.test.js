@@ -5,6 +5,19 @@ const schemaBuilder     = require ( './schema-builder' );
 const op                = schemaBuilder.op;
 
 //----------------------------------------------------------------//
+test ( 'test json escaping', () => {
+
+    const jsonStringIn = `{"escape":"\\"123\\""}`;
+    console.log ( 'ESCAPE', jsonStringIn );
+    
+    const json = JSON.parse ( jsonStringIn );
+    expect ( json.escape === '\"123\"' ).toBe ( true );
+
+    const jsonStringOut = JSON.stringify ( json );
+    expect ( jsonStringOut === jsonStringIn ).toBe ( true );
+});
+
+//----------------------------------------------------------------//
 test ( 'define schema', () => {
 
     let schemaTemplate = schemaBuilder ( 'TEST_SCHEMA', 'schema.lua' )

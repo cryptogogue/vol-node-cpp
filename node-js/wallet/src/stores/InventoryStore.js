@@ -2,7 +2,10 @@
 
 import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
 import { LocalStore }                                       from './LocalStore';
-import { action, computed, extendObservable, observable }   from "mobx";
+import { meta }                                             from '../resources/meta';
+import { action, computed, extendObservable, observable }   from 'mobx';
+
+import { AssetFormatter }                                   from './AssetFormatter-Volition';
 
 const DEBUG = true;
 
@@ -13,13 +16,16 @@ export class InventoryStore extends LocalStore {
 
     @observable loading     = true;
 
-    @observable assets      = {};
-    @observable schema      = new Schema (); // empty schema
-    @observable binding     = new Binding (); // empty binding
+    @observable assets          = {};
+    @observable assetLayouts    = {};
+    @observable schema          = new Schema (); // empty schema
+    @observable binding         = new Binding (); // empty binding
 
     //----------------------------------------------------------------//
     constructor ( accountID, minerURL ) {
         super ();
+
+        this.formatter = new AssetFormatter ();
 
         if ( DEBUG || ( !( accountID && minerURL ))) {
             this.useDebugInventory ();
@@ -70,6 +76,7 @@ export class InventoryStore extends LocalStore {
             this.schema = new Schema ();
             for ( let i in templates ) {
                 this.schema.applyTemplate ( templates [ i ]);
+                this.formatter.applyMeta ( templates [ i ].meta );
             }
         }
 
@@ -87,21 +94,19 @@ export class InventoryStore extends LocalStore {
         const op = buildSchema.op;
 
         let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
+            .meta ( meta )
 
             //----------------------------------------------------------------//
             .definition ( 'pack' )
                 .field ( 'displayName', 'Booster Pack' )
          
             .definition ( 'common' )
-                .field ( 'displayName', 'Common' )
                 .field ( 'keywords', 'card common' )
          
             .definition ( 'rare' )
-                .field ( 'displayName', 'Rare' )
                 .field ( 'keywords', 'card rare' )
          
             .definition ( 'ultraRare' )
-                .field ( 'displayName', 'Ultra-Rare' )
                 .field ( 'keywords', 'card ultra-rare' )
 
             //----------------------------------------------------------------//
@@ -132,6 +137,12 @@ export class InventoryStore extends LocalStore {
         this.schema = schema;
         this.assets = assets;
         this.binding = schema.generateBinding ( assets );
+
+        this.formatter.applyMeta ( schemaTemplate.meta );
+
+        for ( let assetID in this.assets ) {
+            this.assetLayouts [ assetID ] = this.formatter.composeAssetLayout ( this.assets [ assetID ], [ 'EN', 'RGB' ]);
+        }
 
         this.finishLoading ();
     }

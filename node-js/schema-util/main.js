@@ -10,12 +10,18 @@ const op = buildSchema.op;
 //================================================================//
 
 //----------------------------------------------------------------//
-function makeSchemaTransaction ( schema ) {
+function makeSchemaTransaction ( schema, accountName, keyName, gratuity, nonce ) {
 
     return {
-        type:   'PUBLISH_SCHEMA',
-        name:   schema.name,
-        json:   JSON.stringify ( schema ),
+        type:       'PUBLISH_SCHEMA',
+        maker: {
+            accountName:    accountName,
+            keyName:        keyName || 'master',
+            gratuity:       gratuity || 0,
+            nonce:          nonce || 0,
+        },
+        name:       schema.name,
+        schema:     schema,
     }
 }
 
@@ -23,22 +29,19 @@ function makeSchemaTransaction ( schema ) {
 // schema
 //================================================================//
 let schema = buildSchema ( 'TEST_SCHEMA' )
+    .metaFile ( 'meta/meta.json' )
     .luaFile ( 'lua/publish.lua' )
 
     //----------------------------------------------------------------//
     .definition ( 'pack' )
-        .field ( 'displayName', 'Booster Pack' )
  
     .definition ( 'common' )
-        .field ( 'displayName', 'Common' )
         .field ( 'keywords', 'card common' )
  
     .definition ( 'rare' )
-        .field ( 'displayName', 'Rare' )
         .field ( 'keywords', 'card rare' )
  
     .definition ( 'ultraRare' )
-        .field ( 'displayName', 'Ultra-Rare' )
         .field ( 'keywords', 'card ultra-rare' )
 
     //----------------------------------------------------------------//
@@ -59,4 +62,4 @@ let schema = buildSchema ( 'TEST_SCHEMA' )
     .done ()
 
 fs.writeFileSync ( 'schema.json', JSON.stringify ( schema, null, 4 ), 'utf8' );
-fs.writeFileSync ( 'publish-schema-transaction.json', JSON.stringify ( makeSchemaTransaction ( schema ), null, 4 ), 'utf8' );
+fs.writeFileSync ( 'publish-schema-transaction.json', JSON.stringify ( makeSchemaTransaction ( schema, '9090' ), null, 4 ), 'utf8' );

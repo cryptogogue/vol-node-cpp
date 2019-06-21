@@ -162,6 +162,30 @@ protected:
     };
 
     //----------------------------------------------------------------//
+    void AbstractSerializerFrom_stringFromTree ( SerializerPropertyName name, string& value ) const override {
+    
+        if ( this->has ( name )) {
+    
+            const Poco::Dynamic::Var member = this->get ( name );
+            assert ( !member.isEmpty ());
+           
+            const type_info& tinfo = member.type ();
+           
+            stringstream strStream;
+           
+            if ( tinfo == typeid ( Poco::JSON::Array::Ptr )) {
+                Poco::JSON::Array::Ptr array = member.extract < Poco::JSON::Array::Ptr >();
+                array->stringify ( strStream );
+            }
+            else if ( tinfo == typeid ( Poco::JSON::Object::Ptr )) {
+                Poco::JSON::Object::Ptr object = member.extract < Poco::JSON::Object::Ptr >();
+                object->stringify ( strStream );
+            }
+            value = strStream.str ();
+        }
+    }
+
+    //----------------------------------------------------------------//
     const Poco::Dynamic::Var get ( SerializerPropertyName name ) const {
     
         if ( this->mArray ) {

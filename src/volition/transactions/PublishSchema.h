@@ -23,14 +23,14 @@ public:
     TRANSACTION_MATURITY ( 0 )
 
     string      mSchemaName;
-    string      mJSON;
+    Schema      mSchema;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
-        serializer.serialize ( "json",          this->mJSON );
+        serializer.serialize ( "schema",        this->mSchema );
     }
     
     //----------------------------------------------------------------//
@@ -38,16 +38,13 @@ public:
         AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
-        serializer.serialize ( "json",          this->mJSON );
+        serializer.serialize ( "schema",        this->mSchema );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
-    
-        Schema schema;
-        FromJSONSerializer::fromJSONString ( schema, this->mJSON  );
         
-        return ledger.publishSchema ( this->mMakerSignature->getAccountName (), this->mSchemaName, schema );
+        return ledger.publishSchema ( this->mMakerSignature->getAccountName (), this->mSchemaName, this->mSchema );
     }
 };
 

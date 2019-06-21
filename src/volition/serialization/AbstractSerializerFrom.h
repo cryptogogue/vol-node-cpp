@@ -46,6 +46,7 @@ protected:
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, string& value ) const = 0;
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, AbstractSerializable& value ) const = 0;
     virtual void                            AbstractSerializerFrom_serialize        ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) const = 0;
+    virtual void                            AbstractSerializerFrom_stringFromTree   ( SerializerPropertyName name, string& value ) const = 0;
 
 public:
     
@@ -91,6 +92,11 @@ public:
         TYPE value = fallback;
         this->AbstractSerializerFrom_serialize ( name, value );
         return value;
+    }
+    
+    //----------------------------------------------------------------//
+    void stringFromTree ( SerializerPropertyName name, string& value ) const {
+        this->AbstractSerializerFrom_stringFromTree ( name, value );
     }
 };
 

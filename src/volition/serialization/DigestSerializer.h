@@ -72,6 +72,11 @@ protected:
         serializeFunc ( *this );
     }
 
+    //----------------------------------------------------------------//
+    void AbstractSerializerFrom_stringToTree ( SerializerPropertyName name, string value ) override {
+        assert ( false );
+    }
+
 public:
 
     //----------------------------------------------------------------//

@@ -178,23 +178,6 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    definition ( name ) {
-
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
-
-        this.push (
-            SCHEMA_BUILDER_ADDING_ASSET_DEFINITION,
-            {
-                fields:         {},
-            },
-            ( schema, definition ) => {
-                schema.definitions [ name ] = definition;
-            }
-        );
-        return this;
-    }
-
-    //----------------------------------------------------------------//
     constArg ( name, qualifier ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ));
@@ -219,16 +202,34 @@ class SchemaBuilder {
         this.stack = [];
 
         this.schema = {
-            name:           name,
-            lua:            '',
-            definitions:    {},
-            methods:        {},
+            name:               name,
+            lua:                '',
+            definitions:        {},
+            meta:               '',
+            methods:            {},
         };
 
         this.push (
             SCHEMA_BUILDER_ADDING_SCHEMA,
             this.schema
         );
+    }
+
+    //----------------------------------------------------------------//
+    definition ( name ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_ASSET_DEFINITION,
+            {
+                fields:         {},
+            },
+            ( schema, definition ) => {
+                schema.definitions [ name ] = definition;
+            }
+        );
+        return this;
     }
 
     //----------------------------------------------------------------//
@@ -278,6 +279,7 @@ class SchemaBuilder {
 
     //----------------------------------------------------------------//
     luaFile ( filename ) {
+
         // pop to adding method first
         assert (
             this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ) ||
@@ -289,6 +291,26 @@ class SchemaBuilder {
         //lua = jsonEscape ( lua );
 
         this.top ().lua = lua;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    meta ( meta ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+        this.top ().meta = meta;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    metaFile ( filename ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        let meta = fs.readFileSync ( filename, 'utf8' );
+        assert ( meta );
+
+        this.top ().meta = JSON.parse ( meta );
         return this;
     }
 

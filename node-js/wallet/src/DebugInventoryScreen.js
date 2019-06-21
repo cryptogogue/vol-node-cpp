@@ -45,12 +45,19 @@ const DebugInventoryScreen = observer (( props ) => {
         methodListItems.push (<List.Item key = { methodName }>{ name }</List.Item>);
     }
 
+    let assetLayouts = [];
+    for ( let assetID in store.assets ) {
+        assetLayouts.push (<div key = { assetID } dangerouslySetInnerHTML = {{ __html: store.assetLayouts [ assetID ]}}/>);
+    }
+
     return (
         <div>
             <h3>Methods</h3>
             <List>{ methodListItems }</List>
             <h3>Assets</h3>
             <List>{ assetListItems }</List>
+            <h3>Asset Layouts</h3>
+            { assetLayouts }
         </div>
     );
 });

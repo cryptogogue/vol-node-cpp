@@ -99,6 +99,16 @@ protected:
     }
 
     //----------------------------------------------------------------//
+    void AbstractSerializerFrom_stringToTree ( SerializerPropertyName name, string value ) override {
+    
+        istringstream inStream ( value );
+        Poco::JSON::Parser parser;
+        Poco::Dynamic::Var result = parser.parse ( inStream );
+        
+        this->set ( name, result );
+    }
+
+    //----------------------------------------------------------------//
     void affirmJSONArray () {
         assert ( !this->mObject );
         if ( !this->mArray ) {

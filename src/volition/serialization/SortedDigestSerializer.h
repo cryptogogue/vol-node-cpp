@@ -217,6 +217,11 @@ protected:
     }
 
     //----------------------------------------------------------------//
+    void AbstractSerializerFrom_stringToTree ( SerializerPropertyName name, string value ) override {
+        assert ( false );
+    }
+
+    //----------------------------------------------------------------//
     void setValue ( SerializerPropertyName name, unique_ptr < AbstractSortedDigestSerializerValue > value ) {
     
         if ( !this->mContainer ) {

@@ -26,6 +26,7 @@ private:
     typedef SerializableMap < string, AssetMethod >         Methods;
 
     string                  mName;
+    string                  mMeta;
     Definitions             mDefinitions;
     Methods                 mMethods;
     string                  mLua;
@@ -37,6 +38,8 @@ private:
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "methods",           this->mMethods );
         serializer.serialize ( "lua",               this->mLua );
+        
+        serializer.stringFromTree ( "meta", this->mMeta );
     }
 
     //----------------------------------------------------------------//
@@ -46,6 +49,14 @@ private:
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "methods",           this->mMethods );
         serializer.serialize ( "lua",               this->mLua );
+        
+        if ( serializer.isDigest ()) {
+        
+            serializer.serialize ( "meta", this->mMeta );
+        }
+        else {
+            serializer.stringToTree ( "meta", this->mMeta );
+        }
     }
 };
 

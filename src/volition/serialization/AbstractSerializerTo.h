@@ -19,17 +19,18 @@ protected:
     typedef std::function < void ( AbstractSerializerTo& )> SerializationFunc;
 
     //----------------------------------------------------------------//
-    virtual void                        AbstractSerializerTo_affirmArray    () = 0;
-    virtual void                        AbstractSerializerTo_affirmObject   () = 0;
-    virtual SerializerPropertyName      AbstractSerializerTo_getName        () const = 0;
-    virtual AbstractSerializerTo*       AbstractSerializerTo_getParent      () = 0;
-    virtual bool                        AbstractSerializerTo_isDigest       () const = 0;
-    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const bool& value ) = 0;
-    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const double& value ) = 0;
-    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const u64& value ) = 0;
-    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const string& value ) = 0;
-    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;
-    virtual void                        AbstractSerializerTo_serialize      ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) = 0;
+    virtual void                        AbstractSerializerTo_affirmArray        () = 0;
+    virtual void                        AbstractSerializerTo_affirmObject       () = 0;
+    virtual SerializerPropertyName      AbstractSerializerTo_getName            () const = 0;
+    virtual AbstractSerializerTo*       AbstractSerializerTo_getParent          () = 0;
+    virtual bool                        AbstractSerializerTo_isDigest           () const = 0;
+    virtual void                        AbstractSerializerTo_serialize          ( SerializerPropertyName name, const bool& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize          ( SerializerPropertyName name, const double& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize          ( SerializerPropertyName name, const u64& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize          ( SerializerPropertyName name, const string& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize          ( SerializerPropertyName name, const AbstractSerializable& value ) = 0;
+    virtual void                        AbstractSerializerTo_serialize          ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) = 0;
+    virtual void                        AbstractSerializerFrom_stringToTree     ( SerializerPropertyName name, string value ) = 0;
 
 public:
     
@@ -67,6 +68,11 @@ public:
     template < typename TYPE >
     void serialize ( SerializerPropertyName name, const TYPE& value ) {
         this->AbstractSerializerTo_serialize ( name, value );
+    }
+
+    //----------------------------------------------------------------//
+    void stringToTree ( SerializerPropertyName name, string value ) {
+        this->AbstractSerializerFrom_stringToTree ( name, value );
     }
 };
 
