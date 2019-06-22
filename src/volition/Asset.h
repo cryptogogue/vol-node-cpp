@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/AssetDefinition.h>
 #include <volition/AssetFieldValue.h>
+#include <volition/AssetID.h>
 #include <volition/Format.h>
 #include <volition/serialization/Serialization.h>
 
@@ -58,7 +59,7 @@ public:
         
         string assetID;
         serializer.serialize ( "assetID", assetID );
-        this->mIndex = stoi ( assetID );
+        this->mIndex = AssetID::decode ( assetID );
         
         serializer.serialize ( "type",      this->mType );
         serializer.serialize ( "owner",     this->mOwner );
@@ -81,7 +82,8 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
-        string assetID = Format::write ( "%d", this->mIndex );
+        //string assetID = Format::write ( "%d", this->mIndex );
+        string assetID = AssetID::encode ( this->mIndex );
         
         serializer.serialize ( "assetID",   assetID );
         serializer.serialize ( "type",      this->mType );

@@ -288,6 +288,9 @@
 		CDED588A20BD1C5F003A2969 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CDED589320BD1CCE003A2969 /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5C632320B524A30038EE98 /* main-simulator.cpp */; };
+		CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */ = {isa = PBXBuildFile; fileRef = CDEDC20722BD57BC00C5643C /* AssetID.h */; };
+		CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20A22BD5AD800C5643C /* AssetID.cpp */; };
+		CDEDC20D22BD645B00C5643C /* TestAssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */; };
 		CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7981E21EC3010002C4D80 /* FuncSquap.h */; };
 		CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7982121EC30B6002C4D80 /* ConstSquap.h */; };
 		CDF8AD5021F29045000E285F /* ExtendChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */; };
@@ -821,6 +824,9 @@
 		CDED586120BA3981003A2969 /* libPocoXML.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoXML.a; path = poco/lib/libPocoXML.a; sourceTree = "<group>"; };
 		CDED586220BA3981003A2969 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
 		CDED589020BD1C5F003A2969 /* server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = server; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDEDC20722BD57BC00C5643C /* AssetID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetID.h; path = src/volition/AssetID.h; sourceTree = "<group>"; };
+		CDEDC20A22BD5AD800C5643C /* AssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetID.cpp; path = src/volition/AssetID.cpp; sourceTree = "<group>"; };
+		CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestAssetID.cpp; path = src/volition/gtest/TestAssetID.cpp; sourceTree = "<group>"; };
 		CDF7981E21EC3010002C4D80 /* FuncSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuncSquap.h; path = src/volition/FuncSquap.h; sourceTree = "<group>"; };
 		CDF7982121EC30B6002C4D80 /* ConstSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConstSquap.h; path = src/volition/ConstSquap.h; sourceTree = "<group>"; };
 		CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtendChainHandler.h; path = "src/volition/web-miner-api/ExtendChainHandler.h"; sourceTree = "<group>"; };
@@ -1007,6 +1013,8 @@
 			children = (
 				CD63A1DA22B2244600D5C801 /* Account.h */,
 				CDB8B3C521AC7DB8004EE816 /* Asset.h */,
+				CDEDC20A22BD5AD800C5643C /* AssetID.cpp */,
+				CDEDC20722BD57BC00C5643C /* AssetID.h */,
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CD63A1CD22AC88A000D5C801 /* AssetFieldValue.h */,
 				CD63A1C722AC6BEA00D5C801 /* AssetMethod.h */,
@@ -1061,6 +1069,7 @@
 			isa = PBXGroup;
 			children = (
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
+				CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */,
 				CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
 				CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */,
@@ -1420,6 +1429,7 @@
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,
+				CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */,
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
 				CDF8AD5D21F52B34000E285F /* LuaContext.h in Headers */,
 				CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */,
@@ -1866,6 +1876,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD85B1CC228D3C7D000C2A54 /* TestFormatUtils.cpp in Sources */,
+				CDEDC20D22BD645B00C5643C /* TestAssetID.cpp in Sources */,
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1879,6 +1890,7 @@
 				CD4E81CF2105941A007DA585 /* TransactionMakerSignature.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
+				CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */,
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
 				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,
 				CDB8B40621ACC874004EE816 /* HTTPRequestHandlerFactory.cpp in Sources */,
