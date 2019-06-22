@@ -53,27 +53,28 @@ export class AssetFormatter {
     composeAsset ( asset, filters ) {
 
         asset = Object.assign ({}, asset );
+        asset.fields = Object.assign ({}, asset.fields );
         const assetType = asset.type;
 
         const definition = this.definitions [ asset.type ];
         if ( definition ) {
-            asset = Object.assign ( asset, definition );
+            asset.fields = Object.assign ( asset.fields, definition );
         }
 
         for ( let i in filters ) {
             const definitionsForFilter = this.filteredDefinitions [ filters [ i ]];
             if ( definitionsForFilter ) {
                 const filteredDefinition = definitionsForFilter [ assetType ];
-                asset = Object.assign ( asset, filteredDefinition );
+                asset.fields = Object.assign ( asset.fields, filteredDefinition );
             }
         }
         return asset;
     }
 
     //----------------------------------------------------------------//
-    composeAssetLayout ( asset, filters ) {
+    composeAssetLayout ( asset, filters, overrideContext ) {
 
-        return this.formatAssetLayout ( this.composeAsset ( asset, filters ));
+        return this.formatAssetLayout ( this.composeAsset ( asset, filters ), overrideContext );
     }
 
     //----------------------------------------------------------------//
@@ -85,8 +86,11 @@ export class AssetFormatter {
     }
 
     //----------------------------------------------------------------//
-    formatAssetLayout ( asset ) {
+    formatAssetLayout ( asset, overrideContext ) {
 
-        return this.templates [ asset.template ]( asset );
+        let context = Object.assign ({}, asset.fields );
+        context = Object.assign ( context, overrideContext );
+
+        return this.templates [ context.template ]( context );
     }
 }

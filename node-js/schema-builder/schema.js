@@ -12,9 +12,9 @@ const squap             = require ( './squap' );
 class Schema {
 
     //----------------------------------------------------------------//
-    addTestAsset ( assets, typeName ) {
+    addTestAsset ( assets, typeName, assetID ) {
 
-        let assetID = String ( Object.keys ( assets ).length );
+        assetID = assetID || String ( Object.keys ( assets ).length );
 
         let asset = this.newAsset ( assetID, typeName );
         assert ( Boolean ( asset ));

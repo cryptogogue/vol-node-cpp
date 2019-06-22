@@ -2,7 +2,7 @@
 
 import { useLocalStore }    from './stores/LocalStore';
 import { InventoryStore }   from './stores/InventoryStore';
-import { observer }         from "mobx-react";
+import { observer }         from 'mobx-react';
 import React                from 'react';
 import { List }             from 'semantic-ui-react';
 
@@ -52,10 +52,10 @@ const DebugInventoryScreen = observer (( props ) => {
 
     return (
         <div>
-            <h3>Methods</h3>
-            <List>{ methodListItems }</List>
             <h3>Assets</h3>
             <List>{ assetListItems }</List>
+            <h3>Methods</h3>
+            <List>{ methodListItems }</List>
             <h3>Asset Layouts</h3>
             { assetLayouts }
         </div>

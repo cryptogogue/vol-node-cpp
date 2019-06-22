@@ -2,6 +2,7 @@
 
 import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
 import { LocalStore }                                       from './LocalStore';
+import { barcodeToSVG }                                     from '../utils/pdf417';
 import { meta }                                             from '../resources/meta';
 import { action, computed, extendObservable, observable }   from 'mobx';
 
@@ -98,7 +99,6 @@ export class InventoryStore extends LocalStore {
 
             //----------------------------------------------------------------//
             .definition ( 'pack' )
-                .field ( 'displayName', 'Booster Pack' )
          
             .definition ( 'common' )
                 .field ( 'keywords', 'card common' )
@@ -127,12 +127,12 @@ export class InventoryStore extends LocalStore {
 
         let assets = {};
 
-        const pack0         = schema.addTestAsset ( assets, 'pack' );
-        const common0       = schema.addTestAsset ( assets, 'common' );
-        const common1       = schema.addTestAsset ( assets, 'common' );
-        const rare0         = schema.addTestAsset ( assets, 'rare' );
-        const rare1         = schema.addTestAsset ( assets, 'rare' );
-        const ultraRare0    = schema.addTestAsset ( assets, 'ultraRare' );
+        const pack0         = schema.addTestAsset ( assets, 'pack', 'bofip-jitut-vupoz-208' );
+        const common0       = schema.addTestAsset ( assets, 'common', 'dosaz-huvuf-nohol-103' );
+        const common1       = schema.addTestAsset ( assets, 'common', 'famaz-havij-zohag-209' );
+        const rare0         = schema.addTestAsset ( assets, 'rare', 'giduv-zotav-domin-184' );
+        const rare1         = schema.addTestAsset ( assets, 'rare', 'honas-simuj-marif-114' );
+        const ultraRare0    = schema.addTestAsset ( assets, 'ultraRare', 'jafoh-najon-gobig-250' );
 
         this.schema = schema;
         this.assets = assets;
@@ -141,7 +141,16 @@ export class InventoryStore extends LocalStore {
         this.formatter.applyMeta ( schemaTemplate.meta );
 
         for ( let assetID in this.assets ) {
-            this.assetLayouts [ assetID ] = this.formatter.composeAssetLayout ( this.assets [ assetID ], [ 'EN', 'RGB' ]);
+
+            // compose the asset
+            let asset = this.formatter.composeAsset ( this.assets [ assetID ], [ 'EN', 'RGB' ]);
+
+            // generate the barcode and inject it into the layout
+            let barcode = barcodeToSVG ( assetID );
+            this.assetLayouts [ assetID ] = this.formatter.formatAssetLayout ( asset, { barcode: barcode });
+
+            // store the composed asset
+            this.assets [ assetID ] = asset;
         }
 
         this.finishLoading ();
