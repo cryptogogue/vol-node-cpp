@@ -3,6 +3,27 @@
 
 #include <volition/AssetID.h>
 
+// https://arxiv.org/html/0901.4016
+// https://github.com/dsw/proquint
+
+// AssetID isn't a proquint, but it plays one on TV. we're doing a couple of things
+// differently. for example, going from low-to-high bits (vs. high-to-low, as in the proquint
+// sample implementation). there is also an 8-bit checksum, for what it's worth. we don't
+// anticipate people typing assets IDs much, but the checksum was easy enough to add. also, gives
+// the asset names a sort of panache.
+
+// we thought about truncating AssetIDs for lower numbered indices, but decided against it.
+// it seems appealing to have all AssetIDs be the same length from the start.
+
+// the AssetID itself is derived from an index, which is expected to be no more than 48 bits.
+// by the time we need more than 48 bits (after Volition becomes self-aware and deploys the
+// mind-control drones), Volition will have grown to absorb all data and computational resources
+// in the known universe. can devise a new AssetID format then.
+
+// "munge" and "spin" just exist to give the AssetIDs some variety. without them, the
+// nature of AssetIDs as decorated counters would be plainly evident, and we'd be stuck with
+// repeated letters for long stretches at a time. so munge/spin are purely aesthetic.
+
 namespace Volition {
 
 static const char sConsonants [] = {
