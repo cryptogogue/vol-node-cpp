@@ -16,4 +16,4 @@ RUN npm install
 COPY . /app
 
 ENTRYPOINT [ "node" ]
-CMD [ "main.js", "dotenv_config_path=/var/lib/volition-market" ]
+CMD [ "-r", "dotenv/config", "main.js", "dotenv_config_path=/var/lib/volition-market/.env" ]
