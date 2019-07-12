@@ -28,7 +28,7 @@ class TransactionSelectorService extends Service {
         this.transactionSchemas = transactionSchemas ();
 
         extendObservable ( this, {
-            showForm: false,
+            formIsShown: false,
             schemaIndex: -1,
         });
     }
@@ -43,15 +43,17 @@ class TransactionSelectorService extends Service {
     }
 
     //----------------------------------------------------------------//
+    @action
     selectForm ( index ) {
 
         this.schemaIndex = index;
     }
 
     //----------------------------------------------------------------//
+    @action
     showForm ( show ) {
 
-        this.showForm = show;
+        this.formIsShown = show;
         this.schemaIndex = -1;
     }
 }
@@ -76,7 +78,7 @@ const TransactionFormSelector = observer (( props ) => {
         ( nonce >= 0 )
     );
 
-    if ( isShowFormEnabled && service.showForm ) {
+    if ( isShowFormEnabled && service.formIsShown ) {
 
         let transactionForm;
 
@@ -90,7 +92,7 @@ const TransactionFormSelector = observer (( props ) => {
 
             transactionForm = (
                 <TransactionForm
-                    accountId = { accountId }
+                    appState = { appState }
                     schema = { service.transactionSchemas [ schemaIndex ]}
                     onSubmit = { onSubmit }
                 />

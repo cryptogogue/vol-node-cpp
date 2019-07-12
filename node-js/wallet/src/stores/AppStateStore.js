@@ -36,10 +36,10 @@ export class AppStateStore extends Store {
 
     @observable userId;
     @observable accountId;
+    @observable accountInfo;
 
     // persisted
     @observable accounts;
-    @observable accountInfo;
     @observable node;
     @observable nodes;
     @observable passwordHash;
@@ -50,6 +50,13 @@ export class AppStateStore extends Store {
     @computed get
     account () {
         return this.getAccount ();
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    accountKeyNames () {
+        const account = this.account
+        return ( account && Object.keys ( account.keys )) || [];
     }
 
     //----------------------------------------------------------------//
@@ -291,14 +298,8 @@ export class AppStateStore extends Store {
     }
 
     //----------------------------------------------------------------//
-    getAccountKeyNames ( accountId ) {
-        const account = this.account
-        return ( account && Object.keys ( account.keys )) || [];
-    }
-
-    //----------------------------------------------------------------//
-    getDefaultAccountKeyName ( accountId, defaultKeyName ) {
-        const accountKeyNames = this.getAccountKeyNames ( accountId );
+    getDefaultAccountKeyName ( defaultKeyName ) {
+        const accountKeyNames = this.accountKeyNames ;
         if ( defaultKeyName && accountKeyNames.includes [ defaultKeyName ]) return defaultKeyName;
         return (( accountKeyNames.length > 0 ) && accountKeyNames [ 0 ]) || '';
     }
@@ -354,9 +355,10 @@ export class AppStateStore extends Store {
             this.nodes [ url ].status = NODE_STATUS.UNKNOWN;
         }
 
-        this.affirmObservers ();
+        const accountNames = Object.keys ( this.accounts );
+        this.accountId = (( accountId in this.accounts ) && accountId ) || ( accountNames.length && accountNames [ 0 ]) || '';
 
-        this.setAccount ( accountId );
+        this.affirmObservers ();
     }
 
     //----------------------------------------------------------------//
@@ -464,16 +466,6 @@ export class AppStateStore extends Store {
     saveAccount ( accountId, privateKey, publicKey ) {
 
         this.affirmAccountAndKey ( accountId, 'master', privateKey, publicKey );
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    setAccount ( accountId ) {
-
-        console.log ( 'SET ACCOUNT:', accountId );
-
-        const accountNames = Object.keys ( this.accounts );
-        this.accountId = (( accountId in this.accounts ) && accountId ) || ( accountNames.length && accountNames [ 0 ]) || '';
     }
 
     //----------------------------------------------------------------//

@@ -10,6 +10,7 @@
 #include <functional>
 #include <inttypes.h>
 #include <iostream>
+#include <limits>
 #include <list>
 #include <map>
 #include <memory>
@@ -83,5 +84,9 @@ typedef Poco::Int32             s32;
 typedef Poco::Int64             s64;
 
 #define VOL_FILTER_ROOT "volition"
+
+#if !defined(UNUSED)
+    #define UNUSED(x) ((void)(x))
+#endif
 
 #endif

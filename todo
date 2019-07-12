@@ -86,3 +86,34 @@ validator app - sample
 VOL:ETH
 onboarding
 bearer bond vs oracles
+
+----------------------------------------------------------------
+
+banner at the top connected to TEST/PROD server
+
+renderSVGforPrint {
+    return 2.5x3.5 svg
+}
+
+Collection screen
+    - filter collection
+    - print filtered collection
+    - visually represent craftability (rollover)
+Crafting modal accessed from asset in collection
+    - working backward from possible recipe
+
+Customizing
+OpenPack(assetID){}
+ChangeArt (asset, mediaType) {
+    Input URL
+    Then Submit
+}
+ChangeName (card, mediaType) {
+    Input new name
+    Submit
+}
+
+React Native app that uses the camera that scans the QR code and returns raw card data including the owner:
+
+QR CODE Validator {
+}

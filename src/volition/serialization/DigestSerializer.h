@@ -44,36 +44,43 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const bool& value ) override {
+        UNUSED ( name );
         *this->mStream << value;
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const double& value ) override {
+        UNUSED ( name );
         *this->mStream << value;
     }
 
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const u64& value ) override {
+        UNUSED ( name );
         *this->mStream << value;
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const string& value ) override {
+        UNUSED ( name );
         *this->mStream << value;
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
+        UNUSED ( name );
         value.serialize ( *this );
     }
 
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) override {
+        UNUSED ( name );
         serializeFunc ( *this );
     }
 
     //----------------------------------------------------------------//
     void AbstractSerializerFrom_stringToTree ( SerializerPropertyName name, string value ) override {
+        UNUSED ( name );
         assert ( false );
     }
 

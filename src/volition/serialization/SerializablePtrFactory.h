@@ -18,6 +18,7 @@ protected:
 
     //----------------------------------------------------------------//
     virtual unique_ptr < TYPE > SerializablePtrFactory_make ( const AbstractSerializerFrom& serializer ) {
+        UNUSED ( serializer );
         return make_unique < TYPE >();
     }
 };

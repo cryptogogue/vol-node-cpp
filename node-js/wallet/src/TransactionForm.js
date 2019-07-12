@@ -1,21 +1,27 @@
 /* eslint-disable no-whitespace-before-property */
 
-import React, { Component }         from 'react';
-import { Button, Form, Segment, Select } from 'semantic-ui-react';
+import { AppStateStore }                                                        from './stores/AppStateStore';
+import { Service }                                                              from './stores/Service';
+import { Store, useStore }                                                      from './stores/Store';
+import * as util                                                                from './utils/util';
+import { action, computed, extendObservable, observable, observe }              from 'mobx';
+import { observer }                                                             from 'mobx-react';
+import React, { useState }                                                      from 'react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Select, Segment }  from 'semantic-ui-react';
 
 //================================================================//
-// TransactionForm
+// TransactionFormService
 //================================================================//
-class TransactionForm extends Component {
+class TransactionFormService extends Service {
 
     //----------------------------------------------------------------//
     checkFormInputs () {
 
-        const { schema } = this.props;
         let isValid = true;
 
-        Object.keys ( schema.fields ).forEach (( fieldName ) => {
-            let fieldValue = this.state [ fieldName ];
+        Object.keys ( this.schema.fields ).forEach (( fieldName ) => {
+            let fieldValue = this.fieldValues [ fieldName ];
+            console.log ( 'FIELD', fieldName, fieldValue );
             if ( fieldValue === null ) {
                 isValid = false;
             }
@@ -25,15 +31,18 @@ class TransactionForm extends Component {
     }
 
     //----------------------------------------------------------------//
-    constructor ( props ) {
-        super ( props );
+    constructor ( appState, schema ) {
+        super ();
 
-        const { accountId, schema } = this.props;
+        const accountId = appState.accountId;
 
-        const defaultKeyName = this.props.appState.getDefaultAccountKeyName ( accountId, 'master' );
+        this.appState = appState;
+        this.schema = schema;
+
+        const defaultKeyName = appState.getDefaultAccountKeyName ( 'master' );
 
         let fieldValues = {
-            makerAccountName: this.props.accountId,
+            makerAccountName: accountId,
             makerKeyName: defaultKeyName,
             makerNonce: -1,
         };
@@ -42,10 +51,11 @@ class TransactionForm extends Component {
             fieldValues [ name ] = fieldValues [ name ] || null;
         });
 
-        this.state = fieldValues;
+        extendObservable ( this, { fieldValues: fieldValues });
     }
 
     //----------------------------------------------------------------//
+    @action
     handleChange ( event ) {
         
         let typedValue = null;
@@ -55,8 +65,7 @@ class TransactionForm extends Component {
             const type = event.target.type;
             typedValue = ( type === 'number' ) ? Number ( value ) : String ( value );
         }
-
-        this.setState ({[ event.target.name ]: typedValue });
+        this.fieldValues [ event.target.name ] = typedValue;
     }
 
     //----------------------------------------------------------------//
@@ -67,11 +76,11 @@ class TransactionForm extends Component {
         if ( name === 'makerAccountName' ) return;
         if ( name === 'makerNonce' ) return;
 
-        let value = this.state [ name ] === null ? '' : this.state [ name ];
+        let value = this.fieldValues [ name ] === null ? '' : this.fieldValues [ name ];
 
         if ( name === 'makerKeyName' ) {
 
-            const accountKeyNames = this.props.appState.getAccountKeyNames ( this.props.accountId );
+            const accountKeyNames = this.appState.accountKeyNames;
 
             //if ( accountKeyNames.length <= 1 ) return;
 
@@ -111,45 +120,49 @@ class TransactionForm extends Component {
             />
         );
     }
-
-    //----------------------------------------------------------------//
-    render () {
-
-        const schema = this.props.schema;
-
-        // order fields using hashOrder
-        let orderedFields = [];
-        Object.keys ( schema.fields ).forEach (( name ) => {
-            const field = schema.fields [ name ];
-            orderedFields [ field.hashOrder ] = name;
-        });
-
-        // add the fields in order
-        let fields = [];
-        orderedFields.forEach (( name ) => {
-            let formInput = this.makeFormInputForField ( name, schema.fields [ name ]);
-            if ( formInput ) {
-                fields.push ( formInput );
-            }
-        });
-
-        const isSubmitEnabled = this.checkFormInputs ();
-
-        let onClickSend = () => {
-            this.props.onSubmit ( this.props.schema, Object.assign ({}, this.state ))
-        };
-
-        return (
-            <Form size = "large">
-                <Segment stacked>
-                    { fields }
-                    <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickSend }>
-                        Send
-                    </Button>
-                </Segment>
-            </Form>
-        );
-    }
 }
+
+//================================================================//
+// TransactionForm
+//================================================================//
+const TransactionForm = observer (( props ) => {
+
+    const { appState, schema } = props;
+
+    const service = useStore (() => new TransactionFormService ( appState, schema ));
+
+    // order fields using hashOrder
+    let orderedFields = [];
+    Object.keys ( schema.fields ).forEach (( name ) => {
+        const field = schema.fields [ name ];
+        orderedFields [ field.hashOrder ] = name;
+    });
+
+    // add the fields in order
+    let fields = [];
+    orderedFields.forEach (( name ) => {
+        let formInput = service.makeFormInputForField ( name, schema.fields [ name ]);
+        if ( formInput ) {
+            fields.push ( formInput );
+        }
+    });
+
+    const isSubmitEnabled = service.checkFormInputs ();
+
+    let onClickSend = () => {
+        this.props.onSubmit ( schema, Object.assign ({}, service.fieldValues ))
+    };
+
+    return (
+        <Form size = "large">
+            <Segment stacked>
+                { fields }
+                <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickSend }>
+                    Send
+                </Button>
+            </Segment>
+        </Form>
+    );
+});
 
 export default TransactionForm;
