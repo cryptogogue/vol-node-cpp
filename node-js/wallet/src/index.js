@@ -8,7 +8,6 @@ configure ({
 });
 
 import AccountScreen            from './AccountScreen';
-import { AppStateProvider }     from './AppStateProvider';
 import CraftingScreen           from './CraftingScreen';
 import DebugHandlebarsScreen    from './DebugHandlebarsScreen';
 import DebugInventoryScreen     from './DebugInventoryScreen';
@@ -34,35 +33,33 @@ const App = () => (
                 <li><Link to = "/stripe">Stripe</Link></li>
             </ul>
             <hr />
-            <AppStateProvider>
-                <Switch>
-                    <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
-                    <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
+            <Switch>
+                <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
+                <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
 
-                    <Route exact path = "/:userId/accounts/new" component = { NewAccountScreen }/>
-                    <Route exact path = "/accounts/new" component = { NewAccountScreen }/>
+                <Route exact path = "/:userId/accounts/new" component = { NewAccountScreen }/>
+                <Route exact path = "/accounts/new" component = { NewAccountScreen }/>
 
-                    <Route exact path = "/:userId/accounts/:accountId" component = { AccountScreen }/>
-                    <Route exact path = "/accounts/:accountId" component = { AccountScreen }/>
+                <Route exact path = "/:userId/accounts/:accountId" component = { AccountScreen }/>
+                <Route exact path = "/accounts/:accountId" component = { AccountScreen }/>
 
-                    <Route exact path = "/:userId/accounts/:accountId/crafting" component = { CraftingScreen }/>
-                    <Route exact path = "/accounts/:accountId/crafting" component = { CraftingScreen }/>
+                <Route exact path = "/:userId/accounts/:accountId/crafting" component = { CraftingScreen }/>
+                <Route exact path = "/accounts/:accountId/crafting" component = { CraftingScreen }/>
 
-                    <Route exact path = "/:userId/accounts" component = { AccountScreen }/>
-                    <Route exact path = "/accounts" component = { AccountScreen }/>
-                    
-                    <Route exact path = "/:userId/login" component = { LoginScreen }/>
-                    <Route exact path = "/login" component = { LoginScreen }/>
+                <Route exact path = "/:userId/accounts" component = { AccountScreen }/>
+                <Route exact path = "/accounts" component = { AccountScreen }/>
+                
+                <Route exact path = "/:userId/login" component = { LoginScreen }/>
+                <Route exact path = "/login" component = { LoginScreen }/>
 
-                    <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
-                    <Route exact path = "/debug/inventory" component = { DebugInventoryScreen }/>
-                    <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
-                    <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
+                <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
+                <Route exact path = "/debug/inventory" component = { DebugInventoryScreen }/>
+                <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
+                <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
 
-                    <Route exact path = "/:userId/" component = { RegisterScreen }/>
-                    <Route exact path = "/" component = { RegisterScreen }/>
-                </Switch>
-            </AppStateProvider>
+                <Route exact path = "/:userId/" component = { RegisterScreen }/>
+                <Route exact path = "/" component = { RegisterScreen }/>
+            </Switch>
         </div>
     </BrowserRouter>
 )

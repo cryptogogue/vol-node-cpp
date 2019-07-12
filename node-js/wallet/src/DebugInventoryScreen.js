@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { useLocalStore }    from './stores/LocalStore';
+import { useStore }         from './stores/Store';
 import { InventoryStore }   from './stores/InventoryStore';
 import { observer }         from 'mobx-react';
 import React                from 'react';
@@ -13,7 +13,7 @@ const DebugInventoryScreen = observer (( props ) => {
 
     console.log ( 'RENDER INVENTORY SCREEN' )
 
-    const store = useLocalStore (() => new InventoryStore ());
+    const store = useStore (() => new InventoryStore ());
 
     if ( store.loading === true ) {
         return (<div>{ 'LOADING' }</div>);

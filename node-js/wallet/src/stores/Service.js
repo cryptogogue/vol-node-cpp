@@ -1,15 +1,15 @@
 /* eslint-disable no-whitespace-before-property */
 
-import React            from 'react';
-import { Redirect }     from 'react-router-dom';
+import { Store }        from './Store';
 
 //================================================================//
-// LocalStore
+// Store
 //================================================================//
-export class LocalStore {
+export class Service extends Store {
 
     //----------------------------------------------------------------//
     constructor () {
+        super ();
 
         this.revocables = new Map (); // need to use a propet set to contain objects
         this.revoked = false;
@@ -18,22 +18,6 @@ export class LocalStore {
     //----------------------------------------------------------------//
     isRevoked () {
         return this.revoked;
-    }
-
-    //----------------------------------------------------------------//
-    prefixURL ( url ) {
-
-        let userId = this.props.match.params.userId;
-        if ( userId && userId.length ) {
-            return '/' + userId + url;
-        }
-        return url;
-    }
-
-    //----------------------------------------------------------------//
-    redirect ( url ) {
-        console.log ( 'REDIRECT:', this.prefixURL ( url ));
-        return (<Redirect to = { this.prefixURL ( url )}/>);
     }
 
     //----------------------------------------------------------------//
@@ -49,7 +33,7 @@ export class LocalStore {
     //----------------------------------------------------------------//
     revocableFetchJSON ( input, init ) {
         return this.revocableFetch ( input, init )
-                .then ( response => this.revocablePromise ( response.json ()));
+            .then ( response => this.revocablePromise ( response.json ()));
     }
 
     //----------------------------------------------------------------//
@@ -73,6 +57,7 @@ export class LocalStore {
                     reject ({ isCanceled: true });
                 }
                 else {
+                    console.log ( 'HERE', error );
                     reject ( error );
                 }
             }
@@ -93,6 +78,30 @@ export class LocalStore {
     };
 
     //----------------------------------------------------------------//
+    revocablePromiseWithBackoff ( makePromise, wait, step, asService, retries ) {
+
+        step = step || 2;
+        retries = retries || 0;
+
+        this.revocablePromise ( makePromise ())
+            .then (() => {
+                if ( asService ) {
+                    this.revocableTimeout (() => { this.revocablePromiseWithBackoff ( makePromise, wait, step, asService )}, wait );
+                }
+            })
+            .catch (( error ) => {
+
+                console.log ( error );
+                
+                retries = retries + 1;
+                let retryDelay = wait * Math.pow ( 2, retries );
+                console.log ( 'RETRY:', retries, retryDelay );
+
+                this.revocableTimeout (() => { this.revocablePromiseWithBackoff ( makePromise, wait, step, asService, retries )}, retryDelay );
+            })
+    }
+
+    //----------------------------------------------------------------//
     revocableTimeout ( callback, delay ) {
         
         if ( this.revoked ) return;
@@ -110,40 +119,28 @@ export class LocalStore {
     }
 
     //----------------------------------------------------------------//
-    shutdownAndRevokeAll () {
+    revoke ( revocable ) {
 
-        this.revoked = true;
+        if ( map.has ( revocable )) {
+            map [ revocable ]();
+            map.delete ( revocable );
+        }
+    }
+
+    //----------------------------------------------------------------//
+    revokeAll () {
 
         this.revocables.forEach (( revoke ) => {
             revoke ();
         });
         this.revocables.clear ();
     }
-}
 
-//================================================================//
-// hooks
-//================================================================//
+    //----------------------------------------------------------------//
+    shutdownAndRevokeAll () {
 
-//----------------------------------------------------------------//
-export function useLocalStore ( factory ) {
-
-    const storeRef = React.useRef ();
-    storeRef.current = storeRef.current || factory ();
-
-    React.useEffect (
-        () => {
-
-            const current = storeRef.current;
-
-            return () => {
-                if ( current.shutdownAndRevokeAll ) {
-                    current.shutdownAndRevokeAll ();
-                }
-            };
-        },
-        []
-    );
-
-    return storeRef.current;
+        this.revoked = true;
+        this.revokeAll ();
+        super.shutdown ();
+    }
 }

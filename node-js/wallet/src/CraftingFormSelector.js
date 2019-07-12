@@ -1,6 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { withAppState }                 from './AppStateProvider';
 import CraftingForm                     from './CraftingForm';
 import { observer }                     from "mobx-react";
 import React, { useState }              from 'react';

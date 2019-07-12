@@ -1,129 +1,51 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
+import { AppStateStore }                                                            from './stores/AppStateStore';
+import { Service }                                                                  from './stores/Service';
+import { Store, useStore }                                                          from './stores/Store';
+import * as util                                                                    from './utils/util';
+import { action, computed, extendObservable, observable, observe, runInAction }     from 'mobx';
+import { observer }                                                                 from 'mobx-react';
+import React, { useState }                                                          from 'react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }      from 'semantic-ui-react';
+
 // https://www.npmjs.com/package/js-crypto-utils
 
-import { withAppStateAndUser }  from './AppStateProvider';
-import BaseComponent            from './BaseComponent';
 import * as crypto              from './utils/crypto';
-import React                    from 'react';
-import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 const STATUS_WAITING_FOR_INPUT          = 0;
 const STATUS_VERIFYING_KEY              = 1;
 const STATUS_DONE                       = 2;
 
 //================================================================//
-// ImportAccountScreen
+// ImportAccountService
 //================================================================//
-class ImportAccountScreen extends BaseComponent {
+class ImportAccountService extends Service {
+
+    @observable accountID       = '';
+    @observable errorMessage    = '';
+    @observable phraseOrKey     = '';
+    @observable status          = STATUS_WAITING_FOR_INPUT;
 
     //----------------------------------------------------------------//
-    constructor ( props ) {
-        super ( props );
-
-        this.state = {
-            accountId: '',
-            errorMessage: '',
-            phraseOrKey: '',
-            searchCount: 0,
-            status: STATUS_WAITING_FOR_INPUT,
-        };
+    constructor ( appState ) {
+        super ();
+        this.appState = appState;
     }
 
     //----------------------------------------------------------------//
+    @action
     handleChange ( event ) {
 
-        this.setState ({[ event.target.name ]: event.target.value });
+        this [ event.target.name ] = event.target.value;
     }
 
     //----------------------------------------------------------------//
-    async handleSubmit () {
-
-        try {
-            const key = await crypto.loadKeyAsync ( this.state.phraseOrKey );
-            this.verifyKey ( key );
-        }
-        catch ( error ) {
-
-            console.log ( error );
-        }
-    }
-
-    //----------------------------------------------------------------//
-    render () {
-
-        const { appState } = this.props;
-        const { minerURLs } = appState;
-        const hasMiners = minerURLs.size > 0;
-
-        if ( this.state.status === STATUS_DONE ) return this.redirect ( '/accounts/' + this.state.accountId );
-
-        
-        const { errorMessage, phraseOrKey } = this.state;
-
-        const inputEnabled = hasMiners;
-        const submitEnabled = inputEnabled && ( phraseOrKey.length > 0 );
-
-        let onChange    = ( event ) => { this.handleChange ( event )};
-        let onSubmit    = () => { this.handleSubmit ()};
-
-        let warning;
-        if ( !hasMiners ) {
-            warning = (
-                <Header as="h4" color="red" textAlign="center">
-                    No mining nodes found. Offline or none listed.
-                </Header>
-            );
-        }
-
-        return (
-        
-            <div className='login-form'>
-                {/*
-                    The styles below are necessary for the correct render of this form.
-                    You can do same with CSS, the main idea is that all the elements up to the `Grid`
-                    below must have a height of 100%.
-                */}
-                <style>{`
-                    body > div,
-                    body > div > div,
-                    body > div > div > div.login-form {
-                        height: 100%;
-                    }
-                `}</style>
-                <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                    <Grid.Column style={{ maxWidth: 450 }}>
-                    <Header as="h2" color="teal" textAlign="center">
-                        Import your account
-                    </Header>
-                    { warning }
-                    <Form size = "large" onSubmit = { onSubmit }>
-                        <Segment stacked>
-                            <Form.TextArea
-                                placeholder = "Mnemonic Phrase or Private Key"
-                                name = "phraseOrKey"
-                                value = { this.state.phraseOrKey }
-                                onChange = { onChange }
-                                error = {( errorMessage.length > 0 ) ? true : false }
-                                disabled = { !inputEnabled }
-                            />
-                            {( errorMessage.length > 0 ) && <span>{ errorMessage }</span>}
-                            <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
-                                Login
-                            </Button>
-                        </Segment>
-                    </Form>
-                    </Grid.Column>
-                </Grid>
-            </div>
-        );
-    }
-
-    //----------------------------------------------------------------//
+    @action
     async verifyKey ( key ) {
 
-        const { appState } = this.props;
+        const appState = this.appState;
 
         const publicKey = key.getPublicHex ();
         console.log ( 'PUBLIC_KEY', publicKey );
@@ -135,64 +57,130 @@ class ImportAccountScreen extends BaseComponent {
 
             console.log ( 'ACCOUNT KEY ALREADY EXISTS' );
 
-            this.setState ({
-                accountId: accountId,
-                status: STATUS_DONE,
-            });
+            this.accountId = accountId;
+            this.status = STATUS_DONE;
+
             return;
         }
 
         const keyID = key.getKeyID ();
         console.log ( 'KEY_ID', keyID );
 
-        this.setState ({
-            status: STATUS_VERIFYING_KEY,
-            searchCount: 0,
-        })
- 
+        this.status = STATUS_VERIFYING_KEY;
+
         let keyName = false;
-        let searchCount = 0;
 
-        let verify = async ( url ) => {
+        try {
+            const data = await this.revocableFetchJSON ( appState.node + '/keys/' + keyID );
 
-            try {
-                const data = await this.revocableFetchJSON ( url + '/keys/' + keyID );
+            const keyInfo = data && data.keyInfo;
 
-                const keyInfo = data && data.keyInfo;
-
-                if ( keyInfo ) {
-                    accountId = keyInfo.accountName;
-                    keyName = keyInfo.keyName;
-                }
+            if ( keyInfo ) {
+                accountId = keyInfo.accountName;
+                keyName = keyInfo.keyName;
             }
-            catch ( error ) {
-                console.log ( error );
-            }
-            this.setState ({ searchCount: searchCount++ });
+        }
+        catch ( error ) {
+            console.log ( error );
         }
 
-        appState.minerURLs.forEach ( async ( url ) => {
-
-            await verify ( url );
-
+        runInAction (() => {
             if ( accountId ) {
 
                 const privateKey = key.getPrivateHex ();
-                appState.affirmAccountAndKey ( accountId, keyName, privateKey, publicKey ); // TODO: should affirm the account and key
+                appState.affirmAccountAndKey ( accountId, keyName, privateKey, publicKey );
 
-                this.setState ({
-                    accountId: accountId,
-                    status: STATUS_DONE,
-                });
-                return;
+                this.accountId = accountId;
+                this.status = STATUS_DONE;
+            }
+            else {
+                this.errorMessage = 'Account not found.';
+                this.status = STATUS_WAITING_FOR_INPUT;
             }
         });
-        
-        this.setState ({
-            errorMessage: 'Account not found.',
-            status: STATUS_WAITING_FOR_INPUT,
-        });
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    async verifyPhraseOrKey () {
+
+        try {
+            const key = await crypto.loadKeyAsync ( this.phraseOrKey );
+            this.verifyKey ( key );
+        }
+        catch ( error ) {
+            console.log ( error );
+        }
     }
 }
 
-export default withAppStateAndUser ( ImportAccountScreen );
+//================================================================//
+// ImportAccountScreen
+//================================================================//
+const ImportAccountScreen = observer (( props ) => {
+
+    const appState      = useStore (() => new AppStateStore ( util.getUserId ( props )));
+    const service       = useStore (() => new ImportAccountService ( appState ));
+
+    let onChange    = ( event ) => { service.handleChange ( event )};
+    let onSubmit    = () => { service.verifyPhraseOrKey ()};
+
+    const hasMiners         = appState.node.length > 0;
+    const inputEnabled      = hasMiners;
+    const submitEnabled     = inputEnabled && ( service.phraseOrKey.length > 0 );
+
+    if ( service.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + service.accountId );
+
+    let warning;
+    if ( !appState.node.length > 0 ) {
+        warning = (
+            <Header as="h4" color="red" textAlign="center">
+                No mining node specified.
+            </Header>
+        );
+    }
+
+    return (
+    
+        <div className='login-form'>
+            {/*
+                The styles below are necessary for the correct render of this form.
+                You can do same with CSS, the main idea is that all the elements up to the `Grid`
+                below must have a height of 100%.
+            */}
+            <style>{`
+                body > div,
+                body > div > div,
+                body > div > div > div.login-form {
+                    height: 100%;
+                }
+            `}</style>
+            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
+                <Grid.Column style={{ maxWidth: 450 }}>
+                <Header as="h2" color="teal" textAlign="center">
+                    Import your account
+                </Header>
+                { warning }
+                <Form size = "large" onSubmit = { onSubmit }>
+                    <Segment stacked>
+                        <Form.TextArea
+                            placeholder = "Mnemonic Phrase or Private Key"
+                            name = "phraseOrKey"
+                            value = { service.phraseOrKey }
+                            onChange = { onChange }
+                            error = {( service.errorMessage.length > 0 ) ? true : false }
+                            disabled = { !inputEnabled }
+                        />
+                        {( service.errorMessage.length > 0 ) && <span>{ service.errorMessage }</span>}
+                        <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
+                            Login
+                        </Button>
+                    </Segment>
+                </Form>
+                </Grid.Column>
+            </Grid>
+        </div>
+    );
+});
+
+export default ImportAccountScreen;

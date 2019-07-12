@@ -40,7 +40,7 @@ class Transactions extends Component {
         return (
             <div>
                 <Segment>
-                    <Button onClick={this.getTransactions}>
+                    <Button onClick = { this.getTransactions }>
                         Get Transactions
                     </Button>
                     {this.state.transactions && <p>Transaction 0: { this.state.transactions }</p>}

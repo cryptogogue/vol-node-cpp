@@ -1,11 +1,16 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { withAppStateAndUser }      from './AppStateProvider';
-import BaseComponent                from './BaseComponent';
+import { AppStateStore }                                                        from './stores/AppStateStore';
+import { Service }                                                              from './stores/Service';
+import { Store, useStore }                                                      from './stores/Store';
+import * as util                                                                from './utils/util';
+import { action, computed, extendObservable, observable, observe }              from 'mobx';
+import { observer }                                                             from 'mobx-react';
+import React, { useState }                                                      from 'react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
+
 import * as crypto                  from './utils/crypto';
-import React                        from 'react';
-import { Header, Icon, Button }     from 'semantic-ui-react';
 
 const STATUS_SEARCHING_FOR_BIDS         = 0;
 const STATUS_NO_PROVIDERS_FOUND         = 1;
@@ -15,14 +20,14 @@ const STATUS_POSTING_TRANSACTION        = 4;
 const STATUS_DONE                       = 5;
 
 //================================================================//
-// NewAccountScreen
+// NewAccountService
 //================================================================//
-class NewAccountScreen extends BaseComponent {
+class NewAccountService extends Service {
     
     //----------------------------------------------------------------//
     async acceptBid () {
 
-        const bid = this.state.bestBid;
+        const bid = this.bestBid;
         if ( !bid ) return;
 
         console.log ( 'ACCEPTING BID' );
@@ -30,9 +35,9 @@ class NewAccountScreen extends BaseComponent {
         this.setState ({ status: STATUS_POSTING_TRANSACTION })
 
         const order = {
-            accountName:    this.state.accountId,
+            accountName:    this.accountId,
             keyName:        'master',
-            publicKey:      this.state.publicKey,
+            publicKey:      this.publicKey,
             amount:         0,
         };
 
@@ -56,10 +61,10 @@ class NewAccountScreen extends BaseComponent {
     }
 
     //----------------------------------------------------------------//
-    constructor ( props ) {
-        super ( props );
+    constructor ( appState ) {
+        super ();
 
-        // TODO: posible to show spinner while this sets up?
+        this.appState = appState;
 
         // Create random string for account ID
         const accountId = 'vol_' + Math.random ().toString ( 36 ).substr ( 2, 9 );
@@ -69,20 +74,20 @@ class NewAccountScreen extends BaseComponent {
         const privateKey = key.getPrivateHex ();
         const publicKey = key.getPublicHex ();
 
-        this.state = {
-            accountId: accountId,
-            privateKey: privateKey,
-            publicKey: publicKey,
-            seedPhrase: mnemonic,
-            status: STATUS_SEARCHING_FOR_BIDS,
-            searchCount: 0,
-            providers: [],
-            bestBid: false,
-        };
+        extendObservable ( this, {
+            accountId:      accountId,
+            privateKey:     privateKey,
+            publicKey:      publicKey,
+            seedPhrase:     mnemonic,
+            status:         STATUS_SEARCHING_FOR_BIDS,
+            searchCount:    0,
+            providers:      [],
+            bestBid:        false,
+        });
 
         this.miners = [];
 
-        this.revocableTimeout (() => { this.searchForBids (); }, 0 );
+        this.revocableTimeout (() => { this.searchForBids ()}, 0 );
     }
 
     //----------------------------------------------------------------//
@@ -93,7 +98,7 @@ class NewAccountScreen extends BaseComponent {
         console.log ( 'POSTING TRANSACTION' );
         console.log ( 'MINERS', minerURLs );
 
-        this.setState ({ status: STATUS_POSTING_TRANSACTION })
+        this.status = STATUS_POSTING_TRANSACTION;
 
         let success = 0;
 
@@ -122,68 +127,15 @@ class NewAccountScreen extends BaseComponent {
         await this.revocableAll ( promises );
 
         if ( success > 0 ) {
-            this.props.appState.saveAccount ( this.state.accountId, this.state.privateKey, this.state.publicKey );
+            this.this.appState.saveAccount ( this.accountId, this.privateKey, this.publicKey );
             this.revocableSetState ({ status: STATUS_DONE });
         }
     }
 
     //----------------------------------------------------------------//
-    render () {
-
-        if ( this.state.status === STATUS_DONE ) return this.redirect ( '/accounts/' + this.state.accountId );
-
-        return (
-            <div>
-                <Header>{ this.state.accountId }</Header>
-                <Header>Mnemonic seed phrase</Header>
-                <p>{ this.state.seedPhrase }</p>
-                <Header>Keys</Header>
-                <p>Public Key: { this.state.publicKey }</p>
-                <p>Private Key: { this.state.privateKey }</p>
-                <Header size = "small">You will not be able to recover your seed phrase and private key later</Header>
-
-                { this.renderBid ()}
-                { this.renderButton ()}
-            </div>
-        );
-    }
-
-    //----------------------------------------------------------------//
-    renderBid () {
-
-        const { status, bestBid } = this.state;
-
-        if ( status === STATUS_SEARCHING_FOR_BIDS ) {
-            return (<Header>SEARCHING FOR BIDS...</Header>);
-        }
-        else if ( status === STATUS_NO_PROVIDERS_FOUND ) {
-            return (<Header>NO PROVIDERS FOUND</Header>);
-        }
-        else if ( status === STATUS_NO_BIDS_FOUND ) {
-            return (<Header>NO BIDS FOUND</Header>);
-        }
-        else if ( bestBid ) {
-            return (<Header>{ 'BEST BID: $' + bestBid.accountPrice }</Header>);
-        }
-    }
-
-    //----------------------------------------------------------------//
-    renderButton () {
-
-        const isEnabled = ( this.state.status === STATUS_FOUND_BID );
-
-        return (
-            <Button primary icon labelPosition = "right" disabled = { !isEnabled } onClick = {() => { this.acceptBid ()}}>
-                Accept bid
-                <Icon name = "right arrow" />
-            </Button>
-        );
-    }
-
-    //----------------------------------------------------------------//
     async searchForBids () {
 
-        const { marketURLs } = this.props.appState;
+        const { marketURLs } = this.appState;
 
         if ( marketURLs.size <= 0 ) {
             this.setState ({ status: STATUS_NO_PROVIDERS_FOUND });
@@ -240,4 +192,62 @@ class NewAccountScreen extends BaseComponent {
     }
 }
 
-export default withAppStateAndUser ( NewAccountScreen );
+//================================================================//
+// NewAccountScreen
+//================================================================//
+const NewAccountScreen = observer (( props ) => {
+
+    const appState  = useStore (() => new AppStateStore ( util.getUserId ( props )));
+    const service   = useStore (() => new NewAccountService ( appState ));
+
+    if ( service.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + service.accountId );
+
+    return (
+        <div>
+            <Header>{ service.accountId }</Header>
+            <Header>Mnemonic seed phrase</Header>
+            <p>{ service.seedPhrase }</p>
+            <Header>Keys</Header>
+            <p>Public Key: { service.publicKey }</p>
+            <p>Private Key: { service.privateKey }</p>
+            <Header size = "small">You will not be able to recover your seed phrase and private key later</Header>
+
+            { renderBid ()}
+            { renderButton ()}
+        </div>
+    );
+});
+
+//----------------------------------------------------------------//
+function renderBid ( service ) {
+
+    const { status, bestBid } = service.state;
+
+    if ( status === STATUS_SEARCHING_FOR_BIDS ) {
+        return (<Header>SEARCHING FOR BIDS...</Header>);
+    }
+    else if ( status === STATUS_NO_PROVIDERS_FOUND ) {
+        return (<Header>NO PROVIDERS FOUND</Header>);
+    }
+    else if ( status === STATUS_NO_BIDS_FOUND ) {
+        return (<Header>NO BIDS FOUND</Header>);
+    }
+    else if ( bestBid ) {
+        return (<Header>{ 'BEST BID: $' + bestBid.accountPrice }</Header>);
+    }
+}
+
+//----------------------------------------------------------------//
+function renderButton ( service ) {
+
+    const isEnabled = ( service.state.status === STATUS_FOUND_BID );
+
+    return (
+        <Button primary icon labelPosition = "right" disabled = { !isEnabled } onClick = {() => { service.acceptBid ()}}>
+            Accept bid
+            <Icon name = "right arrow" />
+        </Button>
+    );
+}
+
+export default NewAccountScreen;

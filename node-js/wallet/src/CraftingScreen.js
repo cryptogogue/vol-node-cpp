@@ -1,9 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateContext }      from './AppStateProvider';
 import CraftingFormSelector     from './CraftingFormSelector';
 import NavigationBar            from './NavigationBar';
-import { useLocalStore }        from './stores/LocalStore';
+import { useStore }             from './stores/Store';
 import { InventoryStore }       from './stores/InventoryStore';
 import { observer }             from "mobx-react";
 import React, { useContext }    from 'react';
@@ -19,7 +18,7 @@ const CraftingScreen = observer (( props ) => {
     // don't use context just now; needs a rewrite
     //const { appState } = useContext ( AppStateContext );
 
-    const inventory = useLocalStore (() => new InventoryStore ( accountId, 'http://localhost:9090' )); // TODO: get URL from context after rewrite
+    const inventory = useStore (() => new InventoryStore ( accountId, 'http://localhost:9090' )); // TODO: get URL from context after rewrite
 
     return (
         <div>

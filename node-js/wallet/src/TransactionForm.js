@@ -1,6 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { withAppState }             from './AppStateProvider';
 import React, { Component }         from 'react';
 import { Button, Form, Segment, Select } from 'semantic-ui-react';
 
@@ -153,4 +152,4 @@ class TransactionForm extends Component {
     }
 }
 
-export default withAppState ( TransactionForm );
+export default TransactionForm;

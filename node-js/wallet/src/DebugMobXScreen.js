@@ -1,14 +1,14 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { LocalStore, useLocalStore }    from './stores/LocalStore';
-import { action, computed, observable } from "mobx";
-import { observer }                     from "mobx-react";
-import React                            from 'react';
+import { Store, useStore }                  from './stores/Store';
+import { action, computed, observable }     from "mobx";
+import { observer }                         from "mobx-react";
+import React                                from 'react';
 
 //================================================================//
 // DebugMobXScreenStore
 //================================================================//
-class DebugMobXScreenStore extends LocalStore {
+class DebugMobXScreenStore extends Store {
 
     @observable index = 0;
 
@@ -37,7 +37,7 @@ class DebugMobXScreenStore extends LocalStore {
 //================================================================//
 const DebugMobXScreen = observer (( props ) => {
 
-    const store = useLocalStore (() => new DebugMobXScreenStore ([ 'foo', 'doop', 'moop' ]));
+    const store = useStore (() => new DebugMobXScreenStore ([ 'foo', 'doop', 'moop' ]));
 
     const onKeyDown = ( e ) => {
         if ( e.keyCode === 38 ) {

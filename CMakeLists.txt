@@ -35,6 +35,7 @@ target_sources ( volition-lib
         src/volition/AbstractAPIRequestHandler.cpp
         src/volition/AbstractRequestHandler.cpp
         src/volition/AbstractTransaction.cpp
+        src/volition/AssetID.cpp
         src/volition/Block.cpp
         src/volition/Chain.cpp
         src/volition/ChainMetadata.cpp
@@ -42,12 +43,11 @@ target_sources ( volition-lib
         src/volition/FileSys.cpp
         src/volition/Format.cpp
         src/volition/Ledger.cpp
+        src/volition/LuaContext.cpp
         src/volition/Miner.cpp
         src/volition/MinerInfo.cpp
         src/volition/Policy.cpp
         src/volition/RouteTable.cpp
-        src/volition/Schema.cpp
-        src/volition/SchemaLua.cpp
         src/volition/Signature.cpp
         src/volition/SquapFactory.cpp
         src/volition/SyncChainTask.cpp

@@ -118,16 +118,16 @@ async function _getBid ( request, result ) {
 //----------------------------------------------------------------//
 async function _getStatus ( request, result ) {
 
-    console.log ( 'MINER URL:', MINER_URL );
+    // console.log ( 'MINER URL:', MINER_URL );
 
-    const status = await _fetchStatus ();
-    result.json ( status );
+    // const status = await _fetchStatus ();
+    // result.json ( status );
 
-    // const message = {
-    //     type: 'VOL_PROVIDER',
-    // };
+    const message = {
+        type: 'VOL_PROVIDER',
+    };
 
-    // result.json ( message );
+    result.json ( message );
 }
 
 //----------------------------------------------------------------//

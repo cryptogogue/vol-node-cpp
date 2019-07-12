@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
-import { LocalStore }                                       from './LocalStore';
+import { Store }                                            from './Store';
 import { barcodeToSVG }                                     from '../utils/pdf417';
 import { meta }                                             from '../resources/meta';
 import { action, computed, extendObservable, observable }   from 'mobx';
@@ -13,7 +13,7 @@ const DEBUG = true;
 //================================================================//
 // InventoryStore
 //================================================================//
-export class InventoryStore extends LocalStore {
+export class InventoryStore extends Store {
 
     @observable loading     = true;
 

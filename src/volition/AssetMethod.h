@@ -5,7 +5,7 @@
 #define VOLITION_ASSETMETHOD_H
 
 #include <volition/common.h>
-#include <volition/serialization.h>
+#include <volition/serialization/Serialization.h>
 #include <volition/SquapFactory.h>
 
 namespace Volition {
