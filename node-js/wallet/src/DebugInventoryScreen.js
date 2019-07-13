@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { useStore }         from './stores/Store';
-import { InventoryStore }   from './stores/InventoryStore';
+import { useService }       from './stores/Service';
+import { InventoryService }   from './stores/InventoryService';
 import { observer }         from 'mobx-react';
 import React                from 'react';
 import { List }             from 'semantic-ui-react';
@@ -13,7 +13,7 @@ const DebugInventoryScreen = observer (( props ) => {
 
     console.log ( 'RENDER INVENTORY SCREEN' )
 
-    const store = useStore (() => new InventoryStore ());
+    const store = useService (() => new InventoryService ());
 
     if ( store.loading === true ) {
         return (<div>{ 'LOADING' }</div>);

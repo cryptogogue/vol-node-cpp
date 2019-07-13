@@ -1,8 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateStore }                                                        from './stores/AppStateStore';
-import { Service }                                                              from './stores/Service';
-import { Store, useStore }                                                      from './stores/Store';
+import { AppStateService }                                                      from './stores/AppStateService';
+import { Service, useService }                                                  from './stores/Service';
 import * as util                                                                from './utils/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';
@@ -19,7 +18,7 @@ const LoginScreen = observer (( props ) => {
     const [ errorMessage, setErrorMessage ] = useState ( '' );
     const [ password, setPassword ] = useState ( '' );
 
-    const appState = useStore (() => new AppStateStore ( util.getUserId ( props )));
+    const appState = useService (() => new AppStateService ( util.getUserId ( props )));
 
     if ( !appState.hasUser ()) return appState.redirect ( '/' );
     if ( appState.isLoggedIn ()) return appState.redirect ( '/accounts' );

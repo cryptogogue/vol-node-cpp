@@ -1,8 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateStore }                                                        from './stores/AppStateStore';
-import { Service }                                                              from './stores/Service';
-import { Store, useStore }                                                      from './stores/Store';
+import { AppStateService }                                                      from './stores/AppStateService';
+import { Service, useService }                                                  from './stores/Service';
 import * as util                                                                from './utils/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';
@@ -63,8 +62,8 @@ class RegisterService extends Service {
 //================================================================//
 const RegisterScreen = observer (( props ) => {
     
-    const appState = useStore (() => new AppStateStore ( util.getUserId ( props )));
-    const service = useStore (() => new RegisterService ( appState ));
+    const appState = useService (() => new AppStateService ( util.getUserId ( props )));
+    const service = useService (() => new RegisterService ( appState ));
 
     if ( appState.hasUser ()) {
         const to = appState.isLoggedIn () ? '/accounts' : '/login';

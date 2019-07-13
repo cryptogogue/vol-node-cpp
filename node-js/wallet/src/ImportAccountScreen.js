@@ -1,9 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { AppStateStore }                                                            from './stores/AppStateStore';
-import { Service }                                                                  from './stores/Service';
-import { Store, useStore }                                                          from './stores/Store';
+import { AppStateService }                                                          from './stores/AppStateService';
+import { Service, useService }                                                      from './stores/Service';
 import * as util                                                                    from './utils/util';
 import { action, computed, extendObservable, observable, observe, runInAction }     from 'mobx';
 import { observer }                                                                 from 'mobx-react';
@@ -119,8 +118,8 @@ class ImportAccountService extends Service {
 //================================================================//
 const ImportAccountScreen = observer (( props ) => {
 
-    const appState      = useStore (() => new AppStateStore ( util.getUserId ( props )));
-    const service       = useStore (() => new ImportAccountService ( appState ));
+    const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
+    const service       = useService (() => new ImportAccountService ( appState ));
 
     let onChange    = ( event ) => { service.handleChange ( event )};
     let onSubmit    = () => { service.verifyPhraseOrKey ()};

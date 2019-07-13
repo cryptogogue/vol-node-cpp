@@ -1,4 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
+
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 

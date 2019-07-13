@@ -1,16 +1,15 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateStore }                                                        from './stores/AppStateStore';
-import { Service }                                                              from './stores/Service';
-import { Store, useStore }                                                      from './stores/Store';
+import { AppStateService }                                                      from './stores/AppStateService';
+import { Service, useService }                                                  from './stores/Service';
 import * as util                                                                from './utils/util';
-import { action, computed, extendObservable, observable, observe }              from 'mobx';
+import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                                                             from 'mobx-react';
 import React, { useState }                                                      from 'react';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
 
 import TransactionForm              from './TransactionForm';
-import { transactionSchemas }       from './TransactionSchemas';
+import * as transactions            from './transactions';
 
 //================================================================//
 // TransactionSelectorService
@@ -25,28 +24,26 @@ class TransactionSelectorService extends Service {
 
         // TODO: this is a placeholder; transaction schemas should come from
         // the server.
-        this.transactionSchemas = transactionSchemas ();
+        this.transactionTypes = transactions.transactionTypes;
 
         extendObservable ( this, {
             formIsShown: false,
-            schemaIndex: -1,
+            index: -1,
         });
     }
 
     //----------------------------------------------------------------//
-    handleSubmit ( schema, fieldValues ) {
+    handleSubmit ( transaction ) {
 
-        fieldValues.makerNonce = this.props.nonce;
-
+        this.appState.pushTransaction ( transaction );
         this.showForm ( false );
-        this.appState.startTransaction ( schema, fieldValues );
     }
 
     //----------------------------------------------------------------//
     @action
     selectForm ( index ) {
 
-        this.schemaIndex = index;
+        this.index = index;
     }
 
     //----------------------------------------------------------------//
@@ -54,7 +51,7 @@ class TransactionSelectorService extends Service {
     showForm ( show ) {
 
         this.formIsShown = show;
-        this.schemaIndex = -1;
+        this.index = -1;
     }
 }
 
@@ -63,37 +60,28 @@ class TransactionSelectorService extends Service {
 //================================================================//
 const TransactionFormSelector = observer (( props ) => {
 
-    const { appState, accountId, nonce } = props;
+    const { appState } = props;
 
-    const service = useStore (() => new TransactionSelectorService ( appState ));
+    const service = useService (() => new TransactionSelectorService ( appState ));
 
-    const pendingTransaction = appState.getPendingTransaction ( accountId );
-    if ( pendingTransaction ) {
-        return renderPendingTransaction ( pendingTransaction );
-    }
-
-    const isShowFormEnabled = (
-        accountId &&
-        ( accountId.length > 0 ) &&
-        ( nonce >= 0 )
-    );
+    const isShowFormEnabled = ( appState.nonce >= 0 );
 
     if ( isShowFormEnabled && service.formIsShown ) {
 
         let transactionForm;
 
-        const schemaIndex = service.schemaIndex;
+        const index = service.index;
 
-        if ( 0 <= schemaIndex ) {
+        if ( 0 <= index ) {
 
-            let onSubmit = ( schema, fieldValues ) => {
-                service.handleSubmit ( schema, fieldValues )
+            let onSubmit = ( transaction ) => {
+                service.handleSubmit ( transaction )
             };
 
             transactionForm = (
                 <TransactionForm
                     appState = { appState }
-                    schema = { service.transactionSchemas [ schemaIndex ]}
+                    transactionType = { service.transactionTypes [ index ]}
                     onSubmit = { onSubmit }
                 />
             );
@@ -125,8 +113,9 @@ function renderDropdown ( service ) {
 
     let options = [];
 
-    service.transactionSchemas.forEach ( function ( schema, index ) {
-        options.push ({ key:schema.transactionType, value:index, text:schema.friendlyName });
+    service.transactionTypes.forEach ( function ( transactionType, index ) {
+        const schema = transactions.schemaForType ( transactionType );
+        options.push ({ key:index, value:index, text:schema.friendlyName });
     });
 
     return (
@@ -138,14 +127,6 @@ function renderDropdown ( service ) {
             options = { options }
             onChange = {( event, data ) => { service.selectForm ( data.value )}}
         />
-    );
-}
-
-//----------------------------------------------------------------//
-function renderPendingTransaction ( transaction ) {
-
-    return (
-        <p>{ transaction.friendlyName }</p>
     );
 }
 

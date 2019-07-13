@@ -2,8 +2,9 @@
 /* eslint-disable no-loop-func */
 
 import * as storage         from '../utils/storage';
-import { Store }            from './Store';
-import { action, computed, extendObservable, observe, observable } from 'mobx';
+import * as transactions    from '../transactions';
+import { Service }          from './Service';
+import { action, computed, extendObservable, observe, observable, runInAction } from 'mobx';
 import React                from 'react';
 import { Redirect }         from 'react-router';
 
@@ -12,15 +13,11 @@ const STORE_NODE            = '.vol_node';
 const STORE_NODES           = '.vol_nodes';
 const STORE_PASSWORD_HASH   = '.vol_password_hash';
 const STORE_SESSION         = '.vol_session';
-const STORE_TRANSACTIONS    = '.vol_transactions';
-
-const TRANSACTION_STATUS_PENDING    = 'pending';
-const TRANSACTION_STATUS_DONE       = 'done';
 
 export const NODE_TYPE = {
     UNKNOWN:    'UNKNOWN',
     MINING:     'MINING',
-    PROVIDER:   'PROVIDER',
+    MARKET:     'MARKET',
 };
 
 export const NODE_STATUS = {
@@ -30,13 +27,14 @@ export const NODE_STATUS = {
 };
 
 //================================================================//
-// AppStateStore
+// AppStateService
 //================================================================//
-export class AppStateStore extends Store {
+export class AppStateService extends Service {
 
     @observable userId;
     @observable accountId;
     @observable accountInfo;
+    @observable nextTransactionCost;
 
     // persisted
     @observable accounts;
@@ -45,6 +43,9 @@ export class AppStateStore extends Store {
     @observable passwordHash;
     @observable session;
     @observable transactions;
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // computed
 
     //----------------------------------------------------------------//
     @computed get
@@ -66,7 +67,7 @@ export class AppStateStore extends Store {
         let count = 0;
         for ( let url in this.nodes ) {
             const info = this.nodes [ url ];
-            if (( info.type === NODE_TYPE.PROVIDER ) && ( info.status === NODE_STATUS.ONLINE )) {
+            if (( info.type === NODE_TYPE.MARKET ) && ( info.status === NODE_STATUS.ONLINE )) {
                 count++;
             }
         }
@@ -88,12 +89,109 @@ export class AppStateStore extends Store {
     }
 
     //----------------------------------------------------------------//
+    @computed get
+    balance () {
+
+        let cost = 0;
+
+        const pendingTransactions = this.pendingTransactions;
+        for ( let i in pendingTransactions ) {
+            cost += pendingTransactions [ i ].cost;
+        }
+
+        const stagedTransactions = this.stagedTransactions;
+        for ( let i in stagedTransactions ) {
+            cost += stagedTransactions [ i ].cost;
+        }
+
+        return this.accountInfo.balance - cost - this.nextTransactionCost;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    canSubmitTransactions () {
+
+        if ( this.nextNonce < 0 ) return false;
+        if ( this.node.length === 0 ) return false;
+        if ( this.account.stagedTransactions.length === 0 ) return false;
+
+        return this.hasActiveMiningNode;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    hasAccount () {
+        return (( this.accountId.length > 0 ) && this.account );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    hasAccountInfo () {
+        return ( this.accountInfo.nonce >= 0 );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    hasActiveMiningNode () {
+
+        const nodeInfo = this.nodeInfo;
+
+        if ( nodeInfo.type !== NODE_TYPE.MINING ) return false;
+        if ( nodeInfo.status !== NODE_STATUS.ONLINE ) return false;
+
+        return true;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    nextNonce () {
+
+        if ( this.nonce < 0 ) return -1;
+
+        const pendingTransactions = this.pendingTransactions;
+        const pendingTop = pendingTransactions.length;
+
+        return pendingTop > 0 ? pendingTransactions [ pendingTop - 1 ].nonce + 1 : this.nonce;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    nodeInfo () {
+        return this.getNodeInfo ();
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    nonce () {
+        return this.accountInfo.nonce;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    pendingTransactions () {
+        return this.account.pendingTransactions || [];
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    stagedTransactions () {
+        return this.account.stagedTransactions || [];
+    }
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // methods
+
+    //----------------------------------------------------------------//
     @action
     affirmAccountAndKey ( accountId, keyName, privateKey, publicKey ) {
 
         let accounts = this.accounts;
 
-        let account = accounts [ accountId ] || { keys: {}};
+        let account = accounts [ accountId ] || {
+            keys: {},
+            pendingTransactions: [],
+            stagedTransactions: [],
+        };
 
         let key = account.keys [ keyName ] || {};
 
@@ -137,19 +235,14 @@ export class AppStateStore extends Store {
         this.observeMember ( 'nodes',           () => { this.persistValue ( STORE_NODES, this.nodes )});
         this.observeMember ( 'passwordHash',    () => { this.persistValue ( STORE_PASSWORD_HASH, this.passwordHash )});
         this.observeMember ( 'session',         () => { this.persistValue ( STORE_SESSION, this.session )});
-        this.observeMember ( 'transactions',    () => { this.persistValue ( STORE_TRANSACTIONS, this.transactions )});
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    balance () {
-        return this.accountInfo.balance;
     }
 
     //----------------------------------------------------------------//
     // CLEAR App State (reset to initial state)
     @action
     clearState () {
+
+        this.nextTransactionCost = 0;
 
         this.accounts           = {};
         this.session            = this.makeSession ( false );
@@ -159,6 +252,25 @@ export class AppStateStore extends Store {
         this.transactions       = [];
 
         this.setAccountInfo ();
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    clearStagedTransactions () {
+
+        if ( this.hasAccount ) {
+            this.account.stagedTransactions = [];
+        }
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    confirmTransactions ( nonce ) {
+
+        let pendingTransactions = this.account.pendingTransactions;
+        while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce <= nonce )) {
+            pendingTransactions.shift ();
+        }
     }
 
     //----------------------------------------------------------------//
@@ -207,6 +319,16 @@ export class AppStateStore extends Store {
     }
 
     //----------------------------------------------------------------//
+    @action
+    deleteTransactions () {
+
+        if ( this.hasAccount ) {
+            this.account.pendingTransactions = [];
+            this.account.stagedTransactions = [];
+        }
+    }
+
+    //----------------------------------------------------------------//
     deleteUserStorage () {
 
         storage.removeItem ( this.prefixStoreKey ( STORE_ACCOUNTS ));
@@ -214,7 +336,6 @@ export class AppStateStore extends Store {
         storage.removeItem ( this.prefixStoreKey ( STORE_NODES ));
         storage.removeItem ( this.prefixStoreKey ( STORE_PASSWORD_HASH ));
         storage.removeItem ( this.prefixStoreKey ( STORE_SESSION ));
-        storage.removeItem ( this.prefixStoreKey ( STORE_TRANSACTIONS ));
 
         this.disposeObservers ();
         this.clearState ();
@@ -233,52 +354,6 @@ export class AppStateStore extends Store {
             }
         }
         return false;
-    }
-
-    //----------------------------------------------------------------//
-    finishTransaction ( accountId, nonce ) {
-
-        let transactions = this.transactions;
-
-        if ( !( accountId in transactions )) return;
-
-        let transaction = this.state.transactions [ accountId ];
-        if ( transaction.status !== TRANSACTION_STATUS_PENDING ) return;
-        if ( nonce <= transaction.fieldValues.makerNonce ) return;
-
-        transaction.status = Object.assign ({},
-            transaction,
-            { status: TRANSACTION_STATUS_DONE }
-        );
-
-        transactions = Object.assign ({},
-            this.transactions,
-            {[ accountId ] : transaction }
-        );
-
-        this.persistValue ( STORE_TRANSACTIONS, transactions );
-        this.transactions = transactions;
-    }
-
-    //----------------------------------------------------------------//
-    formatTransaction ( format, fieldValues ) {
-
-        let result = {};
-        Object.keys ( format ).forEach (( fieldName ) => {
-
-            const fieldSource = format [ fieldName ];
-            let fieldValue;
-
-            if (( typeof fieldSource ) === 'object' ) {
-                fieldValue = this.formatTransaction ( fieldSource, fieldValues );
-            }
-            else {
-                fieldValue = fieldValues [ fieldSource ];
-            }
-            result [ fieldName ] = fieldValue;
-        });
-
-        return result;
     }
 
     //----------------------------------------------------------------//
@@ -313,7 +388,7 @@ export class AppStateStore extends Store {
     //----------------------------------------------------------------//
     getNodeInfo ( url ) {
 
-        return this.nodes [ url ] || this.makeNodeInfo ();
+        return this.nodes [ url || this.node || '' ] || this.makeNodeInfo ();
     }
 
     //----------------------------------------------------------------//
@@ -349,15 +424,12 @@ export class AppStateStore extends Store {
         this.nodes                  = storage.getItem ( userId + STORE_NODES ) || this.nodes;
         this.passwordHash           = storage.getItem ( userId + STORE_PASSWORD_HASH ) || this.passwordHash;
         this.session                = storage.getItem ( userId + STORE_SESSION ) || this.session;
-        this.transactions           = storage.getItem ( userId + STORE_TRANSACTIONS ) || this.transactions;
 
         for ( let url in this.nodes ) {
             this.nodes [ url ].status = NODE_STATUS.UNKNOWN;
         }
 
-        const accountNames = Object.keys ( this.accounts );
-        this.accountId = (( accountId in this.accounts ) && accountId ) || ( accountNames.length && accountNames [ 0 ]) || '';
-
+        this.setAccount ( accountId );
         this.affirmObservers ();
     }
 
@@ -383,12 +455,6 @@ export class AppStateStore extends Store {
     }
 
     //----------------------------------------------------------------//
-    @computed get
-    nonce () {
-        return this.accountInfo.nonce;
-    }
-
-    //----------------------------------------------------------------//
     persistValue ( key, value ) {
         return storage.setItem ( this.prefixStoreKey ( key ), value );
     }
@@ -409,43 +475,22 @@ export class AppStateStore extends Store {
     }
 
     //----------------------------------------------------------------//
-    async processTransactions () {
+    @action
+    pushTransaction ( transaction ) {
 
-        // const { transactions } = this.state;
+        if ( transaction.fieldValues.makerAccountName !== this.accountId ) throw 'SOMETHING HAPPEN!';
 
-        // let submitTransaction = async ( transaction, url ) => {
+        let account = this.account;
 
-        //     try {
+        let memo = {
+            type:               transaction.type,
+            cost:               transaction.getCost (),
+            fieldValues:        Object.assign ({}, transaction.fieldValues ),
+        }
 
-        //         let body = this.formatTransaction ( transaction.schema.format, transaction.fieldValues );
-        //         body.type = transaction.schema.transactionType;
+        this.account.stagedTransactions.push ( memo );
 
-        //         await this.revocableFetch ( url + '/transactions', {
-        //             method : 'POST',
-        //             headers : { 'content-type': 'application/json' },
-        //             body : JSON.stringify ( body )
-        //         });
-        //     }
-        //     catch ( error ) {
-        //         console.log ( error );
-        //     }
-        // }
-
-        // let promises = [];
-        // for ( let accountName in transactions ) {
-
-        //     const transaction = transactions [ accountName ];
-
-        //     if ( transaction.status === TRANSACTION_STATUS_PENDING ) {
-                
-        //         this.minerURLs.forEach (( url ) => {
-        //             promises.push ( submitTransaction ( transaction, url ));
-        //         });
-        //     }
-        // }
-        // await this.revocableAll ( promises );
-
-        // this.revocableTimeout (() => { this.processTransactions ()}, 1337 );
+        this.setNextTransactionCost ( 0 );
     }
 
     //----------------------------------------------------------------//
@@ -470,6 +515,18 @@ export class AppStateStore extends Store {
 
     //----------------------------------------------------------------//
     @action
+    setAccount ( accountId ) {
+
+        const accountNames = Object.keys ( this.accounts );
+        accountId = (( accountId in this.accounts ) && accountId ) || ( accountNames.length && accountNames [ 0 ]) || '';
+        if ( this.accountId !== accountId ) {
+            this.accountId = accountId;
+            this.setAccountInfo ();
+        }
+    }
+
+    //----------------------------------------------------------------//
+    @action
     setAccountInfo ( balance, nonce ) {
 
         this.accountInfo = {
@@ -480,7 +537,15 @@ export class AppStateStore extends Store {
 
     //----------------------------------------------------------------//
     @action
+    setNextTransactionCost ( cost ) {
+
+        this.nextTransactionCost = cost;
+    }
+
+    //----------------------------------------------------------------//
+    @action
     setNodeInfo ( nodeURL, type, status ) {
+
         if ( nodeURL in this.nodes ) {
             const info = this.nodes [ nodeURL ];
             if (( info.type !== type ) || ( info.status !== status )) {
@@ -490,35 +555,46 @@ export class AppStateStore extends Store {
     }
 
     //----------------------------------------------------------------//
-    setUser ( userId ) {
+    @action
+    async submitTransactions () {
 
-        userId = userId || '';
+        let stagedTransactions = this.account.stagedTransactions;
+        let pendingTransactions = this.account.pendingTransactions;
 
-        if ( this.userId !== userId ) {
+        try {
 
-            console.log ( 'CHANGED USER:', userId );
-            this.loadState ( userId );
+            while ( this.canSubmitTransactions ) {
+
+                let memo = stagedTransactions [ 0 ];
+
+                let fieldValues = Object.assign ({}, memo.fieldValues );
+                fieldValues.makerNonce = this.nextNonce;
+
+                let transaction = transactions.makeTransaction ( memo.type, fieldValues );
+                let body = transaction.format ();
+
+                body.type = transaction.schema.transactionType;
+                body = JSON.stringify ( body );
+                
+                await this.revocableFetch ( this.node + '/transactions', {
+                    method : 'POST',
+                    headers : { 'content-type': 'application/json' },
+                    body : body
+                });
+
+                runInAction (() => {
+                    stagedTransactions.shift ();
+                    pendingTransactions.push ({
+                        type:               transaction.type,
+                        cost:               transaction.getCost (),
+                        fieldValues:        fieldValues,
+                        nonce:              fieldValues.makerNonce,
+                    });
+                });
+            }
         }
-    }
-
-    //----------------------------------------------------------------//
-    startTransaction ( schema, fieldValues ) {
-
-        let transaction = {
-            status:             TRANSACTION_STATUS_PENDING,
-            submitted:          0,
-            schema:             schema,
-            fieldValues:        fieldValues,
+        catch ( error ) {
+             console.log ( 'AN ERROR!', error );
         }
-
-        let transactions = Object.assign ({},
-            this.transactions,
-            {[ fieldValues.makerAccountName ] : transaction }
-        );
-
-        console.log ( 'START TRANSACTION', transactions );
-
-        this.persistValue ( STORE_TRANSACTIONS, transactions );
-        this.transactions = transactions;
     }
 }

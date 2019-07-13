@@ -2,8 +2,8 @@
 
 import CraftingFormSelector     from './CraftingFormSelector';
 import NavigationBar            from './NavigationBar';
-import { useStore }             from './stores/Store';
-import { InventoryStore }       from './stores/InventoryStore';
+import { useService }           from './stores/Service';
+import { InventoryService }       from './stores/InventoryService';
 import { observer }             from "mobx-react";
 import React, { useContext }    from 'react';
 import { Segment, Grid }        from 'semantic-ui-react';
@@ -18,7 +18,7 @@ const CraftingScreen = observer (( props ) => {
     // don't use context just now; needs a rewrite
     //const { appState } = useContext ( AppStateContext );
 
-    const inventory = useStore (() => new InventoryStore ( accountId, 'http://localhost:9090' )); // TODO: get URL from context after rewrite
+    const inventory = useService (() => new InventoryService ( accountId, 'http://localhost:9090' )); // TODO: get URL from context after rewrite
 
     return (
         <div>

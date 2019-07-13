@@ -6,7 +6,7 @@ import { Service }      from './Service';
 import { action, computed, extendObservable, observe, observable } from 'mobx';
 
 //================================================================//
-// AppStateStore
+// AppStateService
 //================================================================//
 export class AccountInfoService extends Service {
 
@@ -33,12 +33,19 @@ export class AccountInfoService extends Service {
 
         let updateBalance = async () => {
 
-            const data = await this.revocableFetchJSON ( this.appState.node + '/accounts/' + this.appState.accountId );
+            try {
+                const data = await this.revocableFetchJSON ( this.appState.node + '/accounts/' + this.appState.accountId );
 
-            if ( data.account && ( data.account.accountName === this.appState.accountId )) {
-                this.appState.setAccountInfo ( data.account.balance, data.account.nonce );
+                if ( data.account && ( data.account.accountName === this.appState.accountId )) {
+                    this.appState.setAccountInfo ( data.account.balance, data.account.nonce );
+                    this.appState.confirmTransactions ( data.account.nonce );
+                }
+            }
+            catch ( error ) {
+                this.appState.setAccountInfo ();
+                throw error;
             }
         }
-        this.revocablePromiseWithBackoff (() => updateBalance (), delay, 2, true );
+        this.revocablePromiseWithBackoff (() => updateBalance (), delay, true );
     }
 }

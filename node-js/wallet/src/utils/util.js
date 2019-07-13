@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { extendObservable, isObservable, observe } from 'mobx';
+import { deepObserve }          from 'mobx-utils';
 import React                    from 'react';
 import { Redirect }             from 'react-router';
 
@@ -25,7 +26,7 @@ export function observeField ( container, field, callback ) {
         valueDisposer && valueDisposer (); // not strictly necessary, but why not?
 
         if ( isObservable ( container [ field ])) {
-            valueDisposer = observe ( container [ field ], callback );
+            valueDisposer = deepObserve ( container [ field ], callback );
         }
     }
 

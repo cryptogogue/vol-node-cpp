@@ -1,5 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
+import { NODE_TYPE, NODE_STATUS }   from './stores/AppStateService';
 import React, { useState }          from 'react';
 import { observer }                 from 'mobx-react';
 import { Button, Form, Segment }    from 'semantic-ui-react';
@@ -31,7 +32,11 @@ const NodeListView = observer (( props ) => {
 
     let urlList = [];
     for ( let url in nodes ) {
-        urlList.push (<p key = { urlList.length }>{ url }</p>)
+
+        const nodeInfo = appState.getNodeInfo ( url );
+        const textColor = nodeInfo.status === NODE_STATUS.ONLINE ? 'black' : 'red';
+
+        urlList.push (<p style = {{ color: textColor }} key = { urlList.length }>{ `${ nodeInfo.type } - ${ url }` }</p>)
     }
 
     return (

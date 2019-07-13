@@ -14,6 +14,6 @@
     "stripe": "^6.36.0"
   },
   "scripts": {
-    "start": "node main.js"
+    "start": "node -r dotenv/config main.js"
   }
 }

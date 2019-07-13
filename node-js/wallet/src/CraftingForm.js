@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { Store, useStore }              from './stores/Store';
+import { Service, useService }          from './stores/Service';
 import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
 import React                            from 'react';
@@ -11,7 +11,7 @@ const CLEAR_DROPDOWN_TEXT = '--';
 //================================================================//
 // CraftingFormValuesStore
 //================================================================//
-class CraftingFormValuesStore extends Store {
+class CraftingFormValuesStore extends Service {
 
     @observable ingredients = {};
     @observable fieldValues = {};
@@ -150,7 +150,7 @@ function renderIngredientList ( formState ) {
 //================================================================//
 const CraftingForm = observer (( props ) => {
 
-    const formState = useStore (() => new CraftingFormValuesStore ( props.inventory, props.methodName ));
+    const formState = useService (() => new CraftingFormValuesStore ( props.inventory, props.methodName ));
 
     const onClickSend = () => {
         props.onSubmit ( Object.assign ({}, formState.fieldValues ))

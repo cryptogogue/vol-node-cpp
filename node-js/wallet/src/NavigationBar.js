@@ -17,6 +17,7 @@ const NavigationBar = observer (( props ) => {
     let onClickAffirmLocalhostNodes     = () => { appState.affirmLocalhostNodes ()};
     let onClickDeleteAccount            = () => { appState.deleteAccount ()};
     let onClickDeleteAllStorage         = () => { appState.deleteStorage ()};
+    let onClickDeleteTransactions       = () => { appState.deleteTransactions ()};
     let onClickDeleteUserStorage        = () => { appState.deleteUserStorage ()};
     let onClickDeleteNodeList           = () => { appState.deleteNodeList ()};
     let onClickLogout                   = () => { appState.login ( false )};
@@ -41,6 +42,7 @@ const NavigationBar = observer (( props ) => {
                         <Dropdown.Item icon = "globe" text = "DEBUG: Affirm Localhost Nodes" onClick = { onClickAffirmLocalhostNodes }/>
                         <Dropdown.Item icon = "globe" text = "DEBUG: Delete Account" onClick = { onClickDeleteAccount }/>
                         <Dropdown.Item icon = "globe" text = "DEBUG: Delete Node List" onClick = { onClickDeleteNodeList }/>
+                        <Dropdown.Item icon = "globe" text = "DEBUG: Delete Transactions" onClick = { onClickDeleteTransactions }/>
                         <Dropdown.Item icon = "globe" text = "DEBUG: Delete User Storage" onClick = { onClickDeleteUserStorage }/>
                         <Dropdown.Item icon = "globe" text = "DEBUG: Delete All Storage" onClick = { onClickDeleteAllStorage }/>
                     </Dropdown.Menu>

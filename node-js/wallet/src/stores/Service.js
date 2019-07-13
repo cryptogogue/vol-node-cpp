@@ -1,18 +1,34 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { Store }        from './Store';
+import * as util        from '../utils/util';
+import { observe }      from 'mobx';
+import React            from 'react';
+import { Redirect }     from 'react-router-dom';
 
 //================================================================//
 // Store
 //================================================================//
-export class Service extends Store {
+export class Service {
 
     //----------------------------------------------------------------//
     constructor () {
-        super ();
+
+        this.disposeObservers ();
 
         this.revocables = new Map (); // need to use a propet set to contain objects
         this.revoked = false;
+    }
+
+    //----------------------------------------------------------------//
+    disposeObservers () {
+
+        if ( this.observerDisposers ) {
+
+            for ( let key in this.observerDisposers ) {
+                this.observerDisposers [ key ]();
+            }
+        }
+        this.observerDisposers = {};
     }
 
     //----------------------------------------------------------------//
@@ -21,25 +37,32 @@ export class Service extends Store {
     }
 
     //----------------------------------------------------------------//
+    observeMember ( name, callback ) {
+
+        this.observerDisposers [ name ] = util.observeField ( this, name, callback );
+    }
+
+    //----------------------------------------------------------------//
     revocableAll ( promises ) {
         return this.revocablePromise ( Promise.all ( promises ));
     }
 
     //----------------------------------------------------------------//
-    revocableFetch ( input, init ) {
-        return this.revocablePromise ( fetch ( input, init ));
+    revocableFetch ( input, init, timeout ) {
+        return this.revocablePromise ( fetch ( input, init ), timeout || 1000 );
     }
 
     //----------------------------------------------------------------//
-    revocableFetchJSON ( input, init ) {
-        return this.revocableFetch ( input, init )
+    revocableFetchJSON ( input, init, timeout ) {
+        return this.revocableFetch ( input, init, timeout || 1000 )
             .then ( response => this.revocablePromise ( response.json ()));
     }
 
     //----------------------------------------------------------------//
-    revocablePromise ( promise ) {
+    revocablePromise ( promise, timeout ) {
 
         let isCancelled = false;
+        let timer;
 
         const wrappedPromise = new Promise (( resolve, reject ) => {
 
@@ -57,13 +80,19 @@ export class Service extends Store {
                     reject ({ isCanceled: true });
                 }
                 else {
-                    console.log ( 'HERE', error );
                     reject ( error );
                 }
             }
 
             let onFinally = () => {
+                clearTimeout ( timer );
                 this.revocables.delete ( wrappedPromise );
+            }
+
+            if ( timeout ) {
+                timer = setTimeout (() => {
+                    onRejected ( 'TIMED OUT' );
+                }, timeout );
             }
 
             promise.then ( onFulfilled, onRejected )
@@ -72,33 +101,41 @@ export class Service extends Store {
 
         this.revocables.set ( wrappedPromise, () => {
             isCancelled = true
+            clearTimeout ( timer );
             console.log ( 'REVOKED PROMISE!' );
         });
         return wrappedPromise;
     };
 
     //----------------------------------------------------------------//
-    revocablePromiseWithBackoff ( makePromise, wait, step, asService, retries ) {
+    revocablePromiseWithBackoff ( makePromise, wait, asService, step, max, retries ) {
 
         step = step || 2;
         retries = retries || 0;
+        max = typeof ( max ) == 'number' ? ( max > 0 ? max : false ) : wait * 10;
 
         this.revocablePromise ( makePromise ())
-            .then (() => {
-                if ( asService ) {
-                    this.revocableTimeout (() => { this.revocablePromiseWithBackoff ( makePromise, wait, step, asService )}, wait );
-                }
-            })
-            .catch (( error ) => {
 
-                console.log ( error );
-                
-                retries = retries + 1;
-                let retryDelay = wait * Math.pow ( 2, retries );
-                console.log ( 'RETRY:', retries, retryDelay );
+        .then (() => {
+            if ( asService ) {
+                this.revocableTimeout (() => { this.revocablePromiseWithBackoff ( makePromise, wait, asService, step, max )}, wait );
+            }
+        })
+        
+        .catch (( error ) => {
 
-                this.revocableTimeout (() => { this.revocablePromiseWithBackoff ( makePromise, wait, step, asService, retries )}, retryDelay );
-            })
+            console.log ( error );
+            
+            retries = retries + 1;
+            let retryDelay = wait * Math.pow ( 2, retries );
+            retryDelay = ( max && ( retryDelay < max )) ? retryDelay : max;
+
+            console.log ( 'RETRY:', retries, retryDelay );
+
+            this.revocableTimeout (() => { this.revocablePromiseWithBackoff ( makePromise, wait, asService, step, max, retries )}, retryDelay );
+        },
+
+        wait );
     }
 
     //----------------------------------------------------------------//
@@ -137,10 +174,36 @@ export class Service extends Store {
     }
 
     //----------------------------------------------------------------//
-    shutdownAndRevokeAll () {
+    shutdown () {
 
         this.revoked = true;
         this.revokeAll ();
-        super.shutdown ();
     }
+}
+
+//================================================================//
+// hooks
+//================================================================//
+
+//----------------------------------------------------------------//
+export function useService ( factory ) {
+
+    const serviceRef = React.useRef ();
+    serviceRef.current = serviceRef.current || factory ();
+
+    React.useEffect (
+        () => {
+
+            const current = serviceRef.current;
+
+            return () => {
+                if ( current.shutdown ) {
+                    current.shutdown ();
+                }
+            };
+        },
+        []
+    );
+
+    return serviceRef.current;
 }

@@ -2,7 +2,7 @@
 /* eslint-disable no-loop-func */
 
 import * as storage                 from '../utils/storage';
-import { NODE_TYPE, NODE_STATUS }   from './AppStateStore';
+import { NODE_TYPE, NODE_STATUS }   from './AppStateService';
 import { Service }                  from './Service';
 import { action, computed, extendObservable, observe, observable } from 'mobx';
 
@@ -21,7 +21,7 @@ export class NodeInfoService extends Service {
             appState:   appState,
         });
 
-        //this.discoverNodes ( 1000 );
+        this.discoverNodes ( 1000 );
     }
 
     //----------------------------------------------------------------//
@@ -32,13 +32,14 @@ export class NodeInfoService extends Service {
             let { type } = this.appState.getNodeInfo ( url );
 
             try {
+
                 const data = await this.revocableFetchJSON ( url );
 
                 if ( data.type === 'VOL_MINING_NODE' ) {
                     type = NODE_TYPE.MINING;
                 }
                 if ( data.type === 'VOL_PROVIDER' ) {
-                    type = NODE_TYPE.PROVIDER;
+                    type = NODE_TYPE.MARKET;
                 }
 
                 this.appState.setNodeInfo ( url, type, NODE_STATUS.ONLINE );
