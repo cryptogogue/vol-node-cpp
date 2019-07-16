@@ -10,6 +10,7 @@ import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import NavigationBar                                        from './NavigationBar';
 import React, { useState }                                  from 'react';
+import { Link }                                             from 'react-router-dom';
 import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
 
 const SORT_MODE = {
@@ -40,7 +41,6 @@ class InventoryController extends Service {
         this.inventory = inventory;
 
         extendObservable ( this, {
-            methodName:     '',
             sortMode:       SORT_MODE.ALPHA_ATOZ,
         });
     }
@@ -51,20 +51,6 @@ class InventoryController extends Service {
         let assetArray = this.inventory.getAssetArray ();
         assetArray.sort (( asset0, asset1 ) => this.compareForSort ( asset0, asset1 ));
         return assetArray;
-    }
-
-    //----------------------------------------------------------------//
-    isCrafting () {
-
-        return this.methodName.length > 0;
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    setMethodName ( methodName ) {
-
-        const methodBindings = this.inventory.getCraftingMethodBindings ();
-        this.methodName = ( methodName && ( methodName in methodBindings ) && methodBindings [ methodName ].valid ) ? methodName : '';
     }
 
     //----------------------------------------------------------------//
@@ -80,7 +66,7 @@ class InventoryController extends Service {
 //================================================================//
 const InventoryFilterMenu = observer (( props ) => {
 
-    const controller = props.controller;
+    const { appState, controller } = props;
 
     const onSortItemClick = ( event, { name }) => controller.setSortMode ( name );
 
@@ -92,13 +78,12 @@ const InventoryFilterMenu = observer (( props ) => {
         
         console.log ( 'METHOD', methodName );
 
-        //const name = `${ methodName }: ${ binding.valid ? 'OK' : 'nope' }`;
-        // methodListItems.push (<List.Item key = { methodName }>{ name }</List.Item>);
         methodListItems.push (<Dropdown.Item
             key = { methodName }
             text = { methodName }
             disabled = { disabled }
-            onClick = {() => controller.setMethodName ( methodName )}
+            as = { Link }
+            to = { appState.prefixURL ( `/accounts/${ appState.accountId }/crafting/${ methodName }` )}
         />);
     }
 
@@ -140,7 +125,6 @@ const InventoryView = observer (( props ) => {
     
     return (
         <div>
-            <InventoryFilterMenu controller = { controller }/>
             { assetLayouts }
         </div>
     );
@@ -157,8 +141,6 @@ const InventoryScreen = observer (( props ) => {
     const inventory     = useService (() => new InventoryService ());
     const controller    = useService (() => new InventoryController ( inventory ));
 
-    // controller.setMethodName ( 'makeRare' );
-
     if ( appState.accountId !== accountIdFromEndpoint ) {
         return appState.redirect ( `/accounts/${ appState.accountId }/inventory` );
     }
@@ -166,29 +148,12 @@ const InventoryScreen = observer (( props ) => {
     if ( inventory.loading === true ) {
         return (<div>{ 'LOADING' }</div>);
     }
-    
-    const handleSubmit = ( fieldValues ) => {
-        // fieldValues.makerNonce = this.props.nonce;
-        // this.showForm ( false );
-        // this.props.appState.startTransaction ( schema, fieldValues );
-    }
 
     return (
         <div>
             <NavigationBar navTitle = "Inventory" appState = { appState }/>
-            <Choose>
-                <When condition = { controller.isCrafting ()}>
-                    <CraftingForm
-                        key         = { controller.methodName }
-                        methodName  = { controller.methodName }
-                        inventory   = { inventory }
-                        onSubmit    = {( fieldValues ) => { handleSubmit ( fieldValues )}}
-                    /> 
-                </When>
-                <Otherwise>
-                    <InventoryView controller = { controller }/>
-                </Otherwise>
-            </Choose>
+            <InventoryFilterMenu appState = { appState } controller = { controller }/>
+            <InventoryView controller = { controller }/>
         </div>
     );
 });

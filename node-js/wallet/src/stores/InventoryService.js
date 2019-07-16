@@ -80,6 +80,11 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
+    methodIsValid ( methodName, assetID ) {
+        return ( methodName !== '' ) && this.binding.methodIsValid ( methodName, assetID );
+    }
+
+    //----------------------------------------------------------------//
     @action
     update ( templates, assets ) {
 

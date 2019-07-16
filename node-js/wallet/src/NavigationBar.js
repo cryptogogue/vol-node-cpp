@@ -25,6 +25,7 @@ const NavigationBar = observer (( props ) => {
 
     const accountsURL   = appState.prefixURL ( `/accounts/${ accountId }` );
     const inventoryURL  = appState.prefixURL ( `/accounts/${ accountId }/inventory` );
+    const craftingURL   = appState.prefixURL ( `/accounts/${ accountId }/crafting` );
 
     return (
         <Menu>
@@ -33,6 +34,7 @@ const NavigationBar = observer (( props ) => {
                     <Dropdown.Menu>
                         <Dropdown.Item icon = "add square" text = "Accounts" as = { Link } to = { accountsURL }/>
                         <Dropdown.Item icon = "add square" text = "Inventory" as = { Link } to = { inventoryURL }/>
+                        <Dropdown.Item icon = "add square" text = "Crafting" as = { Link } to = { craftingURL }/>
                     </Dropdown.Menu>
                 </Dropdown>
             </Menu.Menu>

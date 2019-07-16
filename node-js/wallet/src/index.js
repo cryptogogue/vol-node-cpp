@@ -37,6 +37,9 @@ const App = () => (
                 <Route exact path = "/:userId/accounts/:accountId" component = { AccountScreen }/>
                 <Route exact path = "/accounts/:accountId" component = { AccountScreen }/>
 
+                <Route exact path = "/:userId/accounts/:accountId/crafting/:methodName" component = { CraftingScreen }/>
+                <Route exact path = "/accounts/:accountId/crafting/:methodName" component = { CraftingScreen }/>
+
                 <Route exact path = "/:userId/accounts/:accountId/crafting" component = { CraftingScreen }/>
                 <Route exact path = "/accounts/:accountId/crafting" component = { CraftingScreen }/>
 

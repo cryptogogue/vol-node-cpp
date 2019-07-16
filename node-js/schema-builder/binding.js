@@ -46,7 +46,7 @@ class Binding {
             let methodBinding = this.methodBindingsByAssetID [ assetID ][ methodName ];
             return methodBinding ? methodBinding.valid : false;
         }
-        return this.methodBindingsByName [ methodName ].valid;
+        return ( methodName in this.methodBindingsByName ) && this.methodBindingsByName [ methodName ].valid;
     }
 }
 
