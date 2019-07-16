@@ -29,7 +29,7 @@ const CraftingFormSelector = observer (( props ) => {
     return (
         <div>
             <Dropdown
-                placeholder = "Select Action"
+                placeholder = "Select Method"
                 fluid
                 search
                 selection
@@ -54,9 +54,6 @@ const CraftingScreen = observer (( props ) => {
     const inventory     = useService (() => new InventoryService ());
 
     const [ selectedMethod, setSelectedMethod ] = useState ( methodNameFromEndpoint );
-
-    console.log ( 'METHOD NAME FROM ENDPOINT:', methodNameFromEndpoint );
-    console.log ( 'SELECTED METHOD:', selectedMethod );
 
     if (( appState.accountId !== accountIdFromEndpoint ) || ( selectedMethod !== methodNameFromEndpoint )) {
         return appState.redirect ( `/accounts/${ appState.accountId }/crafting/${ selectedMethod }` );
