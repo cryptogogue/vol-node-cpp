@@ -13,6 +13,7 @@ import { Dropdown, Menu }       from 'semantic-ui-react';
 const NavigationBar = observer (( props ) => {
         
     const { appState, navTitle } = props;
+    const { accountId } = appState;
 
     let onClickAffirmLocalhostNodes     = () => { appState.affirmLocalhostNodes ()};
     let onClickDeleteAccount            = () => { appState.deleteAccount ()};
@@ -22,14 +23,19 @@ const NavigationBar = observer (( props ) => {
     let onClickDeleteNodeList           = () => { appState.deleteNodeList ()};
     let onClickLogout                   = () => { appState.login ( false )};
 
+    const accountsURL   = appState.prefixURL ( `/accounts/${ accountId }` );
+    const inventoryURL  = appState.prefixURL ( `/accounts/${ accountId }/inventory` );
+
     return (
         <Menu>
-            <Menu.Item
-                icon = "bars"
-                name = ""
-                as = { Link } to = "/"
-                active = { true }
-            />
+            <Menu.Menu position = "left">
+                <Dropdown item icon = "bars">
+                    <Dropdown.Menu>
+                        <Dropdown.Item icon = "add square" text = "Accounts" as = { Link } to = { accountsURL }/>
+                        <Dropdown.Item icon = "add square" text = "Inventory" as = { Link } to = { inventoryURL }/>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </Menu.Menu>
 
             <span className = "large text">{ navTitle }</span>
     

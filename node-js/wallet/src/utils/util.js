@@ -12,6 +12,12 @@ export function getAccountId ( props ) {
 }
 
 //----------------------------------------------------------------//
+export function getMatch ( props, field, fallback ) {
+    let match = props.match.params && props.match.params [ field ] || '';
+    return match.length > 0 ? match : ( fallback || '' );
+}
+
+//----------------------------------------------------------------//
 export function getUserId ( props ) {
     return props.match.params && props.match.params.userId;
 }

@@ -1,43 +1,35 @@
 /* eslint-disable no-whitespace-before-property */
 
+import AssetView                        from './AssetView';
 import { Service, useService }          from './stores/Service';
 import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
-import React                            from 'react';
-import { Button, Form, List, Segment, Select } from 'semantic-ui-react';
+import React, { useState }              from 'react';
+import { Button, Dropdown, Form, Header, Grid, List, Segment, Select } from 'semantic-ui-react';
 
 const CLEAR_DROPDOWN_TEXT = '--';
+const EMPTY_STRING = '';
 
 //================================================================//
-// CraftingFormValuesStore
+// CraftingFormController
 //================================================================//
-class CraftingFormValuesStore extends Service {
+class CraftingFormController extends Service {
 
-    @observable ingredients = {};
+    @observable ingredients = {};    
     @observable fieldValues = {};
+
+    @observable activeField         = EMPTY_STRING;
+    @observable activeIngredient    = null;
+
+    @observable ingredientsForField = {};
+    @observable fieldsForIngredient = {};
 
     //----------------------------------------------------------------//
     constructor ( inventory, methodName ) {
         super ();
+        this.inventory = inventory;
+        this.methodName = methodName;
         this.initialize ( inventory, methodName );
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    handleChange ( fieldName, value ) {
-
-        const prevValue = this.fieldValues [ fieldName ];
-        const valueOrNull = value === CLEAR_DROPDOWN_TEXT ? null : value ;
-
-        if ( prevValue !== null ) {
-            this.ingredients [ prevValue ].utilized = false;
-        }
-
-        if ( valueOrNull !== null ) {
-            this.ingredients [ valueOrNull ].utilized = true;
-        }
-
-        this.fieldValues [ fieldName ] = valueOrNull;
     }
 
     //----------------------------------------------------------------//
@@ -48,7 +40,7 @@ class CraftingFormValuesStore extends Service {
 
         for ( let paramName in this.paramBindings ) {
 
-            this.fieldValues [ paramName ] = null;
+            this.fieldValues [ paramName ] = EMPTY_STRING;
 
             const options = this.paramBindings [ paramName ];
             for ( let i in options ) {
@@ -58,7 +50,8 @@ class CraftingFormValuesStore extends Service {
 
                 this.ingredients [ assetID ] = {
                     asset:          inventory.assets [ assetID ],
-                    utilized:       false,
+                    assetID:        assetID,
+                    fieldName:      EMPTY_STRING,
                     displayName:    `${ assetID }: ${ asset.fields.displayName || asset.type }`,
                 }
             }
@@ -66,110 +59,212 @@ class CraftingFormValuesStore extends Service {
     }
 
     //----------------------------------------------------------------//
+    isActiveField ( fieldName ) {
+
+        return ( this.fieldName === fieldName );
+    }
+
+    //----------------------------------------------------------------//
+    isActiveIngredient ( assetID ) {
+
+        return (( this.activeIngredient !== null ) && ( this.activeIngredient.assetID === assetID ));
+    }
+
+    //----------------------------------------------------------------//
+    isEnabledField ( fieldName ) {
+
+        // if there's an active asset, only enable fields that can accept that asset.
+        if ( this.activeIngredient !== null ) {
+
+            const methodBinding = this.inventory.getCraftingMethodBindings ()[ this.methodName ];
+            return ( methodBinding.assetIDsByArgName [ fieldName ].includes ( this.activeIngredient.assetID ));
+        }
+
+        // otherwise, all fields are enabled.
+        return true;
+    }
+
+    //----------------------------------------------------------------//
+    isEnabledIngredient ( assetID ) {
+
+        // if there's an active field, only enable unused ingredients approved for field
+        if ( this.activeField !== EMPTY_STRING ) {
+
+            let ingredientsForActiveField = {};
+            const options = this.paramBindings [ this.activeField ];
+            for ( let i in options ) {
+                let assetID = options [ i ];
+                ingredientsForActiveField [ assetID ] = this.ingredients [ assetID ];
+            }
+            return ( assetID in ingredientsForActiveField );
+        }
+
+        // otherwise, all ingredients are active
+        return true;
+    }
+
+    //----------------------------------------------------------------//
+    isUtilizedIngredient ( assetID ) {
+
+        return ( this.ingredients [ assetID ].fieldName !== EMPTY_STRING );
+    }
+
+    //----------------------------------------------------------------//
     @computed get
     isValid () {
 
         for ( let fieldName in this.fieldValues ) {
-            if ( this.fieldValues [ fieldName ] === null ) {
+            if ( this.fieldValues [ fieldName ] === EMPTY_STRING ) {
                 return false;
             }
         }
         return true;
     }
-}
 
-//================================================================//
-// renderFormInputForField
-//================================================================//
-function renderFormInputForField ( formState, fieldName, options ) {
+    //----------------------------------------------------------------//
+    @action
+    select () {
 
-    let onChange = ( event, payload ) => { formState.handleChange ( fieldName, payload.value )};
+        const fieldName = this.activeField;
+        const prevValue = this.fieldValues [ fieldName ];
 
-    let value = formState.fieldValues [ fieldName ] === null ? '' : formState.fieldValues [ fieldName ];
+        if ( prevValue !== EMPTY_STRING ) {
+            this.ingredients [ prevValue ].fieldName = EMPTY_STRING;
+        }
+        this.fieldValues [ fieldName ] = EMPTY_STRING;
 
-    const select = [];
-    for ( let i in options ) {
-        const assetID = options [ i ];
-        const ingredient = formState.ingredients [ assetID ];
-        const disabled = ingredient.utilized
-        select.push ({ key: i, text: ingredient.displayName, value: assetID, disabled: disabled });
-    }
-    select.push ({ key: options.length, text: CLEAR_DROPDOWN_TEXT, value: CLEAR_DROPDOWN_TEXT });
-
-    return (
-        <div key = { fieldName }>
-            <Form.Input
-                fluid
-                control = { Select }
-                options = { select }
-                placeholder = { fieldName }
-                name = { fieldName }
-                value = { formState.fieldValues [ fieldName ] || '' }
-                onChange = { onChange }
-            />
-        </div>
-    );
-}
-
-//================================================================//
-// renderFormInputs
-//================================================================//
-function renderFormInputs ( formState ) {
-    // add the fields in order
-    const paramBindings = formState.paramBindings;
-    let inputs = [];
-    for ( let paramName in paramBindings ) {
-        let formInput = renderFormInputForField ( formState, paramName, paramBindings [ paramName ]);
-        if ( formInput ) {
-            inputs.push ( formInput );
+        if ( this.activeIngredient !== null ) {
+            this.fieldValues [ fieldName ] = this.activeIngredient.assetID;
+            this.activeIngredient.fieldName = fieldName;
+            this.activeField = EMPTY_STRING;
+            this.activeIngredient = null;
         }
     }
-    return inputs;
+
+    //----------------------------------------------------------------//
+    @action
+    selectField ( fieldName ) {
+
+        this.activeField = fieldName || EMPTY_STRING;
+        this.select ();
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    selectIngredient ( assetID ) {
+
+        let ingredient = assetID ? this.ingredients [ assetID ] : null;
+
+        if ( ingredient.fieldName !== EMPTY_STRING ) {
+            this.fieldValues [ ingredient.fieldName ] = EMPTY_STRING;
+            ingredient.fieldName = EMPTY_STRING;
+        }
+
+        this.activeIngredient = ingredient;
+        if ( this.activeField !== EMPTY_STRING ) {
+            this.select ();
+        }
+    }
 }
 
 //================================================================//
-// renderIngredientList
+// CraftingFormFieldButtons
 //================================================================//
-function renderIngredientList ( formState ) {
+const CraftingFormFieldButtons = observer (( props ) => {
 
-    const ingredients = formState.ingredients;
-    let ingredientListItem = [];
+    const [ buttonDOM, setButtonDOM ] = useState ();
+
+    const controller = props.controller;
+
+    // add the fields in order
+    const paramBindings = controller.paramBindings;
+    let fields = [];
+    for ( let fieldName in paramBindings ) {
+
+        let isActive = controller.isActiveField ( fieldName );
+
+        let value = controller.fieldValues [ fieldName ];
+        let text = ( value === EMPTY_STRING ) ? fieldName : `${ fieldName }: ${ value }`;
+
+        fields.push (
+            <Button
+                type = 'button'
+                key = { fieldName }
+                style = {{
+                    outline:    isActive ? 'solid #00FFFF' : '',
+                }}
+                fluid
+                onClick = {() => { controller.selectField ( fieldName )}}
+            >
+                { text }
+            </Button>
+        );
+    }
+    return <div>{ fields }</div>;
+});
+
+//================================================================//
+// IngredientList
+//================================================================//
+const IngredientList = observer (( props ) => {
+
+    const controller = props.controller;
+
+    const ingredients = controller.ingredients;
+    let ingredientList = [];
     for ( let assetID in ingredients ) {
         
         let ingredient = ingredients [ assetID ];
 
-        if  ( !ingredient.utilized ) {
-            ingredientListItem.push (<List.Item key = { assetID }>{ ingredient.displayName }</List.Item>);
-        }
+        const isActive      = controller.isActiveIngredient ( assetID );
+        const isEnabled     = controller.isEnabledIngredient ( assetID );
+        const isUtilized    = controller.isUtilizedIngredient ( assetID );
+
+        ingredientList.push (<AssetView
+            key = { assetID }
+            style = {{
+                float:      'left',
+                outline:    isActive ? 'thick solid #00FFFF' : ( isUtilized ? 'thick solid #00FF00' : '' ),
+                opacity:    isEnabled ? '1.0' : '0.5',
+            }}
+            inventory = { controller.inventory }
+            assetId = { assetID }
+            onClick = {() => { isEnabled && controller.selectIngredient ( assetID )}}
+        />);
     }
-    return ingredientListItem;
-}
+    return <div>{ ingredientList }</div>;
+});
 
 //================================================================//
 // CraftingForm
 //================================================================//
 const CraftingForm = observer (( props ) => {
 
-    const formState = useService (() => new CraftingFormValuesStore ( props.inventory, props.methodName ));
+    const controller = useService (() => new CraftingFormController ( props.inventory, props.methodName ));
 
     const onClickSend = () => {
-        props.onSubmit ( Object.assign ({}, formState.fieldValues ))
+        props.onSubmit ( Object.assign ({}, controller.fieldValues ))
     };
 
-    const inputs = renderFormInputs ( formState );
-    const ingredientListItems = renderIngredientList ( formState );
-    const isSubmitEnabled = formState.isValid;
+    const isSubmitEnabled = controller.isValid;
 
     return (
-        <Form size = "large">
-            <Segment stacked>
-                <List>{ ingredientListItems }</List>
-                { inputs }
-                <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickSend }>
-                    OK
-                </Button>
-            </Segment>
-        </Form>
+        <div>
+            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
+                <Grid.Column style = {{ maxWidth: 450 }}>
+                    <Segment>
+                        <Header as = "h3">
+                            { props.methodName }
+                        </Header>
+                        <CraftingFormFieldButtons controller = { controller }/>
+                        <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickSend }>
+                            OK
+                        </Button>
+                    </Segment>
+                </Grid.Column>
+            </Grid>
+            <IngredientList controller = { controller }/>
+        </div>
     );
 });
 

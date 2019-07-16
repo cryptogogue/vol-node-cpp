@@ -60,6 +60,16 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
+    getAssetArray () {
+
+        let assets = [];
+        for ( let assetID in this.assets ) {
+            assets.push ( this.assets [ assetID ]);
+        }
+        return assets;
+    }
+
+    //----------------------------------------------------------------//
     getCraftingMethodBindings () {
         return this.binding.methodBindingsByName;
     }

@@ -11,10 +11,10 @@ configure ({
 import AccountScreen            from './AccountScreen';
 import CraftingScreen           from './CraftingScreen';
 import DebugHandlebarsScreen    from './DebugHandlebarsScreen';
-import DebugInventoryScreen     from './DebugInventoryScreen';
 import DebugMobXScreen          from './DebugMobXScreen';
 import DebugStripeScreen        from './DebugStripeScreen';
 import ImportAccountScreen      from './ImportAccountScreen';
+import InventoryScreen          from './InventoryScreen';
 import LoginScreen              from './LoginScreen';
 import NewAccountScreen         from './NewAccountScreen';
 import RegisterScreen           from './RegisterScreen';
@@ -27,13 +27,6 @@ import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
 const App = () => (
     <BrowserRouter>
         <div>
-            <ul>DEBUG MENU
-                <li><Link to = "/">Register</Link></li>
-                <li><Link to = "/login">Login</Link></li>
-                <li><Link to = "/accounts">Accounts</Link></li>
-                <li><Link to = "/stripe">Stripe</Link></li>
-            </ul>
-            <hr />
             <Switch>
                 <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
                 <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
@@ -47,6 +40,9 @@ const App = () => (
                 <Route exact path = "/:userId/accounts/:accountId/crafting" component = { CraftingScreen }/>
                 <Route exact path = "/accounts/:accountId/crafting" component = { CraftingScreen }/>
 
+                <Route exact path = "/:userId/accounts/:accountId/inventory" component = { InventoryScreen }/>
+                <Route exact path = "/accounts/:accountId/inventory" component = { InventoryScreen }/>
+
                 <Route exact path = "/:userId/accounts" component = { AccountScreen }/>
                 <Route exact path = "/accounts" component = { AccountScreen }/>
                 
@@ -54,7 +50,6 @@ const App = () => (
                 <Route exact path = "/login" component = { LoginScreen }/>
 
                 <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
-                <Route exact path = "/debug/inventory" component = { DebugInventoryScreen }/>
                 <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
                 <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
 

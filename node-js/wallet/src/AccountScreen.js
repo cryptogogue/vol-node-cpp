@@ -109,9 +109,9 @@ const AccountSelector = observer (( props ) => {
 //================================================================//
 const AccountScreen = observer (( props ) => {
 
-    const accountIdFromEndpoint = util.getAccountId ( props ) || '';
+    const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
 
-    const appState              = useService (() => new AppStateService ( util.getUserId ( props ), accountIdFromEndpoint ));
+    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
     const accountInfoService    = useService (() => new AccountInfoService ( appState ));
     const nodeInfoService       = useService (() => new NodeInfoService ( appState ));
 
