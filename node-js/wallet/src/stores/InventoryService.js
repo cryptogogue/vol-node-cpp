@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AssetFormatter }                                   from '../utils/AssetFormatter';
-import { barcodeToSVG }                                     from '../utils/pdf417';
+import { AssetFormatter }                                   from '../util/AssetFormatter';
+import { barcodeToSVG }                                     from '../util/pdf417';
 import { meta }                                             from '../resources/meta';
 import { Service }                                          from './Service';
 import { action, computed, extendObservable, observable }   from 'mobx';

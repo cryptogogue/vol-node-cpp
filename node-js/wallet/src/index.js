@@ -18,7 +18,7 @@ import InventoryScreen          from './InventoryScreen';
 import LoginScreen              from './LoginScreen';
 import NewAccountScreen         from './NewAccountScreen';
 import RegisterScreen           from './RegisterScreen';
-import registerServiceWorker    from './utils/registerServiceWorker';
+import registerServiceWorker    from './util/registerServiceWorker';
 import React                    from 'react';
 import ReactDOM                 from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from "react-router-dom";

@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import * as storage         from '../utils/storage';
+import * as storage         from '../util/storage';
 import { Service }          from './Service';
 import { action, computed, extendObservable, observe, observable, runInAction } from 'mobx';
 import React                from 'react';

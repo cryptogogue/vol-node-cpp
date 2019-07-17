@@ -3,8 +3,8 @@
 import { AppStateService }                                                      from './stores/AppStateService';
 import { Service, useService }                                                  from './stores/Service';
 import TransactionForm                                                          from './TransactionForm';
-import { Transaction, TRANSACTION_TYPE }                                        from './utils/Transaction';
-import * as util                                                                from './utils/util';
+import { Transaction, TRANSACTION_TYPE }                                        from './util/Transaction';
+import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                                                             from 'mobx-react';
 import React, { useState }                                                      from 'react';

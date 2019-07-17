@@ -3,13 +3,13 @@
 
 import { AppStateService }                                                      from './stores/AppStateService';
 import { Service, useService }                                                  from './stores/Service';
-import * as util                                                                from './utils/util';
+import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';
 import React, { useState }                                                      from 'react';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
 
-import * as crypto                  from './utils/crypto';
+import * as crypto                  from './util/crypto';
 
 const STATUS_SEARCHING_FOR_BIDS         = 0;
 const STATUS_NO_PROVIDERS_FOUND         = 1;

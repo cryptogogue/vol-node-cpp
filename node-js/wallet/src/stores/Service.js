@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import * as util        from '../utils/util';
+import * as util        from '../util/util';
 import { observe }      from 'mobx';
 import React            from 'react';
 import { Redirect }     from 'react-router-dom';

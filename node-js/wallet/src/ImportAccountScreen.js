@@ -3,7 +3,7 @@
 
 import { AppStateService }                                                          from './stores/AppStateService';
 import { Service, useService }                                                      from './stores/Service';
-import * as util                                                                    from './utils/util';
+import * as util                                                                    from './util/util';
 import { action, computed, extendObservable, observable, observe, runInAction }     from 'mobx';
 import { observer }                                                                 from 'mobx-react';
 import React, { useState }                                                          from 'react';
@@ -11,7 +11,7 @@ import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  
 
 // https://www.npmjs.com/package/js-crypto-utils
 
-import * as crypto              from './utils/crypto';
+import * as crypto              from './util/crypto';
 
 const STATUS_WAITING_FOR_INPUT          = 0;
 const STATUS_VERIFYING_KEY              = 1;

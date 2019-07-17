@@ -5,7 +5,7 @@ import CraftingForm                                         from './CraftingForm
 import { AppStateService }                                  from './stores/AppStateService';
 import { Service, useService }                              from './stores/Service';
 import { InventoryService }                                 from './stores/InventoryService';
-import * as util                                            from './utils/util';
+import * as util                                            from './util/util';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import NavigationBar                                        from './NavigationBar';

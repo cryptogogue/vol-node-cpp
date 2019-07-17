@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { Transaction }                      from './utils/Transaction';
+import { Transaction }                      from './util/Transaction';
 import React, { useState }                  from 'react';
 import { observer }                         from 'mobx-react';
 import { Button, Form, Header, Segment }    from 'semantic-ui-react';
