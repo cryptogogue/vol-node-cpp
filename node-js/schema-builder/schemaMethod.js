@@ -46,6 +46,9 @@ class SchemaMethod {
             this.constArgs [ argname ] = squap.makeSquap ( template.constArgs [ argname ]);
         }
 
+        this.weight     = template.weight;
+        this.maturity   = template.maturity;
+
         // TODO: constraints
         //console.log ( this )
     }

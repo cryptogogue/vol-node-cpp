@@ -9,6 +9,7 @@ export const TRANSACTION_TYPE = {
     KEY_POLICY:         'KEY_POLICY',
     OPEN_ACCOUNT:       'OPEN_ACCOUNT',
     REGISTER_MINER:     'REGISTER_MINER',
+    RUN_SCRIPT:         'RUN_SCRIPT',
     SEND_VOL:           'SEND_VOL',
 };
 
@@ -37,6 +38,7 @@ export class Transaction {
             case TRANSACTION_TYPE.KEY_POLICY:       return 'Key Policy';
             case TRANSACTION_TYPE.OPEN_ACCOUNT:     return 'Open Account';
             case TRANSACTION_TYPE.REGISTER_MINER:   return 'Register Miner';
+            case TRANSACTION_TYPE.RUN_SCRIPT:       return 'Run Script';
             case TRANSACTION_TYPE.SEND_VOL:         return 'Send VOL';
         }
     }
@@ -63,6 +65,7 @@ export class Transaction {
             case TRANSACTION_TYPE.KEY_POLICY:       return new Transaction ( type, body );
             case TRANSACTION_TYPE.OPEN_ACCOUNT:     return new Transaction ( type, body );
             case TRANSACTION_TYPE.REGISTER_MINER:   return new Transaction ( type, body );
+            case TRANSACTION_TYPE.RUN_SCRIPT:       return new Transaction ( type, body );
             case TRANSACTION_TYPE.SEND_VOL:         return new SendVol ( type, body );
         }
     }

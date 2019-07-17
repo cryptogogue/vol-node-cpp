@@ -369,9 +369,10 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    getDefaultAccountKeyName ( defaultKeyName ) {
+    getDefaultAccountKeyName () {
+        const defaultKeyName = 'master';
         const accountKeyNames = this.accountKeyNames ;
-        if ( defaultKeyName && accountKeyNames.includes [ defaultKeyName ]) return defaultKeyName;
+        if ( accountKeyNames.includes [ defaultKeyName ]) return defaultKeyName;
         return (( accountKeyNames.length > 0 ) && accountKeyNames [ 0 ]) || '';
     }
 
@@ -474,7 +475,8 @@ export class AppStateService extends Service {
     @action
     pushTransaction ( transaction ) {
 
-        if ( transaction.body.maker.accountName !== this.accountId ) throw 'SOMETHING HAPPEN!';
+        transaction.body.maker.accountName = this.accountId;
+        transaction.body.maker.nonce = -1;
 
         let account = this.account;
 
@@ -535,7 +537,7 @@ export class AppStateService extends Service {
     @action
     setNextTransactionCost ( cost ) {
 
-        this.nextTransactionCost = cost;
+        this.nextTransactionCost = cost || 0;
     }
 
     //----------------------------------------------------------------//

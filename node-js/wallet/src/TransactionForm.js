@@ -2,7 +2,7 @@
 
 import { AppStateService }                                                      from './stores/AppStateService';
 import { Service, useService }                                                  from './stores/Service';
-import { Transaction, TRANSACTION_TYPE }                                        from './util/Transaction';
+import { Transaction }                                                          from './util/Transaction';
 import { TransactionTemplate }                                                  from './util/TransactionTemplate';
 import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
@@ -31,16 +31,18 @@ class TransactionFormService extends Service {
         this.appState           = appState;
         this.transactioNType    = transactionType;
         this.template           = new TransactionTemplate ( transactionType );
+        this.orderedFields      = []; // order fields using hashOrder
 
         let fieldValues = {
-            makerAccountName:   appState.accountId,
-            makerKeyName:       appState.getDefaultAccountKeyName ( 'master' ),
-            makerNonce:         -1,
+            makerKeyName:       appState.getDefaultAccountKeyName (),
         };
 
-        Object.keys ( this.template.fields ).forEach (( name ) => {
-            fieldValues [ name ] = fieldValues [ name ] || null;
-        });
+        for ( let fieldName in this.template.fields ) {
+
+            const field = this.template.fields [ fieldName ];
+            this.orderedFields [ field.hashOrder ] = fieldName;
+            fieldValues [ fieldName ] = fieldValues [ fieldName ] || null; // populate missing fields with null
+        }
 
         let transaction = this.template.makeTransaction ( fieldValues );
 
@@ -66,20 +68,22 @@ class TransactionFormService extends Service {
     }
 
     //----------------------------------------------------------------//
-    makeFormInputForField ( name, field ) {
+    isUserEditableField ( name ) {
+
+        if ( name === 'makerAccountName' ) return false;
+        if ( name === 'makerNonce' ) return false;
+    }
+
+    //----------------------------------------------------------------//
+    makeFormInputForField ( name ) {
 
         let onChange = ( event ) => { this.handleChange ( event.target.name, event.target.type, event.target.value )};
 
-        if ( name === 'makerAccountName' ) return;
-        if ( name === 'makerNonce' ) return;
-
-        let value = this.fieldValues [ name ] === null ? '' : this.fieldValues [ name ];
+        let value = this.fieldValues [ name ] !== null ? this.fieldValues [ name ] : '';
 
         if ( name === 'makerKeyName' ) {
 
             const accountKeyNames = this.appState.accountKeyNames;
-
-            //if ( accountKeyNames.length <= 1 ) return;
 
             const select = [];
             for ( let i in accountKeyNames ) {
@@ -88,21 +92,20 @@ class TransactionFormService extends Service {
             }
 
             return (
-
-                <div key = { name }>
-                    <Form.Input
-                        fluid
-                        control = { Select }
-                        options = { select }
-                        placeholder = 'Account Key'
-                        name = { name }
-                        value = { value }
-                        onChange = { onChange }
-                    />
-                </div>
+                <Form.Input
+                    fluid
+                    key = { name }
+                    control = { Select }
+                    options = { select }
+                    placeholder = 'Account Key'
+                    name = { name }
+                    value = { value }
+                    onChange = { onChange }
+                />
             );
         }
         
+        let field = this.template.fields [ name ];
         let inputType = field.fieldType === 'INTEGER' ? 'number' : 'string';
 
         return (
@@ -128,21 +131,11 @@ const TransactionForm = observer (( props ) => {
 
     const service = useService (() => new TransactionFormService ( appState, transactionType ));
 
-    // order fields using hashOrder
-    let orderedFields = [];
-    Object.keys ( service.template.fields ).forEach (( name ) => {
-        const field = service.template.fields [ name ];
-        orderedFields [ field.hashOrder ] = name;
-    });
-
     // add the fields in order
     let fields = [];
-    orderedFields.forEach (( name ) => {
-        let formInput = service.makeFormInputForField ( name, service.template.fields [ name ]);
-        if ( formInput ) {
-            fields.push ( formInput );
-        }
-    });
+    for ( let i in service.orderedFields ) {
+        fields.push ( service.makeFormInputForField ( service.orderedFields [ i ]));
+    }
 
     const isSubmitEnabled = service.checkFormInputs ();
 
@@ -152,12 +145,10 @@ const TransactionForm = observer (( props ) => {
 
     return (
         <Form size = "large">
-            <Segment stacked>
-                { fields }
-                <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickSend }>
-                    Send
-                </Button>
-            </Segment>
+            { fields }
+            <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickSend }>
+                Send
+            </Button>
         </Form>
     );
 });

@@ -32,7 +32,6 @@ const AccountDetails = observer (( props ) => {
     const nodes = appState.nodes;
 
     const balance = appState.balance;
-
     const textColor = balance > 0 ? 'black' : 'red';
 
     return (

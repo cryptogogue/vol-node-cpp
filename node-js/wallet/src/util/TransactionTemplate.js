@@ -21,23 +21,18 @@ function stringField ( hashOrder ) {
 //----------------------------------------------------------------//
 function makerFormat () {
     return {
-        accountName:        'makerAccountName',
         gratuity:           'gratuity',
         keyName:            'makerKeyName',
-        nonce:              'makerNonce',
     };
 }
 
 //----------------------------------------------------------------//
 const accountPolicy = {
-    transactionType:    TRANSACTION_TYPE.ACCOUNT_POLICY,
     fields: {
-        makerAccountName:           stringField ( 0 ),
-        makerKeyName:               stringField ( 1 ),
-        makerNonce:                 integerField ( 2 ),
-        policyName:                 stringField ( 3 ),
-        policy:                     stringField ( 4 ),
-        gratuity:                   integerField ( 5 ),
+        makerKeyName:               stringField ( 0 ),
+        policyName:                 stringField ( 1 ),
+        policy:                     stringField ( 2 ),
+        gratuity:                   integerField ( 3 ),
     },
     format: {
         maker:                      makerFormat (),
@@ -48,15 +43,12 @@ const accountPolicy = {
 
 //----------------------------------------------------------------//
 const affirmKey = {
-    transactionType:    TRANSACTION_TYPE.AFFIRM_KEY,
     fields: {
-        makerAccountName:           stringField ( 0 ),
-        makerKeyName:               stringField ( 1 ),
-        makerNonce:                 integerField ( 2 ),
-        keyName:                    stringField ( 3 ),
-        key:                        stringField ( 4 ),
-        policyName:                 stringField ( 5 ),
-        gratuity:                   integerField ( 6 ),
+        makerKeyName:               stringField ( 0 ),
+        keyName:                    stringField ( 1 ),
+        key:                        stringField ( 2 ),
+        policyName:                 stringField ( 3 ),
+        gratuity:                   integerField ( 4 ),
     },
     format: {
         maker:                      makerFormat (),
@@ -68,14 +60,11 @@ const affirmKey = {
 
 //----------------------------------------------------------------//
 const keyPolicy = {
-    transactionType:    TRANSACTION_TYPE.KEY_POLICY,
     fields: {
-        makerAccountName:           stringField ( 0 ),
-        makerKeyName:               stringField ( 1 ),
-        makerNonce:                 integerField ( 2 ),
-        policyName:                 stringField ( 3 ),
-        policy:                     stringField ( 4 ),
-        gratuity:                   integerField ( 5 ),
+        makerKeyName:               stringField ( 0 ),
+        policyName:                 stringField ( 1 ),
+        policy:                     stringField ( 2 ),
+        gratuity:                   integerField ( 3 ),
     },
     format: {
         maker:                      makerFormat (),
@@ -86,16 +75,13 @@ const keyPolicy = {
 
 //----------------------------------------------------------------//
 const openAccount = {
-    transactionType:    TRANSACTION_TYPE.OPEN_ACCOUNT,
     fields: {
-        makerAccountName:           stringField ( 0 ),
-        makerKeyName:               stringField ( 1 ),
-        makerNonce:                 integerField ( 2 ),
-        accountName:                stringField ( 3 ),
-        keyName:                    stringField ( 4 ),
-        key:                        stringField ( 5 ),
-        amount:                     integerField ( 6 ),
-        gratuity:                   integerField ( 7 ),
+        makerKeyName:               stringField ( 0 ),
+        accountName:                stringField ( 1 ),
+        keyName:                    stringField ( 2 ),
+        key:                        stringField ( 3 ),
+        amount:                     integerField ( 4 ),
+        gratuity:                   integerField ( 5 ),
     },
     format: {
         maker:                      makerFormat (),
@@ -108,13 +94,10 @@ const openAccount = {
 
 //----------------------------------------------------------------//
 const registerMiner = {
-    transactionType:    TRANSACTION_TYPE.REGISTER_MINER,
     fields: {
-        makerAccountName:           stringField ( 0 ),
-        makerKeyName:               stringField ( 1 ),
-        makerNonce:                 integerField ( 2 ),
-        url:                        stringField ( 3 ),
-        gratuity:                   integerField ( 4 ),
+        makerKeyName:               stringField ( 0 ),
+        url:                        stringField ( 1 ),
+        gratuity:                   integerField ( 2 ),
     },
     format: {
         maker:                      makerFormat (),
@@ -123,15 +106,23 @@ const registerMiner = {
 }
 
 //----------------------------------------------------------------//
-const sendVOL = {
-    transactionType:    TRANSACTION_TYPE.SEND_VOL,
+const runScript = {
     fields: {
-        makerAccountName:           stringField ( 0 ),
-        makerKeyName:               stringField ( 1 ),
-        makerNonce:                 integerField ( 2 ),
-        accountName:                stringField ( 3 ),
-        amount:                     integerField ( 4 ),
-        gratuity:                   integerField ( 5 ),
+        makerKeyName:               stringField ( 0 ),
+        gratuity:                   integerField ( 2 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+    },
+}
+
+//----------------------------------------------------------------//
+const sendVOL = {
+    fields: {
+        makerKeyName:               stringField ( 0 ),
+        accountName:                stringField ( 1 ),
+        amount:                     integerField ( 2 ),
+        gratuity:                   integerField ( 3 ),
     },
     format: {
         maker:                      makerFormat (),
@@ -149,6 +140,7 @@ function templateForType ( type ) {
         case TRANSACTION_TYPE.KEY_POLICY:       return keyPolicy;
         case TRANSACTION_TYPE.OPEN_ACCOUNT:     return openSccount;
         case TRANSACTION_TYPE.REGISTER_MINER:   return registerMiner;
+        case TRANSACTION_TYPE.RUN_SCRIPT:       return runScript;
         case TRANSACTION_TYPE.SEND_VOL:         return sendVOL; 
     }
 }
@@ -174,11 +166,9 @@ export class TransactionTemplate {
     constructor ( type ) {
 
         const template = templateForType ( type );
-
-        this.type           = type;
-        this.friendlyName   = Transaction.friendlyNameForType ( type );
-        this.fields         = template.fields;
-        this.format         = template.format;
+        this.type = type;
+        this.fields = template.fields;
+        this.format = template.format;
     }
 
     //----------------------------------------------------------------//

@@ -61,63 +61,13 @@ class TransactionSelectorService extends Service {
 }
 
 //================================================================//
-// TransactionFormSelector
+// TransactionDropdown
 //================================================================//
-const TransactionFormSelector = observer (( props ) => {
+const TransactionDropdown = observer (( props ) => {
 
-    const { appState } = props;
-
-    const service = useService (() => new TransactionSelectorService ( appState ));
-
-    const isShowFormEnabled = ( appState.nonce >= 0 );
-
-    if ( isShowFormEnabled && service.formIsShown ) {
-
-        let transactionForm;
-
-        const index = service.index;
-
-        if ( 0 <= index ) {
-
-            let onSubmit = ( transaction ) => {
-                service.handleSubmit ( transaction )
-            };
-
-            transactionForm = (
-                <TransactionForm
-                    appState = { appState }
-                    transactionType = { transactionTypes [ index ]}
-                    onSubmit = { onSubmit }
-                />
-            );
-        }
-
-        return (
-            <div>
-                { renderDropdown ( service )}
-                { transactionForm }
-                <Divider/>
-                <Button color = "red" fluid onClick = {() => { service.showForm ( false )}}>
-                    Cancel
-                </Button>
-            </div>
-        );
-    }
-
-    return (
-        <div>
-            <Button color = "teal" fluid disabled = { !isShowFormEnabled } onClick = {() => { service.showForm ( true )}}>
-                New Transaction
-            </Button>
-        </div>
-    );
-});
-
-//----------------------------------------------------------------//
-function renderDropdown ( service ) {
+    const { service } = props;
 
     let options = [];
-
     transactionTypes.forEach ( function ( transactionType, index ) {
         options.push ({ key:index, value:index, text:Transaction.friendlyNameForType ( transactionType )});
     });
@@ -132,6 +82,49 @@ function renderDropdown ( service ) {
             onChange = {( event, data ) => { service.selectForm ( data.value )}}
         />
     );
-}
+});
+
+//================================================================//
+// TransactionFormSelector
+//================================================================//
+const TransactionFormSelector = observer (( props ) => {
+
+    const { appState } = props;
+
+    const service = useService (() => new TransactionSelectorService ( appState ));
+
+    const isShowFormEnabled = ( appState.nonce >= 0 );
+    const index = service.index;
+
+    const onSubmit = ( transaction ) => {
+        service.handleSubmit ( transaction )
+    };
+
+    return (
+        <Choose>
+            <When condition = { isShowFormEnabled && service.formIsShown }>
+                <TransactionDropdown service = { service }/>
+                <If condition = { 0 <= index }>
+                    <Segment stacked>
+                        <TransactionForm
+                            appState = { appState }
+                            transactionType = { transactionTypes [ index ]}
+                            onSubmit = { onSubmit }
+                        />
+                    </Segment>
+                </If>
+                <Divider/>
+                <Button color = "red" fluid onClick = {() => { service.showForm ( false )}}>
+                    Cancel
+                </Button>
+            </When>
+            <Otherwise>
+                <Button color = "teal" fluid disabled = { !isShowFormEnabled } onClick = {() => { service.showForm ( true )}}>
+                    New Transaction
+                </Button>
+            </Otherwise>
+        </Choose>
+    );
+});
 
 export default TransactionFormSelector;

@@ -2,6 +2,7 @@
 
 import AssetView                                            from './AssetView';
 import CraftingForm                                         from './CraftingForm';
+import { AccountInfoService }                               from './stores/AccountInfoService';
 import { AppStateService }                                  from './stores/AppStateService';
 import { Service, useService }                              from './stores/Service';
 import { InventoryService }                                 from './stores/InventoryService';
@@ -41,7 +42,6 @@ const CraftingFormSelector = observer (( props ) => {
     );
 });
 
-
 //================================================================//
 // CraftingScreen
 //================================================================//
@@ -50,8 +50,9 @@ const CraftingScreen = observer (( props ) => {
     const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
     const methodNameFromEndpoint = util.getMatch ( props, 'methodName' );
 
-    const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
-    const inventory     = useService (() => new InventoryService ());
+    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
+    const accountInfoService    = useService (() => new AccountInfoService ( appState ));
+    const inventory             = useService (() => new InventoryService ());
 
     const [ selectedMethod, setSelectedMethod ] = useState ( methodNameFromEndpoint );
 
@@ -68,7 +69,7 @@ const CraftingScreen = observer (( props ) => {
         setSelectedMethod ( '' );
     }
     
-    const handleSubmit = ( fieldValues ) => {
+    const handleSubmit = ( transaction ) => {
         // fieldValues.makerNonce = this.props.nonce;
         // this.showForm ( false );
         // this.props.appState.startTransaction ( schema, fieldValues );
@@ -86,9 +87,10 @@ const CraftingScreen = observer (( props ) => {
 
             <If condition = { isValid }>
                 <CraftingForm
-                    methodName  = { methodNameFromEndpoint }
+                    appState    = { appState }
                     inventory   = { inventory }
-                    onSubmit    = {( fieldValues ) => { handleSubmit ( fieldValues )}}
+                    methodName  = { methodNameFromEndpoint }
+                    onSubmit    = {( transaction ) => { handleSubmit ( transaction )}}
                 />
             </If>
         </div>
