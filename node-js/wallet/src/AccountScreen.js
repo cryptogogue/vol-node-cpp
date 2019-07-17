@@ -43,7 +43,7 @@ const AccountDetails = observer (( props ) => {
                 
                 { appState.accountId }
 
-                <Modal size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0,30 ) + "..." }</Header.Subheader> }>
+                <Modal size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
                     <Modal.Content>
                         <center>
                             <h3>Public Key</h3>
@@ -176,24 +176,5 @@ const AccountScreen = observer (( props ) => {
         </div>
     );
 });
-
-//----------------------------------------------------------------//
-// function renderTransactions () {
-
-//     const { transactions } = this.props.appState.state;
-//     if ( transactions.length === 0 ) return;
-
-//     let count = 0;
-
-//     // transaction type     nonce       pending     rejected        confirmed
-
-//     return (
-//         <Segment>
-//             { transactions.map (( entry ) => {
-//                 return (<p key = { count++ }>{ entry.transaction.friendlyName }</p>);
-//             })}
-//         </Segment>
-//     );
-// }
 
 export default AccountScreen;

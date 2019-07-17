@@ -267,7 +267,7 @@ export class AppStateService extends Service {
     confirmTransactions ( nonce ) {
 
         let pendingTransactions = this.account.pendingTransactions;
-        while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].body.maker.nonce <= nonce )) {
+        while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce <= nonce )) {
             pendingTransactions.shift ();
         }
     }
@@ -481,7 +481,7 @@ export class AppStateService extends Service {
         let memo = {
             type:               transaction.type,
             cost:               transaction.getCost (),
-            body:               Object.assign ( transaction.body ),
+            body:               JSON.stringify ( transaction.body, null, 4 ),
         }
 
         this.account.stagedTransactions.push ( memo );
@@ -564,13 +564,14 @@ export class AppStateService extends Service {
                 let memo = stagedTransactions [ 0 ];
                 let nonce = this.nextNonce;
 
-                let body = memo.body;
+                let body = JSON.parse ( memo.body );
                 body.maker.nonce = nonce;
+                body = JSON.stringify ( body, null, 4 );
                 
                 await this.revocableFetch ( this.node + '/transactions', {
                     method : 'POST',
                     headers : { 'content-type': 'application/json' },
-                    body : JSON.stringify ( body ),
+                    body : body,
                 });
 
                 runInAction (() => {
@@ -579,6 +580,7 @@ export class AppStateService extends Service {
                         type:                       memo.type,
                         cost:                       memo.cost,
                         body:                       body,
+                        nonce:                      nonce,
                     });
                 });
             }
