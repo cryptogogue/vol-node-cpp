@@ -2,14 +2,23 @@
 
 import { AppStateService }                                                      from './stores/AppStateService';
 import { Service, useService }                                                  from './stores/Service';
+import TransactionForm                                                          from './TransactionForm';
+import { Transaction, TRANSACTION_TYPE }                                        from './utils/Transaction';
 import * as util                                                                from './utils/util';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                                                             from 'mobx-react';
 import React, { useState }                                                      from 'react';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
 
-import TransactionForm              from './TransactionForm';
-import * as transactions            from './transactions';
+//----------------------------------------------------------------//
+export const transactionTypes = [
+    TRANSACTION_TYPE.SEND_VOL,
+    TRANSACTION_TYPE.ACCOUNT_POLICY,
+    TRANSACTION_TYPE.KEY_POLICY,
+    TRANSACTION_TYPE.OPEN_ACCOUNT,
+    TRANSACTION_TYPE.REGISTER_MINER,
+    TRANSACTION_TYPE.SEND_VOL,
+];
 
 //================================================================//
 // TransactionSelectorService
@@ -21,10 +30,6 @@ class TransactionSelectorService extends Service {
         super ();
 
         this.appState = appState;
-
-        // TODO: this is a placeholder; transaction schemas should come from
-        // the server.
-        this.transactionTypes = transactions.transactionTypes;
 
         extendObservable ( this, {
             formIsShown: false,
@@ -81,7 +86,7 @@ const TransactionFormSelector = observer (( props ) => {
             transactionForm = (
                 <TransactionForm
                     appState = { appState }
-                    transactionType = { service.transactionTypes [ index ]}
+                    transactionType = { transactionTypes [ index ]}
                     onSubmit = { onSubmit }
                 />
             );
@@ -113,9 +118,8 @@ function renderDropdown ( service ) {
 
     let options = [];
 
-    service.transactionTypes.forEach ( function ( transactionType, index ) {
-        const schema = transactions.schemaForType ( transactionType );
-        options.push ({ key:index, value:index, text:schema.friendlyName });
+    transactionTypes.forEach ( function ( transactionType, index ) {
+        options.push ({ key:index, value:index, text:Transaction.friendlyNameForType ( transactionType )});
     });
 
     return (

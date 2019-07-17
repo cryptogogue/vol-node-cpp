@@ -1,16 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { action, computed, extendObservable, observable, observe } from 'mobx';
-
-//----------------------------------------------------------------//
-export const TRANSACTION_TYPE = {
-    ACCOUNT_POLICY:     'ACCOUNT_POLICY',
-    AFFIRM_KEY:         'AFFIRM_KEY',
-    KEY_POLICY:         'KEY_POLICY',
-    OPEN_ACCOUNT:       'OPEN_ACCOUNT',
-    REGISTER_MINER:     'REGISTER_MINER',
-    SEND_VOL:           'SEND_VOL',
-};
+import { Transaction, TRANSACTION_TYPE } from './Transaction';
 
 //----------------------------------------------------------------//
 function integerField ( hashOrder ) {
@@ -41,7 +31,6 @@ function makerFormat () {
 //----------------------------------------------------------------//
 const accountPolicy = {
     transactionType:    TRANSACTION_TYPE.ACCOUNT_POLICY,
-    friendlyName:       'Account Policy',
     fields: {
         makerAccountName:           stringField ( 0 ),
         makerKeyName:               stringField ( 1 ),
@@ -60,7 +49,6 @@ const accountPolicy = {
 //----------------------------------------------------------------//
 const affirmKey = {
     transactionType:    TRANSACTION_TYPE.AFFIRM_KEY,
-    friendlyName:       'Affirm Key',
     fields: {
         makerAccountName:           stringField ( 0 ),
         makerKeyName:               stringField ( 1 ),
@@ -81,7 +69,6 @@ const affirmKey = {
 //----------------------------------------------------------------//
 const keyPolicy = {
     transactionType:    TRANSACTION_TYPE.KEY_POLICY,
-    friendlyName:       'Key Policy',
     fields: {
         makerAccountName:           stringField ( 0 ),
         makerKeyName:               stringField ( 1 ),
@@ -100,7 +87,6 @@ const keyPolicy = {
 //----------------------------------------------------------------//
 const openAccount = {
     transactionType:    TRANSACTION_TYPE.OPEN_ACCOUNT,
-    friendlyName:       'Open Account',
     fields: {
         makerAccountName:           stringField ( 0 ),
         makerKeyName:               stringField ( 1 ),
@@ -123,7 +109,6 @@ const openAccount = {
 //----------------------------------------------------------------//
 const registerMiner = {
     transactionType:    TRANSACTION_TYPE.REGISTER_MINER,
-    friendlyName:       'Register Miner',
     fields: {
         makerAccountName:           stringField ( 0 ),
         makerKeyName:               stringField ( 1 ),
@@ -140,7 +125,6 @@ const registerMiner = {
 //----------------------------------------------------------------//
 const sendVOL = {
     transactionType:    TRANSACTION_TYPE.SEND_VOL,
-    friendlyName:       'Send VOL',
     fields: {
         makerAccountName:           stringField ( 0 ),
         makerKeyName:               stringField ( 1 ),
@@ -156,25 +140,51 @@ const sendVOL = {
     },
 }
 
+//----------------------------------------------------------------//
+function templateForType ( type ) {
+
+    switch ( type ) {
+        case TRANSACTION_TYPE.ACCOUNT_POLICY:   return accountPolicy;
+        case TRANSACTION_TYPE.AFFIRM_KEY:       return affirmKey;
+        case TRANSACTION_TYPE.KEY_POLICY:       return keyPolicy;
+        case TRANSACTION_TYPE.OPEN_ACCOUNT:     return openSccount;
+        case TRANSACTION_TYPE.REGISTER_MINER:   return registerMiner;
+        case TRANSACTION_TYPE.SEND_VOL:         return sendVOL; 
+    }
+}
+
 //================================================================//
-// Transaction
+// TransactionTemplate
 //================================================================//
-class Transaction {
+export class TransactionTemplate {
 
     //----------------------------------------------------------------//
-    constructor ( type, fieldValues ) {
-        this.type = type;
-        this.schema = schemaForType ( type );
+    checkFieldValues ( fieldValues ) {
 
-        extendObservable ( this, {
-            fieldValues:    fieldValues,
-        });
+        for ( let fieldName in this.fields ) {
+            let fieldValue = fieldValues [ fieldName ];
+            if ( fieldValue === null ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     //----------------------------------------------------------------//
-    format ( format ) {
+    constructor ( type ) {
 
-        format = format || this.schema.format;
+        const template = templateForType ( type );
+
+        this.type           = type;
+        this.friendlyName   = Transaction.friendlyNameForType ( type );
+        this.fields         = template.fields;
+        this.format         = template.format;
+    }
+
+    //----------------------------------------------------------------//
+    formatBody ( fieldValues, format ) {
+        
+        format = format || this.format;
 
         let result = {};
         for ( let fieldName in format ) {
@@ -183,10 +193,10 @@ class Transaction {
             let fieldValue;
 
             if (( typeof fieldSource ) === 'object' ) {
-                fieldValue = this.format ( fieldSource, this.fieldValues );
+                fieldValue = this.formatBody ( fieldValues, fieldSource );
             }
             else {
-                fieldValue = this.fieldValues [ fieldSource ];
+                fieldValue = fieldValues [ fieldSource ];
             }
             result [ fieldName ] = fieldValue;
         }
@@ -195,55 +205,8 @@ class Transaction {
     }
 
     //----------------------------------------------------------------//
-    getCost () {
+    makeTransaction ( fieldValues ) {
 
-        return this.schema.fields.gratuity && this.fieldValues.gratuity || 0;
-    }
-};
-
-//================================================================//
-// SendVol
-//================================================================//
-class SendVol extends Transaction {
-
-    //----------------------------------------------------------------//
-    getCost () {
-
-        return super.getCost () + ( this.fieldValues.amount || 0 );
-    }
-};
-
-//----------------------------------------------------------------//
-export function makeTransaction ( type, fieldValues ) {
-
-    switch ( type ) {
-        case TRANSACTION_TYPE.ACCOUNT_POLICY:   return new Transaction ( type, fieldValues );
-        case TRANSACTION_TYPE.AFFIRM_KEY:       return new Transaction ( type, fieldValues );
-        case TRANSACTION_TYPE.KEY_POLICY:       return new Transaction ( type, fieldValues );
-        case TRANSACTION_TYPE.OPEN_ACCOUNT:     return new Transaction ( type, fieldValues );
-        case TRANSACTION_TYPE.REGISTER_MINER:   return new Transaction ( type, fieldValues );
-        case TRANSACTION_TYPE.SEND_VOL:         return new SendVol ( type, fieldValues );
+        return Transaction.transactionWithBody ( this.type, this.formatBody ( fieldValues ));
     }
 }
-
-//----------------------------------------------------------------//
-export function schemaForType ( type ) {
-    switch ( type ) {
-        case TRANSACTION_TYPE.ACCOUNT_POLICY:   return accountPolicy;
-        case TRANSACTION_TYPE.AFFIRM_KEY:       return affirmKey;
-        case TRANSACTION_TYPE.KEY_POLICY:       return keyPolicy;
-        case TRANSACTION_TYPE.OPEN_ACCOUNT:     return openAccount;
-        case TRANSACTION_TYPE.REGISTER_MINER:   return registerMiner;
-        case TRANSACTION_TYPE.SEND_VOL:         return sendVOL;
-    }
-}
-
-//----------------------------------------------------------------//
-export const transactionTypes = [
-    TRANSACTION_TYPE.SEND_VOL,
-    TRANSACTION_TYPE.ACCOUNT_POLICY,
-    TRANSACTION_TYPE.KEY_POLICY,
-    TRANSACTION_TYPE.OPEN_ACCOUNT,
-    TRANSACTION_TYPE.REGISTER_MINER,
-    TRANSACTION_TYPE.SEND_VOL,
-];

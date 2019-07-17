@@ -2,7 +2,6 @@
 /* eslint-disable no-loop-func */
 
 import * as storage         from '../utils/storage';
-import * as transactions    from '../transactions';
 import { Service }          from './Service';
 import { action, computed, extendObservable, observe, observable, runInAction } from 'mobx';
 import React                from 'react';
@@ -268,7 +267,7 @@ export class AppStateService extends Service {
     confirmTransactions ( nonce ) {
 
         let pendingTransactions = this.account.pendingTransactions;
-        while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce <= nonce )) {
+        while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].body.maker.nonce <= nonce )) {
             pendingTransactions.shift ();
         }
     }
@@ -282,9 +281,6 @@ export class AppStateService extends Service {
         this.urlBackoff = {};
 
         this.loadState ( userId, accountId );
-
-        // this.discoverNetwork ();
-        // this.processTransactions ();
     }
 
     //----------------------------------------------------------------//
@@ -478,14 +474,14 @@ export class AppStateService extends Service {
     @action
     pushTransaction ( transaction ) {
 
-        if ( transaction.fieldValues.makerAccountName !== this.accountId ) throw 'SOMETHING HAPPEN!';
+        if ( transaction.body.maker.accountName !== this.accountId ) throw 'SOMETHING HAPPEN!';
 
         let account = this.account;
 
         let memo = {
             type:               transaction.type,
             cost:               transaction.getCost (),
-            fieldValues:        Object.assign ({}, transaction.fieldValues ),
+            body:               Object.assign ( transaction.body ),
         }
 
         this.account.stagedTransactions.push ( memo );
@@ -566,29 +562,23 @@ export class AppStateService extends Service {
             while ( this.canSubmitTransactions ) {
 
                 let memo = stagedTransactions [ 0 ];
+                let nonce = this.nextNonce;
 
-                let fieldValues = Object.assign ({}, memo.fieldValues );
-                fieldValues.makerNonce = this.nextNonce;
-
-                let transaction = transactions.makeTransaction ( memo.type, fieldValues );
-                let body = transaction.format ();
-
-                body.type = transaction.schema.transactionType;
-                body = JSON.stringify ( body );
+                let body = memo.body;
+                body.maker.nonce = nonce;
                 
                 await this.revocableFetch ( this.node + '/transactions', {
                     method : 'POST',
                     headers : { 'content-type': 'application/json' },
-                    body : body
+                    body : JSON.stringify ( body ),
                 });
 
                 runInAction (() => {
                     stagedTransactions.shift ();
                     pendingTransactions.push ({
-                        type:               transaction.type,
-                        cost:               transaction.getCost (),
-                        fieldValues:        fieldValues,
-                        nonce:              fieldValues.makerNonce,
+                        type:                       memo.type,
+                        cost:                       memo.cost,
+                        body:                       body,
                     });
                 });
             }

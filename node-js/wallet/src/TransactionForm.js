@@ -2,13 +2,13 @@
 
 import { AppStateService }                                                      from './stores/AppStateService';
 import { Service, useService }                                                  from './stores/Service';
+import { Transaction, TRANSACTION_TYPE }                                        from './utils/Transaction';
+import { TransactionTemplate }                                                  from './utils/TransactionTemplate';
 import * as util                                                                from './utils/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';
 import React, { useState }                                                      from 'react';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Select, Segment }  from 'semantic-ui-react';
-
-import * as transactions            from './transactions';
 
 //================================================================//
 // TransactionFormService
@@ -21,54 +21,46 @@ class TransactionFormService extends Service {
         let cost = this.transaction.getCost ();
         if ( this.appState.balance < cost ) return false;
 
-        for ( let fieldName in this.schema.fields ) {
-            let fieldValue = this.transaction.fieldValues [ fieldName ];
-            if ( fieldValue === null ) {
-                return false;
-            }
-        }
-
-        return true;
+        return this.template.checkFieldValues ( this.fieldValues );
     }
 
     //----------------------------------------------------------------//
     constructor ( appState, transactionType ) {
         super ();
 
-        const accountId = appState.accountId;
-
-        this.appState = appState;
-        this.schema = transactions.schemaForType ( transactionType );
-
-        const defaultKeyName = appState.getDefaultAccountKeyName ( 'master' );
+        this.appState           = appState;
+        this.transactioNType    = transactionType;
+        this.template           = new TransactionTemplate ( transactionType );
 
         let fieldValues = {
-            makerAccountName: accountId,
-            makerKeyName: defaultKeyName,
-            makerNonce: -1,
+            makerAccountName:   appState.accountId,
+            makerKeyName:       appState.getDefaultAccountKeyName ( 'master' ),
+            makerNonce:         -1,
         };
 
-        Object.keys ( this.schema.fields ).forEach (( name ) => {
+        Object.keys ( this.template.fields ).forEach (( name ) => {
             fieldValues [ name ] = fieldValues [ name ] || null;
         });
 
-        let transaction = transactions.makeTransaction ( transactionType, fieldValues );
+        let transaction = this.template.makeTransaction ( fieldValues );
 
-        extendObservable ( this, { transaction: transaction });
+        extendObservable ( this, {
+            fieldValues:    fieldValues,
+            transaction:    transaction,
+        });
     }
 
     //----------------------------------------------------------------//
     @action
-    handleChange ( event ) {
+    handleChange ( fieldName, type, value ) {
         
         let typedValue = null;
-        const value = event.target.value;
 
         if ( value && ( value.length > 0 )) {
-            const type = event.target.type;
             typedValue = ( type === 'number' ) ? Number ( value ) : String ( value );
         }
-        this.transaction.fieldValues [ event.target.name ] = typedValue;
+        this.fieldValues [ fieldName ] = typedValue;
+        this.transaction = this.template.makeTransaction ( this.fieldValues );
 
         this.appState.setNextTransactionCost ( this.transaction.getCost ());
     }
@@ -76,12 +68,12 @@ class TransactionFormService extends Service {
     //----------------------------------------------------------------//
     makeFormInputForField ( name, field ) {
 
-        let onChange = ( event ) => { this.handleChange ( event )};
+        let onChange = ( event ) => { this.handleChange ( event.target.name, event.target.type, event.target.value )};
 
         if ( name === 'makerAccountName' ) return;
         if ( name === 'makerNonce' ) return;
 
-        let value = this.transaction.fieldValues [ name ] === null ? '' : this.transaction.fieldValues [ name ];
+        let value = this.fieldValues [ name ] === null ? '' : this.fieldValues [ name ];
 
         if ( name === 'makerKeyName' ) {
 
@@ -138,15 +130,15 @@ const TransactionForm = observer (( props ) => {
 
     // order fields using hashOrder
     let orderedFields = [];
-    Object.keys ( service.schema.fields ).forEach (( name ) => {
-        const field = service.schema.fields [ name ];
+    Object.keys ( service.template.fields ).forEach (( name ) => {
+        const field = service.template.fields [ name ];
         orderedFields [ field.hashOrder ] = name;
     });
 
     // add the fields in order
     let fields = [];
     orderedFields.forEach (( name ) => {
-        let formInput = service.makeFormInputForField ( name, service.schema.fields [ name ]);
+        let formInput = service.makeFormInputForField ( name, service.template.fields [ name ]);
         if ( formInput ) {
             fields.push ( formInput );
         }

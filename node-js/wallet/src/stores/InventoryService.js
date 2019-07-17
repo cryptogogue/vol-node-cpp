@@ -1,12 +1,11 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
-import { Service }                                          from './Service';
+import { AssetFormatter }                                   from '../utils/AssetFormatter';
 import { barcodeToSVG }                                     from '../utils/pdf417';
 import { meta }                                             from '../resources/meta';
+import { Service }                                          from './Service';
 import { action, computed, extendObservable, observable }   from 'mobx';
-
-import { AssetFormatter }                                   from './AssetFormatter-Volition';
+import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
 
 const DEBUG = true;
 

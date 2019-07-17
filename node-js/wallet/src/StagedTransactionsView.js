@@ -1,10 +1,9 @@
 /* eslint-disable no-whitespace-before-property */
 
+import { Transaction }                      from './utils/Transaction';
 import React, { useState }                  from 'react';
 import { observer }                         from 'mobx-react';
 import { Button, Form, Header, Segment }    from 'semantic-ui-react';
-
-import * as transactions            from './transactions';
 
 //================================================================//
 // StagedTransactionsView
@@ -24,11 +23,7 @@ const StagedTransactionsView = observer (( props ) => {
     for ( let i in stagedTransactions ) {
 
         const memo = stagedTransactions [ i ];
-        const transaction = transactions.makeTransaction ( memo.type, memo.fieldValues );
-
-        if ( transaction ) {
-            transactionList.push (<p key = { i }>{ transaction.schema.friendlyName }</p>);
-        }
+        transactionList.push (<p key = { i }>{ Transaction.friendlyNameForType ( memo.type )}</p>);
     }
 
     return (
