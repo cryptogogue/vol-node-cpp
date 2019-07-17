@@ -60,6 +60,9 @@ class CraftingFormController extends Service {
         body.invocations = [ invocation ];
         body.weight = invocation.weight;
         body.maturity = invocation.maturity;
+
+        transaction.setAssetsUtilized ( Object.values ( this.fieldValues ));
+        transaction.setNote ( this.methodName );
     }
 
     //----------------------------------------------------------------//
@@ -212,7 +215,7 @@ class CraftingFormController extends Service {
                 let asset       = inventory.assets [ assetID ];
 
                 this.ingredients [ assetID ] = {
-                    asset:          inventory.assets [ assetID ],
+                    asset:          asset,
                     assetID:        assetID,
                     fieldName:      EMPTY_STRING,
                     displayName:    `${ assetID }: ${ asset.fields.displayName || asset.type }`,

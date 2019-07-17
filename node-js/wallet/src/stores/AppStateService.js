@@ -3,7 +3,7 @@
 
 import * as storage         from '../util/storage';
 import { Service }          from './Service';
-import { action, computed, extendObservable, observe, observable, runInAction } from 'mobx';
+import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import React                from 'react';
 import { Redirect }         from 'react-router';
 
@@ -85,6 +85,24 @@ export class AppStateService extends Service {
             }
         }
         return count;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    assetsUtilized () {
+
+        let assetsUtilized = [];
+
+        const pendingTransactions = this.pendingTransactions;
+        for ( let i in pendingTransactions ) {
+            assetsUtilized = assetsUtilized.concat ( pendingTransactions [ i ].assets );
+        }
+
+        const stagedTransactions = this.stagedTransactions;
+        for ( let i in stagedTransactions ) {
+            assetsUtilized = assetsUtilized.concat ( stagedTransactions [ i ].assets );
+        }
+        return assetsUtilized;
     }
 
     //----------------------------------------------------------------//
@@ -482,9 +500,13 @@ export class AppStateService extends Service {
 
         let memo = {
             type:               transaction.type,
+            note:               transaction.note,
             cost:               transaction.getCost (),
             body:               JSON.stringify ( transaction.body, null, 4 ),
+            assets:             transaction.assetsUtilized,
         }
+
+        console.log ( 'ASSETS UTILIZED:', memo.assets );
 
         this.account.stagedTransactions.push ( memo );
 
@@ -580,9 +602,11 @@ export class AppStateService extends Service {
                     stagedTransactions.shift ();
                     pendingTransactions.push ({
                         type:                       memo.type,
+                        note:                       memo.note,
                         cost:                       memo.cost,
                         body:                       body,
                         nonce:                      nonce,
+                        assets:                     memo.assets,
                     });
                 });
             }

@@ -46,7 +46,7 @@ class InventoryController extends Service {
     //----------------------------------------------------------------//
     getSortedAssets () {
 
-        let assetArray = this.inventory.getAssetArray ();
+        let assetArray = this.inventory.availableAssetsArray;
         assetArray.sort (( asset0, asset1 ) => this.compareForSort ( asset0, asset1 ));
         return assetArray;
     }
@@ -134,7 +134,7 @@ const InventoryScreen = observer (( props ) => {
     const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
 
     const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
-    const inventory     = useService (() => new InventoryService ());
+    const inventory     = useService (() => new InventoryService ( appState ));
     const controller    = useService (() => new InventoryController ( inventory ));
 
     if ( appState.accountId !== accountIdFromEndpoint ) {

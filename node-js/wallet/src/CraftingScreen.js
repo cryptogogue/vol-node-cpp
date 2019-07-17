@@ -22,9 +22,12 @@ const CraftingFormSelector = observer (( props ) => {
 
     let options = [];
 
-    const methods = inventory.validMethods;
-    for ( let i in methods ) {
-        options.push ({ key:i, value:methods [ i ], text:methods [ i ]});
+    const methodBindings = inventory.getCraftingMethodBindings ();
+    for ( let methodName in methodBindings ) {
+        const binding = methodBindings [ methodName ];
+        const disabled = !binding.valid;
+
+        options.push ({ key:methodName, value:methodName, text:methodName, disabled: disabled });
     }
 
     return (
@@ -52,7 +55,7 @@ const CraftingScreen = observer (( props ) => {
 
     const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
     const accountInfoService    = useService (() => new AccountInfoService ( appState ));
-    const inventory             = useService (() => new InventoryService ());
+    const inventory             = useService (() => new InventoryService ( appState ));
 
     const [ selectedMethod, setSelectedMethod ] = useState ( methodNameFromEndpoint );
 
@@ -67,12 +70,6 @@ const CraftingScreen = observer (( props ) => {
     const isValid = inventory.methodIsValid ( methodNameFromEndpoint );
     if (( methodNameFromEndpoint !== '' ) && !isValid ) {
         setSelectedMethod ( '' );
-    }
-    
-    const handleSubmit = ( transaction ) => {
-        // fieldValues.makerNonce = this.props.nonce;
-        // this.showForm ( false );
-        // this.props.appState.startTransaction ( schema, fieldValues );
     }
 
     const onSelectionChanged = ( methodName ) => {
@@ -90,7 +87,6 @@ const CraftingScreen = observer (( props ) => {
                     appState    = { appState }
                     inventory   = { inventory }
                     methodName  = { methodNameFromEndpoint }
-                    onSubmit    = {( transaction ) => { handleSubmit ( transaction )}}
                 />
             </If>
         </div>

@@ -25,7 +25,9 @@ export class Transaction {
         body.type = type;
 
         extendObservable ( this, {
-            body:    body,
+            body:               body,
+            assetsUtilized:     [],
+            note:               '',
         });
     }
 
@@ -51,9 +53,23 @@ export class Transaction {
 
     //----------------------------------------------------------------//
     @action
+    setAssetsUtilized ( assetsUtilized ) {
+
+        this.assetsUtilized = assetsUtilized.splice ( 0 );
+    }
+
+    //----------------------------------------------------------------//
+    @action
     setBody ( body ) {
 
         this.body = body;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    setNote ( note ) {
+
+        this.note = note || '';
     }
 
     //----------------------------------------------------------------//

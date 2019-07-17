@@ -4,7 +4,7 @@ import { AssetFormatter }                                   from '../util/AssetF
 import { barcodeToSVG }                                     from '../util/pdf417';
 import { meta }                                             from '../resources/meta';
 import { Service }                                          from './Service';
-import { action, computed, extendObservable, observable }   from 'mobx';
+import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
 
 const DEBUG = true;
@@ -21,18 +21,63 @@ export class InventoryService extends Service {
     @observable schema          = new Schema (); // empty schema
     @observable binding         = new Binding (); // empty binding
 
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // computed
+
     //----------------------------------------------------------------//
-    constructor ( accountID, minerURL ) {
+    @computed get
+    availableAssetsArray () {
+
+        const assetsUtilized = this.appState.assetsUtilized;
+
+        let assets = [];
+        for ( let assetID in this.assets ) {
+            if ( !assetsUtilized.includes ( assetID )) {
+                assets.push ( this.assets [ assetID ]);
+            }
+        }
+        return assets;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    availableAssetsByID () {
+
+        const assetsUtilized = this.appState.assetsUtilized;
+
+        let assets = {};
+        for ( let assetID in this.assets ) {
+            if ( !assetsUtilized.includes ( assetID )) {
+                assets [ assetID ] = this.assets [ assetID ];
+            }
+        }
+        return assets;
+    }
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // methods
+
+    //----------------------------------------------------------------//
+    constructor ( appState ) {
         super ();
+
+        extendObservable ( this, {
+            appState:   appState,
+        });
 
         this.formatter = new AssetFormatter ();
 
-        if ( DEBUG || ( !( accountID && minerURL ))) {
+        if ( DEBUG || ( !( appState.accountId && appState.node ))) {
             this.useDebugInventory ();
         }
         else {
-            this.fetchInventory ( accountID, minerURL );
+            this.fetchInventory ( appState.accountId, appState.node );
         }
+
+        observe ( appState, 'assetsUtilized', ( change ) => {
+            console.log ( 'ASSETS UTILIZED DID CHANGE' );
+            this.refreshBinding ();
+        });
     }
 
     //----------------------------------------------------------------//
@@ -59,16 +104,6 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
-    getAssetArray () {
-
-        let assets = [];
-        for ( let assetID in this.assets ) {
-            assets.push ( this.assets [ assetID ]);
-        }
-        return assets;
-    }
-
-    //----------------------------------------------------------------//
     getCraftingMethodBindings () {
         return this.binding.methodBindingsByName;
     }
@@ -81,6 +116,14 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     methodIsValid ( methodName, assetID ) {
         return ( methodName !== '' ) && this.binding.methodIsValid ( methodName, assetID );
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    refreshBinding () {
+        const availableAssetsByID = this.availableAssetsByID;
+        console.log ( 'REFRESH BINDING:', availableAssetsByID );
+        this.binding = this.schema.generateBinding ( availableAssetsByID );
     }
 
     //----------------------------------------------------------------//
@@ -98,8 +141,7 @@ export class InventoryService extends Service {
         if ( assets ) {
             this.assets = assets;
         }
-
-        this.binding = this.schema.generateBinding ( this.assets );
+        this.refreshBinding ();
     }
 
     //----------------------------------------------------------------//
@@ -150,7 +192,7 @@ export class InventoryService extends Service {
 
         this.schema = schema;
         this.assets = assets;
-        this.binding = schema.generateBinding ( assets );
+        this.refreshBinding ();
 
         this.formatter.applyMeta ( schemaTemplate.meta );
 

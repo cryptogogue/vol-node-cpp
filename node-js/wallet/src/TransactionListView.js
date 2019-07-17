@@ -22,6 +22,10 @@ const TransactionListView = observer (( props ) => {
 
         let friendlyName = Transaction.friendlyNameForType ( memo.type );
 
+        if ( memo.note !== '' ) {
+            friendlyName = `${ friendlyName } - ${ memo.note }`;
+        }
+
         if ( typeof ( memo.nonce ) === 'number' ) {
             friendlyName = `${ memo.nonce }: ${ friendlyName }`;
         }
