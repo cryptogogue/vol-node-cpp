@@ -26,8 +26,6 @@ class InventoryController extends Service {
     //----------------------------------------------------------------//
     compareForSort ( asset0, asset1 ) {
 
-        console.log ( 'SORT', asset0, asset1 );
-
         if ( this.sortMode === SORT_MODE.ALPHA_ATOZ ) {
             return asset0.type.localeCompare ( asset1.type );
         }
@@ -76,8 +74,6 @@ const InventoryFilterMenu = observer (( props ) => {
         const binding = methodBindings [ methodName ];
         const disabled = !binding.valid;
         
-        console.log ( 'METHOD', methodName );
-
         methodListItems.push (<Dropdown.Item
             key = { methodName }
             text = { methodName }
