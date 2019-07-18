@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-const assert            = require ( 'assert' );
-const fs                = require ( 'fs' );
+import { assert }       from '../util/assert';
+import fs               from 'fs';
 
 const MUTABLE           = 'MUTABLE';
 const NUMBER            = 'NUMBER';
@@ -142,7 +142,7 @@ function wrapLiteral ( param ) {
 }
 
 //----------------------------------------------------------------//
-const op = {
+export const op = {
     ADD:                makeBinaryOp    ( 'ADD' ),
     AND:                makeBinaryOp    ( 'AND' ),
     ASSET_TYPE:         makeIndexOp     ( 'ASSET_TYPE' ),
@@ -390,7 +390,4 @@ class SchemaBuilder {
     }
 }
 
-//export { SchemaBuilder };
-
-var exports = module.exports = ( name, lua ) => new SchemaBuilder ( name, lua );
-exports.op = op;
+export const buildSchema = ( name, displayName ) => { return new SchemaBuilder ( name, displayName ); }

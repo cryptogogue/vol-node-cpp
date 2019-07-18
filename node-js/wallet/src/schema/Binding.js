@@ -1,12 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 
-const assert        = require ( 'assert' );
-const Schema        = require ( './schema' ).Schema;
+import { assert }           from '../util/assert';
+import { Schema }           from './Schema';
 
 //================================================================//
 // Binding
 //================================================================//
-class Binding {
+export class Binding {
 
     //----------------------------------------------------------------//
     constructor ( methodBindingsByName, methodBindingsByAssetID ) {
@@ -48,8 +48,4 @@ class Binding {
         }
         return ( methodName in this.methodBindingsByName ) && this.methodBindingsByName [ methodName ].valid;
     }
-}
-
-var exports = module.exports = {
-    Binding:    Binding,
 }

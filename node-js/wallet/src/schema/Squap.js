@@ -1,14 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-// import { randomBytes }          from './randomBytes';
-// import * as BigInteger          from 'bigi';
-// import * as bip39               from 'bip39';
-// import * as bitcoin             from 'bitcoinjs-lib';
-// import keyutils                 from 'js-crypto-key-utils';
-// import * as secp256k1           from 'secp256k1'
-
-let makeSquap;
-
 //================================================================//
 // AbstractSquap
 //================================================================//
@@ -356,11 +347,7 @@ const factoryTable = {
 }
 
 //----------------------------------------------------------------//
-makeSquap = ( template ) => {
+export function makeSquap ( template ) {
 
     return factoryTable [ template.op ]( template );
-}
-
-var exports = module.exports = {
-    makeSquap:      makeSquap,
 }

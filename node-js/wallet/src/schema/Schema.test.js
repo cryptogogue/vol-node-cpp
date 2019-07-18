@@ -1,8 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-const Schema            = require ( './schema' ).Schema;
-const schemaBuilder     = require ( './schema-builder' );
-const op                = schemaBuilder.op;
+import { Schema }                                           from '../schema/Schema';
+import { buildSchema, op }                                  from '../schema/SchemaBuilder';
 
 //----------------------------------------------------------------//
 test ( 'test json escaping', () => {
@@ -20,7 +19,7 @@ test ( 'test json escaping', () => {
 //----------------------------------------------------------------//
 test ( 'define schema', () => {
 
-    let schemaTemplate = schemaBuilder ( 'TEST_SCHEMA', 'schema.lua' )
+    let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
 
         //----------------------------------------------------------------//
         .definition ( 'pack' )
@@ -100,7 +99,7 @@ test ( 'define schema', () => {
 //----------------------------------------------------------------//
 test ( 'test operators', () => {
 
-    let schemaTemplate = schemaBuilder ( 'TEST_SCHEMA', 'schema.lua' )
+    let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
 
         //----------------------------------------------------------------//
         .definition ( 'testAsset' )

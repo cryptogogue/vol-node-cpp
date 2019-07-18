@@ -1,9 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-const fs                = require ( 'fs' );
-const buildSchema       = require ( 'volition-schema-builder' ).buildSchema;
-
-const op = buildSchema.op;
+import fs                       from 'fs';
+import { buildSchema, op }      from '../wallet/src/Schema/SchemaBuilder.js';
 
 //================================================================//
 // DO IT

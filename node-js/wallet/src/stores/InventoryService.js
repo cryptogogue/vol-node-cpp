@@ -5,7 +5,9 @@ import { barcodeToSVG }                                     from '../util/pdf417
 import { meta }                                             from '../resources/meta';
 import { Service }                                          from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
-import { Binding, Schema, buildSchema }                     from 'volition-schema-builder';
+import { Binding }                                          from '../schema/Binding';
+import { Schema }                                           from '../schema/Schema';
+import { buildSchema, op }                                  from '../schema/SchemaBuilder';
 
 const DEBUG = true;
 
@@ -147,8 +149,6 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     @action
     useDebugInventory () {
-
-        const op = buildSchema.op;
 
         let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
             .meta ( meta )

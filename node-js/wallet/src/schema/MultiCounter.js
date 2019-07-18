@@ -3,7 +3,7 @@
 //================================================================//
 // MultiCounter
 //================================================================//
-class MultiCounter {
+export class MultiCounter {
 
     //----------------------------------------------------------------//
     constructor ( size ) {
@@ -70,8 +70,4 @@ class MultiCounter {
     setLimit ( i, limit ) {
         this.limits [ i ] = limit;
     }
-}
-
-var exports = module.exports = {
-    MultiCounter:   MultiCounter,
 }

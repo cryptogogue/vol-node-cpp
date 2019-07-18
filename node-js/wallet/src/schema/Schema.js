@@ -1,15 +1,13 @@
 /* eslint-disable no-whitespace-before-property */
 
-const assert            = require ( 'assert' );
-const Binding           = require ( './binding' ).Binding;
-const MultiCounter      = require ( './multiCounter' ).MultiCounter;
-const SchemaMethod      = require ( './schemaMethod' ).SchemaMethod;
-const squap             = require ( './squap' );
+import { assert }           from '../util/assert';
+import { Binding }          from './Binding';
+import { SchemaMethod }     from './SchemaMethod';
 
 //================================================================//
 // Schema
 //================================================================//
-class Schema {
+export class Schema {
 
     //----------------------------------------------------------------//
     addTestAsset ( assets, typeName, assetID ) {
@@ -110,8 +108,4 @@ class Schema {
         }
         return asset;
     }
-}
-
-var exports = module.exports = {
-    Schema:     Schema,
 }

@@ -1,13 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 
-const assert            = require ( 'assert' );
-const MultiCounter      = require ( './multiCounter' ).MultiCounter;
-const squap             = require ( './squap' );
+import { MultiCounter }     from './MultiCounter';
+import * as squap           from './Squap';
 
 //================================================================//
 // SchemaMethod
 //================================================================//
-class SchemaMethod {
+export class SchemaMethod {
 
     //----------------------------------------------------------------//
     bindAsset ( schema, asset, methodBinding, methodBindingsForAssetByMethodName ) {
@@ -115,8 +114,4 @@ class SchemaMethod {
             }
         }
     }
-}
-
-var exports = module.exports = {
-    SchemaMethod:       SchemaMethod,
 }
