@@ -18,6 +18,7 @@
     "mobx-react": "^6.0.3",
     "mobx-utils": "^5.4.1",
     "npm": "^6.9.0",
+    "opentype.js": "^1.1.0",
     "react": "^16.8.6",
     "react-app-rewire-mobx": "^1.0.9",
     "react-app-rewired": "^2.0.2",
