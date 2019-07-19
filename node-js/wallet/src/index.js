@@ -10,9 +10,11 @@ configure ({
 
 import AccountScreen            from './AccountScreen';
 import CraftingScreen           from './CraftingScreen';
+import DebugDropzoneScreen      from './DebugDropzoneScreen';
 import DebugHandlebarsScreen    from './DebugHandlebarsScreen';
 import DebugMobXScreen          from './DebugMobXScreen';
 import DebugStripeScreen        from './DebugStripeScreen';
+import DebugTextFitterScreen    from './DebugTextFitterScreen';
 import ImportAccountScreen      from './ImportAccountScreen';
 import InventoryScreen          from './InventoryScreen';
 import LoginScreen              from './LoginScreen';
@@ -24,8 +26,9 @@ import ReactDOM                 from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
 
 //----------------------------------------------------------------//
-const App = () => (
-    <BrowserRouter>
+const App = () => {
+
+    return (<BrowserRouter>
         <div>
             <Switch>
                 <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
@@ -52,16 +55,18 @@ const App = () => (
                 <Route exact path = "/:userId/login" component = { LoginScreen }/>
                 <Route exact path = "/login" component = { LoginScreen }/>
 
+                <Route exact path = "/debug/dropzone" component = { DebugDropzoneScreen }/>
                 <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
                 <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
                 <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
+                <Route exact path = "/debug/textfitter" component = { DebugTextFitterScreen }/>
 
                 <Route exact path = "/:userId/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>
             </Switch>
         </div>
-    </BrowserRouter>
-)
+    </BrowserRouter>);
+}
 
 //----------------------------------------------------------------//
 ReactDOM.render (

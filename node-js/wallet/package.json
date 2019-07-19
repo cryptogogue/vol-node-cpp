@@ -23,6 +23,7 @@
     "react-app-rewire-mobx": "^1.0.9",
     "react-app-rewired": "^2.0.2",
     "react-dom": "^16.8.6",
+    "react-dropzone": "^10.1.5",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "react-stripe-elements": "^2.0.3",
