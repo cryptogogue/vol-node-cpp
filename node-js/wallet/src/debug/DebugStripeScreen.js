@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import StripeCheckoutForm       from './StripeCheckoutForm';
-import * as storage             from './util/storage';
+import * as storage             from '../util/storage';
 import React, { Component }     from 'react';
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { Elements, StripeProvider } from 'react-stripe-elements';

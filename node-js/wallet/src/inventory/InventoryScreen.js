@@ -1,14 +1,16 @@
 /* eslint-disable no-whitespace-before-property */
 
-import AssetView                                            from './AssetView';
-import CraftingForm                                         from './CraftingForm';
-import { AppStateService }                                  from './stores/AppStateService';
-import { Service, useService }                              from './stores/Service';
-import { InventoryService }                                 from './stores/InventoryService';
-import * as util                                            from './util/util';
+import './InventoryScreen.css';
+
+import AssetView                                            from '../AssetView';
+import NavigationBar                                        from '../NavigationBar';
+import { AppStateService }                                  from '../stores/AppStateService';
+import { Service, useService }                              from '../stores/Service';
+import { InventoryService }                                 from '../stores/InventoryService';
+import * as util                                            from '../util/util';
+import { InventoryView, INVENTORY_LAYOUT, getInventoryLayoutFriendlyName } from './InventoryView';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
-import NavigationBar                                        from './NavigationBar';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
 import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
@@ -22,6 +24,21 @@ const SORT_MODE = {
 // InventoryController
 //================================================================//
 class InventoryController extends Service {
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // computed
+
+    //----------------------------------------------------------------//
+    @computed get
+    sortedAssets () {
+
+        let assetArray = this.inventory.availableAssetsArray;
+        assetArray.sort (( asset0, asset1 ) => this.compareForSort ( asset0, asset1 ));
+        return assetArray;
+    }
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // methods
 
     //----------------------------------------------------------------//
     compareForSort ( asset0, asset1 ) {
@@ -39,16 +56,16 @@ class InventoryController extends Service {
         this.inventory = inventory;
 
         extendObservable ( this, {
+            layoutMode:     INVENTORY_LAYOUT.WEB,
             sortMode:       SORT_MODE.ALPHA_ATOZ,
         });
     }
 
     //----------------------------------------------------------------//
-    getSortedAssets () {
+    @action
+    setLayoutMode ( layoutMode ) {
 
-        let assetArray = this.inventory.availableAssetsArray;
-        assetArray.sort (( asset0, asset1 ) => this.compareForSort ( asset0, asset1 ));
-        return assetArray;
+        this.layoutMode = layoutMode;
     }
 
     //----------------------------------------------------------------//
@@ -83,14 +100,40 @@ const InventoryFilterMenu = observer (( props ) => {
         />);
     }
 
+    const layoutDropdown = [
+        INVENTORY_LAYOUT.WEB,
+        INVENTORY_LAYOUT.US_LETTER,
+    ];
+
+    let layoutOptions = [];
+    for ( let i in layoutDropdown ) {
+        const layoutMode = layoutDropdown [ i ];
+        layoutOptions.push (<Dropdown.Item
+            key         = { layoutMode }
+            text        = { getInventoryLayoutFriendlyName ( layoutMode )}
+            onClick     = {() => { controller.setLayoutMode ( layoutMode )}}
+        />);
+    }
+
     return (
         <Menu>
             <Menu.Item name = { SORT_MODE.ALPHA_ATOZ } active = { controller.sortMode === SORT_MODE.ALPHA_ATOZ } onClick = { onSortItemClick }>
                 <Icon name = 'sort alphabet up'/>
             </Menu.Item>
+
             <Menu.Item name = { SORT_MODE.ALPHA_ZTOA } active = { controller.sortMode === SORT_MODE.ALPHA_ZTOA } onClick = { onSortItemClick }>
                 <Icon name = 'sort alphabet down'/>
             </Menu.Item>
+            
+            <Menu.Item name = "Print" onClick = {() => { window.print ()}}>
+                <Icon name = 'print'/>
+            </Menu.Item>
+
+            <Dropdown item text = "Layout">
+                <Dropdown.Menu>
+                { layoutOptions }
+                </Dropdown.Menu>
+            </Dropdown>
 
             <Menu.Menu position = "right">
                 <Dropdown item icon = "industry">
@@ -100,29 +143,6 @@ const InventoryFilterMenu = observer (( props ) => {
                 </Dropdown>
             </Menu.Menu>
         </Menu>
-    );
-});
-
-//================================================================//
-// InventoryView
-//================================================================//
-const InventoryView = observer (( props ) => {
-
-    const controller    = props.controller;
-    const inventory     = controller.inventory;
-
-    let assetArray = controller.getSortedAssets ();
-
-    let assetLayouts = [];
-    for ( let i in assetArray ) {
-        const asset = assetArray [ i ];
-        assetLayouts.push (<AssetView key = { asset.assetID } style = {{ float:'left' }} inventory = { inventory } assetId = { asset.assetID }/>);
-    }
-    
-    return (
-        <div>
-            { assetLayouts }
-        </div>
     );
 });
 
@@ -147,9 +167,15 @@ const InventoryScreen = observer (( props ) => {
 
     return (
         <div>
-            <NavigationBar navTitle = "Inventory" appState = { appState }/>
-            <InventoryFilterMenu appState = { appState } controller = { controller }/>
-            <InventoryView controller = { controller }/>
+            <div className = "no-print">
+                <NavigationBar navTitle = "Inventory" appState = { appState }/>
+                <InventoryFilterMenu appState = { appState } controller = { controller }/>
+            </div>
+            <InventoryView
+                key = { controller.sortMode }
+                controller = { controller }
+                layout = { controller.layoutMode }
+            />
         </div>
     );
 });

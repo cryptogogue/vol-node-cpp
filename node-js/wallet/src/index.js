@@ -10,13 +10,14 @@ configure ({
 
 import AccountScreen            from './AccountScreen';
 import CraftingScreen           from './CraftingScreen';
-import DebugDropzoneScreen      from './DebugDropzoneScreen';
-import DebugHandlebarsScreen    from './DebugHandlebarsScreen';
-import DebugMobXScreen          from './DebugMobXScreen';
-import DebugStripeScreen        from './DebugStripeScreen';
-import DebugTextFitterScreen    from './DebugTextFitterScreen';
+import DebugDropzoneScreen      from './debug/DebugDropzoneScreen';
+import DebugHandlebarsScreen    from './debug/DebugHandlebarsScreen';
+import DebugMobXScreen          from './debug/DebugMobXScreen';
+import DebugPrintScreen         from './debug/DebugPrintScreen';
+import DebugStripeScreen        from './debug/DebugStripeScreen';
+import DebugTextFitterScreen    from './debug/DebugTextFitterScreen';
 import ImportAccountScreen      from './ImportAccountScreen';
-import InventoryScreen          from './InventoryScreen';
+import InventoryScreen          from './inventory/InventoryScreen';
 import LoginScreen              from './LoginScreen';
 import NewAccountScreen         from './NewAccountScreen';
 import RegisterScreen           from './RegisterScreen';
@@ -24,6 +25,10 @@ import registerServiceWorker    from './util/registerServiceWorker';
 import React                    from 'react';
 import ReactDOM                 from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
+
+// https://react-bootstrap.github.io/
+// https://material-ui.com/
+// https://www.primefaces.org/
 
 //----------------------------------------------------------------//
 const App = () => {
@@ -58,6 +63,7 @@ const App = () => {
                 <Route exact path = "/debug/dropzone" component = { DebugDropzoneScreen }/>
                 <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
                 <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
+                <Route exact path = "/debug/print" component = { DebugPrintScreen }/>
                 <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
                 <Route exact path = "/debug/textfitter" component = { DebugTextFitterScreen }/>
 
