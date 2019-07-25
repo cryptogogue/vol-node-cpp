@@ -1,61 +1,3 @@
-Mining reward
-command line wallet
-
-users have accounts
-users can be individuals or legal entities
-accounts have keys
-key have permissions
-keys are unique to accounts
-accounts hold currency and assets
-
-if a user identity is stolen
-    - freeze all accounts
-    - re-establish identity (multiple trusted parties)
-
-- open and fund account (user, account, account key)
-
-- new account (and user)
-    - must be funded by sponsor
-
-- identify user (notary)
-- attach signing keys
-- make proclamation (revokable within time limit)
-
-- create account (with owner)
-- account policy (overflow, keepalive, demurrage, etc.)
-- account user policy
-    - user groups
-    - add/remove keys
-- transfer VOL
-    - transfer immediately
-    - schedule transfer
-    - cancel transfer
-
-- publish proclamation
-- publish schema
-
-asset transformation rules
-f ( A ) -> B
-f ( A, B ) -> C
-f ( A, B+ ) -> C
-f ( A, B * N ) -> C
-
-declare mining reward
-declare asset types
-declare data tables
-declare lua chunks
-
-can always transfer an asset
-parameters - assets ( N, N or more)
-multistep (requires miner entropy)
-cost
-base asset + customization
-
-broad phase: type
-medium phase: keywords
-narrow phase: metadata
-
-----------------------------------------------------------------
 
 DONE: rework asset tracking - no generics; every asset to be unique
 DONE: decide on final asset identifier format
@@ -65,55 +7,43 @@ DONE: variable-size transactions (multiple crafting commands per transaction)
 DONE: template cards using SVG and mustache
 DONE: expand schema to include svg templates
 DONE: finalize schema - where do resources live?
-
-implement way to expire transactions
-
-implement queue of transactions in wallet - rebuild state dynamically (from node)
-    rethink state handling in wallet
-svg barcode
-expand schema to include placeholder asset templates
-
-wallet
-    collection screen
-        filtering
-        printing
-        indicate craftability
-    crafting screen
-    rendering svg for print
-
-validator app - sample
-
-VOL:ETH
-onboarding
-bearer bond vs oracles
+DONE: wallet inventory - collection screen
+DONE: wallet inventory - filtering
+DONE: wallet inventory - printing
+DONE: wallet inventory - indicate craftability
+DONE: wallet inventory - crafting screen
+DONE: wallet inventory - rendering svg for print
+DONE: implement queue of transactions in wallet - rebuild state dynamically (from node)
+DONE: rethink state handling in wallet
+DONE: svg barcode
 
 ----------------------------------------------------------------
+BETA
 
-banner at the top connected to TEST/PROD server
+tool to generate set schema from XLS spreadsheet
+logic for attachments
 
-renderSVGforPrint {
-    return 2.5x3.5 svg
-}
+implement way to expire transactions
+identify networks (by genesis block) - name networks
 
-Collection screen
-    - filter collection
-    - print filtered collection
-    - visually represent craftability (rollover)
-Crafting modal accessed from asset in collection
-    - working backward from possible recipe
+provision any asset
+provision every asset in set
+provision beta account - generate key
+handle unrecognized account
+account permissions
 
-Customizing
-OpenPack(assetID){}
-ChangeArt (asset, mediaType) {
-    Input URL
-    Then Submit
-}
-ChangeName (card, mediaType) {
-    Input new name
-    Submit
-}
+revise layout schema - address SVG shortcomings
+expand schema to include placeholder asset templates
 
-React Native app that uses the camera that scans the QR code and returns raw card data including the owner:
+add banner at the top of wallet showing network name
+display all transactions of selected account
+customize asset fields - images, text
 
-QR CODE Validator {
-}
+validator app - scan the QR code and return raw card data including the owner
+
+----------------------------------------------------------------
+LAUNCH
+
+VOL:ETH
+VOL:ETH - onboarding
+VOL:ETH - bearer bond vs oracles
