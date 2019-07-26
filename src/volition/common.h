@@ -41,6 +41,7 @@
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
+#include <Poco/Net/SecureServerSocket.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Observer.h>
 #include <Poco/ScopedLock.h>

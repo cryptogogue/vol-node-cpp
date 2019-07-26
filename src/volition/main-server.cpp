@@ -24,6 +24,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const override {
+        UNUSED ( match );
 
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
@@ -49,6 +50,9 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
+        UNUSED ( match );
+        UNUSED ( request );
+        
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -67,6 +71,9 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
+        UNUSED ( match );
+        UNUSED ( request );
+        
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -85,6 +92,9 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
+        UNUSED ( match );
+        UNUSED ( request );
+        
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.setContentType ( "text/html" );
 
@@ -103,7 +113,10 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override {
-        
+        UNUSED ( match );
+        UNUSED ( request );
+        UNUSED ( response );
+
 //        Poco::JSON::Object::Ptr object = AbstractRequestHandler::parseJSON ( request );
 //
 //        unique_ptr < Volition::AbstractTransaction > transaction ( Volition::TheTransactionFactory::get ().create ( *object ));
@@ -185,14 +198,14 @@ protected:
         
         options.addOption (
             Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
-                .required ( true )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "genesis" )
         );
         
         options.addOption (
             Poco::Util::Option ( "keyfile", "k", "path to key file" )
-                .required ( true )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "keyfile" )
         );
@@ -255,23 +268,25 @@ protected:
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
         string configfile   = configuration.getString ( "config", "" );
-        string genesis      = configuration.getString ( "genesis" );
-        string keyfile      = configuration.getString ( "keyfile" );
-        int port            = configuration.getInt ( "port", 9090 );
-        string nodelist     = configuration.getString ( "nodelist", "" );
-        string redisConf    = configuration.getString ( "redis-conf", "./redis.conf" );
-        string redisHost    = configuration.getString ( "redis-conf", "127.0.0.1" );
-        string redisFolder  = configuration.getString ( "redis-folder", "./redis" );
-        int redisPort       = configuration.getInt ( "redis-port", 0 );
-        bool solo           = configuration.getBool ( "solo", false );
-    
+        
         if ( configfile.size () > 0 ) {
             this->loadConfiguration ( configfile, PRIO_APPLICATION - 1 );
         }
         else {
             this->loadConfiguration ( PRIO_APPLICATION - 1 );
         }
-//        this->printProperties ();
+//      this->printProperties ();
+        
+        string genesis          = configuration.getString ( "genesis" );
+        string keyfile          = configuration.getString ( "keyfile" );
+        int port                = configuration.getInt ( "port", 9090 );
+        string nodelist         = configuration.getString ( "nodelist", "" );
+        string redisConf        = configuration.getString ( "redis-conf", "./redis.conf" );
+        string redisHost        = configuration.getString ( "redis-conf", "127.0.0.1" );
+        string redisFolder      = configuration.getString ( "redis-folder", "./redis" );
+        int redisPort           = configuration.getInt ( "redis-port", 0 );
+        bool solo               = configuration.getBool ( "solo", false );
+        string sslCertFile      = configuration.getString ( "openSSL.server.certificateFile", "" );
         
         string minerID      = to_string ( port );
     
@@ -323,7 +338,7 @@ protected:
             webMiner.start ();
         }
 
-        this->serve ( port );
+        this->serve ( port, sslCertFile.length () > 0 );
 
         {
             Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
@@ -365,9 +380,14 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void serve ( int port ) {
-        
-        Poco::Net::HTTPServer server ( new Volition::WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( port ), new Poco::Net::HTTPServerParams ());
+    void serve ( int port, bool ssl ) {
+
+
+        Poco::Net::HTTPServer server (
+            new Volition::WebMinerAPI::HTTPRequestHandlerFactory (),
+            ssl ? Poco::Net::SecureServerSocket ( port ) : Poco::Net::ServerSocket ( port ),
+            new Poco::Net::HTTPServerParams ()
+        );
         server.start ();
 
         LOG_F ( INFO, "\nSERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
@@ -386,6 +406,20 @@ protected:
         #endif
 
         server.stop ();
+    }
+
+public:
+
+    //----------------------------------------------------------------//
+    ServerApp () {
+    
+        Poco::Net::initializeSSL ();
+    }
+    
+    //----------------------------------------------------------------//
+    ~ServerApp () {
+    
+        Poco::Net::uninitializeSSL ();
     }
 };
 
