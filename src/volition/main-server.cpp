@@ -176,12 +176,12 @@ protected:
     void defineOptions ( Poco::Util::OptionSet& options ) override {
         Application::defineOptions ( options );
         
-//        options.addOption (
-//            Poco::Util::Option ( "chain", "c", "path to the chain" )
-//                .required ( false )
-//                .argument ( "value", true )
-//                .binding ( "chain" )
-//        );
+        options.addOption (
+            Poco::Util::Option ( "config", "c", "path to configuration file" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "config" )
+        );
         
         options.addOption (
             Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
@@ -197,13 +197,6 @@ protected:
                 .binding ( "keyfile" )
         );
         
-//        options.addOption (
-//            Poco::Util::Option ( "name", "n", "mining node name" )
-//                .required ( false )
-//                .argument ( "value", true )
-//                .binding ( "name" )
-//        );
-        
         options.addOption (
             Poco::Util::Option ( "port", "p", "set port to serve from" )
                 .required ( false )
@@ -214,7 +207,7 @@ protected:
         options.addOption (
             Poco::Util::Option ( "nodelist", "n", "path to nodelist file" )
                 .required ( false )
-                .argument ( "value" )
+                .argument ( "value", true )
                 .binding ( "nodelist" )
         );
         
@@ -257,10 +250,11 @@ protected:
     //----------------------------------------------------------------//
     int main ( const vector < string >& ) override {
         
-        //this->printProperties ();
+        printf ( "APPLICATION NAME: %s\n", this->name ());
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
+        string configfile   = configuration.getString ( "config", "" );
         string genesis      = configuration.getString ( "genesis" );
         string keyfile      = configuration.getString ( "keyfile" );
         int port            = configuration.getInt ( "port", 9090 );
@@ -271,6 +265,14 @@ protected:
         int redisPort       = configuration.getInt ( "redis-port", 0 );
         bool solo           = configuration.getBool ( "solo", false );
     
+        if ( configfile.size () > 0 ) {
+            this->loadConfiguration ( configfile, PRIO_APPLICATION - 1 );
+        }
+        else {
+            this->loadConfiguration ( PRIO_APPLICATION - 1 );
+        }
+//        this->printProperties ();
+        
         string minerID      = to_string ( port );
     
         Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
@@ -331,10 +333,16 @@ protected:
     }
     
     //----------------------------------------------------------------//
+    const char* name () {
+    
+        return "volition";
+    }
+    
+    //----------------------------------------------------------------//
     void printProperties ( const std::string& base = "" ) {
     
         Poco::Util::AbstractConfiguration::Keys keys;
-        config ().keys ( base, keys );
+        this->config ().keys ( base, keys );
     
         if ( keys.empty ()) {
             if ( config ().hasProperty ( base )) {
