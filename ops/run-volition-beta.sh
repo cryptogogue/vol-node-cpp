@@ -10,4 +10,4 @@ docker run -d --rm --name volition-node \
     -p "443:9090" \
     -v ${PWD}:/var/lib/volition \
     volition/node \
-    -c /var/lib/volition/volition.config
+    -c /var/lib/volition/volition.properties
