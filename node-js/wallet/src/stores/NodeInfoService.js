@@ -21,7 +21,7 @@ export class NodeInfoService extends Service {
             appState:   appState,
         });
 
-        this.discoverNodes ( 1000 );
+        this.discoverNodes ( 5000 );
     }
 
     //----------------------------------------------------------------//

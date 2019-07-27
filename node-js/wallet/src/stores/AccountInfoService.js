@@ -20,9 +20,9 @@ export class AccountInfoService extends Service {
 
         observe ( appState, 'accountId', ( change ) => {
             this.revokeAll ();
-            this.syncAccountBalance ( 1000 );
+            this.syncAccountBalance ( 5000 );
         });
-        this.syncAccountBalance ( 1000 );
+        this.syncAccountBalance ( 5000 );
     }
 
     //----------------------------------------------------------------//
