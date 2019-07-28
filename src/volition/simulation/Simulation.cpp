@@ -17,6 +17,7 @@ namespace Simulation {
 
 //----------------------------------------------------------------//
 bool Simulation::Simulation_control ( size_t step ) {
+    UNUSED ( step );
 
     return true;
 }

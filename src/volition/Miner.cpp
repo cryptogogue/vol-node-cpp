@@ -170,6 +170,7 @@ void Miner::loadGenesis ( string path ) {
 
 //----------------------------------------------------------------//
 void Miner::loadKey ( string keyfile, string password ) {
+    UNUSED ( password );
 
     // TODO: password
 
@@ -218,6 +219,7 @@ void Miner::saveChain () {
 
 //----------------------------------------------------------------//
 void Miner::setPersistenceProvider ( shared_ptr < AbstractPersistenceProvider > persistence ) {
+    UNUSED ( persistence );
 
 //    this->mPersistenceProvider = persistence;
 //    if ( persistence ) {
@@ -337,12 +339,14 @@ void Miner::submitChainRecurse ( const Chain& chain, size_t blockID ) {
 
 //----------------------------------------------------------------//
 void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+    UNUSED ( serializer );
     
 //    serializer.serialize ( "chain", this->mChain );
 }
 
 //----------------------------------------------------------------//
 void Miner::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+    UNUSED ( serializer );
 
 //    serializer.serialize ( "chain", this->mChain );
 }

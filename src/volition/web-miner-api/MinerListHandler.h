@@ -23,15 +23,17 @@ public:
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+        UNUSED ( method );
+        UNUSED ( jsonIn );
     
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-        const map < string, MinerInfo >& minerInfo = ledger.getMiners ();
+        const map < string, MinerInfo >& minerInfoMap = ledger.getMiners ();
         
         Poco::JSON::Object::Ptr minersJSON = new Poco::JSON::Object ();
         
-        map < string, MinerInfo >::const_iterator minerInfoIt = minerInfo.cbegin ();
-        for ( unsigned int i = 0; minerInfoIt != minerInfo.cend (); ++minerInfoIt, ++i ) {
+        map < string, MinerInfo >::const_iterator minerInfoIt = minerInfoMap.cbegin ();
+        for ( unsigned int i = 0; minerInfoIt != minerInfoMap.cend (); ++minerInfoIt, ++i ) {
             const MinerInfo& minerInfo = minerInfoIt->second;
             
             Poco::JSON::Object::Ptr minerInfoJSON = new Poco::JSON::Object ();

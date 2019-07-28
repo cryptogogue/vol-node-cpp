@@ -20,6 +20,7 @@ public:
     
     //----------------------------------------------------------------//
     AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
+        UNUSED ( context );
         
         return AssetFieldValue ();
     }

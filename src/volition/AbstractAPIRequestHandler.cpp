@@ -39,6 +39,7 @@ int AbstractAPIRequestHandler::getMethodForString ( string method ) {
 
 //----------------------------------------------------------------//
 void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const {
+    UNUSED ( match );
 
     response.add ( "Access-Control-Allow-Origin", "*" );
     response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );

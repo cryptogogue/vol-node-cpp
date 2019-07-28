@@ -43,6 +43,8 @@ public:
 
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+        UNUSED ( ledger );
+    
         return true;
     }
 };

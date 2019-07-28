@@ -23,10 +23,12 @@ Policy::~Policy () {
 
 //----------------------------------------------------------------//
 void Policy::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+    UNUSED ( serializer );
 }
 
 //----------------------------------------------------------------//
 void Policy::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+    UNUSED ( serializer );
 }
 
 } // namespace Volition

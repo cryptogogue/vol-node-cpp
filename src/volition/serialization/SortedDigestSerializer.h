@@ -218,6 +218,8 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractSerializerFrom_stringToTree ( SerializerPropertyName name, string value ) override {
+        UNUSED ( name );
+        UNUSED ( value );
         assert ( false );
     }
 

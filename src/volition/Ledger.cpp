@@ -18,12 +18,15 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 bool Ledger::accountPolicy ( string accountName, const Policy* policy ) {
+    UNUSED ( policy );
+    UNUSED ( accountName );
 
     return true;
 }
 
 //----------------------------------------------------------------//
 bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& key, string policyName ) {
+    UNUSED ( policyName );
 
     string keyID = key.getKeyID ();
     if ( keyID.size ()) return false;
@@ -440,6 +443,9 @@ bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocatio
 
 //----------------------------------------------------------------//
 bool Ledger::keyPolicy ( string accountName, string policyName, const Policy* policy ) {
+    UNUSED ( accountName );
+    UNUSED ( policyName );
+    UNUSED ( policy );
 
     return true;
 }

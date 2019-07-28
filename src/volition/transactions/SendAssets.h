@@ -40,6 +40,7 @@ public:
 
     //----------------------------------------------------------------//
     bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+        UNUSED ( ledger );
         
         //return ledger.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
         return false;

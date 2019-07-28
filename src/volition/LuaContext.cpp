@@ -169,12 +169,14 @@ int LuaContext::_awardAsset ( lua_State* L ) {
 
 //----------------------------------------------------------------//
 int LuaContext::_getEntropy ( lua_State* L ) {
+    UNUSED ( L );
 
     return 0;
 }
 
 //----------------------------------------------------------------//
 int LuaContext::_revokeAsset ( lua_State* L ) {
+    UNUSED ( L );
 
     return 0;
 }
@@ -254,6 +256,8 @@ bool LuaContext::invoke ( Ledger& ledger, string accountName, const AssetMethod&
 
 //----------------------------------------------------------------//
 void LuaContext::miningReward ( Ledger& ledger, string rewardName ) {
+    UNUSED ( ledger );
+    UNUSED ( rewardName );
 }
 
 //----------------------------------------------------------------//

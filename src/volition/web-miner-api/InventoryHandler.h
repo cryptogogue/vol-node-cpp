@@ -23,6 +23,8 @@ public:
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+        UNUSED ( method );
+        UNUSED ( jsonIn );
     
         try {
         

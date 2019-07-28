@@ -73,6 +73,8 @@ public:
     
     //----------------------------------------------------------------//
     bool qualifyConstArg ( string argName, const AssetFieldValue& value ) const {
+        UNUSED ( argName );
+        UNUSED ( value );
     
         return true;
     }

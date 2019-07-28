@@ -29,6 +29,7 @@ const SimMiner* SimMiner::nextMiner () {
 
 //----------------------------------------------------------------//
 void SimMiner::log ( string prefix ) const {
+    UNUSED ( prefix );
 
 //    string name = this->mCohort ? this->mCohort->mName.c_str () : "";
 //    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s[%s] %s", prefix.c_str (), name.c_str (), this->mChain.print ( "CHAIN: " ).c_str ());

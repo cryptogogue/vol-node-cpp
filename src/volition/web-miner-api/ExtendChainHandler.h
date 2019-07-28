@@ -23,8 +23,11 @@ public:
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+        UNUSED ( method );
+        UNUSED ( jsonIn );
+        UNUSED ( jsonOut );
     
-        try {        
+        try {
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             WebMiner& webMiner = scopedLock.getWebMiner ();
             

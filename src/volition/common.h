@@ -4,6 +4,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
 #include <assert.h>
 #include <cmath>
 #include <fstream>
@@ -67,6 +70,8 @@
 #include <lua.hpp>
 
 #include <lognosis/Logger.h>
+
+#pragma clang diagnostic pop
 
 using namespace std;
 using namespace Padamose;

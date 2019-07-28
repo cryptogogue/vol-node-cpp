@@ -59,6 +59,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
+        UNUSED ( ledger );
     }
     
     //----------------------------------------------------------------//
