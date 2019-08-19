@@ -55,8 +55,11 @@ function makeAssetFieldValue ( value ) {
     }
 
     return {
-        type:       type,
-        value:      value,
+        type:           type,
+        value:          value,
+        mutable:        false,
+        scriptable:     true,
+        alternates:     {},
     }
 }
 
@@ -168,6 +171,14 @@ export const op = {
 // SchemaBuilder
 //================================================================//
 class SchemaBuilder {
+
+    //----------------------------------------------------------------//
+    alternate ( key, value ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD ));
+        this.top ().alternates [ key ] = value;
+        return this;
+    }
 
     //----------------------------------------------------------------//
     assetArg ( name, qualifier ) {
@@ -338,10 +349,10 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    mutable ( base ) {
+    mutable ( value ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD ));
-        this.top ().mutable = true;
+        this.top ().mutable = typeof ( value ) === 'boolean' ? value : true;
         return this;
     }
 
@@ -377,7 +388,15 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    string ( base ) {
+    scriptable ( value ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD ));
+        this.top ().scriptable = typeof ( value ) === 'boolean' ? value : true;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    string () {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE_FIELD ));
         this.top ().type = TYPE_STRING;

@@ -18,24 +18,28 @@ class AssetDefinitionField :
 public:
 
     bool    mMutable;
+    bool    mScriptable;
 
     //----------------------------------------------------------------//
     AssetDefinitionField () :
-        mMutable ( false ) {
+        mMutable ( false ),
+        mScriptable ( true ) {
     }
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AssetFieldValue::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "mutable",   this->mMutable );
+        serializer.serialize ( "mutable",       this->mMutable );
+        serializer.serialize ( "scriptable",    this->mScriptable );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AssetFieldValue::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "mutable",   this->mMutable );
+        serializer.serialize ( "mutable",       this->mMutable );
+        serializer.serialize ( "scriptable",    this->mScriptable );
     }
 };
 

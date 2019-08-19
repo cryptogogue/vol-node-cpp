@@ -3,6 +3,7 @@
 import { assert }           from '../util/assert';
 import { Binding }          from './Binding';
 import { SchemaMethod }     from './SchemaMethod';
+import _                    from 'lodash';
 
 //================================================================//
 // Schema
@@ -97,14 +98,18 @@ export class Schema {
         assert ( Boolean ( definition ));
 
         let asset = {
-            type:       typeName,
-            assetID:    assetID,
-            fields:     {},
+            type:           typeName,
+            assetID:        assetID,
+            fields:         {},
+            alternates:     {},
         };
 
         for ( let fieldName in definition.fields ) {
             let field = definition.fields [ fieldName ];
-            asset.fields [ fieldName ] = field.value;
+            asset.fields [ fieldName ] = {
+                value:          field.value,
+                alternates:     _.cloneDeep ( field.alternates ),
+            }
         }
         return asset;
     }

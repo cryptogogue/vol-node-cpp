@@ -101,7 +101,6 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     @action
     finishLoading () {
-
         this.loading = false;
     }
 
@@ -155,14 +154,33 @@ export class InventoryService extends Service {
 
             //----------------------------------------------------------------//
             .definition ( 'pack' )
+                .field ( 'layout', 'pack' )
+                .field ( 'displayName', 'Pack' )
+                    .alternate ( 'ES', 'El Pack' )
+                    .alternate ( 'FR', 'Le Pack' )
          
             .definition ( 'common' )
+                .field ( 'layout', 'card' )
+                .field ( 'displayName', 'Common' )
+                    .alternate ( 'ES', 'El Common' )
+                    .alternate ( 'FR', 'Le Common' )
+                .field ( 'image', 'https://i.imgur.com/VMPKVAN.jpg' )
                 .field ( 'keywords', 'card common' )
          
             .definition ( 'rare' )
+                .field ( 'layout', 'card' )
+                .field ( 'displayName', 'Rare' )
+                    .alternate ( 'ES', 'El Rare' )
+                    .alternate ( 'FR', 'Le Rare' )
+                .field ( 'image', 'https://i.imgur.com/BtKggd4.jpg' )
                 .field ( 'keywords', 'card rare' )
          
             .definition ( 'ultraRare' )
+                .field ( 'layout', 'card' )
+                .field ( 'displayName', 'Ultra-Rare' )
+                    .alternate ( 'ES', 'El Ultra-Rare' )
+                    .alternate ( 'FR', 'Le Ultra-Rare' )
+                .field ( 'image', 'https://i.imgur.com/2aiJ3cq.jpg' )
                 .field ( 'keywords', 'card ultra-rare' )
 
             //----------------------------------------------------------------//
@@ -198,15 +216,12 @@ export class InventoryService extends Service {
 
         for ( let assetID in this.assets ) {
 
-            // compose the asset
-            let asset = this.formatter.composeAsset ( this.assets [ assetID ], [ 'EN', 'RGB' ]);
+            const asset = this.assets [ assetID ];
+            const filters = [ 'EN', 'RGB' ];
 
             // generate the barcode and inject it into the layout
             let barcode = barcodeToSVG ( assetID );
-            this.assetLayouts [ assetID ] = this.formatter.formatAssetLayout ( asset, { barcode: barcode });
-
-            // store the composed asset
-            this.assets [ assetID ] = asset;
+            this.assetLayouts [ assetID ] = this.formatter.composeAssetLayout ( asset, filters, { barcode: barcode });
         }
 
         this.finishLoading ();

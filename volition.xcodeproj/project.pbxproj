@@ -243,6 +243,7 @@
 		CDBFD550218B8999002AB0C3 /* SendVOL.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBFD544218B8999002AB0C3 /* SendVOL.h */; };
 		CDBFD551218B8999002AB0C3 /* RunScript.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBFD545218B8999002AB0C3 /* RunScript.h */; };
 		CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBFD558218BA145002AB0C3 /* Schema.h */; };
+		CDD11D8A22ED6E070051F04E /* AssetFieldVariant.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD11D8922ED6E070051F04E /* AssetFieldVariant.h */; };
 		CDD36CE3215DA428004FC222 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD4215DA35E004FC222 /* libgtest.a */; };
 		CDD36CE4215DA429004FC222 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
 		CDD36CE7215DA444004FC222 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
@@ -794,6 +795,7 @@
 		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/volition/Chain.h; sourceTree = "<group>"; };
 		CDC2B34120D1182400300A96 /* TheContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheContext.h; path = src/volition/TheContext.h; sourceTree = "<group>"; };
 		CDC2B34220D1196900300A96 /* TheContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheContext.cpp; path = src/volition/TheContext.cpp; sourceTree = "<group>"; };
+		CDD11D8922ED6E070051F04E /* AssetFieldVariant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetFieldVariant.h; path = src/volition/AssetFieldVariant.h; sourceTree = "<group>"; };
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
 		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
 		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
@@ -1017,6 +1019,7 @@
 				CDEDC20722BD57BC00C5643C /* AssetID.h */,
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CD63A1CD22AC88A000D5C801 /* AssetFieldValue.h */,
+				CDD11D8922ED6E070051F04E /* AssetFieldVariant.h */,
 				CD63A1C722AC6BEA00D5C801 /* AssetMethod.h */,
 				CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
@@ -1413,6 +1416,7 @@
 				CDBFD546218B8999002AB0C3 /* AccountPolicy.h in Headers */,
 				CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */,
 				CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */,
+				CDD11D8A22ED6E070051F04E /* AssetFieldVariant.h in Headers */,
 				CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */,
 				CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */,
 				CD4E81CE2105941A007DA585 /* TheTransactionFactory.h in Headers */,
