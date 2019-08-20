@@ -19,6 +19,17 @@ DONE: svg barcode
 DONE: revise layout schema - address SVG shortcomings
 
 ----------------------------------------------------------------
+NAMING
+
+*Screen
+*Display
+*Controller
+*Service
+
+group in folders by functionality
+don't mix controllers and displays
+
+----------------------------------------------------------------
 PLAYTEST
 
 tool to generate set schema from XLS spreadsheet
