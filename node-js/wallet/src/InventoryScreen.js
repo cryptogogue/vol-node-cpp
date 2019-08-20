@@ -2,12 +2,12 @@
 
 import './InventoryScreen.css';
 
-import AssetView                                            from '../AssetView';
-import NavigationBar                                        from '../NavigationBar';
-import { AppStateService }                                  from '../stores/AppStateService';
-import { Service, useService }                              from '../stores/Service';
-import { InventoryService }                                 from '../stores/InventoryService';
-import * as util                                            from '../util/util';
+import AssetView                                            from './AssetView';
+import NavigationBar                                        from './NavigationBar';
+import { AppStateService }                                  from './AppStateService';
+import { Service, useService }                              from './Service';
+import { InventoryService }                                 from './InventoryService';
+import * as util                                            from './util/util';
 import { InventoryView, INVENTORY_LAYOUT, getInventoryLayoutFriendlyName } from './InventoryView';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
@@ -21,9 +21,9 @@ const SORT_MODE = {
 };
 
 //================================================================//
-// InventoryController
+// InventoryScreenController
 //================================================================//
-class InventoryController extends Service {
+class InventoryScreenController extends Service {
 
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     // computed
@@ -161,7 +161,7 @@ const InventoryScreen = observer (( props ) => {
 
     const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
     const inventory     = useService (() => new InventoryService ( appState ));
-    const controller    = useService (() => new InventoryController ( inventory ));
+    const controller    = useService (() => new InventoryScreenController ( inventory ));
 
     if ( appState.accountId !== accountIdFromEndpoint ) {
         return appState.redirect ( `/accounts/${ appState.accountId }/inventory` );

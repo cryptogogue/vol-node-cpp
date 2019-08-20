@@ -1,8 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { AppStateService }                                                      from './stores/AppStateService';
-import { Service, useService }                                                  from './stores/Service';
+import { AppStateService }                                                      from './AppStateService';
+import { Service, useService }                                                  from './Service';
 import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';
@@ -19,9 +19,9 @@ const STATUS_POSTING_TRANSACTION        = 4;
 const STATUS_DONE                       = 5;
 
 //================================================================//
-// NewAccountService
+// NewAccountScreenController
 //================================================================//
-class NewAccountService extends Service {
+class NewAccountScreenController extends Service {
     
     //----------------------------------------------------------------//
     async acceptBid () {
@@ -191,32 +191,6 @@ class NewAccountService extends Service {
     }
 }
 
-//================================================================//
-// NewAccountScreen
-//================================================================//
-const NewAccountScreen = observer (( props ) => {
-
-    const appState  = useService (() => new AppStateService ( util.getUserId ( props )));
-    const service   = useService (() => new NewAccountService ( appState ));
-
-    if ( service.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + service.accountId );
-
-    return (
-        <div>
-            <Header>{ service.accountId }</Header>
-            <Header>Mnemonic seed phrase</Header>
-            <p>{ service.seedPhrase }</p>
-            <Header>Keys</Header>
-            <p>Public Key: { service.publicKey }</p>
-            <p>Private Key: { service.privateKey }</p>
-            <Header size = "small">You will not be able to recover your seed phrase and private key later</Header>
-
-            { renderBid ()}
-            { renderButton ()}
-        </div>
-    );
-});
-
 //----------------------------------------------------------------//
 function renderBid ( service ) {
 
@@ -248,5 +222,31 @@ function renderButton ( service ) {
         </Button>
     );
 }
+
+//================================================================//
+// NewAccountScreen
+//================================================================//
+const NewAccountScreen = observer (( props ) => {
+
+    const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
+    const controller    = useService (() => new NewAccountScreenController ( appState ));
+
+    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountId );
+
+    return (
+        <div>
+            <Header>{ controller.accountId }</Header>
+            <Header>Mnemonic seed phrase</Header>
+            <p>{ controller.seedPhrase }</p>
+            <Header>Keys</Header>
+            <p>Public Key: { controller.publicKey }</p>
+            <p>Private Key: { controller.privateKey }</p>
+            <Header size = "small">You will not be able to recover your seed phrase and private key later</Header>
+
+            { renderBid ()}
+            { renderButton ()}
+        </div>
+    );
+});
 
 export default NewAccountScreen;

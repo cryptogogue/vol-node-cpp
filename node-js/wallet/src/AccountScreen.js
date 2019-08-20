@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateService }                                                      from './stores/AppStateService';
-import { Service, useService }                                                  from './stores/Service';
+import { AppStateService }                                                      from './AppStateService';
+import { Service, useService }                                                  from './Service';
 import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';
@@ -13,15 +13,15 @@ import NodeListView             from './NodeListView';
 import PendingTransactionsView  from './PendingTransactionsView';
 import StagedTransactionsView   from './StagedTransactionsView';
 
-import { AccountInfoService }   from './stores/AccountInfoService';
-import { NodeInfoService }      from './stores/NodeInfoService';
+import { AccountInfoService }   from './AccountInfoService';
+import { NodeInfoService }      from './NodeInfoService';
 
 import TransactionFormSelector  from './TransactionFormSelector';
 
 //================================================================//
-// AccountDetails
+// AccountDetailsView
 //================================================================//
-const AccountDetails = observer (( props ) => {
+const AccountDetailsView = observer (( props ) => {
 
     const { appState } = props;
     const account = appState.account;
@@ -146,7 +146,7 @@ const AccountScreen = observer (( props ) => {
                     <If condition = { appState.hasAccount }>
 
                         <Segment>
-                            <AccountDetails appState = { appState }/>
+                            <AccountDetailsView appState = { appState }/>
                         </Segment>
 
                         <If condition = { appState.stagedTransactions.length > 0 }>

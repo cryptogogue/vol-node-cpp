@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateService }                                                      from './stores/AppStateService';
-import { Service, useService }                                                  from './stores/Service';
+import { AppStateService }                                                      from './AppStateService';
+import { Service, useService }                                                  from './Service';
 import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';

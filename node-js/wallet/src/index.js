@@ -17,7 +17,7 @@ import DebugPrintScreen         from './debug/DebugPrintScreen';
 import DebugStripeScreen        from './debug/DebugStripeScreen';
 import DebugTextFitterScreen    from './debug/DebugTextFitterScreen';
 import ImportAccountScreen      from './ImportAccountScreen';
-import InventoryScreen          from './inventory/InventoryScreen';
+import InventoryScreen          from './InventoryScreen';
 import LoginScreen              from './LoginScreen';
 import NewAccountScreen         from './NewAccountScreen';
 import RegisterScreen           from './RegisterScreen';

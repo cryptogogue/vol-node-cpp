@@ -22,7 +22,13 @@ DONE: revise layout schema - address SVG shortcomings
 NAMING
 
 *Screen
-*Display
+*Form
+*Picker
+*Selector
+*View
+*Menu
+*Button
+
 *Controller
 *Service
 

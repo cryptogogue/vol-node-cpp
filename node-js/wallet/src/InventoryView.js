@@ -1,11 +1,11 @@
 /* eslint-disable no-whitespace-before-property */
 
-import AssetView                                            from '../AssetView';
-import NavigationBar                                        from '../NavigationBar';
-import { AppStateService }                                  from '../stores/AppStateService';
-import { Service, useService }                              from '../stores/Service';
-import { InventoryService }                                 from '../stores/InventoryService';
-import * as util                                            from '../util/util';
+import AssetView                                            from './AssetView';
+import NavigationBar                                        from './NavigationBar';
+import { AppStateService }                                  from './AppStateService';
+import { Service, useService }                              from './Service';
+import { InventoryService }                                 from './InventoryService';
+import * as util                                            from './util/util';
 import handlebars                                           from 'handlebars';
 import { action, computed, extendObservable, observable }   from 'mobx';
 import { observer }                                         from 'mobx-react';
@@ -68,9 +68,9 @@ function getPageDimensions ( layout ) {
 }
 
 //================================================================//
-// AssetPageLayout
+// InventoryPageView
 //================================================================//
-const AssetPageLayout = ( props ) => {
+const InventoryPageView = ( props ) => {
 
     const { assetIDs, inventory, pageSize } = props;
     const doc = getPageDimensions ( pageSize );
@@ -178,7 +178,7 @@ export const InventoryView = observer (( props ) => {
 
             if ( pageAssetIDs.length > 0 ) {
                 assetLayouts.push (
-                    <AssetPageLayout
+                    <InventoryPageView
                         key = { i }
                         assetIDs = { pageAssetIDs }
                         inventory = { inventory }

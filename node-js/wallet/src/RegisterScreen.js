@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateService }                                                      from './stores/AppStateService';
-import { Service, useService }                                                  from './stores/Service';
+import { AppStateService }                                                      from './AppStateService';
+import { Service, useService }                                                  from './Service';
 import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                                                             from 'mobx-react';
@@ -11,9 +11,9 @@ import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  
 import * as bcrypt              from 'bcryptjs';
 
 //================================================================//
-// RegisterService
+// RegisterScreenController
 //================================================================//
-class RegisterService extends Service {
+class RegisterScreenController extends Service {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
@@ -63,17 +63,17 @@ class RegisterService extends Service {
 const RegisterScreen = observer (( props ) => {
     
     const appState = useService (() => new AppStateService ( util.getUserId ( props )));
-    const service = useService (() => new RegisterService ( appState ));
+    const controller = useService (() => new RegisterScreenController ( appState ));
 
     if ( appState.hasUser ()) {
         const to = appState.isLoggedIn () ? '/accounts' : '/login';
         return appState.redirect ( to );
     }
 
-    let onChange        = ( event ) => { service.handleChange ( event )};
-    let onSubmit        = () => { service.handleSubmit ()};
+    let onChange        = ( event ) => { controller.handleChange ( event )};
+    let onSubmit        = () => { controller.handleSubmit ()};
 
-    const isEnabled = service.readyToSubmit;
+    const isEnabled = controller.readyToSubmit;
 
     return (
         <div className = "register-form">
@@ -103,7 +103,7 @@ const RegisterScreen = observer (( props ) => {
                                 placeholder = "Password"
                                 type = "password"
                                 name = "password"
-                                value = { service.password }
+                                value = { controller.password }
                                 onChange = { onChange }
                             />
                             <Form.Input
@@ -113,10 +113,10 @@ const RegisterScreen = observer (( props ) => {
                                 placeholder = "Confirm password"
                                 type = "password"
                                 name = "confirmPassword"
-                                value = { service.confirmPassword }
+                                value = { controller.confirmPassword }
                                 onChange = { onChange }
                             />
-                            { service.errorMessage && <span>{ service.errorMessage }</span>}
+                            { controller.errorMessage && <span>{ controller.errorMessage }</span>}
                             <Button color = "red" fluid size = "large" disabled = { !isEnabled }>
                                 Create Password
                             </Button>

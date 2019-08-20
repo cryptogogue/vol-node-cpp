@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { NODE_TYPE, NODE_STATUS }   from './stores/AppStateService';
+import { NODE_TYPE, NODE_STATUS }   from './AppStateService';
 import React, { useState }          from 'react';
 import { observer }                 from 'mobx-react';
 import { Button, Form, Segment }    from 'semantic-ui-react';

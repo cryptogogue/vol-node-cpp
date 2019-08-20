@@ -2,48 +2,16 @@
 
 import AssetView                                            from './AssetView';
 import CraftingForm                                         from './CraftingForm';
-import { AccountInfoService }                               from './stores/AccountInfoService';
-import { AppStateService }                                  from './stores/AppStateService';
-import { Service, useService }                              from './stores/Service';
-import { InventoryService }                                 from './stores/InventoryService';
+import { AccountInfoService }                               from './AccountInfoService';
+import { AppStateService }                                  from './AppStateService';
+import { Service, useService }                              from './Service';
+import { InventoryService }                                 from './InventoryService';
 import * as util                                            from './util/util';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import NavigationBar                                        from './NavigationBar';
 import React, { useState }                                  from 'react';
 import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
-
-//================================================================//
-// CraftingFormSelector
-//================================================================//
-const CraftingFormSelector = observer (( props ) => {
-
-    const { inventory, methodName, onChanged } = props;
-
-    let options = [];
-
-    const methodBindings = inventory.getCraftingMethodBindings ();
-    for ( let methodName in methodBindings ) {
-        const binding = methodBindings [ methodName ];
-        const disabled = !binding.valid;
-
-        options.push ({ key:methodName, value:methodName, text:methodName, disabled: disabled });
-    }
-
-    return (
-        <div>
-            <Dropdown
-                placeholder = "Select Method"
-                fluid
-                search
-                selection
-                options = { options }
-                onChange = {( event, data ) => { onChanged ( data.value )}}
-                defaultValue = { methodName !== '' ? methodName : null }
-            />
-        </div>
-    );
-});
 
 //================================================================//
 // CraftingScreen
@@ -72,6 +40,16 @@ const CraftingScreen = observer (( props ) => {
         setSelectedMethod ( '' );
     }
 
+    let dropdownOptions = [];
+
+    const methodBindings = inventory.getCraftingMethodBindings ();
+    for ( let methodName in methodBindings ) {
+        const binding = methodBindings [ methodName ];
+        const disabled = !binding.valid;
+
+        dropdownOptions.push ({ key:methodName, value:methodName, text:methodName, disabled: disabled });
+    }
+
     const onSelectionChanged = ( methodName ) => {
         setSelectedMethod ( methodName );
     }
@@ -80,7 +58,17 @@ const CraftingScreen = observer (( props ) => {
         <div>
             <NavigationBar navTitle = "Crafting" appState = { appState }/>
 
-            <CraftingFormSelector inventory = { inventory } methodName = { methodNameFromEndpoint } onChanged = { onSelectionChanged }/>
+            <div>
+                <Dropdown
+                    placeholder = "Select Method"
+                    fluid
+                    search
+                    selection
+                    options = { dropdownOptions }
+                    onChange = {( event, data ) => { onSelectionChanged ( data.value )}}
+                    defaultValue = { methodNameFromEndpoint !== '' ? methodNameFromEndpoint : null }
+                />
+            </div>
 
             <If condition = { isValid }>
                 <CraftingForm

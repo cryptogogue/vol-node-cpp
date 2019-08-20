@@ -1,8 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { AppStateService }                                                          from './stores/AppStateService';
-import { Service, useService }                                                      from './stores/Service';
+import { AppStateService }                                                          from './AppStateService';
+import { Service, useService }                                                      from './Service';
 import * as util                                                                    from './util/util';
 import { action, computed, extendObservable, observable, observe, runInAction }     from 'mobx';
 import { observer }                                                                 from 'mobx-react';
@@ -18,9 +18,9 @@ const STATUS_VERIFYING_KEY              = 1;
 const STATUS_DONE                       = 2;
 
 //================================================================//
-// ImportAccountService
+// ImportAccountScreenController
 //================================================================//
-class ImportAccountService extends Service {
+class ImportAccountScreenController extends Service {
 
     @observable accountID       = '';
     @observable errorMessage    = '';
@@ -119,16 +119,16 @@ class ImportAccountService extends Service {
 const ImportAccountScreen = observer (( props ) => {
 
     const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
-    const service       = useService (() => new ImportAccountService ( appState ));
+    const controller    = useService (() => new ImportAccountScreenController ( appState ));
 
     let onChange    = ( event ) => { service.handleChange ( event )};
     let onSubmit    = () => { service.verifyPhraseOrKey ()};
 
     const hasMiners         = appState.node.length > 0;
     const inputEnabled      = hasMiners;
-    const submitEnabled     = inputEnabled && ( service.phraseOrKey.length > 0 );
+    const submitEnabled     = inputEnabled && ( controller.phraseOrKey.length > 0 );
 
-    if ( service.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + service.accountId );
+    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountId );
 
     let warning;
     if ( !appState.node.length > 0 ) {
@@ -165,12 +165,12 @@ const ImportAccountScreen = observer (( props ) => {
                         <Form.TextArea
                             placeholder = "Mnemonic Phrase or Private Key"
                             name = "phraseOrKey"
-                            value = { service.phraseOrKey }
+                            value = { controller.phraseOrKey }
                             onChange = { onChange }
-                            error = {( service.errorMessage.length > 0 ) ? true : false }
+                            error = {( controller.errorMessage.length > 0 ) ? true : false }
                             disabled = { !inputEnabled }
                         />
-                        {( service.errorMessage.length > 0 ) && <span>{ service.errorMessage }</span>}
+                        {( controller.errorMessage.length > 0 ) && <span>{ controller.errorMessage }</span>}
                         <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
                             Login
                         </Button>

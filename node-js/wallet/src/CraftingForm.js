@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import AssetView                        from './AssetView';
-import { Service, useService }          from './stores/Service';
+import { Service, useService }          from './Service';
 import TransactionForm                  from './TransactionForm';
 import { TRANSACTION_TYPE }             from './util/Transaction';
 import { action, computed, observable } from "mobx";
@@ -226,21 +226,18 @@ class CraftingFormController extends Service {
 }
 
 //================================================================//
-// CraftingFormFieldButtons
+// CraftingFormAssetPicker
 //================================================================//
-const CraftingFormFieldButtons = observer (( props ) => {
+const CraftingFormAssetPicker = observer (( props ) => {
 
-    const [ buttonDOM, setButtonDOM ] = useState ();
-
-    const controller = props.controller;
+    const { controller } = props;
 
     // add the fields in order
-    const paramBindings = controller.paramBindings;
     let fields = [];
+    const paramBindings = controller.paramBindings;
     for ( let fieldName in paramBindings ) {
 
         let isActive = controller.isActiveField ( fieldName );
-
         let value = controller.fieldValues [ fieldName ];
         let text = ( value === EMPTY_STRING ) ? fieldName : `${ fieldName }: ${ value }`;
 
@@ -248,9 +245,7 @@ const CraftingFormFieldButtons = observer (( props ) => {
             <Button
                 type = 'button'
                 key = { fieldName }
-                style = {{
-                    outline:    isActive ? 'solid #00FFFF' : '',
-                }}
+                style = {{ outline:    isActive ? 'solid #00FFFF' : '', }}
                 fluid
                 onClick = {() => { controller.selectField ( fieldName )}}
             >
@@ -258,18 +253,34 @@ const CraftingFormFieldButtons = observer (( props ) => {
             </Button>
         );
     }
-    return <div>{ fields }</div>;
+
+    const onClick = () => {
+        controller.nextState ();
+    };
+
+    const isSubmitEnabled = controller.isValid;
+
+    return (
+        <div>
+            <div>{ fields }</div>
+            <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClick }>
+                OK
+            </Button>
+        </div>
+    );
 });
 
 //================================================================//
-// IngredientList
+// CraftingForm
 //================================================================//
-const IngredientList = observer (( props ) => {
+const CraftingForm = observer (( props ) => {
 
-    const controller = props.controller;
+    const { appState, inventory, methodName } = props;
 
-    const ingredients = controller.ingredients;
+    const controller = useService (() => new CraftingFormController ( appState, inventory, methodName ));
+
     let ingredientList = [];
+    const ingredients = controller.ingredients;
     for ( let assetID in ingredients ) {
         
         let ingredient = ingredients [ assetID ];
@@ -299,40 +310,6 @@ const IngredientList = observer (( props ) => {
             </div>
         );
     }
-    return <div>{ ingredientList }</div>;
-});
-
-//================================================================//
-// AssetSelector
-//================================================================//
-const AssetSelector = observer (( props ) => {
-
-    const { controller } = props;
-
-    const onClick = () => {
-        controller.nextState ();
-    };
-
-    const isSubmitEnabled = controller.isValid;
-
-    return (
-        <div>
-            <CraftingFormFieldButtons controller = { controller }/>
-            <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClick }>
-                OK
-            </Button>
-        </div>
-    );
-});
-
-//================================================================//
-// CraftingForm
-//================================================================//
-const CraftingForm = observer (( props ) => {
-
-    const { appState, inventory, methodName } = props;
-
-    const controller = useService (() => new CraftingFormController ( appState, inventory, methodName ));
 
     const onCancel = () => {
         appState.setNextTransactionCost ( 0 );
@@ -358,7 +335,7 @@ const CraftingForm = observer (( props ) => {
                         </Header>
                         <Choose >
                             <When condition = { controller.state === CRAFTING_STATE.ASSET_SELECTION }>
-                                <AssetSelector controller = { controller }/>
+                                <CraftingFormAssetPicker controller = { controller }/>
                             </When>
                             <When condition = { controller.state === CRAFTING_STATE.MAKE_TRANSACTION }>
                                 <Header as = "h2">
@@ -379,7 +356,7 @@ const CraftingForm = observer (( props ) => {
                     </Segment>
                 </Grid.Column>
             </Grid>
-            <IngredientList controller = { controller }/>
+            <div>{ ingredientList }</div>
         </div>
     );
 });

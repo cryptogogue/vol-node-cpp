@@ -1,12 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { barcodeToSVG }                         from '../util/pdf417';
+import { barcodeToSVG }                         from './util/pdf417';
 import { Service }                              from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
-import { Binding }                              from '../schema/Binding';
-import { Schema }                               from '../schema/Schema';
-import { buildSchema, op }                      from '../schema/SchemaBuilder';
-import { JUSTIFY }                              from '../util/TextFitter';
+import { Binding }                              from './schema/Binding';
+import { Schema }                               from './schema/Schema';
+import { buildSchema, op }                      from './schema/SchemaBuilder';
+import { JUSTIFY }                              from './util/TextFitter';
 import * as opentype                            from 'opentype.js';
 
 const DEBUG = true;

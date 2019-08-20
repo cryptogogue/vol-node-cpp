@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateService }                                                      from './stores/AppStateService';
-import { Service, useService }                                                  from './stores/Service';
+import { AppStateService }                                                      from './AppStateService';
+import { Service, useService }                                                  from './Service';
 import { Transaction }                                                          from './util/Transaction';
 import { TransactionTemplate }                                                  from './util/TransactionTemplate';
 import * as util                                                                from './util/util';
