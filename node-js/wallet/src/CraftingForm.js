@@ -278,17 +278,26 @@ const IngredientList = observer (( props ) => {
         const isEnabled     = controller.isEnabledIngredient ( assetID );
         const isUtilized    = controller.isUtilizedIngredient ( assetID );
 
-        ingredientList.push (<AssetView
-            key = { assetID }
-            style = {{
-                float:      'left',
-                outline:    isActive ? 'thick solid #00FFFF' : ( isUtilized ? 'thick solid #00FF00' : '' ),
-                opacity:    isEnabled ? '1.0' : '0.5',
-            }}
-            inventory = { controller.inventory }
-            assetId = { assetID }
-            onClick = {() => { isEnabled && controller.selectIngredient ( assetID )}}
-        />);
+        ingredientList.push (
+            <div
+                key = { assetID }
+                style = {{
+                    float:      'left',
+                    outline:    isActive ? 'thick solid #00FFFF' : ( isUtilized ? 'thick solid #00FF00' : '' ),
+                    opacity:    isEnabled ? '1.0' : '0.5',
+                }}
+                onClick = {() => {
+                    isEnabled && controller.selectIngredient ( assetID );
+                    console.log ( 'click' );
+                }}
+            >
+                <AssetView
+                    inventory = { controller.inventory }
+                    assetId = { assetID }
+                    inches = 'true'
+                />
+            </div>
+        );
     }
     return <div>{ ingredientList }</div>;
 });
