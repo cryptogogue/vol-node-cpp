@@ -16,27 +16,38 @@ DONE: wallet inventory - rendering svg for print
 DONE: implement queue of transactions in wallet - rebuild state dynamically (from node)
 DONE: rethink state handling in wallet
 DONE: svg barcode
+DONE: revise layout schema - address SVG shortcomings
 
 ----------------------------------------------------------------
-BETA
+PLAYTEST
 
 tool to generate set schema from XLS spreadsheet
 logic for attachments
+add schema to genesis block
+support loading genesis chain
+test - handle restarting network and/or changing schemas
 
 implement way to expire transactions
-identify networks (by genesis block) - name networks
+identify (mining) networks (by genesis block) - name networks; i.e. test network, production network
 
+commands for test account
 provision any asset
 provision every asset in set
 provision beta account - generate key
-handle unrecognized account
-account permissions
+discard all (by set)
+handle unrecognized account - reject transactions
+account permissions - god keys, publisher keys
 
-revise layout schema - address SVG shortcomings
-expand schema to include placeholder asset templates
+add banner at the top of wallet showing mining network name
 
-add banner at the top of wallet showing network name
-display all transactions of selected account
+----------------------------------------------------------------
+MVP
+
+tagging sets of cards and deck building
+
+batch transfer assets to other accounts
+
+display all (historic) transactions of selected account
 customize asset fields - images, text
 
 validator app - scan the QR code and return raw card data including the owner
