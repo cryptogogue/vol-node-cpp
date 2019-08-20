@@ -13,9 +13,17 @@ import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
 import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
 
+const DPI = 300;
+const MM_TO_IN = 0.03937007874;
+
 export const INVENTORY_LAYOUT = {
     WEB:                'WEB',
     US_LETTER:          'US_LETTER',
+    US_LEGAL:           'US_LEGAL',
+    US_LEDGER:          'US_LEDGER',
+    A4:                 'A4',
+    A3:                 'A3',
+    A2:                 'A2',
 };
 
 export function getInventoryLayoutFriendlyName ( layout ) {
@@ -23,83 +31,127 @@ export function getInventoryLayoutFriendlyName ( layout ) {
     switch ( layout ) {
         case INVENTORY_LAYOUT.WEB:          return 'Web';
         case INVENTORY_LAYOUT.US_LETTER:    return 'US Letter (8.5" x 11")';
+        case INVENTORY_LAYOUT.US_LEGAL:     return 'US Legal (14" x 8.5")';
+        case INVENTORY_LAYOUT.US_LEDGER:    return 'US Ledger (17" x 11")';
+
+        case INVENTORY_LAYOUT.A4:           return 'A4 (210mm x 297mm)';
+        case INVENTORY_LAYOUT.A3:           return 'A3 (420mm x 297mm)';
+        case INVENTORY_LAYOUT.A2:           return 'A2 (420mm x 594mm)';
     }
 }
 
-function getAssetsPerTemplate ( layout ) {
+function getAssetsPerPageSize ( layout ) {
 
     switch ( layout ) {
-        case INVENTORY_LAYOUT.WEB:          return -1;
         case INVENTORY_LAYOUT.US_LETTER:    return 9;
+        case INVENTORY_LAYOUT.US_LEGAL:     return 10;
+        case INVENTORY_LAYOUT.US_LEDGER:    return 18;
+
+        case INVENTORY_LAYOUT.A4:           return 9;
+        case INVENTORY_LAYOUT.A3:           return 16;
+        case INVENTORY_LAYOUT.A2:           return 36;
+    }
+    return -1;
+}
+
+function getPageDimensions ( layout ) {
+
+    switch ( layout ) {
+        case INVENTORY_LAYOUT.US_LETTER:    return { width: 8.5, height: 11 };
+        case INVENTORY_LAYOUT.US_LEGAL:     return { width: 14, height: 8.5 };
+        case INVENTORY_LAYOUT.US_LEDGER:    return { width: 17, height: 11 };
+
+        case INVENTORY_LAYOUT.A4:           return { width: 210 * MM_TO_IN, height: 297 * MM_TO_IN };
+        case INVENTORY_LAYOUT.A3:           return { width: 420 * MM_TO_IN, height: 297 * MM_TO_IN };
+        case INVENTORY_LAYOUT.A2:           return { width: 420 * MM_TO_IN, height: 594 * MM_TO_IN };
     }
 }
 
-const templates = {};
+//================================================================//
+// AssetPageLayout
+//================================================================//
+const AssetPageLayout = ( props ) => {
 
-templates [ INVENTORY_LAYOUT.US_LETTER ] = handlebars.compile ( `
-    <svg
-        version = "1.1"
-        baseProfile = "basic"
-        xmlns = "http://www.w3.org/2000/svg"
-        xmlns:xlink = "http://www.w3.org/1999/xlink"
-        width = "8.5in"
-        height = "11in"
-        viewBox = "0 0 2550 3300"
-        preserveAspectRatio = "none"
-        >
-        <g style = "stroke:#000000;stroke-width:1">
-            <line x1 = "150" y1 = "0" x2 = "150" y2 = "3300"/>
-            <line x1 = "900" y1 = "0" x2 = "900" y2 = "3300"/>
-            <line x1 = "1650" y1 = "0" x2 = "1650" y2 = "3300"/>
-            <line x1 = "2400" y1 = "0" x2 = "2400" y2 = "3300"/>
+    const { assetIDs, inventory, pageSize } = props;
+    const doc = getPageDimensions ( pageSize );
 
-            <line x1 = "0" y1 = "75" x2 = "2550" y2 = "75"/>
-            <line x1 = "0" y1 = "1125" x2 = "2550" y2 = "1125"/>
-            <line x1 = "0" y1 = "2175" x2 = "2550" y2 = "2175"/>
-            <line x1 = "0" y1 = "3225" x2 = "2550" y2 = "3225"/>
-        </g>
-        <g transform = "translate ( 150, 75 )">
+    const width = doc.width * DPI;
+    const height = doc.height * DPI;
 
-            <svg x = "0" y = "0" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none">
-                {{{ asset0 }}}
-            </svg>
-            <svg x = "750" y = "0" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none">
-                {{{ asset1 }}}
-            </svg>
-            <svg x = "1500" y = "0" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none"> 
-                {{{ asset2 }}}
-            </svg>
+    // TODO: get these dynamically
+    const ASSET_WIDTH   = 750;
+    const ASSET_HEIGHT  = 1050;
 
-            <svg x = "0" y = "1050" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none">
-                {{{ asset3 }}}
-            </svg>
-            <svg x = "750" y = "1050" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none"> 
-                {{{ asset4 }}}
-            </svg>
-            <svg x = "1500" y = "1050" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none"> 
-                {{{ asset5 }}}
-            </svg>
+    
 
-            <svg x = "0" y = "2100" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none"> 
-                {{{ asset6 }}}
-            </svg>
-            <svg x = "750" y = "2100" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none"> 
-                {{{ asset7 }}}
-            </svg>
-            <svg x = "1500" y = "2100" width = "750" height = "1050" viewBox = "0 0 750 1050" preserveAspectRatio = "none">
-                {{{ asset8 }}}
-            </svg>
-        </g>
-        <g style = "stroke:#ffffff;stroke-width:3">
+    const maxCols = Math.floor ( width / ASSET_WIDTH );
+    const maxRows = Math.floor ( height / ASSET_HEIGHT );
 
-            <line x1 = "900" y1 = "75" x2 = "900" y2 = "3225"/>
-            <line x1 = "1650" y1 = "75" x2 = "1650" y2 = "3225"/>
+    const xOff = ( width - ( maxCols * ASSET_WIDTH ) ) / 2;
+    const yOff = ( height - ( maxRows * ASSET_HEIGHT ) ) / 2;
 
-            <line x1 = "150" y1 = "1125" x2 = "2400" y2 = "1125"/>
-            <line x1 = "150" y1 = "2175" x2 = "2400" y2 = "2175"/>
-        </g>
-    </svg>
-`);
+    const ASSET_FRAME_STYLE = {
+        fill:           'none',
+        stroke:         '#ffffff',
+        strokeWidth:    3,
+    };
+
+    const GUIDE_LINE_STYLE = {
+        fill:           'none',
+        stroke:         '#000000',
+        strokeWidth:    1,
+    };
+
+    let guidelines = [];
+
+    for ( let col = 0; col < ( maxCols + 1 ); ++col ) {
+        const x = xOff + ( col * ASSET_WIDTH );
+        guidelines.push (<line key = { guidelines.length } x1 = { x } y1 = { 0 } x2 = { x } y2 = { height }/>);
+    }
+
+    for ( let row = 0; row < ( maxRows + 1 ); ++row ) {
+        const y = yOff + ( row * ASSET_HEIGHT );
+        guidelines.push (<line key = { guidelines.length } x1 = { 0 } y1 = { y } x2 = { width } y2 = { y }/>); 
+    }
+
+    let assets = [];
+
+    for ( let row = 0; row < maxRows; ++row ) {
+        for ( let col = 0; col < maxCols; ++col ) {
+
+            const i = (( row * maxCols ) + col );
+            if ( i >= assetIDs.length ) break;
+
+            let x = xOff + ( col * ASSET_WIDTH );
+            let y = yOff + ( row * ASSET_HEIGHT );
+
+            assets.push (
+                <g key = { i }>
+                    <AssetView x = { x } y = { y } inventory = { inventory } assetId = { assetIDs [ i ]}/>
+                    <rect x = { x } y = { y } width = { ASSET_WIDTH } height = { ASSET_HEIGHT } style = { ASSET_FRAME_STYLE }/>
+                </g>
+            );
+        }
+    }
+
+    return (
+        <svg
+            version = "1.1"
+            baseProfile = "basic"
+            xmlns = "http://www.w3.org/2000/svg"
+            xmlnsXlink = "http://www.w3.org/1999/xlink"
+            width = { `${ doc.width }in` }
+            height = { `${ doc.height }in` }
+            viewBox = { `0 0 ${ width } ${ height }` }
+            preserveAspectRatio = "none"
+            >
+            <g style = { GUIDE_LINE_STYLE }>
+                { guidelines }
+            </g>
+            { assets }
+        </svg>
+    );
+}
 
 //================================================================//
 // InventoryView
@@ -108,37 +160,49 @@ export const InventoryView = observer (( props ) => {
 
     const { controller, layout } = props;
 
-    const inventory = controller.inventory;
-    const assetArray = controller.sortedAssets;
+    const inventory     = controller.inventory;
+    const assetArray    = controller.sortedAssets;
 
     let assetLayouts = [];
     
-    const template = templates [ layout ];
+    const step = getAssetsPerPageSize ( layout );
     
-    if ( template ) {
+    if ( step > 0 ) {
 
-        const step = getAssetsPerTemplate ( layout );
-        let base = 0;
+        let pageAssetIDs = [];
         for ( let i = 0; i < assetArray.length; i += step ) {
 
-            let pageContext = {};
             for ( let j = 0; ( j < step ) && (( i + j ) < assetArray.length ); ++j ) {
-                const assetID = assetArray [ i + j ].assetID;
-                pageContext [ 'asset' + String ( j )] = inventory.assetLayouts [ assetID ];
+                pageAssetIDs.push ( assetArray [ i + j ].assetID );
             }
-            const svg = template ( pageContext );
-            assetLayouts.push (<div key = { i } dangerouslySetInnerHTML = {{ __html: svg }}/>);
+
+            if ( pageAssetIDs.length > 0 ) {
+                assetLayouts.push (
+                    <AssetPageLayout
+                        key = { i }
+                        assetIDs = { pageAssetIDs }
+                        inventory = { inventory }
+                        pageSize = { layout }
+                    />
+                );
+            }
         }
     }
     else {
         for ( let i in assetArray ) {
             const asset = assetArray [ i ];
-            assetLayouts.push (<AssetView
-                key = { asset.assetID }
-                style = {{ float:'left' }}
-                inventory = { inventory }
-                assetId = { asset.assetID }
-            />);
+            assetLayouts.push (
+                <div
+                    key = { asset.assetID }
+                    style = {{ float:'left' }}
+                >
+                    <AssetView
+                        assetId = { asset.assetID }
+                        inventory = { inventory }
+                        inches = 'true'
+                    />
+                </div>
+            );
         }
     }
 

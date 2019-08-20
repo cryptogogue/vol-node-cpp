@@ -1271,7 +1271,7 @@ export const pdf417 = (code, ecl, aspectratio) => {
 }
 
 //----------------------------------------------------------------//
-export const barcodeToSVG = ( barcode, bw, bh ) => {
+export const barcodeToSVG = ( barcode, xOff, yOff, bw, bh ) => {
 
     // TODO: this isn't the most naive (at least the columns are combined into rects),
     // but it's still pretty darn naive. rewrite using marching squares or something
@@ -1281,9 +1281,6 @@ export const barcodeToSVG = ( barcode, bw, bh ) => {
     if ( typeof ( barcode ) === 'string' ) {
         barcode = pdf417 ( barcode );
     }
-
-    bw = bw || 1;
-    bh = bh || 1;
 
     let numRows = barcode.num_rows;
     let numCols = barcode.num_cols;
@@ -1295,12 +1292,15 @@ export const barcodeToSVG = ( barcode, bw, bh ) => {
     let columnY = 0;
     let columnHeight = 0;
 
+    bw = ( bw / numCols ) || 1;
+    bh = ( bh / numRows ) || 1;
+
     const flushColumn = () => {
 
         if ( inColumn ) {
 
-            let x = columnX * bw;
-            let y = columnY * bh;
+            let x = xOff + ( columnX * bw );
+            let y = yOff + ( columnY * bh );
             let h = columnHeight * bh;
 
             columns.push ( `<rect x="${ x }" y="${ y }" width="${ bw }" height="${ h }"/>` );
@@ -1332,5 +1332,5 @@ export const barcodeToSVG = ( barcode, bw, bh ) => {
         flushColumn ();
     }
 
-    return `<g>${ columns.join ( '' ) }</g>`;
+    return `<g fill = 'black'>${ columns.join ( '' ) }</g>`;
 }

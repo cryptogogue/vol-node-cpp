@@ -2,7 +2,7 @@
 
 /build
 /node_modules
-/ops
+/public/fonts
 
 # misc
 .DS_Store

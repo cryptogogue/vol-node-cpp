@@ -24,6 +24,14 @@ export const JUSTIFY = {
 const DEFAULT_FIT_STEP_CUTOFF       = 0.5;
 const DEFAULT_MAX_FIT_ITERATIONS    = 16;
 
+//----------------------------------------------------------------//
+export const fitText = ( text, font, fontSize, x, y, width, height, hJustify, vJustify ) => {
+
+    let fitter = new TextFitter ( font, fontSize, x, y, width, height, hJustify || JUSTIFY.HORIZONTAL.LEFT, vJustify || JUSTIFY.VERTICAL.TOP );
+    fitter.fitDynamic ( text );
+    return fitter.toSVG ();
+}
+
 //================================================================//
 // TextLine
 //================================================================//

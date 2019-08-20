@@ -1,13 +1,13 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AssetFormatter }                                   from '../util/AssetFormatter';
-import { barcodeToSVG }                                     from '../util/pdf417';
-import { meta }                                             from '../resources/meta';
-import { Service }                                          from './Service';
+import { barcodeToSVG }                         from '../util/pdf417';
+import { Service }                              from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
-import { Binding }                                          from '../schema/Binding';
-import { Schema }                                           from '../schema/Schema';
-import { buildSchema, op }                                  from '../schema/SchemaBuilder';
+import { Binding }                              from '../schema/Binding';
+import { Schema }                               from '../schema/Schema';
+import { buildSchema, op }                      from '../schema/SchemaBuilder';
+import { JUSTIFY }                              from '../util/TextFitter';
+import * as opentype                            from 'opentype.js';
 
 const DEBUG = true;
 
@@ -16,7 +16,7 @@ const DEBUG = true;
 //================================================================//
 export class InventoryService extends Service {
 
-    @observable loading     = true;
+    @observable loading         = true;
 
     @observable assets          = {};
     @observable assetLayouts    = {};
@@ -60,6 +60,28 @@ export class InventoryService extends Service {
     // methods
 
     //----------------------------------------------------------------//
+    composeAssetContext ( asset, filters, overrideContext ) {
+
+        let context = {};
+
+        for ( let fieldName in asset.fields ) {
+
+            const field = asset.fields [ fieldName ];
+            const alternates = field.alternates;
+
+            context [ fieldName ] = field.value;
+
+            for ( let i in filters ) {
+                const filter = filters [ i ];
+                if ( _.has ( alternates, filter )) {
+                    context [ fieldName ] = alternates [ filter ];
+                }
+            }
+        }
+        return Object.assign ( context, overrideContext );
+    }
+
+    //----------------------------------------------------------------//
     constructor ( appState ) {
         super ();
 
@@ -67,7 +89,9 @@ export class InventoryService extends Service {
             appState:   appState,
         });
 
-        this.formatter = new AssetFormatter ();
+        this.templates = {};
+        this.layouts = {};
+        this.fonts = {};
 
         if ( DEBUG || ( !( appState.accountId && appState.node ))) {
             this.useDebugInventory ();
@@ -121,7 +145,11 @@ export class InventoryService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    refreshBinding () {
+    refreshBinding ( schema, assets ) {
+
+        this.schema = schema || this.schema;
+        this.assets = assets || this.assets;
+
         const availableAssetsByID = this.availableAssetsByID;
         console.log ( 'REFRESH BINDING:', availableAssetsByID );
         this.binding = this.schema.generateBinding ( availableAssetsByID );
@@ -146,11 +174,33 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
-    @action
-    useDebugInventory () {
+    async useDebugInventory () {
 
-        let schemaTemplate = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
-            .meta ( meta )
+        let template = buildSchema ( 'TEST_SCHEMA', 'schema.lua' )
+
+            //----------------------------------------------------------------//
+            .font ( 'roboto', 'http://localhost:3000/fonts/roboto/roboto-regular.ttf' )
+
+            //----------------------------------------------------------------//
+            .layout ( 'card', 750, 1050, 300 )
+                .drawSVG (`
+                    <rect x="0" y="0" width="750" height="1050" fill="gray" stroke="blue" stroke-width="37.5"/>
+                `)
+                .drawImageField ( 'image', 25, 100, 700, 700 )
+                .drawTextField ( 'displayName', 'roboto', 70, 0, 815, 700, 70 )
+                    .justify ( JUSTIFY.HORIZONTAL.CENTER, JUSTIFY.VERTICAL.CENTER )
+                    .pen ( 'white' )
+                .drawBarcodeField ( '$', 75, 900, 600, 125 )
+
+            .layout ( 'pack', 750, 1050, 300 )
+                .drawSVG (`
+                    <rect x="0" y="0" width="750" height="1050" fill="gray" stroke="blue" stroke-width="37.5"/>
+                    <text x="375" y="560" font-size="150" text-anchor="middle" fill="white">PACK</text>
+                `)
+                .drawTextField ( 'displayName', 'roboto', 70, 0, 815, 700, 70 )
+                    .justify ( JUSTIFY.HORIZONTAL.CENTER, JUSTIFY.VERTICAL.CENTER )
+                    .pen ( 'white' )
+                .drawBarcodeField ( '$', 75, 900, 600, 125 )
 
             //----------------------------------------------------------------//
             .definition ( 'pack' )
@@ -197,7 +247,9 @@ export class InventoryService extends Service {
 
             .done ()
 
-        let schema = new Schema ( schemaTemplate );
+
+        let schema = new Schema ();
+        await schema.applyTemplate ( template );
 
         let assets = {};
 
@@ -208,22 +260,27 @@ export class InventoryService extends Service {
         const rare1         = schema.addTestAsset ( assets, 'rare', 'honas-simuj-marif-114' );
         const ultraRare0    = schema.addTestAsset ( assets, 'ultraRare', 'jafoh-najon-gobig-250' );
 
-        this.schema = schema;
-        this.assets = assets;
-        this.refreshBinding ();
-
-        this.formatter.applyMeta ( schemaTemplate.meta );
-
-        for ( let assetID in this.assets ) {
-
-            const asset = this.assets [ assetID ];
-            const filters = [ 'EN', 'RGB' ];
-
-            // generate the barcode and inject it into the layout
-            let barcode = barcodeToSVG ( assetID );
-            this.assetLayouts [ assetID ] = this.formatter.composeAssetLayout ( asset, filters, { barcode: barcode });
+        for ( let layoutName in template.layouts ) {
+            this.layouts [ layoutName ] = template.layouts [ layoutName ];
         }
 
+        for ( let name in template.fonts ) {
+
+            try {
+                const url = template.fonts [ name ].url;
+
+                console.log ( 'FETCHING FONT:', name, url );
+
+                const response  = await this.revocableFetch ( url );
+                const buffer    = await response.arrayBuffer ();
+                this.fonts [ name ] = opentype.parse ( buffer );
+            }
+            catch ( error ) {
+                console.log ( error );
+            }
+        }
+
+        this.refreshBinding ( schema, assets );
         this.finishLoading ();
     }
 

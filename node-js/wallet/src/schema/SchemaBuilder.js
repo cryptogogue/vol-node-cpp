@@ -17,10 +17,25 @@ const MEDIA_IMAGE       = 'MEDIA_IMAGE';
 const MEDIA_TEXT        = 'MEDIA_TEXT';
 const MEDIA_VIDEO       = 'MEDIA_VIDEO';
 
-const SCHEMA_BUILDER_ADDING_SCHEMA                  = 'SCHEMA_BUILDER_ADDING_SCHEMA';
-const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION        = 'ADDING_ASSET_DEFINITION';
-const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD  = 'ADDING_ASSET_DEFINITION_FIELD';
-const SCHEMA_BUILDER_ADDING_METHOD                  = 'ADDING_ASSET_METHOD';
+
+
+const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION            = 'SCHEMA_BUILDER_ADDING_ASSET_DEFINITION';
+const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD      = 'SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD';
+const SCHEMA_BUILDER_ADDING_DRAW_BARCODE_FIELD          = 'SCHEMA_BUILDER_ADDING_DRAW_BARCODE_FIELD';
+const SCHEMA_BUILDER_ADDING_DRAW_IMAGE_FIELD            = 'SCHEMA_BUILDER_ADDING_DRAW_IMAGE_FIELD';
+const SCHEMA_BUILDER_ADDING_DRAW_SVG                    = 'SCHEMA_BUILDER_ADDING_DRAW_SVG';
+const SCHEMA_BUILDER_ADDING_DRAW_TEXT_FIELD             = 'SCHEMA_BUILDER_ADDING_DRAW_TEXT_FIELD';
+const SCHEMA_BUILDER_ADDING_FONT                        = 'SCHEMA_BUILDER_ADDING_FONT';
+const SCHEMA_BUILDER_ADDING_LAYOUT                      = 'SCHEMA_BUILDER_ADDING_LAYOUT';
+const SCHEMA_BUILDER_ADDING_METHOD                      = 'SCHEMA_BUILDER_ADDING_METHOD';
+const SCHEMA_BUILDER_ADDING_SCHEMA                      = 'SCHEMA_BUILDER_ADDING_SCHEMA';
+
+export const LAYOUT_COMMAND = {
+    DRAW_BARCODE_FIELD:     'DRAW_BARCODE_FIELD',
+    DRAW_IMAGE_FIELD:       'DRAW_IMAGE_FIELD',
+    DRAW_SVG:               'DRAW_SVG',
+    DRAW_TEXT_FIELD:        'DRAW_TEXT_FIELD',
+};
 
 //----------------------------------------------------------------//
 // function jsonEscape ( str ) {
@@ -214,8 +229,10 @@ class SchemaBuilder {
 
         this.schema = {
             name:               name,
+            fonts:              {},
             lua:                '',
             definitions:        {},
+            layouts:            {},
             meta:               '',
             methods:            {},
         };
@@ -251,6 +268,92 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
+    drawBarcodeField ( fieldName, x, y, width, height ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_DRAW_BARCODE_FIELD,
+            {
+                type:           LAYOUT_COMMAND.DRAW_BARCODE_FIELD,
+                field:          fieldName,
+                x:              x || 0,
+                y:              y || 0,
+                width:          width || 0,
+                height:         height || 0,
+            },
+            ( layout, item ) => {
+                layout.commands.push ( item );
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    drawImageField ( fieldName, x, y, width, height ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_DRAW_IMAGE_FIELD,
+            {
+                type:           LAYOUT_COMMAND.DRAW_IMAGE_FIELD,
+                field:          fieldName,
+                x:              x || 0,
+                y:              y || 0,
+                width:          width || 0,
+                height:         height || 0,
+            },
+            ( layout, item ) => {
+                layout.commands.push ( item );
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    drawSVG ( svg ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_DRAW_SVG,
+            {
+                type:           LAYOUT_COMMAND.DRAW_SVG,
+                svg:            svg || '',
+            },
+            ( layout, item ) => {
+                layout.commands.push ( item );
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    drawTextField ( fieldName, fontName, fontSize, x, y, width, height ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_DRAW_TEXT_FIELD,
+            {
+                type:           LAYOUT_COMMAND.DRAW_TEXT_FIELD,
+                field:          fieldName,
+                fontName:       fontName,
+                fontSize:       fontSize,
+                x:              x || 0,
+                y:              y || 0,
+                width:          width || 0,
+                height:         height || 0,
+            },
+            ( layout, item ) => {
+                layout.commands.push ( item );
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
     extends ( base ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_TEMPLATE ));
@@ -271,6 +374,54 @@ class SchemaBuilder {
             field,
             ( definition, field ) => {
                 definition.fields [ name ] = field;
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    font ( name, url ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_FONT,
+            {
+                width:      name,
+                url:        url,
+            },
+            ( schema, font ) => {
+                schema.fonts [ name ] = font;
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    justify ( horizontal, vertical ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT_FIELD ));
+        const top = this.top ();
+        top.hJustify = horizontal || false;
+        top.vJustify = vertical || false;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    layout ( name, width, height, dpi ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_LAYOUT,
+            {
+                width:          width || 0,
+                height:         height || 0,
+                dpi:            dpi || 300,
+                commands:       [],
+            },
+            ( schema, layout ) => {
+                schema.layouts [ name ] = layout;
             }
         );
         return this;
@@ -353,6 +504,15 @@ class SchemaBuilder {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD ));
         this.top ().mutable = typeof ( value ) === 'boolean' ? value : true;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    pen ( fill ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT_FIELD ));
+        const top = this.top ();
+        top.fill = fill;
         return this;
     }
 

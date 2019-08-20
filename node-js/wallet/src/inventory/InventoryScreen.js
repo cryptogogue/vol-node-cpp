@@ -103,16 +103,22 @@ const InventoryFilterMenu = observer (( props ) => {
     const layoutDropdown = [
         INVENTORY_LAYOUT.WEB,
         INVENTORY_LAYOUT.US_LETTER,
+        INVENTORY_LAYOUT.US_LEGAL,
+        INVENTORY_LAYOUT.US_LEDGER,
+        INVENTORY_LAYOUT.A4,
+        INVENTORY_LAYOUT.A3,
     ];
 
     let layoutOptions = [];
     for ( let i in layoutDropdown ) {
         const layoutMode = layoutDropdown [ i ];
-        layoutOptions.push (<Dropdown.Item
-            key         = { layoutMode }
-            text        = { getInventoryLayoutFriendlyName ( layoutMode )}
-            onClick     = {() => { controller.setLayoutMode ( layoutMode )}}
-        />);
+        layoutOptions.push (
+            <Dropdown.Item
+                key         = { layoutMode }
+                text        = { getInventoryLayoutFriendlyName ( layoutMode )}
+                onClick     = {() => { controller.setLayoutMode ( layoutMode )}}
+            />
+        );
     }
 
     return (
@@ -129,7 +135,7 @@ const InventoryFilterMenu = observer (( props ) => {
                 <Icon name = 'print'/>
             </Menu.Item>
 
-            <Dropdown item text = "Layout">
+            <Dropdown item text = { getInventoryLayoutFriendlyName ( controller.layoutMode )}>
                 <Dropdown.Menu>
                 { layoutOptions }
                 </Dropdown.Menu>
@@ -171,11 +177,13 @@ const InventoryScreen = observer (( props ) => {
                 <NavigationBar navTitle = "Inventory" appState = { appState }/>
                 <InventoryFilterMenu appState = { appState } controller = { controller }/>
             </div>
-            <InventoryView
-                key = { controller.sortMode }
-                controller = { controller }
-                layout = { controller.layoutMode }
-            />
+            <If condition = { inventory.loading === false }>
+                <InventoryView
+                    key = { controller.sortMode }
+                    controller = { controller }
+                    layout = { controller.layoutMode }
+                />
+            </If>
         </div>
     );
 });
