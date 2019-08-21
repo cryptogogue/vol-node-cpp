@@ -60,12 +60,12 @@ const AssetView = observer (( props ) => {
             case LAYOUT_COMMAND.DRAW_IMAGE_FIELD:
                 items.push (
                     <image
-                        key     = { i }
-                        x       = { command.x }
-                        y       = { command.y }
-                        height  = { command.width }
-                        width   = { command.height }
-                        xlinkHref = { value }
+                        key                     = { i }
+                        x                       = { command.x }
+                        y                       = { command.y }
+                        width                   = { command.width }
+                        height                  = { command.height }
+                        xlinkHref               = { value }
                     />
                 );
                 break;

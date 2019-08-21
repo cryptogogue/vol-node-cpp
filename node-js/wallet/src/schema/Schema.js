@@ -4,6 +4,7 @@ import { assert }           from '../util/assert';
 import { Binding }          from './Binding';
 import { SchemaMethod }     from './SchemaMethod';
 import _                    from 'lodash';
+import uuidv4               from 'uuid/v4';
 
 //================================================================//
 // Schema
@@ -13,7 +14,7 @@ export class Schema {
     //----------------------------------------------------------------//
     addTestAsset ( assets, typeName, assetID ) {
 
-        assetID = assetID || String ( Object.keys ( assets ).length );
+        assetID = assetID || uuidv4 ();
 
         let asset = this.newAsset ( assetID, typeName );
         assert ( Boolean ( asset ));

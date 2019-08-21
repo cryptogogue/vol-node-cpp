@@ -39,10 +39,8 @@ don't mix controllers and displays
 PLAYTEST
 
 tool to generate set schema from XLS spreadsheet
-logic for attachments
 add schema to genesis block
 support loading genesis chain
-test - handle restarting network and/or changing schemas
 
 implement way to expire transactions
 identify (mining) networks (by genesis block) - name networks; i.e. test network, production network
@@ -59,6 +57,8 @@ add banner at the top of wallet showing mining network name
 
 ----------------------------------------------------------------
 MVP
+
+logic for attachments (i.e. equip one asset with another)
 
 tagging sets of cards and deck building
 

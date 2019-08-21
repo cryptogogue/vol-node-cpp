@@ -1,5 +1,5 @@
-{
-    "name": "TEST_SCHEMA",
+export const SAMPLE_SCHEMA = JSON.parse ( `{
+    "name": "SAMPLE_SCHEMA",
     "fonts": {},
     "lua": "",
     "definitions": {
@@ -16711,4 +16711,4 @@
     "layouts": {},
     "meta": "",
     "methods": {}
-}
+}` );

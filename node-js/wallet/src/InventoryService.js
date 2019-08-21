@@ -7,7 +7,10 @@ import { Binding }                              from './schema/Binding';
 import { Schema }                               from './schema/Schema';
 import { buildSchema, op }                      from './schema/SchemaBuilder';
 import { JUSTIFY }                              from './util/TextFitter';
+import _                                        from 'lodash';
 import * as opentype                            from 'opentype.js';
+
+import { SAMPLE_SCHEMA }                        from './resources/sample-schema';
 
 const DEBUG = true;
 
@@ -182,83 +185,108 @@ export class InventoryService extends Service {
             .font ( 'roboto', 'http://localhost:3000/fonts/roboto/roboto-regular.ttf' )
 
             //----------------------------------------------------------------//
-            .layout ( 'card', 750, 1050, 300 )
+            .layout ( 'dude', 750, 1050, 300 )
                 .drawSVG (`
-                    <rect x="0" y="0" width="750" height="1050" fill="gray" stroke="blue" stroke-width="37.5"/>
+                    <rect x='0' y='0' width='750' height='1050' fill='#000000'/>
+                    <rect x='37.5' y='37.5' width='675' height='975' fill='#ffffff'/>
+                    <rect x='37.5' y='168.75' width='675' height='412.5' fill='#ff0000'/>
+                    <rect x='37.5' y='900' width='675' height='112.5' fill='#ff0000'/>
+
+                    <rect x='48.875' y='37.5' width='534.375' height='56.25' fill='none' stroke='gray'/>
+                    <rect x='48.875' y='93.75' width='534.375' height='37.5' fill='none' stroke='gray'/>
+                    <rect x='48.875' y='131.25' width='534.375' height='37.5' fill='none' stroke='gray'/>
+
+                    <rect x='48.875' y='592.625' width='652.25' height='296' fill='none' stroke='gray'/>
                 `)
-                .drawImageField ( 'image', 25, 100, 700, 700 )
-                .drawTextField ( 'displayName', 'roboto', 70, 0, 815, 700, 70 )
-                    .justify ( JUSTIFY.HORIZONTAL.CENTER, JUSTIFY.VERTICAL.CENTER )
-                    .pen ( 'white' )
-                .drawBarcodeField ( '$', 75, 900, 600, 125 )
+                .drawImageField ( 'image', 37.5, 168.75, 675, 412.5 )
 
-            .layout ( 'pack', 750, 1050, 300 )
-                .drawSVG (`
-                    <rect x="0" y="0" width="750" height="1050" fill="gray" stroke="blue" stroke-width="37.5"/>
-                    <text x="375" y="560" font-size="150" text-anchor="middle" fill="white">PACK</text>
-                `)
-                .drawTextField ( 'displayName', 'roboto', 70, 0, 815, 700, 70 )
-                    .justify ( JUSTIFY.HORIZONTAL.CENTER, JUSTIFY.VERTICAL.CENTER )
-                    .pen ( 'white' )
-                .drawBarcodeField ( '$', 75, 900, 600, 125 )
+                // card name
+                .drawTextField ( 'name', 'roboto', 40, 48.875, 37.5, 534.375, 56.25 )
+                    .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
 
-            //----------------------------------------------------------------//
-            .definition ( 'pack' )
-                .field ( 'layout', 'pack' )
-                .field ( 'displayName', 'Pack' )
-                    .alternate ( 'ES', 'El Pack' )
-                    .alternate ( 'FR', 'Le Pack' )
+                // card type
+                .drawTextField ( 'type', 'roboto', 30, 48.875, 93.75, 534.375, 37.5 )
+                    .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
+
+                // access
+                .drawTextField ( 'access', 'roboto', 30, 48.875, 131.25, 534.375, 37.5)
+                    .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
+
+                // rules
+                .drawTextField ( 'rules', 'roboto', 40, 48.875, 592.625, 652.25, 296 )
+                    .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.TOP )
+
+                .drawBarcodeField ( '$', 37.5, 900, 675, 112.5 )
+
+            .done ();
+
+            // .layout ( 'pack', 750, 1050, 300 )
+            //     .drawSVG (`
+            //         <rect x='0' y='0' width='750' height='1050' fill='#000000'/>
+            //         <rect x='37.5' y='37.5' width='675' height='975' fill='gray'/>
+            //         <text x="375" y="560" font-size="150" text-anchor="middle" fill="white">PACK</text>
+            //     `)
+            //     .drawTextField ( 'displayName', 'roboto', 70, 0, 815, 700, 70 )
+            //         .justify ( JUSTIFY.HORIZONTAL.CENTER, JUSTIFY.VERTICAL.CENTER )
+            //         .pen ( 'white' )
+            //     .drawBarcodeField ( '$', 37.5, 900, 675, 112.5 )
+
+            // //----------------------------------------------------------------//
+            // .definition ( 'pack' )
+            //     .field ( 'layout', 'pack' )
+            //     .field ( 'displayName', 'Pack' )
+            //         .alternate ( 'ES', 'El Pack' )
+            //         .alternate ( 'FR', 'Le Pack' )
          
-            .definition ( 'common' )
-                .field ( 'layout', 'card' )
-                .field ( 'displayName', 'Common' )
-                    .alternate ( 'ES', 'El Common' )
-                    .alternate ( 'FR', 'Le Common' )
-                .field ( 'image', 'https://i.imgur.com/VMPKVAN.jpg' )
-                .field ( 'keywords', 'card common' )
+            // .definition ( 'common' )
+            //     .field ( 'layout', 'card' )
+            //     .field ( 'displayName', 'Common' )
+            //         .alternate ( 'ES', 'El Common' )
+            //         .alternate ( 'FR', 'Le Common' )
+            //     .field ( 'image', 'https://i.imgur.com/VMPKVAN.jpg' )
+            //     .field ( 'keywords', 'card common' )
          
-            .definition ( 'rare' )
-                .field ( 'layout', 'card' )
-                .field ( 'displayName', 'Rare' )
-                    .alternate ( 'ES', 'El Rare' )
-                    .alternate ( 'FR', 'Le Rare' )
-                .field ( 'image', 'https://i.imgur.com/BtKggd4.jpg' )
-                .field ( 'keywords', 'card rare' )
+            // .definition ( 'rare' )
+            //     .field ( 'layout', 'card' )
+            //     .field ( 'displayName', 'Rare' )
+            //         .alternate ( 'ES', 'El Rare' )
+            //         .alternate ( 'FR', 'Le Rare' )
+            //     .field ( 'image', 'https://i.imgur.com/BtKggd4.jpg' )
+            //     .field ( 'keywords', 'card rare' )
          
-            .definition ( 'ultraRare' )
-                .field ( 'layout', 'card' )
-                .field ( 'displayName', 'Ultra-Rare' )
-                    .alternate ( 'ES', 'El Ultra-Rare' )
-                    .alternate ( 'FR', 'Le Ultra-Rare' )
-                .field ( 'image', 'https://i.imgur.com/2aiJ3cq.jpg' )
-                .field ( 'keywords', 'card ultra-rare' )
+            // .definition ( 'ultraRare' )
+            //     .field ( 'layout', 'card' )
+            //     .field ( 'displayName', 'Ultra-Rare' )
+            //         .alternate ( 'ES', 'El Ultra-Rare' )
+            //         .alternate ( 'FR', 'Le Ultra-Rare' )
+            //     .field ( 'image', 'https://i.imgur.com/2aiJ3cq.jpg' )
+            //     .field ( 'keywords', 'card ultra-rare' )
 
-            //----------------------------------------------------------------//
-            .method ( 'makeRare', 'Combine two commons to make a rare.' )
-                .assetArg ( 'common0', op.ASSET_TYPE ( 'common' ))
-                .assetArg ( 'common1', op.ASSET_TYPE ( 'common' ))
+            // //----------------------------------------------------------------//
+            // .method ( 'makeRare', 'Combine two commons to make a rare.' )
+            //     .assetArg ( 'common0', op.ASSET_TYPE ( 'common' ))
+            //     .assetArg ( 'common1', op.ASSET_TYPE ( 'common' ))
 
-            .method ( 'makeUltraRare', 'Combine two rares to make an ultra-rare.' )
-                .assetArg ( 'rare0', op.ASSET_TYPE ( 'rare' ))
-                .assetArg ( 'rare1', op.ASSET_TYPE ( 'rare' ))
+            // .method ( 'makeUltraRare', 'Combine two rares to make an ultra-rare.' )
+            //     .assetArg ( 'rare0', op.ASSET_TYPE ( 'rare' ))
+            //     .assetArg ( 'rare1', op.ASSET_TYPE ( 'rare' ))
 
-            .method ( 'openPack', 'Open a booster pack.' )
-                .assetArg ( 'pack', op.ASSET_TYPE ( 'pack' ))
+            // .method ( 'openPack', 'Open a booster pack.' )
+            //     .assetArg ( 'pack', op.ASSET_TYPE ( 'pack' ))
 
-            .done ()
+            // .done ()
 
 
         let schema = new Schema ();
         await schema.applyTemplate ( template );
+        await schema.applyTemplate ( SAMPLE_SCHEMA );
 
-        let assets = {};
-
-        const pack0         = schema.addTestAsset ( assets, 'pack', 'bofip-jitut-vupoz-208' );
-        const common0       = schema.addTestAsset ( assets, 'common', 'dosaz-huvuf-nohol-103' );
-        const common1       = schema.addTestAsset ( assets, 'common', 'famaz-havij-zohag-209' );
-        const rare0         = schema.addTestAsset ( assets, 'rare', 'giduv-zotav-domin-184' );
-        const rare1         = schema.addTestAsset ( assets, 'rare', 'honas-simuj-marif-114' );
-        const ultraRare0    = schema.addTestAsset ( assets, 'ultraRare', 'jafoh-najon-gobig-250' );
+        // const pack0         = schema.addTestAsset ( assets, 'pack', 'bofip-jitut-vupoz-208' );
+        // const common0       = schema.addTestAsset ( assets, 'common', 'dosaz-huvuf-nohol-103' );
+        // const common1       = schema.addTestAsset ( assets, 'common', 'famaz-havij-zohag-209' );
+        // const rare0         = schema.addTestAsset ( assets, 'rare', 'giduv-zotav-domin-184' );
+        // const rare1         = schema.addTestAsset ( assets, 'rare', 'honas-simuj-marif-114' );
+        // const ultraRare0    = schema.addTestAsset ( assets, 'ultraRare', 'jafoh-najon-gobig-250' );
 
         for ( let layoutName in template.layouts ) {
             this.layouts [ layoutName ] = template.layouts [ layoutName ];
@@ -277,6 +305,18 @@ export class InventoryService extends Service {
             }
             catch ( error ) {
                 console.log ( error );
+            }
+        }
+
+        let assets = {};
+
+        for ( let assetType in schema.definitions ) {
+
+            const definition = schema.definitions [ assetType ];
+            const layoutName = _.has ( definition.fields, 'layout' ) ? definition.fields.layout.value : '';
+            
+            if ( this.layouts [ layoutName ]) {
+                schema.addTestAsset ( assets, assetType );
             }
         }
 

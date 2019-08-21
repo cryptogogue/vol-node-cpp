@@ -38,17 +38,14 @@ export const LAYOUT_COMMAND = {
 };
 
 //----------------------------------------------------------------//
-// function jsonEscape ( str ) {
-//     return str
-//         .replace ( /\\n/g, "\\n" )
-//         .replace ( /\\'/g, "\\'" )
-//         .replace ( /\\"/g, '\\"' )
-//         .replace ( /\\&/g, "\\&" )
-//         .replace ( /\\r/g, "\\r" )
-//         .replace ( /\\t/g, "\\t" )
-//         .replace ( /\\b/g, "\\b" )
-//         .replace ( /\\f/g, "\\f" );
-// }
+function jsonEscape ( str ) {
+    return str
+        .replace ( /(\n)/g, `\\n` )
+        .replace ( /(\")/g, `\"` )
+        .replace ( /(\r)/g, `\\r` )
+        .replace ( /(\t)/g, `\\t` )
+        .replace ( /(\f)/g, `\\f` );
+}
 
 //----------------------------------------------------------------//
 function makeAssetFieldValue ( value ) {
@@ -64,6 +61,7 @@ function makeAssetFieldValue ( value ) {
             break;
         case 'string':
             type = TYPE_STRING;
+            value = jsonEscape ( value );
             break;
         default:
             assert ( false );
@@ -345,6 +343,7 @@ class SchemaBuilder {
                 y:              y || 0,
                 width:          width || 0,
                 height:         height || 0,
+                fill:           'black',
             },
             ( layout, item ) => {
                 layout.commands.push ( item );

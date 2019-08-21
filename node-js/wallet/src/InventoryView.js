@@ -72,8 +72,13 @@ function getPageDimensions ( layout ) {
 //================================================================//
 const InventoryPageView = ( props ) => {
 
+    const MARGIN = 0.125;
+
     const { assetIDs, inventory, pageSize } = props;
     const doc = getPageDimensions ( pageSize );
+
+    doc.width = doc.width - MARGIN;
+    doc.height = doc.height - MARGIN;
 
     const width = doc.width * DPI;
     const height = doc.height * DPI;
@@ -81,8 +86,6 @@ const InventoryPageView = ( props ) => {
     // TODO: get these dynamically
     const ASSET_WIDTH   = 750;
     const ASSET_HEIGHT  = 1050;
-
-    
 
     const maxCols = Math.floor ( width / ASSET_WIDTH );
     const maxRows = Math.floor ( height / ASSET_HEIGHT );
@@ -168,9 +171,9 @@ export const InventoryView = observer (( props ) => {
     const step = getAssetsPerPageSize ( layout );
     
     if ( step > 0 ) {
-
-        let pageAssetIDs = [];
         for ( let i = 0; i < assetArray.length; i += step ) {
+
+            let pageAssetIDs = [];
 
             for ( let j = 0; ( j < step ) && (( i + j ) < assetArray.length ); ++j ) {
                 pageAssetIDs.push ( assetArray [ i + j ].assetID );
@@ -178,12 +181,16 @@ export const InventoryView = observer (( props ) => {
 
             if ( pageAssetIDs.length > 0 ) {
                 assetLayouts.push (
-                    <InventoryPageView
+                    <div
+                        className = 'page-break'
                         key = { i }
-                        assetIDs = { pageAssetIDs }
-                        inventory = { inventory }
-                        pageSize = { layout }
-                    />
+                    >
+                        <InventoryPageView
+                            assetIDs = { pageAssetIDs }
+                            inventory = { inventory }
+                            pageSize = { layout }
+                        />
+                    </div>
                 );
             }
         }
