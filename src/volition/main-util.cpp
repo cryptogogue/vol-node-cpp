@@ -96,6 +96,7 @@ public:
 
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) override {
+        UNUSED ( args );
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
     

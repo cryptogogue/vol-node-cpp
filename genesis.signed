@@ -1,71 +1,26 @@
 {
     "height" : 0,
     "signature" : {
-        "digest" : "8bf02fcd60b45321f2ba4ac407a1d7e4fc8a92bf36e761ed6e5eb01f6e02a242",
+        "digest" : "ad22c060f2a4f0566c5f44bedce86f2fc8b8dba1367532989ef5cba1ea34fd92",
         "hashAlgorithm" : "SHA256",
-        "signature" : "304402201090102ce74d18131c5f740bb7f356177dd4a853adfa666edc9601ea641a26fa0220691d6e68cafe8009d078c4417566c024117fb23689c54c6c75fe2931daee54c7"
+        "signature" : "304502200ea2fe0a43812102fa0770fb42f6d38e59a8dfbf930ddfb832fe8e1c9944c4b8022100abec048c2b21e454a92e62f4a961977248c8d4b4858f1b33232d05940dd45f10"
     },
     "time" : "1970-01-01T00:00:00UTC",
     "transactions" : [
         {
-            "accountName" : "9090",
-            "amount" : 1000000,
-            "key" : {
-                "groupName" : "secp256k1",
-                "publicKey" : "036DEA12FB64E82B90BDDB02A792E488E202857D70DDA9B408902E74EEDD35B5DC",
-                "type" : "EC_HEX"
-            },
-            "keyName" : "master",
-            "type" : "GENESIS_MINER",
-            "url" : "http:\/\/127.0.0.1:9090\/"
+            "body" : "{\"accountName\":\"9090\",\"amount\":1000000,\"key\":{\"groupName\":\"secp256k1\",\"publicKey\":\"036DEA12FB64E82B90BDDB02A792E488E202857D70DDA9B408902E74EEDD35B5DC\",\"type\":\"EC_HEX\"},\"keyName\":\"master\",\"type\":\"GENESIS_MINER\",\"url\":\"http:\\\/\\\/127.0.0.1:9090\\\/\"}"
         },
         {
-            "accountName" : "9091",
-            "amount" : 1000000,
-            "key" : {
-                "groupName" : "secp256k1",
-                "publicKey" : "02024798B73C8AE88F4136307930E05F6CEEFF1002B5A2B1A3CE270DB00598E6DF",
-                "type" : "EC_HEX"
-            },
-            "keyName" : "master",
-            "type" : "GENESIS_MINER",
-            "url" : "http:\/\/127.0.0.1:9091\/"
+            "body" : "{\"accountName\":\"9091\",\"amount\":1000000,\"key\":{\"groupName\":\"secp256k1\",\"publicKey\":\"02024798B73C8AE88F4136307930E05F6CEEFF1002B5A2B1A3CE270DB00598E6DF\",\"type\":\"EC_HEX\"},\"keyName\":\"master\",\"type\":\"GENESIS_MINER\",\"url\":\"http:\\\/\\\/127.0.0.1:9091\\\/\"}"
         },
         {
-            "accountName" : "9092",
-            "amount" : 1000000,
-            "key" : {
-                "groupName" : "secp256k1",
-                "publicKey" : "02B2BAB862BC3F095AC40BABFCB94ED377AA92DFFF322DA29DEFCA17B81BA52013",
-                "type" : "EC_HEX"
-            },
-            "keyName" : "master",
-            "type" : "GENESIS_MINER",
-            "url" : "http:\/\/127.0.0.1:9092\/"
+            "body" : "{\"accountName\":\"9092\",\"amount\":1000000,\"key\":{\"groupName\":\"secp256k1\",\"publicKey\":\"02B2BAB862BC3F095AC40BABFCB94ED377AA92DFFF322DA29DEFCA17B81BA52013\",\"type\":\"EC_HEX\"},\"keyName\":\"master\",\"type\":\"GENESIS_MINER\",\"url\":\"http:\\\/\\\/127.0.0.1:9092\\\/\"}"
         },
         {
-            "accountName" : "9093",
-            "amount" : 1000000,
-            "key" : {
-                "groupName" : "secp256k1",
-                "publicKey" : "026AF5C09B1252B3ED8FE4677E117817DCAD2AF2106918EB9449A5E51D31733CA8",
-                "type" : "EC_HEX"
-            },
-            "keyName" : "master",
-            "type" : "GENESIS_MINER",
-            "url" : "http:\/\/127.0.0.1:9093\/"
+            "body" : "{\"accountName\":\"9093\",\"amount\":1000000,\"key\":{\"groupName\":\"secp256k1\",\"publicKey\":\"026AF5C09B1252B3ED8FE4677E117817DCAD2AF2106918EB9449A5E51D31733CA8\",\"type\":\"EC_HEX\"},\"keyName\":\"master\",\"type\":\"GENESIS_MINER\",\"url\":\"http:\\\/\\\/127.0.0.1:9093\\\/\"}"
         },
         {
-            "accountName" : "9094",
-            "amount" : 1000000,
-            "key" : {
-                "groupName" : "secp256k1",
-                "publicKey" : "033A509CCF521461616FC67C5330167223619B372A76B0B8C202D4BD2488639E3E",
-                "type" : "EC_HEX"
-            },
-            "keyName" : "master",
-            "type" : "GENESIS_MINER",
-            "url" : "http:\/\/127.0.0.1:9094\/"
+            "body" : "{\"accountName\":\"9094\",\"amount\":1000000,\"key\":{\"groupName\":\"secp256k1\",\"publicKey\":\"033A509CCF521461616FC67C5330167223619B372A76B0B8C202D4BD2488639E3E\",\"type\":\"EC_HEX\"},\"keyName\":\"master\",\"type\":\"GENESIS_MINER\",\"url\":\"http:\\\/\\\/127.0.0.1:9094\\\/\"}"
         }
     ]
 }

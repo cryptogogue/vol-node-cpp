@@ -41,6 +41,7 @@ protected:
     friend class Transaction;
 
     SerializableUniquePtr < TransactionMaker >  mMaker;
+    u64                                         mMaxHeight; // expiration block
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;

@@ -68,14 +68,27 @@ u64 Transaction::weight () const {
 //----------------------------------------------------------------//
 void Transaction::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
-    serializer.serialize ( "signatures",    this->mSignature );
-    serializer.serialize ( "body",          this->mBodyString );
+    serializer.serialize ( "signature", this->mSignature );
+    
+    if ( serializer.has ( "bodyIn" )) {
+        TransactionBodyPtr body;
+        serializer.serialize ( "bodyIn", body );
+        this->setBody ( body );
+    }
+    else {
+        serializer.serialize ( "body", this->mBodyString );
+        if ( this->mBodyString.size ()) {
+        
+            FromJSONSerializer::fromJSONString ( this->mBody, this->mBodyString );
+            assert ( this->mBody );
+        }
+    }
 }
 
 //----------------------------------------------------------------//
 void Transaction::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
-    serializer.serialize ( "signatures",    this->mSignature );
+    serializer.serialize ( "signature",     this->mSignature );
     serializer.serialize ( "body",          this->mBodyString );
 }
 

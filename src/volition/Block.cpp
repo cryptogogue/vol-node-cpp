@@ -58,8 +58,9 @@ bool Block::apply ( Ledger& ledger ) const {
         }
     }
 
-    // apply block.
+    // apply transactions
     size_t nextMaturity = this->applyTransactions ( ledger );
+    
     if ( nextMaturity > this->mHeight ) {
     
         UnfinishedBlock unfinishedBlock;

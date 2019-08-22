@@ -81,6 +81,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    bool has ( SerializerPropertyName name ) const {
+        return this->AbstractSerializerFrom_has ( name );
+    }
+    
+    //----------------------------------------------------------------//
     template < typename TYPE >
     void serialize ( SerializerPropertyName name, TYPE& value ) const {
         this->AbstractSerializerFrom_serialize ( name, value );
