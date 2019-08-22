@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/Schema.h>
-#include <volition/TheTransactionFactory.h>
+#include <volition/TheTransactionBodyFactory.h>
 #include <volition/TheWebMiner.h>
 
 namespace Volition {

@@ -38,15 +38,18 @@ void SimMiner::log ( string prefix ) const {
 //----------------------------------------------------------------//
 void SimMiner::pushGenesisTransaction ( Block& block ) const {
 
-    unique_ptr < Transactions::GenesisMiner > genesisMinerTransaction = make_unique < Transactions::GenesisMiner >();
+    unique_ptr < Transactions::GenesisMiner > genesisMinerTransactionBody = make_unique < Transactions::GenesisMiner >();
     
-    genesisMinerTransaction->mAccountName = this->mMinerID;
-    genesisMinerTransaction->mKey = this->mKeyPair;
-    genesisMinerTransaction->mKeyName = "master";
-    genesisMinerTransaction->mAmount = 0;
-    genesisMinerTransaction->mURL = "";
+    genesisMinerTransactionBody->mAccountName = this->mMinerID;
+    genesisMinerTransactionBody->mKey = this->mKeyPair;
+    genesisMinerTransactionBody->mKeyName = "master";
+    genesisMinerTransactionBody->mAmount = 0;
+    genesisMinerTransactionBody->mURL = "";
 
-    block.pushTransaction ( move ( genesisMinerTransaction ));
+    shared_ptr < Transaction > transaction = make_shared < Transaction >();
+    transaction->setBody ( move ( genesisMinerTransactionBody ));
+
+    block.pushTransaction ( transaction );
 }
 
 //----------------------------------------------------------------//

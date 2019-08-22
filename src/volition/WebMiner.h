@@ -5,11 +5,11 @@
 #define VOLITION_WEBMINER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/Block.h>
 #include <volition/Chain.h>
-#include <volition/Miner.h>
 #include <volition/Ledger.h>
+#include <volition/Miner.h>
+#include <volition/Transaction.h>
 
 namespace Volition {
 

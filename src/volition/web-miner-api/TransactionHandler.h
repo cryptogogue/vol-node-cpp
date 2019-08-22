@@ -6,7 +6,7 @@
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
-#include <volition/TheTransactionFactory.h>
+#include <volition/Transaction.h>
 #include <volition/TheWebMiner.h>
 
 namespace Volition {
@@ -26,7 +26,7 @@ public:
         UNUSED ( method );
         UNUSED ( jsonOut );
 
-        SerializableUniquePtr < AbstractTransaction, TransactionFactory > transaction;
+        SerializableUniquePtr < Transaction > transaction;
         FromJSONSerializer::fromJSON ( transaction, jsonIn );
 
         if ( transaction ) {

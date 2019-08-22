@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_OPEN_POLICY_H
 
 #include <volition/common.h>
-#include <volition/AbstractSingleSignerTransaction.h>
+#include <volition/AbstractTransactionBody.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // OpenAccount
 //================================================================//
 class OpenAccount :
-    public AbstractSingleSignerTransaction {
+    public AbstractTransactionBody {
 public:
 
     TRANSACTION_TYPE ( "OPEN_ACCOUNT" )
@@ -29,7 +29,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -39,7 +39,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -48,10 +48,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
         assert ( this->mKey );
-        return ledger.openAccount ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, this->mKey );
+        return ledger.openAccount ( this->mMaker->getAccountName (), this->mAccountName, this->mAmount, this->mKeyName, this->mKey );
     }
 };
 

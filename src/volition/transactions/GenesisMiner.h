@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_GENESIS_MINER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
+#include <volition/AbstractTransactionBody.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // GenesisMiner
 //================================================================//
 class GenesisMiner :
-    public AbstractTransaction {
+    public AbstractTransactionBody {
 public:
 
     TRANSACTION_TYPE ( "GENESIS_MINER" )
@@ -30,7 +30,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -41,7 +41,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -51,21 +51,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
     
         assert ( this->mKey );
         return ledger.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, this->mKey, this->mURL );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractTransaction_incrementNonce ( Ledger& ledger ) const override {
-        UNUSED ( ledger );
-    }
-    
-    //----------------------------------------------------------------//
-    bool AbstractTransaction_verify  ( const Ledger& ledger ) const override {
-
-        return ( ledger.getVersion () == 0 );
     }
 };
 

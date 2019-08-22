@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_AFFIRM_KEY_H
 
 #include <volition/common.h>
-#include <volition/AbstractSingleSignerTransaction.h>
+#include <volition/AbstractTransactionBody.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // AffirmKey
 //================================================================//
 class AffirmKey :
-    public AbstractSingleSignerTransaction {
+    public AbstractTransactionBody {
 public:
 
     TRANSACTION_TYPE ( "AFFIRM_KEY" )
@@ -28,7 +28,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
@@ -37,7 +37,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
@@ -45,9 +45,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
     
-        return ledger.affirmKey ( this->mMakerSignature->getAccountName (), this->mKeyName, this->mKey, this->mPolicyName );
+        return ledger.affirmKey ( this->mMaker->getAccountName (), this->mKeyName, this->mKey, this->mPolicyName );
     }
 };
 

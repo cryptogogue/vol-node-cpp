@@ -4,7 +4,7 @@
 #include <volition/Block.h>
 #include <volition/Format.h>
 #include <volition/TheContext.h>
-#include <volition/TheTransactionFactory.h>
+#include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
 
@@ -90,7 +90,7 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
         
         // apply block transactions.
         for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
-            const AbstractTransaction& transaction = *this->mTransactions [ i ];
+            const Transaction& transaction = *this->mTransactions [ i ];
             
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
@@ -244,7 +244,7 @@ bool Block::isParent ( const Block& block ) const {
 }
 
 //----------------------------------------------------------------//
-void Block::pushTransaction ( shared_ptr < AbstractTransaction > transaction ) {
+void Block::pushTransaction ( shared_ptr < Transaction > transaction ) {
 
     this->mTransactions.push_back ( transaction );
 }

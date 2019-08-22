@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_KEY_POLICY_H
 
 #include <volition/common.h>
-#include <volition/AbstractSingleSignerTransaction.h>
+#include <volition/AbstractTransactionBody.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // KeyPolicy
 //================================================================//
 class KeyPolicy :
-    public AbstractSingleSignerTransaction {
+    public AbstractTransactionBody {
 public:
 
     TRANSACTION_TYPE ( "KEY_POLICY" )
@@ -27,7 +27,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
@@ -35,14 +35,14 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
         serializer.serialize ( "policyName",    this->mPolicyName );
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         UNUSED ( ledger );
     
         return true;

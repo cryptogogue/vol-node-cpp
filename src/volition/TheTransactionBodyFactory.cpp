@@ -19,17 +19,17 @@
 namespace Volition {
 
 //================================================================//
-// TheTransactionFactory
+// TheTransactionBodyFactory
 //================================================================//
 
 //----------------------------------------------------------------//
-unique_ptr < AbstractTransaction > TheTransactionFactory::create ( string typeString ) const {
+unique_ptr < AbstractTransactionBody > TheTransactionBodyFactory::create ( string typeString ) const {
 
     return this->Factory::create ( typeString );
 }
 
 //----------------------------------------------------------------//
-TheTransactionFactory::TheTransactionFactory () {
+TheTransactionBodyFactory::TheTransactionBodyFactory () {
 
     this->registerTransaction < Volition::Transactions::AccountPolicy >();
     this->registerTransaction < Volition::Transactions::AffirmKey >();
@@ -39,13 +39,12 @@ TheTransactionFactory::TheTransactionFactory () {
     this->registerTransaction < Volition::Transactions::PublishSchema >();
     this->registerTransaction < Volition::Transactions::RegisterMiner >();
     this->registerTransaction < Volition::Transactions::RunScript >();
-    this->registerTransaction < Volition::Transactions::SellAssets >();
     this->registerTransaction < Volition::Transactions::SendAssets >();
     this->registerTransaction < Volition::Transactions::SendVOL >();
 }
 
 //----------------------------------------------------------------//
-TheTransactionFactory::~TheTransactionFactory () {
+TheTransactionBodyFactory::~TheTransactionBodyFactory () {
 }
 
 //================================================================//

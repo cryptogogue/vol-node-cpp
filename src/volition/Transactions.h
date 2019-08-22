@@ -4,7 +4,7 @@
 #ifndef VOLITION_TRANSACTIONS_H
 #define VOLITION_TRANSACTIONS_H
 
-#include <volition/TheTransactionFactory.h>
+#include <volition/TheTransactionBodyFactory.h>
 #include <volition/transactions/AccountPolicy.h>
 #include <volition/transactions/AffirmKey.h>
 #include <volition/transactions/GenesisMiner.h>
@@ -13,7 +13,6 @@
 #include <volition/transactions/PublishSchema.h>
 #include <volition/transactions/RegisterMiner.h>
 #include <volition/transactions/RunScript.h>
-#include <volition/transactions/SellAssets.h>
 #include <volition/transactions/SendAssets.h>
 #include <volition/transactions/SendVOL.h>
 

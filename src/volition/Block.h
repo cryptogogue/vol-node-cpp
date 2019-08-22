@@ -6,12 +6,11 @@
 
 #include <volition/common.h>
 
-#include <volition/AbstractTransaction.h>
 #include <volition/Entropy.h>
 #include <volition/Ledger.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/Signature.h>
-#include <volition/TheTransactionFactory.h>
+#include <volition/Transaction.h>
 
 namespace Volition {
 
@@ -34,7 +33,7 @@ private:
     Signature       mSignature;
 
     // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
-    SerializableVector < SerializableSharedPtr < AbstractTransaction, TransactionFactory >>     mTransactions;
+    SerializableVector < SerializableSharedPtr < Transaction >>     mTransactions;
 
     //----------------------------------------------------------------//
     void                applyEntropy                        ( Ledger& ledger ) const;
@@ -74,7 +73,7 @@ public:
     u64                 getTime                             () const;
     bool                isInRewriteWindow                   ( time_t now ) const;
     bool                isParent                            ( const Block& block ) const;
-    void                pushTransaction                     ( shared_ptr < AbstractTransaction > transaction );
+    void                pushTransaction                     ( shared_ptr < Transaction > transaction );
     void                setAllure                           ( const Digest& allure );
     void                setMinerID                          ( string minerID );
     const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );

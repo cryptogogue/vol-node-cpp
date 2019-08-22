@@ -19,6 +19,7 @@ class AssetMethodInvocation;
 class Block;
 class Policy;
 class Schema;
+class TransactionMaker;
 class TransactionMakerSignature;
 
 //================================================================//
@@ -120,7 +121,7 @@ public:
     bool                            accountPolicy           ( string accountName, const Policy* policy );
     bool                            awardAsset              ( string accountName, string assetType, int quantity );
     bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
-    bool                            checkMakerSignature     ( const TransactionMakerSignature* makerSignature ) const;
+    bool                            checkMaker              ( const TransactionMaker& maker, const Signature& signature ) const;
     bool                            deleteKey               ( string accountName, string keyName );
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     shared_ptr < Account >          getAccount              ( string accountName ) const;
@@ -139,8 +140,9 @@ public:
     list < Schema >                 getSchemas              () const;
     shared_ptr < Block >            getTopBlock             () const;
     UnfinishedBlockList             getUnfinished           ();
-    void                            incrementNonce          ( const TransactionMakerSignature* makerSignature );
+    void                            incrementNonce          ( const TransactionMaker& makerSignature );
     bool                            invoke                  ( string accountName, const AssetMethodInvocation& invocation );
+    bool                            isGenesis               () const;
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
                                     Ledger                  ();
                                     Ledger                  ( Ledger& other );

@@ -1,22 +1,22 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/TransactionMakerSignature.h>
+#include <volition/TransactionMaker.h>
 
 namespace Volition {
 
 //================================================================//
-// TransactionMakerSignature
+// TransactionMaker
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionMakerSignature::TransactionMakerSignature () :
+TransactionMaker::TransactionMaker () :
     mGratuity ( 0 ),
     mNonce ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-TransactionMakerSignature::~TransactionMakerSignature () {
+TransactionMaker::~TransactionMaker () {
 }
 
 //================================================================//
@@ -24,31 +24,31 @@ TransactionMakerSignature::~TransactionMakerSignature () {
 //================================================================//
 
 //----------------------------------------------------------------//
-string TransactionMakerSignature::getAccountName () const {
+string TransactionMaker::getAccountName () const {
 
     return this->mAccountName;
 }
 
 //----------------------------------------------------------------//
-u64 TransactionMakerSignature::getGratuity () const {
+u64 TransactionMaker::getGratuity () const {
 
     return this->mGratuity;
 }
 
 //----------------------------------------------------------------//
-string TransactionMakerSignature::getKeyName () const {
+string TransactionMaker::getKeyName () const {
 
     return this->mKeyName;
 }
 
 //----------------------------------------------------------------//
-u64 TransactionMakerSignature::getNonce () const {
+u64 TransactionMaker::getNonce () const {
 
     return this->mNonce;
 }
 
 //----------------------------------------------------------------//
-void TransactionMakerSignature::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+void TransactionMaker::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
     serializer.serialize ( "accountName",   this->mAccountName );
     serializer.serialize ( "gratuity",      this->mGratuity );
@@ -57,7 +57,7 @@ void TransactionMakerSignature::AbstractSerializable_serializeFrom ( const Abstr
 }
 
 //----------------------------------------------------------------//
-void TransactionMakerSignature::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+void TransactionMaker::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "accountName",   this->mAccountName );
     serializer.serialize ( "gratuity",      this->mGratuity );

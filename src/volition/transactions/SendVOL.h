@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_SEND_VOL_H
 
 #include <volition/common.h>
-#include <volition/AbstractSingleSignerTransaction.h>
+#include <volition/AbstractTransactionBody.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // SendVOL
 //================================================================//
 class SendVOL :
-    public AbstractSingleSignerTransaction {
+    public AbstractTransactionBody {
 public:
 
     TRANSACTION_TYPE ( "SEND_VOL" )
@@ -27,7 +27,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
@@ -35,16 +35,16 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
-        return ledger.sendVOL ( this->mMakerSignature->getAccountName (), this->mAccountName, this->mAmount );
+        return ledger.sendVOL ( this->mMaker->getAccountName (), this->mAccountName, this->mAmount );
     }
 };
 

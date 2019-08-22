@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_PUBLISH_SCHEMA_H
 
 #include <volition/common.h>
-#include <volition/AbstractSingleSignerTransaction.h>
+#include <volition/AbstractTransactionBody.h>
 #include <volition/Schema.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // PublishSchema
 //================================================================//
 class PublishSchema :
-    public AbstractSingleSignerTransaction {
+    public AbstractTransactionBody {
 public:
 
     TRANSACTION_TYPE ( "PUBLISH_SCHEMA" )
@@ -27,7 +27,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "schema",        this->mSchema );
@@ -35,16 +35,16 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractSingleSignerTransaction::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "name",          this->mSchemaName );
         serializer.serialize ( "schema",        this->mSchema );
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransaction_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
-        return ledger.publishSchema ( this->mMakerSignature->getAccountName (), this->mSchemaName, this->mSchema );
+        return ledger.publishSchema ( this->mMaker->getAccountName (), this->mSchemaName, this->mSchema );
     }
 };
 

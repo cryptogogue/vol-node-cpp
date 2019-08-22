@@ -18,12 +18,12 @@ void Miner::addTransactions ( Chain& chain, Block& block ) {
     Ledger ledger;
     ledger.takeSnapshot ( chain );
 
-    list < shared_ptr < AbstractTransaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
+    list < shared_ptr < Transaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
     for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {
-        shared_ptr < AbstractTransaction > transaction = *transactionIt;
+        shared_ptr < Transaction > transaction = *transactionIt;
         
-        // TODO: don't need to fully apply; should just check nonce and then sig
-        if ( transaction->verify ( ledger )) {
+        // TODO: don't need to fully apply; should just check maker's nonce and sig
+        if ( transaction->checkMaker ( ledger )) {
             block.pushTransaction ( transaction );
         }
     }
@@ -182,7 +182,7 @@ void Miner::loadKey ( string keyfile, string password ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::pushTransaction ( shared_ptr < AbstractTransaction > transaction ) {
+void Miner::pushTransaction ( shared_ptr < Transaction > transaction ) {
 
     this->mPendingTransactions.push_back ( transaction );
 }

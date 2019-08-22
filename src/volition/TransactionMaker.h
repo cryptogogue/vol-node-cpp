@@ -1,24 +1,24 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONMAKERSIGNATURE_H
-#define VOLITION_TRANSACTIONMAKERSIGNATURE_H
+#ifndef VOLITION_TRANSACTIONMAKER_H
+#define VOLITION_TRANSACTIONMAKER_H
 
 #include <volition/common.h>
-#include <volition/Signature.h>
+#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
 //================================================================//
-// TransactionMakerSignature
+// TransactionMaker
 //================================================================//
-class TransactionMakerSignature :
-    public Signature {
+class TransactionMaker :
+    public AbstractSerializable {
 protected:
 
     u64                     mGratuity;
     string                  mAccountName;   // account of signer; account being modified; sender account
-    string                  mKeyName;       // will identify a key to an account that can pay
+    string                  mKeyName;
     u64                     mNonce;
 
     //----------------------------------------------------------------//
@@ -32,8 +32,8 @@ public:
     u64                     getGratuity                         () const;
     string                  getKeyName                          () const;
     u64                     getNonce                            () const;
-                            TransactionMakerSignature           ();
-                            ~TransactionMakerSignature          ();
+                            TransactionMaker                    ();
+                            ~TransactionMaker                   ();
 };
 
 } // namespace Volition

@@ -8,7 +8,7 @@
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/LuaContext.h>
-#include <volition/TransactionMakerSignature.h>
+#include <volition/TransactionMaker.h>
 
 namespace Volition {
 
@@ -111,17 +111,14 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::checkMakerSignature ( const TransactionMakerSignature* makerSignature ) const {
+bool Ledger::checkMaker ( const TransactionMaker& maker, const Signature& signature ) const {
+    UNUSED ( signature );
 
-    // TODO: actually check maker signature
-
-    if ( makerSignature ) {
-        shared_ptr < Account > account = this->getAccount ( makerSignature->getAccountName ());
-        if ( account ) {
-            return ( account->mNonce == makerSignature->getNonce ());
-        }
+    shared_ptr < Account > account = this->getAccount ( maker.getAccountName ());
+    if ( account ) {
+        return ( account->mNonce == maker.getNonce ());
     }
-    return true;
+    return false;
 }
 
 //----------------------------------------------------------------//
@@ -411,19 +408,16 @@ UnfinishedBlockList Ledger::getUnfinished () {
 }
 
 //----------------------------------------------------------------//
-void Ledger::incrementNonce ( const TransactionMakerSignature* makerSignature ) {
+void Ledger::incrementNonce ( const TransactionMaker& maker ) {
 
-    if ( makerSignature ) {
+    u64 nonce = maker.getNonce ();
+    string accountName = maker.getAccountName ();
 
-        u64 nonce = makerSignature->getNonce ();
-        string accountName = makerSignature->getAccountName ();
-
-        shared_ptr < Account > account = this->getAccount ( accountName );
-        if ( account && ( account->mNonce <= nonce )) {
-            Account updatedAccount = *account;
-            updatedAccount.mNonce = nonce + 1;
-            this->setAccount ( accountName, updatedAccount );
-        }
+    shared_ptr < Account > account = this->getAccount ( accountName );
+    if ( account && ( account->mNonce <= nonce )) {
+        Account updatedAccount = *account;
+        updatedAccount.mNonce = nonce + 1;
+        this->setAccount ( accountName, updatedAccount );
     }
 }
 
@@ -439,6 +433,12 @@ bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocatio
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
     LuaContext lua ( method->mLua );
     return lua.invoke ( *this, accountName, *method, invocation );
+}
+
+//----------------------------------------------------------------//
+bool Ledger::isGenesis () const {
+
+    return ( this->getVersion () == 0 );
 }
 
 //----------------------------------------------------------------//

@@ -5,13 +5,13 @@
 #define VOLITION_MINER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransaction.h>
 #include <volition/CryptoKey.h>
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
+#include <volition/Ledger.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
-#include <volition/Ledger.h>
+#include <volition/Transaction.h>
 
 namespace Volition {
 
@@ -30,7 +30,7 @@ protected:
     string                                          mMinerID;
 
     CryptoKey                                       mKeyPair;
-    list < shared_ptr < AbstractTransaction >>      mPendingTransactions;
+    list < shared_ptr < Transaction >>              mPendingTransactions;
     bool                                            mLazy;
 
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
@@ -69,7 +69,7 @@ public:
     bool                    hasBranch               ( string miners ) const;
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
-    void                    pushTransaction         ( shared_ptr < AbstractTransaction > transaction );
+    void                    pushTransaction         ( shared_ptr < Transaction > transaction );
     void                    setPersistenceProvider  ( shared_ptr < AbstractPersistenceProvider > persistence );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );
