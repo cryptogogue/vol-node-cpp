@@ -83,7 +83,9 @@ const InventoryFilterMenu = observer (( props ) => {
 
     const { appState, controller } = props;
 
-    const onSortItemClick = ( event, { name }) => controller.setSortMode ( name );
+    const onSortItemClick = ( event, { name }) => {
+        controller.setSortMode ( name );
+    }
 
     let methodListItems = [];
     const methodBindings = controller.inventory.getCraftingMethodBindings ();

@@ -1,5 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
+import { AssetLayout }                          from './AssetLayout';
 import { barcodeToSVG }                         from './util/pdf417';
 import { Service }                              from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
@@ -144,6 +145,16 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     methodIsValid ( methodName, assetID ) {
         return ( methodName !== '' ) && this.binding.methodIsValid ( methodName, assetID );
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    refreshAssetLayouts () {
+
+        this.assetLayouts = {};
+        for ( let assetId in this.assets ) {
+            this.assetLayouts [ assetId ] = new AssetLayout ( this, assetId, [ 'EN', 'RGB' ]);
+        }
     }
 
     //----------------------------------------------------------------//
@@ -309,7 +320,6 @@ export class InventoryService extends Service {
         }
 
         let assets = {};
-
         for ( let assetType in schema.definitions ) {
 
             const definition = schema.definitions [ assetType ];
@@ -321,6 +331,7 @@ export class InventoryService extends Service {
         }
 
         this.refreshBinding ( schema, assets );
+        this.refreshAssetLayouts ();
         this.finishLoading ();
     }
 
