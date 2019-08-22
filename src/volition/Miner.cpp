@@ -237,7 +237,10 @@ void Miner::setGenesis ( const Block& block ) {
     shared_ptr < Chain > chain = make_shared < Chain >();
     bool result = chain->pushBlock ( block );
     assert ( result );
-        
+    
+    string identity = chain->getIdentity ();
+    assert ( identity.size ());
+    
     this->mBranches.insert ( chain );
     this->mBestBranch = chain;
 }

@@ -30,6 +30,7 @@ public:
         
         jsonOut.set ( "type", "VOL_MINING_NODE" );
         jsonOut.set ( "minerID", scopedLock.getWebMiner ().getMinerID ().c_str ());
+        jsonOut.set ( "identity", scopedLock.getWebMiner ().getLedger ().getIdentity ());
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

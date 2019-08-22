@@ -45,6 +45,7 @@
 		CD2AB817230E79D400805F70 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB815230E79D400805F70 /* Transaction.h */; };
 		CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */; };
 		CD2AB81C230E7D1E00805F70 /* TransactionMaker.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB81A230E7D1E00805F70 /* TransactionMaker.h */; };
+		CD2AB81E230F3D5700805F70 /* GenesisBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB81D230F3D5700805F70 /* GenesisBlock.h */; };
 		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
@@ -630,6 +631,7 @@
 		CD2AB815230E79D400805F70 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Transaction.h; path = src/volition/Transaction.h; sourceTree = "<group>"; };
 		CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMaker.cpp; path = src/volition/TransactionMaker.cpp; sourceTree = "<group>"; };
 		CD2AB81A230E7D1E00805F70 /* TransactionMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionMaker.h; path = src/volition/TransactionMaker.h; sourceTree = "<group>"; };
+		CD2AB81D230F3D5700805F70 /* GenesisBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenesisBlock.h; path = src/volition/transactions/GenesisBlock.h; sourceTree = "<group>"; };
 		CD36658920EB3BE0000E0B43 /* Miner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Miner.cpp; path = src/volition/Miner.cpp; sourceTree = "<group>"; };
 		CD36658A20EB3BE0000E0B43 /* Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.h; path = src/volition/Miner.h; sourceTree = "<group>"; };
 		CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheWebMiner.cpp; path = src/volition/TheWebMiner.cpp; sourceTree = "<group>"; };
@@ -1296,6 +1298,7 @@
 			children = (
 				CDBFD53A218B8999002AB0C3 /* AccountPolicy.h */,
 				CDBFD53B218B8999002AB0C3 /* AffirmKey.h */,
+				CD2AB81D230F3D5700805F70 /* GenesisBlock.h */,
 				CDBFD53D218B8999002AB0C3 /* GenesisMiner.h */,
 				CDBFD53E218B8999002AB0C3 /* KeyPolicy.h */,
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
@@ -1456,6 +1459,7 @@
 				CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */,
 				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,
 				CDBFD550218B8999002AB0C3 /* SendVOL.h in Headers */,
+				CD2AB81E230F3D5700805F70 /* GenesisBlock.h in Headers */,
 				CD73D8302166D68700F43CC7 /* Simulations.h in Headers */,
 				CDBFD551218B8999002AB0C3 /* RunScript.h in Headers */,
 				CDBFD547218B8999002AB0C3 /* AffirmKey.h in Headers */,

@@ -1,12 +1,15 @@
 {
     "height" : 0,
     "signature" : {
-        "digest" : "ad22c060f2a4f0566c5f44bedce86f2fc8b8dba1367532989ef5cba1ea34fd92",
+        "digest" : "22ca4efadcb2552d1a9f8fa6ab7d63074629f13b5149166c2003fee198e19095",
         "hashAlgorithm" : "SHA256",
-        "signature" : "304502200ea2fe0a43812102fa0770fb42f6d38e59a8dfbf930ddfb832fe8e1c9944c4b8022100abec048c2b21e454a92e62f4a961977248c8d4b4858f1b33232d05940dd45f10"
+        "signature" : "304402205ea259f8b1c8ff668e14eca5c102bba2ea4e158c4a911bf8dbcaf5b439cb514402207b694ed66b1e0cf8dc9857a4f1431404ef863980d220014288b984fd60a33165"
     },
     "time" : "1970-01-01T00:00:00UTC",
     "transactions" : [
+        {
+            "body" : "{\"identity\":\"VOLITION_TEST_NET\",\"type\":\"GENESIS_BLOCK\"}"
+        },
         {
             "body" : "{\"accountName\":\"9090\",\"amount\":1000000,\"key\":{\"groupName\":\"secp256k1\",\"publicKey\":\"036DEA12FB64E82B90BDDB02A792E488E202857D70DDA9B408902E74EEDD35B5DC\",\"type\":\"EC_HEX\"},\"keyName\":\"master\",\"type\":\"GENESIS_MINER\",\"url\":\"http:\\\/\\\/127.0.0.1:9090\\\/\"}"
         },

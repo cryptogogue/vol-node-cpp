@@ -293,6 +293,12 @@ Entropy Ledger::getEntropy () const {
 }
 
 //----------------------------------------------------------------//
+string Ledger::getIdentity () const {
+
+    return this->getValueOrFallback < string >( IDENTITY, "" );
+}
+
+//----------------------------------------------------------------//
 SerializableList < Asset > Ledger::getInventory ( string accountName ) const {
 
     SerializableList < Asset > assets;
@@ -645,6 +651,14 @@ void Ledger::setBlock ( const Block& block ) {
 void Ledger::setEntropyString ( string entropy ) {
 
     this->setValue < string >( ENTROPY, entropy );
+}
+
+//----------------------------------------------------------------//
+bool Ledger::setIdentity ( string identity ) {
+
+    if ( this->hasValue ( IDENTITY )) return false;
+    this->setValue < string >( IDENTITY, identity );
+    return true;
 }
 
 //----------------------------------------------------------------//

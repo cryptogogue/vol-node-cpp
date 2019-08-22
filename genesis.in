@@ -2,6 +2,12 @@
     "transactions" : [
         {
             "bodyIn" : {
+                "type" :            "GENESIS_BLOCK",
+                "identity" :        "VOLITION_TEST_NET"
+            }
+        },
+        {
+            "bodyIn" : {
                 "type" :            "GENESIS_MINER",
                 "accountName" :     "9090",
                 "amount" :          1000000,

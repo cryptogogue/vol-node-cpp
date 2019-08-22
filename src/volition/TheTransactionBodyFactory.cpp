@@ -6,6 +6,7 @@
 // ACCOUNT_POLICY (account, policy)
 // AFFIRM_KEY (account name, key name, policy name, (opt)key)
 // DELETE_KEY (account name, key name)
+// GENESIS_BLOCK ( identity )
 // GENESIS_MINER ( account name, key name, url, amount)
 // KEY_POLICY (account, policy, policy name)
 // OPEN_ACCOUNT (account name, master key, key name)
@@ -33,6 +34,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
 
     this->registerTransaction < Volition::Transactions::AccountPolicy >();
     this->registerTransaction < Volition::Transactions::AffirmKey >();
+    this->registerTransaction < Volition::Transactions::GenesisBlock >();
     this->registerTransaction < Volition::Transactions::GenesisMiner >();
     this->registerTransaction < Volition::Transactions::KeyPolicy >();
     this->registerTransaction < Volition::Transactions::OpenAccount >();

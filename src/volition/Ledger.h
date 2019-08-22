@@ -82,6 +82,7 @@ public:
     static constexpr const char* BLOCK_KEY          = "block";
     static constexpr const char* KEY_ID             = "keyID.";
     static constexpr const char* ENTROPY            = "entropy";
+    static constexpr const char* IDENTITY           = "identity";
     static constexpr const char* MINERS             = "miners";
     static constexpr const char* MINER_INFO         = "minerInfo";
     static constexpr const char* MINER_URLS         = "minerUrls";
@@ -130,6 +131,7 @@ public:
     shared_ptr < Asset >            getAsset                ( Asset::Index index ) const;
     shared_ptr < Block >            getBlock                ( size_t height ) const;
     Entropy                         getEntropy              () const;
+    string                          getIdentity             () const;
     SerializableList < Asset >      getInventory            ( string accountName ) const;
     shared_ptr < KeyInfo >          getKeyInfo              ( string keyID ) const;
     shared_ptr < AssetMethod >      getMethod               ( string methodName ) const;
@@ -155,6 +157,7 @@ public:
     bool                            setAssetFieldValue      ( Asset::Index index, string fieldName, const AssetFieldValue& field );
     void                            setBlock                ( const Block& block );
     void                            setEntropyString        ( string entropy );
+    bool                            setIdentity             ( string identity );
     void                            setUnfinished           ( const UnfinishedBlockList& unfinished );
     bool                            verify                  ( const AssetMethodInvocation& invocation ) const;
 

@@ -7,6 +7,7 @@
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/transactions/AccountPolicy.h>
 #include <volition/transactions/AffirmKey.h>
+#include <volition/transactions/GenesisBlock.h>
 #include <volition/transactions/GenesisMiner.h>
 #include <volition/transactions/KeyPolicy.h>
 #include <volition/transactions/OpenAccount.h>
