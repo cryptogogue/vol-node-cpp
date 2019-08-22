@@ -33,8 +33,8 @@ const NavigationBar = observer (( props ) => {
                 <Dropdown item icon = "bars">
                     <Dropdown.Menu>
                         <Dropdown.Item icon = "add square" text = "Accounts" as = { Link } to = { accountsURL }/>
-                        <Dropdown.Item icon = "add square" text = "Inventory" as = { Link } to = { inventoryURL }/>
-                        <Dropdown.Item icon = "add square" text = "Crafting" as = { Link } to = { craftingURL }/>
+                        <Dropdown.Item disabled = { !appState.hasAccount } icon = "add square" text = "Inventory" as = { Link } to = { inventoryURL }/>
+                        <Dropdown.Item disabled = { !appState.hasAccount } icon = "add square" text = "Crafting" as = { Link } to = { craftingURL }/>
                     </Dropdown.Menu>
                 </Dropdown>
             </Menu.Menu>

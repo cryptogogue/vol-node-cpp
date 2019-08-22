@@ -166,9 +166,11 @@ const InventoryScreen = observer (( props ) => {
     const controller    = useService (() => new InventoryScreenController ( inventory ));
 
     if ( appState.accountId !== accountIdFromEndpoint ) {
+        //TODO 404 error (need make 404 screen)
         return appState.redirect ( `/accounts/${ appState.accountId }/inventory` );
     }
 
+    //TODO elegant loading screen
     if ( inventory.loading === true ) {
         return (<div>{ 'LOADING' }</div>);
     }

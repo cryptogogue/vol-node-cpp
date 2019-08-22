@@ -59,6 +59,19 @@ const affirmKey = {
 }
 
 //----------------------------------------------------------------//
+const betaGetAssets = {
+    fields: {
+        makerKeyName:               stringField ( 0 ),
+        numAssets:                  integerField ( 1 ),
+        gratuity:                   integerField ( 2 ),
+    },
+    format: {
+        maker:                      makerFormat (),
+        numAssets:                  'numAssets',
+    },
+}
+
+//----------------------------------------------------------------//
 const keyPolicy = {
     fields: {
         makerKeyName:               stringField ( 0 ),
@@ -137,6 +150,7 @@ function templateForType ( type ) {
     switch ( type ) {
         case TRANSACTION_TYPE.ACCOUNT_POLICY:   return accountPolicy;
         case TRANSACTION_TYPE.AFFIRM_KEY:       return affirmKey;
+        case TRANSACTION_TYPE.BETA_GET_ASSETS:  return betaGetAssets;
         case TRANSACTION_TYPE.KEY_POLICY:       return keyPolicy;
         case TRANSACTION_TYPE.OPEN_ACCOUNT:     return openSccount;
         case TRANSACTION_TYPE.REGISTER_MINER:   return registerMiner;

@@ -109,6 +109,7 @@ class ImportAccountScreenController extends Service {
         }
         catch ( error ) {
             console.log ( error );
+            runInAction (() => { this.errorMessage = 'Invalid Key Type' });
         }
     }
 }
@@ -121,8 +122,8 @@ const ImportAccountScreen = observer (( props ) => {
     const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
     const controller    = useService (() => new ImportAccountScreenController ( appState ));
 
-    let onChange    = ( event ) => { service.handleChange ( event )};
-    let onSubmit    = () => { service.verifyPhraseOrKey ()};
+    let onChange    = ( event ) => { controller.handleChange ( event )};
+    let onSubmit    = () => { controller.verifyPhraseOrKey ()};
 
     const hasMiners         = appState.node.length > 0;
     const inputEnabled      = hasMiners;

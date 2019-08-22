@@ -18,6 +18,7 @@ const AssetView = ( props ) => {
 
     const docX          = props.x || 0;
     const docY          = props.y || 0;
+    const scale         = props.scale || 1;
 
     const docWidth      = layout.width;
     const docHeight     = layout.height;
@@ -27,8 +28,8 @@ const AssetView = ( props ) => {
         <svg
             x = { docX }
             y = { docY }
-            width = { inches ? `${ docWidth / dpi }in` : docWidth }
-            height = { inches ? `${ docHeight / dpi }in` : docHeight }
+            width = { inches ? `${( docWidth * scale ) / dpi }in` : docWidth * scale }
+            height = { inches ? `${( docHeight * scale ) / dpi }in` : docHeight * scale }
             viewBox = { `0 0 ${ docWidth } ${ docHeight }` }
             preserveAspectRatio = 'none'
         >

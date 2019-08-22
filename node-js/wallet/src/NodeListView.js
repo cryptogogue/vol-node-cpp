@@ -34,7 +34,7 @@ const NodeListView = observer (( props ) => {
     for ( let url in nodes ) {
 
         const nodeInfo = appState.getNodeInfo ( url );
-        const textColor = nodeInfo.status === NODE_STATUS.ONLINE ? 'black' : 'red';
+        const textColor = nodeInfo.status === NODE_STATUS.OFFLINE ? 'red' : 'black';
 
         urlList.push (<p style = {{ color: textColor }} key = { urlList.length }>{ `${ nodeInfo.type } - ${ url }` }</p>)
     }
