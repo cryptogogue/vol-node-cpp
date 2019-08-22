@@ -3,7 +3,6 @@
 import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
 import { barcodeToSVG }             from './util/pdf417';
 import { fitText, JUSTIFY }         from './util/TextFitter';
-import handlebars                   from 'handlebars';
 import moize                        from 'moize';
 
 //================================================================//
@@ -28,7 +27,9 @@ export class AssetLayout {
         for ( let i in layout.commands ) {
             
             const command = layout.commands [ i ];
-            const value = context [ command.field ] || null;
+            const value = command.template && command.template ( context ) || null;
+
+            if ( !value ) continue;
 
             const x = command.x || 0;
             const y = command.y || 0;
@@ -37,7 +38,7 @@ export class AssetLayout {
 
             switch ( command.type ) {
 
-                case LAYOUT_COMMAND.DRAW_BARCODE_FIELD:
+                case LAYOUT_COMMAND.DRAW_BARCODE: {
 
                     items.push (`
                         <g>
@@ -46,26 +47,15 @@ export class AssetLayout {
                         </g>
                     `);
                     break;
+                }
 
-                case LAYOUT_COMMAND.DRAW_IMAGE_FIELD:
+                case LAYOUT_COMMAND.DRAW_SVG: {
 
-                    items.push (`
-                        <image
-                            x                       = ${ command.x }
-                            y                       = ${ command.y }
-                            width                   = ${ command.width }
-                            height                  = ${ command.height }
-                            xlink:href              = ${ value }
-                        />
-                    `);
+                    items.push ( `<g>${ value }</g>` );
                     break;
+                }
 
-                case LAYOUT_COMMAND.DRAW_SVG:
-
-                    items.push ( `<g>${ command.svg }</g>` );
-                    break;
-
-                case LAYOUT_COMMAND.DRAW_TEXT_FIELD: {
+                case LAYOUT_COMMAND.DRAW_TEXT: {
 
                     const font = inventory.fonts [ command.fontName ];
                     if ( font ) {

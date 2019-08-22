@@ -8,6 +8,7 @@ import { Binding }                              from './schema/Binding';
 import { Schema }                               from './schema/Schema';
 import { buildSchema, op }                      from './schema/SchemaBuilder';
 import { JUSTIFY }                              from './util/TextFitter';
+import handlebars                               from 'handlebars';
 import _                                        from 'lodash';
 import * as opentype                            from 'opentype.js';
 
@@ -208,26 +209,26 @@ export class InventoryService extends Service {
                     <rect x='48.875' y='131.25' width='534.375' height='37.5' fill='none' stroke='gray'/>
 
                     <rect x='48.875' y='592.625' width='652.25' height='296' fill='none' stroke='gray'/>
-                `)
-                .drawImageField ( 'image', 37.5, 168.75, 675, 412.5 )
 
+                    <image x='37.5' y='168.75' width='675' height='412.5' xlink:href='{{ image }}'/>
+                `)
                 // card name
-                .drawTextField ( 'name', 'roboto', 40, 48.875, 37.5, 534.375, 56.25 )
+                .drawText ( '{{ name }}', 'roboto', 40, 48.875, 37.5, 534.375, 56.25 )
                     .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
 
                 // card type
-                .drawTextField ( 'type', 'roboto', 30, 48.875, 93.75, 534.375, 37.5 )
+                .drawText ( '{{ type }}{{ subType }}', 'roboto', 30, 48.875, 93.75, 534.375, 37.5 )
                     .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
 
                 // access
-                .drawTextField ( 'access', 'roboto', 30, 48.875, 131.25, 534.375, 37.5)
+                .drawText ( '{{ access }}', 'roboto', 30, 48.875, 131.25, 534.375, 37.5)
                     .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
 
                 // rules
-                .drawTextField ( 'rules', 'roboto', 40, 48.875, 592.625, 652.25, 296 )
+                .drawText ( '{{ rules }}', 'roboto', 40, 48.875, 592.625, 652.25, 296 )
                     .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.TOP )
 
-                .drawBarcodeField ( '$', 37.5, 900, 675, 112.5 )
+                .drawBarcode( '{{ $ }}', 37.5, 900, 675, 112.5 )
 
             .done ();
 
@@ -300,7 +301,11 @@ export class InventoryService extends Service {
         // const ultraRare0    = schema.addTestAsset ( assets, 'ultraRare', 'jafoh-najon-gobig-250' );
 
         for ( let layoutName in template.layouts ) {
-            this.layouts [ layoutName ] = template.layouts [ layoutName ];
+            const layout = template.layouts [ layoutName ];
+            for ( let command of layout.commands ) {
+                command.template = handlebars.compile ( command.template );
+            }
+            this.layouts [ layoutName ] = layout;
         }
 
         for ( let name in template.fonts ) {
