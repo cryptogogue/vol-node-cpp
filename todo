@@ -42,6 +42,9 @@ tool to generate set schema from XLS spreadsheet
 add schema to genesis block
 support loading genesis chain
 
+sign transaction
+account permissions - god keys, publisher keys
+
 implement way to expire transactions
 identify (mining) networks (by genesis block) - name networks; i.e. test network, production network
 
@@ -51,7 +54,6 @@ provision every asset in set
 provision beta account - generate key
 discard all (by set)
 handle unrecognized account - reject transactions
-account permissions - god keys, publisher keys
 
 add banner at the top of wallet showing mining network name
 

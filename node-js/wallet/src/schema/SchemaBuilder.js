@@ -36,16 +36,6 @@ export const LAYOUT_COMMAND = {
 };
 
 //----------------------------------------------------------------//
-function jsonEscape ( str ) {
-    return str
-        .replace ( /(\n)/g, `\\n` )
-        .replace ( /(\")/g, `\"` )
-        .replace ( /(\r)/g, `\\r` )
-        .replace ( /(\t)/g, `\\t` )
-        .replace ( /(\f)/g, `\\f` );
-}
-
-//----------------------------------------------------------------//
 function makeAssetFieldValue ( value ) {
     
     let type = TYPE_UNDEFINED;
@@ -59,7 +49,6 @@ function makeAssetFieldValue ( value ) {
             break;
         case 'string':
             type = TYPE_STRING;
-            value = jsonEscape ( value );
             break;
         default:
             assert ( false );
@@ -425,7 +414,6 @@ class SchemaBuilder {
 
         let lua = fs.readFileSync ( filename, 'utf8' );
         assert ( lua );
-        //lua = jsonEscape ( lua );
 
         this.top ().lua = lua;
         return this;

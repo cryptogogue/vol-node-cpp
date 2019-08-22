@@ -2,64 +2,39 @@
 
 import fs                       from 'fs';
 import { buildSchema, op }      from '../wallet/src/Schema/SchemaBuilder';
-import * as excel               from './excel'
-
-//================================================================//
-// DO IT
-//================================================================//
-
-//----------------------------------------------------------------//
-function escapeName ( name ) {
-
-    name = name || '';
-    return name.replace(/\s+/g, '-').toLowerCase ();
-}
-
-//----------------------------------------------------------------//
-function makeSchemaTransaction ( schema, accountName, keyName, gratuity, nonce ) {
-
-    return {
-        type:       'PUBLISH_SCHEMA',
-        maker: {
-            accountName:    accountName,
-            keyName:        keyName || 'master',
-            gratuity:       gratuity || 0,
-            nonce:          nonce || 0,
-        },
-        name:       schema.name,
-        schema:     schema,
-    }
-}
-
-//================================================================//
-// schema
-//================================================================//
-// let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
-//     .luaFile ( 'lua/publish.lua' )
+import { JUSTIFY }              from '../wallet/src/util/TextFitter';
+import * as util                from './util'
 
 //     //----------------------------------------------------------------//
-//     .font ( 'roboto', 'fonts/roboto/roboto-regular.ttf' )
+//     .definition ( 'pack' )
+//         .field ( 'layout', 'pack' )
+//         .field ( 'displayName', 'Pack' )
+//             .alternate ( 'ES', 'El Pack' )
+//             .alternate ( 'FR', 'Le Pack' )
 
-//     //----------------------------------------------------------------//
-//     .layout ( 'card', 750, 1050, 300 )
-//         .drawSVG (`
-//             <rect x="0" y="0" width="750" height="1050" fill="gray" stroke="blue" stroke-width="37.5"/>
-//         `)
-//         .drawImageField ( 'image', 25, 100, 700, 700 )
-//         .drawTextField ( 'displayName', 'roboto', 70, 0, 815, 700, 70 )
-//             .justify ( 'CENTER', 'CENTER' )
-//             .pen ( 'white' )
-//         .drawBarcodeField ( '$', 75, 900, 600, 125 )
+//     .definition ( 'common' )
+//         .field ( 'layout', 'card' )
+//         .field ( 'displayName', 'Common' )
+//             .alternate ( 'ES', 'El Common' )
+//             .alternate ( 'FR', 'Le Common' )
+//         .field ( 'image', 'https://i.imgur.com/VMPKVAN.jpg' )
+//         .field ( 'keywords', 'card common' )
 
-//     .layout ( 'pack', 750, 1050, 300 )
-//         .drawSVG (`
-//             <rect x="0" y="0" width="750" height="1050" fill="gray" stroke="blue" stroke-width="37.5"/>
-//             <text x="375" y="560" font-size="150" text-anchor="middle" fill="white">PACK</text>
-//         `)
-//         .drawTextField ( 'displayName', 'roboto', 70, 0, 815, 700, 70 )
-//             .justify ( 'CENTER', 'CENTER' )
-//             .pen ( 'white' )
-//         .drawBarcodeField ( '$', 75, 900, 600, 125 )
+//     .definition ( 'rare' )
+//         .field ( 'layout', 'card' )
+//         .field ( 'displayName', 'Rare' )
+//             .alternate ( 'ES', 'El Rare' )
+//             .alternate ( 'FR', 'Le Rare' )
+//         .field ( 'image', 'https://i.imgur.com/BtKggd4.jpg' )
+//         .field ( 'keywords', 'card rare' )
+
+//     .definition ( 'ultraRare' )
+//         .field ( 'layout', 'card' )
+//         .field ( 'displayName', 'Ultra-Rare' )
+//             .alternate ( 'ES', 'El Ultra-Rare' )
+//             .alternate ( 'FR', 'Le Ultra-Rare' )
+//         .field ( 'image', 'https://i.imgur.com/2aiJ3cq.jpg' )
+//         .field ( 'keywords', 'card ultra-rare' )
 
 //     //----------------------------------------------------------------//
 //     .method ( 'makeRare', 'Combine two commons to make a rare.' )
@@ -77,57 +52,51 @@ function makeSchemaTransaction ( schema, accountName, keyName, gratuity, nonce )
 //         .luaFile ( 'lua/openPack.lua' )
 //     ;
 
-let schemaBuilder = buildSchema ( 'TEST_SCHEMA' );
+//================================================================//
+// schema
+//================================================================//
+let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
+    .luaFile ( 'lua/publish.lua' )
 
-const book = new excel.Workbook ( 'cardlist.xlsx' );
-const sheet = book.getSheet ( 0 );
+    //----------------------------------------------------------------//
+    .font ( 'roboto', 'http://localhost:3000/fonts/roboto/roboto-regular.ttf' )
 
-for ( let row = 0; row < sheet.height; ++row ) {
+    //----------------------------------------------------------------//
+    .layout ( 'dude', 750, 1050, 300 )
+        .drawSVG (`
+            <rect x='0' y='0' width='750' height='1050' fill='#000000'/>
+            <rect x='37.5' y='37.5' width='675' height='975' fill='#ffffff'/>
+            <rect x='37.5' y='168.75' width='675' height='412.5' fill='#ff0000'/>
+            <rect x='37.5' y='900' width='675' height='112.5' fill='#ff0000'/>
 
-    const cardNumber = parseInt ( sheet.getValueByCoord ( 0, row ));
-    if ( !cardNumber ) continue;
+            <rect x='48.875' y='37.5' width='534.375' height='56.25' fill='none' stroke='gray'/>
+            <rect x='48.875' y='93.75' width='534.375' height='37.5' fill='none' stroke='gray'/>
+            <rect x='48.875' y='131.25' width='534.375' height='37.5' fill='none' stroke='gray'/>
 
-    let definition = {};
-    let fieldCount = 0;
+            <rect x='48.875' y='592.625' width='652.25' height='296' fill='none' stroke='gray'/>
 
-    for ( let col = 0; col < sheet.width; ++col ) {
+            <image x='37.5' y='168.75' width='675' height='412.5' xlink:href='{{ image }}'/>
+        `)
+        // card name
+        .drawText ( '{{ name }}', 'roboto', 40, 48.875, 37.5, 534.375, 56.25 )
+            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
 
-        const fieldName = sheet.getValueByCoord ( col, 0, false );
-        const fieldType = sheet.getValueByCoord ( col, 1, false );
-        if ( !( fieldName && fieldType )) continue;
+        // card type
+        .drawText ( '{{ type }}{{ subType }}', 'roboto', 30, 48.875, 93.75, 534.375, 37.5 )
+            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
 
-        const raw = sheet.getValueByCoord ( col, row, '' );
-        let value;
+        // access
+        .drawText ( '{{ access }}', 'roboto', 30, 48.875, 131.25, 534.375, 37.5)
+            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
 
-        switch ( fieldType ) {
-            case 'number':
-                value = Number ( raw );
-                if ( typeof ( value ) !== fieldType ) continue;
-                break;
-            case 'string':
-                value = String ( raw );
-                if ( typeof ( value ) !== fieldType ) continue;
-                break;
-            default:
-                continue;
-        }
+        // rules
+        .drawText ( '{{ rules }}', 'roboto', 40, 48.875, 592.625, 652.25, 296 )
+            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.TOP )
 
-        definition [ fieldName ] = value;
-        fieldCount++;
-    }
+        .drawBarcode( '{{ $ }}', 37.5, 900, 675, 112.5 )
 
-    const name = escapeName ( definition.name );
+const schema = util.parseVolitionXLSX ( schemaBuilder );
 
-    if ( name.length > 0 ) {
-
-        schemaBuilder.definition ( name );
-        for ( let fieldName in definition ) {
-            schemaBuilder.field ( fieldName, definition [ fieldName ]);
-        }
-    }
-}
-
-const schema = schemaBuilder.done ();
-
-fs.writeFileSync ( 'schema.json', JSON.stringify ( schema, null, 4 ), 'utf8' );
-fs.writeFileSync ( 'publish-schema-transaction.json', JSON.stringify ( makeSchemaTransaction ( schema, '9090' ), null, 4 ), 'utf8' );
+util.writeJavascript ( schema, 'schema.js' );
+util.writeJSON ( schema, 'schema.json' );
+util.writeTransaction ( schema, 'publish-schema-transaction.json' );

@@ -9,8 +9,13 @@
     "name": "TEST_SCHEMA",
     "schema": {
         "name": "TEST_SCHEMA",
-        "fonts": {},
-        "lua": "",
+        "fonts": {
+            "roboto": {
+                "width": "roboto",
+                "url": "http://localhost:3000/fonts/roboto/roboto-regular.ttf"
+            }
+        },
+        "lua": "\nfunction main ( ledger, caller )\n    print ( 'publish schema', caller )\n    awardAsset ( ledger, caller, 'pack', 1 )\n    awardAsset ( ledger, caller, 'common', 2 )\n    awardAsset ( ledger, caller, 'rare', 2 )\n    awardAsset ( ledger, caller, 'ultraRare', 1 )\nend\n",
         "definitions": {
             "epsilon-generator": {
                 "fields": {
@@ -406,7 +411,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Attack - Gain an Action. <hr>\\r\\nThis card can only attack once per turn.",
+                        "value": "Attack - Gain an Action. <hr>\r\nThis card can only attack once per turn.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -1566,7 +1571,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "At the end of combat, if any of your dudes with FLYING Hit this combat, you may deploy a core asset.\\r\\n<hr>\\r\\n(DEPLETE) your Hero, destroy this card = Draw a card.",
+                        "value": "At the end of combat, if any of your dudes with FLYING Hit this combat, you may deploy a core asset.\r\n<hr>\r\n(DEPLETE) your Hero, destroy this card = Draw a card.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -2146,7 +2151,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "FAST <HR> Hit - The next time the a shield would be absorbed this combat, destroy it instead.\\r\\nFAST <HR> Hit - The next time the player defending against this dude would absorb a shield this combat, destroys it instead.\\r\\nFAST <HR> Hit - If this would cause a shield to be absorbed, destroys it instead.\\r\\nHit - If this would cause a shield to be absorbed, destroys it instead.\\r\\nHit - If this would cause a shield to be absorbed, absorb 2 instead. If the defending player can't, their hero is defeated.\\r\\n",
+                        "value": "FAST <HR> Hit - The next time the a shield would be absorbed this combat, destroy it instead.\r\nFAST <HR> Hit - The next time the player defending against this dude would absorb a shield this combat, destroys it instead.\r\nFAST <HR> Hit - If this would cause a shield to be absorbed, destroys it instead.\r\nHit - If this would cause a shield to be absorbed, destroys it instead.\r\nHit - If this would cause a shield to be absorbed, absorb 2 instead. If the defending player can't, their hero is defeated.\r\n",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -8758,7 +8763,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Unblockable (This card cannot be blocked) <hr>\\r\\nEnter - You may look at the top 4 cards of your deck, put any number of them on the bottom then put the rest on top in any order. \\r\\n",
+                        "value": "Unblockable (This card cannot be blocked) <hr>\r\nEnter - You may look at the top 4 cards of your deck, put any number of them on the bottom then put the rest on top in any order. \r\n",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -9454,7 +9459,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Destroyed - You may pick an item and put it into its owner's hand. If you do, that item's controller discards a card.\\r\\n<hr>\\r\\nMomentum (This card cannot be blocked by only 1 dude.)",
+                        "value": "Destroyed - You may pick an item and put it into its owner's hand. If you do, that item's controller discards a card.\r\n<hr>\r\nMomentum (This card cannot be blocked by only 1 dude.)",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -11078,7 +11083,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Momentum (This card cannot be blocked by only 1 dude.) <br>\\r\\n(DEPLETE), Discard a card = Draw a card.",
+                        "value": "Momentum (This card cannot be blocked by only 1 dude.) <br>\r\n(DEPLETE), Discard a card = Draw a card.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -11542,7 +11547,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "The attached dude gains +1/+1.\\r\\n<br>\\r\\n3(G) - The attached dude gains DISTRACT (When this card attacks, you may pick a dude. If you do, that dude cannot block this combat.)\\r\\n<hr>(Gear can be attached to your dude when the gear enters play or when your dude enters play if the gear is unattached. You may pay an action to attach this gear to any of your dudes.)",
+                        "value": "The attached dude gains +1/+1.\r\n<br>\r\n3(G) - The attached dude gains DISTRACT (When this card attacks, you may pick a dude. If you do, that dude cannot block this combat.)\r\n<hr>(Gear can be attached to your dude when the gear enters play or when your dude enters play if the gear is unattached. You may pay an action to attach this gear to any of your dudes.)",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -14210,7 +14215,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "You may look at the top card of your deck any time. <hr>\\r\\n(ACT), Reveal the top card of your deck  = You may deploy that card if it is a core asset.",
+                        "value": "You may look at the top card of your deck any time. <hr>\r\n(ACT), Reveal the top card of your deck  = You may deploy that card if it is a core asset.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -14674,7 +14679,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Pick an item and destroy it. \\r\\n<hr>\\r\\nUtilize 3(G) (Reveal this card while it's a facedown asset, (ACT) = Deploy this card ignoring its access requirement.)",
+                        "value": "Pick an item and destroy it. \r\n<hr>\r\nUtilize 3(G) (Reveal this card while it's a facedown asset, (ACT) = Deploy this card ignoring its access requirement.)",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -14906,7 +14911,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "When a dude enters play under your control, add a power counter to this card.\\r\\n<hr>\\r\\nRemove 3 power counters from this card = This turn, your dudes gain +2/+2.",
+                        "value": "When a dude enters play under your control, add a power counter to this card.\r\n<hr>\r\nRemove 3 power counters from this card = This turn, your dudes gain +2/+2.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -15138,7 +15143,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Cost: Choose any number of options once. Destroy an asset you control for each option chosen beyond the first.<hr>\\r\\n- Destroy a dude with 3 or more power. <br>\\r\\n- Search your deck for an event, reveal it and put it on top of your deck. <br>\\r\\n- Put a dude in your trash into your hand.<br>\\r\\n- Up to 2 of your dudes gain FLYING this turn. Destroy them at the end of the turn.\\r\\n",
+                        "value": "Cost: Choose any number of options once. Destroy an asset you control for each option chosen beyond the first.<hr>\r\n- Destroy a dude with 3 or more power. <br>\r\n- Search your deck for an event, reveal it and put it on top of your deck. <br>\r\n- Put a dude in your trash into your hand.<br>\r\n- Up to 2 of your dudes gain FLYING this turn. Destroy them at the end of the turn.\r\n",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -16298,7 +16303,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Enter - Pick a dude in a trash and void it. <BR><BR>\\r\\nIf this card would leave play, instead put it on the bottom of its owner's deck and put the card voided by this into play under your control.",
+                        "value": "Enter - Pick a dude in a trash and void it. <BR><BR>\r\nIf this card would leave play, instead put it on the bottom of its owner's deck and put the card voided by this into play under your control.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -16414,7 +16419,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "At the start of your turn, add up to 1 power counter to this card and trigger the effect equal to the number of power counters on this card:<br>\\r\\n1 - Deplete an opponent's dude.<br>\\r\\n2 - Deplete one of your dudes.<br>\\r\\n4 - One of your dudes gains Unblockable this turn.",
+                        "value": "At the start of your turn, add up to 1 power counter to this card and trigger the effect equal to the number of power counters on this card:<br>\r\n1 - Deplete an opponent's dude.<br>\r\n2 - Deplete one of your dudes.<br>\r\n4 - One of your dudes gains Unblockable this turn.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -16530,7 +16535,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "At the start of your turn, add up to 1 power counter to this card and trigger the effect equal to the number of power counters on this card:<br>\\r\\n2 - Draw a card. Discard a card.<br>\\r\\n3 - Your opponents draw a card.<br>\\r\\n4 - Inflict 3 damage to each dude and remove all counters from this card.",
+                        "value": "At the start of your turn, add up to 1 power counter to this card and trigger the effect equal to the number of power counters on this card:<br>\r\n2 - Draw a card. Discard a card.<br>\r\n3 - Your opponents draw a card.<br>\r\n4 - Inflict 3 damage to each dude and remove all counters from this card.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -16646,7 +16651,7 @@
                     },
                     "rules": {
                         "type": "STRING",
-                        "value": "Cost: Choose any number of options once. Destroy an asset you control for each option chosen beyond the first.<hr>\\r\\n- You may mulligan up to 2 cards. <br>\\r\\n- Each player destroys one of their dudes.<br>\\r\\n- Pick an item and destroy it. <br>\\r\\n- Search your deck for a core asset and put it into play.",
+                        "value": "Cost: Choose any number of options once. Destroy an asset you control for each option chosen beyond the first.<hr>\r\n- You may mulligan up to 2 cards. <br>\r\n- Each player destroys one of their dudes.<br>\r\n- Pick an item and destroy it. <br>\r\n- Search your deck for a core asset and put it into play.",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -16717,7 +16722,79 @@
                 }
             }
         },
-        "layouts": {},
+        "layouts": {
+            "dude": {
+                "width": 750,
+                "height": 1050,
+                "dpi": 300,
+                "commands": [
+                    {
+                        "type": "DRAW_SVG",
+                        "template": "\n            <rect x='0' y='0' width='750' height='1050' fill='#000000'/>\n            <rect x='37.5' y='37.5' width='675' height='975' fill='#ffffff'/>\n            <rect x='37.5' y='168.75' width='675' height='412.5' fill='#ff0000'/>\n            <rect x='37.5' y='900' width='675' height='112.5' fill='#ff0000'/>\n\n            <rect x='48.875' y='37.5' width='534.375' height='56.25' fill='none' stroke='gray'/>\n            <rect x='48.875' y='93.75' width='534.375' height='37.5' fill='none' stroke='gray'/>\n            <rect x='48.875' y='131.25' width='534.375' height='37.5' fill='none' stroke='gray'/>\n\n            <rect x='48.875' y='592.625' width='652.25' height='296' fill='none' stroke='gray'/>\n\n            <image x='37.5' y='168.75' width='675' height='412.5' xlink:href='{{ image }}'/>\n        "
+                    },
+                    {
+                        "type": "DRAW_TEXT",
+                        "template": "{{ name }}",
+                        "fontName": "roboto",
+                        "fontSize": 40,
+                        "x": 48.875,
+                        "y": 37.5,
+                        "width": 534.375,
+                        "height": 56.25,
+                        "fill": "black",
+                        "hJustify": "LEFT",
+                        "vJustify": "CENTER"
+                    },
+                    {
+                        "type": "DRAW_TEXT",
+                        "template": "{{ type }}{{ subType }}",
+                        "fontName": "roboto",
+                        "fontSize": 30,
+                        "x": 48.875,
+                        "y": 93.75,
+                        "width": 534.375,
+                        "height": 37.5,
+                        "fill": "black",
+                        "hJustify": "LEFT",
+                        "vJustify": "CENTER"
+                    },
+                    {
+                        "type": "DRAW_TEXT",
+                        "template": "{{ access }}",
+                        "fontName": "roboto",
+                        "fontSize": 30,
+                        "x": 48.875,
+                        "y": 131.25,
+                        "width": 534.375,
+                        "height": 37.5,
+                        "fill": "black",
+                        "hJustify": "LEFT",
+                        "vJustify": "CENTER"
+                    },
+                    {
+                        "type": "DRAW_TEXT",
+                        "template": "{{ rules }}",
+                        "fontName": "roboto",
+                        "fontSize": 40,
+                        "x": 48.875,
+                        "y": 592.625,
+                        "width": 652.25,
+                        "height": 296,
+                        "fill": "black",
+                        "hJustify": "LEFT",
+                        "vJustify": "TOP"
+                    },
+                    {
+                        "type": "DRAW_BARCODE",
+                        "template": "{{ $ }}",
+                        "x": 37.5,
+                        "y": 900,
+                        "width": 675,
+                        "height": 112.5
+                    }
+                ]
+            }
+        },
         "meta": "",
         "methods": {}
     }
