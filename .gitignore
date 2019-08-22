@@ -13,4 +13,3 @@ Makefile
 *.pbxuser
 *.perspectivev3
 valgrind.out
-3rd-party/padamose
