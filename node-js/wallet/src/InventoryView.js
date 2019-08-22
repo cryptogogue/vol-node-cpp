@@ -207,6 +207,7 @@ export const InventoryView = observer (( props ) => {
                         assetId = { asset.assetID }
                         inventory = { inventory }
                         inches = 'true'
+                        scale = '.75'
                     />
                 </div>
             );

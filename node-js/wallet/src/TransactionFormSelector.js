@@ -14,6 +14,7 @@ import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  
 export const gTransactionTypes = [
     TRANSACTION_TYPE.SEND_VOL,
     TRANSACTION_TYPE.ACCOUNT_POLICY,
+    TRANSACTION_TYPE.BETA_GET_ASSETS,
     TRANSACTION_TYPE.KEY_POLICY,
     TRANSACTION_TYPE.OPEN_ACCOUNT,
     TRANSACTION_TYPE.REGISTER_MINER,
