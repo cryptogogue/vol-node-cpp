@@ -111,7 +111,7 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::checkMaker ( const TransactionMaker& maker, const Signature& signature ) const {
+bool Ledger::checkMaker ( const TransactionMaker& maker, const Signature* signature ) const {
     UNUSED ( signature );
 
     shared_ptr < Account > account = this->getAccount ( maker.getAccountName ());

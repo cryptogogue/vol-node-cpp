@@ -29,9 +29,9 @@ bool Transaction::checkMaker ( const Ledger& ledger ) const {
 
     if ( !this->mBody ) return false;
 
-    if (( ledger.isGenesis () == false ) && this->mBody->mMaker && this->mSignature ) {
+    if (( ledger.isGenesis () == false ) && this->mBody->mMaker ) {
         
-        return ledger.checkMaker ( *this->mBody->mMaker, *this->mSignature );
+        return ledger.checkMaker ( *this->mBody->mMaker, this->mSignature.get ());
     }
     return true;
 }

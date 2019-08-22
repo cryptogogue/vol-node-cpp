@@ -590,12 +590,15 @@ export class AppStateService extends Service {
 
                 let body = JSON.parse ( memo.body );
                 body.maker.nonce = nonce;
-                body = JSON.stringify ( body, null, 4 );
+
+                let envelope = {
+                    body: JSON.stringify ( body, null, 4 ),
+                };
                 
                 await this.revocableFetch ( this.node + '/transactions', {
                     method : 'POST',
                     headers : { 'content-type': 'application/json' },
-                    body : body,
+                    body : JSON.stringify ( envelope, null, 4 ),
                 });
 
                 runInAction (() => {
@@ -604,7 +607,7 @@ export class AppStateService extends Service {
                         type:                       memo.type,
                         note:                       memo.note,
                         cost:                       memo.cost,
-                        body:                       body,
+                        body:                       envelope,
                         nonce:                      nonce,
                         assets:                     memo.assets,
                     });
