@@ -10,7 +10,7 @@
     "babel-plugin-styled-components": "^1.10.1",
     "bcryptjs": "^2.4.3",
     "bip39": "^2.6.0",
-    "bitcoinjs-lib": "^3.3.2",
+    "bitcoinjs-lib": "^5.1.4",
     "customize-cra": "^0.2.9",
     "handlebars": "^4.1.2",
     "js-crypto-key-utils": "^0.5.15",

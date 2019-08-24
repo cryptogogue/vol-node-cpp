@@ -1,35 +1,73 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { randomBytes }          from './randomBytes';
-import * as BigInteger          from 'bigi';
+// import * as BigInteger          from 'bigi';
 import * as bip39               from 'bip39';
 import * as bitcoin             from 'bitcoinjs-lib';
 import keyutils                 from 'js-crypto-key-utils';
-// import * as secp256k1           from 'secp256k1'
+import * as secp256k1           from 'secp256k1'
+
+// https://8gwifi.org/ecsignverify.jsp
 
 //================================================================//
-// CryptoKey
+// Key
 //================================================================//
-class CryptoKey {
+class Key {
 
     //----------------------------------------------------------------//
-    constructor ( keyPair ) {
-        this.keyPair = keyPair;
+    constructor ( ecpair ) {
+
+        this.ecpair = ecpair;
     }
 
     //----------------------------------------------------------------//
     getKeyID () {
-        return bitcoin.crypto.sha256 ( this.getPublicHex ()).toString ( 'hex' );
+
+        return bitcoin.crypto.sha256 ( this.getPublicHex ()).toString ( 'hex' ).toUpperCase ();
+    }
+
+    //----------------------------------------------------------------//
+    getPrivate () {
+
+        return this.ecpair.privateKey;
     }
 
     //----------------------------------------------------------------//
     getPrivateHex () {
-        return this.keyPair.d.toHex ().toUpperCase ();
+
+        return this.getPrivate ().toString ( 'hex' ).toLowerCase ();
+    }
+
+    //----------------------------------------------------------------//
+    getPublic () {
+
+        return this.ecpair.publicKey;
     }
 
     //----------------------------------------------------------------//
     getPublicHex () {
-        return this.keyPair.getPublicKeyBuffer ().toString ( 'hex' ).toUpperCase ();
+
+        return this.getPublic ().toString ( 'hex' ).toLowerCase ();
+    }
+
+    //----------------------------------------------------------------//
+    hash ( message ) {
+
+        return bitcoin.crypto.sha256 ( message ).toString ( 'hex' ).toLowerCase ();
+    }
+
+    //----------------------------------------------------------------//
+    sign ( message ) {
+
+        const signature = this.ecpair.sign ( bitcoin.crypto.sha256 ( message ))
+        return secp256k1.signatureExport ( signature ).toString ( 'hex' ).toLowerCase ();
+    }
+
+    //----------------------------------------------------------------//
+    verify ( message, sigHex ) {
+
+        const signature = Buffer.from ( sigHex, 'hex' );
+        return this.ecpair.verify ( bitcoin.crypto.sha256 ( message ), signature );
     }
 }
 
@@ -126,7 +164,7 @@ async function pemToKeyAsync ( pem ) {
 
     const privKey = new Buffer ( jwk.d, 'base64' );
 
-    return new CryptoKey ( new bitcoin.ECPair ( BigInteger.fromBuffer ( privKey )));
+    return new Key ( bitcoin.ECPair.fromPrivateKey ( privKey ));
 }
 
 export { generateMnemonic, loadKeyAsync, mnemonicToKey, pemToKeyAsync };

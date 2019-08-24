@@ -5,20 +5,14 @@
 #include <volition/FNV1a.h>
 #include <volition/Format.h>
 
+#include <openssl/ecdsa.h>
+
 // bitaddress.org
 // private: KzvyiCGoxXMaraHf3HmtZsttox2U99VTPq9RTWyJqsTVdEZ9nYDV
 // public compressed: 0322FDB3D240158274B8FCA64263B04215A55B6F248AEB51DDED78F052C2A73DC1
 // public: 0422FDB3D240158274B8FCA64263B04215A55B6F248AEB51DDED78F052C2A73DC135CB34215CFC80ECCAF0FE74982DDBA6A85F629C71D0BEB4434E4F7DEA1E623D
 
 namespace Volition {
-
-//----------------------------------------------------------------//
-void _digest ( Poco::Crypto::ECDSADigestEngine& digestEngine, const AbstractSerializable& serializable ) {
-
-    Poco::DigestOutputStream signatureStream ( digestEngine );
-    SortedDigestSerializer::hash ( serializable, signatureStream );
-    signatureStream.close ();
-}
 
 //================================================================//
 // CryptoKey
@@ -134,15 +128,41 @@ bool CryptoKey::hasCurve ( string groupName ) {
 }
 
 //----------------------------------------------------------------//
-Signature CryptoKey::sign ( const AbstractSerializable& serializable, string hashAlgorithm ) const {
+Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm ) const {
 
     if ( this->mKeyPair ) {
         switch ( this->mKeyPair->type ()) {
                 
             case Poco::Crypto::KeyPair::KT_EC: {
-                Poco::Crypto::ECDSADigestEngine digestEngine ( *this, hashAlgorithm );
-                _digest ( digestEngine, serializable );
-                return Signature ( digestEngine.digest (), digestEngine.signature (), hashAlgorithm );
+            
+                const Poco::Crypto::ECKey* pocoECKey = *this;
+                assert ( pocoECKey );
+                
+                EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
+                assert ( pKey );
+            
+                Poco::Crypto::ECDSADigestEngine digestEngine ( *pocoECKey, hashAlgorithm );
+                
+                Poco::DigestOutputStream signatureStream ( digestEngine );
+                digestFunc ( signatureStream );
+                signatureStream.close ();
+                
+                Digest digest = digestEngine.digest ();
+            
+                uint sigLen = ( unsigned int )ECDSA_size ( pKey );
+            
+                Digest sig;
+                sig.resize ( sigLen );
+            
+                int result = ECDSA_sign ( 0,
+                    &digest [ 0 ], ( uint )digest.size (),
+                    &sig [ 0 ], &sigLen,
+                    pKey
+                );
+                assert ( result == 1 );
+                
+                if ( sigLen < sig.size ()) sig.resize ( sigLen );
+                return Signature ( digest, sig, hashAlgorithm );
             }
             
             case Poco::Crypto::KeyPair::KT_RSA: {
@@ -154,23 +174,83 @@ Signature CryptoKey::sign ( const AbstractSerializable& serializable, string has
 }
 
 //----------------------------------------------------------------//
-bool CryptoKey::verify ( const Signature& signature, const AbstractSerializable& serializable ) const {
+Signature CryptoKey::sign ( const AbstractSerializable& serializable, string hashAlgorithm ) const {
+
+    return this->sign (
+        [ & ]( Poco::DigestOutputStream& stream ) {
+            SortedDigestSerializer::hash ( serializable, stream );
+        },
+        hashAlgorithm
+    );
+}
+
+//----------------------------------------------------------------//
+Signature CryptoKey::sign ( string message, string hashAlgorithm ) const {
+
+    return this->sign (
+        [ = ]( Poco::DigestOutputStream& stream ) {
+            stream << message;
+        },
+        hashAlgorithm
+    );
+}
+
+//----------------------------------------------------------------//
+bool CryptoKey::verify ( const Signature& signature, const DigestFunc& digestFunc ) const {
+
+    bool result = false;
 
     if ( this->mKeyPair && signature ) {
         switch ( this->mKeyPair->type ()) {
                 
             case Poco::Crypto::KeyPair::KT_EC: {
-                Poco::Crypto::ECDSADigestEngine digestEngine ( *this, signature.getHashAlgorithm ());
-                _digest ( digestEngine, serializable );
-                return digestEngine.verify ( signature.getSignature ());
+            
+                const Poco::Crypto::ECKey* pocoECKey = *this;
+                assert ( pocoECKey );
+                
+                EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
+                assert ( pKey );
+                
+                Poco::Crypto::ECDSADigestEngine digestEngine ( *pocoECKey, signature.getHashAlgorithm ());
+                
+                Poco::DigestOutputStream signatureStream ( digestEngine );
+                digestFunc ( signatureStream );
+                signatureStream.close ();
+                    
+                Digest digest = digestEngine.digest ();
+                Digest sig = signature.getSignature ();
+            
+                result = 1 == ECDSA_verify ( 0,
+                    &digest [ 0 ], ( uint )digest.size (),
+                    &sig [ 0 ], ( uint )sig.size (),
+                    pKey
+                );
+                break;
             }
             
             case Poco::Crypto::KeyPair::KT_RSA: {
                 // TODO: RSA
+                break;
             }
         }
     }
-    return false;
+    return result;
+}
+
+//----------------------------------------------------------------//
+bool CryptoKey::verify ( const Signature& signature, const AbstractSerializable& serializable ) const {
+
+    return this->verify ( signature, [ & ]( Poco::DigestOutputStream& stream ) {
+        SortedDigestSerializer::hash ( serializable, stream );
+    });
+}
+
+//----------------------------------------------------------------//
+bool CryptoKey::verify ( const Signature& signature, string message ) const {
+
+    return this->verify ( signature, [ = ]( Poco::DigestOutputStream& stream ) {
+        stream << message;
+    });
 }
 
 //================================================================//

@@ -14,6 +14,7 @@
 #include <volition/web-miner-api/MinerListHandler.h>
 #include <volition/web-miner-api/SchemaListHandler.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
+#include <volition/web-miner-api/TestSignatureHandler.h>
 #include <volition/web-miner-api/TransactionHandler.h>
 
 namespace Volition {
@@ -37,6 +38,7 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
     this->mRouteTable.addEndpoint < WebMinerAPI::SchemaListHandler >        ( "/schemas/?" );                           // GET
     this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >       ( "/test/extendChain/?" );                  // POST
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >         ( "/test/keyid/?" );                        // POST
+    this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >     ( "/test/signature/?" );                    // POST
     this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >       ( "/transactions/?" );                      // POST
     this->mRouteTable.setDefault < WebMinerAPI::DefaultHandler >            ();
 }
