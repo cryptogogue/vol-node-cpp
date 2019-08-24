@@ -141,8 +141,7 @@ Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm )
                 EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
                 assert ( pKey );
             
-                Poco::Crypto::ECDSADigestEngine digestEngine ( *pocoECKey, hashAlgorithm );
-                
+                Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
                 Poco::DigestOutputStream signatureStream ( digestEngine );
                 digestFunc ( signatureStream );
                 signatureStream.close ();
@@ -211,8 +210,7 @@ bool CryptoKey::verify ( const Signature& signature, const DigestFunc& digestFun
                 EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
                 assert ( pKey );
                 
-                Poco::Crypto::ECDSADigestEngine digestEngine ( *pocoECKey, signature.getHashAlgorithm ());
-                
+                Poco::Crypto::DigestEngine digestEngine ( signature.getHashAlgorithm ());
                 Poco::DigestOutputStream signatureStream ( digestEngine );
                 digestFunc ( signatureStream );
                 signatureStream.close ();
