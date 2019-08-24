@@ -29,6 +29,7 @@ class DebugCryptoKeyController extends Service {
 
     @observable keyError        = false;
     @observable sigError        = false;
+    @observable postOK          = false;
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
@@ -75,10 +76,13 @@ class DebugCryptoKeyController extends Service {
         };
 
         try {
-            await this.revocableFetch ( this.url, {
+            const result = await this.revocableFetchJSON ( this.url, {
                 method : 'POST',
                 headers : { 'content-type': 'application/json' },
                 body : JSON.stringify ( envelope )
+            });
+            runInAction (() => {
+                this.postOK = ( result.OK === 'true' );
             });
         }
         catch ( error ) {
@@ -122,6 +126,7 @@ class DebugCryptoKeyController extends Service {
     @action
     setSignature ( signature ) {
         this.signature = signature;
+        this.postOK = false;
         this.verify ();
     }
 
@@ -156,7 +161,6 @@ class DebugCryptoKeyController extends Service {
                 this.sigError = !this.key.verify ( this.message, this.signature );
             }
             catch ( error ) {
-                console.log ( error );
                 this.sigError = true;
             }
         }
@@ -207,6 +211,7 @@ const DebugCryptoKey = observer (( props ) => {
                             onChange = {( event ) => { controller.setMessage ( event.target.value )}}
                         />
                         <Form.TextArea
+                            rows = { 4 }
                             placeholder = "Signature"
                             name = "signature"
                             value = { controller.signature }
@@ -223,11 +228,19 @@ const DebugCryptoKey = observer (( props ) => {
                         </Button>
                     </Segment>
                     <Segment stacked>
-                        <input
-                            type = "text"
-                            value = { controller.url }
-                            onChange = {( event ) => { controller.setURL ( event.target.value )}}
-                        />
+                        <div
+                            className = "ui icon input"
+                            style = {{ width: '100%' }}
+                        >
+                            <input
+                                type = "text"
+                                value = { controller.url }
+                                onChange = {( event ) => { controller.setURL ( event.target.value )}}
+                            />
+                            <If condition = { controller.postOK === true }>
+                                <i className = "check icon"></i>
+                            </If>
+                        </div>
                         <div className = "ui hidden divider" ></div>
                         <Button
                             color = "orange"
