@@ -25,12 +25,21 @@ class ImportAccountScreenController extends Service {
     @observable accountID       = '';
     @observable errorMessage    = '';
     @observable phraseOrKey     = '';
+    @observable keyError        = false;
     @observable status          = STATUS_WAITING_FOR_INPUT;
+    @observable password        = '';
+
+    //----------------------------------------------------------------//
+    checkPassword () {
+    
+        return this.appState.checkPassword ( this.password );
+    }
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
         super ();
-        this.appState = appState;
+        this.appState   = appState;
+        this.key        = false;
     }
 
     //----------------------------------------------------------------//
@@ -41,10 +50,17 @@ class ImportAccountScreenController extends Service {
     }
 
     //----------------------------------------------------------------//
+    hasValidKey () {
+
+        return (( this.phraseOrKey.length > 0 ) && ( !this.keyError ));
+    }
+
+    //----------------------------------------------------------------//
     @action
-    async verifyKey ( key ) {
+    async import () {
 
         const appState = this.appState;
+        const key = this.key;
 
         const publicKey = key.getPublicHex ();
         console.log ( 'PUBLIC_KEY', publicKey );
@@ -87,7 +103,7 @@ class ImportAccountScreenController extends Service {
             if ( accountId ) {
 
                 const privateKey = key.getPrivateHex ();
-                appState.affirmAccountAndKey ( accountId, keyName, privateKey, publicKey );
+                appState.affirmAccountAndKey ( accountId, keyName, privateKey, publicKey, this.password );
 
                 this.accountId = accountId;
                 this.status = STATUS_DONE;
@@ -101,15 +117,30 @@ class ImportAccountScreenController extends Service {
 
     //----------------------------------------------------------------//
     @action
-    async verifyPhraseOrKey () {
+    setPassword ( password ) {
+
+        this.password = password;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    async setPhraseOrKey ( phraseOrKey ) {
+
+        this.phraseOrKey = phraseOrKey;
+        this.keyError = false;
+        this.key = false;
 
         try {
             const key = await crypto.loadKeyAsync ( this.phraseOrKey );
-            this.verifyKey ( key );
+            
+            console.log ( 'KEY_ID',         key.getKeyID ());
+            console.log ( 'PUBLIC_KEY',     key.getPublicHex ());
+            console.log ( 'PRIVATE_KEY',    key.getPrivateHex ());
+
+            runInAction (() => { this.key = key });
         }
         catch ( error ) {
-            console.log ( error );
-            runInAction (() => { this.errorMessage = 'Invalid Key Type' });
+            runInAction (() => { this.keyError = true });
         }
     }
 }
@@ -122,12 +153,9 @@ const ImportAccountScreen = observer (( props ) => {
     const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
     const controller    = useService (() => new ImportAccountScreenController ( appState ));
 
-    let onChange    = ( event ) => { controller.handleChange ( event )};
-    let onSubmit    = () => { controller.verifyPhraseOrKey ()};
-
     const hasMiners         = appState.node.length > 0;
-    const inputEnabled      = hasMiners;
-    const submitEnabled     = inputEnabled && ( controller.phraseOrKey.length > 0 );
+    const inputEnabled      = hasMiners && controller.checkPassword ();
+    const submitEnabled     = inputEnabled && controller.hasValidKey ();
 
     if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountId );
 
@@ -161,19 +189,30 @@ const ImportAccountScreen = observer (( props ) => {
                     Import your account
                 </Header>
                 { warning }
-                <Form size = "large" onSubmit = { onSubmit }>
+                <Form size = "large" onSubmit = {() => { controller.import ()}}>
                     <Segment stacked>
+                        <Form.Input
+                            fluid
+                            icon = "lock"
+                            iconPosition = "left"
+                            placeholder = "Wallet Password"
+                            type = "password"
+                            value = { controller.password }
+                            onChange = {( event ) => { controller.setPassword ( event.target.value )}}
+                        />
+                        <div className = "ui hidden divider" ></div>
                         <Form.TextArea
                             placeholder = "Mnemonic Phrase or Private Key"
+                            rows = { 8 }
                             name = "phraseOrKey"
                             value = { controller.phraseOrKey }
-                            onChange = { onChange }
-                            error = {( controller.errorMessage.length > 0 ) ? true : false }
+                            onChange = {( event ) => { controller.setPhraseOrKey ( event.target.value )}}
+                            error = { controller.keyError }
                             disabled = { !inputEnabled }
                         />
-                        {( controller.errorMessage.length > 0 ) && <span>{ controller.errorMessage }</span>}
+                        {( controller.keyError > 0 ) && <span>{ 'Invalid Key Type' }</span>}
                         <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
-                            Login
+                            Import
                         </Button>
                     </Segment>
                 </Form>

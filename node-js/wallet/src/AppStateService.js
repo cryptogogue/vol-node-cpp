@@ -4,6 +4,7 @@
 import * as crypto          from './util/crypto';
 import * as storage         from './util/storage';
 import { Service }          from './Service';
+import * as bcrypt          from 'bcryptjs';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import React                from 'react';
 import { Redirect }         from 'react-router';
@@ -201,7 +202,9 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    affirmAccountAndKey ( accountId, keyName, privateKeyHex, publicKeyHex ) {
+    affirmAccountAndKey ( accountId, keyName, privateKeyHex, publicKeyHex, password ) {
+
+        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
         let accounts = this.accounts;
 
@@ -213,7 +216,7 @@ export class AppStateService extends Service {
 
         let key = account.keys [ keyName ] || {};
 
-        key.privateKeyHex = privateKeyHex;
+        key.privateKeyHexCiphertext = crypto.aesPlainToCipher ( privateKeyHex, password );
         key.publicKeyHex = publicKeyHex;
 
         account.keys [ keyName ] = key;
@@ -253,6 +256,12 @@ export class AppStateService extends Service {
         this.observeMember ( 'nodes',           () => { this.persistValue ( STORE_NODES, this.nodes )});
         this.observeMember ( 'passwordHash',    () => { this.persistValue ( STORE_PASSWORD_HASH, this.passwordHash )});
         this.observeMember ( 'session',         () => { this.persistValue ( STORE_SESSION, this.session )});
+    }
+
+    //----------------------------------------------------------------//
+    checkPassword ( password ) {
+        const passwordHash = ( this.passwordHash ) || '';
+        return (( passwordHash.length > 0 ) && bcrypt.compareSync ( password, passwordHash ));
     }
 
     //----------------------------------------------------------------//
@@ -529,9 +538,9 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    saveAccount ( accountId, privateKeyHex, publicKeyHex ) {
+    saveAccount ( accountId, privateKeyHex, publicKeyHex, password ) {
 
-        this.affirmAccountAndKey ( accountId, 'master', privateKeyHex, publicKeyHex );
+        this.affirmAccountAndKey ( accountId, 'master', privateKeyHex, publicKeyHex, password );
     }
 
     //----------------------------------------------------------------//
@@ -577,7 +586,9 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    async submitTransactions () {
+    async submitTransactions ( password ) {
+
+        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
         let stagedTransactions = this.account.stagedTransactions;
         let pendingTransactions = this.account.pendingTransactions;
@@ -596,9 +607,9 @@ export class AppStateService extends Service {
                     body: JSON.stringify ( body, null, 4 ),
                 };
 
-                const hexKey = this.account.keys [ body.maker.keyName ];
-                console.log ( 'HEX KEY:', hexKey.publicKeyHex, hexKey.privateKeyHex );
-                const key = await crypto.keyFromPrivateHex ( hexKey.privateKeyHex );
+                const hexKey            = this.account.keys [ body.maker.keyName ];
+                const privateKeyHex     = crypto.aesCipherToPlain ( hexKey.privateKeyHexCiphertext, password );
+                const key               = await crypto.keyFromPrivateHex ( privateKeyHex );
 
                 envelope.signature = {
                     hashAlgorithm:  'SHA256',

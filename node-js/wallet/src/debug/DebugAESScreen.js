@@ -4,7 +4,6 @@
 import { Service, useService }                                                      from '../Service';
 import * as crypto                                                                  from '../util/crypto';
 import * as util                                                                    from '../util/util';
-import CryptoJS                                                                     from 'crypto-js';
 import { action, computed, extendObservable, observable, observe, runInAction }     from 'mobx';
 import { observer }                                                                 from 'mobx-react';
 import React, { useState }                                                          from 'react';
@@ -43,8 +42,8 @@ class DebugAESScreenController extends Service {
     @action
     update () {
 
-        this.ciphertext     = CryptoJS.AES.encrypt ( this.message, this.password ).toString ();
-        this.plaintext      = CryptoJS.AES.decrypt ( this.ciphertext, this.password ).toString ( CryptoJS.enc.Utf8 );
+        this.ciphertext     = crypto.aesPlainToCipher ( this.message, this.passeord );
+        this.plaintext      = crypto.aesCipherToPlain ( this.ciphertext, this.passeord );
     }
 }
 

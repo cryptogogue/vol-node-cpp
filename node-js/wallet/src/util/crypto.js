@@ -4,6 +4,7 @@ import { randomBytes }          from './randomBytes';
 // import * as BigInteger          from 'bigi';
 import * as bip39               from 'bip39';
 import * as bitcoin             from 'bitcoinjs-lib';
+import CryptoJS                 from 'crypto-js';
 import keyutils                 from 'js-crypto-key-utils';
 import * as secp256k1           from 'secp256k1'
 
@@ -75,6 +76,18 @@ class Key {
 //================================================================//
 // api
 //================================================================//
+
+//----------------------------------------------------------------//
+export function aesCipherToPlain ( ciphertext, password ) {
+
+   return CryptoJS.AES.decrypt ( ciphertext, password ).toString ( CryptoJS.enc.Utf8 );
+}
+
+//----------------------------------------------------------------//
+export function aesPlainToCipher ( plaintext, password ) {
+
+    return CryptoJS.AES.encrypt ( plaintext, password ).toString ();
+}
 
 //----------------------------------------------------------------//
 function generateMnemonic ( bytes ) {

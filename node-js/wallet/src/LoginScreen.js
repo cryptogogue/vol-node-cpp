@@ -26,10 +26,8 @@ const LoginScreen = observer (( props ) => {
     const onChange      = ( event ) => { setPassword ( event.target.value )};
 
     const onSubmit = () => {
-
-        const passwordHash = ( appState.passwordHash ) || '';
-
-        if (( passwordHash.length > 0 ) && bcrypt.compareSync ( password, passwordHash )) {
+        
+        if ( appState.checkPassword ( password )) {
             appState.login ( true );
         }
         else {
