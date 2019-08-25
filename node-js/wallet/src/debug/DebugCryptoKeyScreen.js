@@ -18,9 +18,9 @@ LnTu3TW13HIuhqXiFIo4JyBql4xVPx30GQQMORjK7aI598njQruR
 const DEFAULT_URL = 'http://localhost:9090/test/signature';
 
 //================================================================//
-// DebugCryptoKeyController
+// DebugCryptoKeyScreenController
 //================================================================//
-class DebugCryptoKeyController extends Service {
+class DebugCryptoKeyScreenController extends Service {
 
     @observable phraseOrKey     = '';
     @observable message         = '';
@@ -168,11 +168,11 @@ class DebugCryptoKeyController extends Service {
 }
 
 //================================================================//
-// DebugCryptoKey
+// DebugCryptoKeyScreen
 //================================================================//
-const DebugCryptoKey = observer (( props ) => {
+const DebugCryptoKeyScreen = observer (( props ) => {
 
-    const controller    = useService (() => new DebugCryptoKeyController ());
+    const controller    = useService (() => new DebugCryptoKeyScreenController ());
 
     return (
     
@@ -257,4 +257,4 @@ const DebugCryptoKey = observer (( props ) => {
     );
 });
 
-export default DebugCryptoKey;
+export default DebugCryptoKeyScreen;

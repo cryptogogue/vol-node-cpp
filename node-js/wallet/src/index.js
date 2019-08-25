@@ -10,7 +10,8 @@ configure ({
 
 import AccountScreen            from './AccountScreen';
 import CraftingScreen           from './CraftingScreen';
-import DebugCryptoKey           from './debug/DebugCryptoKey';
+import DebugAESScreen           from './debug/DebugAESScreen';
+import DebugCryptoKeyScreen     from './debug/DebugCryptoKeyScreen';
 import DebugDropzoneScreen      from './debug/DebugDropzoneScreen';
 import DebugHandlebarsScreen    from './debug/DebugHandlebarsScreen';
 import DebugMobXScreen          from './debug/DebugMobXScreen';
@@ -61,7 +62,8 @@ const App = () => {
                 <Route exact path = "/:userId/login" component = { LoginScreen }/>
                 <Route exact path = "/login" component = { LoginScreen }/>
 
-                <Route exact path = "/debug/cryptokey" component = { DebugCryptoKey }/>
+                <Route exact path = "/debug/aes" component = { DebugAESScreen }/>
+                <Route exact path = "/debug/cryptokey" component = { DebugCryptoKeyScreen }/>
                 <Route exact path = "/debug/dropzone" component = { DebugDropzoneScreen }/>
                 <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
                 <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
