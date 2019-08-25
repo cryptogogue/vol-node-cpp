@@ -111,17 +111,6 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::checkMaker ( const TransactionMaker& maker, const Signature* signature ) const {
-    UNUSED ( signature );
-
-    shared_ptr < Account > account = this->getAccount ( maker.getAccountName ());
-    if ( account ) {
-        return ( account->mNonce == maker.getNonce ());
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
 bool Ledger::deleteKey ( string accountName, string keyName ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );

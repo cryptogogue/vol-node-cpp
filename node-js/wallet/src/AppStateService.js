@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
+import * as crypto          from './util/crypto';
 import * as storage         from './util/storage';
 import { Service }          from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
@@ -200,7 +201,7 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    affirmAccountAndKey ( accountId, keyName, privateKey, publicKey ) {
+    affirmAccountAndKey ( accountId, keyName, privateKeyHex, publicKeyHex ) {
 
         let accounts = this.accounts;
 
@@ -212,8 +213,8 @@ export class AppStateService extends Service {
 
         let key = account.keys [ keyName ] || {};
 
-        key.privateKey = privateKey;
-        key.publicKey = publicKey;
+        key.privateKeyHex = privateKeyHex;
+        key.publicKeyHex = publicKeyHex;
 
         account.keys [ keyName ] = key;
 
@@ -528,9 +529,9 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    saveAccount ( accountId, privateKey, publicKey ) {
+    saveAccount ( accountId, privateKeyHex, publicKeyHex ) {
 
-        this.affirmAccountAndKey ( accountId, 'master', privateKey, publicKey );
+        this.affirmAccountAndKey ( accountId, 'master', privateKeyHex, publicKeyHex );
     }
 
     //----------------------------------------------------------------//
@@ -594,11 +595,21 @@ export class AppStateService extends Service {
                 let envelope = {
                     body: JSON.stringify ( body, null, 4 ),
                 };
+
+                const hexKey = this.account.keys [ body.maker.keyName ];
+                console.log ( 'HEX KEY:', hexKey.publicKeyHex, hexKey.privateKeyHex );
+                const key = await crypto.keyFromPrivateHex ( hexKey.privateKeyHex );
+
+                envelope.signature = {
+                    hashAlgorithm:  'SHA256',
+                    digest:         key.hash ( envelope.body ),
+                    signature:      key.sign ( envelope.body ),
+                };
                 
                 await this.revocableFetch ( this.node + '/transactions', {
-                    method : 'POST',
-                    headers : { 'content-type': 'application/json' },
-                    body : JSON.stringify ( envelope, null, 4 ),
+                    method :    'POST',
+                    headers :   { 'content-type': 'application/json' },
+                    body :      JSON.stringify ( envelope, null, 4 ),
                 });
 
                 runInAction (() => {

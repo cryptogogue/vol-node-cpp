@@ -50,14 +50,12 @@ public:
 //================================================================//
 class KeyAndPolicy :
     public AbstractSerializable {
-private:
+public:
 
     friend class Ledger;
     friend class Account;
     
     CryptoKey mKey;
-
-public:
 
     //----------------------------------------------------------------//
     KeyAndPolicy () {
@@ -143,9 +141,7 @@ public:
 // AccountKey
 //================================================================//
 class AccountKey {
-private:
-
-    friend class Ledger;
+public:
     
     shared_ptr < Account >  mAccount;
     const KeyAndPolicy*     mKeyAndPolicy;

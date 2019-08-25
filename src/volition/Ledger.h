@@ -122,7 +122,6 @@ public:
     bool                            accountPolicy           ( string accountName, const Policy* policy );
     bool                            awardAsset              ( string accountName, string assetType, int quantity );
     bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
-    bool                            checkMaker              ( const TransactionMaker& maker, const Signature* signature ) const;
     bool                            deleteKey               ( string accountName, string keyName );
     bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
     shared_ptr < Account >          getAccount              ( string accountName ) const;

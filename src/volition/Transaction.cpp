@@ -28,12 +28,24 @@ bool Transaction::apply ( Ledger& ledger ) const {
 bool Transaction::checkMaker ( const Ledger& ledger ) const {
 
     if ( !this->mBody ) return false;
+    
+    if ( ledger.isGenesis ()) return true;
 
-    if (( ledger.isGenesis () == false ) && this->mBody->mMaker ) {
+    TransactionMaker* maker = this->mBody->mMaker.get ();
+    Signature* signature = this->mSignature.get ();
+
+    if ( maker && signature ) {
         
-        return ledger.checkMaker ( *this->mBody->mMaker, this->mSignature.get ());
+        AccountKey accountKey = ledger.getAccountKey ( maker->getAccountName (), maker->getKeyName ());
+        if ( accountKey ) {
+        
+            if ( accountKey.mAccount->getNonce () != maker->getNonce ()) return false;
+
+            const CryptoKey& key = accountKey.mKeyAndPolicy->mKey;
+            return key.verify ( *signature, this->mBodyString );
+        }
     }
-    return true;
+    return false;
 }
 
 //----------------------------------------------------------------//

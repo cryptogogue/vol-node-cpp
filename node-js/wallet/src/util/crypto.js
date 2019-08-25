@@ -23,7 +23,8 @@ class Key {
     //----------------------------------------------------------------//
     getKeyID () {
 
-        return bitcoin.crypto.sha256 ( this.getPublicHex ()).toString ( 'hex' ).toUpperCase ();
+        // TODO: make this shiz case insensitive!
+        return bitcoin.crypto.sha256 ( this.getPublicHex ()).toString ( 'hex' ).toLowerCase ();
     }
 
     //----------------------------------------------------------------//
@@ -35,7 +36,7 @@ class Key {
     //----------------------------------------------------------------//
     getPrivateHex () {
 
-        return this.getPrivate ().toString ( 'hex' ).toLowerCase ();
+        return this.getPrivate ().toString ( 'hex' ).toUpperCase ();
     }
 
     //----------------------------------------------------------------//
@@ -47,20 +48,20 @@ class Key {
     //----------------------------------------------------------------//
     getPublicHex () {
 
-        return this.getPublic ().toString ( 'hex' ).toLowerCase ();
+        return this.getPublic ().toString ( 'hex' ).toUpperCase ();
     }
 
     //----------------------------------------------------------------//
     hash ( message ) {
 
-        return bitcoin.crypto.sha256 ( message ).toString ( 'hex' ).toLowerCase ();
+        return bitcoin.crypto.sha256 ( message ).toString ( 'hex' ).toUpperCase ();
     }
 
     //----------------------------------------------------------------//
     sign ( message ) {
 
         const signature = this.ecpair.sign ( bitcoin.crypto.sha256 ( message ))
-        return secp256k1.signatureExport ( signature ).toString ( 'hex' ).toLowerCase ();
+        return secp256k1.signatureExport ( signature ).toString ( 'hex' ).toUpperCase ();
     }
 
     //----------------------------------------------------------------//
@@ -126,6 +127,12 @@ async function loadKeyAsync ( phraseOrPEM ) {
 }
 
 //----------------------------------------------------------------//
+function keyFromPrivateHex ( privateKeyHex ) {
+
+    return new Key ( bitcoin.ECPair.fromPrivateKey ( new Buffer ( privateKeyHex, 'hex' )));
+}
+
+//----------------------------------------------------------------//
 function mnemonicToKey ( mnemonic ) {
     
     if ( !bip39.validateMnemonic ( mnemonic )) {
@@ -167,4 +174,4 @@ async function pemToKeyAsync ( pem ) {
     return new Key ( bitcoin.ECPair.fromPrivateKey ( privKey ));
 }
 
-export { generateMnemonic, loadKeyAsync, mnemonicToKey, pemToKeyAsync };
+export { generateMnemonic, keyFromPrivateHex, loadKeyAsync, mnemonicToKey, pemToKeyAsync };
