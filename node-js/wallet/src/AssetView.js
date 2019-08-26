@@ -10,7 +10,7 @@ import React                        from 'react';
 //================================================================//
 // AssetView
 //================================================================//
-const AssetView = ( props ) => {
+export const AssetView = ( props ) => {
 
     const { inventory, assetId, inches } = props;
 
@@ -37,5 +37,3 @@ const AssetView = ( props ) => {
         </svg>
     );
 }
-
-export default AssetView;

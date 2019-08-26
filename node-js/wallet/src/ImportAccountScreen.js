@@ -1,13 +1,14 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { AppStateService }                                                          from './AppStateService';
-import { Service, useService }                                                      from './Service';
-import * as util                                                                    from './util/util';
-import { action, computed, extendObservable, observable, observe, runInAction }     from 'mobx';
-import { observer }                                                                 from 'mobx-react';
-import React, { useState }                                                          from 'react';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }      from 'semantic-ui-react';
+import { AppStateService }                  from './AppStateService';
+import { Service, useService }              from './Service';
+import { SingleColumnContainerView }        from './SingleColumnContainerView'
+import * as util                            from './util/util';
+import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
+import { observer }                         from 'mobx-react';
+import React, { useState }                  from 'react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
 // https://www.npmjs.com/package/js-crypto-utils
 
@@ -148,7 +149,7 @@ class ImportAccountScreenController extends Service {
 //================================================================//
 // ImportAccountScreen
 //================================================================//
-const ImportAccountScreen = observer (( props ) => {
+export const ImportAccountScreen = observer (( props ) => {
 
     const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
     const controller    = useService (() => new ImportAccountScreenController ( appState ));
@@ -169,57 +170,37 @@ const ImportAccountScreen = observer (( props ) => {
     }
 
     return (
-    
-        <div className='login-form'>
-            {/*
-                The styles below are necessary for the correct render of this form.
-                You can do same with CSS, the main idea is that all the elements up to the `Grid`
-                below must have a height of 100%.
-            */}
-            <style>{`
-                body > div,
-                body > div > div,
-                body > div > div > div.login-form {
-                    height: 100%;
-                }
-            `}</style>
-            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                <Grid.Column style={{ maxWidth: 450 }}>
-                <Header as="h2" color="teal" textAlign="center">
-                    Import your account
-                </Header>
-                { warning }
-                <Form size = "large" onSubmit = {() => { controller.import ()}}>
-                    <Segment stacked>
-                        <Form.Input
-                            fluid
-                            icon = "lock"
-                            iconPosition = "left"
-                            placeholder = "Wallet Password"
-                            type = "password"
-                            value = { controller.password }
-                            onChange = {( event ) => { controller.setPassword ( event.target.value )}}
-                        />
-                        <div className = "ui hidden divider" ></div>
-                        <Form.TextArea
-                            placeholder = "Mnemonic Phrase or Private Key"
-                            rows = { 8 }
-                            name = "phraseOrKey"
-                            value = { controller.phraseOrKey }
-                            onChange = {( event ) => { controller.setPhraseOrKey ( event.target.value )}}
-                            error = { controller.keyError }
-                            disabled = { !inputEnabled }
-                        />
-                        {( controller.keyError > 0 ) && <span>{ 'Invalid Key Type' }</span>}
-                        <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
-                            Import
-                        </Button>
-                    </Segment>
-                </Form>
-                </Grid.Column>
-            </Grid>
-        </div>
+        <SingleColumnContainerView title = 'Import your account'>
+        
+            { warning }
+            <Form size = "large" onSubmit = {() => { controller.import ()}}>
+                <Segment stacked>
+                    <Form.Input
+                        fluid
+                        icon = "lock"
+                        iconPosition = "left"
+                        placeholder = "Wallet Password"
+                        type = "password"
+                        value = { controller.password }
+                        onChange = {( event ) => { controller.setPassword ( event.target.value )}}
+                    />
+                    <div className = "ui hidden divider" ></div>
+                    <Form.TextArea
+                        placeholder = "Mnemonic Phrase or Private Key"
+                        rows = { 8 }
+                        name = "phraseOrKey"
+                        value = { controller.phraseOrKey }
+                        onChange = {( event ) => { controller.setPhraseOrKey ( event.target.value )}}
+                        error = { controller.keyError }
+                        disabled = { !inputEnabled }
+                    />
+                    {( controller.keyError > 0 ) && <span>{ 'Invalid Key Type' }</span>}
+                    <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
+                        Import
+                    </Button>
+                </Segment>
+            </Form>
+
+        </SingleColumnContainerView>
     );
 });
-
-export default ImportAccountScreen;

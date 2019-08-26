@@ -7,7 +7,7 @@ import { useDropzone }  from 'react-dropzone'
 //================================================================//
 // DebugDropzoneScreen
 //================================================================//
-const DebugDropzoneScreen = ( props ) => {
+export const DebugDropzoneScreen = ( props ) => {
 
     const onDrop = ( acceptedFiles ) => {
         console.log ( acceptedFiles );
@@ -25,5 +25,3 @@ const DebugDropzoneScreen = ( props ) => {
         </div>
     );
 }
-
-export default DebugDropzoneScreen;

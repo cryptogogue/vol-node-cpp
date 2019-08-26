@@ -1,22 +1,23 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateService }                                                      from './AppStateService';
-import { Service, useService }                                                  from './Service';
-import * as util                                                                from './util/util';
-import { action, computed, extendObservable, observable, observe }              from 'mobx';
-import { observer }                                                             from 'mobx-react';
-import React, { useState }                                                      from 'react';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
+import { AppStateService }                  from './AppStateService';
+import { Service, useService }              from './Service';
+import { SingleColumnContainerView }        from './SingleColumnContainerView'
+import * as util                            from './util/util';
+import { action, computed, extendObservable, observable, observe } from 'mobx';
+import { observer }                         from 'mobx-react';
+import React, { useState }                  from 'react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
-import NavigationBar            from './NavigationBar';
-import NodeListView             from './NodeListView';
-import PendingTransactionsView  from './PendingTransactionsView';
-import StagedTransactionsView   from './StagedTransactionsView';
+import { NavigationBar }                    from './NavigationBar';
+import { NodeListView }                     from './NodeListView';
+import { PendingTransactionsView }          from './PendingTransactionsView';
+import { StagedTransactionsView }           from './StagedTransactionsView';
 
-import { AccountInfoService }   from './AccountInfoService';
-import { NodeInfoService }      from './NodeInfoService';
+import { AccountInfoService }               from './AccountInfoService';
+import { NodeInfoService }                  from './NodeInfoService';
 
-import TransactionFormSelector  from './TransactionFormSelector';
+import { TransactionFormSelector }          from './TransactionFormSelector';
 
 //================================================================//
 // AccountDetailsView
@@ -106,7 +107,7 @@ const AccountSelector = observer (( props ) => {
 //================================================================//
 // AccountScreen
 //================================================================//
-const AccountScreen = observer (( props ) => {
+export const AccountScreen = observer (( props ) => {
 
     const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
 
@@ -133,47 +134,41 @@ const AccountScreen = observer (( props ) => {
     }
 
     return (
-        <div>
-            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                <Grid.Column style = {{ maxWidth: 450 }}>
+        <SingleColumnContainerView>
 
-                    <NavigationBar navTitle = "Accounts" appState = { appState }/>
+            <NavigationBar navTitle = "Accounts" appState = { appState }/>
 
-                    <If condition = { appState.accounts.length > 1 }>
-                        <AccountSelector appState = { appState }/>
-                    </If>
+            <If condition = { appState.accounts.length > 1 }>
+                <AccountSelector appState = { appState }/>
+            </If>
 
-                    <If condition = { appState.hasAccount }>
+            <If condition = { appState.hasAccount }>
 
-                        <Segment>
-                            <AccountDetailsView appState = { appState }/>
-                        </Segment>
+                <Segment>
+                    <AccountDetailsView appState = { appState }/>
+                </Segment>
 
-                        <If condition = { appState.stagedTransactions.length > 0 }>
-                            <Segment>
-                                <StagedTransactionsView appState = { appState }/>
-                            </Segment>
-                        </If>
-
-                        <If condition = { appState.pendingTransactions.length > 0 }>
-                            <Segment>
-                                <PendingTransactionsView appState = { appState }/>
-                            </Segment>
-                        </If>
-
-                        <Segment>
-                            <TransactionFormSelector appState = { appState }/>
-                        </Segment>
-                    </If>
-
+                <If condition = { appState.stagedTransactions.length > 0 }>
                     <Segment>
-                        <NodeListView appState = { appState }/>
+                        <StagedTransactionsView appState = { appState }/>
                     </Segment>
+                </If>
 
-                </Grid.Column>
-            </Grid>
-        </div>
+                <If condition = { appState.pendingTransactions.length > 0 }>
+                    <Segment>
+                        <PendingTransactionsView appState = { appState }/>
+                    </Segment>
+                </If>
+
+                <Segment>
+                    <TransactionFormSelector appState = { appState }/>
+                </Segment>
+            </If>
+
+            <Segment>
+                <NodeListView appState = { appState }/>
+            </Segment>
+
+        </SingleColumnContainerView>
     );
 });
-
-export default AccountScreen;

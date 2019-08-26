@@ -8,7 +8,7 @@ import { Button, Divider, Form, Header, Modal, Segment }    from 'semantic-ui-re
 //================================================================//
 // TransactionListView
 //================================================================//
-const TransactionListView = observer (( props ) => {
+export const TransactionListView = observer (( props ) => {
     
 
     const { transactions } = props;
@@ -54,5 +54,3 @@ const TransactionListView = observer (( props ) => {
         </div>
     );
 });
-
-export default TransactionListView;

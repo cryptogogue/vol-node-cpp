@@ -4,9 +4,9 @@ import React, { Component }         from 'react';
 import { CardNumberElement, CardExpiryElement, CardCVCElement, PostalCodeElement, injectStripe } from 'react-stripe-elements';
 
 //================================================================//
-// StripeCheckoutForm
+// StripeCheckoutFormInternal
 //================================================================//
-class StripeCheckoutForm extends Component {
+class StripeCheckoutFormInternal extends Component {
 
     //----------------------------------------------------------------//
     constructor ( props ) {
@@ -66,4 +66,4 @@ class StripeCheckoutForm extends Component {
         );
     }
 }
-export default injectStripe ( StripeCheckoutForm );
+export const StripeCheckoutForm = injectStripe ( StripeCheckoutFormInternal );

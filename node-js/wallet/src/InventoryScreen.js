@@ -2,8 +2,8 @@
 
 import './InventoryScreen.css';
 
-import AssetView                                            from './AssetView';
-import NavigationBar                                        from './NavigationBar';
+import { AssetView }                                        from './AssetView';
+import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
 import { Service, useService }                              from './Service';
 import { InventoryService }                                 from './InventoryService';
@@ -157,7 +157,7 @@ const InventoryFilterMenu = observer (( props ) => {
 //================================================================//
 // InventoryScreen
 //================================================================//
-const InventoryScreen = observer (( props ) => {
+export const InventoryScreen = observer (( props ) => {
 
     const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
 
@@ -191,5 +191,3 @@ const InventoryScreen = observer (( props ) => {
         </div>
     );
 });
-
-export default InventoryScreen;

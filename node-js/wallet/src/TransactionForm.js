@@ -125,7 +125,7 @@ class TransactionFormService extends Service {
 //================================================================//
 // TransactionForm
 //================================================================//
-const TransactionForm = observer (( props ) => {
+export const TransactionForm = observer (( props ) => {
 
     const { appState, transactionType, onSubmit } = props;
 
@@ -152,5 +152,3 @@ const TransactionForm = observer (( props ) => {
         </Form>
     );
 });
-
-export default TransactionForm;

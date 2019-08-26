@@ -6,7 +6,7 @@ import React            from 'react';
 //================================================================//
 // DebugHandlebarsScreen
 //================================================================//
-const DebugHandlebarsScreen = ( props ) => {
+export const DebugHandlebarsScreen = ( props ) => {
 
     let template = handlebars.compile ( '<h3>{{ message }}</h3>' );
     let result = template ({ message: 'Hello from Handlebars!' });
@@ -27,5 +27,3 @@ const DebugHandlebarsScreen = ( props ) => {
         </div>
     );
 }
-
-export default DebugHandlebarsScreen;

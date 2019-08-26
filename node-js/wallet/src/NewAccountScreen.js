@@ -226,7 +226,7 @@ function renderButton ( service ) {
 //================================================================//
 // NewAccountScreen
 //================================================================//
-const NewAccountScreen = observer (( props ) => {
+export const NewAccountScreen = observer (( props ) => {
 
     const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
     const controller    = useService (() => new NewAccountScreenController ( appState ));
@@ -248,5 +248,3 @@ const NewAccountScreen = observer (( props ) => {
         </div>
     );
 });
-
-export default NewAccountScreen;

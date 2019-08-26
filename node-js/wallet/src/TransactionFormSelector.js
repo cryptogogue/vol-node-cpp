@@ -2,7 +2,7 @@
 
 import { AppStateService }                                                      from './AppStateService';
 import { Service, useService }                                                  from './Service';
-import TransactionForm                                                          from './TransactionForm';
+import { TransactionForm }                                                      from './TransactionForm';
 import { Transaction, TRANSACTION_TYPE }                                        from './util/Transaction';
 import * as util                                                                from './util/util';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
@@ -48,7 +48,7 @@ const TransactionDropdown = observer (( props ) => {
 //================================================================//
 // TransactionFormSelector
 //================================================================//
-const TransactionFormSelector = observer (( props ) => {
+export const TransactionFormSelector = observer (( props ) => {
 
     const { appState } = props;
 
@@ -88,5 +88,3 @@ const TransactionFormSelector = observer (( props ) => {
         </Choose>
     );
 });
-
-export default TransactionFormSelector;

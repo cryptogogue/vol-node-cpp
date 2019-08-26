@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import TransactionListView                                  from './TransactionListView';
+import { TransactionListView }                              from './TransactionListView';
 import { Transaction }                                      from './util/Transaction';
 import React, { useState }                                  from 'react';
 import { observer }                                         from 'mobx-react';
@@ -9,7 +9,7 @@ import { Button, Divider, Form, Header, Modal, Segment }    from 'semantic-ui-re
 //================================================================//
 // StagedTransactionsView
 //================================================================//
-const StagedTransactionsView = observer (( props ) => {
+export const StagedTransactionsView = observer (( props ) => {
 
     const appState = props.appState;
 
@@ -45,5 +45,3 @@ const StagedTransactionsView = observer (( props ) => {
         </div>
     );
 });
-
-export default StagedTransactionsView;

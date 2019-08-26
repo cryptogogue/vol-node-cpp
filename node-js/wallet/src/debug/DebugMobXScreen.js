@@ -35,7 +35,7 @@ class DebugMobXScreenStore extends Service {
 //================================================================//
 // DebugMobXScreen
 //================================================================//
-const DebugMobXScreen = observer (( props ) => {
+export const DebugMobXScreen = observer (( props ) => {
 
     const store = useService (() => new DebugMobXScreenStore ([ 'foo', 'doop', 'moop' ]));
 
@@ -81,5 +81,3 @@ const DebugMobXScreen = observer (( props ) => {
         </div>
     );
 });
-
-export default DebugMobXScreen;

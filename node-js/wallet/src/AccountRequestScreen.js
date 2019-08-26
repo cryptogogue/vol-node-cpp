@@ -1,17 +1,17 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { AppStateService }                                                      from './AppStateService';
-import { randomBytes }                                                          from './util/randomBytes'; // TODO: stop using this
-import { Service, useService }                                                  from './Service';
-import * as util                                                                from './util/util';
-import _                                                                        from 'lodash';
+import { AppStateService }                  from './AppStateService';
+import { randomBytes }                      from './util/randomBytes'; // TODO: stop using this
+import { Service, useService }              from './Service';
+import { SingleColumnContainerView }        from './SingleColumnContainerView'
+import * as util                            from './util/util';
+import * as crypto                          from './util/crypto';
+import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
-import { observer }                                                             from 'mobx-react';
-import React, { useState }                                                      from 'react';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
-
-import * as crypto                  from './util/crypto';
+import { observer }                         from 'mobx-react';
+import React, { useState }                  from 'react';
+import { Button, Divider, Dropdown, Form, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
 
 //================================================================//
 // AccountReqestForm
@@ -31,25 +31,9 @@ const AccountReqestForm = observer (( props ) => {
     const submitEnabled = ( appState.checkPassword ( password ) && ( accountName.length > 0 ));
 
     return (
+        <div>
+            <SingleColumnContainerView title = 'Create Account Request'>
 
-        <div className='login-form'>
-            {/*
-                The styles below are necessary for the correct render of this form.
-                You can do same with CSS, the main idea is that all the elements up to the `Grid`
-                below must have a height of 100%.
-            */}
-            <style>{`
-                body > div,
-                body > div > div,
-                body > div > div > div.login-form {
-                    height: 100%;
-                }
-            `}</style>
-            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                <Grid.Column style={{ maxWidth: 450 }}>
-                <Header as="h2" color="teal" textAlign="center">
-                    Create Account Request
-                </Header>
                 <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
                     <Segment stacked>
                         <Form.Input
@@ -79,8 +63,8 @@ const AccountReqestForm = observer (( props ) => {
                         </Button>
                     </Segment>
                 </Form>
-                </Grid.Column>
-            </Grid>
+
+            </SingleColumnContainerView>
         </div>
     );
 });
@@ -96,24 +80,9 @@ const PendingAccountView = observer (( props ) => {
 
     return (
 
-        <div className='login-form'>
-            {/*
-                The styles below are necessary for the correct render of this form.
-                You can do same with CSS, the main idea is that all the elements up to the `Grid`
-                below must have a height of 100%.
-            */}
-            <style>{`
-                body > div,
-                body > div > div,
-                body > div > div > div.login-form {
-                    height: 100%;
-                }
-            `}</style>
-            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                <Grid.Column style={{ maxWidth: 450 }}>
-                <Header as="h2" color="teal" textAlign="center">
-                    Create Account Request
-                </Header>
+        <div>
+            <SingleColumnContainerView title = 'Pending Account Request'>
+
                 <Form size = "large">
                     <Segment stacked>
                         <Header as="h3" textAlign="center">
@@ -128,16 +97,16 @@ const PendingAccountView = observer (( props ) => {
                         </Button>
                     </Segment>
                 </Form>
-                </Grid.Column>
-            </Grid>
+
+            </SingleColumnContainerView>
         </div>
     );
 });
 
 //================================================================//
-// AccountReqestScreen
+// AccountRequestScreen
 //================================================================//
-const AccountReqestScreen = observer (( props ) => {
+export const AccountRequestScreen = observer (( props ) => {
 
     const appState = useService (() => new AppStateService ( util.getUserId ( props )));
 
@@ -156,5 +125,3 @@ const AccountReqestScreen = observer (( props ) => {
         </Choose>
     );
 });
-
-export default AccountReqestScreen;

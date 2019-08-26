@@ -1,8 +1,9 @@
 /* eslint-disable no-whitespace-before-property */
 
-import StripeCheckoutForm       from './StripeCheckoutForm';
-import * as storage             from '../util/storage';
-import React, { Component }     from 'react';
+import { SingleColumnContainerView }    from '../SingleColumnContainerView'
+import { StripeCheckoutForm }           from './StripeCheckoutForm';
+import * as storage                     from '../util/storage';
+import React, { Component }             from 'react';
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { Elements, StripeProvider } from 'react-stripe-elements';
 
@@ -11,7 +12,7 @@ const STRIPE_SETTINGS   = 'vol_stripe_settings';
 //================================================================//
 // DebugStripeScreen
 //================================================================//
-class DebugStripeScreen extends Component {
+export class DebugStripeScreen extends Component {
 
     //----------------------------------------------------------------//
     constructor ( props ) {
@@ -70,56 +71,37 @@ class DebugStripeScreen extends Component {
         }
 
         return (
-            <div className = "register-form">
-                {/*
-                The styles below are necessary for the correct render of this form.
-                You can do same with CSS, the main idea is that all the elements up to the `Grid`
-                below must have a height of 100%.
-                */}
-                <style>{`
-                body > div,
-                body > div > div,
-                body > div > div > div.register-form {
-                    height: 100%;
-                }
-                `}</style>
-                <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                    <Grid.Column style = {{ maxWidth: 450 }}>
-                        <Header as = "h2" color = "red" textAlign = "center">
-                            Test Stripe Payment
-                        </Header>
-                        <Form size = "large" onSubmit = { onSubmit }>
-                            <Segment stacked>
-                                <Form.Input
-                                    fluid
-                                    icon = "lock"
-                                    iconPosition = "left"
-                                    placeholder = "Stripe URL"
-                                    name = "stripeURL"
-                                    value = { this.state.stripeURL }
-                                    onChange = { onChange }
-                                />
-                                <Form.Input
-                                    fluid
-                                    icon = "lock"
-                                    iconPosition = "left"
-                                    placeholder = "Stripe public key"
-                                    name = "stripePublicKey"
-                                    value = { this.state.stripePublicKey }
-                                    onChange = { onChange }
-                                />
-                                <Button color = "red" fluid size = "large" disabled = { !isEnabled }>
-                                    Create form
-                                </Button>
-                            </Segment>
-                        </Form>
+            <SingleColumnContainerView title = 'Test Stripe Payment'>
 
-                        { stripeForm }
+                <Form size = "large" onSubmit = { onSubmit }>
+                    <Segment stacked>
+                        <Form.Input
+                            fluid
+                            icon = "lock"
+                            iconPosition = "left"
+                            placeholder = "Stripe URL"
+                            name = "stripeURL"
+                            value = { this.state.stripeURL }
+                            onChange = { onChange }
+                        />
+                        <Form.Input
+                            fluid
+                            icon = "lock"
+                            iconPosition = "left"
+                            placeholder = "Stripe public key"
+                            name = "stripePublicKey"
+                            value = { this.state.stripePublicKey }
+                            onChange = { onChange }
+                        />
+                        <Button color = "red" fluid size = "large" disabled = { !isEnabled }>
+                            Create form
+                        </Button>
+                    </Segment>
+                </Form>
 
-                    </Grid.Column>
-                </Grid>
-            </div>
+                { stripeForm }
+
+            </SingleColumnContainerView>
         );
     }
 }
-export default DebugStripeScreen;

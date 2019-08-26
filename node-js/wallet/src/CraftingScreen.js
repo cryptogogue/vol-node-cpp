@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import AssetView                                            from './AssetView';
-import CraftingForm                                         from './CraftingForm';
+import { AssetView }                                        from './AssetView';
+import { CraftingForm }                                     from './CraftingForm';
 import { AccountInfoService }                               from './AccountInfoService';
 import { AppStateService }                                  from './AppStateService';
 import { Service, useService }                              from './Service';
@@ -9,14 +9,14 @@ import { InventoryService }                                 from './InventorySer
 import * as util                                            from './util/util';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
-import NavigationBar                                        from './NavigationBar';
+import { NavigationBar }                                    from './NavigationBar';
 import React, { useState }                                  from 'react';
 import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
 
 //================================================================//
 // CraftingScreen
 //================================================================//
-const CraftingScreen = observer (( props ) => {
+export const CraftingScreen = observer (( props ) => {
 
     const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
     const methodNameFromEndpoint = util.getMatch ( props, 'methodName' );
@@ -80,5 +80,3 @@ const CraftingScreen = observer (( props ) => {
         </div>
     );
 });
-
-export default CraftingScreen;

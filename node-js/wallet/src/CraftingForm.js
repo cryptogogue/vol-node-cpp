@@ -1,8 +1,9 @@
 /* eslint-disable no-whitespace-before-property */
 
-import AssetView                        from './AssetView';
+import { AssetView }                    from './AssetView';
 import { Service, useService }          from './Service';
-import TransactionForm                  from './TransactionForm';
+import { SingleColumnContainerView }    from './SingleColumnContainerView'
+import { TransactionForm }              from './TransactionForm';
 import { TRANSACTION_TYPE }             from './util/Transaction';
 import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
@@ -273,7 +274,7 @@ const CraftingFormAssetPicker = observer (( props ) => {
 //================================================================//
 // CraftingForm
 //================================================================//
-const CraftingForm = observer (( props ) => {
+export const CraftingForm = observer (( props ) => {
 
     const { appState, inventory, methodName } = props;
 
@@ -327,38 +328,34 @@ const CraftingForm = observer (( props ) => {
 
     return (
         <div>
-            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                <Grid.Column style = {{ maxWidth: 450 }}>
-                    <Segment>
-                        <Header as = "h3">
-                            { props.methodName }
-                        </Header>
-                        <Choose >
-                            <When condition = { controller.state === CRAFTING_STATE.ASSET_SELECTION }>
-                                <CraftingFormAssetPicker controller = { controller }/>
-                            </When>
-                            <When condition = { controller.state === CRAFTING_STATE.MAKE_TRANSACTION }>
-                                <Header as = "h2">
-                                    <p style = {{ color: textColor }}>Balance: { balance }</p>
-                                </Header>
-                                <Segment stacked>
-                                    <TransactionForm
-                                        appState = { appState }
-                                        transactionType = { TRANSACTION_TYPE.RUN_SCRIPT }
-                                        onSubmit = { onSubmit }
-                                    />
-                                </Segment>
-                                <Button type = 'button' color = "red" fluid onClick = { onCancel }>
-                                    Cancel
-                                </Button>
-                            </When>
-                        </Choose>
-                    </Segment>
-                </Grid.Column>
-            </Grid>
+            <SingleColumnContainerView>
+                <Segment>
+                    <Header as = "h3">
+                        { props.methodName }
+                    </Header>
+                    <Choose >
+                        <When condition = { controller.state === CRAFTING_STATE.ASSET_SELECTION }>
+                            <CraftingFormAssetPicker controller = { controller }/>
+                        </When>
+                        <When condition = { controller.state === CRAFTING_STATE.MAKE_TRANSACTION }>
+                            <Header as = "h2">
+                                <p style = {{ color: textColor }}>Balance: { balance }</p>
+                            </Header>
+                            <Segment stacked>
+                                <TransactionForm
+                                    appState = { appState }
+                                    transactionType = { TRANSACTION_TYPE.RUN_SCRIPT }
+                                    onSubmit = { onSubmit }
+                                />
+                            </Segment>
+                            <Button type = 'button' color = "red" fluid onClick = { onCancel }>
+                                Cancel
+                            </Button>
+                        </When>
+                    </Choose>
+                </Segment>
+            </SingleColumnContainerView>
             <div>{ ingredientList }</div>
         </div>
     );
 });
-
-export default CraftingForm;

@@ -1,10 +1,10 @@
 /* eslint-disable no-whitespace-before-property */
 
-import AssetView                                            from './AssetView';
-import NavigationBar                                        from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
-import { Service, useService }                              from './Service';
+import { AssetView }                                        from './AssetView';
 import { InventoryService }                                 from './InventoryService';
+import { NavigationBar }                                    from './NavigationBar';
+import { Service, useService }                              from './Service';
 import * as util                                            from './util/util';
 import handlebars                                           from 'handlebars';
 import { action, computed, extendObservable, observable }   from 'mobx';

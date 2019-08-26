@@ -9,7 +9,7 @@ import { Button, Form, Segment }    from 'semantic-ui-react';
 //================================================================//
 // NodeListView
 //================================================================//
-const NodeListView = observer (( props ) => {
+export const NodeListView = observer (( props ) => {
     
     const [ nodeURL, setNodeURL ] = useState ( '' );
 
@@ -63,5 +63,3 @@ const NodeListView = observer (( props ) => {
         </div>
     );
 });
-
-export default NodeListView;

@@ -7,7 +7,7 @@ import { Button, Form, Grid, Header, Segment }      from 'semantic-ui-react';
 //================================================================//
 // DebugPrintScreen
 //================================================================//
-const DebugPrintScreen = ( props ) => {
+export const DebugPrintScreen = ( props ) => {
 
     // TODO: this is a hacky hammer approach. can redo with CSS media queries.
 
@@ -42,5 +42,3 @@ const DebugPrintScreen = ( props ) => {
         </div>
     );
 }
-
-export default DebugPrintScreen;

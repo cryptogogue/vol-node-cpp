@@ -8,25 +8,25 @@ configure ({
     enforceActions:     'always',
 });
 
-import AccountRequestScreen     from './AccountRequestScreen';
-import AccountScreen            from './AccountScreen';
-import CraftingScreen           from './CraftingScreen';
-import DebugAESScreen           from './debug/DebugAESScreen';
-import DebugCryptoKeyScreen     from './debug/DebugCryptoKeyScreen';
-import DebugDropzoneScreen      from './debug/DebugDropzoneScreen';
-import DebugHandlebarsScreen    from './debug/DebugHandlebarsScreen';
-import DebugMobXScreen          from './debug/DebugMobXScreen';
-import DebugPrintScreen         from './debug/DebugPrintScreen';
-import DebugStripeScreen        from './debug/DebugStripeScreen';
-import DebugTextFitterScreen    from './debug/DebugTextFitterScreen';
-import ImportAccountScreen      from './ImportAccountScreen';
-import InventoryScreen          from './InventoryScreen';
-import LoginScreen              from './LoginScreen';
-import NewAccountScreen         from './NewAccountScreen';
-import RegisterScreen           from './RegisterScreen';
-import registerServiceWorker    from './util/registerServiceWorker';
-import React                    from 'react';
-import ReactDOM                 from 'react-dom';
+import { AccountRequestScreen }     from './AccountRequestScreen';
+import { AccountScreen }            from './AccountScreen';
+import { CraftingScreen }           from './CraftingScreen';
+import { DebugAESScreen }           from './debug/DebugAESScreen';
+import { DebugCryptoKeyScreen }     from './debug/DebugCryptoKeyScreen';
+import { DebugDropzoneScreen }      from './debug/DebugDropzoneScreen';
+import { DebugHandlebarsScreen }    from './debug/DebugHandlebarsScreen';
+import { DebugMobXScreen }          from './debug/DebugMobXScreen';
+import { DebugPrintScreen }         from './debug/DebugPrintScreen';
+import { DebugStripeScreen }        from './debug/DebugStripeScreen';
+import { DebugTextFitterScreen }    from './debug/DebugTextFitterScreen';
+import { ImportAccountScreen }      from './ImportAccountScreen';
+import { InventoryScreen }          from './InventoryScreen';
+import { LoginScreen }              from './LoginScreen';
+import { NewAccountScreen }         from './NewAccountScreen';
+import { RegisterScreen }           from './RegisterScreen';
+import registerServiceWorker        from './util/registerServiceWorker';
+import React                        from 'react';
+import ReactDOM                     from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
 
 // https://react-bootstrap.github.io/

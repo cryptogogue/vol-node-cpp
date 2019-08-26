@@ -1,7 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import './NavigationBar.css';
-
 import { observer }             from 'mobx-react';
 import React                    from 'react';
 import { Link }                 from 'react-router-dom';
@@ -10,7 +8,7 @@ import { Dropdown, Menu }       from 'semantic-ui-react';
 //================================================================//
 // NavigationBar
 //================================================================//
-const NavigationBar = observer (( props ) => {
+export const NavigationBar = observer (( props ) => {
         
     const { appState, navTitle } = props;
     const { accountId } = appState;
@@ -39,7 +37,13 @@ const NavigationBar = observer (( props ) => {
                 </Dropdown>
             </Menu.Menu>
 
-            <span className = "large text">{ navTitle }</span>
+            <span style = {{
+                fontSize: '2rem',
+                margin: 'auto',
+                paddingLeft: '4.5rem',
+            }}>
+                { navTitle }
+            </span>
     
             <Menu.Menu position = "right">
                 <Dropdown item icon = "settings">
@@ -59,5 +63,3 @@ const NavigationBar = observer (( props ) => {
         </Menu>
     );
 });
-
-export default NavigationBar;

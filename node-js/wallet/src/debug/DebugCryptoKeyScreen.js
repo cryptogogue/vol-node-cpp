@@ -1,13 +1,14 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { Service, useService }                                                      from '../Service';
-import * as crypto                                                                  from '../util/crypto';
-import * as util                                                                    from '../util/util';
-import { action, computed, extendObservable, observable, observe, runInAction }     from 'mobx';
-import { observer }                                                                 from 'mobx-react';
-import React, { useState }                                                          from 'react';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }      from 'semantic-ui-react';
+import { Service, useService }          from '../Service';
+import { SingleColumnContainerView }    from '../SingleColumnContainerView'
+import * as crypto                      from '../util/crypto';
+import * as util                        from '../util/util';
+import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
+import { observer }                     from 'mobx-react';
+import React, { useState }              from 'react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
 const DEFAULT_KEY = `-----BEGIN PRIVATE KEY-----
 MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQg6D1bbfkvkOZphXe8doC5
@@ -170,91 +171,71 @@ class DebugCryptoKeyScreenController extends Service {
 //================================================================//
 // DebugCryptoKeyScreen
 //================================================================//
-const DebugCryptoKeyScreen = observer (( props ) => {
+export const DebugCryptoKeyScreen = observer (( props ) => {
 
     const controller    = useService (() => new DebugCryptoKeyScreenController ());
 
     return (
-    
-        <div className='login-form'>
-            {/*
-                The styles below are necessary for the correct render of this form.
-                You can do same with CSS, the main idea is that all the elements up to the `Grid`
-                below must have a height of 100%.
-            */}
-            <style>{`
-                body > div,
-                body > div > div,
-                body > div > div > div.login-form {
-                    height: 100%;
-                }
-            `}</style>
-            <Grid textAlign = "center" style = {{ height: '100%' }} verticalAlign = "middle">
-                <Grid.Column style={{ maxWidth: 450 }}>
-                <Header as="h2" color="teal" textAlign="center">
-                    Test Mnemonic Phrase or Private Key
-                </Header>
-                <Form size = "large">
-                    <Segment stacked>
-                        <Form.TextArea
-                            rows = { 8 }
-                            placeholder = "Mnemonic Phrase or Private Key"
-                            name = "phraseOrKey"
-                            value = { controller.phraseOrKey }
-                            onChange = {( event ) => { controller.setPhraseOrKey ( event.target.value )}}
-                            error = { controller.keyError }
+        <SingleColumnContainerView title = 'Test Mnemonic Phrase or Private Key'>
+
+            <Form size = "large">
+                <Segment stacked>
+                    <Form.TextArea
+                        rows = { 8 }
+                        placeholder = "Mnemonic Phrase or Private Key"
+                        name = "phraseOrKey"
+                        value = { controller.phraseOrKey }
+                        onChange = {( event ) => { controller.setPhraseOrKey ( event.target.value )}}
+                        error = { controller.keyError }
+                    />
+                    <Form.TextArea
+                        placeholder = "Message to Sign"
+                        name = "message"
+                        value = { controller.message }
+                        onChange = {( event ) => { controller.setMessage ( event.target.value )}}
+                    />
+                    <Form.TextArea
+                        rows = { 4 }
+                        placeholder = "Signature"
+                        name = "signature"
+                        value = { controller.signature }
+                        onChange = {( event ) => { controller.setSignature ( event.target.value )}}
+                        error = { controller.sigError }
+                    />
+                    <Button
+                        color = "teal"
+                        disabled = { controller.keyError }
+                        fluid size = "large"
+                        onClick = {() => { controller.sign ()}}
+                    >
+                        Sign
+                    </Button>
+                </Segment>
+                <Segment stacked>
+                    <div
+                        className = "ui icon input"
+                        style = {{ width: '100%' }}
+                    >
+                        <input
+                            type = "text"
+                            value = { controller.url }
+                            onChange = {( event ) => { controller.setURL ( event.target.value )}}
                         />
-                        <Form.TextArea
-                            placeholder = "Message to Sign"
-                            name = "message"
-                            value = { controller.message }
-                            onChange = {( event ) => { controller.setMessage ( event.target.value )}}
-                        />
-                        <Form.TextArea
-                            rows = { 4 }
-                            placeholder = "Signature"
-                            name = "signature"
-                            value = { controller.signature }
-                            onChange = {( event ) => { controller.setSignature ( event.target.value )}}
-                            error = { controller.sigError }
-                        />
-                        <Button
-                            color = "teal"
-                            disabled = { controller.keyError }
-                            fluid size = "large"
-                            onClick = {() => { controller.sign ()}}
-                        >
-                            Sign
-                        </Button>
-                    </Segment>
-                    <Segment stacked>
-                        <div
-                            className = "ui icon input"
-                            style = {{ width: '100%' }}
-                        >
-                            <input
-                                type = "text"
-                                value = { controller.url }
-                                onChange = {( event ) => { controller.setURL ( event.target.value )}}
-                            />
-                            <If condition = { controller.postOK === true }>
-                                <i className = "check icon"></i>
-                            </If>
-                        </div>
-                        <div className = "ui hidden divider" ></div>
-                        <Button
-                            color = "orange"
-                            fluid size = "large"
-                            onClick = {() => { controller.post ()}}
-                        >
-                            Post
-                        </Button>
-                    </Segment>
-                </Form>
-                </Grid.Column>
-            </Grid>
-        </div>
+                        <If condition = { controller.postOK === true }>
+                            <i className = "check icon"></i>
+                        </If>
+                    </div>
+                    <div className = "ui hidden divider" ></div>
+                    <Button
+                        color = "orange"
+                        fluid size = "large"
+                        onClick = {() => { controller.post ()}}
+                    >
+                        Post
+                    </Button>
+                </Segment>
+            </Form>
+            
+        </SingleColumnContainerView>
     );
 });
-
-export default DebugCryptoKeyScreen;

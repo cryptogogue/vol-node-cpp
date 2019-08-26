@@ -196,7 +196,7 @@ export class InventoryService extends Service {
         await schema.applyTemplate ( template );
 
         for ( let layoutName in template.layouts ) {
-            const layout = template.layouts [ layoutName ];
+            const layout = _.cloneDeep ( template.layouts [ layoutName ]);
             for ( let command of layout.commands ) {
                 command.template = handlebars.compile ( command.template );
             }

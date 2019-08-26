@@ -91,9 +91,9 @@ class DebugOpentypeService extends Service {
 }
 
 //================================================================//
-// DebugOpentypeScreen
+// DebugTextFitterScreen
 //================================================================//
-const DebugOpentypeScreen = observer (( props ) => {
+export const DebugTextFitterScreen = observer (( props ) => {
 
     const service = useService (() => new DebugOpentypeService ());
 
@@ -117,5 +117,3 @@ const DebugOpentypeScreen = observer (( props ) => {
         </div>
     );
 });
-
-export default DebugOpentypeScreen;
