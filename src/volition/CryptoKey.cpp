@@ -93,8 +93,6 @@ CryptoKeyInfo CryptoKey::getInfo () const {
     return info;
 }
 
-
-
 //----------------------------------------------------------------//
 string CryptoKey::getKeyID () const {
 

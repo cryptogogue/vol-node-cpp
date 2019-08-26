@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { randomBytes }          from './randomBytes';
-// import * as BigInteger          from 'bigi';
+import * as bip32               from 'bip32';
 import * as bip39               from 'bip39';
 import * as bitcoin             from 'bitcoinjs-lib';
 import CryptoJS                 from 'crypto-js';
@@ -146,8 +146,18 @@ function keyFromPrivateHex ( privateKeyHex ) {
 }
 
 //----------------------------------------------------------------//
-function mnemonicToKey ( mnemonic ) {
+function mnemonicToKey ( mnemonic, path ) {
     
+    // ticket basket addict level barrel hobby release ivory luxury sausage modify zero
+    // pub: 02E7886533261C4D8201F65C5944DA9FE7940E6B499E590665EA8E21DDB109C7BD
+    // priv: B464336E5EA3FC9A322F420E782E352162262831AAEBC7CEEF8BA467CBCA7413
+    // addr: 12r9DzsFe13UFTmrafukYqRKSsawgnFPUX
+
+    // https://iancoleman.io/bip39/?#english
+
+    // path = "m/44'/0'/0'/0"
+    // path = "m/44'/0'/0'/0/0"
+
     if ( !bip39.validateMnemonic ( mnemonic )) {
         throw new Error ( 'invalid mnemonic phrase' );
     }
@@ -156,24 +166,21 @@ function mnemonicToKey ( mnemonic ) {
     const seed = bip39.mnemonicToSeed ( mnemonic );
     console.log ( 'seed:', seed.toString ( 'hex' ));
 
-    // Create Keypair
-    const bitcoinNetwork = bitcoin.networks.bitcoin;
-    const hdMaster = bitcoin.HDNode.fromSeedBuffer ( seed, bitcoinNetwork );
-    
-    // https://iancoleman.io/bip39/?#english
-    
-    // Derive BIP32 Extended Keys
-    const bip32ExtendedPrivateKey = hdMaster.derivePath ( "m/44'/0'/0'/0" );
-    console.log ( 'BIP32 xpriv:', bip32ExtendedPrivateKey.toBase58 ());
-    console.log ( 'BIP32 xpub:', bip32ExtendedPrivateKey.neutered ().toBase58 ());
+    let key = bip32.fromSeed ( seed )
 
-    // Derive address from BIP32 xpriv
-    const key = bip32ExtendedPrivateKey.derivePath ( "0" ).keyPair;
+    if ( path ) {
+        // Derive BIP32 Extended Keys
+        key = key.derivePath ( path );
+    }
 
-    const address = key.getAddress ();
+    console.log ( 'BIP32 xpriv:', key.toBase58 ());
+    console.log ( 'BIP32 xpub:', key.neutered ().toBase58 ());
+
+    // const address = key.getAddress ();
+    const address = bitcoin.payments.p2pkh ({ pubkey: key.publicKey }).address;
     console.log ( 'address:', address );
 
-    return new CryptoKey ( key );
+    return new Key ( key );
 }
 
 //----------------------------------------------------------------//

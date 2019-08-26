@@ -2,18 +2,21 @@
 /* eslint-disable no-loop-func */
 
 import * as crypto          from './util/crypto';
+import { randomBytes }      from './util/randomBytes'; // TODO: stop using this
 import * as storage         from './util/storage';
 import { Service }          from './Service';
 import * as bcrypt          from 'bcryptjs';
+import _                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import React                from 'react';
 import { Redirect }         from 'react-router';
 
-const STORE_ACCOUNTS        = '.vol_accounts';
-const STORE_NODE            = '.vol_node';
-const STORE_NODES           = '.vol_nodes';
-const STORE_PASSWORD_HASH   = '.vol_password_hash';
-const STORE_SESSION         = '.vol_session';
+const STORE_ACCOUNTS            = '.vol_accounts';
+const STORE_NODE                = '.vol_node';
+const STORE_NODES               = '.vol_nodes';
+const STORE_PASSWORD_HASH       = '.vol_password_hash';
+const STORE_PENDING_ACCOUNTS    = '.vol_pending_accounts';
+const STORE_SESSION             = '.vol_session';
 
 export const NODE_TYPE = {
     UNKNOWN:    'UNKNOWN',
@@ -42,6 +45,7 @@ export class AppStateService extends Service {
     @observable node;
     @observable nodes;
     @observable passwordHash;
+    @observable pendingAccounts;
     @observable session;
     @observable transactions;
 
@@ -251,11 +255,12 @@ export class AppStateService extends Service {
     //----------------------------------------------------------------//
     affirmObservers () {
 
-        this.observeMember ( 'accounts',        () => { this.persistValue ( STORE_ACCOUNTS, this.accounts )});
-        this.observeMember ( 'node',            () => { this.persistValue ( STORE_NODE, this.node )});
-        this.observeMember ( 'nodes',           () => { this.persistValue ( STORE_NODES, this.nodes )});
-        this.observeMember ( 'passwordHash',    () => { this.persistValue ( STORE_PASSWORD_HASH, this.passwordHash )});
-        this.observeMember ( 'session',         () => { this.persistValue ( STORE_SESSION, this.session )});
+        this.observeMember ( 'accounts',            () => { this.persistValue ( STORE_ACCOUNTS, this.accounts )});
+        this.observeMember ( 'node',                () => { this.persistValue ( STORE_NODE, this.node )});
+        this.observeMember ( 'nodes',               () => { this.persistValue ( STORE_NODES, this.nodes )});
+        this.observeMember ( 'passwordHash',        () => { this.persistValue ( STORE_PASSWORD_HASH, this.passwordHash )});
+        this.observeMember ( 'pendingAccounts',     () => { this.persistValue ( STORE_PENDING_ACCOUNTS, this.pendingAccounts )});
+        this.observeMember ( 'session',             () => { this.persistValue ( STORE_SESSION, this.session )});
     }
 
     //----------------------------------------------------------------//
@@ -359,6 +364,7 @@ export class AppStateService extends Service {
         storage.removeItem ( this.prefixStoreKey ( STORE_NODE ));
         storage.removeItem ( this.prefixStoreKey ( STORE_NODES ));
         storage.removeItem ( this.prefixStoreKey ( STORE_PASSWORD_HASH ));
+        storage.removeItem ( this.prefixStoreKey ( STORE_PENDING_ACCOUNTS ));
         storage.removeItem ( this.prefixStoreKey ( STORE_SESSION ));
 
         this.disposeObservers ();
@@ -448,6 +454,7 @@ export class AppStateService extends Service {
         this.node                   = storage.getItem ( userId + STORE_NODE ) || this.node;
         this.nodes                  = storage.getItem ( userId + STORE_NODES ) || this.nodes;
         this.passwordHash           = storage.getItem ( userId + STORE_PASSWORD_HASH ) || this.passwordHash;
+        this.pendingAccounts        = storage.getItem ( userId + STORE_PENDING_ACCOUNTS ) || {};
         this.session                = storage.getItem ( userId + STORE_SESSION ) || this.session;
 
         for ( let url in this.nodes ) {
@@ -563,6 +570,49 @@ export class AppStateService extends Service {
             balance:    balance || -1,
             nonce:      typeof ( nonce ) === 'number' ? nonce : -1,
         };
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    setAccountRequest ( accountName, seedPhrase, password ) {
+
+        if ( _.has ( this.pendingAccounts, 'accountName' )) return;
+
+        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+
+        const salt              = randomBytes ( 16 ).toString ( 'hex' );
+
+        const key               = new crypto.mnemonicToKey ( seedPhrase );
+        const keyID             = key.getKeyID ();
+        const message           = `${ accountName }:${ salt }`;
+
+        const request = {
+            key: {
+                type:               'EC_HEX',
+                groupName:          'secp256k1',
+                publicKey:          key.getPublicHex (),
+            },
+            signature: {
+                hashAlgorithm:      'SHA256',
+                digest:             key.hash ( message ),
+                signature:          key.sign ( message ),
+            },
+            publicKey: key.publicKeyHex,
+        }
+
+        const requestJSON   = JSON.stringify ( request );
+        const encoded       = Buffer.from ( requestJSON, 'utf8' ).toString ( 'base64' );
+
+        const pendingAccount = {
+            accountName:            accountName,
+            accountNameSalt:        salt,
+            keyID:                  keyID,
+            seedPhraseCiphertext:   crypto.aesPlainToCipher ( seedPhrase, password ),
+            request:                encoded,
+            encoding:               'base64',
+        }
+
+        this.pendingAccounts [ accountName ] = pendingAccount;
     }
 
     //----------------------------------------------------------------//

@@ -8,6 +8,7 @@ configure ({
     enforceActions:     'always',
 });
 
+import AccountRequestScreen     from './AccountRequestScreen';
 import AccountScreen            from './AccountScreen';
 import CraftingScreen           from './CraftingScreen';
 import DebugAESScreen           from './debug/DebugAESScreen';
@@ -41,8 +42,8 @@ const App = () => {
                 <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
                 <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
 
-                <Route exact path = "/:userId/accounts/new" component = { NewAccountScreen }/>
-                <Route exact path = "/accounts/new" component = { NewAccountScreen }/>
+                <Route exact path = "/:userId/accounts/new" component = { AccountRequestScreen }/>
+                <Route exact path = "/accounts/new" component = { AccountRequestScreen }/>
 
                 <Route exact path = "/:userId/accounts/:accountId" component = { AccountScreen }/>
                 <Route exact path = "/accounts/:accountId" component = { AccountScreen }/>

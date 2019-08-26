@@ -28,7 +28,7 @@ const AccountDetailsView = observer (( props ) => {
 
     if ( !account ) return;
 
-    const publicKey = account.keys.master.publicKey;
+    const publicKey = account.keys.master.publicKeyHex;
     const nodes = appState.nodes;
 
     const balance = appState.balance;
