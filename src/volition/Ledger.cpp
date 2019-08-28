@@ -444,18 +444,18 @@ bool Ledger::isChildName ( string accountName ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::isChildSuffix ( string childSuffix ) {
+bool Ledger::isSuffix ( string suffix ) {
 
     // child names must follow the format "<hex3>.<hex3>.<hex3>", where each hex3 is a *lowecase* 3-digit hexadecimal number.
     
-    if ( childSuffix.size () != 11 ) return false;
-    if (( childSuffix [ 3 ] != '.' ) || ( childSuffix [ 7 ] != '.' )) return false;
+    if ( suffix.size () != 11 ) return false;
+    if (( suffix [ 3 ] != '.' ) || ( suffix [ 7 ] != '.' )) return false;
     
     for ( size_t i = 0; i < 11; ++i ) {
     
         if (( i == 3 ) || ( i == 7 )) continue;
     
-        char c = childSuffix [ i ];
+        char c = suffix [ i ];
     
         if (( '0' <= c ) || ( c <= '9' )) continue;
         if (( 'a' <= c ) || ( c <= 'f' )) continue;
@@ -496,30 +496,31 @@ Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::openAccount ( string sponsorName, string childSuffix, u64 amount, const CryptoKey& key ) {
+bool Ledger::openAccount ( string sponsorName, string suffix, u64 grant, const CryptoKey& key ) {
 
     if ( Ledger::isChildName ( sponsorName )) return false;
-    if ( !Ledger::isChildSuffix ( childSuffix )) return false;
+    if ( !Ledger::isSuffix ( suffix )) return false;
     
     // the child name will be prepended following a tilde: "~<sponsorName>.<childSuffix>"
     // i.e. "~maker.000.000.000"
     // this prevents it from sponsoring any new accounts until it is renamed.
 
-    string newAccountName = Format::write ( "~%s.%s", sponsorName.c_str (), childSuffix.c_str ());
+    string childName = Format::write ( "~%s.%s", sponsorName.c_str (), suffix.c_str ());
+    assert ( Ledger::isChildName ( childName ));
 
     shared_ptr < Account > account = this->getAccount ( sponsorName );
-    if ( account && ( account->mBalance >= amount )) {
+    if ( account && ( account->mBalance >= grant )) {
 
-        if ( this->getAccount ( newAccountName )) return false;
+        if ( this->getAccount ( childName )) return false;
 
         Account accountUpdated = *account;
-        accountUpdated.mBalance -= amount;
+        accountUpdated.mBalance -= grant;
         this->setAccount ( sponsorName, accountUpdated );
         
         Account child;
-        child.mBalance = amount;
+        child.mBalance = grant;
         child.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key );
-        this->setAccount ( newAccountName, child );
+        this->setAccount ( childName, child );
 
         return true;
     }
@@ -607,21 +608,39 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::renameAccount ( string newName, string nameSecret ) {
+bool Ledger::renameAccount ( string accountName, string revealedName, Digest nameHash, Digest nameSecret ) {
+    UNUSED ( accountName );
+    UNUSED ( nameHash );
+    UNUSED ( nameSecret );
 
-    if ( Ledger::isChildName ( newName )) return false; // new names must not begin with a '~'
-    if ( !Ledger::isAccountName ( newName )) return false; // make sure it's a valid account name
+    // nameHash <- SHA256 ( "<new name>" )
+    // nameSecret <- SHA256 ( "<current name>:<new name>" )
 
-    // new name
-    //   if name already exists, overwrite nameSecret and bail
-    //   secret should be sha256(accountName:name)
-    //   find all unrevealed name changes - earliest gets claim
-    //      use a decollider table (hash of requested name)
-    //   if that is the senders account, yay
-    //   if not, overwrite nameSecret
+    // if provided, nameHash and nameSecret may be used to reduce the chances of an account
+    // name being intercepted and registered by an attacker.
     
-    // secretName
-    //   overwrite nameSecret
+    // nameHash establishes the uniqueness of an account name without revealing it. nameSecret
+    // binds the account name to the registrant's account. using both ensures that the registrant
+    // really knows the requested account name. in other words, the registrant's own account
+    // name acts like a salt: an attacker would have to find a match that produced both the
+    // nameHash *and* the nameSecret (derived from their own account name). this, nameHash
+    // is shared, but nameSecret is unique to every account applying for the name.
+    
+    // the nameHash is used to create a decollider table, which records all accounts applying
+    // for the name. the nameSecret is stored inside the account, along with a timestamp.
+    
+    // when a plaintext name is revealed, the decollider table is checked. each colliding
+    // account may then be checked to see if its nameSecret is correct. whichever account
+    // has the correct namesecret and the earliest timestamp is the rightful claimant
+    // of the name.
+    
+    // once a claimant is found, the decollider table may be updated to reflect the change
+    // in status and indicate the winner (although the winner must also submit a rename
+    // transaction to claim the name).
+    
+    // make sure the revealed name is valid
+    if ( Ledger::isChildName ( revealedName )) return false; // new names must not begin with a '~'
+    if ( !Ledger::isAccountName ( revealedName )) return false; // make sure it's a valid account name
     
     return false;
 }

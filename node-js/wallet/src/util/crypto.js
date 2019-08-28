@@ -90,7 +90,7 @@ export function aesPlainToCipher ( plaintext, password ) {
 }
 
 //----------------------------------------------------------------//
-function generateMnemonic ( bytes ) {
+export function generateMnemonic ( bytes ) {
 
     let mnemonic;
 
@@ -106,7 +106,13 @@ function generateMnemonic ( bytes ) {
 }
 
 //----------------------------------------------------------------//
-async function loadKeyAsync ( phraseOrPEM ) {
+export function keyFromPrivateHex ( privateKeyHex ) {
+
+    return new Key ( bitcoin.ECPair.fromPrivateKey ( new Buffer ( privateKeyHex, 'hex' )));
+}
+
+//----------------------------------------------------------------//
+export async function loadKeyAsync ( phraseOrPEM ) {
 
     try {
         if ( bip39.validateMnemonic ( phraseOrPEM )) {
@@ -140,13 +146,7 @@ async function loadKeyAsync ( phraseOrPEM ) {
 }
 
 //----------------------------------------------------------------//
-function keyFromPrivateHex ( privateKeyHex ) {
-
-    return new Key ( bitcoin.ECPair.fromPrivateKey ( new Buffer ( privateKeyHex, 'hex' )));
-}
-
-//----------------------------------------------------------------//
-function mnemonicToKey ( mnemonic, path ) {
+export function mnemonicToKey ( mnemonic, path ) {
     
     // ticket basket addict level barrel hobby release ivory luxury sausage modify zero
     // pub: 02E7886533261C4D8201F65C5944DA9FE7940E6B499E590665EA8E21DDB109C7BD
@@ -184,7 +184,7 @@ function mnemonicToKey ( mnemonic, path ) {
 }
 
 //----------------------------------------------------------------//
-async function pemToKeyAsync ( pem ) {
+export async function pemToKeyAsync ( pem ) {
 
     const keyObj = new keyutils.Key ( 'pem', pem );
     const jwk = await keyObj.export ( 'jwk', { outputPublic: true });
@@ -194,4 +194,8 @@ async function pemToKeyAsync ( pem ) {
     return new Key ( bitcoin.ECPair.fromPrivateKey ( privKey ));
 }
 
-export { generateMnemonic, keyFromPrivateHex, loadKeyAsync, mnemonicToKey, pemToKeyAsync };
+//----------------------------------------------------------------//
+export function sha256 ( message ) {
+
+    return bitcoin.crypto.sha256 ( message ).toString ( 'hex' ).toUpperCase ();
+}

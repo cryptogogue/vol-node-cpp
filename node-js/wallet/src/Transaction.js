@@ -10,6 +10,7 @@ export const TRANSACTION_TYPE = {
     KEY_POLICY:         'KEY_POLICY',
     OPEN_ACCOUNT:       'OPEN_ACCOUNT',
     REGISTER_MINER:     'REGISTER_MINER',
+    RENAME_ACCOUNT:     'RENAME_ACCOUNT',
     RUN_SCRIPT:         'RUN_SCRIPT',
     SEND_VOL:           'SEND_VOL',
 };
@@ -42,6 +43,7 @@ export class Transaction {
             case TRANSACTION_TYPE.KEY_POLICY:       return 'Key Policy';
             case TRANSACTION_TYPE.OPEN_ACCOUNT:     return 'Open Account';
             case TRANSACTION_TYPE.REGISTER_MINER:   return 'Register Miner';
+            case TRANSACTION_TYPE.RENAME_ACCOUNT:   return 'Rename Account';
             case TRANSACTION_TYPE.RUN_SCRIPT:       return 'Run Script';
             case TRANSACTION_TYPE.SEND_VOL:         return 'Send VOL';
         }
@@ -78,21 +80,29 @@ export class Transaction {
     static transactionWithBody ( type, body ) {
 
         switch ( type ) {
-            case TRANSACTION_TYPE.ACCOUNT_POLICY:   return new Transaction ( type, body );
-            case TRANSACTION_TYPE.AFFIRM_KEY:       return new Transaction ( type, body );
-            case TRANSACTION_TYPE.BETA_GET_ASSETS:  return new Transaction ( type, body );
-            case TRANSACTION_TYPE.KEY_POLICY:       return new Transaction ( type, body );
-            case TRANSACTION_TYPE.OPEN_ACCOUNT:     return new Transaction ( type, body );
-            case TRANSACTION_TYPE.REGISTER_MINER:   return new Transaction ( type, body );
-            case TRANSACTION_TYPE.SEND_VOL:         return new SendVol ( type, body );
+            case TRANSACTION_TYPE.OPEN_ACCOUNT: return new Transaction_OpenAccount ( type, body );
+            case TRANSACTION_TYPE.SEND_VOL:     return new Transaction_SendVol ( type, body );
+            default:                            return new Transaction ( type, body );
         }
     }
 };
 
 //================================================================//
-// SendVol
+// Transaction_OpenAccount
 //================================================================//
-class SendVol extends Transaction {
+class Transaction_OpenAccount extends Transaction {
+
+    //----------------------------------------------------------------//
+    getCost () {
+
+        return super.getCost () + ( this.body.grant || 0 );
+    }
+};
+
+//================================================================//
+// Transaction_SendVol
+//================================================================//
+class Transaction_SendVol extends Transaction {
 
     //----------------------------------------------------------------//
     getCost () {

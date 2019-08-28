@@ -329,6 +329,13 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
+    deleteAccountRequest ( requestID ) {
+
+        delete this.pendingAccounts [ requestID ];
+    }
+
+    //----------------------------------------------------------------//
+    @action
     deleteNodeList () {
 
         console.log ( 'DELETE NODE LIST' );
@@ -510,9 +517,6 @@ export class AppStateService extends Service {
     @action
     pushTransaction ( transaction ) {
 
-        transaction.body.maker.accountName = this.accountId;
-        transaction.body.maker.nonce = -1;
-
         let account = this.account;
 
         let memo = {
@@ -574,30 +578,31 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    setAccountRequest ( accountName, seedPhrase, password ) {
-
-        if ( _.has ( this.pendingAccounts, 'accountName' )) return;
+    setAccountRequest ( seedPhrase, password ) {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
-        const key               = new crypto.mnemonicToKey ( seedPhrase );
+        const key = new crypto.mnemonicToKey ( seedPhrase );
         const keyID             = key.getKeyID ();
+        const privateKeyHex     = key.getPrivateHex ();
+        const publicKeyHex      = key.getPublicHex ();
 
-        const nameHash          = key.sign ( message );
+        const seedPhraseAES = crypto.aesPlainToCipher ( seedPhrase, password );
+        if ( seedPhrase !== crypto.aesCipherToPlain ( seedPhraseAES, password )) throw new Error ( 'AES error' );
 
-        const salt              = randomBytes ( 16 ).toString ( 'hex' );
-        const secret            = `${ keyID }:${ nameHash }:${ salt }`;
+        const privateKeyHexAES = crypto.aesPlainToCipher ( privateKeyHex, password );
+        if ( privateKeyHex !== crypto.aesCipherToPlain ( privateKeyHexAES, password )) throw new Error ( 'AES error' );
+
+        let requestID;
+        do {
+            requestID = `vol_${ randomBytes ( 6 ).toString ( 'hex' )}`;
+        } while ( _.has ( this.pendingAccounts, requestID ));
 
         const request = {
             key: {
                 type:               'EC_HEX',
                 groupName:          'secp256k1',
-                publicKey:          key.getPublicHex (),
-            },
-            signature: {
-                hashAlgorithm:      'SHA256',
-                digest:             key.hash ( secret ), // use this to reveal the secret
-                signature:          key.sign ( secret ),
+                publicKey:          publicKeyHex,
             },
         }
 
@@ -605,15 +610,14 @@ export class AppStateService extends Service {
         const encoded       = Buffer.from ( requestJSON, 'utf8' ).toString ( 'base64' );
 
         const pendingAccount = {
-            accountName:            accountName,
-            salt:                   salt,
-            keyID:                  keyID,
-            seedPhraseCiphertext:   crypto.aesPlainToCipher ( seedPhrase, password ),
-            request:                encoded,
-            encoding:               'base64',
+            requestID:              requestID,
+            keyID:                  keyID, // needed to recover account later
+            encoded:                encoded,
+            seedPhraseAES:          seedPhraseAES,
+            privateKeyHexAES:       privateKeyHexAES,
         }
 
-        this.pendingAccounts [ accountName ] = pendingAccount;
+        this.pendingAccounts [ requestID ] = pendingAccount;
     }
 
     //----------------------------------------------------------------//

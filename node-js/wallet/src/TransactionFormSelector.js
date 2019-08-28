@@ -18,6 +18,7 @@ export const gTransactionTypes = [
     TRANSACTION_TYPE.KEY_POLICY,
     TRANSACTION_TYPE.OPEN_ACCOUNT,
     TRANSACTION_TYPE.REGISTER_MINER,
+    TRANSACTION_TYPE.RENAME_ACCOUNT,
 ];
 
 //================================================================//

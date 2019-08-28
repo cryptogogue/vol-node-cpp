@@ -22,7 +22,7 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string          mChildSuffix;   // child name formatted <hex3>.<hex3>.<hex3>
+    string          mSuffix;        // child name formatted <hex3>.<hex3>.<hex3>
     CryptoKey       mKey;           // key
     u64             mGrant;         // amount to fund
 
@@ -30,7 +30,7 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "childSuffix",   this->mChildSuffix );
+        serializer.serialize ( "suffix",        this->mSuffix );
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "grant",         this->mGrant );
     }
@@ -39,7 +39,7 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "childSuffix",   this->mChildSuffix );
+        serializer.serialize ( "suffix",        this->mSuffix );
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "grant",         this->mGrant );
     }
@@ -48,7 +48,7 @@ public:
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
         assert ( this->mKey );
-        return ledger.openAccount ( this->mMaker->getAccountName (), this->mChildSuffix, this->mGrant, this->mKey );
+        return ledger.openAccount ( this->mMaker->getAccountName (), this->mSuffix, this->mGrant, this->mKey );
     }
 };
 

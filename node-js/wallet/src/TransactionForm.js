@@ -29,7 +29,7 @@ export const TransactionForm = observer (( props ) => {
         const value = fieldValues [ name ] !== null ? fieldValues [ name ] : '';
         const error = fieldErrors [ name ];
 
-        const onChange = ( event ) => { controller.handleChange ( event.target.name, event.target.type, event.target.value )};
+        const onChange = ( event ) => { controller.handleChange ( field, event.target.type, event.target.value )};
 
         fields.push (<TransactionFormInput
             key         = { name }

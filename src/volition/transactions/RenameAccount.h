@@ -22,30 +22,32 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string      mNewName;       // new name for account
-    string      mSecretName;    // secret name (or fallback)
+    string      mRevealedName;
+    Digest      mNameHash;      // SHA256 ( "<new name>" )
+    Digest      mNameSecret;    // SHA256 ( "<current name>:<new name>" )
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "newName",       this->mNewName );
-        serializer.serialize ( "secretName",    this->mSecretName  );
+        serializer.serialize ( "revealedName",  this->mRevealedName );
+        serializer.serialize ( "nameHash",      this->mNameHash );
+        serializer.serialize ( "nameSecret",    this->mNameSecret );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "newName",       this->mNewName );
-        serializer.serialize ( "secretName",    this->mSecretName  );
+        serializer.serialize ( "revealedName",  this->mRevealedName );
+        serializer.serialize ( "nameHash",      this->mNameHash );
+        serializer.serialize ( "nameSecret",    this->mNameSecret );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
-        assert ( this->mKey );
-        return ledger.renameAccount ( this->mMaker->getAccountName (), this->mNewName, this->mSecretName );
+        return ledger.renameAccount ( this->mMaker->getAccountName (), this->mRevealedName, this->mNameHash, this->mNameSecret );
     }
 };
 

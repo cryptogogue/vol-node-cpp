@@ -22,13 +22,12 @@ const AccountReqestForm = observer (( props ) => {
 
     const [ password, setPassword ]         = useState ( '' );
     const [ seedPhrase, setSeedPhrase ]     = useState ( crypto.generateMnemonic ());
-    const [ accountName, setAccountName ]   = useState ( '' );
 
     const createAccountRequest = () => {
-        appState.setAccountRequest ( accountName, seedPhrase, password );
+        appState.setAccountRequest ( seedPhrase, password );
     }
 
-    const submitEnabled = ( appState.checkPassword ( password ) && ( accountName.length > 0 ));
+    const submitEnabled = appState.checkPassword ( password );
 
     return (
         <div>
@@ -36,6 +35,9 @@ const AccountReqestForm = observer (( props ) => {
 
                 <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
                     <Segment stacked>
+                        <Segment stacked onClick = {() => { setSeedPhrase ( crypto.generateMnemonic ())}}>
+                            { seedPhrase }
+                        </Segment>
                         <Form.Input
                             fluid
                             icon = "lock"
@@ -45,19 +47,6 @@ const AccountReqestForm = observer (( props ) => {
                             value = { password }
                             onChange = {( event ) => { setPassword ( event.target.value )}}
                         />
-                        <Form.Input
-                            fluid
-                            icon = "address card"
-                            iconPosition = "left"
-                            placeholder = "Account Name"
-                            type = "text"
-                            value = { accountName }
-                            onChange = {( event ) => { setAccountName ( event.target.value )}}
-                        />
-                        <div className = "ui hidden divider" ></div>
-                        <Segment stacked onClick = {() => { setSeedPhrase ( crypto.generateMnemonic ())}}>
-                            { seedPhrase }
-                        </Segment>
                         <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
                             Create Account Request
                         </Button>
@@ -76,21 +65,19 @@ const PendingAccountView = observer (( props ) => {
 
     const { appState, pending } = props;
 
-    console.log ( 'PENDING:', pending );
+    const createAccountRequest = () => {
+        appState.deleteAccountRequest ( pending.requestID );
+    }
 
     return (
 
         <div>
             <SingleColumnContainerView title = 'Pending Account Request'>
 
-                <Form size = "large">
+                <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
                     <Segment stacked>
-                        <Header as="h3" textAlign="center">
-                            { pending.accountName }
-                        </Header>
-                        <div className = "ui hidden divider" ></div>
                         <Segment stacked style = {{ wordWrap: 'break-word' }}>
-                            { pending.request }
+                            { pending.encoded }
                         </Segment>
                         <Button color = "red" fluid size = "large">
                             Delete
@@ -111,8 +98,6 @@ export const AccountRequestScreen = observer (( props ) => {
     const appState = useService (() => new AppStateService ( util.getUserId ( props )));
 
     const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;
-
-    console.log ( 'PENDING:', pending );
 
     return (
         <Choose>
