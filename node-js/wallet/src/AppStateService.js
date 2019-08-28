@@ -580,11 +580,13 @@ export class AppStateService extends Service {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
-        const salt              = randomBytes ( 16 ).toString ( 'hex' );
-
         const key               = new crypto.mnemonicToKey ( seedPhrase );
         const keyID             = key.getKeyID ();
-        const message           = `${ accountName }:${ salt }`;
+
+        const nameHash          = key.sign ( message );
+
+        const salt              = randomBytes ( 16 ).toString ( 'hex' );
+        const secret            = `${ keyID }:${ nameHash }:${ salt }`;
 
         const request = {
             key: {
@@ -594,10 +596,9 @@ export class AppStateService extends Service {
             },
             signature: {
                 hashAlgorithm:      'SHA256',
-                digest:             key.hash ( message ),
-                signature:          key.sign ( message ),
+                digest:             key.hash ( secret ), // use this to reveal the secret
+                signature:          key.sign ( secret ),
             },
-            publicKey: key.publicKeyHex,
         }
 
         const requestJSON   = JSON.stringify ( request );
@@ -605,7 +606,7 @@ export class AppStateService extends Service {
 
         const pendingAccount = {
             accountName:            accountName,
-            accountNameSalt:        salt,
+            salt:                   salt,
             keyID:                  keyID,
             seedPhraseCiphertext:   crypto.aesPlainToCipher ( seedPhrase, password ),
             request:                encoded,

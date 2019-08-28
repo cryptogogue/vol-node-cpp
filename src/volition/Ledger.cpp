@@ -431,6 +431,41 @@ bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocatio
 }
 
 //----------------------------------------------------------------//
+bool Ledger::isAccountName ( string accountName ) {
+    UNUSED ( accountName );
+
+    return true;
+}
+
+//----------------------------------------------------------------//
+bool Ledger::isChildName ( string accountName ) {
+
+    return ( accountName [ 0 ] == '~' );
+}
+
+//----------------------------------------------------------------//
+bool Ledger::isChildSuffix ( string childSuffix ) {
+
+    // child names must follow the format "<hex3>.<hex3>.<hex3>", where each hex3 is a *lowecase* 3-digit hexadecimal number.
+    
+    if ( childSuffix.size () != 11 ) return false;
+    if (( childSuffix [ 3 ] != '.' ) || ( childSuffix [ 7 ] != '.' )) return false;
+    
+    for ( size_t i = 0; i < 11; ++i ) {
+    
+        if (( i == 3 ) || ( i == 7 )) continue;
+    
+        char c = childSuffix [ i ];
+    
+        if (( '0' <= c ) || ( c <= '9' )) continue;
+        if (( 'a' <= c ) || ( c <= 'f' )) continue;
+        
+        return false;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
 bool Ledger::isGenesis () const {
 
     return ( this->getVersion () == 0 );
@@ -461,21 +496,30 @@ Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::openAccount ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key ) {
+bool Ledger::openAccount ( string sponsorName, string childSuffix, u64 amount, const CryptoKey& key ) {
 
-    shared_ptr < Account > account = this->getAccount ( accountName );
+    if ( Ledger::isChildName ( sponsorName )) return false;
+    if ( !Ledger::isChildSuffix ( childSuffix )) return false;
+    
+    // the child name will be prepended following a tilde: "~<sponsorName>.<childSuffix>"
+    // i.e. "~maker.000.000.000"
+    // this prevents it from sponsoring any new accounts until it is renamed.
+
+    string newAccountName = Format::write ( "~%s.%s", sponsorName.c_str (), childSuffix.c_str ());
+
+    shared_ptr < Account > account = this->getAccount ( sponsorName );
     if ( account && ( account->mBalance >= amount )) {
 
-        if ( this->getAccount ( recipientName )) return false;
+        if ( this->getAccount ( newAccountName )) return false;
 
         Account accountUpdated = *account;
         accountUpdated.mBalance -= amount;
-        this->setAccount ( accountName, accountUpdated );
+        this->setAccount ( sponsorName, accountUpdated );
         
-        Account recipient;
-        recipient.mBalance = amount;
-        recipient.mKeys [ keyName ] = KeyAndPolicy ( key );
-        this->setAccount ( recipientName, recipient );
+        Account child;
+        child.mBalance = amount;
+        child.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key );
+        this->setAccount ( newAccountName, child );
 
         return true;
     }
@@ -559,6 +603,26 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
 
         return true;
     }
+    return false;
+}
+
+//----------------------------------------------------------------//
+bool Ledger::renameAccount ( string newName, string nameSecret ) {
+
+    if ( Ledger::isChildName ( newName )) return false; // new names must not begin with a '~'
+    if ( !Ledger::isAccountName ( newName )) return false; // make sure it's a valid account name
+
+    // new name
+    //   if name already exists, overwrite nameSecret and bail
+    //   secret should be sha256(accountName:name)
+    //   find all unrevealed name changes - earliest gets claim
+    //      use a decollider table (hash of requested name)
+    //   if that is the senders account, yay
+    //   if not, overwrite nameSecret
+    
+    // secretName
+    //   overwrite nameSecret
+    
     return false;
 }
 

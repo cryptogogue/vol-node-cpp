@@ -3,8 +3,8 @@
 import { AssetView }                    from './AssetView';
 import { Service, useService }          from './Service';
 import { SingleColumnContainerView }    from './SingleColumnContainerView'
-import { TransactionForm }              from './TransactionForm';
-import { TRANSACTION_TYPE }             from './util/Transaction';
+import { TransactionForm }              from './transactions/TransactionForm';
+import { TRANSACTION_TYPE }             from './transactions/Transaction';
 import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
 import React, { useState }              from 'react';

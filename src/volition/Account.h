@@ -17,8 +17,8 @@ class KeyInfo :
     public AbstractSerializable {
 public:
     
-    string mAccountName;
-    string mKeyName;
+    string  mAccountName;
+    string  mKeyName;
 
     //----------------------------------------------------------------//
     KeyInfo () {

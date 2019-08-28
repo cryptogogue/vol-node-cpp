@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_OPEN_ACCOUNT_H
-#define VOLITION_TRANSACTIONS_OPEN_ACCOUNT_H
+#ifndef VOLITION_TRANSACTIONS_RENAME_ACCOUNT_H
+#define VOLITION_TRANSACTIONS_RENAME_ACCOUNT_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -12,43 +12,40 @@ namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// OpenAccount
+// RenameAccount
 //================================================================//
-class OpenAccount :
+class RenameAccount :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "OPEN_ACCOUNT" )
+    TRANSACTION_TYPE ( "RENAME_ACCOUNT" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string          mChildSuffix;   // child name formatted <hex3>.<hex3>.<hex3>
-    CryptoKey       mKey;           // key
-    u64             mGrant;         // amount to fund
+    string      mNewName;       // new name for account
+    string      mSecretName;    // secret name (or fallback)
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "childSuffix",   this->mChildSuffix );
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "grant",         this->mGrant );
+        serializer.serialize ( "newName",       this->mNewName );
+        serializer.serialize ( "secretName",    this->mSecretName  );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "childSuffix",   this->mChildSuffix );
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "grant",         this->mGrant );
+        serializer.serialize ( "newName",       this->mNewName );
+        serializer.serialize ( "secretName",    this->mSecretName  );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
         assert ( this->mKey );
-        return ledger.openAccount ( this->mMaker->getAccountName (), this->mChildSuffix, this->mGrant, this->mKey );
+        return ledger.renameAccount ( this->mMaker->getAccountName (), this->mNewName, this->mSecretName );
     }
 };
 

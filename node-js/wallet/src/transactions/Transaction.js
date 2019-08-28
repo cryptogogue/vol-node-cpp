@@ -84,7 +84,6 @@ export class Transaction {
             case TRANSACTION_TYPE.KEY_POLICY:       return new Transaction ( type, body );
             case TRANSACTION_TYPE.OPEN_ACCOUNT:     return new Transaction ( type, body );
             case TRANSACTION_TYPE.REGISTER_MINER:   return new Transaction ( type, body );
-            case TRANSACTION_TYPE.RUN_SCRIPT:       return new Transaction ( type, body );
             case TRANSACTION_TYPE.SEND_VOL:         return new SendVol ( type, body );
         }
     }

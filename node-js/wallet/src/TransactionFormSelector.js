@@ -1,13 +1,13 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateService }                                                      from './AppStateService';
-import { Service, useService }                                                  from './Service';
-import { TransactionForm }                                                      from './TransactionForm';
-import { Transaction, TRANSACTION_TYPE }                                        from './util/Transaction';
-import * as util                                                                from './util/util';
+import { AppStateService }                          from './AppStateService';
+import { Service, useService }                      from './Service';
+import { TransactionForm }                          from './transactions/TransactionForm';
+import { Transaction, TRANSACTION_TYPE }            from './transactions/Transaction';
+import * as util                                    from './util/util';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
-import { observer }                                                             from 'mobx-react';
-import React, { useState }                                                      from 'react';
+import { observer }                                 from 'mobx-react';
+import React, { useState }                          from 'react';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
 
 //----------------------------------------------------------------//
@@ -18,7 +18,6 @@ export const gTransactionTypes = [
     TRANSACTION_TYPE.KEY_POLICY,
     TRANSACTION_TYPE.OPEN_ACCOUNT,
     TRANSACTION_TYPE.REGISTER_MINER,
-    TRANSACTION_TYPE.SEND_VOL,
 ];
 
 //================================================================//
@@ -69,9 +68,10 @@ export const TransactionFormSelector = observer (( props ) => {
                 <If condition = { 0 <= index }>
                     <Segment stacked>
                         <TransactionForm
-                            appState = { appState }
-                            transactionType = { gTransactionTypes [ index ]}
-                            onSubmit = { onSubmit }
+                            key                 = { index }
+                            appState            = { appState }
+                            transactionType     = { gTransactionTypes [ index ]}
+                            onSubmit            = { onSubmit }
                         />
                     </Segment>
                 </If>

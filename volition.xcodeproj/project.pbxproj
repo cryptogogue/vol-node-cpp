@@ -47,6 +47,7 @@
 		CD2AB81C230E7D1E00805F70 /* TransactionMaker.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB81A230E7D1E00805F70 /* TransactionMaker.h */; };
 		CD2AB81E230F3D5700805F70 /* GenesisBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB81D230F3D5700805F70 /* GenesisBlock.h */; };
 		CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB8222311214E00805F70 /* TestSignatureHandler.h */; };
+		CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB82F2314E35500805F70 /* RenameAccount.h */; };
 		CD4665A220BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
@@ -634,6 +635,7 @@
 		CD2AB81A230E7D1E00805F70 /* TransactionMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionMaker.h; path = src/volition/TransactionMaker.h; sourceTree = "<group>"; };
 		CD2AB81D230F3D5700805F70 /* GenesisBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenesisBlock.h; path = src/volition/transactions/GenesisBlock.h; sourceTree = "<group>"; };
 		CD2AB8222311214E00805F70 /* TestSignatureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestSignatureHandler.h; path = "src/volition/web-miner-api/TestSignatureHandler.h"; sourceTree = "<group>"; };
+		CD2AB82F2314E35500805F70 /* RenameAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenameAccount.h; path = src/volition/transactions/RenameAccount.h; sourceTree = "<group>"; };
 		CD36658920EB3BE0000E0B43 /* Miner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Miner.cpp; path = src/volition/Miner.cpp; sourceTree = "<group>"; };
 		CD36658A20EB3BE0000E0B43 /* Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.h; path = src/volition/Miner.h; sourceTree = "<group>"; };
 		CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheWebMiner.cpp; path = src/volition/TheWebMiner.cpp; sourceTree = "<group>"; };
@@ -1307,6 +1309,7 @@
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
 				CDBFD540218B8999002AB0C3 /* PublishSchema.h */,
 				CDBFD541218B8999002AB0C3 /* RegisterMiner.h */,
+				CD2AB82F2314E35500805F70 /* RenameAccount.h */,
 				CDBFD545218B8999002AB0C3 /* RunScript.h */,
 				CDBFD543218B8999002AB0C3 /* SendAssets.h */,
 				CDBFD544218B8999002AB0C3 /* SendVOL.h */,
@@ -1427,6 +1430,7 @@
 				CD4E81CE2105941A007DA585 /* TheTransactionBodyFactory.h in Headers */,
 				CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
+				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,

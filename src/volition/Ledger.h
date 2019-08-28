@@ -78,6 +78,8 @@ class Ledger :
     public VersionedStore {
 public:
 
+    static constexpr const char* MASTER_KEY_NAME    = "master";
+
     static constexpr const char* ACCOUNT            = "account";
     static constexpr const char* BLOCK_KEY          = "block";
     static constexpr const char* KEY_ID             = "keyID.";
@@ -143,14 +145,18 @@ public:
     UnfinishedBlockList             getUnfinished           ();
     void                            incrementNonce          ( const TransactionMaker& makerSignature );
     bool                            invoke                  ( string accountName, const AssetMethodInvocation& invocation );
+    static bool                     isAccountName           ( string accountName );
+    static bool                     isChildName             ( string accountName );
+    static bool                     isChildSuffix           ( string childSuffix );
     bool                            isGenesis               () const;
     bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
                                     Ledger                  ();
                                     Ledger                  ( Ledger& other );
                                     ~Ledger                 ();
-    bool                            openAccount             ( string accountName, string recipientName, u64 amount, string keyName, const CryptoKey& key );
+    bool                            openAccount             ( string sponsorName, string childSuffix, u64 amount, const CryptoKey& key );
     bool                            publishSchema           ( string accountName, string schemaName, const Schema& schema );
     bool                            registerMiner           ( string accountName, string keyName, string url );
+    bool                            renameAccount           ( string newName, string nameSecret );
     void                            reset                   ();
     bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
     bool                            setAssetFieldValue      ( Asset::Index index, string fieldName, const AssetFieldValue& field );
