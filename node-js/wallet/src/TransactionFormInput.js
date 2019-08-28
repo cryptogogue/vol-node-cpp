@@ -12,9 +12,12 @@ import { Button, Divider, Dropdown, Form, Icon, Modal, Segment, Select } from 's
 //================================================================//
 export const TransactionFormInput = observer (( props ) => {
 
-    const { appState, field, value, onChange } = props;
+    const { appState, field, value, onChange, error } = props;
 
     const name = field.name;
+
+    const errorMsg = error || '';
+    const hasError = ( errorMsg.length > 0 );
 
     if ( name === 'makerKeyName' ) {
 
@@ -39,17 +42,22 @@ export const TransactionFormInput = observer (( props ) => {
         );
     }
 
+    const commonProps = {
+        placeholder:    field.friendlyName,
+        name:           name,
+        value:          value,
+        onChange:       onChange,
+        error:          hasError ? errorMsg : false,
+    }
+
     switch ( field.fieldType ) {
 
         case 'INTEGER':
             return (
                  <Form.Input
                     fluid
-                    placeholder = { field.friendlyName }
-                    name = { name }
                     type = 'number'
-                    value = { value }
-                    onChange = { onChange }
+                    { ...commonProps }
                 />
             );
 
@@ -57,11 +65,8 @@ export const TransactionFormInput = observer (( props ) => {
             return (
                  <Form.Input
                     fluid
-                    placeholder = { field.friendlyName }
-                    name = { name }
                     type = 'string'
-                    value = { value }
-                    onChange = { onChange }
+                    { ...commonProps }
                 />
             );
 
@@ -69,10 +74,7 @@ export const TransactionFormInput = observer (( props ) => {
             return (
                  <Form.TextArea
                     rows = { field.rows || 8 }
-                    placeholder = { field.friendlyName }
-                    name = { name }
-                    value = { value }
-                    onChange = { onChange }
+                    { ...commonProps }
                 />
             );
     }

@@ -24,7 +24,10 @@ export const TransactionForm = observer (( props ) => {
 
         const name = field.name;
         const fieldValues = controller.fieldValues;
+        const fieldErrors = controller.fieldErrors;
+
         const value = fieldValues [ name ] !== null ? fieldValues [ name ] : '';
+        const error = fieldErrors [ name ];
 
         const onChange = ( event ) => { controller.handleChange ( event.target.name, event.target.type, event.target.value )};
 
@@ -34,10 +37,11 @@ export const TransactionForm = observer (( props ) => {
             field       = { field }
             value       = { value }
             onChange    = { onChange }
+            error       = { error }
         />);
     }
 
-    const isSubmitEnabled = controller.checkFormInputs ();
+    const isSubmitEnabled = controller.isCompleteAndErrorFree;
 
     const onClick = () => {
         onSubmit ( controller.transaction );

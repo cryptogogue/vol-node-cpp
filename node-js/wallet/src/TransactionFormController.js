@@ -3,6 +3,7 @@
 import { Service, useService }              from './Service';
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
 import * as inputType                       from './TransactionFormInputTypes';
+import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -12,7 +13,9 @@ import { Button, Divider, Dropdown, Form, Icon, Modal, Segment, Select } from 's
 function makerFormat () {
     return {
         gratuity:           'gratuity',
+        accountName:        'makerAccountName',
         keyName:            'makerKeyName',
+        nonce:              'makerNonce',
     };
 }
 
@@ -20,21 +23,6 @@ function makerFormat () {
 // TransactionFormController
 //================================================================//
 export class TransactionFormController extends Service {
-
-    //----------------------------------------------------------------//
-    checkFormInputs () {
-
-        const cost = this.transaction.getCost ();
-        if ( this.appState.balance < cost ) return false;
-
-        for ( let field of this.fields ) {
-            const fieldValue = this.fieldValues [ field.name ];
-            if ( fieldValue === null ) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     //----------------------------------------------------------------//
     constructor () {
@@ -78,6 +66,8 @@ export class TransactionFormController extends Service {
         this.transaction = this.makeTransaction ( this.fieldValues );
 
         this.appState.setNextTransactionCost ( this.transaction.getCost ());
+
+        this.validate ();
     }
 
     //----------------------------------------------------------------//
@@ -88,20 +78,30 @@ export class TransactionFormController extends Service {
         this.fields     = fields;
         this.format     = format;
 
-        let fieldValues = {
-            makerKeyName:       appState.getDefaultAccountKeyName (),
-        };
-
+        let fieldValues = {};
         // populate fields with null
         for ( let field of this.fields ) {
-            fieldValues [ field.name ] = fieldValues [ field.name ] || null; 
+            fieldValues [ field.name ] = null;
         }
+
+        fieldValues.makerKeyName        = appState.getDefaultAccountKeyName (),
+        fieldValues.makerAccountName    = appState.accountId;
+        fieldValues.makerNonce          = -1;
 
         extendObservable ( this, {
             fieldValues:    fieldValues,
+            fieldErrors:    {},
+            isComplete:     false,
         });
 
         this.transaction = this.makeTransaction ();
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get isCompleteAndErrorFree () {
+
+        return this.isComplete && ( Object.keys ( this.fieldErrors ).length === 0 );
     }
 
     //----------------------------------------------------------------//
@@ -115,6 +115,27 @@ export class TransactionFormController extends Service {
     makeTransaction () {
 
         return Transaction.transactionWithBody ( this.type, this.formatBody ());
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    validate () {
+
+        console.log ( 'VALIDATE!' );
+
+        this.fieldErrors = {};
+        this.isComplete = false;
+
+        const cost = this.transaction.getCost ();
+        if ( this.appState.balance < cost ) return false;
+
+        for ( let field of this.fields ) {
+            const fieldValue = this.fieldValues [ field.name ];
+            if ( fieldValue === null ) {
+                return;
+            }
+        }
+        this.isComplete = true;
     }
 }
 
@@ -299,18 +320,35 @@ export class TransactionFormController_SendVol extends TransactionFormController
 
         const fields = [
             inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
-            inputType.stringField       ( 'accountName',    'Recipient' ),
+            inputType.stringField       ( 'recipient',      'Recipient' ),
             inputType.integerField      ( 'amount',         'Amount' ),
             inputType.integerField      ( 'gratuity',       'Gratuity' ),
         ];
 
         const format = {
             maker:              makerFormat (),
-            accountName:        'accountName',
+            accountName:        'recipient',
             amount:             'amount',
         };
 
         this.initialize ( appState, type, fields, format );
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    validate () {
+        super.validate ();
+
+        const fieldValues = this.fieldValues;
+        const fieldErrors = this.fieldErrors;
+
+        if ( fieldValues.makerAccountName === fieldValues.recipient ) {
+            fieldErrors.recipient = 'Maker cannot also be recipient.';
+        }
+
+        if ( fieldValues.amount === 0 ) {
+            fieldErrors.amount = 'Pick a non-zero amount.';
+        }
     }
 };
 
