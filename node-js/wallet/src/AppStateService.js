@@ -49,161 +49,6 @@ export class AppStateService extends Service {
     @observable session;
     @observable transactions;
 
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    // computed
-
-    //----------------------------------------------------------------//
-    @computed get
-    account () {
-        return this.getAccount ();
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    accountKeyNames () {
-        const account = this.account
-        return ( account && Object.keys ( account.keys )) || [];
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    activeMarketCount () {
-        
-        let count = 0;
-        for ( let url in this.nodes ) {
-            const info = this.nodes [ url ];
-            if (( info.type === NODE_TYPE.MARKET ) && ( info.status === NODE_STATUS.ONLINE )) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    activeMinerCount () {
-        
-        let count = 0;
-        for ( let url in this.nodes ) {
-            const info = this.nodes [ url ];
-            if (( info.type === NODE_TYPE.MINING ) && ( info.status === NODE_STATUS.ONLINE )) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    assetsUtilized () {
-
-        let assetsUtilized = [];
-
-        const pendingTransactions = this.pendingTransactions;
-        for ( let i in pendingTransactions ) {
-            assetsUtilized = assetsUtilized.concat ( pendingTransactions [ i ].assets );
-        }
-
-        const stagedTransactions = this.stagedTransactions;
-        for ( let i in stagedTransactions ) {
-            assetsUtilized = assetsUtilized.concat ( stagedTransactions [ i ].assets );
-        }
-        return assetsUtilized;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    balance () {
-
-        let cost = 0;
-
-        const pendingTransactions = this.pendingTransactions;
-        for ( let i in pendingTransactions ) {
-            cost += pendingTransactions [ i ].cost;
-        }
-
-        const stagedTransactions = this.stagedTransactions;
-        for ( let i in stagedTransactions ) {
-            cost += stagedTransactions [ i ].cost;
-        }
-
-        return this.accountInfo.balance - cost - this.nextTransactionCost;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    canSubmitTransactions () {
-
-        if ( this.nextNonce < 0 ) return false;
-        if ( this.node.length === 0 ) return false;
-        if ( this.account.stagedTransactions.length === 0 ) return false;
-
-        return this.hasActiveMiningNode;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    hasAccount () {
-        return (( this.accountID.length > 0 ) && this.account );
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    hasAccountInfo () {
-        return ( this.accountInfo.nonce >= 0 );
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    hasActiveMiningNode () {
-
-        const nodeInfo = this.nodeInfo;
-
-        if ( nodeInfo.type !== NODE_TYPE.MINING ) return false;
-        if ( nodeInfo.status !== NODE_STATUS.ONLINE ) return false;
-
-        return true;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    nextNonce () {
-
-        if ( this.nonce < 0 ) return -1;
-
-        const pendingTransactions = this.pendingTransactions;
-        const pendingTop = pendingTransactions.length;
-
-        return pendingTop > 0 ? pendingTransactions [ pendingTop - 1 ].nonce + 1 : this.nonce;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    nodeInfo () {
-        return this.getNodeInfo ();
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    nonce () {
-        return this.accountInfo.nonce;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    pendingTransactions () {
-        return this.account.pendingTransactions || [];
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    stagedTransactions () {
-        return this.account.stagedTransactions || [];
-    }
-
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    // methods
-
     //----------------------------------------------------------------//
     @action
     affirmAccountAndKey ( password, accountID, keyName, phraseOrKey, privateKeyHex, publicKeyHex ) {
@@ -395,6 +240,12 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
+    @computed
+    get account () {
+        return this.getAccount ();
+    }
+
+    //----------------------------------------------------------------//
     getAccount ( accountID ) {
         accountID = accountID || this.accountID;
         const accounts = this.accounts;
@@ -408,6 +259,89 @@ export class AppStateService extends Service {
             const accountNames = Object.keys ( appState.accounts );
             accountID = accountNames && accountNames.length && accountNames [ 0 ];
         }
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get accountKeyNames () {
+        const account = this.account
+        return ( account && Object.keys ( account.keys )) || [];
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get activeMarketCount () {
+        
+        let count = 0;
+        for ( let url in this.nodes ) {
+            const info = this.nodes [ url ];
+            if (( info.type === NODE_TYPE.MARKET ) && ( info.status === NODE_STATUS.ONLINE )) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get activeMinerCount () {
+        
+        let count = 0;
+        for ( let url in this.nodes ) {
+            const info = this.nodes [ url ];
+            if (( info.type === NODE_TYPE.MINING ) && ( info.status === NODE_STATUS.ONLINE )) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get assetsUtilized () {
+
+        let assetsUtilized = [];
+
+        const pendingTransactions = this.pendingTransactions;
+        for ( let i in pendingTransactions ) {
+            assetsUtilized = assetsUtilized.concat ( pendingTransactions [ i ].assets );
+        }
+
+        const stagedTransactions = this.stagedTransactions;
+        for ( let i in stagedTransactions ) {
+            assetsUtilized = assetsUtilized.concat ( stagedTransactions [ i ].assets );
+        }
+        return assetsUtilized;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get balance () {
+
+        let cost = 0;
+
+        const pendingTransactions = this.pendingTransactions;
+        for ( let i in pendingTransactions ) {
+            cost += pendingTransactions [ i ].cost;
+        }
+
+        const stagedTransactions = this.stagedTransactions;
+        for ( let i in stagedTransactions ) {
+            cost += stagedTransactions [ i ].cost;
+        }
+
+        return this.accountInfo.balance - cost - this.nextTransactionCost;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get canSubmitTransactions () {
+
+        if ( this.nextNonce < 0 ) return false;
+        if ( this.node.length === 0 ) return false;
+        if ( this.account.stagedTransactions.length === 0 ) return false;
+
+        return this.hasActiveMiningNode;
     }
 
     //----------------------------------------------------------------//
@@ -425,17 +359,70 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
+    @computed
+    get hasAccount () {
+        return (( this.accountID.length > 0 ) && this.account );
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get hasAccountInfo () {
+        return ( this.accountInfo.nonce >= 0 );
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get hasActiveMiningNode () {
+
+        const nodeInfo = this.nodeInfo;
+
+        if ( nodeInfo.type !== NODE_TYPE.MINING ) return false;
+        if ( nodeInfo.status !== NODE_STATUS.ONLINE ) return false;
+
+        return true;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get nextNonce () {
+
+        if ( this.nonce < 0 ) return -1;
+
+        const pendingTransactions = this.pendingTransactions;
+        const pendingTop = pendingTransactions.length;
+
+        return pendingTop > 0 ? pendingTransactions [ pendingTop - 1 ].nonce + 1 : this.nonce;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get nodeInfo () {
+        return this.getNodeInfo ();
+    }
+
+    //----------------------------------------------------------------//
     getNodeInfo ( url ) {
 
         return this.nodes [ url || this.node || '' ] || this.makeNodeInfo ();
     }
 
     //----------------------------------------------------------------//
-    getPendingTransaction ( accountID ) {
+    @computed
+    get nonce () {
+        return this.accountInfo.nonce;
+    }
 
-        if ( !( accountID in this.transactions )) return;
-        const transaction = this.transactions [ accountID ];
-        return ( transaction.status === TRANSACTION_STATUS_PENDING ) && transaction;
+    //----------------------------------------------------------------//
+    @computed
+    get pendingTransactions () {
+        return this.account.pendingTransactions || [];
+    }
+
+
+    //----------------------------------------------------------------//
+    @computed
+    get stagedTransactions () {
+        return this.account.stagedTransactions || [];
     }
 
     //----------------------------------------------------------------//

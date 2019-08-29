@@ -25,21 +25,6 @@ const SORT_MODE = {
 //================================================================//
 class InventoryScreenController extends Service {
 
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    // computed
-
-    //----------------------------------------------------------------//
-    @computed get
-    sortedAssets () {
-
-        let assetArray = this.inventory.availableAssetsArray;
-        assetArray.sort (( asset0, asset1 ) => this.compareForSort ( asset0, asset1 ));
-        return assetArray;
-    }
-
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    // methods
-
     //----------------------------------------------------------------//
     compareForSort ( asset0, asset1 ) {
 
@@ -59,6 +44,15 @@ class InventoryScreenController extends Service {
             layoutMode:     INVENTORY_LAYOUT.WEB,
             sortMode:       SORT_MODE.ALPHA_ATOZ,
         });
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get sortedAssets () {
+
+        let assetArray = this.inventory.availableAssetsArray;
+        assetArray.sort (( asset0, asset1 ) => this.compareForSort ( asset0, asset1 ));
+        return assetArray;
     }
 
     //----------------------------------------------------------------//

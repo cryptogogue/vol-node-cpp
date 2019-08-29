@@ -28,42 +28,6 @@ export class InventoryService extends Service {
     @observable schema          = new Schema (); // empty schema
     @observable binding         = new Binding (); // empty binding
 
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    // computed
-
-    //----------------------------------------------------------------//
-    @computed get
-    availableAssetsArray () {
-
-        const assetsUtilized = this.appState.assetsUtilized;
-
-        let assets = [];
-        for ( let assetID in this.assets ) {
-            if ( !assetsUtilized.includes ( assetID )) {
-                assets.push ( this.assets [ assetID ]);
-            }
-        }
-        return assets;
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    availableAssetsByID () {
-
-        const assetsUtilized = this.appState.assetsUtilized;
-
-        let assets = {};
-        for ( let assetID in this.assets ) {
-            if ( !assetsUtilized.includes ( assetID )) {
-                assets [ assetID ] = this.assets [ assetID ];
-            }
-        }
-        return assets;
-    }
-
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    // methods
-
     //----------------------------------------------------------------//
     composeAssetContext ( asset, filters, overrideContext ) {
 
@@ -131,6 +95,36 @@ export class InventoryService extends Service {
     @action
     finishLoading () {
         this.loading = false;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get availableAssetsArray () {
+
+        const assetsUtilized = this.appState.assetsUtilized;
+
+        let assets = [];
+        for ( let assetID in this.assets ) {
+            if ( !assetsUtilized.includes ( assetID )) {
+                assets.push ( this.assets [ assetID ]);
+            }
+        }
+        return assets;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get availableAssetsByID () {
+
+        const assetsUtilized = this.appState.assetsUtilized;
+
+        let assets = {};
+        for ( let assetID in this.assets ) {
+            if ( !assetsUtilized.includes ( assetID )) {
+                assets [ assetID ] = this.assets [ assetID ];
+            }
+        }
+        return assets;
     }
 
     //----------------------------------------------------------------//
