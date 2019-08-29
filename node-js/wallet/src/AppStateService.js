@@ -206,7 +206,7 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    affirmAccountAndKey ( accountId, keyName, privateKeyHex, publicKeyHex, password ) {
+    affirmAccountAndKey ( password, accountId, keyName, phraseOrKey, privateKeyHex, publicKeyHex ) {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
@@ -220,8 +220,9 @@ export class AppStateService extends Service {
 
         let key = account.keys [ keyName ] || {};
 
-        key.privateKeyHexCiphertext = crypto.aesPlainToCipher ( privateKeyHex, password );
-        key.publicKeyHex = publicKeyHex;
+        key.phraseOrKeyAES      = crypto.aesPlainToCipher ( phraseOrKey, password );
+        key.privateKeyHexAES    = crypto.aesPlainToCipher ( privateKeyHex, password );
+        key.publicKeyHex        = publicKeyHex;
 
         account.keys [ keyName ] = key;
 
@@ -451,14 +452,16 @@ export class AppStateService extends Service {
         const pending = this.pendingAccounts [ requestID ];
         if ( !pending ) throw new Error ( 'Account request not found' );
 
-        const privateKeyHex = crypto.aesCipherToPlain ( pending.privateKeyHexAES, password );
+        const phraseOrKey       = crypto.aesCipherToPlain ( pending.phraseOrKeyAES, password );
+        const privateKeyHex     = crypto.aesCipherToPlain ( pending.privateKeyHexAES, password );
 
         this.affirmAccountAndKey (
+            password,
             pending.accountId,
             pending.keyName,
+            phraseOrKey,
             privateKeyHex,
             pending.publicKeyHex,
-            password
         );
 
         delete this.pendingAccounts [ requestID ];
@@ -571,12 +574,6 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    saveAccount ( accountId, privateKeyHex, publicKeyHex, password ) {
-
-        this.affirmAccountAndKey ( accountId, 'master', privateKeyHex, publicKeyHex, password );
-    }
-
-    //----------------------------------------------------------------//
     @action
     setAccount ( accountId ) {
 
@@ -600,17 +597,12 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    setAccountRequest ( seedPhrase, password ) {
+    setAccountRequest ( password, phraseOrKey, keyID, privateKeyHex, publicKeyHex ) {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
-        const key               = crypto.mnemonicToKey ( seedPhrase );
-        const keyID             = key.getKeyID ();
-        const privateKeyHex     = key.getPrivateHex ();
-        const publicKeyHex      = key.getPublicHex ();
-
-        const seedPhraseAES = crypto.aesPlainToCipher ( seedPhrase, password );
-        if ( seedPhrase !== crypto.aesCipherToPlain ( seedPhraseAES, password )) throw new Error ( 'AES error' );
+        const phraseOrKeyAES = crypto.aesPlainToCipher ( phraseOrKey, password );
+        if ( phraseOrKey !== crypto.aesCipherToPlain ( phraseOrKeyAES, password )) throw new Error ( 'AES error' );
 
         const privateKeyHexAES = crypto.aesPlainToCipher ( privateKeyHex, password );
         if ( privateKeyHex !== crypto.aesCipherToPlain ( privateKeyHexAES, password )) throw new Error ( 'AES error' );
@@ -636,8 +628,8 @@ export class AppStateService extends Service {
             encoded:                encoded,
             keyID:                  keyID, // needed to recover account later
             publicKeyHex:           publicKeyHex,
-            seedPhraseAES:          seedPhraseAES,
             privateKeyHexAES:       privateKeyHexAES,
+            phraseOrKeyAES:         phraseOrKeyAES,
             readyToImport:          false,
         }
 

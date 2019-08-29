@@ -105,7 +105,14 @@ class ImportAccountScreenController extends Service {
             if ( accountId ) {
 
                 const privateKey = key.getPrivateHex ();
-                appState.affirmAccountAndKey ( accountId, keyName, privateKey, publicKey, this.password );
+                appState.affirmAccountAndKey (
+                    this.password,
+                    accountId,
+                    keyName,
+                    this.phraseOrKey,
+                    privateKey,
+                    publicKey
+                );
 
                 this.accountId = accountId;
                 this.status = STATUS_DONE;
@@ -154,6 +161,9 @@ export const ImportAccountScreen = observer (( props ) => {
 
     const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
     const controller    = useService (() => new ImportAccountScreenController ( appState ));
+
+    if ( !appState.hasUser ()) return appState.redirect ( '/' );
+    if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );
 
     const hasMiners         = appState.node.length > 0;
     const inputEnabled      = hasMiners;

@@ -22,24 +22,65 @@ const AccountReqestForm = observer (( props ) => {
 
     const { appState } = props;
 
-    const [ password, setPassword ]         = useState ( '' );
-    const [ seedPhrase, setSeedPhrase ]     = useState ( crypto.generateMnemonic ());
+    if ( !appState.hasUser ()) return appState.redirect ( '/' );
+    if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );
 
-    const createAccountRequest = () => {
-        appState.setAccountRequest ( seedPhrase, password );
-        setPassword ( '' );
-        setSeedPhrase ( crypto.generateMnemonic ());
+    const [ password, setPassword ]         = useState ( '' );
+    const [ phraseOrKey, setPhraseOrKey ]   = useState ( false );
+    const [ keyError, setKeyError ]         = useState ( false );
+    const [ key, setKey ]                   = useState ( false );
+
+    const onChange = async ( phraseOrKey ) => {
+
+        console.log ( 'SET PHRASE OR KEY' );
+        console.log ( phraseOrKey );
+        
+        setKey ( false );
+        setPhraseOrKey ( phraseOrKey );
+
+        try {
+            const key = await crypto.loadKeyAsync ( phraseOrKey );
+            setKey ( key );
+            setKeyError ( false );
+            console.log ( 'KEY IS OKAY' );
+        }
+        catch ( error ) {
+            setKeyError ( true );
+            console.log ( 'KEY IS NOT OKAY' );
+        }
     }
 
-    const submitEnabled = appState.checkPassword ( password );
+    const createAccountRequest = () => {
+        appState.setAccountRequest (
+            password,
+            phraseOrKey,
+            key.getKeyID (),
+            key.getPrivateHex (),
+            key.getPublicHex ()
+        );
+        setPassword ( '' );
+        setPhraseOrKey ( false );
+        setKey ( false );
+    }
+
+    if ( !phraseOrKey ) {
+        onChange ( crypto.generateMnemonic ());
+    }
+
+    const submitEnabled = key && appState.checkPassword ( password );
 
     return (
         <div>
             <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
                 <Segment stacked>
-                    <Segment stacked>
-                        { seedPhrase }
-                    </Segment>
+                    <Form.TextArea
+                        placeholder = "Mnemonic Phrase or Private Key"
+                        rows = { 8 }
+                        name = "phraseOrKey"
+                        value = { phraseOrKey }
+                        onChange = {( event ) => { onChange ( event.target.value )}}
+                        error = { keyError }
+                    />
                     <Form.Input
                         fluid
                         icon = "lock"

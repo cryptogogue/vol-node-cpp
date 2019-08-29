@@ -22,7 +22,6 @@ import { DebugTextFitterScreen }    from './debug/DebugTextFitterScreen';
 import { ImportAccountScreen }      from './ImportAccountScreen';
 import { InventoryScreen }          from './InventoryScreen';
 import { LoginScreen }              from './LoginScreen';
-import { NewAccountScreen }         from './NewAccountScreen';
 import { RegisterScreen }           from './RegisterScreen';
 import registerServiceWorker        from './util/registerServiceWorker';
 import React                        from 'react';
