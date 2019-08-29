@@ -27,6 +27,8 @@ const AccountReqestForm = observer (( props ) => {
 
     const createAccountRequest = () => {
         appState.setAccountRequest ( seedPhrase, password );
+        setPassword ( '' );
+        setSeedPhrase ( crypto.generateMnemonic ());
     }
 
     const submitEnabled = appState.checkPassword ( password );
@@ -131,23 +133,23 @@ export const AccountRequestScreen = observer (( props ) => {
 
     const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;
 
+    let requests = [];
+    for ( let requestID in appState.pendingAccounts ) {
+        const pending = appState.pendingAccounts [ requestID ];
+        
+        if ( pending.readyToImport ) {
+            requests.push (<ImportAccountView key = { requestID } appState = { appState } pending = { pending }/>);
+        }
+        else {
+            requests.push (<PendingAccountView key = { requestID } appState = { appState } pending = { pending }/>);
+        }
+    }
+
     return (
         <SingleColumnContainerView>
-
             <NavigationBar navTitle = "New Account" appState = { appState }/>
-
-            <Choose>
-                <When condition = {( pending && ( pending.readyToImport === false ))}>
-                    <PendingAccountView appState = { appState } pending = { pending }/>
-                </When>
-                <When condition = {( pending && ( pending.readyToImport === true ))}>
-                    <ImportAccountView appState = { appState } pending = { pending }/>
-                </When>
-                <Otherwise>
-                    <AccountReqestForm appState = { appState }/>
-                </Otherwise>
-            </Choose>
-
+            <AccountReqestForm appState = { appState }/>
+            { requests }
         </SingleColumnContainerView>
     );
 });

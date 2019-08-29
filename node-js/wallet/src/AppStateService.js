@@ -604,7 +604,7 @@ export class AppStateService extends Service {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
-        const key = new crypto.mnemonicToKey ( seedPhrase );
+        const key               = crypto.mnemonicToKey ( seedPhrase );
         const keyID             = key.getKeyID ();
         const privateKeyHex     = key.getPrivateHex ();
         const publicKeyHex      = key.getPublicHex ();

@@ -1,13 +1,14 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { AppStateService }                                                      from './AppStateService';
-import { Service, useService }                                                  from './Service';
-import * as util                                                                from './util/util';
-import { action, computed, extendObservable, observable, observe }              from 'mobx';
-import { observer }                                                             from 'mobx-react';
-import React, { useState }                                                      from 'react';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
+import { AppStateService }                  from './AppStateService';
+import { NavigationBar }                    from './NavigationBar';
+import { Service, useService }              from './Service';
+import * as util                            from './util/util';
+import { action, computed, extendObservable, observable, observe } from 'mobx';
+import { observer }                         from 'mobx-react';
+import React, { useState }                  from 'react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
 import * as crypto                  from './util/crypto';
 
