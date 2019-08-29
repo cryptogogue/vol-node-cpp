@@ -2,6 +2,7 @@
 /* eslint-disable no-loop-func */
 
 import { AppStateService }                  from './AppStateService';
+import { NavigationBar }                    from './NavigationBar';
 import { Service, useService }              from './Service';
 import { SingleColumnContainerView }        from './SingleColumnContainerView'
 import * as util                            from './util/util';
@@ -170,8 +171,10 @@ export const ImportAccountScreen = observer (( props ) => {
     }
 
     return (
-        <SingleColumnContainerView title = 'Import your account'>
+        <SingleColumnContainerView>
         
+            <NavigationBar navTitle = "Import Account" appState = { appState }/>
+
             { warning }
             <Form size = "large" onSubmit = {() => { controller.import ()}}>
                 <Segment stacked>

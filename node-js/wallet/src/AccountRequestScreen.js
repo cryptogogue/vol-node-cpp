@@ -3,9 +3,10 @@
 
 import { AccountRequestService }            from './AccountRequestService';
 import { AppStateService }                  from './AppStateService';
-import { randomBytes }                      from './util/randomBytes'; // TODO: stop using this
+import { NavigationBar }                    from './NavigationBar';
 import { Service, useService }              from './Service';
 import { SingleColumnContainerView }        from './SingleColumnContainerView'
+import { randomBytes }                      from './util/randomBytes'; // TODO: stop using this
 import * as util                            from './util/util';
 import * as crypto                          from './util/crypto';
 import _                                    from 'lodash';
@@ -32,29 +33,25 @@ const AccountReqestForm = observer (( props ) => {
 
     return (
         <div>
-            <SingleColumnContainerView title = 'Create Account Request'>
-
-                <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
+            <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
+                <Segment stacked>
                     <Segment stacked>
-                        <Segment stacked>
-                            { seedPhrase }
-                        </Segment>
-                        <Form.Input
-                            fluid
-                            icon = "lock"
-                            iconPosition = "left"
-                            placeholder = "Wallet Password"
-                            type = "password"
-                            value = { password }
-                            onChange = {( event ) => { setPassword ( event.target.value )}}
-                        />
-                        <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
-                            Create Account Request
-                        </Button>
+                        { seedPhrase }
                     </Segment>
-                </Form>
-
-            </SingleColumnContainerView>
+                    <Form.Input
+                        fluid
+                        icon = "lock"
+                        iconPosition = "left"
+                        placeholder = "Wallet Password"
+                        type = "password"
+                        value = { password }
+                        onChange = {( event ) => { setPassword ( event.target.value )}}
+                    />
+                    <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
+                        Create Account Request
+                    </Button>
+                </Segment>
+            </Form>
         </div>
     );
 });
@@ -71,22 +68,18 @@ const PendingAccountView = observer (( props ) => {
     }
 
     return (
-
         <div>
-            <SingleColumnContainerView title = 'Pending Account Request'>
-
-                <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
-                    <Segment stacked>
-                        <Segment stacked style = {{ wordWrap: 'break-word' }}>
-                            { pending.encoded }
-                        </Segment>
-                        <Button color = "red" fluid size = "large">
-                            Delete
-                        </Button>
+            <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
+                <Segment stacked>
+                    <Header as="h2" color="teal" textAlign="center">Account Request</Header>
+                    <Segment stacked style = {{ wordWrap: 'break-word' }}>
+                        { pending.encoded }
                     </Segment>
-                </Form>
-
-            </SingleColumnContainerView>
+                    <Button color = "red" fluid size = "large">
+                        Delete
+                    </Button>
+                </Segment>
+            </Form>
         </div>
     );
 });
@@ -106,29 +99,24 @@ const ImportAccountView = observer (( props ) => {
     const submitEnabled = appState.checkPassword ( password );
 
     return (
-
         <div>
-            <SingleColumnContainerView title = 'Pending Account Request'>
-
-                <Form size = "large" onSubmit = {() => { importAccount ()}}>
-                    <Segment stacked>
-                        <h3>{ pending.accountId }</h3>
-                        <Form.Input
-                            fluid
-                            icon = "lock"
-                            iconPosition = "left"
-                            placeholder = "Wallet Password"
-                            type = "password"
-                            value = { password }
-                            onChange = {( event ) => { setPassword ( event.target.value )}}
-                        />
-                        <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
-                            Import
-                        </Button>
-                    </Segment>
-                </Form>
-
-            </SingleColumnContainerView>
+            <Form size = "large" onSubmit = {() => { importAccount ()}}>
+                <Segment stacked>
+                    <h3>{ pending.accountId }</h3>
+                    <Form.Input
+                        fluid
+                        icon = "lock"
+                        iconPosition = "left"
+                        placeholder = "Wallet Password"
+                        type = "password"
+                        value = { password }
+                        onChange = {( event ) => { setPassword ( event.target.value )}}
+                    />
+                    <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
+                        Import
+                    </Button>
+                </Segment>
+            </Form>
         </div>
     );
 });
@@ -144,16 +132,22 @@ export const AccountRequestScreen = observer (( props ) => {
     const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;
 
     return (
-        <Choose>
-            <When condition = {( pending && ( pending.readyToImport === false ))}>
-                <PendingAccountView appState = { appState } pending = { pending }/>
-            </When>
-            <When condition = {( pending && ( pending.readyToImport === true ))}>
-                <ImportAccountView appState = { appState } pending = { pending }/>
-            </When>
-            <Otherwise>
-                <AccountReqestForm appState = { appState }/>
-            </Otherwise>
-        </Choose>
+        <SingleColumnContainerView>
+
+            <NavigationBar navTitle = "New Account" appState = { appState }/>
+
+            <Choose>
+                <When condition = {( pending && ( pending.readyToImport === false ))}>
+                    <PendingAccountView appState = { appState } pending = { pending }/>
+                </When>
+                <When condition = {( pending && ( pending.readyToImport === true ))}>
+                    <ImportAccountView appState = { appState } pending = { pending }/>
+                </When>
+                <Otherwise>
+                    <AccountReqestForm appState = { appState }/>
+                </Otherwise>
+            </Choose>
+
+        </SingleColumnContainerView>
     );
 });
