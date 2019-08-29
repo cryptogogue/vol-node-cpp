@@ -114,14 +114,17 @@ export function keyFromPrivateHex ( privateKeyHex ) {
 //----------------------------------------------------------------//
 export async function loadKeyAsync ( phraseOrPEM ) {
 
+    console.log ( 'LOAD KEY ASYNC' );
+    console.log ( phraseOrPEM );
+
     try {
         if ( bip39.validateMnemonic ( phraseOrPEM )) {
             const key = mnemonicToKey ( phraseOrPEM );
             return key;
         }
+        console.log ( 'NOT A VALID MNEMONIC' );
     }
     catch ( error ) {
-
         console.log ( error );
     }
     
@@ -139,7 +142,7 @@ export async function loadKeyAsync ( phraseOrPEM ) {
         return key;
     }
     catch ( error ) {
-        console.log ( error );
+        console.log ( 'NOT A VALID PEM' );
     }
 
     throw new Error ( 'Unknown key type' );
@@ -181,6 +184,14 @@ export function mnemonicToKey ( mnemonic, path ) {
     console.log ( 'address:', address );
 
     return new Key ( key );
+}
+
+//----------------------------------------------------------------//
+export function privateHexToKey ( privateKeyHex ) {
+
+    const privKey = new Buffer ( privateKeyHex, 'hex' );
+
+    return new Key ( bitcoin.ECPair.fromPrivateKey ( privKey ));
 }
 
 //----------------------------------------------------------------//

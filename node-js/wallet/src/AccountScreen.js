@@ -138,7 +138,7 @@ export const AccountScreen = observer (( props ) => {
 
             <NavigationBar navTitle = "Accounts" appState = { appState }/>
 
-            <If condition = { appState.accounts.length > 1 }>
+            <If condition = { Object.keys ( appState.accounts ).length > 1 }>
                 <AccountSelector appState = { appState }/>
             </If>
 

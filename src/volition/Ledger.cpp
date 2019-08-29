@@ -522,6 +522,8 @@ bool Ledger::openAccount ( string sponsorName, string suffix, u64 grant, const C
         child.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key );
         this->setAccount ( childName, child );
 
+        this->setJSONSerializableObject < KeyInfo >( KEY_ID + key.getKeyID (), KeyInfo ( childName, MASTER_KEY_NAME ));
+
         return true;
     }
     return false;

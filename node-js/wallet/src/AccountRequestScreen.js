@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
+import { AccountRequestService }            from './AccountRequestService';
 import { AppStateService }                  from './AppStateService';
 import { randomBytes }                      from './util/randomBytes'; // TODO: stop using this
 import { Service, useService }              from './Service';
@@ -35,7 +36,7 @@ const AccountReqestForm = observer (( props ) => {
 
                 <Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
                     <Segment stacked>
-                        <Segment stacked onClick = {() => { setSeedPhrase ( crypto.generateMnemonic ())}}>
+                        <Segment stacked>
                             { seedPhrase }
                         </Segment>
                         <Form.Input
@@ -91,18 +92,64 @@ const PendingAccountView = observer (( props ) => {
 });
 
 //================================================================//
+// ImportAccountView
+//================================================================//
+const ImportAccountView = observer (( props ) => {
+
+    const { appState, pending } = props;
+    const [ password, setPassword ] = useState ( '' );
+
+    const importAccount = () => {
+        appState.importAccountRequest ( pending.requestID, password );
+    }
+
+    const submitEnabled = appState.checkPassword ( password );
+
+    return (
+
+        <div>
+            <SingleColumnContainerView title = 'Pending Account Request'>
+
+                <Form size = "large" onSubmit = {() => { importAccount ()}}>
+                    <Segment stacked>
+                        <h3>{ pending.accountId }</h3>
+                        <Form.Input
+                            fluid
+                            icon = "lock"
+                            iconPosition = "left"
+                            placeholder = "Wallet Password"
+                            type = "password"
+                            value = { password }
+                            onChange = {( event ) => { setPassword ( event.target.value )}}
+                        />
+                        <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
+                            Import
+                        </Button>
+                    </Segment>
+                </Form>
+
+            </SingleColumnContainerView>
+        </div>
+    );
+});
+
+//================================================================//
 // AccountRequestScreen
 //================================================================//
 export const AccountRequestScreen = observer (( props ) => {
 
-    const appState = useService (() => new AppStateService ( util.getUserId ( props )));
+    const appState                  = useService (() => new AppStateService ( util.getUserId ( props )));
+    const accountRequestService     = useService (() => new AccountRequestService ( appState ));
 
     const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;
 
     return (
         <Choose>
-            <When condition = { pending !== false }>
+            <When condition = {( pending && ( pending.readyToImport === false ))}>
                 <PendingAccountView appState = { appState } pending = { pending }/>
+            </When>
+            <When condition = {( pending && ( pending.readyToImport === true ))}>
+                <ImportAccountView appState = { appState } pending = { pending }/>
             </When>
             <Otherwise>
                 <AccountReqestForm appState = { appState }/>

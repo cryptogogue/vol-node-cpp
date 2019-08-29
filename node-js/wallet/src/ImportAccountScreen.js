@@ -155,8 +155,8 @@ export const ImportAccountScreen = observer (( props ) => {
     const controller    = useService (() => new ImportAccountScreenController ( appState ));
 
     const hasMiners         = appState.node.length > 0;
-    const inputEnabled      = hasMiners && controller.checkPassword ();
-    const submitEnabled     = inputEnabled && controller.hasValidKey ();
+    const inputEnabled      = hasMiners;
+    const submitEnabled     = inputEnabled && controller.checkPassword () && controller.hasValidKey ();
 
     if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountId );
 

@@ -443,6 +443,28 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
+    @action
+    importAccountRequest ( requestID, password ) {
+
+        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+
+        const pending = this.pendingAccounts [ requestID ];
+        if ( !pending ) throw new Error ( 'Account request not found' );
+
+        const privateKeyHex = crypto.aesCipherToPlain ( pending.privateKeyHexAES, password );
+
+        this.affirmAccountAndKey (
+            pending.accountId,
+            pending.keyName,
+            privateKeyHex,
+            pending.publicKeyHex,
+            password
+        );
+
+        delete this.pendingAccounts [ requestID ];
+    }
+
+    //----------------------------------------------------------------//
     isLoggedIn () {
         return ( this.session.isLoggedIn === true );
     }
@@ -571,7 +593,7 @@ export class AppStateService extends Service {
     setAccountInfo ( balance, nonce ) {
 
         this.accountInfo = {
-            balance:    balance || -1,
+            balance:    typeof ( balance ) === 'number' ? balance : -1,
             nonce:      typeof ( nonce ) === 'number' ? nonce : -1,
         };
     }
@@ -611,10 +633,12 @@ export class AppStateService extends Service {
 
         const pendingAccount = {
             requestID:              requestID,
-            keyID:                  keyID, // needed to recover account later
             encoded:                encoded,
+            keyID:                  keyID, // needed to recover account later
+            publicKeyHex:           publicKeyHex,
             seedPhraseAES:          seedPhraseAES,
             privateKeyHexAES:       privateKeyHexAES,
+            readyToImport:          false,
         }
 
         this.pendingAccounts [ requestID ] = pendingAccount;
@@ -694,5 +718,15 @@ export class AppStateService extends Service {
         catch ( error ) {
              console.log ( 'AN ERROR!', error );
         }
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    updateAccountRequest ( requestID, accountName, keyName ) {
+
+        let pendingAccount = this.pendingAccounts [ requestID ];
+        pendingAccount.accountId = accountName;
+        pendingAccount.keyName = keyName;
+        pendingAccount.readyToImport = true;
     }
 }
