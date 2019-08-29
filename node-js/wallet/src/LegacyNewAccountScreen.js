@@ -35,7 +35,7 @@ class NewAccountScreenController extends Service {
         this.setState ({ status: STATUS_POSTING_TRANSACTION })
 
         const order = {
-            accountName:    this.accountId,
+            accountName:    this.accountID,
             keyName:        'master',
             publicKey:      this.publicKey,
             amount:         0,
@@ -67,7 +67,7 @@ class NewAccountScreenController extends Service {
         this.appState = appState;
 
         // Create random string for account ID
-        const accountId = 'vol_' + Math.random ().toString ( 36 ).substr ( 2, 9 );
+        const accountID = 'vol_' + Math.random ().toString ( 36 ).substr ( 2, 9 );
 
         const mnemonic = crypto.generateMnemonic ();
         const key = crypto.mnemonicToKey ( mnemonic );
@@ -75,7 +75,7 @@ class NewAccountScreenController extends Service {
         const publicKey = key.getPublicHex ();
 
         extendObservable ( this, {
-            accountId:      accountId,
+            accountID:      accountID,
             privateKey:     privateKey,
             publicKey:      publicKey,
             seedPhrase:     mnemonic,
@@ -127,7 +127,7 @@ class NewAccountScreenController extends Service {
         await this.revocableAll ( promises );
 
         if ( success > 0 ) {
-            this.this.appState.saveAccount ( this.accountId, this.privateKey, this.publicKey );
+            this.this.appState.saveAccount ( this.accountID, this.privateKey, this.publicKey );
             this.revocableSetState ({ status: STATUS_DONE });
         }
     }
@@ -232,11 +232,11 @@ export const NewAccountScreen = observer (( props ) => {
     const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
     const controller    = useService (() => new NewAccountScreenController ( appState ));
 
-    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountId );
+    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountID );
 
     return (
         <div>
-            <Header>{ controller.accountId }</Header>
+            <Header>{ controller.accountID }</Header>
             <Header>Mnemonic seed phrase</Header>
             <p>{ controller.seedPhrase }</p>
             <Header>Keys</Header>

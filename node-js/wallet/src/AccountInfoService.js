@@ -18,7 +18,7 @@ export class AccountInfoService extends Service {
             appState:   appState,
         });
 
-        observe ( appState, 'accountId', ( change ) => {
+        observe ( appState, 'accountID', ( change ) => {
             this.revokeAll ();
             this.syncAccountBalance ( 5000 );
         });
@@ -29,14 +29,14 @@ export class AccountInfoService extends Service {
     @action
     syncAccountBalance ( delay ) {
 
-        if ( this.appState.accountId.length === 0 ) return;
+        if ( this.appState.accountID.length === 0 ) return;
 
         let updateBalance = async () => {
 
             try {
-                const data = await this.revocableFetchJSON ( this.appState.node + '/accounts/' + this.appState.accountId );
+                const data = await this.revocableFetchJSON ( this.appState.node + '/accounts/' + this.appState.accountID );
 
-                if ( data.account && ( data.account.accountName === this.appState.accountId )) {
+                if ( data.account && ( data.account.accountName === this.appState.accountID )) {
                     this.appState.setAccountInfo ( data.account.balance, data.account.nonce );
                     this.appState.confirmTransactions ( data.account.nonce );
                 }

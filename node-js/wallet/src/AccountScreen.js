@@ -41,7 +41,7 @@ const AccountDetailsView = observer (( props ) => {
 
                 <Icon name = "key" circular />
                 
-                { appState.accountId }
+                { appState.accountID }
 
                 <Modal size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
                     <Modal.Content>
@@ -86,8 +86,8 @@ const AccountSelector = observer (( props ) => {
     const accounts = appState.accounts;
     let options = [];
 
-    Object.keys ( accounts ).forEach (( accountId ) => {
-        options.push ({ key:accountId, value:accountId, text:accountId });
+    Object.keys ( accounts ).forEach (( accountID ) => {
+        options.push ({ key:accountID, value:accountID, text:accountID });
     });
 
     return (
@@ -109,28 +109,28 @@ const AccountSelector = observer (( props ) => {
 //================================================================//
 export const AccountScreen = observer (( props ) => {
 
-    const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
+    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
-    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
+    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
     const accountInfoService    = useService (() => new AccountInfoService ( appState ));
     const nodeInfoService       = useService (() => new NodeInfoService ( appState ));
 
-    const userId        = appState.userId;
-    const accountId     = appState.accountId;
+    const userID        = appState.userID;
+    const accountID     = appState.accountID;
 
     // TODO: move redirects to a HOC
     if ( !appState.hasUser ()) return appState.redirect ( '/' );
     if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );
 
-    console.log ( 'APPSTATE ACCOUNT ID:', accountId );
+    console.log ( 'APPSTATE ACCOUNT ID:', accountID );
 
-    if ( accountId !== accountIdFromEndpoint ) {
-        return appState.redirect ( '/accounts/' + accountId );
+    if ( accountID !== accountIDFromEndpoint ) {
+        return appState.redirect ( '/accounts/' + accountID );
     }
 
     let userName;
-    if ( userId.length > 0 ) {
-        userName = (<Header as = 'h2'>{ userId }</Header>);
+    if ( userID.length > 0 ) {
+        userName = (<Header as = 'h2'>{ userID }</Header>);
     }
 
     return (

@@ -11,7 +11,7 @@ import { Dropdown, Menu }       from 'semantic-ui-react';
 export const NavigationBar = observer (( props ) => {
         
     const { appState, navTitle } = props;
-    const { accountId } = appState;
+    const { accountID } = appState;
 
     let onClickAffirmLocalhostNodes     = () => { appState.affirmLocalhostNodes ()};
     let onClickDeleteAccount            = () => { appState.deleteAccount ()};
@@ -21,9 +21,9 @@ export const NavigationBar = observer (( props ) => {
     let onClickDeleteNodeList           = () => { appState.deleteNodeList ()};
     let onClickLogout                   = () => { appState.login ( false )};
 
-    const accountsURL   = appState.prefixURL ( `/accounts/${ accountId }` );
-    const inventoryURL  = appState.prefixURL ( `/accounts/${ accountId }/inventory` );
-    const craftingURL   = appState.prefixURL ( `/accounts/${ accountId }/crafting` );
+    const accountsURL   = appState.prefixURL ( `/accounts/${ accountID }` );
+    const inventoryURL  = appState.prefixURL ( `/accounts/${ accountID }/inventory` );
+    const craftingURL   = appState.prefixURL ( `/accounts/${ accountID }/crafting` );
 
     return (
         <Menu>

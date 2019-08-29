@@ -18,17 +18,17 @@ import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-re
 //================================================================//
 export const CraftingScreen = observer (( props ) => {
 
-    const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
+    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
     const methodNameFromEndpoint = util.getMatch ( props, 'methodName' );
 
-    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
+    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
     const accountInfoService    = useService (() => new AccountInfoService ( appState ));
     const inventory             = useService (() => new InventoryService ( appState ));
 
     const [ selectedMethod, setSelectedMethod ] = useState ( methodNameFromEndpoint );
 
-    if (( appState.accountId !== accountIdFromEndpoint ) || ( selectedMethod !== methodNameFromEndpoint )) {
-        return appState.redirect ( `/accounts/${ appState.accountId }/crafting/${ selectedMethod }` );
+    if (( appState.accountID !== accountIDFromEndpoint ) || ( selectedMethod !== methodNameFromEndpoint )) {
+        return appState.redirect ( `/accounts/${ appState.accountID }/crafting/${ selectedMethod }` );
     }
 
     if ( inventory.loading === true ) {

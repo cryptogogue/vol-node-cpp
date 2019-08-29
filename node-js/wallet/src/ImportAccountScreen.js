@@ -68,13 +68,13 @@ class ImportAccountScreenController extends Service {
         console.log ( 'PUBLIC_KEY', publicKey );
 
         // check to see if we already have the key, in which case early out
-        let accountId = appState.findAccountIdByPublicKey ( publicKey );
+        let accountID = appState.findAccountIdByPublicKey ( publicKey );
 
-        if ( accountId ) {
+        if ( accountID ) {
 
             console.log ( 'ACCOUNT KEY ALREADY EXISTS' );
 
-            this.accountId = accountId;
+            this.accountID = accountID;
             this.status = STATUS_DONE;
 
             return;
@@ -93,7 +93,7 @@ class ImportAccountScreenController extends Service {
             const keyInfo = data && data.keyInfo;
 
             if ( keyInfo ) {
-                accountId = keyInfo.accountName;
+                accountID = keyInfo.accountName;
                 keyName = keyInfo.keyName;
             }
         }
@@ -102,19 +102,19 @@ class ImportAccountScreenController extends Service {
         }
 
         runInAction (() => {
-            if ( accountId ) {
+            if ( accountID ) {
 
                 const privateKey = key.getPrivateHex ();
                 appState.affirmAccountAndKey (
                     this.password,
-                    accountId,
+                    accountID,
                     keyName,
                     this.phraseOrKey,
                     privateKey,
                     publicKey
                 );
 
-                this.accountId = accountId;
+                this.accountID = accountID;
                 this.status = STATUS_DONE;
             }
             else {
@@ -169,7 +169,7 @@ export const ImportAccountScreen = observer (( props ) => {
     const inputEnabled      = hasMiners;
     const submitEnabled     = inputEnabled && controller.checkPassword () && controller.hasValidKey ();
 
-    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountId );
+    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountID );
 
     let warning;
     if ( !appState.node.length > 0 ) {

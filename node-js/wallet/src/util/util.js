@@ -7,8 +7,8 @@ import { Redirect }             from 'react-router';
 
 //----------------------------------------------------------------//
 export function getAccountId ( props ) {
-    let accountId = props.match.params && props.match.params.accountId;
-    return accountId && ( accountId.length > 0 ) && accountId;
+    let accountID = props.match.params && props.match.params.accountID;
+    return accountID && ( accountID.length > 0 ) && accountID;
 }
 
 //----------------------------------------------------------------//
@@ -19,7 +19,7 @@ export function getMatch ( props, field, fallback ) {
 
 //----------------------------------------------------------------//
 export function getUserId ( props ) {
-    return props.match.params && props.match.params.userId;
+    return props.match.params && props.match.params.userID;
 }
 
 //----------------------------------------------------------------//

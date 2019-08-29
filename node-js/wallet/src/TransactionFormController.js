@@ -87,7 +87,7 @@ export class TransactionFormController extends Service {
             fieldValues [ field.name ] = null;
         }
 
-        fieldValues.makerAccountName    = appState.accountId;
+        fieldValues.makerAccountName    = appState.accountID;
         fieldValues.makerKeyName        = appState.getDefaultAccountKeyName (),
         fieldValues.makerNonce          = -1;
 

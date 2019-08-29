@@ -38,28 +38,28 @@ const App = () => {
     return (<BrowserRouter>
         <div>
             <Switch>
-                <Route exact path = "/:userId/accounts/import" component = { ImportAccountScreen }/>
+                <Route exact path = "/:userID/accounts/import" component = { ImportAccountScreen }/>
                 <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
 
-                <Route exact path = "/:userId/accounts/new" component = { AccountRequestScreen }/>
+                <Route exact path = "/:userID/accounts/new" component = { AccountRequestScreen }/>
                 <Route exact path = "/accounts/new" component = { AccountRequestScreen }/>
 
-                <Route exact path = "/:userId/accounts/:accountId" component = { AccountScreen }/>
-                <Route exact path = "/accounts/:accountId" component = { AccountScreen }/>
+                <Route exact path = "/:userID/accounts/:accountID" component = { AccountScreen }/>
+                <Route exact path = "/accounts/:accountID" component = { AccountScreen }/>
 
-                <Route exact path = "/:userId/accounts/:accountId/crafting/:methodName" component = { CraftingScreen }/>
-                <Route exact path = "/accounts/:accountId/crafting/:methodName" component = { CraftingScreen }/>
+                <Route exact path = "/:userID/accounts/:accountID/crafting/:methodName" component = { CraftingScreen }/>
+                <Route exact path = "/accounts/:accountID/crafting/:methodName" component = { CraftingScreen }/>
 
-                <Route exact path = "/:userId/accounts/:accountId/crafting" component = { CraftingScreen }/>
-                <Route exact path = "/accounts/:accountId/crafting" component = { CraftingScreen }/>
+                <Route exact path = "/:userID/accounts/:accountID/crafting" component = { CraftingScreen }/>
+                <Route exact path = "/accounts/:accountID/crafting" component = { CraftingScreen }/>
 
-                <Route exact path = "/:userId/accounts/:accountId/inventory" component = { InventoryScreen }/>
-                <Route exact path = "/accounts/:accountId/inventory" component = { InventoryScreen }/>
+                <Route exact path = "/:userID/accounts/:accountID/inventory" component = { InventoryScreen }/>
+                <Route exact path = "/accounts/:accountID/inventory" component = { InventoryScreen }/>
 
-                <Route exact path = "/:userId/accounts" component = { AccountScreen }/>
+                <Route exact path = "/:userID/accounts" component = { AccountScreen }/>
                 <Route exact path = "/accounts" component = { AccountScreen }/>
                 
-                <Route exact path = "/:userId/login" component = { LoginScreen }/>
+                <Route exact path = "/:userID/login" component = { LoginScreen }/>
                 <Route exact path = "/login" component = { LoginScreen }/>
 
                 <Route exact path = "/debug/aes" component = { DebugAESScreen }/>
@@ -71,7 +71,7 @@ const App = () => {
                 <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
                 <Route exact path = "/debug/textfitter" component = { DebugTextFitterScreen }/>
 
-                <Route exact path = "/:userId/" component = { RegisterScreen }/>
+                <Route exact path = "/:userID/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>
             </Switch>
         </div>

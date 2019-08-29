@@ -98,7 +98,7 @@ const InventoryFilterMenu = observer (( props ) => {
             text = { methodName }
             disabled = { disabled }
             as = { Link }
-            to = { appState.prefixURL ( `/accounts/${ appState.accountId }/crafting/${ methodName }` )}
+            to = { appState.prefixURL ( `/accounts/${ appState.accountID }/crafting/${ methodName }` )}
         />);
     }
 
@@ -159,15 +159,15 @@ const InventoryFilterMenu = observer (( props ) => {
 //================================================================//
 export const InventoryScreen = observer (( props ) => {
 
-    const accountIdFromEndpoint = util.getMatch ( props, 'accountId' );
+    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
-    const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userId' ), accountIdFromEndpoint ));
+    const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
     const inventory     = useService (() => new InventoryService ( appState ));
     const controller    = useService (() => new InventoryScreenController ( inventory ));
 
-    if ( appState.accountId !== accountIdFromEndpoint ) {
+    if ( appState.accountID !== accountIDFromEndpoint ) {
         //TODO 404 error (need make 404 screen)
-        return appState.redirect ( `/accounts/${ appState.accountId }/inventory` );
+        return appState.redirect ( `/accounts/${ appState.accountID }/inventory` );
     }
 
     //TODO elegant loading screen

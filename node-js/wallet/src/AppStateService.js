@@ -35,8 +35,8 @@ export const NODE_STATUS = {
 //================================================================//
 export class AppStateService extends Service {
 
-    @observable userId;
-    @observable accountId;
+    @observable userID;
+    @observable accountID;
     @observable accountInfo;
     @observable nextTransactionCost;
 
@@ -144,7 +144,7 @@ export class AppStateService extends Service {
     //----------------------------------------------------------------//
     @computed get
     hasAccount () {
-        return (( this.accountId.length > 0 ) && this.account );
+        return (( this.accountID.length > 0 ) && this.account );
     }
 
     //----------------------------------------------------------------//
@@ -206,13 +206,13 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    affirmAccountAndKey ( password, accountId, keyName, phraseOrKey, privateKeyHex, publicKeyHex ) {
+    affirmAccountAndKey ( password, accountID, keyName, phraseOrKey, privateKeyHex, publicKeyHex ) {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
         let accounts = this.accounts;
 
-        let account = accounts [ accountId ] || {
+        let account = accounts [ accountID ] || {
             keys: {},
             pendingTransactions: [],
             stagedTransactions: [],
@@ -227,7 +227,7 @@ export class AppStateService extends Service {
         account.keys [ keyName ] = key;
 
         // Add new account to StateManager state
-        this.accounts [ accountId ] = account;
+        this.accounts [ accountID ] = account;
     }
 
     //----------------------------------------------------------------//
@@ -307,24 +307,24 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    constructor ( userId, accountId ) {
+    constructor ( userID, accountID ) {
         super ();
 
         this.minerURLs = new Set ();
         this.marketURLs = new Set ();
         this.urlBackoff = {};
 
-        this.loadState ( userId, accountId );
+        this.loadState ( userID, accountID );
     }
 
     //----------------------------------------------------------------//
     @action
     deleteAccount () {
 
-        if ( this.accountId in this.accounts ) {
-            delete this.accounts [ this.accountId ];
+        if ( this.accountID in this.accounts ) {
+            delete this.accounts [ this.accountID ];
         }
-        this.accountId = '';
+        this.accountID = '';
         this.setAccountInfo ();
     }
 
@@ -384,29 +384,29 @@ export class AppStateService extends Service {
     findAccountIdByPublicKey ( publicKey ) {
 
         const accounts = this.accounts;
-        for ( let accountId in accounts ) {
-            const account = accounts [ accountId ];
+        for ( let accountID in accounts ) {
+            const account = accounts [ accountID ];
             for ( let keyName in account.keys ) {
                 const key = account.keys [ keyName ];
-                if ( key.publicKey === publicKey ) return accountId;
+                if ( key.publicKey === publicKey ) return accountID;
             }
         }
         return false;
     }
 
     //----------------------------------------------------------------//
-    getAccount ( accountId ) {
-        accountId = accountId || this.accountId;
+    getAccount ( accountID ) {
+        accountID = accountID || this.accountID;
         const accounts = this.accounts;
-        return ( accountId in accounts ) && accounts [ accountId ] || null;
+        return ( accountID in accounts ) && accounts [ accountID ] || null;
     }
 
     //----------------------------------------------------------------//
     getAccountIdOrDefault () {
 
-        if ( !accountId ) {
+        if ( !accountID ) {
             const accountNames = Object.keys ( appState.accounts );
-            accountId = accountNames && accountNames.length && accountNames [ 0 ];
+            accountID = accountNames && accountNames.length && accountNames [ 0 ];
         }
     }
 
@@ -431,10 +431,10 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    getPendingTransaction ( accountId ) {
+    getPendingTransaction ( accountID ) {
 
-        if ( !( accountId in this.transactions )) return;
-        const transaction = this.transactions [ accountId ];
+        if ( !( accountID in this.transactions )) return;
+        const transaction = this.transactions [ accountID ];
         return ( transaction.status === TRANSACTION_STATUS_PENDING ) && transaction;
     }
 
@@ -457,7 +457,7 @@ export class AppStateService extends Service {
 
         this.affirmAccountAndKey (
             password,
-            pending.accountId,
+            pending.accountID,
             pending.keyName,
             phraseOrKey,
             privateKeyHex,
@@ -474,26 +474,26 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    loadState ( userId, accountId ) {
+    loadState ( userID, accountID ) {
 
         this.disposeObservers ();
         this.clearState ();
 
-        userId = userId || '';
-        this.userId = userId;
+        userID = userID || '';
+        this.userID = userID;
 
-        this.accounts               = storage.getItem ( userId + STORE_ACCOUNTS ) || this.accounts;
-        this.node                   = storage.getItem ( userId + STORE_NODE ) || this.node;
-        this.nodes                  = storage.getItem ( userId + STORE_NODES ) || this.nodes;
-        this.passwordHash           = storage.getItem ( userId + STORE_PASSWORD_HASH ) || this.passwordHash;
-        this.pendingAccounts        = storage.getItem ( userId + STORE_PENDING_ACCOUNTS ) || {};
-        this.session                = storage.getItem ( userId + STORE_SESSION ) || this.session;
+        this.accounts               = storage.getItem ( userID + STORE_ACCOUNTS ) || this.accounts;
+        this.node                   = storage.getItem ( userID + STORE_NODE ) || this.node;
+        this.nodes                  = storage.getItem ( userID + STORE_NODES ) || this.nodes;
+        this.passwordHash           = storage.getItem ( userID + STORE_PASSWORD_HASH ) || this.passwordHash;
+        this.pendingAccounts        = storage.getItem ( userID + STORE_PENDING_ACCOUNTS ) || {};
+        this.session                = storage.getItem ( userID + STORE_SESSION ) || this.session;
 
         for ( let url in this.nodes ) {
             this.nodes [ url ].status = NODE_STATUS.UNKNOWN;
         }
 
-        this.setAccount ( accountId );
+        this.setAccount ( accountID );
         this.affirmObservers ();
     }
 
@@ -525,15 +525,15 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     prefixStoreKey ( key ) {
-        return this.userId + key;
+        return this.userID + key;
     }
 
     //----------------------------------------------------------------//
     prefixURL ( url ) {
 
-        const userId = this.userId;
-        if ( userId && userId.length ) {
-            return '/' + userId + url;
+        const userID = this.userID;
+        if ( userID && userID.length ) {
+            return '/' + userID + url;
         }
         return url;
     }
@@ -575,12 +575,12 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    setAccount ( accountId ) {
+    setAccount ( accountID ) {
 
         const accountNames = Object.keys ( this.accounts );
-        accountId = (( accountId in this.accounts ) && accountId ) || ( accountNames.length && accountNames [ 0 ]) || '';
-        if ( this.accountId !== accountId ) {
-            this.accountId = accountId;
+        accountID = (( accountID in this.accounts ) && accountID ) || ( accountNames.length && accountNames [ 0 ]) || '';
+        if ( this.accountID !== accountID ) {
+            this.accountID = accountID;
             this.setAccountInfo ();
         }
     }
@@ -679,7 +679,7 @@ export class AppStateService extends Service {
                 };
 
                 const hexKey            = this.account.keys [ body.maker.keyName ];
-                const privateKeyHex     = crypto.aesCipherToPlain ( hexKey.privateKeyHexCiphertext, password );
+                const privateKeyHex     = crypto.aesCipherToPlain ( hexKey.privateKeyHexAES, password );
                 const key               = await crypto.keyFromPrivateHex ( privateKeyHex );
 
                 envelope.signature = {
@@ -717,7 +717,7 @@ export class AppStateService extends Service {
     updateAccountRequest ( requestID, accountName, keyName ) {
 
         let pendingAccount = this.pendingAccounts [ requestID ];
-        pendingAccount.accountId = accountName;
+        pendingAccount.accountID = accountName;
         pendingAccount.keyName = keyName;
         pendingAccount.readyToImport = true;
     }

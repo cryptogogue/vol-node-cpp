@@ -145,7 +145,7 @@ const ImportAccountView = observer (( props ) => {
         <div>
             <Form size = "large" onSubmit = {() => { importAccount ()}}>
                 <Segment stacked>
-                    <h3>{ pending.accountId }</h3>
+                    <h3>{ pending.accountID }</h3>
                     <Form.Input
                         fluid
                         icon = "lock"

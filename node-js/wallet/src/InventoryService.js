@@ -98,11 +98,11 @@ export class InventoryService extends Service {
         this.layouts = {};
         this.fonts = {};
 
-        if ( DEBUG || ( !( appState.accountId && appState.node ))) {
+        if ( DEBUG || ( !( appState.accountID && appState.node ))) {
             this.useDebugInventory ();
         }
         else {
-            this.fetchInventory ( appState.accountId, appState.node );
+            this.fetchInventory ( appState.accountID, appState.node );
         }
 
         observe ( appState, 'assetsUtilized', ( change ) => {
