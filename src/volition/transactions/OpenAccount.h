@@ -48,7 +48,7 @@ public:
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
         assert ( this->mKey );
-        return ledger.openAccount ( this->mMaker->getAccountName (), this->mSuffix, this->mGrant, this->mKey );
+        return ledger.sponsorAccount ( this->mMaker->getAccountName (), this->mSuffix, this->mGrant, this->mKey );
     }
 };
 

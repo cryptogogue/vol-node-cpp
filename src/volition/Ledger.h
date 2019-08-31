@@ -8,6 +8,7 @@
 #include <volition/Account.h>
 #include <volition/Asset.h>
 #include <volition/Entropy.h>
+#include <volition/FormatLedgerKey.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
 
@@ -80,41 +81,11 @@ public:
 
     static constexpr const char* MASTER_KEY_NAME    = "master";
 
-    static constexpr const char* ACCOUNT            = "account";
-    static constexpr const char* BLOCK_KEY          = "block";
-    static constexpr const char* KEY_ID             = "keyID.";
-    static constexpr const char* ENTROPY            = "entropy";
-    static constexpr const char* IDENTITY           = "identity";
-    static constexpr const char* MINERS             = "miners";
-    static constexpr const char* MINER_INFO         = "minerInfo";
-    static constexpr const char* MINER_URLS         = "minerUrls";
-    static constexpr const char* UNFINISHED         = "unfinished";
-
-    static constexpr const char* ACCOUNT_HEAD       = "head";
-    static constexpr const char* ACCOUNT_TAIL       = "tail";
-
-    static constexpr const char* ASSET_NEXT         = "next";
-    static constexpr const char* ASSET_OWNER        = "owner";
-    static constexpr const char* ASSET_PREV         = "prev";
-    static constexpr const char* ASSET_TYPE         = "type";
-
-    //static constexpr const char* ASSET_INSTANCE_KEY_FMT_SSD     = "%s.inventory.%s.%d";
-
 protected:
 
     //----------------------------------------------------------------//
-    static string                   formatKeyForAccount             ( string accountName, string member );
-    static string                   formatKeyForAsset               ( Asset::Index index, string member );
-    static string                   formatKeyForAssetCounter        ();
-    static string                   formatKeyForAssetDefinition     ( string assetType );
-    static string                   formatKeyForAssetField          ( Asset::Index index, string fieldName );
-    static string                   formatKeyForAssetMethod         ( string methodName );
-    static string                   formatKeyForSchemaCount         ();
-    static string                   formatSchemaKey                 ( int schemaCount );
-    static string                   formatSchemaKey                 ( string schemaName );
-    static string                   prefixKey                       ( string prefix, string key );
-    void                            setAccount                      ( string accountName, const Account& account );
-    void                            setMinerInfo                    ( string accountName, const MinerInfo& minerInfo );
+    void                            setAccount              ( string accountName, const Account& account );
+    void                            setMinerInfo            ( string accountName, const MinerInfo& minerInfo );
 
 public:
 
@@ -125,23 +96,25 @@ public:
     bool                            awardAsset              ( string accountName, string assetType, int quantity );
     bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
     bool                            deleteKey               ( string accountName, string keyName );
-    bool                            genesisMiner            ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url );
+    bool                            genesisMiner            ( string accountName, u64 balance, const CryptoKey& key, string url );
     shared_ptr < Account >          getAccount              ( string accountName ) const;
+    Account::Index                  getAccountIndex         ( string accountName ) const;
     AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
-    shared_ptr < Asset >            getAsset                ( string assetID ) const;
+    shared_ptr < AccountKeyLookup > getAccountKeyLookup     ( string keyID ) const;
+    string                          getAccountName          ( Account::Index accountIndex ) const;
     shared_ptr < Asset >            getAsset                ( Asset::Index index ) const;
+    shared_ptr < Block >            getBlock                () const;
     shared_ptr < Block >            getBlock                ( size_t height ) const;
     Entropy                         getEntropy              () const;
     string                          getIdentity             () const;
     SerializableList < Asset >      getInventory            ( string accountName ) const;
-    shared_ptr < KeyInfo >          getKeyInfo              ( string keyID ) const;
     shared_ptr < AssetMethod >      getMethod               ( string methodName ) const;
     shared_ptr < MinerInfo >        getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
     shared_ptr < MinerURLMap >      getMinerURLs            () const;
     shared_ptr < Schema >           getSchema               ( string schemaName ) const;
+    Schema::Index                   getSchemaIndex          ( string schemaName ) const;
     list < Schema >                 getSchemas              () const;
-    shared_ptr < Block >            getTopBlock             () const;
     UnfinishedBlockList             getUnfinished           ();
     void                            incrementNonce          ( const TransactionMaker& makerSignature );
     bool                            invoke                  ( string accountName, const AssetMethodInvocation& invocation );
@@ -153,7 +126,7 @@ public:
                                     Ledger                  ();
                                     Ledger                  ( Ledger& other );
                                     ~Ledger                 ();
-    bool                            openAccount             ( string sponsorName, string suffix, u64 grant, const CryptoKey& key );
+    bool                            newAccount              ( string accountName, u64 balance, const CryptoKey& key );
     bool                            publishSchema           ( string accountName, string schemaName, const Schema& schema );
     bool                            registerMiner           ( string accountName, string keyName, string url );
     bool                            renameAccount           ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
@@ -164,18 +137,19 @@ public:
     void                            setEntropyString        ( string entropy );
     bool                            setIdentity             ( string identity );
     void                            setUnfinished           ( const UnfinishedBlockList& unfinished );
+    bool                            sponsorAccount          ( string sponsorName, string suffix, u64 grant, const CryptoKey& key );
     bool                            verify                  ( const AssetMethodInvocation& invocation ) const;
 
     //----------------------------------------------------------------//
     template < typename TYPE >
-    shared_ptr < TYPE > getJSONSerializableObject ( string key ) const {
+    shared_ptr < TYPE > getObjectOrNull ( LedgerKey key ) const {
 
-        return Ledger::getJSONSerializableObject < TYPE >( *this, key );
+        return Ledger::getObjectOrNull < TYPE >( *this, key );
     }
     
     //----------------------------------------------------------------//
     template < typename TYPE >
-    static shared_ptr < TYPE > getJSONSerializableObject ( const VersionedStoreSnapshot& snapshot, string key ) {
+    static shared_ptr < TYPE > getObjectOrNull ( const VersionedStoreSnapshot& snapshot, LedgerKey key ) {
     
         string json = snapshot.getValueOrFallback < string >( key, "" );
         if ( json.size () > 0 ) {
@@ -188,7 +162,7 @@ public:
     
     //----------------------------------------------------------------//
     template < typename TYPE >
-    void setJSONSerializableObject ( string key, const TYPE& object ) {
+    void setObject ( LedgerKey key, const TYPE& object ) {
     
         string json = ToJSONSerializer::toJSONString ( object );
         this->setValue < string >( key, json );

@@ -42,7 +42,6 @@ void SimMiner::pushGenesisTransaction ( Block& block ) const {
     
     genesisMinerTransactionBody->mAccountName = this->mMinerID;
     genesisMinerTransactionBody->mKey = this->mKeyPair;
-    genesisMinerTransactionBody->mKeyName = "master";
     genesisMinerTransactionBody->mAmount = 0;
     genesisMinerTransactionBody->mURL = "";
 

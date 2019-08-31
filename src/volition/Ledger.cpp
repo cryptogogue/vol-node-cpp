@@ -31,21 +31,20 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
     string keyID = key.getKeyID ();
     if ( keyID.size ()) return false;
 
-    string keyInfoPrefix = KEY_ID + keyID;
-    shared_ptr < KeyInfo > keyInfo = this->getJSONSerializableObject < KeyInfo >( keyInfoPrefix );
-
-    if ( keyInfo && ( keyInfo->mAccountName != accountName )) return false;
-
     shared_ptr < Account > account = this->getAccount ( accountName );
     if ( account ) {
 
+        const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = FormatLedgerKey::forAccountKeyLookup ( keyID );
+        shared_ptr < AccountKeyLookup > accountKeyLookup = this->getObjectOrNull < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP );
+
+        if ( accountKeyLookup && ( accountKeyLookup->mAccountIndex != account->mIndex )) return false;
+
         if ( key ) {
             
-            Account updatedAccount = *account;
-            updatedAccount.mKeys [ keyName ] = KeyAndPolicy ( key );
-            this->setAccount ( accountName, updatedAccount );
+            account->mKeys [ keyName ] = KeyAndPolicy ( key );
+            this->setAccount ( accountName, *account );
             
-            this->setJSONSerializableObject < KeyInfo >( keyInfoPrefix, KeyInfo ( accountName, keyName ));
+            this->setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( account->mIndex, keyName ));
             
             return true;
         }
@@ -58,54 +57,57 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
 
     if ( quantity == 0 ) return true;
 
-    string keyForAssetCounter = Ledger::formatKeyForAssetCounter ();
-    Asset::Index firstAssetIndex = this->getValue < Asset::Index >( keyForAssetCounter );
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return false;
+
+    LedgerKey KEY_FOR_ASSET_COUNT = FormatLedgerKey::forAssetCount ();
+    Asset::Index firstAssetIndex = this->getValue < Asset::Index >( KEY_FOR_ASSET_COUNT );
 
     // update head
-    string keyForAccountHead = Ledger::formatKeyForAccount( accountName, ACCOUNT_HEAD );
-    Asset::Index accountHeadIndex = this->getValueOrFallback < Asset::Index >( keyForAccountHead, Asset::NULL_ASSET_ID );
+    LedgerKey KEY_FOR_ACCOUNT_HEAD = FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_HEAD );
+    Asset::Index accountHeadIndex = this->getValueOrFallback < Asset::Index >( KEY_FOR_ACCOUNT_HEAD, Asset::NULL_INDEX );
 
-    if ( accountHeadIndex == Asset::NULL_ASSET_ID ) {
-        this->setValue < Asset::Index >( keyForAccountHead, firstAssetIndex );
+    if ( accountHeadIndex == Asset::NULL_INDEX ) {
+        this->setValue < Asset::Index >( KEY_FOR_ACCOUNT_HEAD, firstAssetIndex );
     }
 
     // update tail
-    string keyForAccountTail = Ledger::formatKeyForAccount( accountName, ACCOUNT_TAIL );
-    Asset::Index accountTailIndex = this->getValueOrFallback < Asset::Index >( keyForAccountTail, Asset::NULL_ASSET_ID );
+    string KEY_FOR_ACCOUNT_TAIL = FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_TAIL );
+    Asset::Index accountTailIndex = this->getValueOrFallback < Asset::Index >( KEY_FOR_ACCOUNT_TAIL, Asset::NULL_INDEX );
     
-    if ( accountTailIndex != Asset::NULL_ASSET_ID ) {
-        this->setValue < Asset::Index >( Ledger::formatKeyForAsset ( accountTailIndex, ASSET_NEXT ), firstAssetIndex );
+    if ( accountTailIndex != Asset::NULL_INDEX ) {
+        this->setValue < Asset::Index >( FormatLedgerKey::forAssetMember ( accountTailIndex, FormatLedgerKey::ASSET_NEXT ), firstAssetIndex );
     }
     Asset::Index firstElementPrev = accountTailIndex;
     accountTailIndex = ( firstAssetIndex + quantity ) - 1;
-    this->setValue < Asset::Index >( keyForAccountTail, accountTailIndex );
+    this->setValue < Asset::Index >( KEY_FOR_ACCOUNT_TAIL, accountTailIndex );
     
     // now add the assets
     for ( Asset::Index i = firstAssetIndex; i <= accountTailIndex; ++i ) {
         
-        this->setValue < string >( Ledger::formatKeyForAsset ( i, ASSET_OWNER ), accountName );
-        this->setValue < string >( Ledger::formatKeyForAsset ( i, ASSET_TYPE ), assetType );
+        this->setValue < string >( FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_OWNER ), accountName );
+        this->setValue < string >( FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_TYPE ), assetType );
         
-        string keyForAssetPrev = Ledger::formatKeyForAsset ( i, ASSET_PREV );
-        string keyForAssetNext = Ledger::formatKeyForAsset ( i, ASSET_NEXT );
+        string KEY_FOR_ASSET_PREV = FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_PREV );
+        string KEY_FOR_ASSET_NEXT = FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_NEXT );
         
         if ( i == firstAssetIndex ) {
-            this->setValue < Asset::Index >( keyForAssetPrev, firstElementPrev );
+            this->setValue < Asset::Index >( KEY_FOR_ASSET_PREV, firstElementPrev );
         }
         else {
-            this->setValue < Asset::Index >( keyForAssetPrev, i - 1 );
+            this->setValue < Asset::Index >( KEY_FOR_ASSET_PREV, i - 1 );
         }
         
         if ( i < accountTailIndex ) {
-            this->setValue < Asset::Index >( keyForAssetNext, i + 1 );
+            this->setValue < Asset::Index >( KEY_FOR_ASSET_NEXT, i + 1 );
         }
         else {
-            this->setValue < Asset::Index >( keyForAssetNext, Asset::NULL_ASSET_ID );
+            this->setValue < Asset::Index >( KEY_FOR_ASSET_NEXT, Asset::NULL_INDEX );
         }
     }
     
     // increment total asset count
-    this->setValue < size_t >( keyForAssetCounter, accountTailIndex + 1 );
+    this->setValue < size_t >( KEY_FOR_ASSET_COUNT, accountTailIndex + 1 );
 
     return true;
 }
@@ -124,82 +126,28 @@ bool Ledger::deleteKey ( string accountName, string keyName ) {
 }
 
 //----------------------------------------------------------------//
-string Ledger::formatKeyForAccount ( string accountName, string member ) {
+bool Ledger::genesisMiner ( string accountName, u64 balance, const CryptoKey& key, string url ) {
 
-    assert ( member.size () > 0 );
-    return Format::write ( "asset.%s.%s", accountName.c_str (), member.c_str ());
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatKeyForAsset ( Asset::Index index, string member ) {
-
-    assert ( member.size () > 0 );
-    return Format::write ( "asset.%d.%s", index, member.c_str ());
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatKeyForAssetCounter () {
-
-    return Format::write ( "asset.count" );
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatKeyForAssetDefinition ( string assetType ) {
-
-    return Format::write ( "asset.%s.definition", assetType.c_str ());
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatKeyForAssetField ( Asset::Index index, string fieldName ) {
-
-    return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatKeyForAssetMethod ( string methodName ) {
-
-    return Format::write ( "method.%s", methodName.c_str ());
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatKeyForSchemaCount () {
-
-    return "schema.count";
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatSchemaKey ( int schemaCount ) {
-
-    return Format::write ( "schema.%d", schemaCount );
-}
-
-//----------------------------------------------------------------//
-string Ledger::formatSchemaKey ( string schemaName ) {
-
-    return Format::write ( "schema.%s", schemaName.c_str ());
-}
-
-//----------------------------------------------------------------//
-bool Ledger::genesisMiner ( string accountName, u64 amount, string keyName, const CryptoKey& key, string url ) {
-
-    Account account;
-
-    account.mBalance = amount;
-    account.mKeys [ keyName ] = KeyAndPolicy ( key );
-    this->setAccount ( accountName, account );
-
-    string keyID = key.getKeyID ();
-    assert ( keyID.size ());
-
-    this->setJSONSerializableObject < KeyInfo >( KEY_ID + keyID, KeyInfo ( accountName, keyName ));
-
-    return this->registerMiner ( accountName, keyName, url );
+    if ( !this->newAccount ( accountName, balance, key )) return false;
+    return this->registerMiner ( accountName, MASTER_KEY_NAME, url );
 }
 
 //----------------------------------------------------------------//
 shared_ptr < Account > Ledger::getAccount ( string accountName ) const {
 
-    return this->getJSONSerializableObject < Account >( prefixKey ( ACCOUNT, accountName ));
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return NULL;
+
+    return this->getObjectOrNull < Account >( FormatLedgerKey::forAccount ( accountIndex ));
+}
+
+//----------------------------------------------------------------//
+Account::Index Ledger::getAccountIndex ( string accountName ) const {
+
+    if ( accountName.size () == 0 ) return Account::NULL_INDEX;
+
+    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( accountName );
+    return this->getValueOrFallback < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, Account::NULL_INDEX );
 }
 
 //----------------------------------------------------------------//
@@ -219,22 +167,34 @@ AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < AccountKeyLookup > Ledger::getAccountKeyLookup ( string keyID ) const {
+
+    return this->getObjectOrNull < AccountKeyLookup >( FormatLedgerKey::forAccountKeyLookup ( keyID ));
+}
+
+//----------------------------------------------------------------//
+string Ledger::getAccountName ( Account::Index accountIndex ) const {
+
+    return this->getValueOrFallback < string >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_NAME ), "" );
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Asset > Ledger::getAsset ( Asset::Index index ) const {
 
-    string keyForAssetOwner = Ledger::formatKeyForAsset ( index, ASSET_OWNER );
-    if ( !this->hasValue ( keyForAssetOwner )) return NULL;
+    string KEY_FOR_ASSET_OWNER = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_OWNER );
+    if ( !this->hasValue ( KEY_FOR_ASSET_OWNER )) return NULL;
 
-    string keyForAssetType = Ledger::formatKeyForAsset ( index, ASSET_TYPE );
-    string typeName = this->getValue < string >( keyForAssetType );
+    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_TYPE );
+    string typeName = this->getValue < string >( KEY_FOR_ASSET_TYPE );
 
-    string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( typeName );
-    shared_ptr < AssetDefinition > assetDefinition = this->getJSONSerializableObject < AssetDefinition >( keyForAssetDefinition );
+    LedgerKey KEY_FOR_ASSET_DEFINITION = FormatLedgerKey::forAssetDefinition ( typeName );
+    shared_ptr < AssetDefinition > assetDefinition = this->getObjectOrNull < AssetDefinition >( KEY_FOR_ASSET_DEFINITION );
     if ( !assetDefinition ) return NULL;
     
     shared_ptr < Asset > asset = make_shared < Asset >( assetDefinition );
     asset->mType    = typeName;
     asset->mIndex   = index;
-    asset->mOwner   = this->getValue < string >( keyForAssetOwner );
+    asset->mOwner   = this->getValue < string >( KEY_FOR_ASSET_OWNER );
     
     // copy the fields and apply any overrides
     AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
@@ -265,26 +225,32 @@ shared_ptr < Asset > Ledger::getAsset ( Asset::Index index ) const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < Block > Ledger::getBlock () const {
+
+    return this->getObjectOrNull < Block >( FormatLedgerKey::forBlock ());
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
 
     VersionedStore snapshot ( *this );
     if ( height < snapshot.getVersion ()) {
         snapshot.revert ( height );
     }
-    return Ledger::getJSONSerializableObject < Block >( snapshot, BLOCK_KEY );
+    return Ledger::getObjectOrNull < Block >( snapshot, FormatLedgerKey::forBlock ());
 }
 
 //----------------------------------------------------------------//
 Entropy Ledger::getEntropy () const {
 
-    string entropy = this->getValueOrFallback < string >( ENTROPY, "" );
+    string entropy = this->getValueOrFallback < string >( FormatLedgerKey::forEntropy (), "" );
     return entropy.size () > 0 ? Entropy ( entropy ) : Entropy ();
 }
 
 //----------------------------------------------------------------//
 string Ledger::getIdentity () const {
 
-    return this->getValueOrFallback < string >( IDENTITY, "" );
+    return this->getValueOrFallback < string >( FormatLedgerKey::forIdentity (), "" );
 }
 
 //----------------------------------------------------------------//
@@ -292,55 +258,36 @@ SerializableList < Asset > Ledger::getInventory ( string accountName ) const {
 
     SerializableList < Asset > assets;
 
-    string keyForAccountHeadIndex = this->formatKeyForAccount ( accountName, ACCOUNT_HEAD );
-    Asset::Index cursor = this->getValue < Asset::Index >( keyForAccountHeadIndex );
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return assets;
+
+    LedgerKey KEY_FOR_ACCOUNT_HEAD = FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_HEAD );
+    Asset::Index cursor = this->getValue < Asset::Index >( KEY_FOR_ACCOUNT_HEAD );
     
-    while ( cursor != Asset::NULL_ASSET_ID ) {
+    while ( cursor != Asset::NULL_INDEX ) {
     
         shared_ptr < Asset > asset = this->getAsset ( cursor );
         assert ( asset );
         assets.push_back ( *asset );
     
-        cursor = this->getValue < Asset::Index >( Ledger::formatKeyForAsset ( cursor, ASSET_NEXT ));
+        cursor = this->getValue < Asset::Index >( FormatLedgerKey::forAssetMember ( cursor, FormatLedgerKey::ASSET_NEXT ));
     }
     return assets;
 }
 
 //----------------------------------------------------------------//
-//Inventory Ledger::getInventory ( string accountName ) const {
-//
-//    Inventory inventory;
-//    
-////    try {
-////        VersionedCollectionIterator < string > collectionIt ( *this, Ledger::formatInventoryKey ( accountName ));
-////        
-////        for ( ; collectionIt; ++collectionIt ) {
-////            BulkAssetIdentifier assetIdentifier;
-////            FromJSONSerializer::fromJSONString ( assetIdentifier, *collectionIt );
-////            inventory.mAssets.push_back ( assetIdentifier );
-////        }
-////    }
-////    catch ( VersionedCollectionNotFoundException ) {
-////    }
-//    return inventory;
-//}
-
-//----------------------------------------------------------------//
-shared_ptr < KeyInfo > Ledger::getKeyInfo ( string keyID ) const {
-
-    return this->getJSONSerializableObject < KeyInfo >( KEY_ID + keyID );
-}
-
-//----------------------------------------------------------------//
 shared_ptr < AssetMethod > Ledger::getMethod ( string methodName ) const {
 
-    return this->getJSONSerializableObject < AssetMethod >( Ledger::formatKeyForAssetMethod ( methodName ));
+    return this->getObjectOrNull < AssetMethod >( FormatLedgerKey::forMethod ( methodName ));
 }
 
 //----------------------------------------------------------------//
 shared_ptr < MinerInfo > Ledger::getMinerInfo ( string accountName ) const {
 
-    return this->getJSONSerializableObject < MinerInfo >( prefixKey ( MINER_INFO, accountName ));
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return NULL;
+
+    return this->getObjectOrNull < MinerInfo >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_MINER_INFO ));
 }
 
 //----------------------------------------------------------------//
@@ -348,7 +295,7 @@ map < string, MinerInfo > Ledger::getMiners () const {
 
     map < string, MinerInfo > minerInfoMap;
 
-    shared_ptr < SerializableSet < string >> miners = this->getJSONSerializableObject < SerializableSet < string >>( MINERS );
+    shared_ptr < SerializableSet < string >> miners = this->getObjectOrNull < SerializableSet < string >>( FormatLedgerKey::forMiners ());
     assert ( miners );
     
     set < string >::const_iterator minerIt = miners->cbegin ();
@@ -366,23 +313,32 @@ map < string, MinerInfo > Ledger::getMiners () const {
 //----------------------------------------------------------------//
 shared_ptr < Ledger::MinerURLMap > Ledger::getMinerURLs () const {
 
-    return this->getJSONSerializableObject < MinerURLMap >( MINER_URLS );
+    return this->getObjectOrNull < MinerURLMap >( FormatLedgerKey::forMinerURLs ());
 }
 
 //----------------------------------------------------------------//
 shared_ptr < Schema > Ledger::getSchema ( string schemaName ) const {
 
-    return this->getJSONSerializableObject < Schema >( Ledger::formatSchemaKey ( schemaName ));
+    Schema::Index schemaIndex = this->getSchemaIndex ( schemaName );
+    if ( schemaIndex == Schema::NULL_INDEX ) return NULL;
+
+    return this->getObjectOrNull < Schema >( FormatLedgerKey::forSchema ( schemaIndex ));
+}
+
+//----------------------------------------------------------------//
+Schema::Index Ledger::getSchemaIndex ( string schemaName ) const {
+
+    LedgerKey KEY_FOR_SCHEMA_ALIAS = FormatLedgerKey::forAccountAlias ( schemaName );
+    return this->getValueOrFallback < Schema::Index >( KEY_FOR_SCHEMA_ALIAS, Schema::NULL_INDEX );
 }
 
 //----------------------------------------------------------------//
 list < Schema > Ledger::getSchemas () const {
 
     list < Schema > schemaList;
-    const int schemaCount = this->getValue < int >( Ledger::formatKeyForSchemaCount ());
-    for ( int i = 0; i < schemaCount; ++i ) {
-        string name = this->getValue < string >( Ledger::formatSchemaKey ( i ));
-        shared_ptr < Schema > schema = this->getJSONSerializableObject < Schema >( name );
+    const Schema::Index schemaCount = this->getValue < Schema::Index >( FormatLedgerKey::forSchemaCount ());
+    for ( Schema::Index i = 0; i < schemaCount; ++i ) {
+        shared_ptr < Schema > schema = this->getObjectOrNull < Schema >( FormatLedgerKey::forSchema ( i ));
         assert ( schema );
         schemaList.push_back ( *schema );
     }
@@ -390,15 +346,9 @@ list < Schema > Ledger::getSchemas () const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Block > Ledger::getTopBlock () const {
-
-    return this->getJSONSerializableObject < Block >( BLOCK_KEY );
-}
-
-//----------------------------------------------------------------//
 UnfinishedBlockList Ledger::getUnfinished () {
 
-    shared_ptr < UnfinishedBlockList > unfinished = this->getJSONSerializableObject < UnfinishedBlockList >( UNFINISHED );
+    shared_ptr < UnfinishedBlockList > unfinished = this->getObjectOrNull < UnfinishedBlockList >( FormatLedgerKey::forUnfinished ());
     return unfinished ? *unfinished : UnfinishedBlockList ();
 }
 
@@ -422,8 +372,9 @@ bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocatio
     shared_ptr < AssetMethod > method = this->getMethod ( invocation.mMethodName );
     if ( !( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ))) return false;
 
-    string keyForAccount = Ledger::prefixKey ( ACCOUNT, accountName );
-    if ( !this->hasValue ( keyForAccount )) return false;
+    // make sure account exists
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return false;
 
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
     LuaContext lua ( method->mLua );
@@ -496,43 +447,35 @@ Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::openAccount ( string sponsorName, string suffix, u64 grant, const CryptoKey& key ) {
+bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key ) {
 
-    if ( Ledger::isChildName ( sponsorName )) return false;
-    if ( !Ledger::isSuffix ( suffix )) return false;
+    // check to see if there is already an alias for this account name
+    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( accountName );
+    if ( this->hasKey ( KEY_FOR_ACCOUNT_ALIAS )) return false; // alias already exists
+
+    // provision the account ID
+    LedgerKey KEY_FOR_ACCOUNT_COUNT = FormatLedgerKey::forAccountCount ();
+    Account::Index accountIndex = this->getValue < Account::Index >( KEY_FOR_ACCOUNT_COUNT );
+    this->setValue < Account::Index >( KEY_FOR_ACCOUNT_COUNT, accountIndex + 1 ); // increment counter
+
+    // store the account
+    Account account;
+    account.mIndex = accountIndex;
+    account.mBalance = balance;
+    account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key );
     
-    // the child name will be prepended following a tilde: "~<sponsorName>.<childSuffix>"
-    // i.e. "~maker.000.000.000"
-    // this prevents it from sponsoring any new accounts until it is renamed.
+    this->setObject < Account >( FormatLedgerKey::forAccount ( accountIndex ), account );
 
-    string childName = Format::write ( "~%s.%s", sponsorName.c_str (), suffix.c_str ());
-    assert ( Ledger::isChildName ( childName ));
+    // store the key (for reverse lookup):
+    string keyID = key.getKeyID ();
+    assert ( keyID.size ());
+    this->setObject < AccountKeyLookup >( FormatLedgerKey::forAccountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, MASTER_KEY_NAME ));
 
-    shared_ptr < Account > account = this->getAccount ( sponsorName );
-    if ( account && ( account->mBalance >= grant )) {
+    // store the alias
+    this->setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
+    this->setValue < string >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_NAME ), accountName );
 
-        if ( this->getAccount ( childName )) return false;
-
-        Account accountUpdated = *account;
-        accountUpdated.mBalance -= grant;
-        this->setAccount ( sponsorName, accountUpdated );
-        
-        Account child;
-        child.mBalance = grant;
-        child.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key );
-        this->setAccount ( childName, child );
-
-        this->setJSONSerializableObject < KeyInfo >( KEY_ID + key.getKeyID (), KeyInfo ( childName, MASTER_KEY_NAME ));
-
-        return true;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
-string Ledger::prefixKey ( string prefix, string key ) {
-
-    return prefix + "." + key;
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -540,19 +483,18 @@ bool Ledger::publishSchema ( string accountName, string schemaName, const Schema
 
     // TODO: check account permissions
 
-    schemaName = Ledger::formatSchemaKey ( schemaName );
+    LedgerKey KEY_FOR_SCHEMA_ALIAS = FormatLedgerKey::forSchemaAlias ( schemaName );
+    if ( this->hasValue ( KEY_FOR_SCHEMA_ALIAS )) return false;
 
-    if ( this->hasValue ( schemaName )) return false;
-
-    string keyForSchemaCount = Ledger::formatKeyForSchemaCount ();
-
-    int schemaIndex = this->getValue < int >( keyForSchemaCount );
+    // provision the schema ID
+    LedgerKey KEY_FOR_SCHEMA_COUNT = FormatLedgerKey::forSchemaCount ();
+    Schema::Index schemaIndex = this->getValue < Schema::Index >( KEY_FOR_SCHEMA_COUNT );
+    this->setValue < Schema::Index >( KEY_FOR_SCHEMA_COUNT, schemaIndex + 1 ); // increment counter
     
-    string schemaKey = Ledger::formatSchemaKey ( schemaIndex );
-
-    this->setValue < string >( schemaKey, schemaName );
-    this->setJSONSerializableObject < Schema >( schemaName, schema );
-    this->setValue < int >( keyForSchemaCount, schemaIndex + 1 );
+    this->setObject < Schema >( FormatLedgerKey::forSchema ( schemaIndex ), schema );
+    
+    // store the alias
+    this->setValue < Account::Index >( KEY_FOR_SCHEMA_ALIAS, schemaIndex );
 
     Schema::Definitions::const_iterator definitionIt = schema.mDefinitions.cbegin ();
     for ( ; definitionIt != schema.mDefinitions.cend (); ++definitionIt ) {
@@ -561,8 +503,9 @@ bool Ledger::publishSchema ( string accountName, string schemaName, const Schema
         const AssetDefinition& definition = definitionIt->second;
     
         // store the definition for easy access later
-        string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( typeName );
-        this->setJSONSerializableObject < AssetDefinition >( keyForAssetDefinition, definition );
+        LedgerKey KEY_FOR_ASSET_DEFINITION = FormatLedgerKey::forAssetDefinition ( typeName );
+        if ( this->hasValue ( KEY_FOR_ASSET_DEFINITION )) return false; // can't overwrite definitions
+        this->setObject < AssetDefinition >( KEY_FOR_ASSET_DEFINITION, definition );
     }
 
     Schema::Methods::const_iterator methodIt = schema.mMethods.cbegin ();
@@ -572,9 +515,9 @@ bool Ledger::publishSchema ( string accountName, string schemaName, const Schema
         const AssetMethod& method = methodIt->second;
         
         // store the method for easy access later
-        string keyForAssetMethod = Ledger::formatKeyForAssetMethod ( methodName );
-        if ( this->hasValue ( keyForAssetMethod )) return false; // can't overwrite methods
-        this->setJSONSerializableObject < AssetMethod >( keyForAssetMethod, method );
+        LedgerKey KEY_FOR_METHOD = FormatLedgerKey::forMethod ( methodName );
+        if ( this->hasValue ( KEY_FOR_METHOD )) return false; // can't overwrite methods
+        this->setObject < AssetMethod >( KEY_FOR_METHOD, method );
     }
 
     LuaContext lua ( schema.mLua );
@@ -589,20 +532,27 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
     if ( accountKey ) {
 
-        this->setJSONSerializableObject < MinerInfo >( prefixKey ( MINER_INFO, accountName ), MinerInfo ( accountName, url, accountKey.mKeyAndPolicy->mKey ));
+        shared_ptr < Account > account = accountKey.mAccount;
+        Account::Index accountIndex = account->mIndex;
+
+        this->setObject < MinerInfo >(
+            FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_MINER_INFO ),
+            MinerInfo ( accountIndex, url, accountKey.mKeyAndPolicy->mKey )
+        );
         
         // TODO: find an efficient way to do all this
-        shared_ptr < SerializableMap < string, string >> minerURLs = this->getJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS );
-        assert ( minerURLs );
         
-        ( *minerURLs )[ accountName ] = url;
-        this->setJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS, *minerURLs );
-
-        shared_ptr < SerializableSet < string >> miners = this->getJSONSerializableObject < SerializableSet < string >>( MINERS );
+        LedgerKey KEY_FOR_MINERS = FormatLedgerKey::forMiners ();
+        shared_ptr < SerializableSet < string >> miners = this->getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );
         assert ( miners );
-        
         miners->insert ( accountName );
-        this->setJSONSerializableObject < SerializableSet < string >>( MINERS, *miners );
+        this->setObject < SerializableSet < string >>( KEY_FOR_MINERS, *miners );
+        
+        LedgerKey KEY_FOR_MINER_URLS = FormatLedgerKey::forMinerURLs ();
+        shared_ptr < SerializableMap < string, string >> minerURLs = this->getObjectOrNull < SerializableMap < string, string >>( KEY_FOR_MINER_URLS );
+        assert ( minerURLs );
+        ( *minerURLs )[ accountName ] = url;
+        this->setObject < SerializableMap < string, string >>( KEY_FOR_MINER_URLS, *minerURLs );
 
         return true;
     }
@@ -611,7 +561,6 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
 
 //----------------------------------------------------------------//
 bool Ledger::renameAccount ( string accountName, string revealedName, Digest nameHash, Digest nameSecret ) {
-    UNUSED ( accountName );
     UNUSED ( nameHash );
     UNUSED ( nameSecret );
 
@@ -644,6 +593,12 @@ bool Ledger::renameAccount ( string accountName, string revealedName, Digest nam
     if ( Ledger::isChildName ( revealedName )) return false; // new names must not begin with a '~'
     if ( !Ledger::isAccountName ( revealedName )) return false; // make sure it's a valid account name
     
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return false;
+    
+    this->setValue < Account::Index >( FormatLedgerKey::forAccountAlias ( revealedName ), accountIndex );
+    this->setValue < string >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_NAME ), revealedName );
+ 
     return false;
 }
 
@@ -651,10 +606,11 @@ bool Ledger::renameAccount ( string accountName, string revealedName, Digest nam
 void Ledger::reset () {
 
     this->clear ();
-    this->setJSONSerializableObject < SerializableSet < string >>( MINERS, SerializableSet < string > ());
-    this->setJSONSerializableObject < SerializableMap < string, string >>( MINER_URLS, SerializableMap < string, string > ());
-    this->setValue < int >( Ledger::formatKeyForSchemaCount (), 0 );
-    this->setValue < Asset::Index >( Ledger::formatKeyForAssetCounter (), 0 );
+    this->setObject < SerializableSet < string >>( FormatLedgerKey::forMiners (), SerializableSet < string > ());
+    this->setObject < SerializableMap < string, string >>( FormatLedgerKey::forMinerURLs (), SerializableMap < string, string > ());
+    this->setValue < Asset::Index >( FormatLedgerKey::forAccountCount (), 0 );
+    this->setValue < Schema::Index >( FormatLedgerKey::forSchemaCount (), 0 );
+    this->setValue < Asset::Index >( FormatLedgerKey::forAssetCount (), 0 );
 }
 
 //----------------------------------------------------------------//
@@ -682,21 +638,24 @@ bool Ledger::sendVOL ( string accountName, string recipientName, u64 amount ) {
 //----------------------------------------------------------------//
 void Ledger::setAccount ( string accountName, const Account& account ) {
 
-    this->setJSONSerializableObject < Account >( prefixKey ( ACCOUNT, accountName ), account );
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    assert ( accountIndex != Account::NULL_INDEX );
+
+    this->setObject < Account >( FormatLedgerKey::forAccount ( accountIndex ), account );
 }
 
 //----------------------------------------------------------------//
 bool Ledger::setAssetFieldValue ( Asset::Index index, string fieldName, const AssetFieldValue& field ) {
 
     // make sure the asset exists
-    string keyForAssetType = Ledger::formatKeyForAsset ( index, ASSET_TYPE );
-    if ( !this->hasValue ( keyForAssetType )) return false;
+    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_TYPE );
+    if ( !this->hasValue ( KEY_FOR_ASSET_TYPE )) return false;
 
-    string assetType = this->getValue < string >( keyForAssetType );
+    string assetType = this->getValue < string >( KEY_FOR_ASSET_TYPE );
 
     // make sure the field exists
-    string keyForAssetDefinition = Ledger::formatKeyForAssetDefinition ( assetType );
-    shared_ptr < AssetDefinition > assetDefinition = this->getJSONSerializableObject < AssetDefinition >( keyForAssetDefinition );
+    LedgerKey KEY_FOR_ASSET_DEFINITION = FormatLedgerKey::forAssetDefinition ( assetType );
+    shared_ptr < AssetDefinition > assetDefinition = this->getObjectOrNull < AssetDefinition >( KEY_FOR_ASSET_DEFINITION );
     if ( !assetDefinition ) return false;
     if ( !assetDefinition->hasMutableField ( fieldName, field.getType ())) return false;
 
@@ -718,33 +677,63 @@ bool Ledger::setAssetFieldValue ( Asset::Index index, string fieldName, const As
 //----------------------------------------------------------------//
 void Ledger::setBlock ( const Block& block ) {
     assert ( block.mHeight == this->getVersion ());
-    this->setJSONSerializableObject < Block >( BLOCK_KEY, block );
+    this->setObject < Block >( FormatLedgerKey::forBlock (), block );
 }
 
 //----------------------------------------------------------------//
 void Ledger::setEntropyString ( string entropy ) {
 
-    this->setValue < string >( ENTROPY, entropy );
+    this->setValue < string >( FormatLedgerKey::forEntropy (), entropy );
 }
 
 //----------------------------------------------------------------//
 bool Ledger::setIdentity ( string identity ) {
 
-    if ( this->hasValue ( IDENTITY )) return false;
-    this->setValue < string >( IDENTITY, identity );
+    LedgerKey KEY_FOR_IDENTITY = FormatLedgerKey::forIdentity ();
+    if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
+    this->setValue < string >( KEY_FOR_IDENTITY, identity );
     return true;
 }
 
 //----------------------------------------------------------------//
 void Ledger::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
 
-    this->setJSONSerializableObject < MinerInfo >( prefixKey ( ACCOUNT, accountName ), minerInfo );
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    assert ( accountIndex != Account::NULL_INDEX );
+
+    this->setObject < MinerInfo >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_MINER_INFO ), minerInfo );
 }
 
 //----------------------------------------------------------------//
 void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
-    this->setJSONSerializableObject < UnfinishedBlockList >( UNFINISHED, unfinished );
+    this->setObject < UnfinishedBlockList >( FormatLedgerKey::forUnfinished (), unfinished );
+}
+
+//----------------------------------------------------------------//
+bool Ledger::sponsorAccount ( string sponsorName, string suffix, u64 grant, const CryptoKey& key ) {
+
+    if ( Ledger::isChildName ( sponsorName )) return false;
+    if ( !Ledger::isSuffix ( suffix )) return false;
+    
+    // the child name will be prepended following a tilde: "~<sponsorName>.<childSuffix>"
+    // i.e. "~maker.000.000.000"
+    // this prevents it from sponsoring any new accounts until it is renamed.
+
+    string childName = Format::write ( "~%s.%s", sponsorName.c_str (), suffix.c_str ());
+    assert ( Ledger::isChildName ( childName ));
+
+    shared_ptr < Account > account = this->getAccount ( sponsorName );
+    if ( account && ( account->mBalance >= grant )) {
+
+        if ( !this->newAccount ( childName, grant, key )) return false;
+
+        account->mBalance -= grant;
+        this->setAccount ( sponsorName, *account );
+
+        return true;
+    }
+    return false;
 }
 
 //----------------------------------------------------------------//

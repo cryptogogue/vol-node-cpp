@@ -51,7 +51,7 @@ void Miner::extend ( bool force ) {
     time_t now = this->getTime ();
     
     if ( !force ) {
-        shared_ptr < Block > topBlock = chain.getTopBlock ();
+        shared_ptr < Block > topBlock = chain.getBlock ();
         assert ( topBlock );
         if (( this->mMinerID == topBlock->getMinerID ()) && topBlock->isInRewriteWindow ( now )) return;
     }
@@ -81,7 +81,7 @@ void Miner::extend ( bool force ) {
         fork.pushVersion ();
     }
     
-    shared_ptr < Block > prevBlock = fork.getTopBlock ();
+    shared_ptr < Block > prevBlock = fork.getBlock ();
     assert ( prevBlock );
     
     Block block ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );

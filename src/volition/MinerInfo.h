@@ -5,6 +5,7 @@
 #define VOLITION_MINERINFO_H
 
 #include <volition/common.h>
+#include <volition/Account.h>
 #include <volition/CryptoKey.h>
 
 namespace Volition {
@@ -16,25 +17,25 @@ class MinerInfo :
     public AbstractSerializable {
 private:
 
-    string                  mMinerID;
+    Account::Index          mAccountIndex;
     string                  mURL;
     CryptoKey               mPublicKey;
 
 public:
 
     //----------------------------------------------------------------//
-    string                  getMinerID          () const;
+    Account::Index          getAccountIndex     () const;
     const CryptoKey&        getPublicKey        () const;
     string                  getURL              () const;
                             MinerInfo           ();
-                            MinerInfo           ( string minerID, string url, const CryptoKey& publicKey );
+                            MinerInfo           ( Account::Index accountIndex, string url, const CryptoKey& publicKey );
                             MinerInfo           ( const MinerInfo& minerInfo );
                             ~MinerInfo          ();
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "minerID",           this->mMinerID );
+        serializer.serialize ( "accountIndex",      this->mAccountIndex );
         serializer.serialize ( "url",               this->mURL );
         serializer.serialize ( "publicKey",         this->mPublicKey );
     }
@@ -42,7 +43,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
-        serializer.serialize ( "minerID",           this->mMinerID );
+        serializer.serialize ( "accountIndex",      this->mAccountIndex );
         serializer.serialize ( "url",               this->mURL );
         serializer.serialize ( "publicKey",         this->mPublicKey );
     }

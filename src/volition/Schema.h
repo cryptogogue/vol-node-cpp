@@ -17,6 +17,13 @@ namespace Volition {
 //================================================================//
 class Schema :
     public AbstractSerializable {
+public:
+
+    typedef u64 Index;
+    enum {
+        NULL_INDEX      = ( u64 )-1,
+    };
+
 private:
 
     friend class Ledger;

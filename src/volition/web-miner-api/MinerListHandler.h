@@ -36,9 +36,13 @@ public:
         for ( unsigned int i = 0; minerInfoIt != minerInfoMap.cend (); ++minerInfoIt, ++i ) {
             const MinerInfo& minerInfo = minerInfoIt->second;
             
+            string accountName = ledger.getAccountName ( minerInfo.getAccountIndex ());
+            if ( accountName.size () == 0 ) continue;
+            
             Poco::JSON::Object::Ptr minerInfoJSON = new Poco::JSON::Object ();
             minerInfoJSON->set ( "url",         minerInfo.getURL ().c_str ());
-            minersJSON->set ( minerInfo.getMinerID (), minerInfoJSON );
+            
+            minersJSON->set ( accountName, minerInfoJSON );
         }
         
         jsonOut.set ( "miners", minersJSON );

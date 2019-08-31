@@ -21,12 +21,12 @@ class Asset :
 public:
 
     typedef map < string, AssetFieldValue > Fields;
+
     typedef u64 Index;
-
     enum {
-        NULL_ASSET_ID = ( u64 )-1,
+        NULL_INDEX      = ( u64 )-1,
     };
-
+    
     Index       mIndex;
     
     string      mType;

@@ -24,7 +24,6 @@ public:
 
     string      mAccountName;
     CryptoKey   mKey;
-    string      mKeyName;
     u64         mAmount;
     string      mURL;
 
@@ -35,7 +34,6 @@ public:
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
         serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "keyName",       this->mKeyName );
         serializer.serialize ( "url",           this->mURL );
     }
     
@@ -46,7 +44,6 @@ public:
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "amount",        this->mAmount  );
         serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "keyName",       this->mKeyName );
         serializer.serialize ( "url",           this->mURL );
     }
 
@@ -54,7 +51,7 @@ public:
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
     
         assert ( this->mKey );
-        return ledger.genesisMiner ( this->mAccountName, this->mAmount, this->mKeyName, this->mKey, this->mURL );
+        return ledger.genesisMiner ( this->mAccountName, this->mAmount, this->mKey, this->mURL );
     }
 };
 

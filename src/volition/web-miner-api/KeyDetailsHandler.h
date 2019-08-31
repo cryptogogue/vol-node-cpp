@@ -31,14 +31,19 @@ public:
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
 
-        shared_ptr < KeyInfo > keyInfo = ledger.getKeyInfo ( keyID );
-        if ( keyInfo ) {
-            Poco::JSON::Object::Ptr keyInfoJSON = new Poco::JSON::Object ();
-            keyInfoJSON->set ( "accountName", keyInfo->mAccountName.c_str ());
-            keyInfoJSON->set ( "keyName", keyInfo->mKeyName.c_str ());
+        shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );
+        if ( accountKeyLookup ) {
             
-            jsonOut.set ( "keyInfo", keyInfoJSON );
-            return Poco::Net::HTTPResponse::HTTP_OK;
+            string accountName = ledger.getAccountName ( accountKeyLookup->mAccountIndex );
+            if ( accountName.size () > 0 ) {
+            
+                Poco::JSON::Object::Ptr accountLookupJSON = new Poco::JSON::Object ();
+                accountLookupJSON->set ( "accountName", accountName.c_str ());
+                accountLookupJSON->set ( "keyName", accountKeyLookup->mKeyName.c_str ());
+                
+                jsonOut.set ( "keyInfo", accountLookupJSON );
+                return Poco::Net::HTTPResponse::HTTP_OK;
+            }
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }

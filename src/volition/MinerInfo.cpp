@@ -10,8 +10,8 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-string MinerInfo::getMinerID () const {
-    return this->mMinerID;
+Account::Index MinerInfo::getAccountIndex () const {
+    return this->mAccountIndex;
 }
 
 //----------------------------------------------------------------//
@@ -29,15 +29,15 @@ MinerInfo::MinerInfo () {
 }
 
 //----------------------------------------------------------------//
-MinerInfo::MinerInfo ( string minerID, string url, const CryptoKey& publicKey ) :
-    mMinerID ( minerID ),
+MinerInfo::MinerInfo ( Account::Index accountIndex, string url, const CryptoKey& publicKey ) :
+    mAccountIndex ( accountIndex ),
     mURL ( url ),
     mPublicKey ( publicKey ) {
 }
 
 //----------------------------------------------------------------//
 MinerInfo::MinerInfo ( const MinerInfo& minerInfo ) :
-    mMinerID ( minerInfo.getMinerID ()),
+    mAccountIndex ( minerInfo.getAccountIndex ()),
     mURL ( minerInfo.getURL ()),
     mPublicKey ( minerInfo.getPublicKey ()) {
 }
