@@ -59,7 +59,7 @@ string toupper ( string str ) {
 char* vsnprintf_alloc ( char* s, size_t n, const char* format, va_list arg ) {
 
     char* buffer = s;
-    size_t buffSize = n;
+    int buffSize = ( int )n;
     
     int result;
     
@@ -75,7 +75,7 @@ char* vsnprintf_alloc ( char* s, size_t n, const char* format, va_list arg ) {
             buffSize = buffSize << 1;
         }
         else if ( result > buffSize ) {
-            buffSize = ( size_t )result + 2;
+            buffSize = result + 2;
         }
         else {
             break;

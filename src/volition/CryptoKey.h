@@ -64,7 +64,7 @@ public:
     bool                verify                  ( const Signature& signature, string message ) const;
     
     //----------------------------------------------------------------//
-    operator const bool () const {
+    operator bool () const {
         return this->mKeyPair ? true : false;
     }
     

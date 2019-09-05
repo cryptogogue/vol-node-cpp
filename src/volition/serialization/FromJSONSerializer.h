@@ -235,8 +235,8 @@ public:
 
     //----------------------------------------------------------------//
     FromJSONSerializer () :
-        mObject ( NULL ),
         mArray ( NULL ),
+        mObject ( NULL ),
         mParent ( NULL ) {
     }
 

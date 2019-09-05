@@ -34,7 +34,7 @@ target_sources ( volition-lib
     PRIVATE
         src/volition/AbstractAPIRequestHandler.cpp
         src/volition/AbstractRequestHandler.cpp
-        src/volition/AbstractTransaction.cpp
+        src/volition/AbstractTransactionBody.cpp
         src/volition/AssetID.cpp
         src/volition/Block.cpp
         src/volition/Chain.cpp
@@ -52,9 +52,10 @@ target_sources ( volition-lib
         src/volition/SquapFactory.cpp
         src/volition/SyncChainTask.cpp
         src/volition/TheContext.cpp
-        src/volition/TheTransactionFactory.cpp
+        src/volition/TheTransactionBodyFactory.cpp
         src/volition/TheWebMiner.cpp
-        src/volition/TransactionMakerSignature.cpp
+        src/volition/Transaction.cpp
+        src/volition/TransactionMaker.cpp
         src/volition/WebMiner.cpp
         src/volition/simulation/Analysis.cpp
         src/volition/simulation/Cohort.cpp

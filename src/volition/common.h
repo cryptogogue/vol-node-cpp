@@ -4,8 +4,15 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
+#if __clang__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wunused-parameter"
+#endif
+
+#if __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
 #include <assert.h>
 #include <cmath>
@@ -71,7 +78,13 @@
 
 #include <lognosis/Logger.h>
 
-#pragma clang diagnostic pop
+#if __clang__
+    #pragma clang diagnostic pop
+#endif
+
+#if __GNUC__
+    #pragma GCC diagnostic pop
+#endif
 
 using namespace std;
 using namespace Padamose;
