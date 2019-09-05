@@ -4,7 +4,7 @@
 	branch = poco-1.9.1
 [submodule "3rd-party/simple-cpp-router"]
 	path = 3rd-party/simple-cpp-router
-	url = git@github.com:qoollo/simple-cpp-router.git
+url=git@github.com:cryptogogue/simple-cpp-router.git
 [submodule "3rd-party/padamose"]
 	path = 3rd-party/padamose
 	url = git@github.com:cryptogogue/padamose.git
