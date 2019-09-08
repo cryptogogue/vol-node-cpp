@@ -34,7 +34,6 @@
 		CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CD0C3E5A20C86D88006E3B1C /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
 		CD0C3E5B20C86D88006E3B1C /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
-		CD0C3E5C20C86D88006E3B1C /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585F20BA3981003A2969 /* libPocoRedis.a */; };
 		CD0C3E5D20C86D88006E3B1C /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
 		CD0C3E5E20C86D88006E3B1C /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
 		CD0C3E5F20C86D88006E3B1C /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
@@ -57,7 +56,6 @@
 		CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CD4E8154210579C8007DA585 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
 		CD4E8155210579C8007DA585 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
-		CD4E8156210579C8007DA585 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585F20BA3981003A2969 /* libPocoRedis.a */; };
 		CD4E8157210579C8007DA585 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
 		CD4E8158210579C8007DA585 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
 		CD4E8159210579C8007DA585 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
@@ -276,7 +274,6 @@
 		CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CDED586720BA3981003A2969 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
 		CDED586820BA3981003A2969 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
-		CDED586920BA3981003A2969 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585F20BA3981003A2969 /* libPocoRedis.a */; };
 		CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
@@ -286,7 +283,6 @@
 		CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
 		CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
 		CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
-		CDED588620BD1C5F003A2969 /* libPocoRedis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585F20BA3981003A2969 /* libPocoRedis.a */; };
 		CDED588720BD1C5F003A2969 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
 		CDED588820BD1C5F003A2969 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
 		CDED588920BD1C5F003A2969 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
@@ -830,7 +826,6 @@
 		CDED585C20BA3981003A2969 /* libPocoJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoJSON.a; path = poco/lib/libPocoJSON.a; sourceTree = "<group>"; };
 		CDED585D20BA3981003A2969 /* libPocoNet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNet.a; path = poco/lib/libPocoNet.a; sourceTree = "<group>"; };
 		CDED585E20BA3981003A2969 /* libPocoNetSSL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoNetSSL.a; path = poco/lib/libPocoNetSSL.a; sourceTree = "<group>"; };
-		CDED585F20BA3981003A2969 /* libPocoRedis.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoRedis.a; path = poco/lib/libPocoRedis.a; sourceTree = "<group>"; };
 		CDED586020BA3981003A2969 /* libPocoUtil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoUtil.a; path = poco/lib/libPocoUtil.a; sourceTree = "<group>"; };
 		CDED586120BA3981003A2969 /* libPocoXML.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoXML.a; path = poco/lib/libPocoXML.a; sourceTree = "<group>"; };
 		CDED586220BA3981003A2969 /* libPocoZip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoZip.a; path = poco/lib/libPocoZip.a; sourceTree = "<group>"; };
@@ -867,7 +862,6 @@
 				CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */,
 				CD0C3E5A20C86D88006E3B1C /* libPocoFoundation.a in Frameworks */,
 				CD0C3E5B20C86D88006E3B1C /* libPocoNetSSL.a in Frameworks */,
-				CD0C3E5C20C86D88006E3B1C /* libPocoRedis.a in Frameworks */,
 				CD0C3E5D20C86D88006E3B1C /* libPocoEncodings.a in Frameworks */,
 				CD0C3E5E20C86D88006E3B1C /* libPocoNet.a in Frameworks */,
 				CD0C3E5F20C86D88006E3B1C /* libPocoZip.a in Frameworks */,
@@ -894,7 +888,6 @@
 				CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */,
 				CD4E8154210579C8007DA585 /* libPocoFoundation.a in Frameworks */,
 				CD4E8155210579C8007DA585 /* libPocoNetSSL.a in Frameworks */,
-				CD4E8156210579C8007DA585 /* libPocoRedis.a in Frameworks */,
 				CD4E8157210579C8007DA585 /* libPocoEncodings.a in Frameworks */,
 				CD4E8158210579C8007DA585 /* libPocoNet.a in Frameworks */,
 				CD4E8159210579C8007DA585 /* libPocoZip.a in Frameworks */,
@@ -927,7 +920,6 @@
 				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED586820BA3981003A2969 /* libPocoNetSSL.a in Frameworks */,
-				CDED586920BA3981003A2969 /* libPocoRedis.a in Frameworks */,
 				CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */,
 				CDED586720BA3981003A2969 /* libPocoNet.a in Frameworks */,
 				CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */,
@@ -967,7 +959,6 @@
 				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */,
-				CDED588620BD1C5F003A2969 /* libPocoRedis.a in Frameworks */,
 				CDED588720BD1C5F003A2969 /* libPocoEncodings.a in Frameworks */,
 				CDED588820BD1C5F003A2969 /* libPocoNet.a in Frameworks */,
 				CDED588920BD1C5F003A2969 /* libPocoZip.a in Frameworks */,
@@ -1102,7 +1093,6 @@
 				CDED585C20BA3981003A2969 /* libPocoJSON.a */,
 				CDED585D20BA3981003A2969 /* libPocoNet.a */,
 				CDED585E20BA3981003A2969 /* libPocoNetSSL.a */,
-				CDED585F20BA3981003A2969 /* libPocoRedis.a */,
 				CDED586020BA3981003A2969 /* libPocoUtil.a */,
 				CDED586120BA3981003A2969 /* libPocoXML.a */,
 				CDED586220BA3981003A2969 /* libPocoZip.a */,
