@@ -14,7 +14,7 @@ import * as opentype                            from 'opentype.js';
 
 import { TEST_SCHEMA }                          from './resources/sample-schema';
 
-const DEBUG = true;
+const DEBUG = false;
 
 //================================================================//
 // InventoryService
@@ -63,7 +63,7 @@ export class InventoryService extends Service {
         this.fonts = {};
 
         if ( DEBUG || ( !( appState.accountID && appState.node ))) {
-            this.useDebugInventory ();
+            this.update ([ TEST_SCHEMA ]);
         }
         else {
             this.fetchInventory ( appState.accountID, appState.node );
@@ -79,16 +79,24 @@ export class InventoryService extends Service {
     async fetchInventory ( accountID, minerURL ) {
 
         try {
-            const schemaJSON = await this.revocableFetchJSON ( minerURL + '/schemas/' );
-            const inventoryJSON = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory' );
+            console.log ( 'FETCH INVENTORY', accountID, minerURL );
 
-            this.update ( schemaJSON.schemas, inventoryJSON.inventory );
-            this.finishLoading ();
+            const schemaJSON        = await this.revocableFetchJSON ( minerURL + '/schemas', null, 5000 );
+            console.log ( schemaJSON );
+
+            const inventoryJSON     = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory' );
+            console.log ( inventoryJSON );
+
+            let assets = {};
+            for ( let asset of inventoryJSON.inventory ) {
+                assets [ asset.assetID ] = asset;
+            }
+            await this.update ( schemaJSON.schemas, assets );
         }
         catch ( error ) {
             console.log ( error );
-            this.finishLoading ();
         }
+        await this.finishLoading ();
     }
 
     //----------------------------------------------------------------//
@@ -165,55 +173,39 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
-    @action
-    update ( templates, assets ) {
+    async update ( templates, assets ) {
 
-        if ( templates ) {
-            this.schema = new Schema ();
-            for ( let i in templates ) {
-                this.schema.applyTemplate ( templates [ i ]);
-                this.formatter.applyMeta ( templates [ i ].meta );
-            }
-        }
-
-        if ( assets ) {
-            this.assets = assets;
-        }
-        this.refreshBinding ();
-    }
-
-    //----------------------------------------------------------------//
-    async useDebugInventory () {
-
-        let template = TEST_SCHEMA;
         let schema = new Schema ();
-        await schema.applyTemplate ( template );
 
-        for ( let layoutName in template.layouts ) {
-            const layout = _.cloneDeep ( template.layouts [ layoutName ]);
-            for ( let command of layout.commands ) {
-                command.template = handlebars.compile ( command.template );
+        for ( let template of templates ) {
+            await schema.applyTemplate ( template );
+
+            for ( let layoutName in template.layouts ) {
+                const layout = _.cloneDeep ( template.layouts [ layoutName ]);
+                for ( let command of layout.commands ) {
+                    command.template = handlebars.compile ( command.template );
+                }
+                this.layouts [ layoutName ] = layout;
             }
-            this.layouts [ layoutName ] = layout;
+
+            for ( let name in template.fonts ) {
+
+                try {
+                    const url = template.fonts [ name ].url;
+
+                    console.log ( 'FETCHING FONT:', name, url );
+
+                    const response  = await this.revocableFetch ( url );
+                    const buffer    = await response.arrayBuffer ();
+                    this.fonts [ name ] = opentype.parse ( buffer );
+                }
+                catch ( error ) {
+                    console.log ( error );
+                }
+            }
         }
 
-        for ( let name in template.fonts ) {
-
-            try {
-                const url = template.fonts [ name ].url;
-
-                console.log ( 'FETCHING FONT:', name, url );
-
-                const response  = await this.revocableFetch ( url );
-                const buffer    = await response.arrayBuffer ();
-                this.fonts [ name ] = opentype.parse ( buffer );
-            }
-            catch ( error ) {
-                console.log ( error );
-            }
-        }
-
-        let assets = {};
+        assets = assets || {};
         for ( let assetType in schema.definitions ) {
 
             const definition = schema.definitions [ assetType ];
@@ -226,7 +218,6 @@ export class InventoryService extends Service {
 
         this.refreshBinding ( schema, assets );
         this.refreshAssetLayouts ();
-        this.finishLoading ();
     }
 
     //----------------------------------------------------------------//

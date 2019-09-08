@@ -112,9 +112,10 @@ public:
     shared_ptr < MinerInfo >        getMinerInfo            ( string accountName ) const;
     map < string, MinerInfo >       getMiners               () const;
     shared_ptr < MinerURLMap >      getMinerURLs            () const;
-    shared_ptr < Schema >           getSchema               ( string schemaName ) const;
+    shared_ptr < Schema >           getSchema               ( Schema::Index schemaIndex ) const;
+    Schema::Index                   getSchemaCount          () const;
     Schema::Index                   getSchemaIndex          ( string schemaName ) const;
-    list < Schema >                 getSchemas              () const;
+    string                          getSchemaString         ( Schema::Index schemaIndex ) const;
     UnfinishedBlockList             getUnfinished           ();
     void                            incrementNonce          ( const TransactionMaker& makerSignature );
     bool                            invoke                  ( string accountName, const AssetMethodInvocation& invocation );
@@ -127,7 +128,7 @@ public:
                                     Ledger                  ( Ledger& other );
                                     ~Ledger                 ();
     bool                            newAccount              ( string accountName, u64 balance, const CryptoKey& key );
-    bool                            publishSchema           ( string accountName, string schemaName, const Schema& schema );
+    bool                            publishSchema           ( string accountName, const Schema& schema, string schemaString );
     bool                            registerMiner           ( string accountName, string keyName, string url );
     bool                            renameAccount           ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
     void                            reset                   ();

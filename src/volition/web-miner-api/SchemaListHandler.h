@@ -31,15 +31,16 @@ public:
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         
-            list < Schema > schemas = ledger.getSchemas ();
-            list < Schema >::const_iterator schemaIt = schemas.cbegin ();
-            
             Poco::JSON::Array::Ptr jsonArray = new Poco::JSON::Array ();
-            for ( int i = 0; schemaIt != schemas.cend (); ++i, ++schemaIt ) {
-                const Schema& schema = *schemaIt;
-                jsonArray->set ( i, ToJSONSerializer::toJSON ( schema ));
+            Schema::Index schemaCount = ledger.getSchemaCount ();
+            for ( Schema::Index i = 0; i < schemaCount; ++i ) {
+                string schemaString = ledger.getSchemaString ( i );
+                
+                Poco::JSON::Parser parser;
+                Poco::JSON::Object::Ptr object = parser.parse ( schemaString ).extract < Poco::JSON::Object::Ptr >();
+                
+                jsonArray->set (( uint )i, object );
             }
-            
             jsonOut.set ( "schemas", jsonArray );
         }
         catch ( ... ) {

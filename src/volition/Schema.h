@@ -24,20 +24,19 @@ public:
         NULL_INDEX      = ( u64 )-1,
     };
 
+    typedef SerializableMap < string, AssetDefinition >     Definitions;
+    typedef SerializableMap < string, AssetMethod >         Methods;
+
 private:
 
     friend class Ledger;
     friend class LuaContext;
 
-    typedef SerializableMap < string, AssetDefinition >     Definitions;
-    typedef SerializableMap < string, AssetMethod >         Methods;
-
     string                  mName;
-    string                  mMeta;
     Definitions             mDefinitions;
     Methods                 mMethods;
     string                  mLua;
-
+    
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
@@ -45,8 +44,6 @@ private:
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "methods",           this->mMethods );
         serializer.serialize ( "lua",               this->mLua );
-        
-        serializer.stringFromTree ( "meta", this->mMeta );
     }
 
     //----------------------------------------------------------------//
@@ -56,15 +53,7 @@ private:
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "methods",           this->mMethods );
         serializer.serialize ( "lua",               this->mLua );
-        
-        if ( serializer.isDigest ()) {
-        
-            serializer.serialize ( "meta", this->mMeta );
-        }
-        else {
-            serializer.stringToTree ( "meta", this->mMeta );
-        }
-    }
+    }    
 };
 
 } // namespace Volition

@@ -296,6 +296,7 @@
 		CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */ = {isa = PBXBuildFile; fileRef = CDEDC20722BD57BC00C5643C /* AssetID.h */; };
 		CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20A22BD5AD800C5643C /* AssetID.cpp */; };
 		CDEDC20D22BD645B00C5643C /* TestAssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */; };
+		CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF4B7682325A94A0004392C /* BetaGetAssets.h */; };
 		CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7981E21EC3010002C4D80 /* FuncSquap.h */; };
 		CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7982121EC30B6002C4D80 /* ConstSquap.h */; };
 		CDF8AD5021F29045000E285F /* ExtendChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */; };
@@ -837,6 +838,7 @@
 		CDEDC20722BD57BC00C5643C /* AssetID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetID.h; path = src/volition/AssetID.h; sourceTree = "<group>"; };
 		CDEDC20A22BD5AD800C5643C /* AssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetID.cpp; path = src/volition/AssetID.cpp; sourceTree = "<group>"; };
 		CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestAssetID.cpp; path = src/volition/gtest/TestAssetID.cpp; sourceTree = "<group>"; };
+		CDF4B7682325A94A0004392C /* BetaGetAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BetaGetAssets.h; path = src/volition/transactions/BetaGetAssets.h; sourceTree = "<group>"; };
 		CDF7981E21EC3010002C4D80 /* FuncSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuncSquap.h; path = src/volition/FuncSquap.h; sourceTree = "<group>"; };
 		CDF7982121EC30B6002C4D80 /* ConstSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConstSquap.h; path = src/volition/ConstSquap.h; sourceTree = "<group>"; };
 		CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtendChainHandler.h; path = "src/volition/web-miner-api/ExtendChainHandler.h"; sourceTree = "<group>"; };
@@ -981,7 +983,6 @@
 		CD0C3E0F20C14410006E3B1C /* miner */ = {
 			isa = PBXGroup;
 			children = (
-				CDB8B3CD21ACC33A004EE816 /* webMinerAPI */,
 				CD36658920EB3BE0000E0B43 /* Miner.cpp */,
 				CD36658A20EB3BE0000E0B43 /* Miner.h */,
 				CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */,
@@ -1112,6 +1113,7 @@
 		CD5C62F320B4F7A70038EE98 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CDB8B3CD21ACC33A004EE816 /* api */,
 				CD4E80E021031D24007DA585 /* crypto */,
 				CD4665AA20BFE49000A02D55 /* ledger */,
 				CD0C3E0F20C14410006E3B1C /* miner */,
@@ -1204,14 +1206,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CDB8B3CD21ACC33A004EE816 /* webMinerAPI */ = {
+		CDB8B3CD21ACC33A004EE816 /* api */ = {
 			isa = PBXGroup;
 			children = (
 				CDB8B3E221ACC657004EE816 /* handlers */,
 				CDB8B3FC21ACC874004EE816 /* HTTPRequestHandlerFactory.cpp */,
 				CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */,
 			);
-			name = webMinerAPI;
+			name = api;
 			sourceTree = "<group>";
 		};
 		CDB8B3E221ACC657004EE816 /* handlers */ = {
@@ -1306,6 +1308,7 @@
 			children = (
 				CDBFD53A218B8999002AB0C3 /* AccountPolicy.h */,
 				CDBFD53B218B8999002AB0C3 /* AffirmKey.h */,
+				CDF4B7682325A94A0004392C /* BetaGetAssets.h */,
 				CD2AB81D230F3D5700805F70 /* GenesisBlock.h */,
 				CDBFD53D218B8999002AB0C3 /* GenesisMiner.h */,
 				CDBFD53E218B8999002AB0C3 /* KeyPolicy.h */,
@@ -1513,6 +1516,7 @@
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,
 				CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
+				CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */,
 				CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
 				CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */,

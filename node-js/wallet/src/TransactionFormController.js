@@ -361,6 +361,58 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
 }
 
 //================================================================//
+// TransactionFormController_PublishSchema
+//================================================================//
+export class TransactionFormController_PublishSchema extends TransactionFormController {
+
+    //----------------------------------------------------------------//
+    composeBody ( fieldValues ) {
+
+        let body = {};
+        body.maker          = this.formatBody ( fieldValues, MAKER_FORMAT );
+        body.schema         = JSON.parse ( this.fieldValues.schema );
+
+        return body;
+    }
+
+    //----------------------------------------------------------------//
+    constructor ( appState ) {
+        super ();
+
+        const type = TRANSACTION_TYPE.PUBLISH_SCHEMA;
+
+        const fields = [
+            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
+            inputType.textField         ( 'schema',         'Schema', 8 ),
+            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
+        ];
+
+        const format = {
+            maker:              MAKER_FORMAT,
+            schema:             'schema',
+        };
+
+        this.initialize ( appState, type, fields, format );
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    validate () {
+        super.validate ();
+
+        const fieldValues = this.fieldValues;
+        const fieldErrors = this.fieldErrors;
+
+        try {
+            this.schema = JSON.parse ( this.fieldValues.schema );
+        }
+        catch ( error ) {
+            fieldErrors.schema = 'Error parsing JSON.';
+        }
+    }
+}
+
+//================================================================//
 // TransactionFormController_RegisterMiner
 //================================================================//
 export class TransactionFormController_RegisterMiner extends TransactionFormController {
@@ -514,6 +566,7 @@ export function makeControllerForTransactionType ( appState, transactionType ) {
         case TRANSACTION_TYPE.BETA_GET_ASSETS:  return new TransactionFormController_BetaGetAssets ( appState );
         case TRANSACTION_TYPE.KEY_POLICY:       return new TransactionFormController_KeyPolicy ( appState );
         case TRANSACTION_TYPE.OPEN_ACCOUNT:     return new TransactionFormController_OpenAccount ( appState );
+        case TRANSACTION_TYPE.PUBLISH_SCHEMA:   return new TransactionFormController_PublishSchema ( appState );
         case TRANSACTION_TYPE.REGISTER_MINER:   return new TransactionFormController_RegisterMiner ( appState );
         case TRANSACTION_TYPE.RENAME_ACCOUNT:   return new TransactionFormController_RenameAccount ( appState );
         case TRANSACTION_TYPE.SEND_VOL:         return new TransactionFormController_SendVol ( appState );

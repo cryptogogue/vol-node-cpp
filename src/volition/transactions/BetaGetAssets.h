@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_PUBLISH_SCHEMA_H
-#define VOLITION_TRANSACTIONS_PUBLISH_SCHEMA_H
+#ifndef VOLITION_TRANSACTIONS_BETA_GET_ASSETS_H
+#define VOLITION_TRANSACTIONS_BETA_GET_ASSETS_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -12,38 +12,42 @@ namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// PublishSchema
+// BetaGetAssets
 //================================================================//
-class PublishSchema :
+class BetaGetAssets :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "PUBLISH_SCHEMA" )
+    TRANSACTION_TYPE ( "BETA_GET_ASSETS" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    Schema      mSchema;
-    string      mSchemaString;
+    u64         mNumAssets;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "schema",        this->mSchema );
-        serializer.stringFromTree ( "schema",   this->mSchemaString );
+        serializer.serialize ( "schema",        this->mNumAssets );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.stringToTree ( "schema",     this->mSchemaString );
+        serializer.serialize ( "schema",        this->mNumAssets );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
-        return ledger.publishSchema ( this->mMaker->getAccountName (), this->mSchema, this->mSchemaString );
+        Schema::Index schemaCount = ledger.getSchemaCount ();
+        for ( Schema::Index i = 0; i < schemaCount; ++i ) {
+            shared_ptr < Schema > schema = legder.getSchema ( i );
+            
+        }
+        
+        return true;
     }
 };
 

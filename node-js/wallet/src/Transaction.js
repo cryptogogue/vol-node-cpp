@@ -9,6 +9,7 @@ export const TRANSACTION_TYPE = {
     BETA_GET_ASSETS:    'BETA_GET_ASSETS',
     KEY_POLICY:         'KEY_POLICY',
     OPEN_ACCOUNT:       'OPEN_ACCOUNT',
+    PUBLISH_SCHEMA:     'PUBLISH_SCHEMA',
     REGISTER_MINER:     'REGISTER_MINER',
     RENAME_ACCOUNT:     'RENAME_ACCOUNT',
     RUN_SCRIPT:         'RUN_SCRIPT',
@@ -42,6 +43,7 @@ export class Transaction {
             case TRANSACTION_TYPE.BETA_GET_ASSETS:  return 'BETA Get Assets';
             case TRANSACTION_TYPE.KEY_POLICY:       return 'Key Policy';
             case TRANSACTION_TYPE.OPEN_ACCOUNT:     return 'Open Account';
+            case TRANSACTION_TYPE.PUBLISH_SCHEMA:   return 'Publish Schema';
             case TRANSACTION_TYPE.REGISTER_MINER:   return 'Register Miner';
             case TRANSACTION_TYPE.RENAME_ACCOUNT:   return 'Rename Account';
             case TRANSACTION_TYPE.RUN_SCRIPT:       return 'Run Script';

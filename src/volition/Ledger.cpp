@@ -57,6 +57,9 @@ bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
 
     if ( quantity == 0 ) return true;
 
+    LedgerKey KEY_FOR_ASSET_DEFINITION = FormatLedgerKey::forAssetDefinition ( assetType );
+    if ( !this->hasValue ( KEY_FOR_ASSET_DEFINITION )) return false;
+
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex == Account::NULL_INDEX ) return false;
 
@@ -262,7 +265,7 @@ SerializableList < Asset > Ledger::getInventory ( string accountName ) const {
     if ( accountIndex == Account::NULL_INDEX ) return assets;
 
     LedgerKey KEY_FOR_ACCOUNT_HEAD = FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_HEAD );
-    Asset::Index cursor = this->getValue < Asset::Index >( KEY_FOR_ACCOUNT_HEAD );
+    Asset::Index cursor = this->getValueOrFallback < Asset::Index >( KEY_FOR_ACCOUNT_HEAD, Asset::NULL_INDEX );
     
     while ( cursor != Asset::NULL_INDEX ) {
     
@@ -317,12 +320,21 @@ shared_ptr < Ledger::MinerURLMap > Ledger::getMinerURLs () const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Schema > Ledger::getSchema ( string schemaName ) const {
+shared_ptr < Schema > Ledger::getSchema ( Schema::Index schemaIndex ) const {
 
-    Schema::Index schemaIndex = this->getSchemaIndex ( schemaName );
-    if ( schemaIndex == Schema::NULL_INDEX ) return NULL;
+    string schemaString = this->getSchemaString ( schemaIndex );
+    if ( schemaString.size () > 0 ) {
+        shared_ptr < Schema > schema = make_shared < Schema >();
+        FromJSONSerializer::fromJSONString ( *schema, schemaString );
+        return schema;
+    }
+    return NULL;
+}
 
-    return this->getObjectOrNull < Schema >( FormatLedgerKey::forSchema ( schemaIndex ));
+//----------------------------------------------------------------//
+Schema::Index Ledger::getSchemaCount () const {
+
+    return this->getValue < Schema::Index >( FormatLedgerKey::forSchemaCount ());
 }
 
 //----------------------------------------------------------------//
@@ -333,16 +345,9 @@ Schema::Index Ledger::getSchemaIndex ( string schemaName ) const {
 }
 
 //----------------------------------------------------------------//
-list < Schema > Ledger::getSchemas () const {
+string Ledger::getSchemaString ( Schema::Index schemaIndex ) const {
 
-    list < Schema > schemaList;
-    const Schema::Index schemaCount = this->getValue < Schema::Index >( FormatLedgerKey::forSchemaCount ());
-    for ( Schema::Index i = 0; i < schemaCount; ++i ) {
-        shared_ptr < Schema > schema = this->getObjectOrNull < Schema >( FormatLedgerKey::forSchema ( i ));
-        assert ( schema );
-        schemaList.push_back ( *schema );
-    }
-    return schemaList;
+    return this->getValue < string >( FormatLedgerKey::forSchema ( schemaIndex ));
 }
 
 //----------------------------------------------------------------//
@@ -479,9 +484,11 @@ bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key 
 }
 
 //----------------------------------------------------------------//
-bool Ledger::publishSchema ( string accountName, string schemaName, const Schema& schema ) {
+bool Ledger::publishSchema ( string accountName, const Schema& schema, string schemaString ) {
 
     // TODO: check account permissions
+
+    string schemaName = schema.mName;
 
     LedgerKey KEY_FOR_SCHEMA_ALIAS = FormatLedgerKey::forSchemaAlias ( schemaName );
     if ( this->hasValue ( KEY_FOR_SCHEMA_ALIAS )) return false;
@@ -491,7 +498,7 @@ bool Ledger::publishSchema ( string accountName, string schemaName, const Schema
     Schema::Index schemaIndex = this->getValue < Schema::Index >( KEY_FOR_SCHEMA_COUNT );
     this->setValue < Schema::Index >( KEY_FOR_SCHEMA_COUNT, schemaIndex + 1 ); // increment counter
     
-    this->setObject < Schema >( FormatLedgerKey::forSchema ( schemaIndex ), schema );
+    this->setValue < string >( FormatLedgerKey::forSchema ( schemaIndex ), schemaString );
     
     // store the alias
     this->setValue < Account::Index >( KEY_FOR_SCHEMA_ALIAS, schemaIndex );
