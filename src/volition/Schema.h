@@ -53,7 +53,19 @@ private:
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "methods",           this->mMethods );
         serializer.serialize ( "lua",               this->mLua );
-    }    
+    }
+
+public:
+
+    //----------------------------------------------------------------//
+    const Definitions& getDefinitions () const {
+        return this->mDefinitions;
+    }
+
+    //----------------------------------------------------------------//
+    const Methods& getMethods () const {
+        return this->mMethods;
+    }
 };
 
 } // namespace Volition

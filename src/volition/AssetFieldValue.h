@@ -74,7 +74,13 @@ public:
         
         this->serializeValue ( serializer, "value" );
         
-//        serializer.serialize ( "alternatives", this->mAlternatives );
+        serializer.context ( "alternatives", [ this ]( AbstractSerializerTo& serializer ) {
+
+            map < string, AssetFieldVariant >::const_iterator alternativesIt = this->mAlternatives.cbegin ();
+            for ( ; alternativesIt != this->mAlternatives.cend (); ++alternativesIt ) {
+                alternativesIt->second.serializeValue ( serializer, alternativesIt->first );
+            }
+        });
     }
 };
 

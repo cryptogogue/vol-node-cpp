@@ -81,10 +81,10 @@ export class InventoryService extends Service {
         try {
             console.log ( 'FETCH INVENTORY', accountID, minerURL );
 
-            const schemaJSON        = await this.revocableFetchJSON ( minerURL + '/schemas', null, 5000 );
+            const schemaJSON        = await this.revocableFetchJSON ( minerURL + '/schemas', null, 20000 );
             console.log ( schemaJSON );
 
-            const inventoryJSON     = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory' );
+            const inventoryJSON     = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory', null, 20000 );
             console.log ( inventoryJSON );
 
             let assets = {};
@@ -205,18 +205,20 @@ export class InventoryService extends Service {
             }
         }
 
+        // TODO: properly handle layout field alternatives; doing this here is a big, fat hack
+        let assetsWithLayouts = {};
         assets = assets || {};
-        for ( let assetType in schema.definitions ) {
+        for ( let assetID in assets ) {
 
-            const definition = schema.definitions [ assetType ];
-            const layoutName = _.has ( definition.fields, 'layout' ) ? definition.fields.layout.value : '';
+            const asset = assets [ assetID ];
+            const layoutName = _.has ( asset.fields, 'layout' ) ? asset.fields.layout.value : '';
             
             if ( this.layouts [ layoutName ]) {
-                schema.addTestAsset ( assets, assetType );
+                assetsWithLayouts [ assetID ] = asset;
             }
         }
 
-        this.refreshBinding ( schema, assets );
+        this.refreshBinding ( schema, assetsWithLayouts );
         this.refreshAssetLayouts ();
     }
 

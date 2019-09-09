@@ -20,7 +20,7 @@ class Asset :
      public AbstractSerializable {
 public:
 
-    typedef map < string, AssetFieldValue > Fields;
+    typedef SerializableMap < string, AssetFieldValue > Fields;
 
     typedef u64 Index;
     enum {
@@ -63,20 +63,23 @@ public:
         
         serializer.serialize ( "type",      this->mType );
         serializer.serialize ( "owner",     this->mOwner );
+        serializer.serialize ( "fields",    this->mFields );
         
-        serializer.context ( "fields", [ this ]( const AbstractSerializerFrom& serializer ) {
-            
-            assert ( this->mDefinition );
-        
-            AssetDefinition::Fields::const_iterator definitionFieldsIt = this->mDefinition->mFields.cbegin ();
-            for ( ; definitionFieldsIt != this->mDefinition->mFields.cend (); ++definitionFieldsIt ) {
-            
-                string fieldName = definitionFieldsIt->first;
-                const AssetDefinitionField& definitionField = definitionFieldsIt->second;
-                
-                this->mFields [ fieldName ].serializeValue ( serializer, definitionField.getType (), fieldName );
-            }
-        });
+//        serializer.context ( "fields", [ this ]( const AbstractSerializerFrom& serializer )
+//
+//        serializer.context ( "fields", [ this ]( const AbstractSerializerFrom& serializer ) {
+//
+//            assert ( this->mDefinition );
+//
+//            AssetDefinition::Fields::const_iterator definitionFieldsIt = this->mDefinition->mFields.cbegin ();
+//            for ( ; definitionFieldsIt != this->mDefinition->mFields.cend (); ++definitionFieldsIt ) {
+//
+//                string fieldName = definitionFieldsIt->first;
+//                const AssetDefinitionField& definitionField = definitionFieldsIt->second;
+//                
+//                this->mFields [ fieldName ].serializeValue ( serializer, definitionField.getType (), fieldName );
+//            }
+//        });
     }
     
     //----------------------------------------------------------------//
@@ -88,16 +91,17 @@ public:
         serializer.serialize ( "assetID",   assetID );
         serializer.serialize ( "type",      this->mType );
         serializer.serialize ( "owner",     this->mOwner );
+        serializer.serialize ( "fields",    this->mFields );
         
-        serializer.context ( "fields", [ this ]( AbstractSerializerTo& serializer ) {
-            
-            assert ( this->mDefinition );
-        
-            map < string, AssetFieldValue >::const_iterator fieldsIt = this->mFields.cbegin ();
-            for ( ; fieldsIt != this->mFields.cend (); ++fieldsIt ) {
-                fieldsIt->second.serializeValue ( serializer, fieldsIt->first );
-            }
-        });
+//        serializer.context ( "fields", [ this ]( AbstractSerializerTo& serializer ) {
+//
+//            assert ( this->mDefinition );
+//
+//            map < string, AssetFieldValue >::const_iterator fieldsIt = this->mFields.cbegin ();
+//            for ( ; fieldsIt != this->mFields.cend (); ++fieldsIt ) {
+//                fieldsIt->second.serializeValue ( serializer, fieldsIt->first );
+//            }
+//        });
     }
 };
 

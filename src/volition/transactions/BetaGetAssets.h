@@ -28,14 +28,14 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "schema",        this->mNumAssets );
+        serializer.serialize ( "numAssets",     this->mNumAssets );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "schema",        this->mNumAssets );
+        serializer.serialize ( "numAssets",     this->mNumAssets );
     }
 
     //----------------------------------------------------------------//
@@ -43,8 +43,14 @@ public:
         
         Schema::Index schemaCount = ledger.getSchemaCount ();
         for ( Schema::Index i = 0; i < schemaCount; ++i ) {
-            shared_ptr < Schema > schema = legder.getSchema ( i );
+            shared_ptr < Schema > schema = ledger.getSchema ( i );
+            const Schema::Definitions& definitions = schema->getDefinitions ();
             
+            Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
+            for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
+            
+                ledger.awardAsset ( this->mMaker->getAccountName (), definitionIt->first, ( int )this->mNumAssets );
+            }
         }
         
         return true;

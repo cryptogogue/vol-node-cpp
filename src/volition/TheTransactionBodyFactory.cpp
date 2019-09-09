@@ -3,20 +3,6 @@
 
 #include <volition/Transactions.h>
 
-// ACCOUNT_POLICY (account, policy)
-// AFFIRM_KEY (account name, key name, policy name, (opt)key)
-// DELETE_KEY (account name, key name)
-// GENESIS_BLOCK ( identity )
-// GENESIS_MINER ( account name, key name, url, amount)
-// KEY_POLICY (account, policy, policy name)
-// OPEN_ACCOUNT (account name, master key, key name)
-// PUBLISH_SCHEMA (json, lua)
-// REGISTER_MINER (account name, url)
-// RUN_SCRIPT (...)
-// SELL_ASSETS (assets, buyer, seller, amount)
-// SEND_ASSETS (assets, from, to)
-// SEND_VOL (from, to)
-
 namespace Volition {
 
 //================================================================//
@@ -34,6 +20,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
 
     this->registerTransaction < Volition::Transactions::AccountPolicy >();
     this->registerTransaction < Volition::Transactions::AffirmKey >();
+    this->registerTransaction < Volition::Transactions::BetaGetAssets >();
     this->registerTransaction < Volition::Transactions::GenesisBlock >();
     this->registerTransaction < Volition::Transactions::GenesisMiner >();
     this->registerTransaction < Volition::Transactions::KeyPolicy >();
