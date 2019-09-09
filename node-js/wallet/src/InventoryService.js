@@ -12,10 +12,6 @@ import handlebars                               from 'handlebars';
 import _                                        from 'lodash';
 import * as opentype                            from 'opentype.js';
 
-import { TEST_SCHEMA }                          from './resources/sample-schema';
-
-const DEBUG = false;
-
 //================================================================//
 // InventoryService
 //================================================================//
@@ -62,12 +58,7 @@ export class InventoryService extends Service {
         this.layouts = {};
         this.fonts = {};
 
-        if ( DEBUG || ( !( appState.accountID && appState.node ))) {
-            this.update ([ TEST_SCHEMA ]);
-        }
-        else {
-            this.fetchInventory ( appState.accountID, appState.node );
-        }
+        this.fetchInventory ( appState.accountID, appState.node );
 
         observe ( appState, 'assetsUtilized', ( change ) => {
             console.log ( 'ASSETS UTILIZED DID CHANGE' );
