@@ -13,3 +13,33 @@
         page-break-before:  always;
     }
 }
+
+.ui.card {
+    float:      left;
+    margin:     1em;
+    padding:    5px;
+    width:      auto;
+}
+
+.ui.card .clicked {
+    border:     1px solid red;
+}
+
+.ui.card:first-child {
+    margin-top: 1em;
+}
+
+.asset-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* .ui.item.dropdown {
+    margin: 5px;
+}
+
+.ui.dropdown.test .menu {
+    padding:    5px;
+    width:      100%;
+} */

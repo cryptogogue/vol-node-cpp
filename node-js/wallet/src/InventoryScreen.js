@@ -14,6 +14,7 @@ import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
 import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
+import { SingleColumnContainerView }                        from './SingleColumnContainerView';
 
 const SORT_MODE = {
     ALPHA_ATOZ:     'ALPHA_ATOZ',
@@ -172,8 +173,10 @@ export const InventoryScreen = observer (( props ) => {
     return (
         <div>
             <div className = "no-print">
-                <NavigationBar navTitle = "Inventory" appState = { appState }/>
-                <InventoryFilterMenu appState = { appState } controller = { controller }/>
+                <SingleColumnContainerView>
+                    <NavigationBar navTitle = "Inventory" appState = { appState }/>
+                    <InventoryFilterMenu appState = { appState } controller = { controller }/>
+                </SingleColumnContainerView>
             </div>
             <If condition = { inventory.loading === false }>
                 <InventoryView

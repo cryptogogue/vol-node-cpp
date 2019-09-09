@@ -15,7 +15,7 @@ export const SingleColumnContainerView = ( props ) => {
 
     return (
 
-        <div>
+        <div style={{ margin:'5% 0 10px 0' }}>
             <style>{`
                 body > div,
                 body > div > div,

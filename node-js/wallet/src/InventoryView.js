@@ -11,7 +11,7 @@ import { action, computed, extendObservable, observable }   from 'mobx';
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
-import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
+import { Dropdown, Grid, Icon, List, Menu, Card, Group }           from 'semantic-ui-react';
 
 const DPI = 300;
 const MM_TO_IN = 0.03937007874;
@@ -199,9 +199,10 @@ export const InventoryView = observer (( props ) => {
         for ( let i in assetArray ) {
             const asset = assetArray [ i ];
             assetLayouts.push (
-                <div
+                <Card
                     key = { asset.assetID }
                     style = {{ float:'left' }}
+
                 >
                     <AssetView
                         assetId = { asset.assetID }
@@ -209,13 +210,13 @@ export const InventoryView = observer (( props ) => {
                         inches = 'true'
                         scale = '.75'
                     />
-                </div>
+                </Card>
             );
         }
     }
 
     return (
-        <div>
+        <div className="asset-wrapper">
             { assetLayouts }
         </div>
     );

@@ -6,6 +6,7 @@ import { fitText, JUSTIFY }         from './util/TextFitter';
 import handlebars                   from 'handlebars';
 import { observer }                 from 'mobx-react';
 import React                        from 'react';
+import { forOfStatement } from '@babel/types';
 
 //================================================================//
 // AssetView
@@ -24,6 +25,10 @@ export const AssetView = ( props ) => {
     const docHeight     = layout.height;
     const dpi           = layout.dpi;
 
+    const foob = () => {
+        console.log( JSON.stringify( inventory.assets[assetId], null, 4 ))
+    }
+
     return (
         <svg
             x = { docX }
@@ -32,6 +37,7 @@ export const AssetView = ( props ) => {
             height = { inches ? `${( docHeight * scale ) / dpi }in` : docHeight * scale }
             viewBox = { `0 0 ${ docWidth } ${ docHeight }` }
             preserveAspectRatio = 'none'
+            onClick = {() => { foob()}}
         >
             <g dangerouslySetInnerHTML = {{ __html: layout.svg }}/>
         </svg>
