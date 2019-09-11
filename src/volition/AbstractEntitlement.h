@@ -28,7 +28,7 @@ protected:
     //----------------------------------------------------------------//
     virtual bool                            AbstractEntitlement_check                   () const;
     virtual bool                            AbstractEntitlement_check                   ( double value ) const;
-//    virtual const AbstractEntitlement*      AbstractEntitlement_getChild                ( string name ) const;
+    virtual const AbstractEntitlement*      AbstractEntitlement_getChild                ( string name ) const;
     virtual bool                            AbstractEntitlement_isMatchOrSubsetOf       ( const AbstractEntitlement* abstractOther ) const = 0;
 
 public:
