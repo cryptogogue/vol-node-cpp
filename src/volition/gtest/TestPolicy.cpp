@@ -2,7 +2,7 @@
 // http://cryptogogue.com
 
 #include <gtest/gtest.h>
-#include <volition/EntitlementFactory.h>
+#include <volition/Entitlements.h>
 #include <volition/Policy.h>
 #include <volition/serialization/Serialization.h>
 
@@ -85,32 +85,57 @@ static const char* policy0_subset_json = JSON_STR ({
 //----------------------------------------------------------------//
 TEST ( Policy, entitlements ) {
     
-    SerializableSharedPtr < AbstractEntitlement, EntitlementFactory > policy0;
+    Entitlements policy0;
     FromJSONSerializer::fromJSONString ( policy0, policy0_json );
     
-    ASSERT_TRUE     ( policy0 != NULL );
-    ASSERT_TRUE     ( policy0->check ( "" )); // exists
-    ASSERT_TRUE     ( policy0->check ( "p0" )); // exists
-    ASSERT_TRUE     ( policy0->check ( "p0.p0" )); // leaf value is true
-    ASSERT_FALSE    ( policy0->check ( "p0.p1" )); // leaf value is false
-    ASSERT_FALSE    ( policy0->check ( "p0.p2" )); // doesn't exist
+    ASSERT_TRUE     ( policy0.check ( "" )); // exists
+    ASSERT_TRUE     ( policy0.check ( "p0" )); // exists
+    ASSERT_TRUE     ( policy0.check ( "p0.p0" )); // leaf value is true
+    ASSERT_FALSE    ( policy0.check ( "p0.p1" )); // leaf value is false
+    ASSERT_FALSE    ( policy0.check ( "p0.p2" )); // doesn't exist
     
-    ASSERT_FALSE    ( policy0->check ( "p1" )); // not a bool
-    ASSERT_TRUE     ( policy0->check ( "p1", 10000 )); // any value permitted
+    ASSERT_FALSE    ( policy0.check ( "p1" )); // not a bool
+    ASSERT_TRUE     ( policy0.check ( "p1", 10000 )); // any value permitted
     
-    ASSERT_FALSE    ( policy0->check ( "p2" )); // not a bool
-    ASSERT_TRUE     ( policy0->check ( "p2", 100 )); // lower bound is 10
-    ASSERT_FALSE    ( policy0->check ( "p2", 5 )); // lower bound is 10
+    ASSERT_FALSE    ( policy0.check ( "p2" )); // not a bool
+    ASSERT_TRUE     ( policy0.check ( "p2", 100 )); // lower bound is 10
+    ASSERT_FALSE    ( policy0.check ( "p2", 5 )); // lower bound is 10
     
-    ASSERT_FALSE    ( policy0->check ( "p3" )); // not a bool
-    ASSERT_TRUE     ( policy0->check ( "p3", 50 )); // upper bound is 100
-    ASSERT_FALSE    ( policy0->check ( "p3", 150 )); // lower bound is 100
+    ASSERT_FALSE    ( policy0.check ( "p3" )); // not a bool
+    ASSERT_TRUE     ( policy0.check ( "p3", 50 )); // upper bound is 100
+    ASSERT_FALSE    ( policy0.check ( "p3", 150 )); // lower bound is 100
     
-    ASSERT_TRUE ( policy0->isMatchOrSubsetOf ( policy0.get ())); // policy should match self
+    ASSERT_TRUE ( policy0.isMatchOrSubsetOf ( &policy0 )); // policy should match self
     
-    SerializableSharedPtr < AbstractEntitlement, EntitlementFactory > policy0_subset;
+    Entitlements policy0_subset;
     FromJSONSerializer::fromJSONString ( policy0_subset, policy0_subset_json );
     
-    ASSERT_TRUE ( policy0_subset->isMatchOrSubsetOf ( policy0.get ()));
-    ASSERT_FALSE ( policy0->isMatchOrSubsetOf ( policy0_subset.get ()));
+    ASSERT_TRUE ( policy0_subset.isMatchOrSubsetOf ( &policy0 ));
+    ASSERT_FALSE ( policy0.isMatchOrSubsetOf ( &policy0_subset ));
+}
+
+//----------------------------------------------------------------//
+TEST ( Policy, entitlements_affirm_path ) {
+    
+    Entitlements entitlements;
+    
+    entitlements.affirmPath ( "p0" );
+    ASSERT_TRUE ( entitlements.check ( "p0" ));
+    ASSERT_FALSE ( entitlements.check ( "p1" ));
+    ASSERT_FALSE ( entitlements.check ( "p0.p1" ));
+    
+    entitlements.affirmPath ( "p0.p1" );
+    ASSERT_TRUE ( entitlements.check ( "p0" ));
+    ASSERT_TRUE ( entitlements.check ( "p0.p1" ));
+    
+    entitlements.affirmPath ( "p0.p1.p2" );
+    ASSERT_TRUE ( entitlements.check ( "p0" ));
+    ASSERT_TRUE ( entitlements.check ( "p0.p1" ));
+    ASSERT_TRUE ( entitlements.check ( "p0.p1.p2" ));
+    
+    entitlements.affirmPath ( "p0.p1.p2", make_shared < BooleanEntitlement >( true ));
+    ASSERT_TRUE ( entitlements.check ( "p0.p1.p2" ));
+    
+    entitlements.affirmPath ( "p0.p1.p2.p3", make_shared < BooleanEntitlement >( true ));
+    ASSERT_TRUE ( entitlements.check ( "p0.p1.p2.p3" ));
 }

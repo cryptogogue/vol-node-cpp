@@ -155,8 +155,10 @@ public:
                 assert ( false );
         }
         
-        assert ( name.size () > 0 );
-        return Format::write ( "entitlements.%s.%s", typeString.c_str (), name.c_str ());
+        if ( name.size () > 0 ) {
+            return Format::write ( "entitlements.%s.%s", typeString.c_str (), name.c_str ());
+        }
+        return Format::write ( "entitlements.%s", typeString.c_str ());
     }
 
     //----------------------------------------------------------------//

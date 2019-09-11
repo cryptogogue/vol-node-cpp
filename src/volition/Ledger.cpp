@@ -8,6 +8,7 @@
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/LuaContext.h>
+#include <volition/TheMasterEntitlements.h>
 #include <volition/TransactionMaker.h>
 
 namespace Volition {
@@ -647,6 +648,9 @@ void Ledger::reset () {
     this->setValue < Asset::Index >( FormatLedgerKey::forAccountCount (), 0 );
     this->setValue < Schema::Index >( FormatLedgerKey::forSchemaCount (), 0 );
     this->setValue < Asset::Index >( FormatLedgerKey::forAssetCount (), 0 );
+    
+    this->setEntitlements ( AbstractPolicy::ACCOUNT_POLICY, "", TheMasterAccountEntitlements::get ());
+    this->setEntitlements ( AbstractPolicy::KEY_POLICY, "", TheMasterKeyEntitlements::get ());
 }
 
 //----------------------------------------------------------------//

@@ -145,6 +145,7 @@
 		CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD8232827B3005AC85D /* EntitlementFactory.h */; };
 		CD762ADC23284438005AC85D /* TestPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestPolicy.cpp */; };
 		CD762AE12328D109005AC85D /* Entitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AE02328D109005AC85D /* Entitlements.h */; };
+		CD762AE32328F7FF005AC85D /* TheMasterEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AE22328F7FF005AC85D /* TheMasterEntitlements.h */; };
 		CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1D0228F47DA000C2A54 /* FileSys.cpp */; };
 		CD85B1D3228F47DA000C2A54 /* FileSys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD85B1D1228F47DA000C2A54 /* FileSys.h */; };
 		CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */; };
@@ -706,6 +707,7 @@
 		CD762AD8232827B3005AC85D /* EntitlementFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntitlementFactory.h; path = src/volition/EntitlementFactory.h; sourceTree = "<group>"; };
 		CD762ADB23284438005AC85D /* TestPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestPolicy.cpp; path = src/volition/gtest/TestPolicy.cpp; sourceTree = "<group>"; };
 		CD762AE02328D109005AC85D /* Entitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entitlements.h; path = src/volition/Entitlements.h; sourceTree = "<group>"; };
+		CD762AE22328F7FF005AC85D /* TheMasterEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheMasterEntitlements.h; path = src/volition/TheMasterEntitlements.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFormatUtils.cpp; path = src/volition/gtest/TestFormatUtils.cpp; sourceTree = "<group>"; };
@@ -1052,6 +1054,7 @@
 				CDBFD558218BA145002AB0C3 /* Schema.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
 				CDC2B34120D1182400300A96 /* TheContext.h */,
+				CD762AE22328F7FF005AC85D /* TheMasterEntitlements.h */,
 			);
 			name = ledger;
 			sourceTree = "<group>";
@@ -1455,6 +1458,7 @@
 				CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */,
 				CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */,
 				CD4E81CE2105941A007DA585 /* TheTransactionBodyFactory.h in Headers */,
+				CD762AE32328F7FF005AC85D /* TheMasterEntitlements.h in Headers */,
 				CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */,
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,

@@ -5,6 +5,8 @@
 #define VOLITION_ENTITLEMENTS_H
 
 #include <volition/common.h>
+#include <volition/BooleanEntitlement.h>
+#include <volition/NumericEntitlement.h>
 #include <volition/PathEntitlement.h>
 
 namespace Volition {
