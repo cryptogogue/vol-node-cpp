@@ -11,22 +11,22 @@
 
 namespace Volition {
 
-#define TRANSACTION_TYPE(typeString)                            \
-    static constexpr const char* TYPE_STRING = typeString;      \
+#define TRANSACTION_TYPE(typeString)                                \
+    static constexpr const char* TYPE_STRING = typeString;          \
     string AbstractTransactionBody_typeString () const override {   \
-        return TYPE_STRING;                                     \
+        return TYPE_STRING;                                         \
     }
 
-#define TRANSACTION_WEIGHT(weight)                              \
-    static constexpr u64 WEIGHT = weight;                       \
+#define TRANSACTION_WEIGHT(weight)                                  \
+    static constexpr u64 WEIGHT = weight;                           \
     u64 AbstractTransactionBody_weight () const override {          \
-        return WEIGHT;                                          \
+        return WEIGHT;                                              \
     }
 
-#define TRANSACTION_MATURITY(maturity)                          \
-    static constexpr u64 MATURITY = maturity;                   \
+#define TRANSACTION_MATURITY(maturity)                              \
+    static constexpr u64 MATURITY = maturity;                       \
     u64 AbstractTransactionBody_maturity () const override {        \
-        return MATURITY;                                        \
+        return MATURITY;                                            \
     }
 
 class Transaction;

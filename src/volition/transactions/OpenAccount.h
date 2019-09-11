@@ -26,22 +26,29 @@ public:
     CryptoKey       mKey;           // key
     u64             mGrant;         // amount to fund
 
+    SerializableSharedPtr < AccountPolicy >     mAccountPolicy;
+    SerializableSharedPtr < KeyPolicy >         mKeyPolicy;
+
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "suffix",        this->mSuffix );
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "grant",         this->mGrant );
+        serializer.serialize ( "suffix",            this->mSuffix );
+        serializer.serialize ( "key",               this->mKey );
+        serializer.serialize ( "grant",             this->mGrant );
+        serializer.serialize ( "accountPolicy",     this->mAccountPolicy );
+        serializer.serialize ( "keyPolicy",         this->mKeyPolicy );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "suffix",        this->mSuffix );
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "grant",         this->mGrant );
+        serializer.serialize ( "suffix",            this->mSuffix );
+        serializer.serialize ( "key",               this->mKey );
+        serializer.serialize ( "grant",             this->mGrant );
+        serializer.serialize ( "accountPolicy",     this->mAccountPolicy );
+        serializer.serialize ( "keyPolicy",         this->mKeyPolicy );
     }
 
     //----------------------------------------------------------------//

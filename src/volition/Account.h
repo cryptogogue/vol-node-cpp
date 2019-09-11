@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/CryptoKey.h>
+#include <volition/Policy.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -20,7 +21,32 @@ public:
     friend class Ledger;
     friend class Account;
     
-    CryptoKey mKey;
+    CryptoKey   mKey;
+    KeyPolicy   mPolicy;
+
+    //----------------------------------------------------------------//
+    operator const AbstractPolicy& () const {
+        return this->mPolicy;
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "key",               this->mKey );
+        serializer.serialize ( "policy",            this->mPolicy );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "key",               this->mKey );
+        serializer.serialize ( "policy",            this->mPolicy );
+    }
+
+    //----------------------------------------------------------------//
+    const KeyPolicy& getPolicy () {
+        return this->mPolicy;
+    }
 
     //----------------------------------------------------------------//
     KeyAndPolicy () {
@@ -29,18 +55,6 @@ public:
     //----------------------------------------------------------------//
     KeyAndPolicy ( const CryptoKey& key ) :
         mKey ( key ) {
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "key",               this->mKey );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "key",               this->mKey );
     }
 };
 
@@ -60,13 +74,39 @@ private:
 
     friend class Ledger;
     
-    Index       mIndex;
-    u64         mBalance;
-    u64         mNonce;
+    Index           mIndex;
+    u64             mBalance;
+    u64             mNonce;
+    AccountPolicy   mPolicy;
 
     SerializableMap < string, KeyAndPolicy > mKeys;
 
 public:
+
+    //----------------------------------------------------------------//
+    operator const AbstractPolicy& () const {
+        return this->mPolicy;
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "index",             this->mIndex );
+        serializer.serialize ( "balance",           this->mBalance );
+        serializer.serialize ( "nonce",             this->mNonce );
+        serializer.serialize ( "keys",              this->mKeys );
+        serializer.serialize ( "policy",            this->mPolicy );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "index",             this->mIndex );
+        serializer.serialize ( "balance",           this->mBalance );
+        serializer.serialize ( "nonce",             this->mNonce );
+        serializer.serialize ( "keys",              this->mKeys );
+        serializer.serialize ( "policy",            this->mPolicy );
+    }
 
     //----------------------------------------------------------------//
     Account () :
@@ -104,36 +144,8 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "index",             this->mIndex );
-        serializer.serialize ( "balance",           this->mBalance );
-        serializer.serialize ( "nonce",             this->mNonce );
-        serializer.serialize ( "keys",              this->mKeys );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "index",             this->mIndex );
-        serializer.serialize ( "balance",           this->mBalance );
-        serializer.serialize ( "nonce",             this->mNonce );
-        serializer.serialize ( "keys",              this->mKeys );
-    }
-};
-
-//================================================================//
-// AccountKey
-//================================================================//
-class AccountKey {
-public:
-    
-    shared_ptr < Account >  mAccount;
-    const KeyAndPolicy*     mKeyAndPolicy;
-    
-    //----------------------------------------------------------------//
-    operator bool () const {
-        return ( this->mAccount && this->mKeyAndPolicy );
+    const AccountPolicy& getPolicy () {
+        return this->mPolicy;
     }
 };
 

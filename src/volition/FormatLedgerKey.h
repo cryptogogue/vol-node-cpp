@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/Account.h>
 #include <volition/Asset.h>
+#include <volition/Policy.h>
 #include <volition/Schema.h>
 
 namespace Volition {
@@ -45,17 +46,17 @@ public:
 class FormatLedgerKey {
 private:
 
-    static constexpr const char* ACCOUNT            = "account";
-    static constexpr const char* ACCOUNT_ALIAS      = "alias";
-    static constexpr const char* ACCOUNT_COUNTER    = "accountCounter";
-    static constexpr const char* BLOCK_KEY          = "block";
-    static constexpr const char* KEY_ID             = "keyID.";
-    static constexpr const char* ENTROPY            = "entropy";
-    static constexpr const char* IDENTITY           = "identity";
-    static constexpr const char* MINERS             = "miners";
-    static constexpr const char* MINER_INFO         = "minerInfo";
-    static constexpr const char* MINER_URLS         = "minerUrls";
-    static constexpr const char* UNFINISHED         = "unfinished";
+    static constexpr const char* ACCOUNT                = "account";
+    static constexpr const char* ACCOUNT_ALIAS          = "alias";
+    static constexpr const char* ACCOUNT_COUNTER        = "accountCounter";
+    static constexpr const char* BLOCK_KEY              = "block";
+    static constexpr const char* KEY_ID                 = "keyID.";
+    static constexpr const char* ENTROPY                = "entropy";
+    static constexpr const char* IDENTITY               = "identity";
+    static constexpr const char* MINERS                 = "miners";
+    static constexpr const char* MINER_INFO             = "minerInfo";
+    static constexpr const char* MINER_URLS             = "minerUrls";
+    static constexpr const char* UNFINISHED             = "unfinished";
 
 public:
 
@@ -86,6 +87,13 @@ public:
     static LedgerKey forAccountCount () {
 
         return "account.count";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey forAccountEntitlements ( string name ) {
+    
+        assert ( name.size () > 0 );
+        return Format::write ( "entitlements.account.%s", name.c_str ());
     }
 
     //----------------------------------------------------------------//
@@ -130,6 +138,25 @@ public:
     static LedgerKey forBlock () {
 
         return "block";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey forEntitlements ( AbstractPolicy::Type type, string name ) {
+    
+        string typeString;
+        switch ( type ) {
+            case AbstractPolicy::ACCOUNT_POLICY:
+                typeString = "account";
+                break;
+            case AbstractPolicy::KEY_POLICY:
+                typeString = "key";
+                break;
+            default:
+                assert ( false );
+        }
+        
+        assert ( name.size () > 0 );
+        return Format::write ( "entitlements.%s.%s", typeString.c_str (), name.c_str ());
     }
 
     //----------------------------------------------------------------//

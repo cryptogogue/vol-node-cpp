@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <cmath>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <inttypes.h>

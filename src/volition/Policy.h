@@ -5,33 +5,97 @@
 #define VOLITION_POLICY_H
 
 #include <volition/common.h>
-#include <volition/serialization/Serialization.h>
+#include <volition/Entitlements.h>
 
 namespace Volition {
 
 //================================================================//
-// Policy
+// AbstractPolicy
 //================================================================//
-class Policy :
+class AbstractPolicy :
     public AbstractSerializable {
+public:
+
+    enum Type {
+        ACCOUNT_POLICY,
+        KEY_POLICY,
+    };
+
 private:
 
+    string              mBase;
+    Entitlements        mRestrictions;
+
     //----------------------------------------------------------------//
-    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    virtual Type        AbstractPolicy_getType      () const = 0;
 
 public:
 
-//    static constexpr const char* KEY_FINAL                    = "KEY_FINAL";
-//    static constexpr const char* KEY_TRANSFER_LIMIT           = "KEY_TRANSFER_LIMIT";
-//
-//    static constexpr const char* ACCOUNT_LIMIT                = "ACCOUNT_LIMIT";
-//    static constexpr const char* ACCOUNT_OVERFLOW             = "ACCOUNT_OVERFLOW";
+    //----------------------------------------------------------------//
+    void applyRestrictions ( Entitlements& entitlements ) const {
+    
+        this->mRestrictions.apply ( entitlements );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        
+        serializer.serialize ( "base",          this->mBase );
+        serializer.serialize ( "restrictions",  this->mRestrictions );
+    }
 
     //----------------------------------------------------------------//
-                        Policy                              ();
-                        ~Policy                             ();
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        
+        serializer.serialize ( "base",          this->mBase );
+        serializer.serialize ( "restrictions",  this->mRestrictions );
+    }
+    
+    //----------------------------------------------------------------//
+    AbstractPolicy () {
+    }
+    
+    //----------------------------------------------------------------//
+    ~AbstractPolicy () {
+    }
+    
+    //----------------------------------------------------------------//
+    string getBase () const {
+    
+        return this->mBase;
+    }
+    
+    //----------------------------------------------------------------//
+    const Entitlements& getRestrictions () const {
+    
+        return this->mRestrictions;
+    }
+    
+    //----------------------------------------------------------------//
+    Type getType () const {
+    
+        return this->AbstractPolicy_getType ();
+    }
 };
+
+//================================================================//
+// PolicyWithType
+//================================================================//
+template < AbstractPolicy::Type TYPE >
+class PolicyWithType :
+    public AbstractPolicy {
+protected:
+
+    //----------------------------------------------------------------//
+    Type AbstractPolicy_getType () const override {
+        return TYPE;
+    }
+
+public:
+};
+
+typedef PolicyWithType < AbstractPolicy::ACCOUNT_POLICY > AccountPolicy;
+typedef PolicyWithType < AbstractPolicy::KEY_POLICY > KeyPolicy;
 
 } // namespace Volition
 #endif

@@ -24,6 +24,22 @@ class TransactionMaker;
 class TransactionMakerSignature;
 
 //================================================================//
+// AccountKey
+//================================================================//
+class AccountKey {
+public:
+    
+    shared_ptr < Account >              mAccount;
+    const KeyAndPolicy*                 mKeyAndPolicy;
+    shared_ptr < PathEntitlement >      mEntitlements;
+    
+    //----------------------------------------------------------------//
+    operator bool () const {
+        return ( this->mAccount && this->mKeyAndPolicy );
+    }
+};
+
+//================================================================//
 // UnfinishedBlock
 //================================================================//
 class UnfinishedBlock :
@@ -84,62 +100,67 @@ public:
 protected:
 
     //----------------------------------------------------------------//
-    void                            setAccount              ( string accountName, const Account& account );
-    void                            setMinerInfo            ( string accountName, const MinerInfo& minerInfo );
+    void                                setAccount                  ( string accountName, const Account& account );
+    void                                setMinerInfo                ( string accountName, const MinerInfo& minerInfo );
 
 public:
 
     typedef SerializableMap < string, string > MinerURLMap;
 
     //----------------------------------------------------------------//
-    bool                            accountPolicy           ( string accountName, const Policy* policy );
-    bool                            awardAsset              ( string accountName, string assetType, int quantity );
-    bool                            affirmKey               ( string accountName, string keyName, const CryptoKey& key, string policyName );
-    bool                            deleteKey               ( string accountName, string keyName );
-    bool                            genesisMiner            ( string accountName, u64 balance, const CryptoKey& key, string url );
-    shared_ptr < Account >          getAccount              ( string accountName ) const;
-    Account::Index                  getAccountIndex         ( string accountName ) const;
-    AccountKey                      getAccountKey           ( string accountName, string keyName ) const;
-    shared_ptr < AccountKeyLookup > getAccountKeyLookup     ( string keyID ) const;
-    string                          getAccountName          ( Account::Index accountIndex ) const;
-    shared_ptr < Asset >            getAsset                ( Asset::Index index ) const;
-    shared_ptr < Block >            getBlock                () const;
-    shared_ptr < Block >            getBlock                ( size_t height ) const;
-    Entropy                         getEntropy              () const;
-    string                          getIdentity             () const;
-    SerializableList < Asset >      getInventory            ( string accountName ) const;
-    shared_ptr < AssetMethod >      getMethod               ( string methodName ) const;
-    shared_ptr < MinerInfo >        getMinerInfo            ( string accountName ) const;
-    map < string, MinerInfo >       getMiners               () const;
-    shared_ptr < MinerURLMap >      getMinerURLs            () const;
-    shared_ptr < Schema >           getSchema               ( Schema::Index schemaIndex ) const;
-    Schema::Index                   getSchemaCount          () const;
-    Schema::Index                   getSchemaIndex          ( string schemaName ) const;
-    string                          getSchemaString         ( Schema::Index schemaIndex ) const;
-    UnfinishedBlockList             getUnfinished           ();
-    void                            incrementNonce          ( const TransactionMaker& makerSignature );
-    bool                            invoke                  ( string accountName, const AssetMethodInvocation& invocation );
-    static bool                     isAccountName           ( string accountName );
-    static bool                     isChildName             ( string accountName );
-    static bool                     isSuffix                ( string suffix );
-    bool                            isGenesis               () const;
-    bool                            keyPolicy               ( string accountName, string policyName, const Policy* policy );
-                                    Ledger                  ();
-                                    Ledger                  ( Ledger& other );
-                                    ~Ledger                 ();
-    bool                            newAccount              ( string accountName, u64 balance, const CryptoKey& key );
-    bool                            publishSchema           ( string accountName, const Schema& schema, string schemaString );
-    bool                            registerMiner           ( string accountName, string keyName, string url );
-    bool                            renameAccount           ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
-    void                            reset                   ();
-    bool                            sendVOL                 ( string accountName, string recipientName, u64 amount );
-    bool                            setAssetFieldValue      ( Asset::Index index, string fieldName, const AssetFieldValue& field );
-    void                            setBlock                ( const Block& block );
-    void                            setEntropyString        ( string entropy );
-    bool                            setIdentity             ( string identity );
-    void                            setUnfinished           ( const UnfinishedBlockList& unfinished );
-    bool                            sponsorAccount          ( string sponsorName, string suffix, u64 grant, const CryptoKey& key );
-    bool                            verify                  ( const AssetMethodInvocation& invocation ) const;
+    bool                                accountPolicy               ( string accountName, const Policy* policy );
+    bool                                awardAsset                  ( string accountName, string assetType, int quantity );
+    bool                                affirmKey                   ( string accountName, string keyName, const CryptoKey& key, string policyName );
+    bool                                deleteKey                   ( string accountName, string keyName );
+    bool                                genesisMiner                ( string accountName, u64 balance, const CryptoKey& key, string url );
+    shared_ptr < Account >              getAccount                  ( string accountName ) const;
+    Account::Index                      getAccountIndex             ( string accountName ) const;
+    AccountKey                          getAccountKey               ( string accountName, string keyName ) const;
+    shared_ptr < AccountKeyLookup >     getAccountKeyLookup         ( string keyID ) const;
+    string                              getAccountName              ( Account::Index accountIndex ) const;
+    shared_ptr < Asset >                getAsset                    ( Asset::Index index ) const;
+    shared_ptr < Entitlements >         getBaseEntitlements         ( const AbstractPolicy& policy ) const;
+    shared_ptr < Block >                getBlock                    () const;
+    shared_ptr < Block >                getBlock                    ( size_t height ) const;
+    Entitlements                        getEntitlements             ( const AbstractPolicy& policy ) const;
+    Entropy                             getEntropy                  () const;
+    string                              getIdentity                 () const;
+    SerializableList < Asset >          getInventory                ( string accountName ) const;
+    shared_ptr < AssetMethod >          getMethod                   ( string methodName ) const;
+    shared_ptr < MinerInfo >            getMinerInfo                ( string accountName ) const;
+    map < string, MinerInfo >           getMiners                   () const;
+    shared_ptr < MinerURLMap >          getMinerURLs                () const;
+    shared_ptr < Schema >               getSchema                   ( Schema::Index schemaIndex ) const;
+    Schema::Index                       getSchemaCount              () const;
+    Schema::Index                       getSchemaIndex              ( string schemaName ) const;
+    string                              getSchemaString             ( Schema::Index schemaIndex ) const;
+    UnfinishedBlockList                 getUnfinished               ();
+    void                                incrementNonce              ( const TransactionMaker& makerSignature );
+    bool                                invoke                      ( string accountName, const AssetMethodInvocation& invocation );
+    static bool                         isAccountName               ( string accountName );
+    static bool                         isChildName                 ( string accountName );
+    static bool                         isSuffix                    ( string suffix );
+    bool                                isGenesis                   () const;
+    bool                                isValidPolicy               ( const AbstractPolicy& policy ) const;
+    bool                                keyPolicy                   ( string accountName, string policyName, const Policy* policy );
+                                        Ledger                      ();
+                                        Ledger                      ( Ledger& other );
+                                        ~Ledger                     ();
+    bool                                newAccount                  ( string accountName, u64 balance, const CryptoKey& key );
+    bool                                publishSchema               ( string accountName, const Schema& schema, string schemaString );
+    bool                                registerMiner               ( string accountName, string keyName, string url );
+    bool                                renameAccount               ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
+    void                                reset                       ();
+    bool                                sendVOL                     ( string accountName, string recipientName, u64 amount );
+    void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
+    bool                                setAssetFieldValue          ( Asset::Index index, string fieldName, const AssetFieldValue& field );
+    void                                setBlock                    ( const Block& block );
+    void                                setEntitlements             ( AbstractPolicy::Type type, string name, const Entitlements& entitlements );
+    void                                setEntropyString            ( string entropy );
+    bool                                setIdentity                 ( string identity );
+    void                                setUnfinished               ( const UnfinishedBlockList& unfinished );
+    bool                                sponsorAccount              ( string sponsorName, string suffix, u64 grant, const CryptoKey& key );
+    bool                                verify                      ( const AssetMethodInvocation& invocation ) const;
 
     //----------------------------------------------------------------//
     template < typename TYPE >

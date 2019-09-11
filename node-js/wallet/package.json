@@ -29,6 +29,7 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "react-stripe-elements": "^2.0.3",
+    "saxen": "^8.1.0",
     "secp256k1": "^3.7.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.0",

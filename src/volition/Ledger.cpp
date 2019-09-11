@@ -228,6 +228,13 @@ shared_ptr < Asset > Ledger::getAsset ( Asset::Index index ) const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < Entitlements > Ledger::getBaseEntitlements ( const AbstractPolicy& policy ) const {
+    
+    LedgerKey KEY_FOR_ENTITLEMENTS = FormatLedgerKey::forEntitlements ( policy.getType (), policy.getBase ());
+    return this->getObjectOrNull < Entitlements >( KEY_FOR_ENTITLEMENTS );
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock () const {
 
     return this->getObjectOrNull < Block >( FormatLedgerKey::forBlock ());
@@ -241,6 +248,20 @@ shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
         snapshot.revert ( height );
     }
     return Ledger::getObjectOrNull < Block >( snapshot, FormatLedgerKey::forBlock ());
+}
+
+//----------------------------------------------------------------//
+Entitlements Ledger::getEntitlements ( const AbstractPolicy& policy ) const {
+
+    Entitlements entitlements;
+    
+    shared_ptr < Entitlements > baseEntitlements = this->getBaseEntitlements ( policy );
+    if ( baseEntitlements ) {
+    
+        entitlements = *baseEntitlements;
+        policy.applyRestrictions ( entitlements );
+    }
+    return entitlements;
 }
 
 //----------------------------------------------------------------//
@@ -425,6 +446,14 @@ bool Ledger::isSuffix ( string suffix ) {
 bool Ledger::isGenesis () const {
 
     return ( this->getVersion () == 0 );
+}
+
+//----------------------------------------------------------------//
+bool Ledger::isValidPolicy ( const AbstractPolicy& policy ) const {
+
+    shared_ptr < Entitlements > baseEntitlements = this->getBaseEntitlements ( policy );
+    if ( !baseEntitlements ) return false;
+    return policy.getRestrictions ().isMatchOrSubsetOf ( baseEntitlements.get ());
 }
 
 //----------------------------------------------------------------//
@@ -685,6 +714,13 @@ bool Ledger::setAssetFieldValue ( Asset::Index index, string fieldName, const As
 void Ledger::setBlock ( const Block& block ) {
     assert ( block.mHeight == this->getVersion ());
     this->setObject < Block >( FormatLedgerKey::forBlock (), block );
+}
+
+//----------------------------------------------------------------//
+void Ledger::setEntitlements ( AbstractPolicy::Type type, string name, const Entitlements& entitlements ) {
+
+    LedgerKey KEY_FOR_ENTITLEMENTS = FormatLedgerKey::forEntitlements ( type, name );
+    this->setObject < Entitlements >( KEY_FOR_ENTITLEMENTS, entitlements );
 }
 
 //----------------------------------------------------------------//
