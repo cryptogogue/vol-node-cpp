@@ -29,6 +29,10 @@
     margin-top: 1em;
 }
 
+.ui.card:last-child {
+    margin-bottom: auto;
+}
+
 .asset-wrapper {
     display: flex;
     flex-wrap: wrap;

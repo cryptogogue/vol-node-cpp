@@ -161,6 +161,18 @@ const InventoryPageView = ( props ) => {
 //================================================================//
 export const InventoryView = observer (( props ) => {
 
+    const [ selection, setSelection ] = useState ({});
+
+    const isSelected = ( asset ) => {
+        return selection [ asset.assetID ] || false;
+    }
+
+    const onclickCard = ( asset ) => {
+        const newSelection = Object.assign ({}, selection );
+        newSelection [ asset.assetID ] = !isSelected ( asset );
+        setSelection ( newSelection );
+    }
+
     const { controller, layout } = props;
 
     const inventory     = controller.inventory;
@@ -198,11 +210,12 @@ export const InventoryView = observer (( props ) => {
     else {
         for ( let i in assetArray ) {
             const asset = assetArray [ i ];
+            const color = isSelected ( asset ) ? 'red' : 'white';
             assetLayouts.push (
                 <Card
                     key = { asset.assetID }
-                    style = {{ float:'left' }}
-
+                    style = {{ float:'left', border:`2px solid ${ color }` }}
+                    onClick = {() => { onclickCard( asset )} }
                 >
                     <AssetView
                         assetId = { asset.assetID }
