@@ -12,6 +12,7 @@ import { observer }                                         from 'mobx-react';
 import { NavigationBar }                                    from './NavigationBar';
 import React, { useState }                                  from 'react';
 import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
+import { SingleColumnContainerView }                        from './SingleColumnContainerView';
 
 //================================================================//
 // CraftingScreen
@@ -56,7 +57,9 @@ export const CraftingScreen = observer (( props ) => {
 
     return (
         <div>
-            <NavigationBar navTitle = "Crafting" appState = { appState }/>
+            <SingleColumnContainerView>
+                <NavigationBar navTitle = "Crafting" appState = { appState }/>
+            </SingleColumnContainerView>
 
             <div>
                 <Dropdown

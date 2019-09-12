@@ -209,6 +209,7 @@ export const InventoryView = observer (( props ) => {
     }
     else {
         for ( let i in assetArray ) {
+            if ( i > 10 ) break;
             const asset = assetArray [ i ];
             const color = isSelected ( asset ) ? 'red' : 'white';
             assetLayouts.push (
