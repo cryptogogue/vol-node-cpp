@@ -13,7 +13,7 @@ import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
-import { Dropdown, Grid, Icon, List, Menu, Dimmer, Loader, Image, Segment } from 'semantic-ui-react';
+import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-react';
 import { SingleColumnContainerView }                        from './SingleColumnContainerView';
 
 const SORT_MODE = {

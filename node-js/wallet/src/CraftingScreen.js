@@ -11,7 +11,7 @@ import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import { NavigationBar }                                    from './NavigationBar';
 import React, { useState }                                  from 'react';
-import { Dropdown, Grid, Icon, List, Menu }                 from 'semantic-ui-react';
+import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-react';
 import { SingleColumnContainerView }                        from './SingleColumnContainerView';
 
 //================================================================//
@@ -33,7 +33,11 @@ export const CraftingScreen = observer (( props ) => {
     }
 
     if ( inventory.loading === true ) {
-        return (<div>{ 'LOADING' }</div>);
+        return (
+            <div>
+                <Loader active inline='centered' size='massive' style={{marginTop:'5%'}}>Loading Assets</Loader>
+            </div>
+        );
     }
 
     const isValid = inventory.methodIsValid ( methodNameFromEndpoint );
@@ -59,19 +63,19 @@ export const CraftingScreen = observer (( props ) => {
         <div>
             <SingleColumnContainerView>
                 <NavigationBar navTitle = "Crafting" appState = { appState }/>
-            </SingleColumnContainerView>
 
-            <div>
-                <Dropdown
-                    placeholder = "Select Method"
-                    fluid
-                    search
-                    selection
-                    options = { dropdownOptions }
-                    onChange = {( event, data ) => { onSelectionChanged ( data.value )}}
-                    defaultValue = { methodNameFromEndpoint !== '' ? methodNameFromEndpoint : null }
-                />
-            </div>
+                <div>
+                    <Dropdown
+                        placeholder = "Select Method"
+                        fluid
+                        search
+                        selection
+                        options = { dropdownOptions }
+                        onChange = {( event, data ) => { onSelectionChanged ( data.value )}}
+                        defaultValue = { methodNameFromEndpoint !== '' ? methodNameFromEndpoint : null }
+                    />
+                </div>
+            </SingleColumnContainerView>
 
             <If condition = { isValid }>
                 <CraftingForm

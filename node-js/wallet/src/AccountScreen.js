@@ -43,7 +43,7 @@ const AccountDetailsView = observer (( props ) => {
                 
                 { appState.accountID }
 
-                <Modal size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
+                <Modal style={{ height:'auto' }} size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
                     <Modal.Content>
                         <center>
                             <h3>Public Key</h3>
@@ -135,6 +135,9 @@ export const AccountScreen = observer (( props ) => {
 
     return (
         <SingleColumnContainerView>
+            <div style={{ height:'20px', backgroundColor:'LightSlateGray', position:'fixed',top:'0',color:'white',left:'0',width:'100%' }}>
+                Network: { appState.nodeInfo.identity || 'UNKNOWN' }
+            </div>
 
             <NavigationBar navTitle = "Accounts" appState = { appState }/>
 

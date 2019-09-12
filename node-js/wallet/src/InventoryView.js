@@ -11,7 +11,10 @@ import { action, computed, extendObservable, observable }   from 'mobx';
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
-import { Dropdown, Grid, Icon, List, Menu, Card, Group }           from 'semantic-ui-react';
+import { Dropdown, Grid, Icon, List, Menu, Card, Group }    from 'semantic-ui-react';
+
+import { FixedSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
 
 const DPI = 300;
 const MM_TO_IN = 0.03937007874;
@@ -161,7 +164,7 @@ const InventoryPageView = ( props ) => {
 //================================================================//
 export const InventoryView = observer (( props ) => {
 
-    const [ selection, setSelection ] = useState ({});
+    const [ selection, setSelection ]   = useState ({});
 
     const isSelected = ( asset ) => {
         return selection [ asset.assetID ] || false;
@@ -230,7 +233,7 @@ export const InventoryView = observer (( props ) => {
     }
 
     return (
-        <div className="asset-wrapper">
+        <div className = "asset-wrapper">
             { assetLayouts }
         </div>
     );
