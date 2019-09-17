@@ -20,25 +20,36 @@ export class AccountInfoService extends Service {
 
         observe ( appState, 'accountID', ( change ) => {
             this.revokeAll ();
-            this.syncAccountBalance ( 5000 );
+            this.syncAccountInfo ( 5000 );
         });
-        this.syncAccountBalance ( 5000 );
+        this.syncAccountInfo ( 5000 );
     }
 
     //----------------------------------------------------------------//
     @action
-    syncAccountBalance ( delay ) {
+    syncAccountInfo ( delay ) {
 
         if ( this.appState.accountID.length === 0 ) return;
 
-        let updateBalance = async () => {
+        let updateInfo = async () => {
 
             try {
-                const data = await this.revocableFetchJSON ( this.appState.node + '/accounts/' + this.appState.accountID );
 
-                if ( data.account && ( data.account.accountName === this.appState.accountID )) {
-                    this.appState.setAccountInfo ( data.account.balance, data.account.nonce );
-                    this.appState.confirmTransactions ( data.account.nonce );
+                const accountID = this.appState.accountID;
+                const data = await this.revocableFetchJSON ( this.appState.node + '/accounts/' + accountID );
+
+                const account = data.account;
+                const entitlements = data.entitlements;
+
+                if ( account ) {
+
+                    this.appState.setAccountInfo ( account.balance, account.nonce );
+                    this.appState.updateAccount ( account, entitlements );
+                    this.appState.confirmTransactions ( account.nonce );
+
+                    if ( account.name !== accountID ) {
+                        this.appState.renameAccount ( accountID, account.name );
+                    }
                 }
             }
             catch ( error ) {
@@ -46,6 +57,6 @@ export class AccountInfoService extends Service {
                 throw error;
             }
         }
-        this.revocablePromiseWithBackoff (() => updateBalance (), delay, true );
+        this.revocablePromiseWithBackoff (() => updateInfo (), delay, true );
     }
 }

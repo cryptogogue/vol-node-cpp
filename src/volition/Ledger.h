@@ -6,18 +6,22 @@
 
 #include <volition/common.h>
 #include <volition/Account.h>
+#include <volition/AccountEntitlements.h>
 #include <volition/Asset.h>
 #include <volition/Entropy.h>
 #include <volition/FormatLedgerKey.h>
+#include <volition/KeyEntitlements.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
+class AccountEntitlements;
 class AssetFieldValue;
 class AssetMethod;
 class AssetMethodInvocation;
 class Block;
+class KeyEntitlements;
 class Policy;
 class Schema;
 class TransactionMaker;
@@ -108,9 +112,8 @@ public:
     typedef SerializableMap < string, string > MinerURLMap;
 
     //----------------------------------------------------------------//
-    bool                                accountPolicy               ( string accountName, const Policy* policy );
+    bool                                affirmKey                   ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
     bool                                awardAsset                  ( string accountName, string assetType, int quantity );
-    bool                                affirmKey                   ( string accountName, string keyName, const CryptoKey& key, string policyName );
     bool                                deleteKey                   ( string accountName, string keyName );
     bool                                genesisMiner                ( string accountName, u64 balance, const CryptoKey& key, string url );
     shared_ptr < Account >              getAccount                  ( string accountName ) const;
@@ -119,10 +122,8 @@ public:
     shared_ptr < AccountKeyLookup >     getAccountKeyLookup         ( string keyID ) const;
     string                              getAccountName              ( Account::Index accountIndex ) const;
     shared_ptr < Asset >                getAsset                    ( Asset::Index index ) const;
-    shared_ptr < Entitlements >         getBaseEntitlements         ( const AbstractPolicy& policy ) const;
     shared_ptr < Block >                getBlock                    () const;
     shared_ptr < Block >                getBlock                    ( size_t height ) const;
-    Entitlements                        getEntitlements             ( const AbstractPolicy& policy ) const;
     Entropy                             getEntropy                  () const;
     string                              getIdentity                 () const;
     SerializableList < Asset >          getInventory                ( string accountName ) const;
@@ -141,12 +142,10 @@ public:
     static bool                         isChildName                 ( string accountName );
     static bool                         isSuffix                    ( string suffix );
     bool                                isGenesis                   () const;
-    bool                                isValidPolicy               ( const AbstractPolicy& policy ) const;
-    bool                                keyPolicy                   ( string accountName, string policyName, const Policy* policy );
                                         Ledger                      ();
                                         Ledger                      ( Ledger& other );
                                         ~Ledger                     ();
-    bool                                newAccount                  ( string accountName, u64 balance, const CryptoKey& key );
+    bool                                newAccount                  ( string accountName, u64 balance, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
     bool                                publishSchema               ( string accountName, const Schema& schema, string schemaString );
     bool                                registerMiner               ( string accountName, string keyName, string url );
     bool                                renameAccount               ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
@@ -155,12 +154,34 @@ public:
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
     bool                                setAssetFieldValue          ( Asset::Index index, string fieldName, const AssetFieldValue& field );
     void                                setBlock                    ( const Block& block );
-    void                                setEntitlements             ( AbstractPolicy::Type type, string name, const Entitlements& entitlements );
+    void                                setEntitlements             ( string name, const Entitlements& entitlements );
     void                                setEntropyString            ( string entropy );
     bool                                setIdentity                 ( string identity );
+    bool                                setKeyBequest               ( string accountName, string keyName, const Policy* bequest );
+    void                                serializeEntitlements       ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setUnfinished               ( const UnfinishedBlockList& unfinished );
-    bool                                sponsorAccount              ( string sponsorName, string suffix, u64 grant, const CryptoKey& key );
+    bool                                sponsorAccount              ( string sponsorName, string keyName, string suffix, u64 grant, const CryptoKey& key, const Policy* keyPolicy, const Policy* accountPolicy );
     bool                                verify                      ( const AssetMethodInvocation& invocation ) const;
+
+    //----------------------------------------------------------------//
+    template < typename ENTITLEMENTS_FAMILY >
+    Entitlements getEntitlements ( string name ) const {
+        
+        if ( name.size () == 0 ) {
+            return *ENTITLEMENTS_FAMILY::getMasterEntitlements ();
+        }
+        LedgerKey KEY_FOR_ENTITLEMENTS = FormatLedgerKey::forEntitlements ( name );
+        shared_ptr < Entitlements > entitlements = this->getObjectOrNull < Entitlements >( KEY_FOR_ENTITLEMENTS );
+        return entitlements ? *entitlements : Entitlements ();
+    }
+
+    //----------------------------------------------------------------//
+    template < typename ENTITLEMENTS_FAMILY >
+    Entitlements getEntitlements ( const Policy& policy ) const {
+        
+        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy.getBase ());
+        return *policy.applyRestrictions ( entitlements );
+    }
 
     //----------------------------------------------------------------//
     template < typename TYPE >
@@ -180,6 +201,48 @@ public:
             return object;
         }
         return NULL;
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename ENTITLEMENTS_FAMILY >
+    bool isMoreRestrictivePolicy ( const Policy& policy, const Policy& restriction ) const {
+
+        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy );
+        Entitlements restrictionEntitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( restriction );
+        
+        return entitlements.isMatchOrSubsetOf ( &restrictionEntitlements );
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename ENTITLEMENTS_FAMILY >
+    bool isValidPolicy ( const Policy& policy ) const {
+
+        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy.getBase ());
+        return policy.isMatchOrSubsetOf ( entitlements );
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename ENTITLEMENTS_FAMILY >
+    bool isValidPolicy ( const Policy& policy, const Policy& restriction ) const {
+
+        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy.getBase ());
+        if ( !policy.isMatchOrSubsetOf ( entitlements )) return false;
+        entitlements = *policy.applyRestrictions ( entitlements );
+        
+        Entitlements restrictionEntitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( restriction );
+        return entitlements.isMatchOrSubsetOf ( &restrictionEntitlements );
+    }
+    
+    //----------------------------------------------------------------//
+    template < typename ENTITLEMENTS_FAMILY >
+    const Policy* resolveBequest ( const Policy& sponsor, const Policy* bequest, const Policy* proposed ) const {
+
+        const Policy* selection = bequest ? bequest : &sponsor;
+        if ( proposed ) {
+            if ( !this->isValidPolicy < ENTITLEMENTS_FAMILY >( *proposed, *selection )) return NULL;
+            return proposed;
+        }
+        return selection;
     }
     
     //----------------------------------------------------------------//

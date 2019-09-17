@@ -21,11 +21,12 @@ public:
     friend class Ledger;
     friend class Account;
     
-    CryptoKey   mKey;
-    KeyPolicy   mPolicy;
+    CryptoKey                           mKey;
+    Policy                              mPolicy;
+    SerializableSharedPtr < Policy >    mBequest;
 
     //----------------------------------------------------------------//
-    operator const AbstractPolicy& () const {
+    operator const Policy& () const {
         return this->mPolicy;
     }
 
@@ -34,6 +35,7 @@ public:
     
         serializer.serialize ( "key",               this->mKey );
         serializer.serialize ( "policy",            this->mPolicy );
+        serializer.serialize ( "bequest",           this->mBequest );
     }
     
     //----------------------------------------------------------------//
@@ -41,10 +43,16 @@ public:
     
         serializer.serialize ( "key",               this->mKey );
         serializer.serialize ( "policy",            this->mPolicy );
+        serializer.serialize ( "bequest",           this->mBequest );
     }
 
     //----------------------------------------------------------------//
-    const KeyPolicy& getPolicy () {
+    const Policy* getBequest () const {
+        return this->mBequest.get ();
+    }
+
+    //----------------------------------------------------------------//
+    const Policy& getPolicy () {
         return this->mPolicy;
     }
 
@@ -53,8 +61,9 @@ public:
     }
     
     //----------------------------------------------------------------//
-    KeyAndPolicy ( const CryptoKey& key ) :
-        mKey ( key ) {
+    KeyAndPolicy ( const CryptoKey& key, const Policy& policy ) :
+        mKey ( key ),
+        mPolicy ( policy ) {
     }
 };
 
@@ -74,17 +83,19 @@ private:
 
     friend class Ledger;
     
-    Index           mIndex;
-    u64             mBalance;
-    u64             mNonce;
-    AccountPolicy   mPolicy;
+    Index                               mIndex;
+    string                              mName;
+    u64                                 mBalance;
+    u64                                 mNonce;
+    Policy                              mPolicy;
+    SerializableSharedPtr < Policy >    mBequest;
 
     SerializableMap < string, KeyAndPolicy > mKeys;
 
 public:
 
     //----------------------------------------------------------------//
-    operator const AbstractPolicy& () const {
+    operator const Policy& () const {
         return this->mPolicy;
     }
 
@@ -92,20 +103,24 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
         serializer.serialize ( "index",             this->mIndex );
+        serializer.serialize ( "name",              this->mName );
         serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "nonce",             this->mNonce );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
+        serializer.serialize ( "bequest",           this->mBequest );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
         serializer.serialize ( "index",             this->mIndex );
+        serializer.serialize ( "name",              this->mName );
         serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "nonce",             this->mNonce );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
+        serializer.serialize ( "bequest",           this->mBequest );
     }
 
     //----------------------------------------------------------------//
@@ -120,6 +135,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    const Policy* getBequest () const {
+        return this->mBequest.get ();
+    }
+
+    //----------------------------------------------------------------//
     const KeyAndPolicy* getKeyAndPolicyOrNull ( string keyName ) const {
     
         map < string, KeyAndPolicy >::const_iterator keyAndPolicyIt = this->mKeys.find ( keyName );
@@ -130,11 +150,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void getKeys ( map < string, CryptoKey >& keys ) const {
+    void getKeys ( map < string, KeyAndPolicy >& keys ) const {
     
         map < string, KeyAndPolicy >::const_iterator keyIt = this->mKeys.cbegin ();
         for ( ; keyIt != this->mKeys.end (); ++keyIt ) {
-            keys [ keyIt->first ] = keyIt->second.mKey;
+            keys [ keyIt->first ] = keyIt->second;
         }
     }
     
@@ -144,7 +164,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    const AccountPolicy& getPolicy () {
+    const Policy& getPolicy () {
         return this->mPolicy;
     }
 };

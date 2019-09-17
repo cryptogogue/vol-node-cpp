@@ -143,9 +143,8 @@
 		CD762AD6232826D7005AC85D /* NumericEntitlement.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD3232826D7005AC85D /* NumericEntitlement.h */; };
 		CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762AD7232827B3005AC85D /* EntitlementFactory.cpp */; };
 		CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD8232827B3005AC85D /* EntitlementFactory.h */; };
-		CD762ADC23284438005AC85D /* TestPolicy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestPolicy.cpp */; };
+		CD762ADC23284438005AC85D /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
 		CD762AE12328D109005AC85D /* Entitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AE02328D109005AC85D /* Entitlements.h */; };
-		CD762AE32328F7FF005AC85D /* TheMasterEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AE22328F7FF005AC85D /* TheMasterEntitlements.h */; };
 		CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1D0228F47DA000C2A54 /* FileSys.cpp */; };
 		CD85B1D3228F47DA000C2A54 /* FileSys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD85B1D1228F47DA000C2A54 /* FileSys.h */; };
 		CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */; };
@@ -262,6 +261,9 @@
 		CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E6820C86FBA006E3B1C /* main-util.cpp */; };
 		CDD36D012162A415004FC222 /* Format.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD36D002162A415004FC222 /* Format.h */; };
 		CDD36D032162A496004FC222 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36D022162A496004FC222 /* Format.cpp */; };
+		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
+		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
+		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -705,9 +707,8 @@
 		CD762AD3232826D7005AC85D /* NumericEntitlement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NumericEntitlement.h; path = src/volition/NumericEntitlement.h; sourceTree = "<group>"; };
 		CD762AD7232827B3005AC85D /* EntitlementFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntitlementFactory.cpp; path = src/volition/EntitlementFactory.cpp; sourceTree = "<group>"; };
 		CD762AD8232827B3005AC85D /* EntitlementFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntitlementFactory.h; path = src/volition/EntitlementFactory.h; sourceTree = "<group>"; };
-		CD762ADB23284438005AC85D /* TestPolicy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestPolicy.cpp; path = src/volition/gtest/TestPolicy.cpp; sourceTree = "<group>"; };
+		CD762ADB23284438005AC85D /* TestEntitlements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestEntitlements.cpp; path = src/volition/gtest/TestEntitlements.cpp; sourceTree = "<group>"; };
 		CD762AE02328D109005AC85D /* Entitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entitlements.h; path = src/volition/Entitlements.h; sourceTree = "<group>"; };
-		CD762AE22328F7FF005AC85D /* TheMasterEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheMasterEntitlements.h; path = src/volition/TheMasterEntitlements.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFormatUtils.cpp; path = src/volition/gtest/TestFormatUtils.cpp; sourceTree = "<group>"; };
@@ -820,6 +821,9 @@
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
 		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
 		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
+		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
+		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
+		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -1030,6 +1034,7 @@
 			isa = PBXGroup;
 			children = (
 				CD63A1DA22B2244600D5C801 /* Account.h */,
+				CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */,
 				CDB8B3C521AC7DB8004EE816 /* Asset.h */,
 				CDEDC20A22BD5AD800C5643C /* AssetID.cpp */,
 				CDEDC20722BD57BC00C5643C /* AssetID.h */,
@@ -1044,6 +1049,7 @@
 				CDC2B33620CE112F00300A96 /* Chain.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
 				CD60495023188C1C0067F96E /* FormatLedgerKey.h */,
+				CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */,
 				CDC2B31420CCAD2400300A96 /* Ledger.cpp */,
 				CDC2B31520CCAD2400300A96 /* Ledger.h */,
 				CDF8AD5A21F52B34000E285F /* LuaContext.cpp */,
@@ -1054,7 +1060,6 @@
 				CDBFD558218BA145002AB0C3 /* Schema.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
 				CDC2B34120D1182400300A96 /* TheContext.h */,
-				CD762AE22328F7FF005AC85D /* TheMasterEntitlements.h */,
 			);
 			name = ledger;
 			sourceTree = "<group>";
@@ -1092,7 +1097,7 @@
 				CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */,
 				CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
-				CD762ADB23284438005AC85D /* TestPolicy.cpp */,
+				CD762ADB23284438005AC85D /* TestEntitlements.cpp */,
 				CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */,
 				CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */,
 			);
@@ -1171,6 +1176,7 @@
 				CD762AD7232827B3005AC85D /* EntitlementFactory.cpp */,
 				CD762AD8232827B3005AC85D /* EntitlementFactory.h */,
 				CD762AD3232826D7005AC85D /* NumericEntitlement.h */,
+				CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */,
 				CD762AD2232826D7005AC85D /* PathEntitlement.h */,
 			);
 			name = entitlements;
@@ -1458,8 +1464,8 @@
 				CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */,
 				CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */,
 				CD4E81CE2105941A007DA585 /* TheTransactionBodyFactory.h in Headers */,
-				CD762AE32328F7FF005AC85D /* TheMasterEntitlements.h in Headers */,
 				CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */,
+				CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */,
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,
@@ -1497,6 +1503,7 @@
 				CDBFD54B218B8999002AB0C3 /* OpenAccount.h in Headers */,
 				CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */,
 				CDBFD54D218B8999002AB0C3 /* RegisterMiner.h in Headers */,
+				CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */,
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
 				CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */,
 				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,
@@ -1930,7 +1937,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CD762ADC23284438005AC85D /* TestPolicy.cpp in Sources */,
+				CD762ADC23284438005AC85D /* TestEntitlements.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1939,6 +1946,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
+				CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */,
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,

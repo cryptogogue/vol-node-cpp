@@ -33,12 +33,12 @@ public:
 
         shared_ptr < Account > account = ledger.getAccount ( accountName );
         if ( account ) {
-            Poco::JSON::Object::Ptr accountJSON = new Poco::JSON::Object ();
-            accountJSON->set ( "accountName", accountName.c_str ());
-            accountJSON->set ( "balance", ( int )account->getBalance ());
-            accountJSON->set ( "nonce", ( int )account->getNonce ());
-
-            jsonOut.set ( "account", accountJSON );
+            jsonOut.set ( "account", ToJSONSerializer::toJSON ( *account ));
+            
+            ToJSONSerializer entitlements;
+            ledger.serializeEntitlements ( *account, entitlements );
+            jsonOut.set ( "entitlements", entitlements );
+            
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;

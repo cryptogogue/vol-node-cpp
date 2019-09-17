@@ -88,7 +88,7 @@ export class TransactionFormController extends Service {
         }
 
         fieldValues.makerAccountName    = appState.accountID;
-        fieldValues.makerKeyName        = appState.getDefaultAccountKeyName (),
+        fieldValues.makerKeyName        = appState.keyName,
         fieldValues.makerNonce          = -1;
 
         extendObservable ( this, {
@@ -106,13 +106,6 @@ export class TransactionFormController extends Service {
     get isCompleteAndErrorFree () {
 
         return this.isComplete && ( Object.keys ( this.fieldErrors ).length === 0 );
-    }
-
-    //----------------------------------------------------------------//
-    isUserEditableField ( name ) {
-
-        if ( name === 'makerAccountName' ) return false;
-        if ( name === 'makerNonce' ) return false;
     }
 
     //----------------------------------------------------------------//
@@ -162,7 +155,6 @@ export class TransactionFormController_AccountPolicy extends TransactionFormCont
         const type = TRANSACTION_TYPE.ACCOUNT_POLICY;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.stringField       ( 'policyName',     'Policy Name' ),
             inputType.textField         ( 'policy',         'Policy', 8 ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
@@ -190,7 +182,6 @@ export class TransactionFormController_AffirmKey extends TransactionFormControll
         const type = TRANSACTION_TYPE.AFFIRM_KEY;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.stringField       ( 'keyName',        'Key Name' ),
             inputType.stringField       ( 'key',            'Key' ),
             inputType.stringField       ( 'policyName',     'Policy' ),
@@ -220,7 +211,6 @@ export class TransactionFormController_BetaGetAssets extends TransactionFormCont
         const type = TRANSACTION_TYPE.BETA_GET_ASSETS;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.integerField      ( 'numAssets',      'Copies', 1 ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
@@ -246,7 +236,6 @@ export class TransactionFormController_KeyPolicy extends TransactionFormControll
         const type = TRANSACTION_TYPE.KEY_POLICY;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.stringField       ( 'policyName',     'Policy Name' ),
             inputType.textField         ( 'policy',         'Policy', 8 ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
@@ -288,7 +277,6 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
         const type = TRANSACTION_TYPE.OPEN_ACCOUNT;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.textField         ( 'request',        'New Account Request', 6 ),
             inputType.integerField      ( 'grant',          'Grant', 0 ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
@@ -382,7 +370,6 @@ export class TransactionFormController_PublishSchema extends TransactionFormCont
         const type = TRANSACTION_TYPE.PUBLISH_SCHEMA;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.textField         ( 'schema',         'Schema', 8 ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
@@ -424,7 +411,6 @@ export class TransactionFormController_RegisterMiner extends TransactionFormCont
         const type = TRANSACTION_TYPE.REGISTER_MINER;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.stringField       ( 'url',            'Miner URL' ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
@@ -468,7 +454,6 @@ export class TransactionFormController_RenameAccount extends TransactionFormCont
         const type = TRANSACTION_TYPE.RENAME_ACCOUNT;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.stringField       ( 'revealedName',   'Revealed Name' ),
             inputType.stringField       ( 'secretName',     'Secret Name' ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
@@ -522,7 +507,6 @@ export class TransactionFormController_SendVol extends TransactionFormController
         const type = TRANSACTION_TYPE.SEND_VOL;
 
         const fields = [
-            inputType.stringField       ( 'makerKeyName',   'Signing Key Name' ),
             inputType.stringField       ( 'recipient',      'Recipient' ),
             inputType.integerField      ( 'amount',         'Amount' ),
             inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),

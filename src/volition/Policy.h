@@ -6,35 +6,26 @@
 
 #include <volition/common.h>
 #include <volition/Entitlements.h>
+#include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
 //================================================================//
-// AbstractPolicy
+// Policy
 //================================================================//
-class AbstractPolicy :
+class Policy :
     public AbstractSerializable {
-public:
-
-    enum Type {
-        ACCOUNT_POLICY,
-        KEY_POLICY,
-    };
-
 private:
 
-    string              mBase;
-    Entitlements        mRestrictions;
-
-    //----------------------------------------------------------------//
-    virtual Type        AbstractPolicy_getType      () const = 0;
+    string                                      mBase;
+    SerializableSharedPtr < Entitlements >      mRestrictions;
 
 public:
 
     //----------------------------------------------------------------//
-    void applyRestrictions ( Entitlements& entitlements ) const {
+    shared_ptr < Entitlements > applyRestrictions ( const Entitlements& entitlements ) const {
     
-        this->mRestrictions.apply ( entitlements );
+        return this->mRestrictions ? this->mRestrictions->apply ( entitlements ) : make_shared < Entitlements >( entitlements );
     }
     
     //----------------------------------------------------------------//
@@ -52,50 +43,31 @@ public:
     }
     
     //----------------------------------------------------------------//
-    AbstractPolicy () {
-    }
-    
-    //----------------------------------------------------------------//
-    ~AbstractPolicy () {
-    }
-    
-    //----------------------------------------------------------------//
     string getBase () const {
     
         return this->mBase;
     }
     
     //----------------------------------------------------------------//
-    const Entitlements& getRestrictions () const {
+    const Entitlements* getRestrictions () const {
     
-        return this->mRestrictions;
+        return this->mRestrictions.get ();
     }
     
     //----------------------------------------------------------------//
-    Type getType () const {
+    bool isMatchOrSubsetOf ( const Entitlements& entitlements ) const {
     
-        return this->AbstractPolicy_getType ();
+        return this->mRestrictions ? this->mRestrictions->isMatchOrSubsetOf ( &entitlements ) : true;
     }
-};
-
-//================================================================//
-// PolicyWithType
-//================================================================//
-template < AbstractPolicy::Type TYPE >
-class PolicyWithType :
-    public AbstractPolicy {
-protected:
-
+    
     //----------------------------------------------------------------//
-    Type AbstractPolicy_getType () const override {
-        return TYPE;
+    Policy () {
     }
-
-public:
+    
+    //----------------------------------------------------------------//
+    ~Policy () {
+    }
 };
-
-typedef PolicyWithType < AbstractPolicy::ACCOUNT_POLICY > AccountPolicy;
-typedef PolicyWithType < AbstractPolicy::KEY_POLICY > KeyPolicy;
 
 } // namespace Volition
 #endif

@@ -65,6 +65,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    void serialize ( SerializerPropertyName name, const char* value ) {
+        this->serialize ( name, string ( value ));
+    }
+
+    //----------------------------------------------------------------//
     template < typename TYPE >
     void serialize ( SerializerPropertyName name, const TYPE& value ) {
         this->AbstractSerializerTo_serialize ( name, value );

@@ -34,7 +34,7 @@ public:
         shared_ptr < Account > account = chain.getAccount ( accountName );
         if ( account ) {
 
-            SerializableMap < string, CryptoKey > keys;
+            SerializableMap < string, KeyAndPolicy > keys;
             account->getKeys ( keys );
             jsonOut.set ( "accountKeys", ToJSONSerializer::toJSON ( keys ));
             return Poco::Net::HTTPResponse::HTTP_OK;

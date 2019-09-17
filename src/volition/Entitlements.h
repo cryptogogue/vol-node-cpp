@@ -11,32 +11,7 @@
 
 namespace Volition {
 
-//================================================================//
-// Entitlements
-//================================================================//
-class Entitlements :
-    public PathEntitlement {
-public:
-
-    //----------------------------------------------------------------//
-    void apply ( PathEntitlement& other ) const {
-    
-        Children::const_iterator childIt = this->mChildren.cbegin ();
-        for ( ; childIt != this->mChildren.end (); ++childIt ) {
-            if ( childIt->second ) {
-                other.mChildren [ childIt->first ] = childIt->second;
-            }
-        }
-    }
-    
-    //----------------------------------------------------------------//
-    Entitlements () {
-    }
-    
-    //----------------------------------------------------------------//
-    ~Entitlements () {
-    }
-};
+typedef PathEntitlement Entitlements;
 
 } // namespace Volition
 #endif

@@ -40,6 +40,8 @@ export class AppStateService extends Service {
     @observable accountInfo;
     @observable nextTransactionCost;
 
+    @observable keyName;
+
     // persisted
     @observable accounts;
     @observable node;
@@ -347,8 +349,8 @@ export class AppStateService extends Service {
     //----------------------------------------------------------------//
     getDefaultAccountKeyName () {
         const defaultKeyName = 'master';
-        const accountKeyNames = this.accountKeyNames ;
-        if ( accountKeyNames.includes [ defaultKeyName ]) return defaultKeyName;
+        const accountKeyNames = this.accountKeyNames;
+        if ( accountKeyNames.includes ( defaultKeyName )) return defaultKeyName;
         return (( accountKeyNames.length > 0 ) && accountKeyNames [ 0 ]) || '';
     }
 
@@ -380,6 +382,15 @@ export class AppStateService extends Service {
         if ( nodeInfo.status !== NODE_STATUS.ONLINE ) return false;
 
         return true;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get key () {
+        console.log ( 'COMPUTED KEY' );
+        const account = this.getAccount ();
+        console.log ( account );
+        return account ? account.keys [ this.keyName ] : null;
     }
 
     //----------------------------------------------------------------//
@@ -562,12 +573,36 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
+    renameAccount ( oldName, newName ) {
+
+        if ( !_.has ( this.accounts, oldName )) return;        
+        
+        this.accounts [ newName ] = _.cloneDeep ( this.accounts [ oldName ]); // or mobx will bitch at us
+        delete this.accounts [ oldName ];
+
+        if ( this.accountID === oldName ) {
+            this.setAccount ( newName );
+        }
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    selectKey ( keyName ) {
+
+        if (( this.keyName !== keyName ) && this.accountKeyNames.includes ( keyName )) {
+            this.keyName = keyName;
+        }
+    }
+
+    //----------------------------------------------------------------//
+    @action
     setAccount ( accountID ) {
 
         const accountNames = Object.keys ( this.accounts );
         accountID = (( accountID in this.accounts ) && accountID ) || ( accountNames.length && accountNames [ 0 ]) || '';
         if ( this.accountID !== accountID ) {
             this.accountID = accountID;
+            this.keyName = this.getDefaultAccountKeyName ();
             this.setAccountInfo ();
         }
     }
@@ -696,6 +731,36 @@ export class AppStateService extends Service {
         }
         catch ( error ) {
              console.log ( 'AN ERROR!', error );
+        }
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    updateAccount ( accountUpdate, entitlements ) {
+
+        console.log ( 'UPDATE ACCOUNT' );
+
+        let account = this.accounts [ this.accountID ];
+        if ( !account ) return;
+
+        account.policy          = accountUpdate.policy;
+        account.bequest         = accountUpdate.bequest;
+        account.entitlements    = entitlements.account;
+
+        for ( let keyName in accountUpdate.keys ) {
+
+            let key = account.keys [ keyName ];
+            if ( !key ) continue;
+
+            let keyUpdate = accountUpdate.keys [ keyName ];
+            let publicKeyHex = keyUpdate.key.publicKey;
+
+            // TODO: handle all the business around expiring keys
+            if ( key.publicKeyHex === keyUpdate.key.publicKey ) {
+                key.policy          = keyUpdate.policy;
+                key.bequest         = keyUpdate.bequest;
+                key.entitlements    = entitlements.keys [ keyName ];
+            }
         }
     }
 

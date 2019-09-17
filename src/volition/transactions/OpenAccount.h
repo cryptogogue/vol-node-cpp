@@ -26,8 +26,8 @@ public:
     CryptoKey       mKey;           // key
     u64             mGrant;         // amount to fund
 
-    SerializableSharedPtr < AccountPolicy >     mAccountPolicy;
-    SerializableSharedPtr < KeyPolicy >         mKeyPolicy;
+    SerializableSharedPtr < Policy >    mAccountPolicy;
+    SerializableSharedPtr < Policy >    mKeyPolicy;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -55,7 +55,15 @@ public:
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
         assert ( this->mKey );
-        return ledger.sponsorAccount ( this->mMaker->getAccountName (), this->mSuffix, this->mGrant, this->mKey );
+        return ledger.sponsorAccount (
+            this->mMaker->getAccountName (),
+            this->mMaker->getKeyName (),
+            this->mSuffix,
+            this->mGrant,
+            this->mKey,
+            this->mAccountPolicy.get (),
+            this->mKeyPolicy.get ()
+        );
     }
 };
 

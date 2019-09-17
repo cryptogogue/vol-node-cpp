@@ -23,11 +23,35 @@ protected:
     
         return this->mValue;
     }
+    
+    //----------------------------------------------------------------//
+    bool AbstractEntitlement_check ( double value ) const override {
+        UNUSED ( value );
+    
+        return this->mValue;
+    }
 
     //----------------------------------------------------------------//
-    bool AbstractEntitlement_isMatchOrSubsetOf ( const AbstractEntitlement* abstractOther ) const override {
+    shared_ptr < AbstractEntitlement > AbstractEntitlement_clone () const override {
+    
+        return make_shared < BooleanEntitlement >( *this );
+    }
+
+    //----------------------------------------------------------------//
+    Leniency AbstractEntitlement_compare ( const AbstractEntitlement* abstractOther ) const override {
         
-        return (( abstractOther && abstractOther->check ()) || ( this->mValue == false ));
+        return AbstractEntitlement::compareRanges ( this, abstractOther );
+    }
+    
+    //----------------------------------------------------------------//
+    Range AbstractEntitlement_getRange () const override {
+    
+        return this->mValue ? ALWAYS_TRUE : ALWAYS_FALSE;
+    }
+
+    //----------------------------------------------------------------//
+    void AbstractEntitlement_print () const override {
+        printf ( "%s", this->mValue ? "TRUE" : "FALSE" );
     }
 
     //----------------------------------------------------------------//

@@ -90,13 +90,6 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forAccountEntitlements ( string name ) {
-    
-        assert ( name.size () > 0 );
-        return Format::write ( "entitlements.account.%s", name.c_str ());
-    }
-
-    //----------------------------------------------------------------//
     static LedgerKey forAccountKeyLookup ( string keyID ) {
 
         return Format::write ( "key.%s", keyID.c_str ());
@@ -141,24 +134,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forEntitlements ( AbstractPolicy::Type type, string name ) {
+    static LedgerKey forEntitlements ( string name ) {
     
-        string typeString;
-        switch ( type ) {
-            case AbstractPolicy::ACCOUNT_POLICY:
-                typeString = "account";
-                break;
-            case AbstractPolicy::KEY_POLICY:
-                typeString = "key";
-                break;
-            default:
-                assert ( false );
-        }
-        
-        if ( name.size () > 0 ) {
-            return Format::write ( "entitlements.%s.%s", typeString.c_str (), name.c_str ());
-        }
-        return Format::write ( "entitlements.%s", typeString.c_str ());
+        assert ( name.size () > 0 );
+        return Format::write ( "entitlements.%s", name.c_str ());
     }
 
     //----------------------------------------------------------------//

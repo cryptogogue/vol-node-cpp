@@ -149,6 +149,19 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+    operator Poco::Dynamic::Var () const {
+    
+        if ( this->mArray ) {
+            return Poco::JSON::Array::Ptr ( this->mArray );
+        }
+        
+        if ( this->mObject ) {
+            return Poco::JSON::Object::Ptr ( this->mObject );
+        }
+        return Poco::Dynamic::Var ();
+    }
+
+    //----------------------------------------------------------------//
     ToJSONSerializer () :
         mParent ( NULL ) {
     }
@@ -158,14 +171,7 @@ public:
 
         ToJSONSerializer serializer;
         serializable.serialize ( serializer );
-        
-        if ( serializer ) {
-            if ( serializer.mArray ) {
-                return Poco::JSON::Array::Ptr ( serializer.mArray );
-            }
-            return Poco::JSON::Object::Ptr ( serializer.mObject );
-        }
-        return Poco::Dynamic::Var ();
+        return serializer;
     }
 
     //----------------------------------------------------------------//

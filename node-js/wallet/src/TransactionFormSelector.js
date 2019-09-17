@@ -4,6 +4,7 @@ import { AppStateService }                          from './AppStateService';
 import { Service, useService }                      from './Service';
 import { TransactionForm }                          from './TransactionForm';
 import { Transaction, TRANSACTION_TYPE }            from './Transaction';
+import * as entitlements                            from './util/entitlements';
 import * as util                                    from './util/util';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                                 from 'mobx-react';
@@ -27,12 +28,18 @@ export const gTransactionTypes = [
 //================================================================//
 const TransactionDropdown = observer (( props ) => {
 
-    const { onChange } = props;
+    const { appState, onChange } = props;
 
     let options = [];
-    gTransactionTypes.forEach ( function ( transactionType, index ) {
-        options.push ({ key:index, value:index, text:Transaction.friendlyNameForType ( transactionType )});
-    });
+    for ( let index in gTransactionTypes ) {
+        const transactionType = gTransactionTypes [ index ];
+        options.push ({
+            key:        index,
+            value:      index,
+            text:       Transaction.friendlyNameForType ( transactionType ),
+            disabled:   !entitlements.check ( appState.key.entitlements.policy, transactionType ),
+        });
+    }
 
     return (
         <Dropdown
@@ -66,7 +73,7 @@ export const TransactionFormSelector = observer (( props ) => {
     return (
         <Choose>
             <When condition = { canShowForm && formIsShown }>
-                <TransactionDropdown onChange = { setIndex }/>
+                <TransactionDropdown appState = { appState } onChange = { setIndex }/>
                 <If condition = { 0 <= index }>
                     <Segment stacked>
                         <TransactionForm
