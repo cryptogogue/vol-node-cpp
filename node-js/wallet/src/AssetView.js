@@ -25,10 +25,6 @@ export const AssetView = ( props ) => {
     const docHeight     = layout.height;
     const dpi           = layout.dpi;
 
-    const foob = () => {
-        console.log( JSON.stringify( inventory.assets[assetId], null, 4 ))
-    }
-
     return (
         <svg
             x = { docX }
@@ -37,7 +33,6 @@ export const AssetView = ( props ) => {
             height = { inches ? `${( docHeight * scale ) / dpi }in` : docHeight * scale }
             viewBox = { `0 0 ${ docWidth } ${ docHeight }` }
             preserveAspectRatio = 'none'
-            onClick = {() => { foob()}}
         >
             <g dangerouslySetInnerHTML = {{ __html: layout.svg }}/>
         </svg>
