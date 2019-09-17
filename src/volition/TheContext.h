@@ -27,9 +27,6 @@ public:
 
 private:
 
-    CryptoKey       mKey;
-    Digest          mDigest;
-
     ScoringMode     mScoringMode;
     size_t          mScoringModulo;
     
@@ -43,8 +40,6 @@ public:
     ScoringMode         getScoringMode              () const;
     size_t              getScoringModulo            () const;
     double              getWindow                   () const;
-    bool                hasGenesisBlockDigest       () const;
-    bool                hasGenesisBlockKey          () const;
                         TheContext                  ();
     void                setGenesisBlockDigest       ( const Digest& digest );
     void                setGenesisBlockKey          ( const CryptoKey& key );
