@@ -1,16 +1,23 @@
 @page {
-    size: auto;
-    margin: 0mm 0mm 0mm 0mm;  
-} 
+    size:   auto;
+    margin: 0mm 0mm 0mm 0mm;
+}
 
 @media print {
+    .asset-wrapper {
+        display: block !important;
+    }
     .no-print,
     .no-print * {
         display: none !important;
     }
     .page-break {
-        display:            block;
-        page-break-before:  always;
+        display: block;
+        margin: 0;
+        overflow: hidden;
+        position: relative;
+        box-sizing: border-box;
+        page-break-after: always;
     }
 }
 
@@ -38,12 +45,3 @@
     flex-wrap: wrap;
     justify-content: center;
 }
-
-/* .ui.item.dropdown {
-    margin: 5px;
-}
-
-.ui.dropdown.test .menu {
-    padding:    5px;
-    width:      100%;
-} */
