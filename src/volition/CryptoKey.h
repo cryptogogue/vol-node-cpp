@@ -13,19 +13,6 @@ namespace Volition {
 class DigestEngine;
 
 //================================================================//
-// CryptoKeyInfo
-//================================================================//
-class CryptoKeyInfo {
-public:
-
-    string  mType;
-    string  mGroupName;
-    string  mPubKeyHex;
-    string  mPrivKeyHex;
-    bool    mIsValid;
-};
-
-//================================================================//
 // CryptoKey
 //================================================================//
 class CryptoKey :
@@ -51,7 +38,6 @@ public:
     void                elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
     void                elliptic                ( string groupName );
     static string       getGroupNameFromNID     ( int nid );
-    CryptoKeyInfo       getInfo                 () const;
     string              getKeyID                () const; // this is just a simple hash of the hex-encoded public key
     static int          getNIDFromGroupName     ( string groupName );
     static bool         hasCurve                ( int nid );
@@ -79,6 +65,11 @@ public:
         const Poco::Crypto::ECKey* ecKey = *this;
         assert ( ecKey );
         return *ecKey;
+    }
+    
+    //----------------------------------------------------------------//
+    operator const Poco::Crypto::KeyPair* () const {
+        return this->mKeyPair.get ();
     }
 };
 

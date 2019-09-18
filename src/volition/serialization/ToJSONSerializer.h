@@ -82,7 +82,7 @@ protected:
         ToJSONSerializer serializer;
         serializer.mParent = this;
         serializer.mName = name;
-        value.serialize ( serializer );
+        value.serializeTo ( serializer );
 
         this->set ( serializer );
     }
@@ -170,7 +170,7 @@ public:
     static Poco::Dynamic::Var toJSON ( const AbstractSerializable& serializable ) {
 
         ToJSONSerializer serializer;
-        serializable.serialize ( serializer );
+        serializable.serializeTo ( serializer );
         return serializer;
     }
 

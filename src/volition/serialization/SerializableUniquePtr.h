@@ -24,7 +24,7 @@ public:
         unique_ptr < TYPE > value = factory.make ( serializer );
         
         if ( value ) {
-            value->serialize ( serializer );
+            value->serializeFrom ( serializer );
         }
         *( unique_ptr < TYPE >* )this = move ( value );
     }
@@ -34,7 +34,7 @@ public:
         
         const TYPE* value = this->get ();
         if ( value ) {
-            value->serialize ( serializer );
+            value->serializeTo ( serializer );
         }
     }
 

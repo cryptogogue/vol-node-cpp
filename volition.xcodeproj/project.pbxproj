@@ -264,6 +264,8 @@
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
+		CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BAE23319E5E00EEAA60 /* CryptoKeyInfo.cpp */; };
+		CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -824,6 +826,8 @@
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
+		CDDB4BAE23319E5E00EEAA60 /* CryptoKeyInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoKeyInfo.cpp; path = src/volition/CryptoKeyInfo.cpp; sourceTree = "<group>"; };
+		CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKeyInfo.h; path = src/volition/CryptoKeyInfo.h; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -1083,6 +1087,8 @@
 			children = (
 				CD4E80D62102BB57007DA585 /* CryptoKey.cpp */,
 				CD4E80D72102BB57007DA585 /* CryptoKey.h */,
+				CDDB4BAE23319E5E00EEAA60 /* CryptoKeyInfo.cpp */,
+				CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */,
 				CD4E80DC21031AB0007DA585 /* Digest.h */,
 				CD59F3B120E889A000705AEB /* Signature.cpp */,
 				CD59F3B220E889A000705AEB /* Signature.h */,
@@ -1496,6 +1502,7 @@
 				CD762AD6232826D7005AC85D /* NumericEntitlement.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransactionBody.h in Headers */,
 				CD63A1D322AF892800D5C801 /* AssetMethodInvocation.h in Headers */,
+				CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */,
 				CDBFD54A218B8999002AB0C3 /* RestrictKey.h in Headers */,
 				CDD36D012162A415004FC222 /* Format.h in Headers */,
 				CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */,
@@ -1950,6 +1957,7 @@
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
+				CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
 				CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */,
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
