@@ -5,6 +5,7 @@
 #define VOLITION_POLICY_H
 
 #include <volition/common.h>
+#include <volition/Entitlements.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -16,21 +17,56 @@ class Policy :
     public AbstractSerializable {
 private:
 
-    //----------------------------------------------------------------//
-    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    string                                      mBase;
+    SerializableSharedPtr < Entitlements >      mRestrictions;
 
 public:
 
-//    static constexpr const char* KEY_FINAL                    = "KEY_FINAL";
-//    static constexpr const char* KEY_TRANSFER_LIMIT           = "KEY_TRANSFER_LIMIT";
-//
-//    static constexpr const char* ACCOUNT_LIMIT                = "ACCOUNT_LIMIT";
-//    static constexpr const char* ACCOUNT_OVERFLOW             = "ACCOUNT_OVERFLOW";
+    //----------------------------------------------------------------//
+    shared_ptr < Entitlements > applyRestrictions ( const Entitlements& entitlements ) const {
+    
+        return this->mRestrictions ? this->mRestrictions->apply ( entitlements ) : make_shared < Entitlements >( entitlements );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        
+        serializer.serialize ( "base",          this->mBase );
+        serializer.serialize ( "restrictions",  this->mRestrictions );
+    }
 
     //----------------------------------------------------------------//
-                        Policy                              ();
-                        ~Policy                             ();
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        
+        serializer.serialize ( "base",          this->mBase );
+        serializer.serialize ( "restrictions",  this->mRestrictions );
+    }
+    
+    //----------------------------------------------------------------//
+    string getBase () const {
+    
+        return this->mBase;
+    }
+    
+    //----------------------------------------------------------------//
+    const Entitlements* getRestrictions () const {
+    
+        return this->mRestrictions.get ();
+    }
+    
+    //----------------------------------------------------------------//
+    bool isMatchOrSubsetOf ( const Entitlements& entitlements ) const {
+    
+        return this->mRestrictions ? this->mRestrictions->isMatchOrSubsetOf ( &entitlements ) : true;
+    }
+    
+    //----------------------------------------------------------------//
+    Policy () {
+    }
+    
+    //----------------------------------------------------------------//
+    ~Policy () {
+    }
 };
 
 } // namespace Volition

@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AppStateService }                  from './AppStateService';
+import { KeySelector }                      from './KeySelector';
 import { Service, useService }              from './Service';
 import { SingleColumnContainerView }        from './SingleColumnContainerView'
 import * as util                            from './util/util';
@@ -24,24 +25,24 @@ import { TransactionFormSelector }          from './TransactionFormSelector';
 //================================================================//
 const AccountDetailsView = observer (( props ) => {
 
-    const { appState } = props;
-    const account = appState.account;
+    const { appState }  = props;
+    const account       = appState.account;
 
     if ( !account ) return;
 
-    const publicKey = account.keys.master.publicKeyHex;
-    const nodes = appState.nodes;
+    const key           = appState.key;
+    const publicKey     = key.publicKeyHex;
+    const nodes         = appState.nodes;
 
-    const balance = appState.balance;
-    const textColor = balance > 0 ? 'black' : 'red';
+    const balance       = appState.balance;
+    const textColor     = balance > 0 ? 'black' : 'red';
 
     return (
         <div>
             <Header as = "h2" icon>
-
                 <Icon name = "key" circular />
-                
                 { appState.accountID }
+<<<<<<< HEAD
 
                 <Modal style={{ height:'auto' }} size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
                     <Modal.Content>
@@ -52,7 +53,25 @@ const AccountDetailsView = observer (( props ) => {
                         </center>
                     </Modal.Content>
                 </Modal>
+=======
+>>>>>>> c2afda08033516546b859619a6979302f3084eea
             </Header>
+
+            <h4>
+                <KeySelector appState = { appState }/>
+            </h4>
+
+            <Modal size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
+                <Modal.Content>
+                    <center>
+                        <h3>Public Key</h3>
+                        <Divider/>
+                        <p>{ publicKey }</p>
+                        <Divider/>
+                        <p>{ JSON.stringify ( key.entitlements.policy, null, 4 )}</p>
+                    </center>
+                </Modal.Content>
+            </Modal>
 
             <Choose>
 

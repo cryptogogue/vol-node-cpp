@@ -26,29 +26,44 @@ public:
     CryptoKey       mKey;           // key
     u64             mGrant;         // amount to fund
 
+    SerializableSharedPtr < Policy >    mAccountPolicy;
+    SerializableSharedPtr < Policy >    mKeyPolicy;
+
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "suffix",        this->mSuffix );
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "grant",         this->mGrant );
+        serializer.serialize ( "suffix",            this->mSuffix );
+        serializer.serialize ( "key",               this->mKey );
+        serializer.serialize ( "grant",             this->mGrant );
+        serializer.serialize ( "accountPolicy",     this->mAccountPolicy );
+        serializer.serialize ( "keyPolicy",         this->mKeyPolicy );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "suffix",        this->mSuffix );
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "grant",         this->mGrant );
+        serializer.serialize ( "suffix",            this->mSuffix );
+        serializer.serialize ( "key",               this->mKey );
+        serializer.serialize ( "grant",             this->mGrant );
+        serializer.serialize ( "accountPolicy",     this->mAccountPolicy );
+        serializer.serialize ( "keyPolicy",         this->mKeyPolicy );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
         assert ( this->mKey );
-        return ledger.sponsorAccount ( this->mMaker->getAccountName (), this->mSuffix, this->mGrant, this->mKey );
+        return ledger.sponsorAccount (
+            this->mMaker->getAccountName (),
+            this->mMaker->getKeyName (),
+            this->mSuffix,
+            this->mGrant,
+            this->mKey,
+            this->mAccountPolicy.get (),
+            this->mKeyPolicy.get ()
+        );
     }
 };
 

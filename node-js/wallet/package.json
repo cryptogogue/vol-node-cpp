@@ -29,9 +29,13 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "react-stripe-elements": "^2.0.3",
+<<<<<<< HEAD
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "react-window-infinite-loader": "^1.0.4",
+=======
+    "saxen": "^8.1.0",
+>>>>>>> c2afda08033516546b859619a6979302f3084eea
     "secp256k1": "^3.7.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.0",

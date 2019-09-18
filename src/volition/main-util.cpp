@@ -3,14 +3,15 @@
 
 #include <volition/Block.h>
 #include <volition/CryptoKey.h>
+#include <volition/CryptoKeyInfo.h>
 #include <volition/TheContext.h>
 
 //----------------------------------------------------------------//
-void defineKeyFileOptions ( Poco::Util::OptionSet& options ) {
+void defineKeyFileOptions ( Poco::Util::OptionSet& options, bool required ) {
 
     options.addOption (
         Poco::Util::Option ( "keyfile", "k", "path to key file" )
-            .required ( true )
+            .required ( required )
             .argument ( "value", true )
             .binding ( "keyfile" )
     );
@@ -33,33 +34,43 @@ public:
     //----------------------------------------------------------------//
     void defineOptions ( Poco::Util::OptionSet& options ) override {
         Application::defineOptions ( options );
-        defineKeyFileOptions ( options );
+        defineKeyFileOptions ( options, false );
+        
+        options.addOption (
+        Poco::Util::Option ( "outfile", "o", "output file" )
+            .required ( true )
+            .argument ( "value", true )
+            .binding ( "outfile" )
+    );
     }
 
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) override {
+        UNUSED ( args );
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
     
-        string keyfile      = configuration.getString ( "keyfile" );
+        string keyfile      = configuration.getString ( "keyfile", "" );
         string password     = configuration.getString ( "password", "" );
+        string outfile      = configuration.getString ( "outfile" );
         
-        Volition::CryptoKey keyPair;
+        Volition::CryptoKey cryptoKey;
 
-        if ( Poco::File ( keyfile ).exists ()) {
+        if ( keyfile.size () && Poco::File ( keyfile ).exists ()) {
             fstream inStream;
             inStream.open ( keyfile, ios_base::in );
-            Volition::FromJSONSerializer::fromJSON ( keyPair, inStream );
+            Volition::FromJSONSerializer::fromJSON ( cryptoKey, inStream );
         }
         else {
-            keyPair.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
+            cryptoKey.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
         }
 
-        Poco::Dynamic::Var var = Volition::ToJSONSerializer::toJSON ( keyPair );
+        Volition::CryptoKeyInfo keyInfo ( cryptoKey, Volition::CryptoKeyInfo::PEM );
+        Poco::Dynamic::Var var = Volition::ToJSONSerializer::toJSON ( keyInfo );
         Poco::JSON::Object::Ptr object = var.extract < Poco::JSON::Object::Ptr >();
 
         fstream jsonOutStream;
-        jsonOutStream.open ( keyfile + ".json", ios_base::out );
+        jsonOutStream.open ( outfile, ios_base::out );
         object->stringify ( jsonOutStream, 4 );
         jsonOutStream.close ();
         
@@ -77,7 +88,7 @@ public:
     //----------------------------------------------------------------//
     void defineOptions ( Poco::Util::OptionSet& options ) override {
         Application::defineOptions ( options );
-        defineKeyFileOptions ( options );
+        defineKeyFileOptions ( options, true );
         
         options.addOption (
         Poco::Util::Option ( "inpath", "i", "path to input file" )

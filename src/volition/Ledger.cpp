@@ -17,16 +17,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger::accountPolicy ( string accountName, const Policy* policy ) {
-    UNUSED ( policy );
-    UNUSED ( accountName );
-
-    return true;
-}
-
-//----------------------------------------------------------------//
-bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& key, string policyName ) {
-    UNUSED ( policyName );
+bool Ledger::affirmKey ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy ) {
 
     string keyID = key.getKeyID ();
     if ( keyID.size ()) return false;
@@ -37,11 +28,24 @@ bool Ledger::affirmKey ( string accountName, string keyName, const CryptoKey& ke
         const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = FormatLedgerKey::forAccountKeyLookup ( keyID );
         shared_ptr < AccountKeyLookup > accountKeyLookup = this->getObjectOrNull < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP );
 
+        // keys must be unique to accounts; no sharing keys across multiple accounts!
         if ( accountKeyLookup && ( accountKeyLookup->mAccountIndex != account->mIndex )) return false;
 
         if ( key ) {
             
-            account->mKeys [ keyName ] = KeyAndPolicy ( key );
+            const KeyAndPolicy* makerKeyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
+            if ( !makerKeyAndPolicy ) return false;
+            
+            const Policy* selectedPolicy = policy;
+            if ( selectedPolicy ) {
+                if ( !this->isValidPolicy < KeyEntitlements >( *selectedPolicy, makerKeyAndPolicy->mPolicy )) return false;
+            }
+            else {
+                const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
+                selectedPolicy = keyAndPolicy ? &keyAndPolicy->mPolicy : &makerKeyAndPolicy->mPolicy;
+            }
+            
+            account->mKeys [ keyName ] = KeyAndPolicy ( key, *selectedPolicy );
             this->setAccount ( accountName, *account );
             
             this->setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( account->mIndex, keyName ));
@@ -131,7 +135,7 @@ bool Ledger::deleteKey ( string accountName, string keyName ) {
 //----------------------------------------------------------------//
 bool Ledger::genesisMiner ( string accountName, u64 balance, const CryptoKey& key, string url ) {
 
-    if ( !this->newAccount ( accountName, balance, key )) return false;
+    if ( !this->newAccount ( accountName, balance, key, Policy (), Policy ())) return false;
     return this->registerMiner ( accountName, MASTER_KEY_NAME, url );
 }
 
@@ -428,15 +432,6 @@ bool Ledger::isGenesis () const {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::keyPolicy ( string accountName, string policyName, const Policy* policy ) {
-    UNUSED ( accountName );
-    UNUSED ( policyName );
-    UNUSED ( policy );
-
-    return true;
-}
-
-//----------------------------------------------------------------//
 Ledger::Ledger () {
 
     this->reset ();
@@ -452,7 +447,7 @@ Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key ) {
+bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
 
     // check to see if there is already an alias for this account name
     LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( accountName );
@@ -465,9 +460,11 @@ bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key 
 
     // store the account
     Account account;
+    account.mPolicy = accountPolicy;
     account.mIndex = accountIndex;
+    account.mName = accountName;
     account.mBalance = balance;
-    account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key );
+    account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
     
     this->setObject < Account >( FormatLedgerKey::forAccount ( accountIndex ), account );
 
@@ -581,7 +578,7 @@ bool Ledger::renameAccount ( string accountName, string revealedName, Digest nam
     // binds the account name to the registrant's account. using both ensures that the registrant
     // really knows the requested account name. in other words, the registrant's own account
     // name acts like a salt: an attacker would have to find a match that produced both the
-    // nameHash *and* the nameSecret (derived from their own account name). this, nameHash
+    // nameHash *and* the nameSecret (derived from their own account name). thus, nameHash
     // is shared, but nameSecret is unique to every account applying for the name.
     
     // the nameHash is used to create a decollider table, which records all accounts applying
@@ -603,10 +600,16 @@ bool Ledger::renameAccount ( string accountName, string revealedName, Digest nam
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex == Account::NULL_INDEX ) return false;
     
-    this->setValue < Account::Index >( FormatLedgerKey::forAccountAlias ( revealedName ), accountIndex );
+    shared_ptr < Account > account = this->getAccount ( accountName );
+    if ( !account ) return false;
+    
+    this->setValue < Account::Index >( FormatLedgerKey::forAccountAlias ( revealedName ), account->mIndex );
     this->setValue < string >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_NAME ), revealedName );
  
-    return false;
+    account->mName = revealedName;
+    this->setObject < Account >( FormatLedgerKey::forAccount ( account->mIndex ), *account );
+ 
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -688,6 +691,13 @@ void Ledger::setBlock ( const Block& block ) {
 }
 
 //----------------------------------------------------------------//
+void Ledger::setEntitlements ( string name, const Entitlements& entitlements ) {
+
+    LedgerKey KEY_FOR_ENTITLEMENTS = FormatLedgerKey::forEntitlements ( name );
+    this->setObject < Entitlements >( KEY_FOR_ENTITLEMENTS, entitlements );
+}
+
+//----------------------------------------------------------------//
 void Ledger::setEntropyString ( string entropy ) {
 
     this->setValue < string >( FormatLedgerKey::forEntropy (), entropy );
@@ -700,6 +710,58 @@ bool Ledger::setIdentity ( string identity ) {
     if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
     this->setValue < string >( KEY_FOR_IDENTITY, identity );
     return true;
+}
+
+//----------------------------------------------------------------//
+bool Ledger::setKeyBequest ( string accountName, string keyName, const Policy* bequest ) {
+
+    shared_ptr < Account > account = this->getAccount ( accountName );
+    if ( account ) {
+
+        const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( keyName );
+        if ( !keyAndPolicy ) return false;
+        
+        if ( bequest ) {
+            if ( !this->isMoreRestrictivePolicy < KeyEntitlements >( *bequest, keyAndPolicy->mPolicy )) return false;
+        }
+        account->mKeys [ keyName ].mBequest = bequest ? make_shared < Policy >( *bequest ) : NULL;
+        this->setAccount ( accountName, *account );
+        
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------//
+void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerTo& serializer ) const {
+
+    serializer.context ( "account", [ & ]( AbstractSerializerTo& serializer ) {
+
+        serializer.serialize ( "policy", this->getEntitlements < AccountEntitlements >( account.mPolicy ));
+        
+        if ( account.mBequest ) {
+            serializer.serialize ( "bequest", this->getEntitlements < AccountEntitlements >( *account.mBequest ));
+        }
+    });
+    
+    serializer.context ( "keys", [ & ]( AbstractSerializerTo& serializer ) {
+
+        SerializableMap < string, KeyAndPolicy >::const_iterator keysIt = account.mKeys.cbegin ();
+        for ( ; keysIt != account.mKeys.cend (); ++keysIt ) {
+
+            string keyName = keysIt->first;
+            const KeyAndPolicy& keyAndPolicy = keysIt->second;
+
+            serializer.context ( keysIt->first, [ & ]( AbstractSerializerTo& serializer ) {
+
+                serializer.serialize ( "policy", this->getEntitlements < KeyEntitlements >( keyAndPolicy.mPolicy ));
+                
+                if ( account.mBequest ) {
+                    serializer.serialize ( "bequest", this->getEntitlements < KeyEntitlements >( *keyAndPolicy.mBequest ));
+                }
+            });
+        }
+    });
 }
 
 //----------------------------------------------------------------//
@@ -718,12 +780,12 @@ void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::sponsorAccount ( string sponsorName, string suffix, u64 grant, const CryptoKey& key ) {
+bool Ledger::sponsorAccount ( string sponsorName, string keyName, string suffix, u64 grant, const CryptoKey& key, const Policy* keyPolicy, const Policy* accountPolicy ) {
 
     if ( Ledger::isChildName ( sponsorName )) return false;
     if ( !Ledger::isSuffix ( suffix )) return false;
     
-    // the child name will be prepended following a tilde: "~<sponsorName>.<childSuffix>"
+    // the child name will be prepended with the sponsor name following a tilde: "~<sponsorName>.<childSuffix>"
     // i.e. "~maker.000.000.000"
     // this prevents it from sponsoring any new accounts until it is renamed.
 
@@ -733,7 +795,20 @@ bool Ledger::sponsorAccount ( string sponsorName, string suffix, u64 grant, cons
     shared_ptr < Account > account = this->getAccount ( sponsorName );
     if ( account && ( account->mBalance >= grant )) {
 
-        if ( !this->newAccount ( childName, grant, key )) return false;
+        const KeyAndPolicy* sponsorKeyAndPolicy = account->getKeyAndPolicyOrNull ( keyName );
+        if ( !sponsorKeyAndPolicy ) return false;
+
+        const Policy& sponsorKeyPolicy = sponsorKeyAndPolicy->mPolicy;
+        Entitlements sponsorKeyEntitlements = this->getEntitlements < KeyEntitlements >( sponsorKeyPolicy );
+        if ( !KeyEntitlements::canOpenAccount ( sponsorKeyEntitlements )) return false;
+
+        const Policy* keyBequest = this->resolveBequest < KeyEntitlements >( sponsorKeyPolicy, sponsorKeyAndPolicy->getBequest (), keyPolicy );
+        if ( !keyBequest ) return false;
+        
+        const Policy* accountBequest = this->resolveBequest < AccountEntitlements >( account->mPolicy, account->getBequest (), accountPolicy );
+        if ( !accountBequest ) return false;
+
+        if ( !this->newAccount ( childName, grant, key, *keyBequest, *accountBequest )) return false;
 
         account->mBalance -= grant;
         this->setAccount ( sponsorName, *account );

@@ -19,29 +19,6 @@ export const TransactionFormInput = observer (( props ) => {
     const errorMsg = error || '';
     const hasError = ( errorMsg.length > 0 );
 
-    if ( name === 'makerKeyName' ) {
-
-        const accountKeyNames = appState.accountKeyNames;
-
-        const select = [];
-        for ( let i in accountKeyNames ) {
-            const keyName = accountKeyNames [ i ];
-            select.push ({ key: i, text: keyName, value: keyName });
-        }
-
-        return (
-            <Form.Input
-                fluid
-                control = { Select }
-                options = { select }
-                placeholder = 'Account Key'
-                name = { name }
-                value = { value }
-                onChange = { onChange }
-            />
-        );
-    }
-
     const commonProps = {
         placeholder:    field.friendlyName,
         name:           name,

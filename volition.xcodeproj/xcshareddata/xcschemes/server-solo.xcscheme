@@ -71,11 +71,11 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-k keys/pkey0.priv.json"
+            argument = "-k keys/key9090.priv.json"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-g genesis.signed"
+            argument = "-g genesis.in"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

@@ -32,12 +32,12 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void serialize ( const AbstractSerializerFrom& serializer ) {
+    void serializeFrom ( const AbstractSerializerFrom& serializer ) {
         this->AbstractSerializable_serializeFrom ( serializer );
     }
     
     //----------------------------------------------------------------//
-    void serialize ( AbstractSerializerTo& serializer ) const {
+    void serializeTo ( AbstractSerializerTo& serializer ) const {
         this->AbstractSerializable_serializeTo ( serializer );
     }
 };

@@ -22,9 +22,9 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string      mKeyName;
-    CryptoKey   mKey;
-    string      mPolicyName;
+    string                              mKeyName;
+    CryptoKey                           mKey;
+    SerializableSharedPtr < Policy >    mPolicy;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -32,7 +32,7 @@ public:
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
-        serializer.serialize ( "policyName",    this->mPolicyName );
+        serializer.serialize ( "policy",        this->mPolicy );
     }
     
     //----------------------------------------------------------------//
@@ -41,13 +41,19 @@ public:
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
-        serializer.serialize ( "policyName",    this->mPolicyName );
+        serializer.serialize ( "policy",        this->mPolicy );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
     
-        return ledger.affirmKey ( this->mMaker->getAccountName (), this->mKeyName, this->mKey, this->mPolicyName );
+        return ledger.affirmKey (
+            this->mMaker->getAccountName (),
+            this->mMaker->getKeyName (),
+            this->mKeyName,
+            this->mKey,
+            this->mPolicy.get ()
+        );
     }
 };
 

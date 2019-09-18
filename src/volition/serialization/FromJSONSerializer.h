@@ -129,7 +129,7 @@ protected:
                 assert ( object );
                 serializer.mObject = object;
             }
-            value.serialize ( serializer );
+            value.serializeFrom ( serializer );
         }
     }
 
@@ -245,7 +245,7 @@ public:
 
         FromJSONSerializer serializer;
         serializer.mArray = &array;
-        serializable.serialize ( serializer );
+        serializable.serializeFrom ( serializer );
     }
 
     //----------------------------------------------------------------//
@@ -253,7 +253,7 @@ public:
 
         FromJSONSerializer serializer;
         serializer.mObject = &object;
-        serializable.serialize ( serializer );
+        serializable.serializeFrom ( serializer );
     }
 
     //----------------------------------------------------------------//

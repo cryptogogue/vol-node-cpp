@@ -82,7 +82,7 @@ protected:
         ToJSONSerializer serializer;
         serializer.mParent = this;
         serializer.mName = name;
-        value.serialize ( serializer );
+        value.serializeTo ( serializer );
 
         this->set ( serializer );
     }
@@ -149,6 +149,19 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+    operator Poco::Dynamic::Var () const {
+    
+        if ( this->mArray ) {
+            return Poco::JSON::Array::Ptr ( this->mArray );
+        }
+        
+        if ( this->mObject ) {
+            return Poco::JSON::Object::Ptr ( this->mObject );
+        }
+        return Poco::Dynamic::Var ();
+    }
+
+    //----------------------------------------------------------------//
     ToJSONSerializer () :
         mParent ( NULL ) {
     }
@@ -157,15 +170,8 @@ public:
     static Poco::Dynamic::Var toJSON ( const AbstractSerializable& serializable ) {
 
         ToJSONSerializer serializer;
-        serializable.serialize ( serializer );
-        
-        if ( serializer ) {
-            if ( serializer.mArray ) {
-                return Poco::JSON::Array::Ptr ( serializer.mArray );
-            }
-            return Poco::JSON::Object::Ptr ( serializer.mObject );
-        }
-        return Poco::Dynamic::Var ();
+        serializable.serializeTo ( serializer );
+        return serializer;
     }
 
     //----------------------------------------------------------------//

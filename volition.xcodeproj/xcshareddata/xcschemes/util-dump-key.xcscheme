@@ -68,7 +68,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-k keys/pkey0.priv.json"
+            argument = "-o keys/triadx.json"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

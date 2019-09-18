@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/Account.h>
 #include <volition/Asset.h>
+#include <volition/Policy.h>
 #include <volition/Schema.h>
 
 namespace Volition {
@@ -45,17 +46,17 @@ public:
 class FormatLedgerKey {
 private:
 
-    static constexpr const char* ACCOUNT            = "account";
-    static constexpr const char* ACCOUNT_ALIAS      = "alias";
-    static constexpr const char* ACCOUNT_COUNTER    = "accountCounter";
-    static constexpr const char* BLOCK_KEY          = "block";
-    static constexpr const char* KEY_ID             = "keyID.";
-    static constexpr const char* ENTROPY            = "entropy";
-    static constexpr const char* IDENTITY           = "identity";
-    static constexpr const char* MINERS             = "miners";
-    static constexpr const char* MINER_INFO         = "minerInfo";
-    static constexpr const char* MINER_URLS         = "minerUrls";
-    static constexpr const char* UNFINISHED         = "unfinished";
+    static constexpr const char* ACCOUNT                = "account";
+    static constexpr const char* ACCOUNT_ALIAS          = "alias";
+    static constexpr const char* ACCOUNT_COUNTER        = "accountCounter";
+    static constexpr const char* BLOCK_KEY              = "block";
+    static constexpr const char* KEY_ID                 = "keyID.";
+    static constexpr const char* ENTROPY                = "entropy";
+    static constexpr const char* IDENTITY               = "identity";
+    static constexpr const char* MINERS                 = "miners";
+    static constexpr const char* MINER_INFO             = "minerInfo";
+    static constexpr const char* MINER_URLS             = "minerUrls";
+    static constexpr const char* UNFINISHED             = "unfinished";
 
 public:
 
@@ -130,6 +131,13 @@ public:
     static LedgerKey forBlock () {
 
         return "block";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey forEntitlements ( string name ) {
+    
+        assert ( name.size () > 0 );
+        return Format::write ( "entitlements.%s", name.c_str ());
     }
 
     //----------------------------------------------------------------//

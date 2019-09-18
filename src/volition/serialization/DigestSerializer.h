@@ -69,7 +69,7 @@ protected:
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const AbstractSerializable& value ) override {
         UNUSED ( name );
-        value.serialize ( *this );
+        value.serializeTo ( *this );
     }
 
     //----------------------------------------------------------------//
@@ -92,7 +92,7 @@ public:
 
         DigestSerializer serializer;
         serializer.mStream = &digestStream;
-        serializable.serialize ( serializer );
+        serializable.serializeTo ( serializer );
     }
 };
 

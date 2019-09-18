@@ -287,16 +287,6 @@ bool Block::verify ( const Ledger& ledger ) const {
 
     // no miner info; must be the genesis block
     if ( this->mHeight > 0 ) return false; // genesis block must be height 0
-
-    TheContext& theContext = TheContext::get ();
-
-    if ( theContext.hasGenesisBlockDigest ()) {
-        if ( !Poco::DigestEngine::constantTimeEquals ( theContext.getGenesisBlockDigest (), this->getSignature ().getDigest ())) return false;
-    }
-
-    if ( theContext.hasGenesisBlockKey ()) {
-        if ( !this->verify ( theContext.getGenesisBlockKey ())) return false;
-    }
     
     return true;
 }

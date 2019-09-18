@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_ACCOUNT_POLICY_H
-#define VOLITION_TRANSACTIONS_ACCOUNT_POLICY_H
+#ifndef VOLITION_TRANSACTIONS_RESTRICT_ACCOUNT_H
+#define VOLITION_TRANSACTIONS_RESTRICT_ACCOUNT_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -12,25 +12,23 @@ namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// AccountPolicy
+// RestrictAccount
 //================================================================//
-class AccountPolicy :
+class RestrictAccount :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "ACCOUNT_POLICY" )
+    TRANSACTION_TYPE ( "RESTRICT_ACCOUNT" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                              mPolicyName;
-    SerializableUniquePtr < Policy >    mPolicy;
+    Policy   mPolicy;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
-        serializer.serialize ( "policyName",    this->mPolicyName );
     }
     
     //----------------------------------------------------------------//
@@ -38,7 +36,6 @@ public:
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
-        serializer.serialize ( "policyName",    this->mPolicyName );
     }
 
     //----------------------------------------------------------------//

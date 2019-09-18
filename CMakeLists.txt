@@ -33,6 +33,7 @@ target_include_directories ( volition-lib PRIVATE ${VOLITION_INCLUDES} )
 target_sources ( volition-lib
     PRIVATE
         src/volition/AbstractAPIRequestHandler.cpp
+        src/volition/AbstractEntitlement.cpp
         src/volition/AbstractRequestHandler.cpp
         src/volition/AbstractTransactionBody.cpp
         src/volition/AssetID.cpp
@@ -40,13 +41,14 @@ target_sources ( volition-lib
         src/volition/Chain.cpp
         src/volition/ChainMetadata.cpp
         src/volition/CryptoKey.cpp
+        src/volition/EntitlementFactory.cpp
         src/volition/FileSys.cpp
         src/volition/Format.cpp
         src/volition/Ledger.cpp
         src/volition/LuaContext.cpp
         src/volition/Miner.cpp
         src/volition/MinerInfo.cpp
-        src/volition/Policy.cpp
+        src/volition/PathEntitlement.cpp
         src/volition/RouteTable.cpp
         src/volition/Signature.cpp
         src/volition/SquapFactory.cpp

@@ -121,7 +121,7 @@ protected:
         bool solo               = configuration.getBool ( "solo", false );
         string sslCertFile      = configuration.getString ( "openSSL.server.certificateFile", "" );
         
-        string minerID      = to_string ( port );
+        string minerID          = to_string ( port );
     
         Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
         
