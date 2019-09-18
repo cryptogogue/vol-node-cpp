@@ -13,9 +13,6 @@ import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
 import { Dropdown, Grid, Icon, List, Menu, Card, Group }    from 'semantic-ui-react';
 
-import { FixedSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
-
 const DPI = 300;
 const MM_TO_IN = 0.03937007874;
 
@@ -51,7 +48,7 @@ function getAssetsPerPageSize ( layout ) {
         case INVENTORY_LAYOUT.US_LEDGER:    return 18;
 
         case INVENTORY_LAYOUT.A4:           return 9;
-        case INVENTORY_LAYOUT.A3:           return 16;
+        case INVENTORY_LAYOUT.A3:           return 18;
         case INVENTORY_LAYOUT.A2:           return 36;
     }
     return -1;
@@ -163,7 +160,6 @@ const InventoryPageView = ( props ) => {
 // InventoryView
 //================================================================//
 export const InventoryView = observer (( props ) => {
-
     const [ selection, setSelection ]   = useState ({});
 
     const isSelected = ( asset ) => {
@@ -212,7 +208,6 @@ export const InventoryView = observer (( props ) => {
     }
     else {
         for ( let i in assetArray ) {
-            if ( i > 10 ) break;
             const asset = assetArray [ i ];
             const color = isSelected ( asset ) ? 'red' : 'white';
             assetLayouts.push (
@@ -234,6 +229,25 @@ export const InventoryView = observer (( props ) => {
 
     return (
         <div className = "asset-wrapper">
+            {/* <InfiniteLoader
+                isItemLoaded = { isItemLoaded }
+                itemCount = { assetArray.length }
+                loadMoreItems = { loadMoreItems }
+            >
+                {({ onItemsRendered, ref }) => (
+                    <FixedSizeList
+                        className = "List"
+                        height = { 150 }
+                        itemCount = { assetArray.length }
+                        itemSize = { 30 }
+                        onItemsRendered = { onItemsRendered }
+                        ref = { ref }
+                        width = { 300 }
+                    >
+                        { Row }
+                    </FixedSizeList>
+                )}
+            </InfiniteLoader> */}
             { assetLayouts }
         </div>
     );

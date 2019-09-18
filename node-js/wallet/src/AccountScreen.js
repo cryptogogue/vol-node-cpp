@@ -136,7 +136,7 @@ export const AccountScreen = observer (( props ) => {
     return (
         <SingleColumnContainerView>
             <div style={{ height:'20px', backgroundColor:'LightSlateGray', position:'fixed',top:'0',color:'white',left:'0',width:'100%' }}>
-                Network: { appState.nodeInfo.identity || 'UNKNOWN' }
+                Network: { appState.nodeInfo.network || 'UNKNOWN' }
             </div>
 
             <NavigationBar navTitle = "Accounts" appState = { appState }/>

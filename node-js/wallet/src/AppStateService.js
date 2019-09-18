@@ -492,11 +492,12 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    makeNodeInfo ( type, status ) {
+    makeNodeInfo ( type, status, network ) {
 
         return {
             type:       type || NODE_TYPE.UNKNOWN,
             status:     status || NODE_STATUS.UNKNOWN,
+            network:    network,
         };
     }
 
@@ -632,12 +633,12 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    setNodeInfo ( nodeURL, type, status ) {
+    setNodeInfo ( nodeURL, type, status, network ) {
 
         if ( nodeURL in this.nodes ) {
             const info = this.nodes [ nodeURL ];
             if (( info.type !== type ) || ( info.status !== status )) {
-                this.nodes [ nodeURL ] = this.makeNodeInfo ( type, status );
+                this.nodes [ nodeURL ] = this.makeNodeInfo ( type, status, network || info.network );
             }
         }
     }

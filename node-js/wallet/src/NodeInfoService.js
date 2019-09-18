@@ -42,7 +42,7 @@ export class NodeInfoService extends Service {
                     type = NODE_TYPE.MARKET;
                 }
 
-                this.appState.setNodeInfo ( url, type, NODE_STATUS.ONLINE );
+                this.appState.setNodeInfo ( url, type, NODE_STATUS.ONLINE, data.identity );
                 delete ( this.pendingURLs [ url ]);
             }
             catch ( error ) {
