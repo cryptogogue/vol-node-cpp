@@ -63,7 +63,7 @@ export const TransactionFormSelector = observer (( props ) => {
     const [ index, setIndex ] = useState ( -1 );
     const [ formIsShown, setFormIsShown ] = useState ( false );
 
-    const canShowForm = ( appState.nonce >= 0 );
+    const canShowForm = (( appState.nonce >= 0 ) && ( appState.key.policy ));
 
     const onSubmit = ( transaction ) => {
         appState.pushTransaction ( transaction );

@@ -17,11 +17,20 @@ export const KeySelector = observer (( props ) => {
 
     const { appState, onChange } = props;
 
+    const account = appState.account;
     const accountKeyNames = appState.accountKeyNames;
     const options = [];
     for ( let i in accountKeyNames ) {
+
         const keyName = accountKeyNames [ i ];
-        options.push ({ key: i, text: keyName, value: keyName });
+        const key = account.keys [ keyName ];
+
+        options.push ({
+            key: i,
+            text: keyName,
+            value: keyName,
+            disabled: !Boolean ( key.policy ),
+        });
     }
 
     return (
