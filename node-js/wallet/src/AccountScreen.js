@@ -44,19 +44,6 @@ const AccountDetailsView = observer (( props ) => {
             <Header as = "h2" icon>
                 <Icon name = "key" circular />
                 { appState.accountID }
-<<<<<<< HEAD
-
-                <Modal style={{ height:'auto' }} size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
-                    <Modal.Content>
-                        <center>
-                            <h3>Public Key</h3>
-                            <Divider/>
-                            <p>{ publicKey }</p>
-                        </center>
-                    </Modal.Content>
-                </Modal>
-=======
->>>>>>> c2afda08033516546b859619a6979302f3084eea
             </Header>
 
             <h4>
@@ -64,17 +51,10 @@ const AccountDetailsView = observer (( props ) => {
             </h4>
 
             <If condition = { keyEntitlements }>
-                <Modal
-                    size = "small"
-                    trigger = {
-                        <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader>
-                    }
-                >
+                <Modal style={{ height:'auto' }} size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
                     <Modal.Content>
                         <center>
                             <h3>Public Key</h3>
-                            <Divider/>
-                            <p>{ publicKey }</p>
                             <Divider/>
                             <p>{ keyEntitlements }</p>
                         </center>
