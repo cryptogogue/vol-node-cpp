@@ -13,3 +13,4 @@ Makefile
 *.pbxuser
 *.perspectivev3
 valgrind.out
+genesis

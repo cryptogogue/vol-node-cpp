@@ -37,6 +37,8 @@ const AccountDetailsView = observer (( props ) => {
     const balance       = appState.balance;
     const textColor     = balance > 0 ? 'black' : 'red';
 
+    const keyEntitlements = key.entitlements ? JSON.stringify ( key.entitlements.policy, null, 4 ) : false;
+
     return (
         <div>
             <Header as = "h2" icon>
@@ -61,17 +63,24 @@ const AccountDetailsView = observer (( props ) => {
                 <KeySelector appState = { appState }/>
             </h4>
 
-            <Modal size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
-                <Modal.Content>
-                    <center>
-                        <h3>Public Key</h3>
-                        <Divider/>
-                        <p>{ publicKey }</p>
-                        <Divider/>
-                        <p>{ JSON.stringify ( key.entitlements.policy, null, 4 )}</p>
-                    </center>
-                </Modal.Content>
-            </Modal>
+            <If condition = { keyEntitlements }>
+                <Modal
+                    size = "small"
+                    trigger = {
+                        <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader>
+                    }
+                >
+                    <Modal.Content>
+                        <center>
+                            <h3>Public Key</h3>
+                            <Divider/>
+                            <p>{ publicKey }</p>
+                            <Divider/>
+                            <p>{ keyEntitlements }</p>
+                        </center>
+                    </Modal.Content>
+                </Modal>
+            </If>
 
             <Choose>
 

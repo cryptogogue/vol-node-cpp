@@ -75,7 +75,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-g genesis.in"
+            argument = "-g genesis"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
