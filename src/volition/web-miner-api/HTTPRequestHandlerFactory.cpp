@@ -12,6 +12,7 @@
 #include <volition/web-miner-api/InventoryHandler.h>
 #include <volition/web-miner-api/KeyDetailsHandler.h>
 #include <volition/web-miner-api/MinerListHandler.h>
+#include <volition/web-miner-api/ResetChainHandler.h>
 #include <volition/web-miner-api/SchemaListHandler.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
@@ -27,19 +28,20 @@ namespace WebMinerAPI {
 //----------------------------------------------------------------//
 HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
 
-    this->mRouteTable.addEndpoint < WebMinerAPI::AccountDetailsHandler >    ( "/accounts/:accountName/?" );             // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::InventoryHandler >         ( "/accounts/:accountName/inventory/?" );   // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >    ( "/accounts/:accountName/keys/?" );        // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >      ( "/assets/:assetIndexOrID/?" );            // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >      ( "/blocks/:blockID/?" );                   // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >         ( "/blocks/?" );                            // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >        ( "/keys/:keyHash/?" );                     // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >         ( "/miners/?" );                            // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::SchemaListHandler >        ( "/schemas/?" );                           // GET
-    this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >       ( "/test/extendChain/?" );                  // POST
-    this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >         ( "/test/keyid/?" );                        // POST
-    this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >     ( "/test/signature/?" );                    // POST
-    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >       ( "/transactions/?" );                      // POST
+    this->mRouteTable.addEndpoint < WebMinerAPI::AccountDetailsHandler >    ( HTTP::GET,        "/accounts/:accountName/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::InventoryHandler >         ( HTTP::GET,        "/accounts/:accountName/inventory/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >    ( HTTP::GET,        "/accounts/:accountName/keys/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >      ( HTTP::GET,        "/assets/:assetIndexOrID/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >      ( HTTP::GET,        "/blocks/:blockID/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >         ( HTTP::GET,        "/blocks/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >        ( HTTP::GET,        "/keys/:keyHash/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >         ( HTTP::GET,        "/miners/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::SchemaListHandler >        ( HTTP::GET,        "/schemas/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >       ( HTTP::POST,       "/test/extendChain/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >         ( HTTP::POST,       "/test/keyid/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >     ( HTTP::POST,       "/test/signature/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >       ( HTTP::POST,       "/transactions/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::ResetChainHandler >        ( HTTP::DELETE,     "/?" );
     this->mRouteTable.setDefault < WebMinerAPI::DefaultHandler >            ();
 }
 
@@ -54,7 +56,7 @@ HTTPRequestHandlerFactory::~HTTPRequestHandlerFactory () {
 //----------------------------------------------------------------//
 Poco::Net::HTTPRequestHandler* HTTPRequestHandlerFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
     
-    return this->mRouteTable.match ( request.getURI ());
+    return this->mRouteTable.match ( request );
 }
 
 } // WebMinerAPI

@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/AbstractRequestHandler.h>
 #include <volition/Factory.h>
+#include <volition/HTTP.h>
 
 namespace Volition {
 
@@ -17,28 +18,36 @@ class RouteTable :
     public Factory < AbstractRequestHandler > {
 private:
 
-    Routing::Router     mRouter;
-    Routing::Router     mDefaultRouter;
+    map < string, Factory < AbstractRequestHandler >> mFactories;
+    unique_ptr < AbstractFactoryAllocator < AbstractRequestHandler >> mDefaultAllocator;
+    
+    Routing::Router             mRouter;
+    Routing::Router             mDefaultRouter;
 
 public:
 
     //----------------------------------------------------------------//
-    AbstractRequestHandler*     match                       ( string uri );
+    AbstractRequestHandler*     match                       ( const Poco::Net::HTTPServerRequest& request );
                                 RouteTable                  ();
                                 ~RouteTable                 ();
-    size_t                      size                        ();
     
     //----------------------------------------------------------------//
     template < typename TYPE >
-    void addEndpoint ( string pattern ) {
-        this->addFactoryAllocator < TYPE >( pattern );
+    void addEndpoint ( HTTP::Method methodMask, string pattern ) {
+    
+        int key = 1;
+        int cursor = ( int )methodMask;
+        for ( ; cursor; cursor >>= 1, key <<= 1 ) {
+            if ( !( cursor & 1 )) continue;
+            this->mFactories [ HTTP::getStringForMethod (( HTTP::Method )key )].addFactoryAllocator < TYPE >( pattern );
+        }
         this->mRouter.registerPath ( pattern );
     }
 
     //----------------------------------------------------------------//
     template < typename TYPE >
     void setDefault () {
-        this->setDefaultFactoryAllocator < TYPE >();
+        this->mDefaultAllocator = make_unique < FactoryAllocator < AbstractRequestHandler, TYPE >>();
         this->mDefaultRouter.registerPath ( "/?" );
     }
 };

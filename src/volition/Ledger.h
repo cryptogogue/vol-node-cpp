@@ -137,6 +137,7 @@ public:
     string                              getSchemaString             ( Schema::Index schemaIndex ) const;
     UnfinishedBlockList                 getUnfinished               ();
     void                                incrementNonce              ( const TransactionMaker& makerSignature );
+    void                                init                        ();
     bool                                invoke                      ( string accountName, const AssetMethodInvocation& invocation );
     static bool                         isAccountName               ( string accountName );
     static bool                         isChildName                 ( string accountName );
@@ -149,7 +150,6 @@ public:
     bool                                publishSchema               ( string accountName, const Schema& schema, string schemaString );
     bool                                registerMiner               ( string accountName, string keyName, string url );
     bool                                renameAccount               ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
-    void                                reset                       ();
     bool                                sendVOL                     ( string accountName, string recipientName, u64 amount );
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
     bool                                setAssetFieldValue          ( Asset::Index index, string fieldName, const AssetFieldValue& field );

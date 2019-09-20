@@ -44,9 +44,9 @@ public:
                         ~Chain              ();
     size_t              countBlocks         () const;
     size_t              countBlocks         ( size_t cycleIdx ) const;
+    void                init                ();
     string              print               ( const char* pre = NULL, const char* post = NULL ) const;
     bool                pushBlock           ( const Block& block );
-    void                reset               ();
     size_t              size                () const;
 };
 

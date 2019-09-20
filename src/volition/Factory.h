@@ -55,7 +55,7 @@ private:
     map < KEY_TYPE, unique_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>>    mKeysToAllocators;
     unique_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>                     mDefaultAllocator;
 
-protected:
+public:
 
     //----------------------------------------------------------------//
     template < typename PRODUCT_TYPE >

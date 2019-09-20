@@ -121,6 +121,12 @@ size_t Chain::countBlocks () const {
 }
 
 //----------------------------------------------------------------//
+void Chain::init () {
+
+    this->Ledger::init ();
+}
+
+//----------------------------------------------------------------//
 string Chain::print ( const char* pre, const char* post ) const {
 
     string str;
@@ -163,12 +169,6 @@ bool Chain::pushBlock ( const Block& block ) {
 }
 
 //----------------------------------------------------------------//
-void Chain::reset () {
-
-    this->Ledger::reset ();
-}
-
-//----------------------------------------------------------------//
 size_t Chain::size () const {
 
     return this->VersionedStore::getVersion ();
@@ -181,7 +181,7 @@ size_t Chain::size () const {
 //----------------------------------------------------------------//
 void Chain::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
-    this->reset ();
+    this->init ();
     
     SerializableVector < Block > blocks;
     serializer.serialize ( "blocks", blocks );

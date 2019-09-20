@@ -376,6 +376,17 @@ void Ledger::incrementNonce ( const TransactionMaker& maker ) {
 }
 
 //----------------------------------------------------------------//
+void Ledger::init () {
+
+    this->clear ();
+    this->setObject < SerializableSet < string >>( FormatLedgerKey::forMiners (), SerializableSet < string > ());
+    this->setObject < SerializableMap < string, string >>( FormatLedgerKey::forMinerURLs (), SerializableMap < string, string > ());
+    this->setValue < Asset::Index >( FormatLedgerKey::forAccountCount (), 0 );
+    this->setValue < Schema::Index >( FormatLedgerKey::forSchemaCount (), 0 );
+    this->setValue < Asset::Index >( FormatLedgerKey::forAssetCount (), 0 );
+}
+
+//----------------------------------------------------------------//
 bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocation ) {
 
     shared_ptr < AssetMethod > method = this->getMethod ( invocation.mMethodName );
@@ -434,7 +445,7 @@ bool Ledger::isGenesis () const {
 //----------------------------------------------------------------//
 Ledger::Ledger () {
 
-    this->reset ();
+    this->init ();
 }
 
 //----------------------------------------------------------------//
@@ -610,17 +621,6 @@ bool Ledger::renameAccount ( string accountName, string revealedName, Digest nam
     this->setObject < Account >( FormatLedgerKey::forAccount ( account->mIndex ), *account );
  
     return true;
-}
-
-//----------------------------------------------------------------//
-void Ledger::reset () {
-
-    this->clear ();
-    this->setObject < SerializableSet < string >>( FormatLedgerKey::forMiners (), SerializableSet < string > ());
-    this->setObject < SerializableMap < string, string >>( FormatLedgerKey::forMinerURLs (), SerializableMap < string, string > ());
-    this->setValue < Asset::Index >( FormatLedgerKey::forAccountCount (), 0 );
-    this->setValue < Schema::Index >( FormatLedgerKey::forSchemaCount (), 0 );
-    this->setValue < Asset::Index >( FormatLedgerKey::forAssetCount (), 0 );
 }
 
 //----------------------------------------------------------------//

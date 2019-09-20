@@ -49,12 +49,12 @@ export class Service {
 
     //----------------------------------------------------------------//
     revocableFetch ( input, init, timeout ) {
-        return this.revocablePromise ( fetch ( input, init ), timeout || 1000 );
+        return this.revocablePromise ( fetch ( input, init ), timeout );
     }
 
     //----------------------------------------------------------------//
     revocableFetchJSON ( input, init, timeout ) {
-        return this.revocableFetch ( input, init, timeout || 1000 )
+        return this.revocableFetch ( input, init, timeout )
             .then ( response => this.revocablePromise ( response.json ()));
     }
 

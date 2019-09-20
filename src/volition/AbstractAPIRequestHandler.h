@@ -5,12 +5,13 @@
 #define VOLITION_ABSTRACTAPIREQUESTHANDLER_H
 
 #include <volition/AbstractRequestHandler.h>
+#include <volition/HTTP.h>
 
 namespace Volition {
 
-#define SUPPORTED_HTTP_METHODS(mask)                                                \
-    int AbstractAPIRequestHandler_getSupportedHTTPMethods () const override {       \
-        return mask;                                                                \
+#define SUPPORTED_HTTP_METHODS(mask)                                                        \
+    HTTP::Method AbstractAPIRequestHandler_getSupportedHTTPMethods () const override {      \
+        return mask;                                                                        \
     }
 
 //================================================================//
@@ -21,23 +22,18 @@ class AbstractAPIRequestHandler :
 protected:
     
     typedef Poco::Net::HTTPResponse::HTTPStatus HTTPStatus;
-
-    static const int HTTP_ALL           = -1;
-    static const int HTTP_DELETE        =  1 << 0;
-    static const int HTTP_GET           =  1 << 1;
-    static const int HTTP_HEAD          =  1 << 2;
-    static const int HTTP_OPTIONS       =  1 << 3;
-    static const int HTTP_PATCH         =  1 << 4;
-    static const int HTTP_POST          =  1 << 5;
-    static const int HTTP_PUT           =  1 << 6;
     
     //----------------------------------------------------------------//
-    static int              getMethodForString                          ( string method );
-    void                    AbstractRequestHandler_handleRequest        ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const override;
+    void                    AbstractRequestHandler_handleRequest                    ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const override;
 
     //----------------------------------------------------------------//
-    virtual int             AbstractAPIRequestHandler_getSupportedHTTPMethods       () const = 0;
-    virtual HTTPStatus      AbstractAPIRequestHandler_handleRequest                 ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
+    virtual HTTP::Method    AbstractAPIRequestHandler_getSupportedHTTPMethods       () const;
+    virtual HTTPStatus      AbstractAPIRequestHandler_handleDelete                  () const;
+    virtual HTTPStatus      AbstractAPIRequestHandler_handleGet                     ( Poco::JSON::Object& jsonOut ) const;
+    virtual HTTPStatus      AbstractAPIRequestHandler_handlePatch                   ( const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const;
+    virtual HTTPStatus      AbstractAPIRequestHandler_handlePost                    ( const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const;
+    virtual HTTPStatus      AbstractAPIRequestHandler_handlePut                     ( const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const;
+    virtual HTTPStatus      AbstractAPIRequestHandler_handleRequest                 ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const;
 
 public:
 

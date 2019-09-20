@@ -76,6 +76,7 @@ public:
     void                    setMinerID              ( string minerID );
                             Miner                   ();
     virtual                 ~Miner                  ();
+    void                    reset                   ();
     void                    selectBranch            ();
     SubmissionResponse      submitBlock             ( const Block& block );
     void                    submitChain             ( const Chain& chain );

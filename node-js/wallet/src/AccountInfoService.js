@@ -34,23 +34,7 @@ export class AccountInfoService extends Service {
         let updateInfo = async () => {
 
             try {
-
-                const accountID = this.appState.accountID;
-                const data = await this.revocableFetchJSON ( this.appState.node + '/accounts/' + accountID );
-
-                const account = data.account;
-                const entitlements = data.entitlements;
-
-                if ( account ) {
-
-                    this.appState.setAccountInfo ( account.balance, account.nonce );
-                    this.appState.updateAccount ( account, entitlements );
-                    this.appState.confirmTransactions ( account.nonce );
-
-                    if ( account.name !== accountID ) {
-                        this.appState.renameAccount ( accountID, account.name );
-                    }
-                }
+                await AccountInfoService.update ( this, this.appState );
             }
             catch ( error ) {
                 this.appState.setAccountInfo ();
@@ -58,5 +42,26 @@ export class AccountInfoService extends Service {
             }
         }
         this.revocablePromiseWithBackoff (() => updateInfo (), delay, true );
+    }
+
+    //----------------------------------------------------------------//
+    static async update ( service, appState ) {
+
+        const accountID = appState.accountID;
+        const data = await service.revocableFetchJSON ( appState.node + '/accounts/' + accountID );
+
+        const account = data.account;
+        const entitlements = data.entitlements;
+
+        if ( account ) {
+
+            appState.setAccountInfo ( account.balance, account.nonce );
+            appState.updateAccount ( account, entitlements );
+            appState.confirmTransactions ( account.nonce );
+
+            if ( account.name !== accountID ) {
+                appState.renameAccount ( accountID, account.name );
+            }
+        }
     }
 }

@@ -20,10 +20,12 @@ export const NavigationBar = observer (( props ) => {
     let onClickDeleteUserStorage        = () => { appState.deleteUserStorage ()};
     let onClickDeleteNodeList           = () => { appState.deleteNodeList ()};
     let onClickLogout                   = () => { appState.login ( false )};
+    let onClickResetMiningNode          = () => { appState.affirmLocalhostNodes ()};
 
     const accountsURL   = appState.prefixURL ( `/accounts/${ accountID }` );
     const inventoryURL  = appState.prefixURL ( `/accounts/${ accountID }/inventory` );
     const craftingURL   = appState.prefixURL ( `/accounts/${ accountID }/crafting` );
+    const resetURL      = appState.prefixURL ( `/accounts/${ accountID }/reset` );
 
     return (
         <Menu>
@@ -48,15 +50,16 @@ export const NavigationBar = observer (( props ) => {
             <Menu.Menu position = "right">
                 <Dropdown item icon = "settings">
                     <Dropdown.Menu>
-                        <Dropdown.Item icon = "add square" text = "Create Account" as = { Link } to = { appState.prefixURL ( '/accounts/new' )}/>
-                        <Dropdown.Item icon = "add square" text = "Import Account" as = { Link } to = { appState.prefixURL ( '/accounts/import' )}/>
-                        <Dropdown.Item icon = "log out" text = "Logout" onClick = { onClickLogout }/>
-                        <Dropdown.Item icon = "globe" text = "DEBUG: Affirm Localhost Nodes" onClick = { onClickAffirmLocalhostNodes }/>
-                        <Dropdown.Item icon = "globe" text = "DEBUG: Delete Account" onClick = { onClickDeleteAccount }/>
-                        <Dropdown.Item icon = "globe" text = "DEBUG: Delete Node List" onClick = { onClickDeleteNodeList }/>
-                        <Dropdown.Item icon = "globe" text = "DEBUG: Delete Transactions" onClick = { onClickDeleteTransactions }/>
-                        <Dropdown.Item icon = "globe" text = "DEBUG: Delete User Storage" onClick = { onClickDeleteUserStorage }/>
-                        <Dropdown.Item icon = "globe" text = "DEBUG: Delete All Storage" onClick = { onClickDeleteAllStorage }/>
+                        <Dropdown.Item icon = "add square"  text = "Create Account"                 as = { Link } to = { appState.prefixURL ( '/accounts/new' )}/>
+                        <Dropdown.Item icon = "add square"  text = "Import Account"                 as = { Link } to = { appState.prefixURL ( '/accounts/import' )}/>
+                        <Dropdown.Item icon = "log out"     text = "Logout"                         onClick = { onClickLogout }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Reset Mining Node"       as = { Link } to = { resetURL }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Affirm Localhost Nodes"  onClick = { onClickAffirmLocalhostNodes }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Delete Account"          onClick = { onClickDeleteAccount }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Delete Node List"        onClick = { onClickDeleteNodeList }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Delete Transactions"     onClick = { onClickDeleteTransactions }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Delete User Storage"     onClick = { onClickDeleteUserStorage }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Delete All Storage"      onClick = { onClickDeleteAllStorage }/>
                     </Dropdown.Menu>
                 </Dropdown>
             </Menu.Menu>

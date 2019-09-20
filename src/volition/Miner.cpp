@@ -209,6 +209,15 @@ Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
+void Miner::reset () {
+
+    this->mPendingTransactions.clear ();
+    this->mBestBranch->reset ( 1 );
+    this->mBranches.clear ();
+    this->mBranches.insert ( this->mBestBranch );
+}
+
+//----------------------------------------------------------------//
 void Miner::saveChain () {
 
 //    if ( this->mPersistenceProvider ) {

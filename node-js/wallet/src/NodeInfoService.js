@@ -29,20 +29,8 @@ export class NodeInfoService extends Service {
 
         const discoverNode = async ( url ) => {
 
-            let { type } = this.appState.getNodeInfo ( url );
-
             try {
-
-                const data = await this.revocableFetchJSON ( url );
-
-                if ( data.type === 'VOL_MINING_NODE' ) {
-                    type = NODE_TYPE.MINING;
-                }
-                if ( data.type === 'VOL_PROVIDER' ) {
-                    type = NODE_TYPE.MARKET;
-                }
-
-                this.appState.setNodeInfo ( url, type, NODE_STATUS.ONLINE, data.identity );
+                await NodeInfoService.update ( this, this.appState, url )
                 delete ( this.pendingURLs [ url ]);
             }
             catch ( error ) {
@@ -59,5 +47,22 @@ export class NodeInfoService extends Service {
             }
         }
         this.revocableTimeout (() => { this.discoverNodes ( delay )}, delay );
+    }
+
+    //----------------------------------------------------------------//
+    static async update ( service, appState, url ) {
+
+        const data = await service.revocableFetchJSON ( url );
+
+        let { type } = appState.getNodeInfo ( url );
+
+        if ( data.type === 'VOL_MINING_NODE' ) {
+            type = NODE_TYPE.MINING;
+        }
+        if ( data.type === 'VOL_PROVIDER' ) {
+            type = NODE_TYPE.MARKET;
+        }
+
+        appState.setNodeInfo ( url, type, NODE_STATUS.ONLINE, data.identity );
     }
 }

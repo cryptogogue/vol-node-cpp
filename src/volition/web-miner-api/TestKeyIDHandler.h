@@ -20,10 +20,10 @@ class TestKeyIDHandler :
     public AbstractAPIRequestHandler {
 public:
 
-    SUPPORTED_HTTP_METHODS ( HTTP_POST )
+    SUPPORTED_HTTP_METHODS ( HTTP::POST )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( int method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonOut );
 

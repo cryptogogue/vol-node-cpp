@@ -118,6 +118,15 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
+    @action
+    clearPendingTransactions () {
+
+        if ( this.hasAccount ) {
+            this.account.pendingTransactions = [];
+        }
+    }
+
+    //----------------------------------------------------------------//
     // CLEAR App State (reset to initial state)
     @action
     clearState () {
@@ -352,12 +361,6 @@ export class AppStateService extends Service {
         const accountKeyNames = this.accountKeyNames;
         if ( accountKeyNames.includes ( defaultKeyName )) return defaultKeyName;
         return (( accountKeyNames.length > 0 ) && accountKeyNames [ 0 ]) || '';
-    }
-
-    //----------------------------------------------------------------//
-    getMinerURL () {
-
-        return this.nodes [ 0 ]; // this is a hack for now (until we redo the config)
     }
 
     //----------------------------------------------------------------//
@@ -684,8 +687,8 @@ export class AppStateService extends Service {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
-        let stagedTransactions = this.account.stagedTransactions;
-        let pendingTransactions = this.account.pendingTransactions;
+        let stagedTransactions      = this.account.stagedTransactions;
+        let pendingTransactions     = this.account.pendingTransactions;
 
         try {
 

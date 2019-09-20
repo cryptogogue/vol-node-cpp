@@ -6,6 +6,8 @@
 
 namespace Volition {
 
+typedef Poco::Net::HTTPResponse::HTTPStatus HTTPStatus;
+
 //================================================================//
 // AbstractAPIRequestHandler
 //================================================================//
@@ -18,36 +20,73 @@ AbstractAPIRequestHandler::AbstractAPIRequestHandler () {
 AbstractAPIRequestHandler::~AbstractAPIRequestHandler () {
 }
 
-//----------------------------------------------------------------//
-int AbstractAPIRequestHandler::getMethodForString ( string method ) {
-
-    switch ( FNV1a::hash_64 ( method.c_str ())) {
-        case FNV1a::const_hash_64 ( "DELETE" ):     return HTTP_DELETE;
-        case FNV1a::const_hash_64 ( "GET" ):        return HTTP_GET;
-        case FNV1a::const_hash_64 ( "HEAD" ):       return HTTP_HEAD;
-        case FNV1a::const_hash_64 ( "OPTIONS" ):    return HTTP_OPTIONS;
-        case FNV1a::const_hash_64 ( "PATCH" ):      return HTTP_PATCH;
-        case FNV1a::const_hash_64 ( "POST" ):       return HTTP_POST;
-        case FNV1a::const_hash_64 ( "PUT" ):        return HTTP_PUT;
-    }
-    return 0;
-}
-
 //================================================================//
 // overrides
 //================================================================//
 
 //----------------------------------------------------------------//
-void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response ) const {
+HTTP::Method AbstractAPIRequestHandler::AbstractAPIRequestHandler_getSupportedHTTPMethods () const {
+    return HTTP::ALL;
+}
+
+//----------------------------------------------------------------//
+HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleDelete () const {
+    return Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED;
+}
+
+//----------------------------------------------------------------//
+HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleGet ( Poco::JSON::Object& jsonOut ) const {
+    UNUSED ( jsonOut );
+    return Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED;
+}
+
+//----------------------------------------------------------------//
+HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handlePatch ( const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const {
+    UNUSED ( jsonIn );
+    UNUSED ( jsonOut );
+    return Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED;
+}
+
+//----------------------------------------------------------------//
+HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handlePost ( const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const {
+    UNUSED ( jsonIn );
+    UNUSED ( jsonOut );
+    return Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED;
+}
+
+//----------------------------------------------------------------//
+HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handlePut ( const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const {
+    UNUSED ( jsonIn );
+    UNUSED ( jsonOut );
+    return Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED;
+}
+
+//----------------------------------------------------------------//
+HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const {
+
+    switch ( method ) {
+        case HTTP::DELETE:  return this->AbstractAPIRequestHandler_handleDelete ();
+        case HTTP::GET:     return this->AbstractAPIRequestHandler_handleGet ( jsonOut );
+        case HTTP::PATCH:   return this->AbstractAPIRequestHandler_handlePatch ( jsonIn, jsonOut );
+        case HTTP::POST:    return this->AbstractAPIRequestHandler_handlePost ( jsonIn, jsonOut );
+        case HTTP::PUT:     return this->AbstractAPIRequestHandler_handlePut ( jsonIn, jsonOut );
+        default:
+            break;
+    }
+    return Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED;
+}
+
+//----------------------------------------------------------------//
+void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const {
     UNUSED ( match );
 
     response.add ( "Access-Control-Allow-Origin", "*" );
     response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );
     response.add ( "Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, POST, PUT" );
 
-    int method = AbstractAPIRequestHandler::getMethodForString ( request.getMethod ());
+    HTTP::Method method = HTTP::getMethodForString ( request.getMethod ());
     
-    if ( method == HTTP_OPTIONS ) {
+    if ( method == HTTP::OPTIONS ) {
         response.setStatus (  Poco::Net::HTTPResponse::HTTP_OK );
         response.send ();
         return;
@@ -62,7 +101,7 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     Poco::JSON::Object::Ptr jsonIn  = NULL;
     Poco::JSON::Object::Ptr jsonOut = new Poco::JSON::Object ();
     
-    if ( method & ( HTTP_POST | HTTP_PUT )) {
+    if ( method & ( HTTP::POST | HTTP::PUT | HTTP::PATCH )) {
     
         Poco::JSON::Parser parser;
         Poco::Dynamic::Var result = parser.parse ( request.stream ());

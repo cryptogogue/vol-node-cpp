@@ -10,7 +10,9 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractRequestHandler* RouteTable::match ( string uri ) {
+AbstractRequestHandler* RouteTable::match ( const Poco::Net::HTTPServerRequest& request ) {
+
+    string uri = request.getURI ();
 
     unique_ptr < AbstractRequestHandler > handler;
 
@@ -18,22 +20,24 @@ AbstractRequestHandler* RouteTable::match ( string uri ) {
         Routing::PathMatch match = this->mRouter.matchPath ( uri );
         const string& pattern = match.pathTemplate ();
         
-        handler = this->create ( pattern );
+        handler = this->mFactories [ request.getMethod ()].create ( pattern );
+        if ( handler ) {
+            handler->setMatch ( match );
+            return handler.release ();
+        }
+    }
+    catch ( Routing::PathNotFoundException ) {}
+    
+    try {
+        Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
+        handler = this->mDefaultAllocator->create ();
         assert ( handler );
         handler->setMatch ( match );
+        return handler.release ();
     }
-    catch ( Routing::PathNotFoundException ) {
+    catch ( Routing::PathNotFoundException ) {}
     
-        try {
-            Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
-            handler = this->create ();
-            assert ( handler );
-            handler->setMatch ( match );
-        }
-        catch ( Routing::PathNotFoundException ) {
-        }
-    }
-    return handler.release ();
+    return NULL;
 }
 
 //----------------------------------------------------------------//
@@ -42,12 +46,6 @@ RouteTable::RouteTable () {
 
 //----------------------------------------------------------------//
 RouteTable::~RouteTable () {
-}
-
-//----------------------------------------------------------------//
-size_t RouteTable::size () {
-
-    return this->getFactorySize ();
 }
 
 } // namespace Volition

@@ -266,6 +266,8 @@
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
 		CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BAE23319E5E00EEAA60 /* CryptoKeyInfo.cpp */; };
 		CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */; };
+		CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */; };
+		CDDB4BBC233374B100EEAA60 /* HTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BBB233374B100EEAA60 /* HTTP.h */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -828,6 +830,8 @@
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
 		CDDB4BAE23319E5E00EEAA60 /* CryptoKeyInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoKeyInfo.cpp; path = src/volition/CryptoKeyInfo.cpp; sourceTree = "<group>"; };
 		CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKeyInfo.h; path = src/volition/CryptoKeyInfo.h; sourceTree = "<group>"; };
+		CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResetChainHandler.h; path = "src/volition/web-miner-api/ResetChainHandler.h"; sourceTree = "<group>"; };
+		CDDB4BBB233374B100EEAA60 /* HTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTP.h; path = src/volition/HTTP.h; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -1264,6 +1268,7 @@
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
 				CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */,
 				CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */,
+				CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */,
 				CD09ED742207D82500B09249 /* SchemaListHandler.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
@@ -1439,6 +1444,7 @@
 				CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */,
 				CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */,
 				CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */,
+				CDDB4BBB233374B100EEAA60 /* HTTP.h */,
 				CDED584220BA2131003A2969 /* RouteTable.cpp */,
 				CDED584320BA2131003A2969 /* RouteTable.h */,
 			);
@@ -1479,6 +1485,7 @@
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
+				CDDB4BBC233374B100EEAA60 /* HTTP.h in Headers */,
 				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
 				CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */,
@@ -1557,6 +1564,7 @@
 				CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */,
 				CD762AD5232826D7005AC85D /* PathEntitlement.h in Headers */,
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,
+				CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */,
 				CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
 				CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */,
