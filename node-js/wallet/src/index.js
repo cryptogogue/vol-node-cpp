@@ -8,25 +8,27 @@ configure ({
     enforceActions:     'always',
 });
 
-import { AccountRequestScreen }     from './AccountRequestScreen';
-import { AccountScreen }            from './AccountScreen';
-import { CraftingScreen }           from './CraftingScreen';
-import { DebugAESScreen }           from './debug/DebugAESScreen';
-import { DebugCryptoKeyScreen }     from './debug/DebugCryptoKeyScreen';
-import { DebugDropzoneScreen }      from './debug/DebugDropzoneScreen';
-import { DebugHandlebarsScreen }    from './debug/DebugHandlebarsScreen';
-import { DebugMobXScreen }          from './debug/DebugMobXScreen';
-import { DebugPrintScreen }         from './debug/DebugPrintScreen';
-import { DebugStripeScreen }        from './debug/DebugStripeScreen';
-import { DebugTextFitterScreen }    from './debug/DebugTextFitterScreen';
-import { ImportAccountScreen }      from './ImportAccountScreen';
-import { InventoryScreen }          from './InventoryScreen';
-import { LoginScreen }              from './LoginScreen';
-import { RegisterScreen }           from './RegisterScreen';
-import { ResetScreen }              from './ResetScreen';
-import registerServiceWorker        from './util/registerServiceWorker';
-import React                        from 'react';
-import ReactDOM                     from 'react-dom';
+import { AccountRequestScreen }         from './AccountRequestScreen';
+import { AccountScreen }                from './AccountScreen';
+import { CraftingScreen }               from './CraftingScreen';
+import { DebugAESScreen }               from './debug/DebugAESScreen';
+import { DebugBarcodePDF417Screen }     from './debug/DebugBarcodePDF417Screen';
+import { DebugBarcodeQRScreen }         from './debug/DebugBarcodeQRScreen';
+import { DebugCryptoKeyScreen }         from './debug/DebugCryptoKeyScreen';
+import { DebugDropzoneScreen }          from './debug/DebugDropzoneScreen';
+import { DebugHandlebarsScreen }        from './debug/DebugHandlebarsScreen';
+import { DebugMobXScreen }              from './debug/DebugMobXScreen';
+import { DebugPrintScreen }             from './debug/DebugPrintScreen';
+import { DebugStripeScreen }            from './debug/DebugStripeScreen';
+import { DebugTextFitterScreen }        from './debug/DebugTextFitterScreen';
+import { ImportAccountScreen }          from './ImportAccountScreen';
+import { InventoryScreen }              from './InventoryScreen';
+import { LoginScreen }                  from './LoginScreen';
+import { RegisterScreen }               from './RegisterScreen';
+import { ResetScreen }                  from './ResetScreen';
+import registerServiceWorker            from './util/registerServiceWorker';
+import React                            from 'react';
+import ReactDOM                         from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
 
 // https://react-bootstrap.github.io/
@@ -66,14 +68,16 @@ const App = () => {
                 <Route exact path = "/:userID/login" component = { LoginScreen }/>
                 <Route exact path = "/login" component = { LoginScreen }/>
 
-                <Route exact path = "/debug/aes" component = { DebugAESScreen }/>
-                <Route exact path = "/debug/cryptokey" component = { DebugCryptoKeyScreen }/>
-                <Route exact path = "/debug/dropzone" component = { DebugDropzoneScreen }/>
-                <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
-                <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
-                <Route exact path = "/debug/print" component = { DebugPrintScreen }/>
-                <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
-                <Route exact path = "/debug/textfitter" component = { DebugTextFitterScreen }/>
+                <Route exact path = "/debug/aes"                component = { DebugAESScreen }/>
+                <Route exact path = "/debug/barcode/pdf417"     component = { DebugBarcodePDF417Screen }/>
+                <Route exact path = "/debug/barcode/qr"         component = { DebugBarcodeQRScreen }/>
+                <Route exact path = "/debug/cryptokey"          component = { DebugCryptoKeyScreen }/>
+                <Route exact path = "/debug/dropzone"           component = { DebugDropzoneScreen }/>
+                <Route exact path = "/debug/handlebars"         component = { DebugHandlebarsScreen }/>
+                <Route exact path = "/debug/mobx"               component = { DebugMobXScreen }/>
+                <Route exact path = "/debug/print"              component = { DebugPrintScreen }/>
+                <Route exact path = "/debug/stripe"             component = { DebugStripeScreen }/>
+                <Route exact path = "/debug/textfitter"         component = { DebugTextFitterScreen }/>
 
                 <Route exact path = "/:userID/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>

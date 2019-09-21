@@ -56,7 +56,7 @@ export const DebugAESScreen = observer (( props ) => {
     const controller    = useService (() => new DebugAESScreenController ());
 
     return (
-        <SingleColumnContainerView title = 'Test Mnemonic Phrase or Private Key'>
+        <SingleColumnContainerView title = 'Test AES Encryption'>
             <Form size = "large">
                 <Segment stacked>
                     <Form.TextArea

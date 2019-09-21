@@ -16,7 +16,7 @@ export class AssetLayout {
         console.log ( 'RENDER ASSET VIEW ITEMS' );
 
         const asset         = inventory.assets [ assetId ];
-        const barcode       = barcodeToSVG ( assetId );
+        const barcode       = barcodeToSVG ( assetId ); // TODO: don't think we need this...
         const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId, barcode: barcode });
 
         const layout        = inventory.layouts [ context.layout ]
