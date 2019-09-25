@@ -22,10 +22,11 @@ export const NavigationBar = observer (( props ) => {
     let onClickLogout                   = () => { appState.login ( false )};
     let onClickResetMiningNode          = () => { appState.affirmLocalhostNodes ()};
 
-    const accountsURL   = appState.prefixURL ( `/accounts/${ accountID }` );
-    const inventoryURL  = appState.prefixURL ( `/accounts/${ accountID }/inventory` );
-    const craftingURL   = appState.prefixURL ( `/accounts/${ accountID }/crafting` );
-    const resetURL      = appState.prefixURL ( `/accounts/${ accountID }/reset` );
+    const accountsURL           = appState.prefixURL ( `/accounts/${ accountID }` );
+    const inventoryURL          = appState.prefixURL ( `/accounts/${ accountID }/inventory` );
+    const craftingURL           = appState.prefixURL ( `/accounts/${ accountID }/crafting` );
+    const resetURL              = appState.prefixURL ( `/accounts/${ accountID }/reset` );
+    const previewSchemaURL      = `/debug/schema`;
 
     return (
         <Menu>
@@ -53,6 +54,7 @@ export const NavigationBar = observer (( props ) => {
                         <Dropdown.Item icon = "add square"  text = "Create Account"                 as = { Link } to = { appState.prefixURL ( '/accounts/new' )}/>
                         <Dropdown.Item icon = "add square"  text = "Import Account"                 as = { Link } to = { appState.prefixURL ( '/accounts/import' )}/>
                         <Dropdown.Item icon = "log out"     text = "Logout"                         onClick = { onClickLogout }/>
+                        <Dropdown.Item icon = "globe"       text = "DEBUG: Preview Schema"          as = { Link } to = { previewSchemaURL }/>
                         <Dropdown.Item icon = "globe"       text = "DEBUG: Reset Mining Node"       as = { Link } to = { resetURL }/>
                         <Dropdown.Item icon = "globe"       text = "DEBUG: Affirm Localhost Nodes"  onClick = { onClickAffirmLocalhostNodes }/>
                         <Dropdown.Item icon = "globe"       text = "DEBUG: Delete Account"          onClick = { onClickDeleteAccount }/>

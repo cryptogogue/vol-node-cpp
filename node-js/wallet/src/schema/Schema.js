@@ -33,7 +33,6 @@ export class Schema {
         if ( this.applied [ name ]) return;
         this.applied [ name ] = true;
 
-        // build an asset table for quick reference
         for ( let typeName in template.definitions ) {
             this.definitions [ typeName ] = template.definitions [ typeName ]; // TODO: deep copy
         }

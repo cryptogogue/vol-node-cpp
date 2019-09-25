@@ -19,6 +19,7 @@ import { DebugDropzoneScreen }          from './debug/DebugDropzoneScreen';
 import { DebugHandlebarsScreen }        from './debug/DebugHandlebarsScreen';
 import { DebugMobXScreen }              from './debug/DebugMobXScreen';
 import { DebugPrintScreen }             from './debug/DebugPrintScreen';
+import { DebugSchemaScreen }            from './debug/DebugSchemaScreen';
 import { DebugStripeScreen }            from './debug/DebugStripeScreen';
 import { DebugTextFitterScreen }        from './debug/DebugTextFitterScreen';
 import { ImportAccountScreen }          from './ImportAccountScreen';
@@ -76,6 +77,7 @@ const App = () => {
                 <Route exact path = "/debug/handlebars"         component = { DebugHandlebarsScreen }/>
                 <Route exact path = "/debug/mobx"               component = { DebugMobXScreen }/>
                 <Route exact path = "/debug/print"              component = { DebugPrintScreen }/>
+                <Route exact path = "/debug/schema"             component = { DebugSchemaScreen }/>
                 <Route exact path = "/debug/stripe"             component = { DebugStripeScreen }/>
                 <Route exact path = "/debug/textfitter"         component = { DebugTextFitterScreen }/>
 

@@ -58,12 +58,16 @@ export class InventoryService extends Service {
         this.layouts = {};
         this.fonts = {};
 
-        this.fetchInventory ( appState.accountID, appState.node );
+        if ( appState ) {
+            this.fetchInventory ( appState.accountID, appState.node );
+        }
 
-        observe ( appState, 'assetsUtilized', ( change ) => {
-            console.log ( 'ASSETS UTILIZED DID CHANGE' );
-            this.refreshBinding ();
-        });
+        if ( appState ) {
+            observe ( appState, 'assetsUtilized', ( change ) => {
+                console.log ( 'ASSETS UTILIZED DID CHANGE' );
+                this.refreshBinding ();
+            });
+        }
     }
 
     //----------------------------------------------------------------//
@@ -87,7 +91,7 @@ export class InventoryService extends Service {
         catch ( error ) {
             console.log ( error );
         }
-        await this.finishLoading ();
+        this.finishLoading ();
     }
 
     //----------------------------------------------------------------//
@@ -100,7 +104,7 @@ export class InventoryService extends Service {
     @computed
     get availableAssetsArray () {
 
-        const assetsUtilized = this.appState.assetsUtilized;
+        const assetsUtilized = this.appState ? this.appState.assetsUtilized : [];
 
         let assets = [];
         for ( let assetID in this.assets ) {
@@ -115,7 +119,7 @@ export class InventoryService extends Service {
     @computed
     get availableAssetsByID () {
 
-        const assetsUtilized = this.appState.assetsUtilized;
+        const assetsUtilized = this.appState ? this.appState.assetsUtilized : [];
 
         let assets = {};
         for ( let assetID in this.assets ) {
@@ -164,11 +168,23 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
+    @action
+    reset ( template ) {
+
+        this.loading = true;
+
+        if ( template ) {
+            this.update ([ template ]);
+        }
+    }
+
+    //----------------------------------------------------------------//
     async update ( templates, assets ) {
 
         let schema = new Schema ();
 
         for ( let template of templates ) {
+
             await schema.applyTemplate ( template );
 
             for ( let layoutName in template.layouts ) {
@@ -196,9 +212,15 @@ export class InventoryService extends Service {
             }
         }
 
+        if ( !assets ) {
+            assets = {};
+            for ( let typeName in schema.definitions ) {
+                schema.addTestAsset ( assets, typeName );
+            }
+        }
+
         // TODO: properly handle layout field alternatives; doing this here is a big, fat hack
         let assetsWithLayouts = {};
-        assets = assets || {};
         for ( let assetID in assets ) {
 
             const asset = assets [ assetID ];
@@ -211,6 +233,7 @@ export class InventoryService extends Service {
 
         this.refreshBinding ( schema, assetsWithLayouts );
         this.refreshAssetLayouts ();
+        this.finishLoading ();
     }
 
     //----------------------------------------------------------------//

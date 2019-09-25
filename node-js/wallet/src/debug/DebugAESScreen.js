@@ -43,8 +43,8 @@ class DebugAESScreenController extends Service {
     @action
     update () {
 
-        this.ciphertext     = crypto.aesPlainToCipher ( this.message, this.passeord );
-        this.plaintext      = crypto.aesCipherToPlain ( this.ciphertext, this.passeord );
+        this.ciphertext     = crypto.aesPlainToCipher ( this.message, this.password );
+        this.plaintext      = crypto.aesCipherToPlain ( this.ciphertext, this.password );
     }
 }
 

@@ -100,7 +100,7 @@ class ResetScreenController extends Service {
         return (
             ( this.busy === false ) &&
             ( this.nodeURL.length > 0 ) &&
-            (( this.schema !== false ) ? this.appState.checkPassword ( this.password ) : true )
+            (( this.schemaJSON.length > 0 ) ? (( this.schema !== false ) && this.appState.checkPassword ( this.password )) : true )
         );
     }
 
