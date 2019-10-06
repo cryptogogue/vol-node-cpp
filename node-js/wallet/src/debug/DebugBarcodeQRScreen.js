@@ -3,7 +3,7 @@
 
 import { Service, useService }          from '../Service';
 import { SingleColumnContainerView }    from '../SingleColumnContainerView'
-import { barcodeToSVG as pdf417 }       from '../util/pdf417';
+import { bitmapToSVG, }                 from '../util/bitmapToPaths';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                     from 'mobx-react';
 import * as qrcode                       from 'qrcode-generator';
@@ -53,14 +53,14 @@ alphaNumericCapacity [ 38 ] = [ 3927, 3054, 2181, 1658, ];
 alphaNumericCapacity [ 39 ] = [ 4087, 3220, 2298, 1774, ];
 alphaNumericCapacity [ 40 ] = [ 4296, 3391, 2420, 1852, ];
 
-const qrErrToIndex = {
+const QR_ERR_TO_INDEX = {
     L:  0,
     M:  1,
     Q:  2,
     H:  3,
 }
 
-const qrErrOptions = [
+const QR_ERR_OPTIONS = [
     { key: 'L', value: 'L', text: 'Low - 7%' },
     { key: 'M', value: 'M', text: 'Medium - 15%' },
     { key: 'Q', value: 'Q', text: 'Quartile - 25%' },
@@ -80,7 +80,7 @@ function clampQRType ( type ) {
 //----------------------------------------------------------------//
 function getCapacity ( qrType, qrErr ) {
 
-    const i = qrErrToIndex [ qrErr ];
+    const i = QR_ERR_TO_INDEX [ qrErr ];
     return alphaNumericCapacity [ qrType ][ i ];
 }
 
@@ -110,14 +110,15 @@ export const DebugBarcodeQRScreen = observer (( props ) => {
             const qr = qrcode ( qrType, qrErr );
             qr.addData ( data.substring ( 0, capacity ), 'Alphanumeric' );
             qr.make ();
-            console.log ( 'MODULE COUNT', qr.getModuleCount ());
 
-            const opts = {
-                cellSize:   w / qr.getModuleCount (),
-                margin:     0,
-                scalable:   false,
+            const moduleCount = qr.getModuleCount ();
+            console.log ( 'MODULE COUNT', moduleCount );
+
+            const sampler = ( x, y ) => {
+                return qr.isDark ( y, x );
             }
-            barcodeSVG = qr.createSvgTag ( opts );
+
+            barcodeSVG = bitmapToSVG ( sampler, moduleCount, moduleCount, 0, 0, w, h );
             
             if ( overflow > 0 ) {
                 errorMsg = `Input string exceeds QR code capacity by ${ overflow } characters.`;
@@ -130,6 +131,8 @@ export const DebugBarcodeQRScreen = observer (( props ) => {
     else {
         errorMsg = 'Input string contains illegal characters.';
     }
+
+    console.log ( barcodeSVG );
 
     return (
         <SingleColumnContainerView title = 'Test QR Code'>
@@ -162,7 +165,7 @@ export const DebugBarcodeQRScreen = observer (( props ) => {
                     <Select
                         fluid
                         value = { qrErr }
-                        options = { qrErrOptions }
+                        options = { QR_ERR_OPTIONS }
                         onChange = {( value, text ) => { setQRErr ( text.value )}}
                     />
                     <Message
