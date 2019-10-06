@@ -253,7 +253,7 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    drawBarcode ( template, x, y, width, height ) {
+    drawBarcode ( template, x, y, width, height, codeType ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
 
@@ -266,12 +266,23 @@ class SchemaBuilder {
                 y:              y || 0,
                 width:          width || 0,
                 height:         height || 0,
+                codeType:       codeType,
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
             }
         );
         return this;
+    }
+
+    //----------------------------------------------------------------//
+    drawBarcodePDF417 ( template, x, y, width, height ) {
+        this.drawBarcode ( template, x, y, width, height, 'PDF417' );
+    }
+
+    //----------------------------------------------------------------//
+    drawBarcodeQR ( template, x, y, size ) {
+        this.drawBarcode ( template, x, y, size, size, 'QR' );
     }
 
     //----------------------------------------------------------------//

@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
-import { barcodeToSVG }             from './util/pdf417';
+import * as pdf417                  from './util/pdf417';
 import { fitText, JUSTIFY }         from './util/TextFitter';
 import moize                        from 'moize';
 
@@ -16,8 +16,7 @@ export class AssetLayout {
         console.log ( 'RENDER ASSET VIEW ITEMS' );
 
         const asset         = inventory.assets [ assetId ];
-        const barcode       = barcodeToSVG ( assetId ); // TODO: don't think we need this...
-        const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId, barcode: barcode });
+        const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId });
 
         const layout        = inventory.layouts [ context.layout ]
 
@@ -43,7 +42,7 @@ export class AssetLayout {
                     items.push (`
                         <g>
                             <rect x = ${ x } y = ${ y } width = ${ w } height = ${ h } fill = 'white'/>
-                            ${ barcodeToSVG ( value, x, y, w, h )}
+                            ${ pdf417.makeSVGTag ( value, x, y, w, h )}
                         </g>
                     `);
                     break;

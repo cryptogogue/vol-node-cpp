@@ -2,9 +2,8 @@
 /* eslint-disable no-loop-func */
 
 import { Service, useService }          from '../Service';
-import { SingleColumnContainerView }    from '../SingleColumnContainerView'
-import { bitmapToSVG, }                 from '../util/bitmapToPaths';
-import { pdf417 }                       from '../util/pdf417';
+import { SingleColumnContainerView }    from '../SingleColumnContainerView';
+import * as pdf417                      from '../util/pdf417';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                     from 'mobx-react';
 import React, { useState }              from 'react';
@@ -22,13 +21,7 @@ export const DebugBarcodePDF417Screen = observer (( props ) => {
     const w = docWidth * 100;
     const h = docWidth * 100;
 
-    const barcode = pdf417 ( data );
-
-    const sampler = ( x, y ) => {
-        return ( barcode.bcode [ y ][ x ] == 1 );
-    }
-
-    const barcodeSVG = bitmapToSVG ( sampler, barcode.num_cols, barcode.num_rows, 0, 0, w, h );
+    const barcodeSVG = pdf417.makeSVGTag ( data, 0, 0, w, h );
 
     return (
         <SingleColumnContainerView title = 'Test PDF417'>
