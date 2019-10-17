@@ -1,17 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 
+import _                            from 'lodash';
 
 // https://regex101.com/
 const COLOR_REGEX           = /#[0-9a-fA-F]+/;
 const POINT_SIZE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)p/;
 const STYLE_COMMAND_REGEX   = /<\$.*?>/;
 const WS_REGEX              = /\s+/;
-
-export const STYLE_COMMAND = {
-    TEXT:   'TEXT',
-    PUSH:   'PUSH',
-    POP:    'POP',
-};
 
 //================================================================//
 // parseTextStyles
@@ -20,43 +15,35 @@ export const STYLE_COMMAND = {
 // foop doop <$#00ff77>boop<$> 
 
 //----------------------------------------------------------------//
-export function parse ( text ) {
+export function parse ( text, baseStyle ) {
 
     text = 'foop<$$esc> doop <$#ff007f  arial           b  i 7p>boop<$>de-boop';
+
+    baseStyle = baseStyle || {};
 
     let index = 0;
     let next = 0;
     let buffer = '';
 
-    let commands = [];
+    const styles = [];
+    const styleStack = [ baseStyle ]; // stack of style options
 
-    const pushCommand = ( command, body ) => {
+    const changeStyle = () => {
+        styles.push ({
+            index: buffer.length,
+            style: _.last ( styleStack ),
+        });
+    }
+    changeStyle ();
 
-        switch ( command ) {
+    const popStyle = () => {
+        styleStack.pop ();
+        changeStyle (); 
+    }
 
-            case STYLE_COMMAND.TEXT:
-                if ( body.length > 0 ) {
-                    console.log ( 'TEXT', body );
-                    commands.push ({
-                        command:    STYLE_COMMAND.TEXT,
-                        text:       body,
-                    });
-                }
-                break;
-
-            case STYLE_COMMAND.PUSH:
-                commands.push ({
-                    command:    STYLE_COMMAND.PUSH,
-                    options:    body,
-                });
-                break;
-                
-            case STYLE_COMMAND.POP:
-                commands.push ({
-                    command:    STYLE_COMMAND.POP,
-                });
-                break;
-        }
+    const pushStyle = ( style ) => {
+        styleStack.push ( _.merge ( _.clone ( style ), _.last ( styleStack )));
+        changeStyle ();
     }
 
     do {
@@ -75,27 +62,32 @@ export function parse ( text ) {
             }
             else {
                 
-                pushCommand ( STYLE_COMMAND.TEXT, buffer + text.slice ( 0, index ));
-                buffer = '';
+                buffer += text.slice ( 0, index );
 
-                const options = parseOptions ( match.slice ( 2, match.length - 1 ).split ( WS_REGEX ));
+                const style = parseStyle ( match.slice ( 2, match.length - 1 ).split ( WS_REGEX ));
 
-                if ( options ) {
-                    pushCommand ( STYLE_COMMAND.PUSH, options );
+                if ( style ) {
+                    pushStyle ( style );
                 }
                 else {
-                    pushCommand ( STYLE_COMMAND.POP );
+                    popStyle ();
                 }
             }
         }
         else {
-            pushCommand ( STYLE_COMMAND.TEXT, text );
+            buffer += text;
             index = -1;
         }
 
     } while ( index != -1 );
 
-    console.log ( JSON.stringify ( commands, null, 4 ));
+    console.log ( buffer );
+    console.log ( JSON.stringify ( styles, null, 4 ));
+
+    return {
+        text: buffer,
+        styles: styles,
+    };
 }
 
 //----------------------------------------------------------------//
@@ -130,29 +122,29 @@ const parseColor = ( param ) => {
 }
 
 //----------------------------------------------------------------//
-const parseOptions = ( params ) => {
+const parseStyle = ( params ) => {
 
-    let options = false;
+    let style = false;
     for ( let param of params ) {
 
         if ( param.length === 0 ) continue;
-        options = options || {};
+        style = style || {};
 
         if ( param === 'b' ) {
-            options.bold = true;
+            style.bold = true;
         }
         else if ( param === 'i' ) {
-            options.italic = true;
+            style.italic = true;
         }
         else if ( COLOR_REGEX.test ( param )) {
-            options.color = parseColor ( param );
+            style.color = parseColor ( param );
         }
         else if ( POINT_SIZE_REGEX.test ( param )) {
-            options.pointSize = Number ( param.slice ( 0, param.length - 1 ));
+            style.pointSize = Number ( param.slice ( 0, param.length - 1 ));
         }
         else {
-            options.font = param;
+            style.font = param;
         }
     }
-    return options;
+    return style;
 }

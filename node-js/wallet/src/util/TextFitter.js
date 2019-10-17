@@ -142,7 +142,6 @@ export class TextFitter {
 
         const length = text.length;
         
-        let ws = 0;
         let tokenStart = 0;
         let inToken = false;
 
@@ -155,9 +154,7 @@ export class TextFitter {
                     this.pushToken ( text.substring ( tokenStart, i ));
                     inToken = false;
                     tokenStart = i;
-                    ws = 0;
                 }
-                ws++;
             }
             else {
                 inToken = true;
