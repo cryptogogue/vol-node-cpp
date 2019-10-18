@@ -1,9 +1,11 @@
 /* eslint-disable no-whitespace-before-property */
 
+import * as color                   from './color';
 import _                            from 'lodash';
 
 // https://regex101.com/
 const COLOR_REGEX           = /#[0-9a-fA-F]+/;
+const FONT_SCALE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)%/;
 const POINT_SIZE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)p/;
 const STYLE_COMMAND_REGEX   = /<\$.*?>/;
 const WS_REGEX              = /\s+/;
@@ -17,7 +19,7 @@ const WS_REGEX              = /\s+/;
 //----------------------------------------------------------------//
 export function parse ( text, baseStyle ) {
 
-    text = 'foop<$$esc> doop <$#ff007f  arial           b  i 7p>boop<$>de-boop';
+    // text = 'foop<$$esc> doop <$#ff007f  arial           b  i 7p>boop<$>de-boop';
 
     baseStyle = baseStyle || {};
 
@@ -25,24 +27,26 @@ export function parse ( text, baseStyle ) {
     let next = 0;
     let buffer = '';
 
-    const styles = [];
+    const styleSpans = [];
     const styleStack = [ baseStyle ]; // stack of style options
 
     const changeStyle = () => {
-        styles.push ({
-            index: buffer.length,
-            style: _.last ( styleStack ),
+        styleSpans.push ({
+            index:  buffer.length,
+            style:  _.last ( styleStack ),
         });
     }
     changeStyle ();
 
     const popStyle = () => {
-        styleStack.pop ();
-        changeStyle (); 
+        if ( styleStack.length > 1 ) {
+            styleStack.pop ();
+            changeStyle ();
+        }
     }
 
     const pushStyle = ( style ) => {
-        styleStack.push ( _.merge ( _.clone ( style ), _.last ( styleStack )));
+        styleStack.push ( _.merge ( _.cloneDeep ( _.last ( styleStack )), style ));
         changeStyle ();
     }
 
@@ -80,45 +84,30 @@ export function parse ( text, baseStyle ) {
         }
 
     } while ( index != -1 );
+    
+    const styledChars = [];
 
-    console.log ( buffer );
-    console.log ( JSON.stringify ( styles, null, 4 ));
+    for ( let i = 0; i < styleSpans.length; ++i ) {
 
-    return {
-        text: buffer,
-        styles: styles,
-    };
-}
+        const styleSpan = styleSpans [ i ];
+        let size = 0;
 
-//----------------------------------------------------------------//
-const parseColor = ( param ) => {
+        if ( i === ( styleSpans.length - 1 )) {
+            size = buffer.length - styleSpan.index;
+        }
+        else {
+            size = styleSpans [ i + 1 ].index - styleSpan.index;
+        }
 
-    const color = {
-        r:  0,
-        g:  0,
-        b:  0,
-        a:  1,
-    };
-
-    param = param.slice ( 1 );
-
-    const component = ( i ) => {
-        i = i * 2;
-        const n = parseInt ( param.slice ( i, i + 2 ), 16 ) / 255;
-        return Math.round ( n * 100 ) / 100
+        for ( let j = 0; j < size; ++j ) {
+            styledChars.push ({
+                char: buffer.charAt ( styleSpan.index + j ),
+                style: styleSpan.style,
+            });
+        }
     }
 
-    if ( param.length >= 6 ) {
-        color.r = component ( 0 );
-        color.g = component ( 1 );
-        color.b = component ( 2 );
-    }
-
-    if ( param.length == 8 ) {
-        color.a = component ( 3 );
-    }
-
-    return color;
+    return styledChars;
 }
 
 //----------------------------------------------------------------//
@@ -137,10 +126,13 @@ const parseStyle = ( params ) => {
             style.italic = true;
         }
         else if ( COLOR_REGEX.test ( param )) {
-            style.color = parseColor ( param );
+            style.color = color.fromHex ( param );
+        }
+        else if ( FONT_SCALE_REGEX.test ( param )) {
+            style.scale = Number ( param.slice ( 0, param.length - 1 ));
         }
         else if ( POINT_SIZE_REGEX.test ( param )) {
-            style.pointSize = Number ( param.slice ( 0, param.length - 1 ));
+            style.size = Number ( param.slice ( 0, param.length - 1 ));
         }
         else {
             style.font = param;

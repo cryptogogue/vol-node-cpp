@@ -23,6 +23,16 @@ export function getUserId ( props ) {
 }
 
 //----------------------------------------------------------------//
+export function greater ( x, y ) {
+    return x > y ? x : y;
+}
+
+//----------------------------------------------------------------//
+export function lesser ( x, y ) {
+    return x < y ? x : y;
+}
+
+//----------------------------------------------------------------//
 export function observeField ( container, field, callback ) {
 
     let valueDisposer;

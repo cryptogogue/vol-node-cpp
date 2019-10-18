@@ -20,7 +20,7 @@ const SVG_TEMPLATE = handlebars.compile ( `
         viewBox="0 0 200 200"
         preserveAspectRatio="none"
         >
-        <rect width="100%" height="100%" fill="red" />
+        <rect width="100%" height="100%" fill="#7f7f7f" />
         {{{ text }}}
     </svg>
 `);
@@ -80,7 +80,7 @@ class DebugOpentypeService extends Service {
     @action
     testFont ( font ) {
 
-        const text = 'This is some really really long text that should wrap to the text box!';
+        const text = 'This <$#ff0000 1.25%>is<$> some really <$#ffffff>really<$> <$0.5%>long text that should <$#00ffff>wrap<$> to the text <$0.75>box!';
 
         let fitter = new TextFitter ( font, 42, 0, 0, 200, 200, JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.TOP );
         fitter.fitDynamic ( text );
