@@ -38,24 +38,26 @@ don't mix controllers and displays
 ----------------------------------------------------------------
 PLAYTEST
 
-tool to generate set schema from XLS spreadsheet
-add schema to genesis block
+DONE: tool to generate set schema from XLS spreadsheet
+DONE: add schema to genesis block
+DONE: sign transaction
+DONE: account permissions - god keys, publisher keys
+DONE: identify (mining) networks (by genesis block) - name networks; i.e. test network, production network
+DONE: commands for test account
+DONE: provision every asset in set
+DONE: provision beta account - generate key
+DONE: add banner at the top of wallet showing mining network name
+
+implement massively complicated layout engine
+add support for QR codes
+
+rework node control endpoints into "control" transactions
+
 support loading genesis chain
-
-sign transaction
-account permissions - god keys, publisher keys
-
 implement way to expire transactions
-identify (mining) networks (by genesis block) - name networks; i.e. test network, production network
-
-commands for test account
 provision any asset
-provision every asset in set
-provision beta account - generate key
 discard all (by set)
 handle unrecognized account - reject transactions
-
-add banner at the top of wallet showing mining network name
 
 ----------------------------------------------------------------
 MVP

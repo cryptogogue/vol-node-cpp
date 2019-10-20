@@ -1,6 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AppStateService }                                  from './AppStateService';
 import { AssetView }                                        from './AssetView';
 import { InventoryService }                                 from './InventoryService';
 import { NavigationBar }                                    from './NavigationBar';
@@ -169,19 +168,18 @@ export const InventoryView = observer (( props ) => {
         return selection [ asset.assetID ] || false;
     }
 
-    const onclickCard = ( asset ) => {
+    const onClickCard = ( asset ) => {
         const newSelection = Object.assign ({}, selection );
         newSelection [ asset.assetID ] = !isSelected ( asset );
         setSelection ( newSelection );
     }
 
-    const { controller, layout } = props;
-
-    const inventory     = controller.inventory;
-    const assetArray    = controller.sortedAssets;
+    const layout        = props.layout || INVENTORY_LAYOUT.WEB;
+    const inventory     = props.inventory;
+    const assetArray    = props.assetArray || inventory.availableAssetsArray;
 
     let assetLayouts = [];
-    
+
     const step = getAssetsPerPageSize ( layout );
     
     if ( step > 0 ) {
@@ -228,7 +226,7 @@ export const InventoryView = observer (( props ) => {
             assetLayoutCache [ i ] = (
                 <Card
                     key = { asset.assetID }
-                    style = {{ float : 'left', border : `2px solid ${ color }` }}
+                    style = {{ float: 'left', border: `2px solid ${ color }` }}
                     onClick = {() => { onclickCard ( asset )}}
                 >
                     <AssetView

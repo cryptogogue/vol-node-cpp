@@ -21,6 +21,7 @@
     "moize": "^5.4.4",
     "npm": "^6.11.0",
     "opentype.js": "^1.1.0",
+    "qrcode-generator": "^1.4.4",
     "react": "^16.8.6",
     "react-app-rewire-mobx": "^1.0.9",
     "react-app-rewired": "^2.0.2",

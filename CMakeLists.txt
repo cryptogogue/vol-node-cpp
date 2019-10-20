@@ -41,6 +41,7 @@ target_sources ( volition-lib
         src/volition/Chain.cpp
         src/volition/ChainMetadata.cpp
         src/volition/CryptoKey.cpp
+        src/volition/CryptoKeyInfo.cpp
         src/volition/EntitlementFactory.cpp
         src/volition/FileSys.cpp
         src/volition/Format.cpp

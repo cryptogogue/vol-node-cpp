@@ -1,7 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
-import { barcodeToSVG }             from './util/pdf417';
+import * as pdf417                  from './util/pdf417';
+import * as qrcode                  from './util/qrcode';
 import { fitText, JUSTIFY }         from './util/TextFitter';
 import moize                        from 'moize';
 
@@ -13,11 +14,8 @@ export class AssetLayout {
     //----------------------------------------------------------------//
     constructor ( inventory, assetId, filters ) {
 
-        console.log ( 'RENDER ASSET VIEW ITEMS' );
-
         const asset         = inventory.assets [ assetId ];
-        const barcode       = barcodeToSVG ( assetId );
-        const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId, barcode: barcode });
+        const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId });
 
         const layout        = inventory.layouts [ context.layout ]
 
@@ -40,10 +38,38 @@ export class AssetLayout {
 
                 case LAYOUT_COMMAND.DRAW_BARCODE: {
 
+                    let svgTag = '<g/>';
+
+                    switch ( command.codeType || pdf417.CONSTS.ID ) {
+
+                        case pdf417.CONSTS.ID: {
+                            svgTag = pdf417.makeSVGTag ( value, x, y, w, h );
+                            break;
+                        }
+
+                        case qrcode.CONSTS.ID: {
+
+                            const valueUpper = value.toUpperCase ();
+
+                            if ( qrcode.isLegal ( valueUpper )) {
+
+                                const options = command.options || {};
+                                const qrErr = options.qrErr || qrcode.CONSTS.ERROR_LEVEL.LOW;
+                                let qrType = options.qrType || qrcode.CONSTS.AUTOSELECT_TYPE;
+                                qrType = ( qrType !== qrcode.CONSTS.AUTOSELECT_TYPE )
+                                    ? qrType
+                                    : qrcode.autoSelectType ( qrErr, valueUpper.length );
+
+                                svgTag = qrcode.makeSVGTag ( valueUpper, x, y, w, h, qrErr, qrType );
+                            }
+                            break;
+                        }
+                    }
+
                     items.push (`
                         <g>
                             <rect x = ${ x } y = ${ y } width = ${ w } height = ${ h } fill = 'white'/>
-                            ${ barcodeToSVG ( value, x, y, w, h )}
+                            ${ svgTag }
                         </g>
                     `);
                     break;

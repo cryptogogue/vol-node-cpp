@@ -93,7 +93,16 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
         .drawText ( '{{ rules }}', 'roboto', 40, 48.875, 592.625, 652.25, 296 )
             .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.TOP )
 
-        .drawBarcode( '{{ $ }}', 37.5, 900, 675, 112.5 )
+        // default barcode is PDF417
+        //.drawBarcode ( '{{ $ }}', 37.5, 900, 675, 112.5 )
+        
+        // same as default, but explicit (better, clearer)
+        // .drawBarcodePDF417 ( '{{ $ }}', 37.5, 900, 675, 112.5 )
+
+        // QR code also supported
+        // defaults to 'L' and 0 (autoselect type)
+        // or specificy one of 'L', 'M', 'Q', 'H' and 0 (autoselect) or types 1-40
+        .drawBarcodeQR ( '{{ $ }}', 600, 900, 112.5 )
 
 const schema = util.parseVolitionXLSX ( schemaBuilder );
 

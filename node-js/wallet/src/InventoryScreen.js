@@ -185,9 +185,10 @@ export const InventoryScreen = observer (( props ) => {
             </div>
             <If condition = { inventory.loading === false }>
                 <InventoryView
-                    key = { controller.sortMode }
-                    controller = { controller }
-                    layout = { controller.layoutMode }
+                    key         = { controller.sortMode }
+                    inventory   = { controller.inventory }
+                    assetArray  = { controller.sortedAssets }
+                    layout      = { controller.layoutMode }
                 />
             </If>
         </div>

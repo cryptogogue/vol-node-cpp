@@ -1,6 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { assert }       from '../util/assert';
+import * as pdf417      from '../util/pdf417';
+import * as qrcode      from '../util/qrcode';
 import fs               from 'fs';
 
 const MUTABLE           = 'MUTABLE';
@@ -253,7 +255,7 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    drawBarcode ( template, x, y, width, height ) {
+    drawBarcode ( template, x, y, width, height, codeType, options ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
 
@@ -266,12 +268,29 @@ class SchemaBuilder {
                 y:              y || 0,
                 width:          width || 0,
                 height:         height || 0,
+                codeType:       codeType || pdf417.CONSTS.ID,
+                options:        options || {},
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
             }
         );
         return this;
+    }
+
+    //----------------------------------------------------------------//
+    drawBarcodePDF417 ( template, x, y, width, height ) {
+        return this.drawBarcode ( template, x, y, width, height, pdf417.CONSTS.ID );
+    }
+
+    //----------------------------------------------------------------//
+    drawBarcodeQR ( template, x, y, size, qrErr, qrType ) {
+
+        const options = {
+            qrErr:      qrErr || qrcode.CONSTS.ERROR_LEVEL.LOW,
+            qrType:     qrType || qrcode.CONSTS.AUTOSELECT_TYPE,
+        };
+        return this.drawBarcode ( template, x, y, size, size, qrcode.CONSTS.ID, options );
     }
 
     //----------------------------------------------------------------//

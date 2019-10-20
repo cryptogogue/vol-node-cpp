@@ -4,7 +4,26 @@ import { assert }           from '../util/assert';
 import { Binding }          from './Binding';
 import { SchemaMethod }     from './SchemaMethod';
 import _                    from 'lodash';
-import uuidv4               from 'uuid/v4';
+
+//----------------------------------------------------------------//
+function randChars ( characters, length ) {
+
+    let result = '';
+    length = length || 1;
+    for ( let i = 0; i < length; ++i ) {
+        result += characters.charAt ( Math.floor ( Math.random () * characters.length ));
+    }
+    return result;
+}
+
+//----------------------------------------------------------------//
+function randomAssetID () {
+
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = '0123456789';
+
+    return `${ randChars ( letters, 5 )}.${ randChars ( letters, 5 )}.${ randChars ( letters, 5 )}-${ randChars ( digits, 3 )}`;
+}
 
 //================================================================//
 // Schema
@@ -14,7 +33,12 @@ export class Schema {
     //----------------------------------------------------------------//
     addTestAsset ( assets, typeName, assetID ) {
 
-        assetID = assetID || uuidv4 ();
+        if ( !Boolean ( assetID )) {
+            do {
+                assetID = randomAssetID ();
+            }
+            while ( _.has ( assets, assetID ));
+        }
 
         let asset = this.newAsset ( assetID, typeName );
         assert ( Boolean ( asset ));
@@ -33,7 +57,6 @@ export class Schema {
         if ( this.applied [ name ]) return;
         this.applied [ name ] = true;
 
-        // build an asset table for quick reference
         for ( let typeName in template.definitions ) {
             this.definitions [ typeName ] = template.definitions [ typeName ]; // TODO: deep copy
         }
