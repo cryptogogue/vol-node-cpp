@@ -26,14 +26,14 @@ export const JUSTIFY = {
     },
 }
 
-const DEFAULT_FIT_STEP_CUTOFF       = 0.0625;
-const DEFAULT_MAX_FIT_ITERATIONS    = 16;
+const DEFAULT_MIN_SCALE_STEP        = 0.01;
 
 //----------------------------------------------------------------//
 export const fitText = ( text, font, fontSize, x, y, width, height, hJustify, vJustify ) => {
 
-    let fitter = new TextFitter ( font, fontSize, x, y, width, height, hJustify || JUSTIFY.HORIZONTAL.LEFT, vJustify || JUSTIFY.VERTICAL.TOP );
-    fitter.fitDynamic ( text );
+    let fitter = new TextFitter ( x, y, width, height, vJustify || JUSTIFY.VERTICAL.TOP );
+    fitter.pushSection ( text, font, fontSize, hJustify || JUSTIFY.HORIZONTAL.LEFT )
+    fitter.fit ();
     return fitter.toSVG ();
 }
 
@@ -111,6 +111,17 @@ class TextLine {
     }
 
     //----------------------------------------------------------------//
+    getBounds () {
+
+        return rect.make (
+            this.bounds.x0 + this.xOff,
+            this.yOff - this.ascender,
+            this.bounds.x1 + this.xOff,
+            this.yOff + this.descender,
+        );
+    }
+
+    //----------------------------------------------------------------//
     makeSnapshot () {
         return {
             length:         this.tokenChars.length,
@@ -131,10 +142,10 @@ class TextLine {
     }
 
     //----------------------------------------------------------------//
-    toSVG () {
+    toSVG ( xOff, yOff ) {
 
-        const x = this.xOff || 0;
-        const y = this.yOff || 0;
+        const x = this.xOff + ( xOff || 0 );
+        const y = this.yOff + ( yOff || 0 );
 
         const paths = [];
         paths.push ( `<g transform = 'translate ( ${ x }, ${ y })'>` );
@@ -153,13 +164,14 @@ class TextLine {
 }
 
 //================================================================//
-// TextFitter
+// TextBox
 //================================================================//
-export class TextFitter {
+export class TextBox {
 
     //----------------------------------------------------------------//
-    constructor ( font, fontSize, x, y, width, height, hJustify, vJustify ) {
+    constructor ( text, font, fontSize, x, y, width, height, hJustify, vJustify ) {
 
+        this.text           = text;
         this.font           = font;
         this.fontSize       = fontSize;
 
@@ -183,13 +195,16 @@ export class TextFitter {
             size:   this.fontSize,
             scale:  1,
         }
+
+        this.styledText     = textStyles.parse ( text, this.baseStyle );
     }
 
     //----------------------------------------------------------------//
-    fit ( text ) {
+    fit ( scale ) {
 
         this.lines = [];
-        this.styledText = text ? textStyles.parse ( text, this.baseStyle ) : this.styledText;
+        this.fitBounds = false;
+        this.fontScale = scale || 1;
 
         const length = this.styledText.length;
 
@@ -213,51 +228,16 @@ export class TextFitter {
             }
         }
 
-        if ( this.lines.length === 0 ) return true;
+        if ( this.lines.length === 0 ) return false;
 
-        const hOverflow = this.layoutHorizontal ();
-        const vOverflow = this.layoutVertical ();
+        let hOverflow = this.layoutHorizontal ();
+        let vOverflow = this.layoutVertical ();
+        
+        for ( let line of this.lines ) {
+            this.fitBounds = rect.grow ( this.fitBounds, line.getBounds ());
+        }
 
         return ( hOverflow || vOverflow );
-    }
-
-    //----------------------------------------------------------------//
-    fitDynamic ( text, fitStepCutoff, maxFitIterations ) {
-
-        this.styledText = textStyles.parse ( text, this.baseStyle );
-
-        this.fontScale = 1;
-        this.maxFontScale = this.fontScale;
-        this.minFontScale = 0;
-
-        this.fitStepCutoff = fitStepCutoff || DEFAULT_FIT_STEP_CUTOFF;
-        this.fitIterations = 0;
-        this.maxFitIterations = maxFitIterations || DEFAULT_MAX_FIT_ITERATIONS;
-
-        this.fitDynamicRecurse ();
-    }
-
-    //----------------------------------------------------------------//
-    fitDynamicRecurse () {
-
-        this.fitIterations = this.fitIterations + 1;
-
-        let overflow = this.fit ();
-
-        if ( overflow ) {
-            // always get smaller on overflow
-            this.maxFontScale = this.fontScale;
-            this.fontScale = ( this.minFontScale + this.maxFontScale ) / 2;
-            this.fitDynamicRecurse ();
-        }
-        else {
-            // no overflow. maybe get bigger.
-            this.minFontScale = this.fontScale;
-            if (( this.fitIterations < this.maxFitIterations ) && (( this.maxFontScale - this.minFontScale ) > this.fitStepCutoff )) {
-                this.fontScale = ( this.minFontScale + this.maxFontScale ) / 2;
-                this.fitDynamicRecurse ();
-            }
-        }
     }
 
     //----------------------------------------------------------------//
@@ -396,13 +376,142 @@ export class TextFitter {
     }
 
     //----------------------------------------------------------------//
-    toSVG () {
+    toSVG ( xOff, yOff ) {
 
         if ( this.lines.length === 0 ) return '';
 
         let svg = [];
         for ( let i in this.lines ) {
-            svg.push ( this.lines [ i ].toSVG ());
+            svg.push ( this.lines [ i ].toSVG ( xOff, yOff ));
+        }
+        return svg.join ();
+    }
+}
+
+
+//================================================================//
+// TextFitter
+//================================================================//
+export class TextFitter {
+
+    //----------------------------------------------------------------//
+    constructor ( x, y, width, height, vJustify ) {
+
+        this.bounds = rect.make (
+            x,
+            y,
+            x + width,
+            y + height,
+        );
+
+        this.vJustify = vJustify || JUSTIFY.VERTICAL.TOP;
+
+        this.sections = [];
+        this.fitHeight = 0;
+    }
+
+    //----------------------------------------------------------------//
+    fit ( maxFontScale, minScaleStep ) {
+
+        maxFontScale = ( typeof ( maxFontScale ) === 'number' ) ? maxFontScale : 1;
+        minScaleStep = (( typeof ( minScaleStep ) === 'number' ) && ( minScaleStep > 0 )) ? minScaleStep : DEFAULT_MIN_SCALE_STEP;
+
+        let fontScale = 1;
+        let minFontScale = 0;
+        let fitIterations = 0;
+
+        const fitSections = () => {
+
+            const height = rect.height ( this.bounds );
+            this.fitHeight = 0;
+
+            for ( let section of this.sections ) {
+                
+                const overflow = section.fit ( fontScale );
+                if ( overflow ) return true;
+
+                this.fitHeight += rect.height ( section.fitBounds );
+                if ( this.fitHeight > height ) return true;
+            }
+            return false;
+        }
+
+        const fitRecurse = () => {
+
+            fitIterations = fitIterations + 1;
+
+            const overflow = fitSections ();
+
+            if ( overflow ) {
+
+                // always get smaller on overflow
+                maxFontScale = fontScale;
+                fontScale = ( minFontScale + maxFontScale ) / 2;
+                fitRecurse ();
+            }
+            else {
+                
+                // no overflow. maybe get bigger.
+                minFontScale = fontScale;
+                let nextScale = ( maxFontScale > 0 ) ? ( minFontScale + maxFontScale ) / 2 : fontScale * 1.1;
+                if (( nextScale - fontScale ) >= minScaleStep ) {
+                    fontScale = nextScale;
+                    fitRecurse ();
+                }
+            }
+        }
+
+        fitRecurse ();
+
+        this.fontScale = fontScale;
+        this.fitIterations = fitIterations;
+    }
+
+    //----------------------------------------------------------------//
+    pushSection ( text, font, fontSize, hJustify ) {
+
+        this.sections.push (
+            new TextBox (
+                text,
+                font,
+                fontSize,
+                this.bounds.x0,
+                this.bounds.y0,
+                rect.width ( this.bounds ),
+                rect.height ( this.bounds ),
+                hJustify || JUSTIFY.HORIZONTAL.LEFT,
+                JUSTIFY.VERTICAL.TOP
+            )
+        );
+    }
+
+    //----------------------------------------------------------------//
+    toSVG () {
+
+        if (( this.fitHeight === 0 ) || ( this.sections.length === 0 )) return '';
+
+        let height = rect.height ( this.bounds );
+        let yOff;
+
+        switch ( this.vJustify ) {
+
+            case JUSTIFY.VERTICAL.TOP:
+                yOff = 0;
+                break;
+
+            case JUSTIFY.VERTICAL.CENTER: {
+                yOff = ( height - this.fitHeight ) / 2;
+                break;
+            }
+            case JUSTIFY.VERTICAL.BOTTOM:
+                yOff = height - this.fitHeight;
+                break;
+        }
+
+        let svg = [];
+        for ( let section of this.sections ) {
+            svg.push ( section.toSVG ( 0, yOff ));
+            yOff += rect.height ( section.fitBounds );
         }
         return svg.join ();
     }
