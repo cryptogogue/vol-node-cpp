@@ -15,7 +15,7 @@ export const AssetView = ( props ) => {
 
     const { inventory, assetId, inches } = props;
 
-    const layout        = inventory.assetLayouts [ assetId ];
+    const layout        = inventory.getAssetLayout ( assetId );
 
     const docX          = props.x || 0;
     const docY          = props.y || 0;

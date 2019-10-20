@@ -11,10 +11,16 @@ import { action, computed, extendObservable, observable }   from 'mobx';
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
-import { Dropdown, Grid, Icon, List, Menu, Card, Group }    from 'semantic-ui-react';
+import { Dropdown, Grid, Icon, List, Menu, Card, Group, Modal, Divider }    from 'semantic-ui-react';
+import { is } from '@babel/types';
+import { InfiniteScrollView }                               from './InfiniteScrollView';
 
 const DPI = 300;
 const MM_TO_IN = 0.03937007874;
+
+// TODO: get these dynamically
+const ASSET_WIDTH   = 750;
+const ASSET_HEIGHT  = 1050;
 
 export const INVENTORY_LAYOUT = {
     WEB:                'WEB',
@@ -82,10 +88,6 @@ const InventoryPageView = ( props ) => {
 
     const width = doc.width * DPI;
     const height = doc.height * DPI;
-
-    // TODO: get these dynamically
-    const ASSET_WIDTH   = 750;
-    const ASSET_HEIGHT  = 1050;
 
     const maxCols = Math.floor ( width / ASSET_WIDTH );
     const maxRows = Math.floor ( height / ASSET_HEIGHT );
@@ -160,6 +162,7 @@ const InventoryPageView = ( props ) => {
 // InventoryView
 //================================================================//
 export const InventoryView = observer (( props ) => {
+
     const [ selection, setSelection ]   = useState ({});
 
     const isSelected = ( asset ) => {
@@ -205,50 +208,66 @@ export const InventoryView = observer (( props ) => {
                 );
             }
         }
+
+        return (
+            <div className = "asset-wrapper">
+                { assetLayouts }
+            </div>
+        );
     }
-    else {
-        for ( let i in assetArray ) {
+
+    const assetLayoutCache = [];
+
+    const getAsset = ( i ) => {
+        console.log ( 'getAsset', i );
+        if ( !assetLayoutCache.includes ( i )) {
+            console.log ('assets', assetArray.length);
             const asset = assetArray [ i ];
             const color = isSelected ( asset ) ? 'red' : 'white';
-            assetLayouts.push (
+
+            assetLayoutCache [ i ] = (
                 <Card
                     key = { asset.assetID }
-                    style = {{ float:'left', border:`2px solid ${ color }` }}
-                    onClick = {() => { onclickCard( asset )} }
+                    style = {{ float : 'left', border : `2px solid ${ color }` }}
+                    onClick = {() => { onclickCard ( asset )}}
                 >
                     <AssetView
                         assetId = { asset.assetID }
                         inventory = { inventory }
-                        inches = 'true'
-                        scale = '.75'
+                        inches = { false }
+                        scale = { .333 }
                     />
+                    { isSelected ( asset ) &&
+                        <Modal style={{ height : 'auto' }} size = "small" open = { isSelected ( asset )}>
+                            <Modal.Content>
+                                <center>
+                                    <h3>Card Info</h3>
+                                    <Divider/>
+                                    <AssetView
+                                        assetId = { asset.assetID }
+                                        inventory = { inventory }
+                                        inches = 'true'
+                                        scale = '1.3'
+                                    />
+                                    <p>Asset ID: { asset.assetID }</p>
+                                </center>
+                            </Modal.Content>
+                        </Modal>
+                    }
                 </Card>
             );
         }
+
+        return assetLayoutCache [ i ];
+
     }
 
     return (
-        <div className = "asset-wrapper">
-            {/* <InfiniteLoader
-                isItemLoaded = { isItemLoaded }
-                itemCount = { assetArray.length }
-                loadMoreItems = { loadMoreItems }
-            >
-                {({ onItemsRendered, ref }) => (
-                    <FixedSizeList
-                        className = "List"
-                        height = { 150 }
-                        itemCount = { assetArray.length }
-                        itemSize = { 30 }
-                        onItemsRendered = { onItemsRendered }
-                        ref = { ref }
-                        width = { 300 }
-                    >
-                        { Row }
-                    </FixedSizeList>
-                )}
-            </InfiniteLoader> */}
-            { assetLayouts }
-        </div>
-    );
+        <InfiniteScrollView 
+            onGetAsset  = { getAsset }
+            cardWidth   = { ASSET_WIDTH / 3 }
+            cardHeight  = { ASSET_HEIGHT / 3 }
+            totalCards  = { assetArray.length }
+        />
+    )
 });

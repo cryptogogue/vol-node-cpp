@@ -15,6 +15,7 @@ import { DebugAESScreen }           from './debug/DebugAESScreen';
 import { DebugCryptoKeyScreen }     from './debug/DebugCryptoKeyScreen';
 import { DebugDropzoneScreen }      from './debug/DebugDropzoneScreen';
 import { DebugHandlebarsScreen }    from './debug/DebugHandlebarsScreen';
+import { DebugInfiniteScrollScreen }  from './debug/DebugInfiniteScrollScreen';
 import { DebugMobXScreen }          from './debug/DebugMobXScreen';
 import { DebugPrintScreen }         from './debug/DebugPrintScreen';
 import { DebugStripeScreen }        from './debug/DebugStripeScreen';
@@ -70,6 +71,7 @@ const App = () => {
                 <Route exact path = "/debug/cryptokey" component = { DebugCryptoKeyScreen }/>
                 <Route exact path = "/debug/dropzone" component = { DebugDropzoneScreen }/>
                 <Route exact path = "/debug/handlebars" component = { DebugHandlebarsScreen }/>
+                <Route exact path = "/debug/infinitescroll" component = { DebugInfiniteScrollScreen }/>
                 <Route exact path = "/debug/mobx" component = { DebugMobXScreen }/>
                 <Route exact path = "/debug/print" component = { DebugPrintScreen }/>
                 <Route exact path = "/debug/stripe" component = { DebugStripeScreen }/>
