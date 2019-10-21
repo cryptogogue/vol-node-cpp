@@ -74,6 +74,7 @@ class DebugOpentypeService extends Service {
         const text2 = 'This <$#ff0000 1.25%>is<$> some really <$#ffffff>really<$> <$0.5%>long text that should <$#00ffff>wrap<$> to the text <$0.75>box!';
 
         let fitter = new TextFitter ( fonts, 0, 0, 200, 600, JUSTIFY.VERTICAL.TOP );
+        
         fitter.pushSection ( text0, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
         fitter.pushSection ( text1, 'roboto', 42, JUSTIFY.HORIZONTAL.CENTER );
         fitter.pushSection ( text2, 'roboto', 42, JUSTIFY.HORIZONTAL.RIGHT );

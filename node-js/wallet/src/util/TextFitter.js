@@ -140,17 +140,6 @@ class TextLine {
     }
 
     //----------------------------------------------------------------//
-    getBounds () {
-
-        return rect.make (
-            this.bounds.x0 + this.xOff,
-            this.yOff - this.ascender,
-            this.bounds.x1 + this.xOff,
-            this.yOff + this.descender,
-        );
-    }
-
-    //----------------------------------------------------------------//
     makeSnapshot () {
         return {
             length:         this.tokenChars.length,
@@ -210,9 +199,6 @@ export class TextBox {
             y + height,
         );
 
-        this.maxWidth   = width;
-        this.maxHeight  = height;
-
         this.hJustify = hJustify || JUSTIFY.HORIZONTAL.LEFT;
         this.vJustify = vJustify || JUSTIFY.VERTICAL.TOP;
 
@@ -259,12 +245,22 @@ export class TextBox {
 
         if ( this.lines.length === 0 ) return false;
 
-        let hOverflow = this.layoutHorizontal ();
-        let vOverflow = this.layoutVertical ();
-        
+        this.layoutHorizontal ();
+        this.layoutVertical ();
+
         for ( let line of this.lines ) {
-            this.fitBounds = rect.grow ( this.fitBounds, line.getBounds ());
+            line.bounds = rect.offset ( line.bounds, line.xOff, line.yOff );
+            this.fitBounds = rect.grow ( this.fitBounds, line.bounds );
         }
+
+        const firstLine = _.first ( this.lines );
+        this.padTop = firstLine.bounds.y0 - ( firstLine.yOff - firstLine.ascender );
+
+        const lastLine = _.last ( this.lines );
+        this.padBottom = ( lastLine.yOff + lastLine.descender ) - lastLine.bounds.y1;
+
+        let hOverflow = ( rect.width ( this.bounds ) < rect.width ( this.fitBounds ));
+        let vOverflow = ( rect.height ( this.bounds ) < rect.height ( this.fitBounds ));
 
         return ( hOverflow || vOverflow );
     }
@@ -274,7 +270,7 @@ export class TextBox {
 
         if ( this.lines.length === 0 ) return false;
 
-        let overflow = false;
+        const maxWidth = rect.width ( this.bounds );
 
         for ( let i in this.lines ) {
 
@@ -282,10 +278,6 @@ export class TextBox {
             const bb = line.bounds;
             const lineLeft = -bb.x0;
             const lineWidth = rect.width ( bb );
-
-            if ( this.maxWidth < lineWidth ) {
-                overflow = true;
-            }
 
             switch ( this.hJustify ) {
 
@@ -302,7 +294,6 @@ export class TextBox {
                     break;
             }
         }
-        return overflow;
     }
 
     //----------------------------------------------------------------//
@@ -310,44 +301,14 @@ export class TextBox {
 
         if ( this.lines.length === 0 ) return false;
 
-        let overflow = false;
-
-        let y0 = null;
-        let y1 = null;
+        const maxHeight = rect.height ( this.bounds );
 
         let base = 0;
 
         for ( let i in this.lines ) {
 
-            let line = this.lines [ i ];
-            base += line.ascender;
-            
-            const bb = line.bounds;
-
-            const lineTop = bb.y0 + base;
-            const lineBottom = bb.y1 + base;
-
-            if (( y0 === null ) || ( y0 > lineTop )) {
-                y0 = lineTop;
-            }
-
-            if (( y1 === null ) || ( y1 < lineBottom )) {
-                y1 = lineBottom;
-            }
-
-            base += line.descender;
-        }
-
-        if ( this.maxHeight < ( y1 - y0 )) {
-            overflow = true;
-        }
-
-        base = 0;
-
-        for ( let i in this.lines ) {
-
             const line = this.lines [ i ];
-            base += line.ascender;
+            base += ( i == 0 ) ? -line.bounds.y0 : line.ascender;
 
             switch ( this.vJustify ) {
 
@@ -363,9 +324,9 @@ export class TextBox {
                     line.yOff = ( this.bounds.x1 - ( y1 - y0 )) + base;
                     break;
             }
+
             base += line.descender;
         }
-        return overflow;
     }
 
     //----------------------------------------------------------------//
@@ -394,7 +355,7 @@ export class TextBox {
         line.append ( token, this );
 
         const bb = line.bounds;
-        const over = bb ? this.maxWidth < rect.width ( bb ) : false;
+        const over = bb ? rect.width ( this.bounds ) < rect.width ( bb ) : false;
 
         // only try new line if line was *not* originally empty
         if ( over && ( isNewLine === false )) {
@@ -438,7 +399,6 @@ export class TextFitter {
         this.vJustify = vJustify || JUSTIFY.VERTICAL.TOP;
 
         this.sections = [];
-        this.fitHeight = 0;
     }
 
     //----------------------------------------------------------------//
@@ -453,17 +413,27 @@ export class TextFitter {
 
         const fitSections = () => {
 
-            const height = rect.height ( this.bounds );
-            this.fitHeight = 0;
+            const maxHeight = rect.height ( this.bounds );
+            let fitHeight = 0;
+            let prevSection = false;
 
-            for ( let section of this.sections ) {
+            for ( let i in this.sections ) {
                 
+                const section = this.sections [ i ];
+
+                section.bounds = rect.copy ( this.bounds );
                 const overflow = section.fit ( fontScale );
                 if ( overflow ) return true;
 
-                this.fitHeight += rect.height ( section.fitBounds );
-                if ( this.fitHeight > height ) return true;
+                fitHeight += rect.height ( section.fitBounds );
+                fitHeight += ( prevSection ) ? prevSection.padBottom + section.padTop : 0;
+                
+                if ( maxHeight < fitHeight ) return true;
+
+                prevSection = section;
             }
+
+            this.fitHeight = fitHeight;
             return false;
         }
 
@@ -523,7 +493,8 @@ export class TextFitter {
         if (( this.fitHeight === 0 ) || ( this.sections.length === 0 )) return '';
 
         let height = rect.height ( this.bounds );
-        let yOff;
+        let fitHeight = this.fitHeight;
+        let yOff = 0;
 
         switch ( this.vJustify ) {
 
@@ -532,19 +503,24 @@ export class TextFitter {
                 break;
 
             case JUSTIFY.VERTICAL.CENTER: {
-                yOff = ( height - this.fitHeight ) / 2;
+                yOff = ( height - fitHeight ) / 2;
                 break;
             }
             case JUSTIFY.VERTICAL.BOTTOM:
-                yOff = height - this.fitHeight;
+                yOff = height - fitHeight;
                 break;
         }
 
         let svg = [];
-        for ( let section of this.sections ) {
+        for ( let i in this.sections ) {
+
+            const section = this.sections [ i ];
+
+            yOff += ( i == 0 ) ? 0 : section.padTop;
             svg.push ( section.toSVG ( 0, yOff ));
-            yOff += rect.height ( section.fitBounds );
+            yOff += rect.height ( section.fitBounds ) + section.padBottom;
         }
+
         return svg.join ();
     }
 }

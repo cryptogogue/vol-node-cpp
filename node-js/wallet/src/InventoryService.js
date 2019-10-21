@@ -54,7 +54,7 @@ export class InventoryService extends Service {
             appState:   appState,
         });
 
-        this.onProgress = onProgress;
+        this.onProgress = onProgress || (( message ) => { console.log ( message )});
         this.templates = {};
         this.layouts = {};
         this.fonts = {};
