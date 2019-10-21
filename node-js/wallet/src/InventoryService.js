@@ -6,7 +6,7 @@ import { Service }                              from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { Binding }                              from './schema/Binding';
 import { Schema }                               from './schema/Schema';
-import { buildSchema, op }                      from './schema/SchemaBuilder';
+import { buildSchema, op, LAYOUT_COMMAND }      from './schema/SchemaBuilder';
 import { JUSTIFY }                              from './util/TextFitter';
 import handlebars                               from 'handlebars';
 import _                                        from 'lodash';
@@ -181,6 +181,13 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     async update ( templates, assets ) {
 
+        const fetchFont = async ( url ) => {
+            if ( !url ) return false;
+            const response  = await this.revocableFetch ( url );
+            const buffer    = await response.arrayBuffer ();
+            return opentype.parse ( buffer );
+        }
+
         let schema = new Schema ();
 
         for ( let template of templates ) {
@@ -188,9 +195,19 @@ export class InventoryService extends Service {
             await schema.applyTemplate ( template );
 
             for ( let layoutName in template.layouts ) {
+                
                 const layout = _.cloneDeep ( template.layouts [ layoutName ]);
+
                 for ( let command of layout.commands ) {
-                    command.template = handlebars.compile ( command.template );
+
+                    if ( command.type === LAYOUT_COMMAND.DRAW_TEXT_BOX ) {
+                        for ( let segment of command.segments ) {
+                            segment.template = handlebars.compile ( segment.template );
+                        }
+                    }
+                    else {
+                        command.template = handlebars.compile ( command.template );
+                    }
                 }
                 this.layouts [ layoutName ] = layout;
             }
@@ -198,13 +215,15 @@ export class InventoryService extends Service {
             for ( let name in template.fonts ) {
 
                 try {
-                    const url = template.fonts [ name ].url;
+                    const fontDesc = template.fonts [ name ];
+                    const faces = {};
 
-                    console.log ( 'FETCHING FONT:', name, url );
-
-                    const response  = await this.revocableFetch ( url );
-                    const buffer    = await response.arrayBuffer ();
-                    this.fonts [ name ] = opentype.parse ( buffer );
+                    for ( let face in fontDesc ) {
+                        const url = fontDesc [ face ];
+                        console.log ( 'FETCHING FONT', face, url );
+                        faces [ face ] = await fetchFont ( url );
+                    }
+                    this.fonts [ name ] = faces;
                 }
                 catch ( error ) {
                     console.log ( error );

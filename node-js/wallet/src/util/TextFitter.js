@@ -13,6 +13,15 @@ const WHITESPACE_CHAR_CODES = [
     0,
 ];
 
+// these are camelCase because they are used directly by SchemaBuilder. this is
+// how they will appear in the schema JSON.
+export const FONT_FACE = {
+    REGULAR:        'regular',
+    BOLD:           'bold',
+    ITALIC:         'italic',
+    BOLD_ITALIC:    'boldItalic',
+};
+
 export const JUSTIFY = {
     HORIZONTAL: {
         LEFT:       'LEFT',
@@ -55,33 +64,53 @@ class TextLine {
         this.segments   = [];
         this.height     = 0;
 
+        const pushSegment = () => {
+
+            const faces = context.fonts [ style.font ];
+            if ( !faces ) return;
+
+            let font = false;
+
+            if (( style.bold ) && ( style.italic )) {
+                font = faces [ FONT_FACE.BOLD_ITALIC ];
+            }
+            else if ( style.bold ) {
+                font = faces [ FONT_FACE.BOLD ];
+            }
+            else if ( style.italic ) {
+                font = faces [ FONT_FACE.ITALIC ];
+            }
+
+            font = font || faces [ FONT_FACE.REGULAR ];
+            if ( !font ) return;
+
+            const size      = style.size * style.scale * ( context.fontScale || 1 );
+            const advance   = font.getAdvanceWidth ( buffer, size );
+            const path      = font.getPath ( buffer, xOff, 0, size );
+            let bb          = path.getBoundingBox ();
+            bb              = rect.make ( bb.x1, bb.y1, bb.x2, bb.y2 );
+
+            this.segments.push ({
+                path:       path,
+                style:      style,
+                font:       font,
+                bounds:     bb,
+            });
+
+            this.bounds = rect.grow ( this.bounds, bb );
+            
+            const ascender  = ( font.ascender / font.unitsPerEm ) * size;
+            const descender  = -( font.descender / font.unitsPerEm ) * size;
+
+            this.ascender = util.greater ( this.ascender, ascender );
+            this.descender = util.greater ( this.descender, descender );
+
+            xOff += advance;
+        }
+
         const grow = () => {
-
             if ( buffer.length ) {
-
-                const font      = context.font;
-                const size      = style.size * style.scale * ( context.fontScale || 1 );
-                const advance   = font.getAdvanceWidth ( buffer, size );
-                const path      = font.getPath ( buffer, xOff, 0, size );
-                let bb          = path.getBoundingBox ();
-                bb              = rect.make ( bb.x1, bb.y1, bb.x2, bb.y2 );
-
-                this.segments.push ({
-                    path:       path,
-                    style:      style,
-                    font:       font,
-                    bounds:     bb,
-                });
-
-                this.bounds = rect.grow ( this.bounds, bb );
-                
-                const ascender  = ( font.ascender / font.unitsPerEm ) * size;
-                const descender  = -( font.descender / font.unitsPerEm ) * size;
-
-                this.ascender = util.greater ( this.ascender, ascender );
-                this.descender = util.greater ( this.descender, descender );
-
-                xOff += advance;
+                pushSegment ();
             }
             buffer = '';
         }
@@ -169,11 +198,10 @@ class TextLine {
 export class TextBox {
 
     //----------------------------------------------------------------//
-    constructor ( text, font, fontSize, x, y, width, height, hJustify, vJustify ) {
+    constructor ( text, fonts, fontName, fontSize, x, y, width, height, hJustify, vJustify ) {
 
         this.text           = text;
-        this.font           = font;
-        this.fontSize       = fontSize;
+        this.fonts          = fonts,
 
         this.bounds = rect.make (
             x,
@@ -191,8 +219,9 @@ export class TextBox {
         this.lines = [];
 
         this.baseStyle = {
+            font:   fontName,
+            size:   fontSize,
             color:  color.make ( 0, 0, 0, 1 ),
-            size:   this.fontSize,
             scale:  1,
         }
 
@@ -395,7 +424,9 @@ export class TextBox {
 export class TextFitter {
 
     //----------------------------------------------------------------//
-    constructor ( x, y, width, height, vJustify ) {
+    constructor ( fonts, x, y, width, height, vJustify ) {
+
+        this.fonts = fonts;
 
         this.bounds = rect.make (
             x,
@@ -468,12 +499,13 @@ export class TextFitter {
     }
 
     //----------------------------------------------------------------//
-    pushSection ( text, font, fontSize, hJustify ) {
+    pushSection ( text, fontName, fontSize, hJustify ) {
 
         this.sections.push (
             new TextBox (
                 text,
-                font,
+                this.fonts,
+                fontName,
                 fontSize,
                 this.bounds.x0,
                 this.bounds.y0,

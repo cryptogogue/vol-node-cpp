@@ -3,7 +3,7 @@
 import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
 import * as pdf417                  from './util/pdf417';
 import * as qrcode                  from './util/qrcode';
-import { fitText, JUSTIFY }         from './util/TextFitter';
+import { TextFitter, JUSTIFY }      from './util/TextFitter';
 import moize                        from 'moize';
 
 //================================================================//
@@ -25,9 +25,7 @@ export class AssetLayout {
         for ( let i in layout.commands ) {
             
             const command = layout.commands [ i ];
-            const value = command.template && command.template ( context ) || null;
-
-            if ( !value ) continue;
+            
 
             const x = command.x || 0;
             const y = command.y || 0;
@@ -37,6 +35,9 @@ export class AssetLayout {
             switch ( command.type ) {
 
                 case LAYOUT_COMMAND.DRAW_BARCODE: {
+
+                    const value = command.template && command.template ( context ) || null;
+                    if ( !value ) break;
 
                     let svgTag = '<g/>';
 
@@ -77,24 +78,26 @@ export class AssetLayout {
 
                 case LAYOUT_COMMAND.DRAW_SVG: {
 
+                    const value = command.template && command.template ( context ) || null;
+                    if ( !value ) break;
+
                     items.push ( `<g>${ value }</g>` );
                     break;
                 }
 
-                case LAYOUT_COMMAND.DRAW_TEXT: {
+                case LAYOUT_COMMAND.DRAW_TEXT_BOX: {
 
-                    const font = inventory.fonts [ command.fontName ];
-                    if ( font ) {
+                    const fitter = new TextFitter ( inventory.fonts, x, y, w, h, command.vJustify );
 
-                        const hJustify  = command.hJustify || JUSTIFY.HORIZONTAL.LEFT;
-                        const vJustify  = command.vJustify || JUSTIFY.VERTICAL.TOP;
-                        const fill      = command.fill || 'black'
+                    for ( let segment of command.segments ) {
 
-                        const fontSize = command.fontSize || h;
-                        const svg = fitText ( value, font, fontSize, x, y, w, h, hJustify, vJustify );
+                        const value = segment.template && segment.template ( context ) || null;
+                        if ( !value ) continue;
 
-                        items.push ( `<g fill = ${ fill }>${ svg }</g>` );
+                        fitter.pushSection ( value, segment.fontName, segment.fontSize, segment.hJustify );
                     }
+                    fitter.fit ();
+                    items.push ( `<g>${ fitter.toSVG ()}</g>` );
                     break;
                 }
             }

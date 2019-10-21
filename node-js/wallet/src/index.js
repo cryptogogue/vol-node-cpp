@@ -16,6 +16,7 @@ import { DebugBarcodePDF417Screen }     from './debug/DebugBarcodePDF417Screen';
 import { DebugBarcodeQRScreen }         from './debug/DebugBarcodeQRScreen';
 import { DebugCryptoKeyScreen }         from './debug/DebugCryptoKeyScreen';
 import { DebugDropzoneScreen }          from './debug/DebugDropzoneScreen';
+import { DebugFilePickerScreen }        from './debug/DebugFilePickerScreen';
 import { DebugHandlebarsScreen }        from './debug/DebugHandlebarsScreen';
 import { DebugMobXScreen }              from './debug/DebugMobXScreen';
 import { DebugPrintScreen }             from './debug/DebugPrintScreen';
@@ -75,6 +76,7 @@ const App = () => {
                 <Route exact path = "/debug/barcode/qr"         component = { DebugBarcodeQRScreen }/>
                 <Route exact path = "/debug/cryptokey"          component = { DebugCryptoKeyScreen }/>
                 <Route exact path = "/debug/dropzone"           component = { DebugDropzoneScreen }/>
+                <Route exact path = "/debug/filepicker"         component = { DebugFilePickerScreen }/>
                 <Route exact path = "/debug/handlebars"         component = { DebugHandlebarsScreen }/>
                 <Route exact path = "/debug/mobx"               component = { DebugMobXScreen }/>
                 <Route exact path = "/debug/print"              component = { DebugPrintScreen }/>
