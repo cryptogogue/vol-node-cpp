@@ -47,13 +47,14 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
-    constructor ( appState ) {
+    constructor ( appState, onProgress ) {
         super ();
 
         extendObservable ( this, {
             appState:   appState,
         });
 
+        this.onProgress = onProgress;
         this.templates = {};
         this.layouts = {};
         this.fonts = {};
@@ -76,9 +77,11 @@ export class InventoryService extends Service {
         try {
             console.log ( 'FETCH INVENTORY', accountID, minerURL );
 
+            this.onProgress ( 'Fetching Schema' );
             const schemaJSON        = await this.revocableFetchJSON ( minerURL + '/schemas', null, 20000 );
             console.log ( schemaJSON );
 
+            this.onProgress ( 'Fetching Inventory' );
             const inventoryJSON     = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory', null, 20000 );
             console.log ( inventoryJSON );
 
@@ -98,6 +101,15 @@ export class InventoryService extends Service {
     @action
     finishLoading () {
         this.loading = false;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    getAssetLayout ( assetID ) {
+        if ( !_.has ( this.assetLayouts, assetID )) {
+            this.assetLayouts [ assetID ] = new AssetLayout ( this, assetID, [ 'EN', 'RGB' ]);
+        }
+        return this.assetLayouts [ assetID ];
     }
 
     //----------------------------------------------------------------//
@@ -148,11 +160,7 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     @action
     refreshAssetLayouts () {
-
         this.assetLayouts = {};
-        for ( let assetId in this.assets ) {
-            this.assetLayouts [ assetId ] = new AssetLayout ( this, assetId, [ 'EN', 'RGB' ]);
-        }
     }
 
     //----------------------------------------------------------------//
@@ -191,9 +199,10 @@ export class InventoryService extends Service {
         let schema = new Schema ();
 
         for ( let template of templates ) {
-
+            this.onProgress ( 'Applying Template' );
             await schema.applyTemplate ( template );
 
+            this.onProgress ( 'Compiling Layouts' );
             for ( let layoutName in template.layouts ) {
                 
                 const layout = _.cloneDeep ( template.layouts [ layoutName ]);
@@ -212,6 +221,7 @@ export class InventoryService extends Service {
                 this.layouts [ layoutName ] = layout;
             }
 
+            this.onProgress ( 'Fetching Fonts' );
             for ( let name in template.fonts ) {
 
                 try {
@@ -250,6 +260,7 @@ export class InventoryService extends Service {
             }
         }
 
+        this.onProgress ( 'Refreshing Binding' );
         this.refreshBinding ( schema, assetsWithLayouts );
         this.refreshAssetLayouts ();
         this.finishLoading ();

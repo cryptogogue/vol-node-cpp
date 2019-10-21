@@ -156,8 +156,9 @@ export const InventoryScreen = observer (( props ) => {
 
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
+    const [ progressMessage, setProgressMessage ] = useState ( '' );
     const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
-    const inventory     = useService (() => new InventoryService ( appState ));
+    const inventory     = useService (() => new InventoryService ( appState, setProgressMessage ));
     const controller    = useService (() => new InventoryScreenController ( inventory ));
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
@@ -169,7 +170,7 @@ export const InventoryScreen = observer (( props ) => {
     if ( inventory.loading === true ) {
         return (
             <div>
-                <Loader active inline='centered' size='massive' style={{marginTop:'5%'}}>Downloading Assets</Loader>
+                <Loader active inline='centered' size='massive' style={{marginTop:'5%'}}>{ progressMessage }</Loader>
             </div>
         );
     }

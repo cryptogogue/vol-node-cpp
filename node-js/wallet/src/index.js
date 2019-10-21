@@ -18,6 +18,7 @@ import { DebugCryptoKeyScreen }         from './debug/DebugCryptoKeyScreen';
 import { DebugDropzoneScreen }          from './debug/DebugDropzoneScreen';
 import { DebugFilePickerScreen }        from './debug/DebugFilePickerScreen';
 import { DebugHandlebarsScreen }        from './debug/DebugHandlebarsScreen';
+import { DebugInfiniteScrollScreen }    from './debug/DebugInfiniteScrollScreen';
 import { DebugMobXScreen }              from './debug/DebugMobXScreen';
 import { DebugPrintScreen }             from './debug/DebugPrintScreen';
 import { DebugSchemaScreen }            from './debug/DebugSchemaScreen';
@@ -78,6 +79,7 @@ const App = () => {
                 <Route exact path = "/debug/dropzone"           component = { DebugDropzoneScreen }/>
                 <Route exact path = "/debug/filepicker"         component = { DebugFilePickerScreen }/>
                 <Route exact path = "/debug/handlebars"         component = { DebugHandlebarsScreen }/>
+                <Route exact path = "/debug/infinitescroll"     component = { DebugInfiniteScrollScreen }/>
                 <Route exact path = "/debug/mobx"               component = { DebugMobXScreen }/>
                 <Route exact path = "/debug/print"              component = { DebugPrintScreen }/>
                 <Route exact path = "/debug/schema"             component = { DebugSchemaScreen }/>

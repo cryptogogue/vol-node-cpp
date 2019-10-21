@@ -143,7 +143,16 @@ export const AccountScreen = observer (( props ) => {
 
     return (
         <SingleColumnContainerView>
-            <div style={{ height:'20px', backgroundColor:'LightSlateGray', position:'fixed',top:'0',color:'white',left:'0',width:'100%' }}>
+            <div style = {{ 
+                backgroundColor :   'LightSlateGray',
+                color           :   'white',
+                height          :   '20px',
+                left            :   '0',
+                position        :   'fixed',
+                top             :   '0',
+                width           :   '100%',
+                zIndex          :   '1000'
+            }}>
                 Network: { appState.nodeInfo.network || 'UNKNOWN' }
             </div>
 
