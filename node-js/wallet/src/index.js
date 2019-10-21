@@ -24,7 +24,7 @@ import { DebugPrintScreen }             from './debug/DebugPrintScreen';
 import { DebugSchemaScreen }            from './debug/DebugSchemaScreen';
 import { DebugStripeScreen }            from './debug/DebugStripeScreen';
 import { DebugTextFitterScreen }        from './debug/DebugTextFitterScreen';
-import { DebugTextStylesScreen }        from './debug/DebugTextStylesScreen';
+import { DebugTextStyleScreen }         from './debug/DebugTextStyleScreen';
 import { ImportAccountScreen }          from './ImportAccountScreen';
 import { InventoryScreen }              from './InventoryScreen';
 import { LoginScreen }                  from './LoginScreen';
@@ -85,7 +85,7 @@ const App = () => {
                 <Route exact path = "/debug/schema"             component = { DebugSchemaScreen }/>
                 <Route exact path = "/debug/stripe"             component = { DebugStripeScreen }/>
                 <Route exact path = "/debug/textfitter"         component = { DebugTextFitterScreen }/>
-                <Route exact path = "/debug/textstyles"         component = { DebugTextStylesScreen }/>
+                <Route exact path = "/debug/textstyle"          component = { DebugTextStyleScreen }/>
 
                 <Route exact path = "/:userID/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>

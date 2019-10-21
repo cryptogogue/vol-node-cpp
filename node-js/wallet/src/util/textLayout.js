@@ -2,7 +2,7 @@
 
 import * as color               from './color';
 import * as rect                from './rect';
-import * as textStyles          from './textStyles';
+import * as textStyle           from './textStyle';
 import * as util                from './util';
 import _                        from 'lodash';
 import * as opentype            from 'opentype.js';
@@ -36,6 +36,12 @@ export const JUSTIFY = {
 }
 
 const DEFAULT_MIN_SCALE_STEP        = 0.01;
+
+const OPENTYPE_OPTIONS = {
+    kerning:    true,
+    features:   true,
+    hinting:    false,
+};
 
 //----------------------------------------------------------------//
 export const fitText = ( text, font, fontSize, x, y, width, height, hJustify, vJustify ) => {
@@ -85,8 +91,8 @@ class TextLine {
             if ( !font ) return;
 
             const size      = style.size * style.scale * ( context.fontScale || 1 );
-            const advance   = font.getAdvanceWidth ( buffer, size );
-            const path      = font.getPath ( buffer, xOff, 0, size );
+            const advance   = font.getAdvanceWidth ( buffer, size, OPENTYPE_OPTIONS );
+            const path      = font.getPath ( buffer, xOff, 0, size, OPENTYPE_OPTIONS );
             let bb          = path.getBoundingBox ();
             bb              = rect.make ( bb.x1, bb.y1, bb.x2, bb.y2 );
 
@@ -211,7 +217,7 @@ export class TextBox {
             scale:  1,
         }
 
-        this.styledText     = textStyles.parse ( text, this.baseStyle );
+        this.styledText     = textStyle.parse ( text, this.baseStyle );
     }
 
     //----------------------------------------------------------------//
@@ -244,41 +250,17 @@ export class TextBox {
         }
 
         if ( this.lines.length === 0 ) return false;
-
-        this.layoutHorizontal ();
-        this.layoutVertical ();
-
-        for ( let line of this.lines ) {
-            line.bounds = rect.offset ( line.bounds, line.xOff, line.yOff );
-            this.fitBounds = rect.grow ( this.fitBounds, line.bounds );
-        }
-
-        const firstLine = _.first ( this.lines );
-        this.padTop = firstLine.bounds.y0 - ( firstLine.yOff - firstLine.ascender );
-
-        const lastLine = _.last ( this.lines );
-        this.padBottom = ( lastLine.yOff + lastLine.descender ) - lastLine.bounds.y1;
-
-        let hOverflow = ( rect.width ( this.bounds ) < rect.width ( this.fitBounds ));
-        let vOverflow = ( rect.height ( this.bounds ) < rect.height ( this.fitBounds ));
-
-        return ( hOverflow || vOverflow );
-    }
-
-    //----------------------------------------------------------------//
-    layoutHorizontal () {
-
-        if ( this.lines.length === 0 ) return false;
-
-        const maxWidth = rect.width ( this.bounds );
-
+        
+        // do the line layout
+        let yOff = 0;
         for ( let i in this.lines ) {
 
             const line = this.lines [ i ];
-            const bb = line.bounds;
-            const lineLeft = -bb.x0;
-            const lineWidth = rect.width ( bb );
 
+            const lineLeft = -line.bounds.x0;
+            const lineWidth = rect.width ( line.bounds );
+
+            // horizontal layout
             switch ( this.hJustify ) {
 
                 case JUSTIFY.HORIZONTAL.LEFT:
@@ -293,40 +275,41 @@ export class TextBox {
                     line.xOff = ( this.bounds.x1 - lineWidth ) + lineLeft;
                     break;
             }
-        }
-    }
 
-    //----------------------------------------------------------------//
-    layoutVertical () {
-
-        if ( this.lines.length === 0 ) return false;
-
-        const maxHeight = rect.height ( this.bounds );
-
-        let base = 0;
-
-        for ( let i in this.lines ) {
-
-            const line = this.lines [ i ];
-            base += ( i == 0 ) ? -line.bounds.y0 : line.ascender;
+            // vertical layout
+            yOff += ( i == 0 ) ? -line.bounds.y0 : line.ascender;
 
             switch ( this.vJustify ) {
 
                 case JUSTIFY.VERTICAL.TOP:
-                    line.yOff = this.bounds.y0 + base;
+                    line.yOff = this.bounds.y0 + yOff;
                     break;
 
                 case JUSTIFY.VERTICAL.CENTER: {
-                    line.yOff = ((( this.bounds.y0 + this.bounds.y1 ) - ( y1 - y0 )) / 2 ) + base;
+                    line.yOff = ((( this.bounds.y0 + this.bounds.y1 ) - ( y1 - y0 )) / 2 ) + yOff;
                     break;
                 }
                 case JUSTIFY.VERTICAL.BOTTOM:
-                    line.yOff = ( this.bounds.x1 - ( y1 - y0 )) + base;
+                    line.yOff = ( this.bounds.x1 - ( y1 - y0 )) + yOff;
                     break;
             }
+            yOff += line.descender;
 
-            base += line.descender;
+            // update the bounds
+            line.bounds = rect.offset ( line.bounds, line.xOff, line.yOff );
+            this.fitBounds = rect.grow ( this.fitBounds, line.bounds );
         }
+
+        const firstLine = _.first ( this.lines );
+        this.padTop = firstLine.bounds.y0 - ( firstLine.yOff - firstLine.ascender );
+
+        const lastLine = _.last ( this.lines );
+        this.padBottom = ( lastLine.yOff + lastLine.descender ) - lastLine.bounds.y1;
+
+        let hOverflow = ( rect.width ( this.bounds ) < rect.width ( this.fitBounds ));
+        let vOverflow = ( rect.height ( this.bounds ) < rect.height ( this.fitBounds ));
+
+        return ( hOverflow || vOverflow );
     }
 
     //----------------------------------------------------------------//

@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { Service, useService }              from '../Service';
-import { TextFitter, FONT_FACE, JUSTIFY }   from '../util/TextFitter';
+import { TextFitter, FONT_FACE, JUSTIFY }   from '../util/textLayout';
 import handlebars                           from 'handlebars';
 import { action, computed, observable, }    from 'mobx';
 import { observer }                         from 'mobx-react';

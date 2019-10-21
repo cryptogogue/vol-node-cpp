@@ -7,7 +7,7 @@ import { action, computed, extendObservable, observable, observe, runInAction } 
 import { Binding }                              from './schema/Binding';
 import { Schema }                               from './schema/Schema';
 import { buildSchema, op, LAYOUT_COMMAND }      from './schema/SchemaBuilder';
-import { JUSTIFY }                              from './util/TextFitter';
+import { JUSTIFY }                              from './util/textLayout';
 import handlebars                               from 'handlebars';
 import _                                        from 'lodash';
 import * as opentype                            from 'opentype.js';

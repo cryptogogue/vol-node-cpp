@@ -3,7 +3,7 @@
 import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
 import * as pdf417                  from './util/pdf417';
 import * as qrcode                  from './util/qrcode';
-import { TextFitter, JUSTIFY }      from './util/TextFitter';
+import { TextFitter, JUSTIFY }      from './util/textLayout';
 import moize                        from 'moize';
 
 //================================================================//

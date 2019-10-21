@@ -3,7 +3,7 @@
 import { assert }               from '../util/assert';
 import * as pdf417              from '../util/pdf417';
 import * as qrcode              from '../util/qrcode';
-import { FONT_FACE, JUSTIFY }   from '../util/TextFitter';
+import { FONT_FACE, JUSTIFY }   from '../util/textLayout';
 import fs                       from 'fs';
 
 const MUTABLE           = 'MUTABLE';
