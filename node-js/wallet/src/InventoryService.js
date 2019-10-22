@@ -59,6 +59,9 @@ export class InventoryService extends Service {
         this.layouts = {};
         this.fonts = {};
 
+        this.maxWidthInInches = 0;
+        this.maxHeightInInches = 0;
+
         if ( appState ) {
             this.fetchInventory ( appState.accountID, appState.node );
         }
@@ -198,6 +201,9 @@ export class InventoryService extends Service {
 
         let schema = new Schema ();
 
+        this.maxWidthInInches = 0;
+        this.maxHeightInInches = 0;
+
         for ( let template of templates ) {
             this.onProgress ( 'Applying Template' );
             await schema.applyTemplate ( template );
@@ -207,8 +213,13 @@ export class InventoryService extends Service {
                 
                 const layout = _.cloneDeep ( template.layouts [ layoutName ]);
 
-                for ( let command of layout.commands ) {
+                const widthInInches = layout.width / layout.dpi;
+                const heightInInches = layout.height / layout.dpi;
 
+                this.maxWidthInInches = ( this.maxWidthInInches > widthInInches ) ? this.maxWidthInInches : widthInInches;
+                this.maxHeightInInches = ( this.maxHeightInInches > heightInInches ) ? this.maxHeightInInches : heightInInches;
+
+                for ( let command of layout.commands ) {
                     if ( command.type === LAYOUT_COMMAND.DRAW_TEXT_BOX ) {
                         for ( let segment of command.segments ) {
                             segment.template = handlebars.compile ( segment.template );
@@ -230,7 +241,7 @@ export class InventoryService extends Service {
 
                     for ( let face in fontDesc ) {
                         const url = fontDesc [ face ];
-                        console.log ( 'FETCHING FONT', face, url );
+                        console.log ( 'FETCHING FONT', name, face, url );
                         faces [ face ] = await fetchFont ( url );
                     }
                     this.fonts [ name ] = faces;

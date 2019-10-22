@@ -216,24 +216,24 @@ export const InventoryView = observer (( props ) => {
 
     const assetLayoutCache = [];
 
-    const getAsset = ( i ) => {
-        console.log ( 'getAsset', i );
+    const getAsset = ( i, targetRef ) => {
+        
         if ( !assetLayoutCache.includes ( i )) {
-            console.log ('assets', assetArray.length);
+            
             const asset = assetArray [ i ];
             const color = isSelected ( asset ) ? 'red' : 'white';
 
             assetLayoutCache [ i ] = (
                 <Card
                     key = { asset.assetID }
-                    style = {{ float: 'left', border: `2px solid ${ color }` }}
+                    style = {{ border: `2px solid ${ color }` }}
                     onClick = {() => { onclickCard ( asset )}}
                 >
                     <AssetView
                         assetId = { asset.assetID }
                         inventory = { inventory }
-                        inches = { false }
-                        scale = { .333 }
+                        inches = { true }
+                        scale = { 0.75 }
                     />
                     { isSelected ( asset ) &&
                         <Modal style={{ height : 'auto' }} size = "small" open = { isSelected ( asset )}>
