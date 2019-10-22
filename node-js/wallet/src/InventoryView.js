@@ -27,6 +27,7 @@ export const InventoryView = observer (( props ) => {
 
     const inventory     = props.inventory;
     const assetArray    = props.assetArray || inventory.availableAssetsArray;
+    const scale         = props.scale || 1;
 
     const onClickCard = ( asset ) => {
         const newSelection = Object.assign ({}, selection );
@@ -52,7 +53,7 @@ export const InventoryView = observer (( props ) => {
                         assetId = { asset.assetID }
                         inventory = { inventory }
                         inches = { true }
-                        scale = { 0.75 }
+                        scale = { scale }
                     />
                     { isSelected ( asset ) &&
                         <Modal style={{ height : 'auto' }} size = "small" open = { isSelected ( asset )}>
