@@ -24,6 +24,10 @@ export const InfiniteScrollView = ( props ) => {
     const cardsPerRow   = hasDimensions ? Math.floor ( rowWidth / cardWidth ) : 1;
     const totalRows     = hasDimensions ? Math.ceil ( totalCards / cardsPerRow ) : 1;    
 
+    const onResize = ({ width }) => {
+        setRowWidth ( width );
+    }
+
     const rowFactory = ({ index, style }) => {
 
         let cardRef = null;
@@ -40,11 +44,8 @@ export const InfiniteScrollView = ( props ) => {
         }
 
         let cards = [];
-
         for ( let i = 0; i < cardsPerRow; ++i ) {
-
             const assetID = i + ( index * cardsPerRow );
-            
             if ( assetID < totalCards ) {
                 cards.push (
                     <div
@@ -71,10 +72,6 @@ export const InfiniteScrollView = ( props ) => {
                 </div>
             </div>
         );
-    }
-
-    const onResize = ({ width }) => {
-        setRowWidth ( width );
     }
 
     return (
