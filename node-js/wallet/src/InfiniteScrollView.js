@@ -24,7 +24,8 @@ export const InfiniteScrollView = ( props ) => {
     const cardsPerRow   = hasDimensions ? Math.floor ( rowWidth / cardWidth ) : 1;
     const totalRows     = hasDimensions ? Math.ceil ( totalCards / cardsPerRow ) : 1;    
 
-    const onResize = ({ width }) => {
+    const onResize = ({ width, height }) => {
+        console.log ( 'RESIZE', width, height );
         setRowWidth ( width );
     }
 
@@ -75,22 +76,19 @@ export const InfiniteScrollView = ( props ) => {
     }
 
     return (
-        <div className = "AutoSizerWrapper">
-            <AutoSizer
-                onResize = { onResize }
-            >
-                {({ width, height }) => (
-                    <FixedSizeList
-                        className = "inventoryList"
-                        height = { height }
-                        itemCount = { totalRows }
-                        itemSize = { hasDimensions ? cardHeight : height }
-                        width = { width }
-                    >
-                        { rowFactory }
-                    </FixedSizeList>
-                )}
-            </AutoSizer>
-        </div>
+        <AutoSizer
+            onResize = { onResize }
+        >
+            {({ width, height }) => (
+                <FixedSizeList
+                    height = { height }
+                    itemCount = { totalRows }
+                    itemSize = { hasDimensions ? cardHeight : height }
+                    width = { width }
+                >
+                    { rowFactory }
+                </FixedSizeList>
+            )}
+        </AutoSizer>
     );
 }

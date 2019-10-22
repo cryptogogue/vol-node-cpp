@@ -1,14 +1,6 @@
-import React, { useState, useRef, useLayoutEffect }         from 'react';
-import { Link }                                             from 'react-router-dom';
-import { Dropdown, Grid, Icon, List, Menu, Card, Group }    from 'semantic-ui-react';
-
-import { FixedSizeList }                                    from 'react-window';
-import AutoSizer                                            from 'react-virtualized-auto-sizer';
-import InfiniteLoader                                       from 'react-window-infinite-loader';
-
-import './debugStyle.css'
 import { InfiniteScrollView }                               from '../InfiniteScrollView';
-
+import React, { useState, useRef, useLayoutEffect }         from 'react';
+import { Dropdown, Grid, Icon, List, Menu, Card, Group }    from 'semantic-ui-react';
 
 const CARD_WIDTH  = 194;
 const CARD_HEIGHT = 266;
@@ -29,12 +21,12 @@ const getCard = ( i ) => {
 }
 
 export const DebugInfiniteScrollScreen = () => {
-    return ( 
-        <InfiniteScrollView 
-            onGetAsset  = { getCard }
-            cardWidth   = { CARD_WIDTH }
-            cardHeight  = { CARD_HEIGHT }
-            totalCards  = { cardArray.length }
-        />
+    return (
+        <div style = {{ height: '100vh' }}>
+            <InfiniteScrollView 
+                onGetAsset  = { getCard }
+                totalCards  = { cardArray.length }
+            />
+        </div>
     );
 }

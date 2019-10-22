@@ -65,28 +65,12 @@ export const DebugSchemaScreen = observer (( props ) => {
         inventory.reset ( controller.schema );
     }
 
-    let assetLayouts = [];
-    if ( inventory.loading === false ) {
-        const assetArray = inventory.availableAssetsArray;
-        for ( let i in assetArray ) {
-            const asset = assetArray [ i ];
-            assetLayouts.push (
-                <Card
-                    key = { asset.assetID }
-                    style = {{ float:'left', border:`2px solid white` }}
-                >
-                    <AssetView
-                        assetId = { asset.assetID }
-                        inventory = { inventory }
-                        inches = 'true'
-                    />
-                </Card>
-            );
-        }
-    }
-
     return (
-        <div>
+        <div style = {{
+            display: 'flex',
+            flexFlow: 'column',
+            height: '100vh',
+        }}>
             <SingleColumnContainerView>
                 <Segment>
                     <Form error = { controller.errorMsg !== false }>
@@ -112,11 +96,14 @@ export const DebugSchemaScreen = observer (( props ) => {
                         </Button>
                     </Form>
                 </Segment>
-
             </SingleColumnContainerView>
 
-            <If condition = { assetLayouts.length > 0 }>
-                { assetLayouts }
+            <If condition = { inventory.loading === false }>
+                <div style = {{ flex: 1 }}>
+                    <InventoryView
+                        inventory   = { inventory }
+                    />
+                </div>
             </If>
         </div>
     );

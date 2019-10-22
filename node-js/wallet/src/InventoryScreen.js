@@ -198,13 +198,18 @@ export const InventoryScreen = observer (( props ) => {
     }
 
     return (
-        <div>
+        <div style = {{
+            display: 'flex',
+            flexFlow: 'column',
+            height: '100vh',
+        }}>
             <div className = "no-print">
                 <SingleColumnContainerView>
                     <NavigationBar navTitle = "Inventory" appState = { appState }/>
                     <InventoryFilterMenu appState = { appState } controller = { controller }/>
                 </SingleColumnContainerView>
             </div>
+
             <If condition = { inventory.loading === false }>
                 <Choose>
                     <When condition = { isPrintLayout ( controller.layoutName )}>
@@ -216,11 +221,13 @@ export const InventoryScreen = observer (( props ) => {
                         />
                     </When>
                     <Otherwise>
-                        <InventoryView
-                            key         = { controller.sortMode }
-                            inventory   = { controller.inventory }
-                            assetArray  = { controller.sortedAssets }
-                        />
+                        <div style = {{ flex: 1 }}>
+                            <InventoryView
+                                key         = { controller.sortMode }
+                                inventory   = { controller.inventory }
+                                assetArray  = { controller.sortedAssets }
+                            />
+                        </div>
                     </Otherwise>
                 </Choose>
             </If>
