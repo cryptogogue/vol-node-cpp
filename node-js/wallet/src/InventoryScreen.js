@@ -8,7 +8,9 @@ import { AppStateService }                                  from './AppStateServ
 import { Service, useService }                              from './Service';
 import { InventoryService }                                 from './InventoryService';
 import * as util                                            from './util/util';
-import { InventoryView, INVENTORY_LAYOUT, getInventoryLayoutFriendlyName } from './InventoryView';
+import { InventoryPrintView, PRINT_LAYOUT }                 from './InventoryPrintView';
+import { InventoryView }                                    from './InventoryView';
+import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
@@ -20,6 +22,35 @@ const SORT_MODE = {
     ALPHA_ATOZ:     'ALPHA_ATOZ',
     ALPHA_ZTOA:     'ALPHA_ZTOA',
 };
+
+const WEB_LAYOUT = 'WEB';
+
+const LAYOUT_DROPDOWN_OPTIONS = [
+        WEB_LAYOUT,
+        PRINT_LAYOUT.US_LETTER,
+        PRINT_LAYOUT.US_LEGAL,
+        PRINT_LAYOUT.US_LEDGER,
+        PRINT_LAYOUT.A4,
+        PRINT_LAYOUT.A3,
+    ];
+
+function getLayoutFriendlyName ( layoutName ) {
+
+    switch ( layoutName ) {
+        case WEB_LAYOUT:                return 'Web';
+        case PRINT_LAYOUT.US_LETTER:    return 'US Letter (8.5" x 11")';
+        case PRINT_LAYOUT.US_LEGAL:     return 'US Legal (14" x 8.5")';
+        case PRINT_LAYOUT.US_LEDGER:    return 'US Ledger (17" x 11")';
+        case PRINT_LAYOUT.A4:           return 'A4 (210mm x 297mm)';
+        case PRINT_LAYOUT.A3:           return 'A3 (420mm x 297mm)';
+        case PRINT_LAYOUT.A2:           return 'A2 (420mm x 594mm)';
+    }
+}
+
+function isPrintLayout ( layoutName ) {
+
+    return _.has ( PRINT_LAYOUT, layoutName );
+}
 
 //================================================================//
 // InventoryScreenController
@@ -42,7 +73,7 @@ class InventoryScreenController extends Service {
         this.inventory = inventory;
 
         extendObservable ( this, {
-            layoutMode:     INVENTORY_LAYOUT.WEB,
+            layoutName:     WEB_LAYOUT,
             sortMode:       SORT_MODE.ALPHA_ATOZ,
         });
     }
@@ -58,9 +89,9 @@ class InventoryScreenController extends Service {
 
     //----------------------------------------------------------------//
     @action
-    setLayoutMode ( layoutMode ) {
+    setLayoutMode ( layoutName ) {
 
-        this.layoutMode = layoutMode;
+        this.layoutName = layoutName;
     }
 
     //----------------------------------------------------------------//
@@ -97,23 +128,14 @@ const InventoryFilterMenu = observer (( props ) => {
         />);
     }
 
-    const layoutDropdown = [
-        INVENTORY_LAYOUT.WEB,
-        INVENTORY_LAYOUT.US_LETTER,
-        INVENTORY_LAYOUT.US_LEGAL,
-        INVENTORY_LAYOUT.US_LEDGER,
-        INVENTORY_LAYOUT.A4,
-        INVENTORY_LAYOUT.A3,
-    ];
-
     let layoutOptions = [];
-    for ( let i in layoutDropdown ) {
-        const layoutMode = layoutDropdown [ i ];
+    for ( let i in LAYOUT_DROPDOWN_OPTIONS ) {
+        const layoutName = LAYOUT_DROPDOWN_OPTIONS [ i ];
         layoutOptions.push (
             <Dropdown.Item
-                key         = { layoutMode }
-                text        = { getInventoryLayoutFriendlyName ( layoutMode )}
-                onClick     = {() => { controller.setLayoutMode ( layoutMode )}}
+                key         = { layoutName }
+                text        = { getLayoutFriendlyName ( layoutName )}
+                onClick     = {() => { controller.setLayoutMode ( layoutName )}}
             />
         );
     }
@@ -132,7 +154,7 @@ const InventoryFilterMenu = observer (( props ) => {
                 <Icon name = 'print'/>
             </Menu.Item>
 
-            <Dropdown item text = { getInventoryLayoutFriendlyName ( controller.layoutMode )}>
+            <Dropdown item text = { getLayoutFriendlyName ( controller.layoutName )}>
                 <Dropdown.Menu>
                 { layoutOptions }
                 </Dropdown.Menu>
@@ -184,12 +206,23 @@ export const InventoryScreen = observer (( props ) => {
                 </SingleColumnContainerView>
             </div>
             <If condition = { inventory.loading === false }>
-                <InventoryView
-                    key         = { controller.sortMode }
-                    inventory   = { controller.inventory }
-                    assetArray  = { controller.sortedAssets }
-                    layout      = { controller.layoutMode }
-                />
+                <Choose>
+                    <When condition = { isPrintLayout ( controller.layoutName )}>
+                        <InventoryPrintView
+                            key         = { controller.sortMode }
+                            inventory   = { controller.inventory }
+                            assetArray  = { controller.sortedAssets }
+                            layoutName  = { controller.layoutName }
+                        />
+                    </When>
+                    <Otherwise>
+                        <InventoryView
+                            key         = { controller.sortMode }
+                            inventory   = { controller.inventory }
+                            assetArray  = { controller.sortedAssets }
+                        />
+                    </Otherwise>
+                </Choose>
             </If>
         </div>
     );
