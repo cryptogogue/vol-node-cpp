@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { Service, useService }              from '../Service';
-import { TextFitter, JUSTIFY }              from '../util/TextFitter';
+import { TextFitter, FONT_FACE, JUSTIFY }   from '../util/textLayout';
 import handlebars                           from 'handlebars';
 import { action, computed, observable, }    from 'mobx';
 import { observer }                         from 'mobx-react';
@@ -15,78 +15,91 @@ const SVG_TEMPLATE = handlebars.compile ( `
         version="1.1"
         baseProfile="full"
         xmlns="http://www.w3.org/2000/svg"
-        width="200"
-        height="200"
-        viewBox="0 0 200 200"
+        width="{{ width }}"
+        height="{{ height }}"
+        viewBox="0 0 {{ width }} {{ height }}"
         preserveAspectRatio="none"
-        >
-        <rect width="100%" height="100%" fill="red" />
+    >
+        <rect width="100%" height="100%" fill="#7f7f7f" />
         {{{ text }}}
     </svg>
 `);
 
+const FONTS = {
+    roboto: {
+        [ FONT_FACE.REGULAR ]:      'http://localhost:3000/fonts/roboto/roboto-regular.ttf',
+        [ FONT_FACE.BOLD ]:         'http://localhost:3000/fonts/roboto/roboto-bold.ttf',
+        [ FONT_FACE.ITALIC ]:       'http://localhost:3000/fonts/roboto/roboto-regularitalic.ttf',
+        [ FONT_FACE.BOLD_ITALIC ]:  'http://localhost:3000/fonts/roboto/roboto-bolditalic.ttf',
+    },
+};
+
 //================================================================//
-// DebugOpentypeService
+// DebugTextFitterService
 //================================================================//
-class DebugOpentypeService extends Service {
+class DebugTextFitterService extends Service {
 
     @observable svg = '<svg/>';
 
     //----------------------------------------------------------------//
     constructor ( values ) {
         super ();
+        this.fetchFontFiles ();
     }
 
     //----------------------------------------------------------------//
-    @action
-    fetchFontFile ( url ) {
+    async fetchFontFiles () {
 
-        this.revocableFetch ( url )
-        .then (( response ) => {
-            response.arrayBuffer ()
-            .then (( buffer ) => {
-                let font = opentype.parse ( buffer );
-                this.testFont ( font );
-            });
-        })
-        .catch (( error ) => {
-            console.log ( error );
-        });
-    }
+        this.fonts = {};
 
-    //----------------------------------------------------------------//
-    @action
-    loadFontFile ( fontFile ) {
-
-        const reader = new FileReader ();
-
-        reader.onabort = () => { console.log ( 'file reading was aborted' )}
-        reader.onerror = () => { console.log ( 'file reading has failed' )}
-        reader.onload = () => {
-          let font = opentype.parse ( reader.result );
-          this.testFont ( font );
+        const fetchFont = async ( url ) => {
+            if ( !url ) return false;
+            const response  = await this.revocableFetch ( url );
+            const buffer    = await response.arrayBuffer ();
+            return opentype.parse ( buffer );
         }
 
-        reader.readAsArrayBuffer ( fontFile );
+        for ( let name in FONTS ) {
+
+            try {
+                const fontDesc = FONTS [ name ];
+                const faces = {};
+
+                for ( let face in fontDesc ) {
+                    const url = fontDesc [ face ];
+                    console.log ( 'FETCHING FONT', face, url );
+                    faces [ face ] = await fetchFont ( url );
+                }
+                this.fonts [ name ] = faces;
+            }
+            catch ( error ) {
+                console.log ( error );
+            }
+        }
+        this.testFonts ();
     }
 
     //----------------------------------------------------------------//
     @action
-    setSVG ( svg ) {
-        this.svg = svg;
-    }
+    testFonts () {
 
-    //----------------------------------------------------------------//
-    @action
-    testFont ( font ) {
+        const text0 = 'This <$#ff0000 1.25%>is<$> some really <$#ffffff i>really<$> <$0.5%>long text that should <$#00ffff b i>wrap<$> to the text <$0.75>box!';
+        const text1 = '<$0.25%>middle section middle section middle section middle section middle section';
+        const text2 = 'This <$#ff0000 1.25%>is<$> some really <$#ffffff>really<$> <$0.5%>long text that <$b>should<$> <$#00ffff>wrap<$> to the text <$0.75>box!';
 
-        const text = 'This is some really really long text that should wrap to the text box!';
+        let fitter = new TextFitter ( this.fonts, 0, 0, 200, 600, JUSTIFY.VERTICAL.TOP );
 
-        let fitter = new TextFitter ( font, 42, 0, 0, 200, 200, JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.TOP );
-        fitter.fitDynamic ( text );
-        console.log ( 'FITERATIONS:', fitter.fitIterations );
+        fitter.pushSection ( text0, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.pushSection ( text1, 'roboto', 42, JUSTIFY.HORIZONTAL.CENTER );
+        fitter.pushSection ( text2, 'roboto', 42, JUSTIFY.HORIZONTAL.RIGHT );
+        fitter.fit ( 0 );
+        console.log ( 'FITERATIONS:', fitter.fitIterations, fitter.fontScale );
 
-        this.setSVG ( SVG_TEMPLATE ({ text: fitter.toSVG ()}));
+        this.svg = SVG_TEMPLATE ({
+            text: fitter.toSVG (),
+            width: 200,
+            height: 600,
+        });
     }
 }
 
@@ -95,24 +108,10 @@ class DebugOpentypeService extends Service {
 //================================================================//
 export const DebugTextFitterScreen = observer (( props ) => {
 
-    const service = useService (() => new DebugOpentypeService ());
-
-    const onChange = ( event ) => {
-        const file = event.target.files.length > 0 ? event.target.files [ 0 ] : false;
-        if ( file ) {
-            service.loadFontFile ( file );
-        }
-    }
+    const service = useService (() => new DebugTextFitterService ());
 
     return (
         <div>
-            <label>Choose a font file:</label>
-            <input type = "file"
-                id = "font"
-                name = "font"
-                accept = ".ttf, .otf"
-                onChange = { onChange }
-            />
             <div dangerouslySetInnerHTML = {{ __html: service.svg }}/>
         </div>
     );

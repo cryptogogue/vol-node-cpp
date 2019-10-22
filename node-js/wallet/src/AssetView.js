@@ -2,7 +2,7 @@
 
 import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
 import { barcodeToSVG }             from './util/pdf417';
-import { fitText, JUSTIFY }         from './util/TextFitter';
+import { fitText, JUSTIFY }         from './util/textLayout';
 import handlebars                   from 'handlebars';
 import { observer }                 from 'mobx-react';
 import React                        from 'react';
@@ -15,7 +15,7 @@ export const AssetView = ( props ) => {
 
     const { inventory, assetId, inches } = props;
 
-    const layout        = inventory.assetLayouts [ assetId ];
+    const layout        = inventory.getAssetLayout ( assetId );
 
     const docX          = props.x || 0;
     const docY          = props.y || 0;

@@ -2,7 +2,7 @@
 
 import fs                       from 'fs';
 import { buildSchema, op }      from '../wallet/src/Schema/SchemaBuilder';
-import { JUSTIFY }              from '../wallet/src/util/TextFitter';
+import { JUSTIFY }              from '../wallet/src/util/textLayout';
 import * as util                from './util'
 
 //     //----------------------------------------------------------------//
@@ -60,6 +60,9 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
 
     //----------------------------------------------------------------//
     .font ( 'roboto', 'http://localhost:3000/fonts/roboto/roboto-regular.ttf' )
+        .bold ( 'http://localhost:3000/fonts/roboto/roboto-bold.ttf' )
+        .italic ( 'http://localhost:3000/fonts/roboto/roboto-regularitalic.ttf' )
+        .boldItalic ( 'http://localhost:3000/fonts/roboto/roboto-bolditalic.ttf' )
 
     //----------------------------------------------------------------//
     .layout ( 'dude', 750, 1050, 300 )
@@ -78,22 +81,31 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
             <image x='37.5' y='168.75' width='675' height='412.5' xlink:href='{{ image }}'/>
         `)
         // card name
-        .drawText ( '{{ name }}', 'roboto', 40, 48.875, 37.5, 534.375, 56.25 )
-            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
+        .drawTextBox ( 48.875, 37.5, 534.375, 56.25, JUSTIFY.VERTICAL.CENTER )
+            .drawText ( '{{ name }}', 'roboto', 40, JUSTIFY.HORIZONTAL.LEFT )
 
         // card type
-        .drawText ( '{{ type }}{{ subType }}', 'roboto', 30, 48.875, 93.75, 534.375, 37.5 )
-            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
+        .drawTextBox ( 48.875, 93.75, 534.375, 37.5, JUSTIFY.VERTICAL.CENTER )
+            .drawText ( '{{ type }}{{ subType }}', 'roboto', 30, JUSTIFY.HORIZONTAL.LEFT )
 
         // access
-        .drawText ( '{{ access }}', 'roboto', 30, 48.875, 131.25, 534.375, 37.5)
-            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.CENTER )
+        .drawTextBox ( 48.875, 131.25, 534.375, 37.5, JUSTIFY.VERTICAL.CENTER )
+            .drawText ( '{{ access }}', 'roboto', 30, JUSTIFY.HORIZONTAL.LEFT )
 
         // rules
-        .drawText ( '{{ rules }}', 'roboto', 40, 48.875, 592.625, 652.25, 296 )
-            .justify ( JUSTIFY.HORIZONTAL.LEFT, JUSTIFY.VERTICAL.TOP )
+        .drawTextBox ( 48.875, 592.625, 652.25, 296, JUSTIFY.VERTICAL.TOP  )
+            .drawText ( '{{ rules }}', 'roboto', 40, JUSTIFY.HORIZONTAL.LEFT )
 
-        .drawBarcode( '{{ $ }}', 37.5, 900, 675, 112.5 )
+        // default barcode is PDF417
+        //.drawBarcode ( '{{ $ }}', 37.5, 900, 675, 112.5 )
+        
+        // same as default, but explicit (better, clearer)
+        // .drawBarcodePDF417 ( '{{ $ }}', 37.5, 900, 675, 112.5 )
+
+        // QR code also supported
+        // defaults to 'L' and 0 (autoselect type)
+        // or specificy one of 'L', 'M', 'Q', 'H' and 0 (autoselect) or types 1-40
+        .drawBarcodeQR ( '{{ $ }}', 600, 900, 112.5 )
 
 const schema = util.parseVolitionXLSX ( schemaBuilder );
 

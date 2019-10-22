@@ -16,12 +16,15 @@ import { DebugBarcodePDF417Screen }     from './debug/DebugBarcodePDF417Screen';
 import { DebugBarcodeQRScreen }         from './debug/DebugBarcodeQRScreen';
 import { DebugCryptoKeyScreen }         from './debug/DebugCryptoKeyScreen';
 import { DebugDropzoneScreen }          from './debug/DebugDropzoneScreen';
+import { DebugFilePickerScreen }        from './debug/DebugFilePickerScreen';
 import { DebugHandlebarsScreen }        from './debug/DebugHandlebarsScreen';
+import { DebugInfiniteScrollScreen }    from './debug/DebugInfiniteScrollScreen';
 import { DebugMobXScreen }              from './debug/DebugMobXScreen';
 import { DebugPrintScreen }             from './debug/DebugPrintScreen';
 import { DebugSchemaScreen }            from './debug/DebugSchemaScreen';
 import { DebugStripeScreen }            from './debug/DebugStripeScreen';
 import { DebugTextFitterScreen }        from './debug/DebugTextFitterScreen';
+import { DebugTextStyleScreen }         from './debug/DebugTextStyleScreen';
 import { ImportAccountScreen }          from './ImportAccountScreen';
 import { InventoryScreen }              from './InventoryScreen';
 import { LoginScreen }                  from './LoginScreen';
@@ -74,12 +77,15 @@ const App = () => {
                 <Route exact path = "/debug/barcode/qr"         component = { DebugBarcodeQRScreen }/>
                 <Route exact path = "/debug/cryptokey"          component = { DebugCryptoKeyScreen }/>
                 <Route exact path = "/debug/dropzone"           component = { DebugDropzoneScreen }/>
+                <Route exact path = "/debug/filepicker"         component = { DebugFilePickerScreen }/>
                 <Route exact path = "/debug/handlebars"         component = { DebugHandlebarsScreen }/>
+                <Route exact path = "/debug/infinitescroll"     component = { DebugInfiniteScrollScreen }/>
                 <Route exact path = "/debug/mobx"               component = { DebugMobXScreen }/>
                 <Route exact path = "/debug/print"              component = { DebugPrintScreen }/>
                 <Route exact path = "/debug/schema"             component = { DebugSchemaScreen }/>
                 <Route exact path = "/debug/stripe"             component = { DebugStripeScreen }/>
                 <Route exact path = "/debug/textfitter"         component = { DebugTextFitterScreen }/>
+                <Route exact path = "/debug/textstyle"          component = { DebugTextStyleScreen }/>
 
                 <Route exact path = "/:userID/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>

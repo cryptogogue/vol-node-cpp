@@ -45,3 +45,7 @@
     flex-wrap: wrap;
     justify-content: center;
 }
+
+.AutoSizerWrapper {
+    height: 100vh;
+}

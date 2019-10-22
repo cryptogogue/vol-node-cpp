@@ -77,8 +77,10 @@
                     "name": "TEST_SCHEMA",
                     "fonts": {
                         "roboto": {
-                            "width": "roboto",
-                            "url": "http://localhost:3000/fonts/roboto/roboto-regular.ttf"
+                            "regular": "http://localhost:3000/fonts/roboto/roboto-regular.ttf",
+                            "bold": "http://localhost:3000/fonts/roboto/roboto-bold.ttf",
+                            "italic": "http://localhost:3000/fonts/roboto/roboto-regularitalic.ttf",
+                            "boldItalic": "http://localhost:3000/fonts/roboto/roboto-bolditalic.ttf"
                         }
                     },
                     "lua": "\nfunction main ( ledger, caller )\n    print ( 'publish schema', caller )\n    awardAsset ( ledger, caller, 'pack', 1 )\n    awardAsset ( ledger, caller, 'common', 2 )\n    awardAsset ( ledger, caller, 'rare', 2 )\n    awardAsset ( ledger, caller, 'ultraRare', 1 )\nend\n",
@@ -16799,64 +16801,81 @@
                                     "template": "\n            <rect x='0' y='0' width='750' height='1050' fill='#000000'/>\n            <rect x='37.5' y='37.5' width='675' height='975' fill='#ffffff'/>\n            <rect x='37.5' y='168.75' width='675' height='412.5' fill='#ff0000'/>\n            <rect x='37.5' y='900' width='675' height='112.5' fill='#ff0000'/>\n\n            <rect x='48.875' y='37.5' width='534.375' height='56.25' fill='none' stroke='gray'/>\n            <rect x='48.875' y='93.75' width='534.375' height='37.5' fill='none' stroke='gray'/>\n            <rect x='48.875' y='131.25' width='534.375' height='37.5' fill='none' stroke='gray'/>\n\n            <rect x='48.875' y='592.625' width='652.25' height='296' fill='none' stroke='gray'/>\n\n            <image x='37.5' y='168.75' width='675' height='412.5' xlink:href='{{ image }}'/>\n        "
                                 },
                                 {
-                                    "type": "DRAW_TEXT",
-                                    "template": "{{ name }}",
-                                    "fontName": "roboto",
-                                    "fontSize": 40,
+                                    "type": "DRAW_TEXT_BOX",
+                                    "segments": [
+                                        {
+                                            "template": "{{ name }}",
+                                            "fontName": "roboto",
+                                            "fontSize": 40,
+                                            "hJustify": "LEFT"
+                                        }
+                                    ],
                                     "x": 48.875,
                                     "y": 37.5,
                                     "width": 534.375,
                                     "height": 56.25,
-                                    "fill": "black",
-                                    "hJustify": "LEFT",
                                     "vJustify": "CENTER"
                                 },
                                 {
-                                    "type": "DRAW_TEXT",
-                                    "template": "{{ type }}{{ subType }}",
-                                    "fontName": "roboto",
-                                    "fontSize": 30,
+                                    "type": "DRAW_TEXT_BOX",
+                                    "segments": [
+                                        {
+                                            "template": "{{ type }}{{ subType }}",
+                                            "fontName": "roboto",
+                                            "fontSize": 30,
+                                            "hJustify": "LEFT"
+                                        }
+                                    ],
                                     "x": 48.875,
                                     "y": 93.75,
                                     "width": 534.375,
                                     "height": 37.5,
-                                    "fill": "black",
-                                    "hJustify": "LEFT",
                                     "vJustify": "CENTER"
                                 },
                                 {
-                                    "type": "DRAW_TEXT",
-                                    "template": "{{ access }}",
-                                    "fontName": "roboto",
-                                    "fontSize": 30,
+                                    "type": "DRAW_TEXT_BOX",
+                                    "segments": [
+                                        {
+                                            "template": "{{ access }}",
+                                            "fontName": "roboto",
+                                            "fontSize": 30,
+                                            "hJustify": "LEFT"
+                                        }
+                                    ],
                                     "x": 48.875,
                                     "y": 131.25,
                                     "width": 534.375,
                                     "height": 37.5,
-                                    "fill": "black",
-                                    "hJustify": "LEFT",
                                     "vJustify": "CENTER"
                                 },
                                 {
-                                    "type": "DRAW_TEXT",
-                                    "template": "{{ rules }}",
-                                    "fontName": "roboto",
-                                    "fontSize": 40,
+                                    "type": "DRAW_TEXT_BOX",
+                                    "segments": [
+                                        {
+                                            "template": "{{ rules }}",
+                                            "fontName": "roboto",
+                                            "fontSize": 40,
+                                            "hJustify": "LEFT"
+                                        }
+                                    ],
                                     "x": 48.875,
                                     "y": 592.625,
                                     "width": 652.25,
                                     "height": 296,
-                                    "fill": "black",
-                                    "hJustify": "LEFT",
                                     "vJustify": "TOP"
                                 },
                                 {
                                     "type": "DRAW_BARCODE",
                                     "template": "{{ $ }}",
-                                    "x": 37.5,
+                                    "x": 600,
                                     "y": 900,
-                                    "width": 675,
-                                    "height": 112.5
+                                    "width": 112.5,
+                                    "height": 112.5,
+                                    "codeType": "QR",
+                                    "options": {
+                                        "qrErr": "L",
+                                        "qrType": 0
+                                    }
                                 }
                             ]
                         }

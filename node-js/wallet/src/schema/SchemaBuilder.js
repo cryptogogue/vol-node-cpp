@@ -1,7 +1,10 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { assert }       from '../util/assert';
-import fs               from 'fs';
+import { assert }               from '../util/assert';
+import * as pdf417              from '../util/pdf417';
+import * as qrcode              from '../util/qrcode';
+import { FONT_FACE, JUSTIFY }   from '../util/textLayout';
+import fs                       from 'fs';
 
 const MUTABLE           = 'MUTABLE';
 const NUMBER            = 'NUMBER';
@@ -24,6 +27,7 @@ const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD      = 'SCHEMA_BUILDER_ADDING
 const SCHEMA_BUILDER_ADDING_DRAW_BARCODE                = 'SCHEMA_BUILDER_ADDING_DRAW_BARCODE';
 const SCHEMA_BUILDER_ADDING_DRAW_SVG                    = 'SCHEMA_BUILDER_ADDING_DRAW_SVG';
 const SCHEMA_BUILDER_ADDING_DRAW_TEXT                   = 'SCHEMA_BUILDER_ADDING_DRAW_TEXT';
+const SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX               = 'SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX';
 const SCHEMA_BUILDER_ADDING_FONT                        = 'SCHEMA_BUILDER_ADDING_FONT';
 const SCHEMA_BUILDER_ADDING_LAYOUT                      = 'SCHEMA_BUILDER_ADDING_LAYOUT';
 const SCHEMA_BUILDER_ADDING_METHOD                      = 'SCHEMA_BUILDER_ADDING_METHOD';
@@ -32,7 +36,7 @@ const SCHEMA_BUILDER_ADDING_SCHEMA                      = 'SCHEMA_BUILDER_ADDING
 export const LAYOUT_COMMAND = {
     DRAW_BARCODE:       'DRAW_BARCODE',
     DRAW_SVG:           'DRAW_SVG',
-    DRAW_TEXT:          'DRAW_TEXT',
+    DRAW_TEXT_BOX:      'DRAW_TEXT_BOX',
 };
 
 //----------------------------------------------------------------//
@@ -189,6 +193,22 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
+    bold ( url ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_FONT ));
+        this.top ()[ FONT_FACE.BOLD ] = url;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    boldItalic ( url ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_FONT ));
+        this.top ()[ FONT_FACE.BOLD_ITALIC ] = url;
+        return this;
+    }
+
+    //----------------------------------------------------------------//
     constArg ( name, qualifier ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_METHOD ));
@@ -253,7 +273,7 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    drawBarcode ( template, x, y, width, height, codeType ) {
+    drawBarcode ( template, x, y, width, height, codeType, options ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
 
@@ -266,7 +286,8 @@ class SchemaBuilder {
                 y:              y || 0,
                 width:          width || 0,
                 height:         height || 0,
-                codeType:       codeType,
+                codeType:       codeType || pdf417.CONSTS.ID,
+                options:        options || {},
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
@@ -277,12 +298,17 @@ class SchemaBuilder {
 
     //----------------------------------------------------------------//
     drawBarcodePDF417 ( template, x, y, width, height ) {
-        this.drawBarcode ( template, x, y, width, height, 'PDF417' );
+        return this.drawBarcode ( template, x, y, width, height, pdf417.CONSTS.ID );
     }
 
     //----------------------------------------------------------------//
-    drawBarcodeQR ( template, x, y, size ) {
-        this.drawBarcode ( template, x, y, size, size, 'QR' );
+    drawBarcodeQR ( template, x, y, size, qrErr, qrType ) {
+
+        const options = {
+            qrErr:      qrErr || qrcode.CONSTS.ERROR_LEVEL.LOW,
+            qrType:     qrType || qrcode.CONSTS.AUTOSELECT_TYPE,
+        };
+        return this.drawBarcode ( template, x, y, size, size, qrcode.CONSTS.ID, options );
     }
 
     //----------------------------------------------------------------//
@@ -304,22 +330,40 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    drawText ( template, fontName, fontSize, x, y, width, height ) {
+    drawText ( template, fontName, fontSize, hJustify ) {
 
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX ));
 
         this.push (
             SCHEMA_BUILDER_ADDING_DRAW_TEXT,
             {
-                type:           LAYOUT_COMMAND.DRAW_TEXT,
                 template:       template,
                 fontName:       fontName,
                 fontSize:       fontSize,
+                hJustify:       hJustify || JUSTIFY.HORIZONTAL.LEFT,
+            },
+            ( textBox, segment ) => {
+                textBox.segments.push ( segment );
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    drawTextBox ( x, y, width, height, vJustify ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX,
+            {
+                type:           LAYOUT_COMMAND.DRAW_TEXT_BOX,
+                segments:       [],
                 x:              x || 0,
                 y:              y || 0,
                 width:          width || 0,
                 height:         height || 0,
-                fill:           'black',
+                vJustify:       vJustify || JUSTIFY.VERTICAL.TOP,
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
@@ -362,8 +406,7 @@ class SchemaBuilder {
         this.push (
             SCHEMA_BUILDER_ADDING_FONT,
             {
-                width:      name,
-                url:        url,
+                [ FONT_FACE.REGULAR ]:  url,
             },
             ( schema, font ) => {
                 schema.fonts [ name ] = font;
@@ -373,12 +416,10 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    justify ( horizontal, vertical ) {
+    italic ( url ) {
 
-        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT ));
-        const top = this.top ();
-        top.hJustify = horizontal || false;
-        top.vJustify = vertical || false;
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_FONT ));
+        this.top ()[ FONT_FACE.ITALIC ] = url;
         return this;
     }
 

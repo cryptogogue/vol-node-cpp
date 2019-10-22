@@ -8,7 +8,9 @@ import { AppStateService }                                  from './AppStateServ
 import { Service, useService }                              from './Service';
 import { InventoryService }                                 from './InventoryService';
 import * as util                                            from './util/util';
-import { InventoryView, INVENTORY_LAYOUT, getInventoryLayoutFriendlyName } from './InventoryView';
+import { InventoryPrintView, PRINT_LAYOUT }                 from './InventoryPrintView';
+import { InventoryView }                                    from './InventoryView';
+import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
@@ -20,6 +22,49 @@ const SORT_MODE = {
     ALPHA_ATOZ:     'ALPHA_ATOZ',
     ALPHA_ZTOA:     'ALPHA_ZTOA',
 };
+
+const WEB_LAYOUT = 'WEB';
+
+const LAYOUT_DROPDOWN_OPTIONS = [
+    WEB_LAYOUT,
+    PRINT_LAYOUT.US_LETTER,
+    PRINT_LAYOUT.US_LEGAL,
+    PRINT_LAYOUT.US_LEDGER,
+    PRINT_LAYOUT.A4,
+    PRINT_LAYOUT.A3,
+];
+
+function getLayoutFriendlyName ( layoutName ) {
+    switch ( layoutName ) {
+        case WEB_LAYOUT:                return 'Web';
+        case PRINT_LAYOUT.US_LETTER:    return 'US Letter (8.5" x 11")';
+        case PRINT_LAYOUT.US_LEGAL:     return 'US Legal (14" x 8.5")';
+        case PRINT_LAYOUT.US_LEDGER:    return 'US Ledger (17" x 11")';
+        case PRINT_LAYOUT.A4:           return 'A4 (210mm x 297mm)';
+        case PRINT_LAYOUT.A3:           return 'A3 (420mm x 297mm)';
+        case PRINT_LAYOUT.A2:           return 'A2 (420mm x 594mm)';
+    }
+}
+
+function isPrintLayout ( layoutName ) {
+    return _.has ( PRINT_LAYOUT, layoutName );
+}
+
+const ZOOM_DROPDOWN_OPTIONS = [
+    0.25,
+    0.50,
+    0.75,
+    1.00,
+    1.25,
+    1.50,
+    2.00
+];
+
+const DEFAULT_SCALE = 0.75;
+
+function getZoomFriendlyName ( scale ) {
+    return `${ scale * 100 }%`;
+}
 
 //================================================================//
 // InventoryScreenController
@@ -42,8 +87,9 @@ class InventoryScreenController extends Service {
         this.inventory = inventory;
 
         extendObservable ( this, {
-            layoutMode:     INVENTORY_LAYOUT.WEB,
+            layoutName:     WEB_LAYOUT,
             sortMode:       SORT_MODE.ALPHA_ATOZ,
+            scale:          DEFAULT_SCALE,
         });
     }
 
@@ -58,9 +104,16 @@ class InventoryScreenController extends Service {
 
     //----------------------------------------------------------------//
     @action
-    setLayoutMode ( layoutMode ) {
+    setLayoutMode ( layoutName ) {
 
-        this.layoutMode = layoutMode;
+        this.layoutName = layoutName;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    setScale ( scale ) {
+
+        this.scale = scale;
     }
 
     //----------------------------------------------------------------//
@@ -77,6 +130,8 @@ class InventoryScreenController extends Service {
 const InventoryFilterMenu = observer (( props ) => {
 
     const { appState, controller } = props;
+
+    const printLayout = isPrintLayout ( controller.layoutName );
 
     const onSortItemClick = ( event, { name }) => {
         controller.setSortMode ( name );
@@ -97,23 +152,24 @@ const InventoryFilterMenu = observer (( props ) => {
         />);
     }
 
-    const layoutDropdown = [
-        INVENTORY_LAYOUT.WEB,
-        INVENTORY_LAYOUT.US_LETTER,
-        INVENTORY_LAYOUT.US_LEGAL,
-        INVENTORY_LAYOUT.US_LEDGER,
-        INVENTORY_LAYOUT.A4,
-        INVENTORY_LAYOUT.A3,
-    ];
-
     let layoutOptions = [];
-    for ( let i in layoutDropdown ) {
-        const layoutMode = layoutDropdown [ i ];
+    for ( let layoutName of LAYOUT_DROPDOWN_OPTIONS ) {
         layoutOptions.push (
             <Dropdown.Item
-                key         = { layoutMode }
-                text        = { getInventoryLayoutFriendlyName ( layoutMode )}
-                onClick     = {() => { controller.setLayoutMode ( layoutMode )}}
+                key         = { layoutName }
+                text        = { getLayoutFriendlyName ( layoutName )}
+                onClick     = {() => { controller.setLayoutMode ( layoutName )}}
+            />
+        );
+    }
+
+    let zoomOptions = [];
+    for ( let scale of ZOOM_DROPDOWN_OPTIONS ) {
+        zoomOptions.push (
+            <Dropdown.Item
+                key         = { scale }
+                text        = { getZoomFriendlyName ( scale )}
+                onClick     = {() => { controller.setScale ( scale )}}
             />
         );
     }
@@ -128,22 +184,36 @@ const InventoryFilterMenu = observer (( props ) => {
                 <Icon name = 'sort alphabet down'/>
             </Menu.Item>
             
-            <Menu.Item name = "Print" onClick = {() => { window.print ()}}>
-                <Icon name = 'print'/>
-            </Menu.Item>
-
-            <Dropdown item text = { getInventoryLayoutFriendlyName ( controller.layoutMode )}>
+            
+            <Dropdown item text = { getLayoutFriendlyName ( controller.layoutName )}>
                 <Dropdown.Menu>
                 { layoutOptions }
                 </Dropdown.Menu>
             </Dropdown>
 
-            <Menu.Menu position = "right">
-                <Dropdown item icon = "industry">
+            <If condition = { !printLayout }>
+                <Dropdown item text = { getZoomFriendlyName ( controller.scale )}>
                     <Dropdown.Menu>
-                        { methodListItems }
+                    { zoomOptions }
                     </Dropdown.Menu>
                 </Dropdown>
+            </If>
+
+            <Menu.Menu position = "right">
+
+                <If condition = { printLayout }>
+                    <Menu.Item name = "Print" onClick = {() => { window.print ()}}>
+                        <Icon name = 'print'/>
+                    </Menu.Item>
+                </If>
+
+                <If condition = { !printLayout }>
+                    <Dropdown item icon = "industry">
+                        <Dropdown.Menu>
+                            { methodListItems }
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </If>
             </Menu.Menu>
         </Menu>
     );
@@ -156,8 +226,9 @@ export const InventoryScreen = observer (( props ) => {
 
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
+    const [ progressMessage, setProgressMessage ] = useState ( '' );
     const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
-    const inventory     = useService (() => new InventoryService ( appState ));
+    const inventory     = useService (() => new InventoryService ( appState, setProgressMessage ));
     const controller    = useService (() => new InventoryScreenController ( inventory ));
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
@@ -169,26 +240,45 @@ export const InventoryScreen = observer (( props ) => {
     if ( inventory.loading === true ) {
         return (
             <div>
-                <Loader active inline='centered' size='massive' style={{marginTop:'5%'}}>Downloading Assets</Loader>
+                <Loader active inline='centered' size='massive' style={{marginTop:'5%'}}>{ progressMessage }</Loader>
             </div>
         );
     }
 
     return (
-        <div>
+        <div style = {{
+            display: 'flex',
+            flexFlow: 'column',
+            height: '100vh',
+        }}>
             <div className = "no-print">
                 <SingleColumnContainerView>
                     <NavigationBar navTitle = "Inventory" appState = { appState }/>
                     <InventoryFilterMenu appState = { appState } controller = { controller }/>
                 </SingleColumnContainerView>
             </div>
+
             <If condition = { inventory.loading === false }>
-                <InventoryView
-                    key         = { controller.sortMode }
-                    inventory   = { controller.inventory }
-                    assetArray  = { controller.sortedAssets }
-                    layout      = { controller.layoutMode }
-                />
+                <Choose>
+                    <When condition = { isPrintLayout ( controller.layoutName )}>
+                        <InventoryPrintView
+                            key         = { controller.sortMode }
+                            inventory   = { controller.inventory }
+                            assetArray  = { controller.sortedAssets }
+                            layoutName  = { controller.layoutName }
+                        />
+                    </When>
+                    <Otherwise>
+                        <div style = {{ flex: 1 }}>
+                            <InventoryView
+                                key         = { `${ controller.sortMode } ${ controller.scale }` }
+                                inventory   = { controller.inventory }
+                                assetArray  = { controller.sortedAssets }
+                                scale       = { controller.scale }
+                            />
+                        </div>
+                    </Otherwise>
+                </Choose>
             </If>
         </div>
     );

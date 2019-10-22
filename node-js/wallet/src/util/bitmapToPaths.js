@@ -62,8 +62,6 @@ export function bitmapToPaths ( sampler, width, height, onCommand ) {
     if ( typeof ( sampler ) !== 'function' ) return;
     if ( typeof ( onCommand ) !== 'function' ) return;
 
-    console.log ( 'bitmapToPaths' );
-
     const corners = [];
 
     const sample = ( x, y ) => {

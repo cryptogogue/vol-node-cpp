@@ -3,6 +3,17 @@
 import { bitmapToSVG, }         from './bitmapToPaths';
 import * as qrcode              from 'qrcode-generator';
 
+export const CONSTS = {
+    ID: 'QR',
+    ERROR_LEVEL: {
+        LOW:        'L',
+        MEDIUM:     'M',
+        QUARTILE:   'Q',
+        HIGH:       'H',
+    },
+    AUTOSELECT_TYPE: 0,
+};
+
 const QR_CAPACITY_ALPHANUMERIC = [];
 
 QR_CAPACITY_ALPHANUMERIC [ 1 ] = [ 25, 20, 16, 10, ];
@@ -56,7 +67,7 @@ const QR_ERR_TO_INDEX = {
 const QR_LEGAL_CHARS = /^[0-9A-Z$%*+-./ ]*$/;
 
 //================================================================//
-// dom
+// qrcode
 //================================================================//
 
 //----------------------------------------------------------------//
@@ -113,7 +124,6 @@ export function makeSVGTag ( data, xOff, yOff, width, height, qrErr, qrType ) {
         qr.make ();
 
         const moduleCount = qr.getModuleCount ();
-        console.log ( 'MODULE COUNT', moduleCount );
 
         const sampler = ( x, y ) => {
             return qr.isDark ( y, x );

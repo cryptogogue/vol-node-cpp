@@ -6,8 +6,8 @@ import { Service }                              from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { Binding }                              from './schema/Binding';
 import { Schema }                               from './schema/Schema';
-import { buildSchema, op }                      from './schema/SchemaBuilder';
-import { JUSTIFY }                              from './util/TextFitter';
+import { buildSchema, op, LAYOUT_COMMAND }      from './schema/SchemaBuilder';
+import { JUSTIFY }                              from './util/textLayout';
 import handlebars                               from 'handlebars';
 import _                                        from 'lodash';
 import * as opentype                            from 'opentype.js';
@@ -47,16 +47,20 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
-    constructor ( appState ) {
+    constructor ( appState, onProgress ) {
         super ();
 
         extendObservable ( this, {
             appState:   appState,
         });
 
+        this.onProgress = onProgress || (( message ) => { console.log ( message )});
         this.templates = {};
         this.layouts = {};
         this.fonts = {};
+
+        this.maxWidthInInches = 0;
+        this.maxHeightInInches = 0;
 
         if ( appState ) {
             this.fetchInventory ( appState.accountID, appState.node );
@@ -76,9 +80,11 @@ export class InventoryService extends Service {
         try {
             console.log ( 'FETCH INVENTORY', accountID, minerURL );
 
+            this.onProgress ( 'Fetching Schema' );
             const schemaJSON        = await this.revocableFetchJSON ( minerURL + '/schemas', null, 20000 );
             console.log ( schemaJSON );
 
+            this.onProgress ( 'Fetching Inventory' );
             const inventoryJSON     = await this.revocableFetchJSON ( minerURL + '/accounts/' + accountID + '/inventory', null, 20000 );
             console.log ( inventoryJSON );
 
@@ -98,6 +104,15 @@ export class InventoryService extends Service {
     @action
     finishLoading () {
         this.loading = false;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    getAssetLayout ( assetID ) {
+        if ( !_.has ( this.assetLayouts, assetID )) {
+            this.assetLayouts [ assetID ] = new AssetLayout ( this, assetID, [ 'EN', 'RGB' ]);
+        }
+        return this.assetLayouts [ assetID ];
     }
 
     //----------------------------------------------------------------//
@@ -148,11 +163,7 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     @action
     refreshAssetLayouts () {
-
         this.assetLayouts = {};
-        for ( let assetId in this.assets ) {
-            this.assetLayouts [ assetId ] = new AssetLayout ( this, assetId, [ 'EN', 'RGB' ]);
-        }
     }
 
     //----------------------------------------------------------------//
@@ -181,30 +192,59 @@ export class InventoryService extends Service {
     //----------------------------------------------------------------//
     async update ( templates, assets ) {
 
+        const fetchFont = async ( url ) => {
+            if ( !url ) return false;
+            const response  = await this.revocableFetch ( url );
+            const buffer    = await response.arrayBuffer ();
+            return opentype.parse ( buffer );
+        }
+
         let schema = new Schema ();
 
-        for ( let template of templates ) {
+        this.maxWidthInInches = 0;
+        this.maxHeightInInches = 0;
 
+        for ( let template of templates ) {
+            this.onProgress ( 'Applying Template' );
             await schema.applyTemplate ( template );
 
+            this.onProgress ( 'Compiling Layouts' );
             for ( let layoutName in template.layouts ) {
+                
                 const layout = _.cloneDeep ( template.layouts [ layoutName ]);
+
+                const widthInInches = layout.width / layout.dpi;
+                const heightInInches = layout.height / layout.dpi;
+
+                this.maxWidthInInches = ( this.maxWidthInInches > widthInInches ) ? this.maxWidthInInches : widthInInches;
+                this.maxHeightInInches = ( this.maxHeightInInches > heightInInches ) ? this.maxHeightInInches : heightInInches;
+
                 for ( let command of layout.commands ) {
-                    command.template = handlebars.compile ( command.template );
+                    if ( command.type === LAYOUT_COMMAND.DRAW_TEXT_BOX ) {
+                        for ( let segment of command.segments ) {
+                            segment.template = handlebars.compile ( segment.template );
+                        }
+                    }
+                    else {
+                        command.template = handlebars.compile ( command.template );
+                    }
                 }
                 this.layouts [ layoutName ] = layout;
             }
 
+            this.onProgress ( 'Fetching Fonts' );
             for ( let name in template.fonts ) {
 
                 try {
-                    const url = template.fonts [ name ].url;
+                    const fontDesc = template.fonts [ name ];
+                    const faces = {};
 
-                    console.log ( 'FETCHING FONT:', name, url );
-
-                    const response  = await this.revocableFetch ( url );
-                    const buffer    = await response.arrayBuffer ();
-                    this.fonts [ name ] = opentype.parse ( buffer );
+                    for ( let face in fontDesc ) {
+                        const url = fontDesc [ face ];
+                        console.log ( 'FETCHING FONT', name, face, url );
+                        faces [ face ] = await fetchFont ( url );
+                    }
+                    this.fonts [ name ] = faces;
                 }
                 catch ( error ) {
                     console.log ( error );
@@ -231,6 +271,7 @@ export class InventoryService extends Service {
             }
         }
 
+        this.onProgress ( 'Refreshing Binding' );
         this.refreshBinding ( schema, assetsWithLayouts );
         this.refreshAssetLayouts ();
         this.finishLoading ();
