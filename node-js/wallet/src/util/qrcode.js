@@ -124,7 +124,6 @@ export function makeSVGTag ( data, xOff, yOff, width, height, qrErr, qrType ) {
         qr.make ();
 
         const moduleCount = qr.getModuleCount ();
-        console.log ( 'MODULE COUNT', moduleCount );
 
         const sampler = ( x, y ) => {
             return qr.isDark ( y, x );
