@@ -227,7 +227,7 @@ export const InventoryView = observer (( props ) => {
                 <Card
                     key = { asset.assetID }
                     style = {{ border: `2px solid ${ color }` }}
-                    onClick = {() => { onclickCard ( asset )}}
+                    onClick = {() => { onClickCard ( asset )}}
                 >
                     <AssetView
                         assetId = { asset.assetID }
