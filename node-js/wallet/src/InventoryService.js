@@ -219,14 +219,18 @@ export class InventoryService extends Service {
                 this.maxWidthInInches = ( this.maxWidthInInches > widthInInches ) ? this.maxWidthInInches : widthInInches;
                 this.maxHeightInInches = ( this.maxHeightInInches > heightInInches ) ? this.maxHeightInInches : heightInInches;
 
+                const compileOptions = {
+                    noEscape: true,
+                }
+
                 for ( let command of layout.commands ) {
                     if ( command.type === LAYOUT_COMMAND.DRAW_TEXT_BOX ) {
                         for ( let segment of command.segments ) {
-                            segment.template = handlebars.compile ( segment.template );
+                            segment.template = handlebars.compile ( segment.template, compileOptions );
                         }
                     }
                     else {
-                        command.template = handlebars.compile ( command.template );
+                        command.template = handlebars.compile ( command.template, compileOptions );
                     }
                 }
                 this.layouts [ layoutName ] = layout;
