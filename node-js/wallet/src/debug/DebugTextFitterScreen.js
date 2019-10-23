@@ -10,7 +10,7 @@ import React                                from 'react';
 
 // https://malcoded.com/posts/react-file-upload/
 
-const SVG_TEMPLATE = handlebars.compile ( `
+const SVG_TEMPLATE = handlebars.compile (`
     <svg
         version="1.1"
         baseProfile="full"
@@ -24,6 +24,16 @@ const SVG_TEMPLATE = handlebars.compile ( `
         {{{ text }}}
     </svg>
 `);
+
+const SVG_CIRCLE_ICON = {
+    svg:    `<circle cx = '0.5' cy = '0.5' r = '0.5'/>`,
+    width:  1,
+};
+
+const SVG_TRIANGLE_ICON = {
+    svg:    `<polygon points = '0,1 1,1 0.5,0'/>`,
+    width:  1,
+};
 
 const FONTS = {
     roboto: {
@@ -45,12 +55,17 @@ class DebugTextFitterService extends Service {
     constructor ( values ) {
         super ();
         this.fetchFontFiles ();
+        this.resources = {
+            fonts: {},
+            icons: {
+                circle: SVG_CIRCLE_ICON,
+                triangle: SVG_TRIANGLE_ICON,
+            },
+        }
     }
 
     //----------------------------------------------------------------//
     async fetchFontFiles () {
-
-        this.fonts = {};
 
         const fetchFont = async ( url ) => {
             if ( !url ) return false;
@@ -70,7 +85,7 @@ class DebugTextFitterService extends Service {
                     console.log ( 'FETCHING FONT', face, url );
                     faces [ face ] = await fetchFont ( url );
                 }
-                this.fonts [ name ] = faces;
+                this.resources.fonts [ name ] = faces;
             }
             catch ( error ) {
                 console.log ( error );
@@ -81,7 +96,14 @@ class DebugTextFitterService extends Service {
 
     //----------------------------------------------------------------//
     @action
-    pushSVG ( svg ) {
+    pushSVG ( svg, width, height ) {
+
+        svg = SVG_TEMPLATE ({
+            text: svg,
+            width: width,
+            height: height,
+        });
+
         this.svg.push (
             <div
                 key = { this.svg.length }
@@ -98,7 +120,7 @@ class DebugTextFitterService extends Service {
         const text1 = '<$0.25%>middle section middle section middle section middle section middle section';
         const text2 = 'This <$#ff0000 1.25%>is<$> some <$#0000003e>really<$> <$#ffffff>really<$> <$0.5%>long text that <$b>should<$> <$#00ffff>wrap<$> to the text <$0.75>box!';
 
-        let fitter = new TextFitter ( this.fonts, 0, 0, 200, 600, JUSTIFY.VERTICAL.TOP );
+        let fitter = new TextFitter ( this.resources, 0, 0, 200, 600, JUSTIFY.VERTICAL.TOP );
 
         fitter.pushSection ( text0, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
         fitter.pushSection ( text1, 'roboto', 42, JUSTIFY.HORIZONTAL.CENTER );
@@ -106,23 +128,31 @@ class DebugTextFitterService extends Service {
         fitter.fit ( 0 );
         console.log ( 'FITERATIONS:', fitter.fitIterations, fitter.fontScale );
 
-        this.pushSVG ( SVG_TEMPLATE ({
-            text: fitter.toSVG (),
-            width: 200,
-            height: 600,
-        }));
+        this.pushSVG ( fitter.toSVG (), 200, 600 );
 
-        const text4 = '\tThis is\nhow we test    test\ntext with\n   new lines\n and\n \twhitespace.';
+        const text3 = '\tThis is\nhow we test    test\ntext with\n   new lines\n and\n \twhitespace.';
 
-        fitter = new TextFitter ( this.fonts, 0, 0, 128, 160, JUSTIFY.VERTICAL.TOP );
-        fitter.pushSection ( text4, 'roboto', 24, JUSTIFY.HORIZONTAL.LEFT );
+        fitter = new TextFitter ( this.resources, 0, 0, 128, 160, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text3, 'roboto', 24, JUSTIFY.HORIZONTAL.LEFT );
         fitter.fit ();
 
-        this.pushSVG ( SVG_TEMPLATE ({
-            text: fitter.toSVG (),
-            width: 128,
-            height: 160,
-        }));
+        this.pushSVG ( fitter.toSVG (), 128, 160 );
+
+        const text4 = 'Test <$i>escaping<$> <$$>style<@@> blocks.';
+
+        fitter = new TextFitter ( this.resources, 0, 0, 600, 50, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text4, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.fit ();
+
+        this.pushSVG ( fitter.toSVG (), 600, 50 );
+
+        const text5 = 'This is a <@triangle circle triangle> test of inline ic<@circle>ns.';
+
+        fitter = new TextFitter ( this.resources, 0, 0, 600, 50, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text5, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.fit ();
+
+        this.pushSVG ( fitter.toSVG (), 600, 50 );
     }
 }
 

@@ -7,7 +7,7 @@ import _                            from 'lodash';
 const COLOR_REGEX           = /#[0-9a-fA-F]+/;
 const FONT_SCALE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)%/;
 const POINT_SIZE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)p/;
-const STYLE_COMMAND_REGEX   = /<\$.*?>/;
+const STYLE_COMMAND_REGEX   = /<.*?>/;
 const WS_REGEX              = /\s+/;
 
 //================================================================//
@@ -61,20 +61,63 @@ export function parse ( text, baseStyle ) {
             index = result.index;
             next = index + match.length;
 
-            if ( match.charAt ( 2 ) === '$' ) {
+            const skip = () => {
                 buffer += text.slice ( 0, index + 1 ) + text.slice ( index + 2, next );
             }
-            else {
-                
+
+            const fold = () => {
+                buffer += text.slice ( index, next );
+            }
+
+            const flush = () => {
                 buffer += text.slice ( 0, index );
+            }
 
-                const style = parseStyle ( match.slice ( 2, match.length - 1 ).split ( WS_REGEX ));
+            const slice = () => {
+                return match.slice ( 2, match.length - 1 ).split ( WS_REGEX );
+            }
 
-                if ( style ) {
-                    pushStyle ( style );
+            switch ( match.charAt ( 1 )) {
+
+                case '@': {
+                    
+                    if ( match.charAt ( 2 ) === '@' ) {
+                        skip ();
+                        break;
+                    }
+
+                    flush ();
+                    const iconNames = slice ();
+
+                    for ( let iconName of iconNames ) {
+                        pushStyle ({ icon: iconName });
+                        buffer += '#';
+                        popStyle ();
+                    }
+                    break;
                 }
-                else {
-                    popStyle ();
+
+                case '$': {
+
+                    if ( match.charAt ( 2 ) === '$' ) {
+                        skip ();
+                        break;
+                    }
+
+                    flush ();
+                    const style = parseStyle ( slice ());
+
+                    if ( style ) {
+                        pushStyle ( style );
+                    }
+                    else {
+                        popStyle ();
+                    }
+                    break;
+                }
+
+                default: {
+                    fold ();
                 }
             }
         }

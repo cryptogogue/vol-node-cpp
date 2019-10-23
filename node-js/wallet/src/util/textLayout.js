@@ -7,6 +7,11 @@ import * as util                from './util';
 import _                        from 'lodash';
 import * as opentype            from 'opentype.js';
 
+const SVG_CIRCLE_ICON = {
+    svg:    `<rect x = '0' y = '0' width = '1' height = '1'/>`,
+    width:  1,
+};
+
 const WHITESPACE_CHAR_CODES = [
     ' '.charCodeAt ( 0 ),
     '\t'.charCodeAt ( 0 ),
@@ -35,7 +40,7 @@ export const JUSTIFY = {
     },
 }
 
-const DEFAULT_MIN_SCALE_STEP        = 0.01;
+const DEFAULT_MIN_SCALE_STEP = 0.01;
 
 const OPENTYPE_OPTIONS = {
     kerning:    true,
@@ -60,6 +65,9 @@ class TextLine {
     //----------------------------------------------------------------//
     append ( tokenChars, context ) {
 
+        const fonts = context.fonts;
+        const icons = context.icons;
+
         this.tokenChars = this.tokenChars.concat ( tokenChars );
 
         let style       = false;
@@ -72,7 +80,7 @@ class TextLine {
 
         const pushSegment = () => {
 
-            const faces = context.fonts [ style.font ];
+            const faces = fonts [ style.font ];
             if ( !faces ) return;
 
             let font = false;
@@ -90,7 +98,34 @@ class TextLine {
             font = font || faces [ FONT_FACE.REGULAR ];
             if ( !font ) return;
 
-            const size      = style.size * style.scale * ( context.fontScale || 1 );
+            const size = style.size * style.scale * ( context.fontScale || 1 );
+
+            const ascender  = ( font.ascender / font.unitsPerEm ) * size;
+            const descender  = -( font.descender / font.unitsPerEm ) * size;
+
+            this.ascender = util.greater ( this.ascender, ascender );
+            this.descender = util.greater ( this.descender, descender );
+
+            if ( style.icon ) {
+
+                const icon = icons [ style.icon ] || DEFAULT_ICON_SVG;
+
+                const width = ascender * ( icon.width || 1 );
+                const height = ascender;  
+
+                const x = xOff;
+                const y = -height;
+
+                this.segments.push ({
+                    svg:        `<g transform='translate ( ${ x }, ${ y }) scale ( ${ height })'>${ icon.svg }</g>`,
+                    style:      style,
+                });
+
+                this.bounds = rect.grow ( this.bounds, rect.make ( x, y, x + width, y + height ));
+                xOff += width;
+                return;
+            }
+
             const advance   = font.getAdvanceWidth ( buffer, size, OPENTYPE_OPTIONS );
             const path      = font.getPath ( buffer, xOff, 0, size, OPENTYPE_OPTIONS );
             let bb          = path.getBoundingBox ();
@@ -99,18 +134,9 @@ class TextLine {
             this.segments.push ({
                 path:       path,
                 style:      style,
-                font:       font,
-                bounds:     bb,
             });
 
             this.bounds = rect.grow ( this.bounds, bb );
-            
-            const ascender  = ( font.ascender / font.unitsPerEm ) * size;
-            const descender  = -( font.descender / font.unitsPerEm ) * size;
-
-            this.ascender = util.greater ( this.ascender, ascender );
-            this.descender = util.greater ( this.descender, descender );
-
             xOff += advance;
         }
 
@@ -179,7 +205,7 @@ class TextLine {
             const hexColor = color.toHexRGB ( style.color );
             const opacity = style.color.a || 1;
 
-            paths.push ( `<g fill='${ hexColor }' opacity='${ opacity }'>${ segment.path.toSVG ()}</g>` );
+            paths.push ( `<g fill='${ hexColor }' opacity='${ opacity }'>${ segment.svg || segment.path.toSVG ()}</g>` );
         }
         paths.push ( '</g>' );
         
@@ -194,10 +220,11 @@ class TextLine {
 export class TextBox {
 
     //----------------------------------------------------------------//
-    constructor ( text, fonts, fontName, fontSize, x, y, width, height, hJustify, vJustify ) {
+    constructor ( text, resources, fontName, fontSize, x, y, width, height, hJustify, vJustify ) {
 
         this.text           = text;
-        this.fonts          = fonts,
+        this.fonts          = resources.fonts;
+        this.icons          = resources.icons;
 
         this.bounds = rect.make (
             x,
@@ -346,7 +373,7 @@ export class TextBox {
             // expand tabs
             let expanded = [];
             for ( let i in token ) {
-                
+
                 const item = token [ i ];
                 if ( item.char.charCodeAt ( 0 ) === TAB ) {
 
