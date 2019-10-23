@@ -94,7 +94,7 @@ class TextLine {
             const advance   = font.getAdvanceWidth ( buffer, size, OPENTYPE_OPTIONS );
             const path      = font.getPath ( buffer, xOff, 0, size, OPENTYPE_OPTIONS );
             let bb          = path.getBoundingBox ();
-            bb              = rect.make ( bb.x1, bb.y1, bb.x2, bb.y2 );
+            bb              = rect.make ( xOff, bb.y1, xOff + advance, bb.y2 );
 
             this.segments.push ({
                 path:       path,
@@ -236,13 +236,19 @@ export class TextBox {
         for ( let i = 0; i <= length; ++i ) {
 
             const charCode = i < length ? this.styledText [ i ].char.charCodeAt ( 0 ) : 0;
+            const isNewline = ( charCode === '\n'.charCodeAt ( 0 ));
 
-            if ( WHITESPACE_CHAR_CODES.includes ( charCode )) {
+            if ( isNewline || WHITESPACE_CHAR_CODES.includes ( charCode )) {
 
                 if ( inToken ) {
                     this.pushToken ( this.styledText.slice ( tokenStart, i ));
                     inToken = false;
                     tokenStart = i;
+                }
+
+                if ( isNewline ) {
+                    this.lines.push ( new TextLine ());
+                    tokenStart++;
                 }
             }
             else {
@@ -314,7 +320,7 @@ export class TextBox {
     }
 
     //----------------------------------------------------------------//
-    pushToken ( token ) {
+    pushToken ( token, trimWhitespace ) {
 
         if ( this.lines.length === 0 ) {
             this.lines = [ new TextLine ()];
@@ -324,7 +330,7 @@ export class TextBox {
         const snapshot = line.makeSnapshot ();
         const isNewLine = ( snapshot.length === 0 );
 
-        if ( isNewLine ) {
+        if ( trimWhitespace ) {
             for ( let i = 0; i < token.length; ++i ) {
                 const charCode = token [ i ].char.charCodeAt ( 0 );
                 if ( WHITESPACE_CHAR_CODES.includes ( charCode ) === false ) {
@@ -332,6 +338,32 @@ export class TextBox {
                     break;
                 }
             }
+        }
+        else {
+
+            const TAB = '\t'.charCodeAt ( 0 );
+
+            // expand tabs
+            let expanded = [];
+            for ( let i in token ) {
+                
+                const item = token [ i ];
+                if ( item.char.charCodeAt ( 0 ) === TAB ) {
+
+                    const pad = 4 - (( snapshot.length + i ) % 4 );
+
+                    for ( let i = 0; i < pad; ++i ) {
+                        expanded.push ({
+                            char: ' ',
+                            style: item.style,
+                        });
+                    }
+                }
+                else {
+                    expanded.push ( item );
+                }
+            }
+            token = expanded;
         }
 
         if ( token.length === 0 ) return;
@@ -345,7 +377,7 @@ export class TextBox {
         if ( over && ( isNewLine === false )) {
             line.restoreFromSnapshot ( snapshot );
             this.lines.push ( new TextLine ());
-            this.pushToken ( token );
+            this.pushToken ( token, true );
         }
     }
 

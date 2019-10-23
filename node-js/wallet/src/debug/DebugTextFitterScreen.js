@@ -39,7 +39,7 @@ const FONTS = {
 //================================================================//
 class DebugTextFitterService extends Service {
 
-    @observable svg = '<svg/>';
+    @observable svg = [ '<svg/>' ];
 
     //----------------------------------------------------------------//
     constructor ( values ) {
@@ -81,6 +81,17 @@ class DebugTextFitterService extends Service {
 
     //----------------------------------------------------------------//
     @action
+    pushSVG ( svg ) {
+        this.svg.push (
+            <div
+                key = { this.svg.length }
+                dangerouslySetInnerHTML = {{ __html: svg }}
+            />
+        );
+    }
+
+    //----------------------------------------------------------------//
+    @action
     testFonts () {
 
         const text0 = 'This <$#ff0000 1.25%>is<$> some really <$#ffffff i>really<$> <$0.5%>long text that should <$#00ffff b i>wrap<$> to the text <$0.75>box!';
@@ -95,11 +106,23 @@ class DebugTextFitterService extends Service {
         fitter.fit ( 0 );
         console.log ( 'FITERATIONS:', fitter.fitIterations, fitter.fontScale );
 
-        this.svg = SVG_TEMPLATE ({
+        this.pushSVG ( SVG_TEMPLATE ({
             text: fitter.toSVG (),
             width: 200,
             height: 600,
-        });
+        }));
+
+        const text4 = '\tThis is\nhow we test    test\ntext with\n   new lines\n and\n \twhitespace.';
+
+        fitter = new TextFitter ( this.fonts, 0, 0, 128, 160, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text4, 'roboto', 24, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.fit ();
+
+        this.pushSVG ( SVG_TEMPLATE ({
+            text: fitter.toSVG (),
+            width: 128,
+            height: 160,
+        }));
     }
 }
 
@@ -112,7 +135,7 @@ export const DebugTextFitterScreen = observer (( props ) => {
 
     return (
         <div>
-            <div dangerouslySetInnerHTML = {{ __html: service.svg }}/>
+            { service.svg }
         </div>
     );
 });
