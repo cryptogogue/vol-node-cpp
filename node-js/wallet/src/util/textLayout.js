@@ -177,8 +177,9 @@ class TextLine {
         for ( let segment of this.segments ) {
             const style = segment.style;
             const hexColor = color.toHexRGB ( style.color );
+            const opacity = style.color.a || 1;
 
-            paths.push ( `<g fill='${ hexColor }'>${ segment.path.toSVG ()}</g>` );
+            paths.push ( `<g fill='${ hexColor }' opacity='${ opacity }'>${ segment.path.toSVG ()}</g>` );
         }
         paths.push ( '</g>' );
         

@@ -85,7 +85,7 @@ class DebugTextFitterService extends Service {
 
         const text0 = 'This <$#ff0000 1.25%>is<$> some really <$#ffffff i>really<$> <$0.5%>long text that should <$#00ffff b i>wrap<$> to the text <$0.75>box!';
         const text1 = '<$0.25%>middle section middle section middle section middle section middle section';
-        const text2 = 'This <$#ff0000 1.25%>is<$> some really <$#ffffff>really<$> <$0.5%>long text that <$b>should<$> <$#00ffff>wrap<$> to the text <$0.75>box!';
+        const text2 = 'This <$#ff0000 1.25%>is<$> some <$#0000003e>really<$> <$#ffffff>really<$> <$0.5%>long text that <$b>should<$> <$#00ffff>wrap<$> to the text <$0.75>box!';
 
         let fitter = new TextFitter ( this.fonts, 0, 0, 200, 600, JUSTIFY.VERTICAL.TOP );
 
