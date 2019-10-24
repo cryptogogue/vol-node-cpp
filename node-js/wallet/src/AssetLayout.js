@@ -24,17 +24,17 @@ export class AssetLayout {
         };
 
         let items = [];
-        items.push ( `<g>` );
 
         for ( let i in layout.commands ) {
             
             const command = layout.commands [ i ];
             
-
             const x = command.x || 0;
             const y = command.y || 0;
             const w = command.width || 0;
             const h = command.height || 0;
+
+            let svg = false;
 
             switch ( command.type ) {
 
@@ -71,21 +71,16 @@ export class AssetLayout {
                         }
                     }
 
-                    items.push (`
-                        <g>
-                            <rect x = ${ x } y = ${ y } width = ${ w } height = ${ h } fill = 'white'/>
-                            ${ svgTag }
-                        </g>
-                    `);
+                    svg = `
+                        <rect x = ${ x } y = ${ y } width = ${ w } height = ${ h } fill = 'white'/>
+                        ${ svgTag }
+                    `;
                     break;
                 }
 
                 case LAYOUT_COMMAND.DRAW_SVG: {
 
-                    const value = command.template && command.template ( context ) || null;
-                    if ( !value ) break;
-
-                    items.push ( `<g>${ value }</g>` );
+                    svg = command.template && command.template ( context ) || false;
                     break;
                 }
 
@@ -101,19 +96,24 @@ export class AssetLayout {
                         fitter.pushSection ( value, segment.fontName, segment.fontSize, segment.hJustify );
                     }
                     fitter.fit ();
-                    items.push ( `<g>${ fitter.toSVG ()}</g>` );
+                    svg = fitter.toSVG ();
                     break;
                 }
             }
+
+            if ( svg ) {
+                svg = command.wrap ? command.wrap ({ body: svg }) : `<g>${ svg }</g>`;
+                items.push ( svg );
+            }
         }
 
-        items.push ( `</g>` );
+        const svg = items.join ( '' );
 
         this.width      = layout.width;
         this.height     = layout.height;
         this.dpi        = layout.dpi;
 
         this.context    = context;
-        this.svg        = items.join ( '' );
+        this.svg        = layout.wrap ? layout.wrap ({ body: svg }) : `<g>${ svg }</g>`;
     }
 }

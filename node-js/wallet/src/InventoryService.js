@@ -233,7 +233,9 @@ export class InventoryService extends Service {
                     else {
                         command.template = handlebars.compile ( command.template, COMPILE_OPTIONS );
                     }
+                    command.wrap = command.wrap && handlebars.compile ( command.wrap, COMPILE_OPTIONS );
                 }
+                layout.wrap = layout.wrap && handlebars.compile ( layout.wrap, COMPILE_OPTIONS );
                 this.layouts [ layoutName ] = layout;
             }
 

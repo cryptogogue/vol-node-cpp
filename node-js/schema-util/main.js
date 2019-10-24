@@ -75,7 +75,8 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
     `)
 
     //----------------------------------------------------------------//
-    .layout ( 'dude', 750, 1050, 300 )
+    .layout ( 'dude', 750, 1050, 300, '<g>{{ body }}</g>' ) // the last param is an optional SVG wrapper (for transforms)
+
         .drawSVG (`
             <rect x='0' y='0' width='750' height='1050' fill='#000000'/>
             <rect x='37.5' y='37.5' width='675' height='975' fill='#ffffff'/>
@@ -105,6 +106,9 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
         // rules
         .drawTextBox ( 48.875, 592.625, 652.25, 296, JUSTIFY.VERTICAL.TOP  )
             .drawText ( '{{ rules }}', 'roboto', 40, JUSTIFY.HORIZONTAL.LEFT )
+
+        // the 'wrapSVG' command can be used on drawTextBox and drawBarcode to wrap the command output
+        //    .wrapSVG ( '<g transform = "translate ( 48.875 592.625 ) rotate ( 45 )">{{ body }}</g>' )
 
         // default barcode is PDF417
         //.drawBarcode ( '{{ $ }}', 37.5, 900, 675, 112.5 )

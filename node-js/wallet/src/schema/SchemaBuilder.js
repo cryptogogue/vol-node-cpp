@@ -289,6 +289,7 @@ class SchemaBuilder {
                 height:         height || 0,
                 codeType:       codeType || pdf417.CONSTS.ID,
                 options:        options || {},
+                wrap:           false,
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
@@ -365,6 +366,7 @@ class SchemaBuilder {
                 width:          width || 0,
                 height:         height || 0,
                 vJustify:       vJustify || JUSTIFY.VERTICAL.TOP,
+                wrap:           false,
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
@@ -443,7 +445,7 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    layout ( name, width, height, dpi ) {
+    layout ( name, width, height, dpi, wrap ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
 
@@ -454,6 +456,7 @@ class SchemaBuilder {
                 height:         height || 0,
                 dpi:            dpi || 300,
                 commands:       [],
+                wrap:           wrap || false,
             },
             ( schema, layout ) => {
                 schema.layouts [ name ] = layout;
@@ -600,6 +603,17 @@ class SchemaBuilder {
     //----------------------------------------------------------------//
     top () {
         return this.stack [ this.stack.length - 1 ].container;
+    }
+
+    //----------------------------------------------------------------//
+    wrapSVG ( template ) {
+
+        assert (
+            this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_BARCODE ) ||
+            this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX )
+        );
+        this.top ().wrap = template;
+        return this;
     }
 }
 

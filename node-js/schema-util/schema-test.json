@@ -135,11 +135,12 @@
                             "hJustify": "LEFT"
                         }
                     ],
-                    "x": 48.875,
-                    "y": 592.625,
+                    "x": 0,
+                    "y": 0,
                     "width": 652.25,
                     "height": 296,
-                    "vJustify": "TOP"
+                    "vJustify": "TOP",
+                    "wrap": "<g transform = \"translate ( 48.875 592.625 ) rotate ( 45 )\">{{ body }}</g>"
                 },
                 {
                     "type": "DRAW_BARCODE",
@@ -154,7 +155,8 @@
                         "qrType": 0
                     }
                 }
-            ]
+            ],
+            "wrap": "<g transform = \"rotate ( 5 )\">{{ body }}</g>"
         }
     },
     "meta": "",
