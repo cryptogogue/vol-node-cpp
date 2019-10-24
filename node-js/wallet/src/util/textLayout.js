@@ -428,9 +428,9 @@ export class TextBox {
 export class TextFitter {
 
     //----------------------------------------------------------------//
-    constructor ( fonts, x, y, width, height, vJustify ) {
+    constructor ( resources, x, y, width, height, vJustify ) {
 
-        this.fonts = fonts;
+        this.resources = resources;
 
         this.bounds = rect.make (
             x,
@@ -517,7 +517,7 @@ export class TextFitter {
         this.sections.push (
             new TextBox (
                 text,
-                this.fonts,
+                this.resources,
                 fontName,
                 fontSize,
                 this.bounds.x0,

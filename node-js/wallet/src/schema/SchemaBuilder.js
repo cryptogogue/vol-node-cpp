@@ -235,6 +235,7 @@ class SchemaBuilder {
         this.schema = {
             name:               name,
             fonts:              {},
+            icons:              {},
             lua:                '',
             definitions:        {},
             layouts:            {},
@@ -410,6 +411,24 @@ class SchemaBuilder {
             },
             ( schema, font ) => {
                 schema.fonts [ name ] = font;
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
+    icon ( name, template, width ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_FONT,
+            {
+                svg:    template,
+                width:  width || 1,
+            },
+            ( schema, icon ) => {
+                schema.icons [ name ] = icon;
             }
         );
         return this;

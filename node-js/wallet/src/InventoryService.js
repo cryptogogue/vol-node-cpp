@@ -58,6 +58,7 @@ export class InventoryService extends Service {
         this.templates = {};
         this.layouts = {};
         this.fonts = {};
+        this.icons = {};
 
         this.maxWidthInInches = 0;
         this.maxHeightInInches = 0;
@@ -199,6 +200,10 @@ export class InventoryService extends Service {
             return opentype.parse ( buffer );
         }
 
+        const COMPILE_OPTIONS = {
+            noEscape: true,
+        }
+
         let schema = new Schema ();
 
         this.maxWidthInInches = 0;
@@ -219,21 +224,21 @@ export class InventoryService extends Service {
                 this.maxWidthInInches = ( this.maxWidthInInches > widthInInches ) ? this.maxWidthInInches : widthInInches;
                 this.maxHeightInInches = ( this.maxHeightInInches > heightInInches ) ? this.maxHeightInInches : heightInInches;
 
-                const compileOptions = {
-                    noEscape: true,
-                }
-
                 for ( let command of layout.commands ) {
                     if ( command.type === LAYOUT_COMMAND.DRAW_TEXT_BOX ) {
                         for ( let segment of command.segments ) {
-                            segment.template = handlebars.compile ( segment.template, compileOptions );
+                            segment.template = handlebars.compile ( segment.template, COMPILE_OPTIONS );
                         }
                     }
                     else {
-                        command.template = handlebars.compile ( command.template, compileOptions );
+                        command.template = handlebars.compile ( command.template, COMPILE_OPTIONS );
                     }
                 }
                 this.layouts [ layoutName ] = layout;
+            }
+
+            for ( let iconName in template.icons ) {
+                this.icons [ iconName ] = _.cloneDeep ( template.icons [ iconName ]);
             }
 
             this.onProgress ( 'Fetching Fonts' );

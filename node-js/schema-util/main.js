@@ -65,6 +65,16 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
         .boldItalic ( 'http://localhost:3000/fonts/roboto/roboto-bolditalic.ttf' )
 
     //----------------------------------------------------------------//
+    .icon ( 'circle', `
+        <circle cx = '0.5' cy = '0.5' r = '0.5'/>
+    `)
+
+    //----------------------------------------------------------------//
+    .icon ( 'triangle', `
+        <polygon points = '0,1 1,1 0.5,0'/>
+    `)
+
+    //----------------------------------------------------------------//
     .layout ( 'dude', 750, 1050, 300 )
         .drawSVG (`
             <rect x='0' y='0' width='750' height='1050' fill='#000000'/>

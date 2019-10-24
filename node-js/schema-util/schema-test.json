@@ -1,0 +1,162 @@
+{
+    "name": "TEST_SCHEMA",
+    "fonts": {
+        "roboto": {
+            "regular": "http://localhost:3000/fonts/roboto/roboto-regular.ttf",
+            "bold": "http://localhost:3000/fonts/roboto/roboto-bold.ttf",
+            "italic": "http://localhost:3000/fonts/roboto/roboto-regularitalic.ttf",
+            "boldItalic": "http://localhost:3000/fonts/roboto/roboto-bolditalic.ttf"
+        }
+    },
+    "icons": {
+        "circle": {
+            "svg": "\n        <circle cx = '0.5' cy = '0.5' r = '0.5'/>\n    ",
+            "width": 1
+        },
+        "triangle": {
+            "svg": "\n        <polygon points = '0,1 1,1 0.5,0'/>\n    ",
+            "width": 1
+        }
+    },
+    "lua": "\nfunction main ( ledger, caller )\n    print ( 'publish schema', caller )\n    awardAsset ( ledger, caller, 'pack', 1 )\n    awardAsset ( ledger, caller, 'common', 2 )\n    awardAsset ( ledger, caller, 'rare', 2 )\n    awardAsset ( ledger, caller, 'ultraRare', 1 )\nend\n",
+    "definitions": {
+        "muckwipe": {
+            "fields": {
+                "name": {
+                    "type": "STRING",
+                    "value": "Muckwipe",
+                    "mutable": false,
+                    "scriptable": true,
+                    "alternates": {}
+                },
+                "type": {
+                    "type": "STRING",
+                    "value": "Dude",
+                    "mutable": false,
+                    "scriptable": true,
+                    "alternates": {}
+                },
+                "subType": {
+                    "type": "STRING",
+                    "value": " - Fish Ninja",
+                    "mutable": false,
+                    "scriptable": true,
+                    "alternates": {}
+                },
+                "rules": {
+                    "type": "STRING",
+                    "value": "<@circle> <$b>Enter<$> - You may pick a depleted dude and inflict 1<@triangle> damage to it.",
+                    "mutable": false,
+                    "scriptable": true,
+                    "alternates": {}
+                },
+                "layout": {
+                    "type": "STRING",
+                    "value": "dude",
+                    "mutable": false,
+                    "scriptable": true,
+                    "alternates": {}
+                },
+                "image": {
+                    "type": "STRING",
+                    "value": "https://i.imgur.com/BtKggd4.jpg",
+                    "mutable": false,
+                    "scriptable": true,
+                    "alternates": {}
+                }
+            }
+        }
+    },
+    "layouts": {
+        "dude": {
+            "width": 750,
+            "height": 1050,
+            "dpi": 300,
+            "commands": [
+                {
+                    "type": "DRAW_SVG",
+                    "template": "\n            <rect x='0' y='0' width='750' height='1050' fill='#000000'/>\n            <rect x='37.5' y='37.5' width='675' height='975' fill='#ffffff'/>\n            <rect x='37.5' y='168.75' width='675' height='412.5' fill='#ff0000'/>\n            <rect x='37.5' y='900' width='675' height='112.5' fill='#ff0000'/>\n\n            <rect x='48.875' y='37.5' width='534.375' height='56.25' fill='none' stroke='gray'/>\n            <rect x='48.875' y='93.75' width='534.375' height='37.5' fill='none' stroke='gray'/>\n            <rect x='48.875' y='131.25' width='534.375' height='37.5' fill='none' stroke='gray'/>\n\n            <rect x='48.875' y='592.625' width='652.25' height='296' fill='none' stroke='gray'/>\n\n            <image x='37.5' y='168.75' width='675' height='412.5' xlink:href='{{ image }}'/>\n        "
+                },
+                {
+                    "type": "DRAW_TEXT_BOX",
+                    "segments": [
+                        {
+                            "template": "{{ name }}",
+                            "fontName": "roboto",
+                            "fontSize": 40,
+                            "hJustify": "LEFT"
+                        }
+                    ],
+                    "x": 48.875,
+                    "y": 37.5,
+                    "width": 534.375,
+                    "height": 56.25,
+                    "vJustify": "CENTER"
+                },
+                {
+                    "type": "DRAW_TEXT_BOX",
+                    "segments": [
+                        {
+                            "template": "{{ type }}{{ subType }}",
+                            "fontName": "roboto",
+                            "fontSize": 30,
+                            "hJustify": "LEFT"
+                        }
+                    ],
+                    "x": 48.875,
+                    "y": 93.75,
+                    "width": 534.375,
+                    "height": 37.5,
+                    "vJustify": "CENTER"
+                },
+                {
+                    "type": "DRAW_TEXT_BOX",
+                    "segments": [
+                        {
+                            "template": "{{ access }}",
+                            "fontName": "roboto",
+                            "fontSize": 30,
+                            "hJustify": "LEFT"
+                        }
+                    ],
+                    "x": 48.875,
+                    "y": 131.25,
+                    "width": 534.375,
+                    "height": 37.5,
+                    "vJustify": "CENTER"
+                },
+                {
+                    "type": "DRAW_TEXT_BOX",
+                    "segments": [
+                        {
+                            "template": "{{ rules }}",
+                            "fontName": "roboto",
+                            "fontSize": 40,
+                            "hJustify": "LEFT"
+                        }
+                    ],
+                    "x": 48.875,
+                    "y": 592.625,
+                    "width": 652.25,
+                    "height": 296,
+                    "vJustify": "TOP"
+                },
+                {
+                    "type": "DRAW_BARCODE",
+                    "template": "{{ $ }}",
+                    "x": 600,
+                    "y": 900,
+                    "width": 112.5,
+                    "height": 112.5,
+                    "codeType": "QR",
+                    "options": {
+                        "qrErr": "L",
+                        "qrType": 0
+                    }
+                }
+            ]
+        }
+    },
+    "meta": "",
+    "methods": {}
+}

@@ -16,8 +16,12 @@ export class AssetLayout {
 
         const asset         = inventory.assets [ assetId ];
         const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId });
-
         const layout        = inventory.layouts [ context.layout ]
+
+        const resources = {
+            fonts:      inventory.fonts,
+            icons:      inventory.icons,
+        };
 
         let items = [];
         items.push ( `<g>` );
@@ -87,7 +91,7 @@ export class AssetLayout {
 
                 case LAYOUT_COMMAND.DRAW_TEXT_BOX: {
 
-                    const fitter = new TextFitter ( inventory.fonts, x, y, w, h, command.vJustify );
+                    const fitter = new TextFitter ( resources, x, y, w, h, command.vJustify );
 
                     for ( let segment of command.segments ) {
 
