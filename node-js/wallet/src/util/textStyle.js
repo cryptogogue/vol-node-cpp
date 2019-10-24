@@ -172,7 +172,7 @@ const parseStyle = ( params ) => {
             style.color = color.fromHex ( param );
         }
         else if ( FONT_SCALE_REGEX.test ( param )) {
-            style.scale = Number ( param.slice ( 0, param.length - 1 ));
+            style.scale = Number ( param.slice ( 0, param.length - 1 )) / 100;
         }
         else if ( POINT_SIZE_REGEX.test ( param )) {
             style.size = Number ( param.slice ( 0, param.length - 1 ));
