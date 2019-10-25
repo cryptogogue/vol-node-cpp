@@ -45,7 +45,7 @@
                 },
                 "rules": {
                     "type": "STRING",
-                    "value": "<@circle> <$b>Enter<$> - You may pick a depleted dude and inflict 1<@triangle> damage to it.",
+                    "value": "<@circle> <$b>Enter<$> - <$#ff0000>You may<$> pick a depleted dude and inflict 1<@triangle> damage to it.",
                     "mutable": false,
                     "scriptable": true,
                     "alternates": {}
