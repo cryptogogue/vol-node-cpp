@@ -27,6 +27,8 @@ export class AssetLayout {
 
         for ( let i in layout.commands ) {
             
+            context [ '$$' ] = '';
+
             const command = layout.commands [ i ];
             
             const x = command.x || 0;
@@ -102,18 +104,20 @@ export class AssetLayout {
             }
 
             if ( svg ) {
-                svg = command.wrap ? command.wrap ({ body: svg }) : `<g>${ svg }</g>`;
+                context [ '$$' ] = svg;
+                svg = command.wrap ? command.wrap ( context ) : `<g>${ svg }</g>`;
                 items.push ( svg );
             }
         }
 
         const svg = items.join ( '' );
+        context [ '$$' ] = svg;
 
         this.width      = layout.width;
         this.height     = layout.height;
         this.dpi        = layout.dpi;
 
         this.context    = context;
-        this.svg        = layout.wrap ? layout.wrap ({ body: svg }) : `<g>${ svg }</g>`;
+        this.svg        = layout.wrap ? layout.wrap ( context ) : `<g>${ svg }</g>`;
     }
 }

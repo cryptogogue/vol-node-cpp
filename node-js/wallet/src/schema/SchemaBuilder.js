@@ -610,6 +610,7 @@ class SchemaBuilder {
 
         assert (
             this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_BARCODE ) ||
+            this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_SVG ) ||
             this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX )
         );
         this.top ().wrap = template;

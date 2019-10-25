@@ -45,7 +45,7 @@
                 },
                 "rules": {
                     "type": "STRING",
-                    "value": "<@circle> <$b>Enter<$> - <$#ff0000>You may<$> pick a depleted dude and inflict 1<@triangle> damage to it.",
+                    "value": "<@circle> <$b>Enter<$> - <$#ff0000>You may<$> pick a\n\t\tdepleted dude and\ninflict 1<@triangle> damage to it.",
                     "mutable": false,
                     "scriptable": true,
                     "alternates": {}
@@ -140,7 +140,7 @@
                     "width": 652.25,
                     "height": 296,
                     "vJustify": "TOP",
-                    "wrap": "<g transform = \"translate ( 48.875 592.625 ) rotate ( 45 )\">{{ body }}</g>"
+                    "wrap": "<g transform = \"translate ( 48.875 592.625 ) rotate ( 45 )\">{{ $$ }}</g>"
                 },
                 {
                     "type": "DRAW_BARCODE",
@@ -156,7 +156,7 @@
                     }
                 }
             ],
-            "wrap": "<g transform = \"rotate ( 5 )\">{{ body }}</g>"
+            "wrap": "<g transform = \"rotate ( 5 )\">{{ $$ }}</g>"
         }
     },
     "meta": "",
