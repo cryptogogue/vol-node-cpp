@@ -419,15 +419,16 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    icon ( name, template, width ) {
+    icon ( name, width, height, template ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
 
         this.push (
             SCHEMA_BUILDER_ADDING_FONT,
             {
-                svg:    template,
-                width:  width || 1,
+                svg:        template,
+                width:      width || 1,
+                height:     height || 1,
             },
             ( schema, icon ) => {
                 schema.icons [ name ] = icon;
