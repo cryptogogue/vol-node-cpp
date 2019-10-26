@@ -45,14 +45,14 @@
                 },
                 "rules": {
                     "type": "STRING",
-                    "value": "<@circle> <$b>Enter<$> - <$#ff0000>You may<$> pick a\n\t\tdepleted dude and\ninflict 1<@triangle> damage to it.",
+                    "value": "<@circle> <$b>Enter<$> - <$#ff0000>You may<$> pick a\n\t\tdepleted dude and\ninflict 1<@triangle> damage\n\n\r\nto it.",
                     "mutable": false,
                     "scriptable": true,
                     "alternates": {}
                 },
                 "layout": {
                     "type": "STRING",
-                    "value": "dude",
+                    "value": "dude, overlay",
                     "mutable": false,
                     "scriptable": true,
                     "alternates": {}
@@ -91,7 +91,8 @@
                     "y": 37.5,
                     "width": 534.375,
                     "height": 56.25,
-                    "vJustify": "CENTER"
+                    "vJustify": "CENTER",
+                    "wrap": false
                 },
                 {
                     "type": "DRAW_TEXT_BOX",
@@ -107,7 +108,8 @@
                     "y": 93.75,
                     "width": 534.375,
                     "height": 37.5,
-                    "vJustify": "CENTER"
+                    "vJustify": "CENTER",
+                    "wrap": false
                 },
                 {
                     "type": "DRAW_TEXT_BOX",
@@ -123,7 +125,8 @@
                     "y": 131.25,
                     "width": 534.375,
                     "height": 37.5,
-                    "vJustify": "CENTER"
+                    "vJustify": "CENTER",
+                    "wrap": false
                 },
                 {
                     "type": "DRAW_TEXT_BOX",
@@ -135,12 +138,12 @@
                             "hJustify": "LEFT"
                         }
                     ],
-                    "x": 0,
-                    "y": 0,
+                    "x": 48.875,
+                    "y": 592.625,
                     "width": 652.25,
                     "height": 296,
                     "vJustify": "TOP",
-                    "wrap": "<g transform = \"translate ( 48.875 592.625 ) rotate ( 45 )\">{{ $$ }}</g>"
+                    "wrap": false
                 },
                 {
                     "type": "DRAW_BARCODE",
@@ -153,10 +156,23 @@
                     "options": {
                         "qrErr": "L",
                         "qrType": 0
-                    }
+                    },
+                    "wrap": false
                 }
             ],
-            "wrap": "<g transform = \"rotate ( 5 )\">{{ $$ }}</g>"
+            "wrap": "<g>{{ $$ }}</g>"
+        },
+        "overlay": {
+            "width": 750,
+            "height": 1050,
+            "dpi": 300,
+            "commands": [
+                {
+                    "type": "DRAW_SVG",
+                    "template": "\n            <circle cx='375' cy='525' r='372' stroke='#00ffff' stroke-width='20' fill='none'/>\n        "
+                }
+            ],
+            "wrap": false
         }
     },
     "meta": "",

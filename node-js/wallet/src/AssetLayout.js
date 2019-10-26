@@ -4,6 +4,7 @@ import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
 import * as pdf417                  from './util/pdf417';
 import * as qrcode                  from './util/qrcode';
 import { TextFitter, JUSTIFY }      from './util/textLayout';
+import _                            from 'lodash';
 import moize                        from 'moize';
 
 //================================================================//
@@ -12,16 +13,40 @@ import moize                        from 'moize';
 export class AssetLayout {
 
     //----------------------------------------------------------------//
-    constructor ( inventory, assetId, filters ) {
+    constructor ( inventory, assetID, filters ) {
 
-        const asset         = inventory.assets [ assetId ];
-        const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId });
-        const layout        = inventory.layouts [ context.layout ]
+        const asset     = inventory.assets [ assetID ];
+        const context   = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetID });
+        const layers    = inventory.getLayoutLayers ( asset );
 
         const resources = {
             fonts:      inventory.fonts,
             icons:      inventory.icons,
         };
+
+        this.width      = 0;
+        this.height     = 0;
+        this.dpi        = false;
+        this.context    = context;
+
+        // this.context    = context;
+
+        let items = [];
+        for ( const layer of layers ) {
+            context [ '$$' ] = '';
+            items.push ( this.layout ( layer, context, resources ));
+        }
+        this.svg = `<g>${ items.join ( '' )}</g>`;
+    }
+
+    //----------------------------------------------------------------//
+    layout ( layout, context, resources ) {
+
+        if ( this.dpi && ( layout.dpi !== this.dpi )) return;
+
+        this.width      = Math.max ( this.width, layout.width );
+        this.height     = Math.max ( this.height, layout.height );
+        this.dpi        = layout.dpi;
 
         let items = [];
 
@@ -112,12 +137,6 @@ export class AssetLayout {
 
         const svg = items.join ( '' );
         context [ '$$' ] = svg;
-
-        this.width      = layout.width;
-        this.height     = layout.height;
-        this.dpi        = layout.dpi;
-
-        this.context    = context;
-        this.svg        = layout.wrap ? layout.wrap ( context ) : `<g>${ svg }</g>`;
+        return layout.wrap ? layout.wrap ( context ) : `<g>${ svg }</g>`;
     }
 }

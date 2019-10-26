@@ -121,6 +121,13 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
         // or specificy one of 'L', 'M', 'Q', 'H' and 0 (autoselect) or types 1-40
         .drawBarcodeQR ( '{{ $ }}', 600, 900, 112.5 )
 
+    //----------------------------------------------------------------//
+    .layout ( 'overlay', 750, 1050, 300 )
+
+        .drawSVG (`
+            <circle cx='375' cy='525' r='372' stroke='#00ffff' stroke-width='20' fill='none'/>
+        `) 
+
 const schema = util.parseVolitionXLSX ( schemaBuilder );
 
 util.writeJavascript ( schema, 'schema.js' );

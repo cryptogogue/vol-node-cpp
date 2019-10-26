@@ -157,6 +157,21 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
+    getLayoutLayers ( asset ) {
+
+        const LAYOUT_LIST_SEPARATOR_REGEX   = /[\s,]+/;
+        const layers = [];
+
+        let layoutNames = _.has ( asset.fields, 'layout' ) ? asset.fields.layout.value : '';
+        layoutNames = layoutNames.split ( LAYOUT_LIST_SEPARATOR_REGEX );
+
+        for ( let layoutName of layoutNames ) {
+            layers.push ( this.layouts [ layoutName ]);
+        }
+        return layers.length > 0 ? layers : false;
+    }
+
+    //----------------------------------------------------------------//
     methodIsValid ( methodName, assetID ) {
         return ( methodName !== '' ) && this.binding.methodIsValid ( methodName, assetID );
     }
@@ -273,12 +288,9 @@ export class InventoryService extends Service {
         // TODO: properly handle layout field alternatives; doing this here is a big, fat hack
         let assetsWithLayouts = {};
         for ( let assetID in assets ) {
-
             const asset = assets [ assetID ];
-            const layoutName = _.has ( asset.fields, 'layout' ) ? asset.fields.layout.value : '';
-            
-            if ( this.layouts [ layoutName ]) {
-                assetsWithLayouts [ assetID ] = asset;
+            if ( this.getLayoutLayers ( asset )) {
+                assetsWithLayouts [ assetID ] = assets [ assetID ];
             }
         }
 
