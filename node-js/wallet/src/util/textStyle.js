@@ -66,7 +66,7 @@ export function parse ( text, baseStyle ) {
             }
 
             const fold = () => {
-                buffer += text.slice ( index, next );
+                buffer += text.slice ( 0, next );
             }
 
             const flush = () => {

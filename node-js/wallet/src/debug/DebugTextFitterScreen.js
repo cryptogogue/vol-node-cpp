@@ -130,20 +130,18 @@ class DebugTextFitterService extends Service {
 
         this.pushSVG ( fitter.toSVG (), 200, 600 );
 
-        const text3 = '\tThis is\nhow we test    test\ntext with\n   new lines\n and\n \twhitespace.';
+        const text3 = '\tThis is\nhow we test    test\ntext\n\ntext with\n   new lines\r\n and\n<$150%>\n<$> \twhitespace.';
 
-        fitter = new TextFitter ( this.resources, 0, 0, 128, 160, JUSTIFY.VERTICAL.TOP );
+        fitter = new TextFitter ( this.resources, 0, 0, 128, 200, JUSTIFY.VERTICAL.TOP );
         fitter.pushSection ( text3, 'roboto', 24, JUSTIFY.HORIZONTAL.LEFT );
         fitter.fit ();
-
-        this.pushSVG ( fitter.toSVG (), 128, 160 );
+        this.pushSVG ( fitter.toSVG (), 128, 200 );
 
         const text4 = 'Test <$i>escaping<$> <$$>style<@@> blocks.';
 
         fitter = new TextFitter ( this.resources, 0, 0, 600, 50, JUSTIFY.VERTICAL.TOP );
         fitter.pushSection ( text4, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
         fitter.fit ();
-
         this.pushSVG ( fitter.toSVG (), 600, 50 );
 
         const text5 = 'This is a <@triangle circle triangle> test of inline ic<@circle>ns.';
@@ -151,7 +149,6 @@ class DebugTextFitterService extends Service {
         fitter = new TextFitter ( this.resources, 0, 0, 600, 50, JUSTIFY.VERTICAL.TOP );
         fitter.pushSection ( text5, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
         fitter.fit ();
-
         this.pushSVG ( fitter.toSVG (), 600, 50 );
     }
 }

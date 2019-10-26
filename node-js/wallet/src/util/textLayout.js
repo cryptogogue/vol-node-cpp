@@ -63,57 +63,39 @@ export const fitText = ( text, font, fontSize, x, y, width, height, hJustify, vJ
 class TextLine {
 
     //----------------------------------------------------------------//
-    append ( tokenChars, context ) {
-
-        const fonts = context.fonts;
-        const icons = context.icons;
+    append ( tokenChars ) {
 
         this.tokenChars = this.tokenChars.concat ( tokenChars );
 
-        let style       = false;
         let buffer      = '';
-        let xOff        = 0;
 
         this.bounds     = false;
         this.segments   = [];
         this.height     = 0;
 
+        let style = false;
+
         const pushSegment = () => {
 
-            const faces = fonts [ style.font ];
-            if ( !faces ) return;
+            const fontMetrics = this.getFontMetrics ( style );
+            if ( !fontMetrics ) return;
 
-            let font = false;
-
-            if (( style.bold ) && ( style.italic )) {
-                font = faces [ FONT_FACE.BOLD_ITALIC ];
-            }
-            else if ( style.bold ) {
-                font = faces [ FONT_FACE.BOLD ];
-            }
-            else if ( style.italic ) {
-                font = faces [ FONT_FACE.ITALIC ];
-            }
-
-            font = font || faces [ FONT_FACE.REGULAR ];
-            if ( !font ) return;
-
-            const size = style.size * style.scale * ( context.fontScale || 1 );
-
-            const ascender  = ( font.ascender / font.unitsPerEm ) * size;
-            const descender  = -( font.descender / font.unitsPerEm ) * size;
+            const font          = fontMetrics.font;
+            const size          = fontMetrics.size;
+            const ascender      = fontMetrics.ascender;
+            const descender     = fontMetrics.descender;
 
             this.ascender = util.greater ( this.ascender, ascender );
             this.descender = util.greater ( this.descender, descender );
 
             if ( style.icon ) {
 
-                const icon = icons [ style.icon ] || DEFAULT_ICON_SVG;
+                const icon = this.icons [ style.icon ] || DEFAULT_ICON_SVG;
 
                 const width = ascender * ( icon.width || 1 );
                 const height = ascender;  
 
-                const x = xOff;
+                const x = this.cursor;
                 const y = -height;
 
                 this.segments.push ({
@@ -122,14 +104,14 @@ class TextLine {
                 });
 
                 this.bounds = rect.grow ( this.bounds, rect.make ( x, y, x + width, y + height ));
-                xOff += width;
+                this.cursor += width;
                 return;
             }
 
             const advance   = font.getAdvanceWidth ( buffer, size, OPENTYPE_OPTIONS );
-            const path      = font.getPath ( buffer, xOff, 0, size, OPENTYPE_OPTIONS );
+            const path      = font.getPath ( buffer, this.cursor, 0, size, OPENTYPE_OPTIONS );
             let bb          = path.getBoundingBox ();
-            bb              = rect.make ( xOff, bb.y1, xOff + advance, bb.y2 );
+            bb              = rect.make ( this.cursor, bb.y1, this.cursor + advance, bb.y2 );
 
             this.segments.push ({
                 path:       path,
@@ -137,7 +119,7 @@ class TextLine {
             });
 
             this.bounds = rect.grow ( this.bounds, bb );
-            xOff += advance;
+            this.cursor += advance;
         }
 
         const grow = () => {
@@ -159,16 +141,78 @@ class TextLine {
     }
 
     //----------------------------------------------------------------//
-    constructor () {
+    carriageReturn () {
 
-        this.xOff       = 0;
-        this.yOff       = 0;
+        this.cursor = 0;
+    }
+
+    //----------------------------------------------------------------//
+    constructor ( context ) {
+
+        this.fonts          = context.fonts;
+        this.fontScale      = context.fontScale;
+        this.icons          = context.icons;
+
+        this.xOff           = 0;
+        this.yOff           = 0;
 
         this.bounds         = false;
         this.tokenChars     = [];
         this.segments       = [];
         this.ascender       = 0;
         this.descender      = 0;
+
+        this.cursor         = 0;
+    }
+
+    //----------------------------------------------------------------//
+    finish ( style ) {
+
+        if (( this.tokenChars.length === 0 ) && ( style )) {
+
+            const fontMetrics   = this.getFontMetrics ( style );
+
+            this.ascender       = fontMetrics.ascender;
+            this.descender      = fontMetrics.descender;
+
+            if ( fontMetrics ) {
+                this.bounds = rect.make ( 0, -fontMetrics.ascender, 0, fontMetrics.descender );
+            }
+        }
+    }
+
+    //----------------------------------------------------------------//
+    getFontMetrics ( style ) {
+
+        const faces = this.fonts [ style.font ];
+        if ( !faces ) return false;
+
+        let font = false;
+
+        if (( style.bold ) && ( style.italic )) {
+            font = faces [ FONT_FACE.BOLD_ITALIC ];
+        }
+        else if ( style.bold ) {
+            font = faces [ FONT_FACE.BOLD ];
+        }
+        else if ( style.italic ) {
+            font = faces [ FONT_FACE.ITALIC ];
+        }
+
+        font = font || faces [ FONT_FACE.REGULAR ];
+        if ( !font ) return false;
+
+        const size = style.size * style.scale * ( this.fontScale || 1 );
+
+        const ascender = ( font.ascender / font.unitsPerEm ) * size;
+        const descender = -( font.descender / font.unitsPerEm ) * size;
+
+        return {
+            font:           font,
+            size:           size,
+            ascender:       ascender,
+            descender:      descender,
+        };
     }
 
     //----------------------------------------------------------------//
@@ -179,6 +223,7 @@ class TextLine {
             segments:       this.segments,
             ascender:       this.ascender,
             descender:      this.descender,
+            cursor:         this.cursor,
         };
     }
 
@@ -189,6 +234,8 @@ class TextLine {
         this.segments       = snapshot.segments;
         this.ascender       = snapshot.ascender;
         this.descender      = snapshot.descender;
+        this.cursor         = snapshot.cursor;
+        this.style          = snapshot.style;
     }
 
     //----------------------------------------------------------------//
@@ -218,6 +265,14 @@ class TextLine {
 // TextBox
 //================================================================//
 export class TextBox {
+
+    //----------------------------------------------------------------//
+    carriageReturn () {
+
+        if ( this.lines.length > 0 ) {
+            _.last ( this.lines ).carriageReturn ();
+        }
+    }
 
     //----------------------------------------------------------------//
     constructor ( text, resources, fontName, fontSize, x, y, width, height, hJustify, vJustify ) {
@@ -262,10 +317,12 @@ export class TextBox {
 
         for ( let i = 0; i <= length; ++i ) {
 
-            const charCode = i < length ? this.styledText [ i ].char.charCodeAt ( 0 ) : 0;
-            const isNewline = ( charCode === '\n'.charCodeAt ( 0 ));
+            const styledChar            = this.styledText [ i ];
+            const charCode              = i < length ? styledChar.char.charCodeAt ( 0 ) : 0;
+            const isNewline             = ( charCode === '\n'.charCodeAt ( 0 ));
+            const isCarriageReturn      = ( charCode === '\r'.charCodeAt ( 0 ));
 
-            if ( isNewline || WHITESPACE_CHAR_CODES.includes ( charCode )) {
+            if ( isNewline || isCarriageReturn || WHITESPACE_CHAR_CODES.includes ( charCode )) {
 
                 if ( inToken ) {
                     this.pushToken ( this.styledText.slice ( tokenStart, i ));
@@ -273,8 +330,13 @@ export class TextBox {
                     tokenStart = i;
                 }
 
+                if ( isCarriageReturn ) {
+                    this.carriageReturn ();
+                    tokenStart++;
+                }
+
                 if ( isNewline ) {
-                    this.lines.push ( new TextLine ());
+                    this.newline ( styledChar.style );
                     tokenStart++;
                 }
             }
@@ -347,10 +409,21 @@ export class TextBox {
     }
 
     //----------------------------------------------------------------//
+    newline ( style ) {
+
+        let prevLine = false;
+        if ( this.lines.length > 0 ) {
+            prevLine = _.last ( this.lines );
+            prevLine.finish ( style );
+        }
+        this.lines.push ( new TextLine ( this ));
+    }
+
+    //----------------------------------------------------------------//
     pushToken ( token, trimWhitespace ) {
 
         if ( this.lines.length === 0 ) {
-            this.lines = [ new TextLine ()];
+            this.newline ();
         }
 
         const line = _.last ( this.lines );
@@ -403,7 +476,7 @@ export class TextBox {
         // only try new line if line was *not* originally empty
         if ( over && ( isNewLine === false )) {
             line.restoreFromSnapshot ( snapshot );
-            this.lines.push ( new TextLine ());
+            this.newline ();
             this.pushToken ( token, true );
         }
     }
