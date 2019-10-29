@@ -166,7 +166,9 @@ export class InventoryService extends Service {
         layoutNames = layoutNames.split ( LAYOUT_LIST_SEPARATOR_REGEX );
 
         for ( let layoutName of layoutNames ) {
-            layers.push ( this.layouts [ layoutName ]);
+            if ( _.has ( this.layouts, layoutName )) {
+                layers.push ( this.layouts [ layoutName ]);
+            }
         }
         return layers.length > 0 ? layers : false;
     }
