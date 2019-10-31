@@ -58,6 +58,7 @@ export class InventoryService extends Service {
         this.templates = {};
         this.layouts = {};
         this.fonts = {};
+        this.icons = {};
 
         this.maxWidthInInches = 0;
         this.maxHeightInInches = 0;
@@ -156,6 +157,23 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
+    getLayoutLayers ( asset ) {
+
+        const LAYOUT_LIST_SEPARATOR_REGEX   = /[\s,]+/;
+        const layers = [];
+
+        let layoutNames = _.has ( asset.fields, 'layout' ) ? asset.fields.layout.value : '';
+        layoutNames = layoutNames.split ( LAYOUT_LIST_SEPARATOR_REGEX );
+
+        for ( let layoutName of layoutNames ) {
+            if ( _.has ( this.layouts, layoutName )) {
+                layers.push ( this.layouts [ layoutName ]);
+            }
+        }
+        return layers.length > 0 ? layers : false;
+    }
+
+    //----------------------------------------------------------------//
     methodIsValid ( methodName, assetID ) {
         return ( methodName !== '' ) && this.binding.methodIsValid ( methodName, assetID );
     }
@@ -199,6 +217,10 @@ export class InventoryService extends Service {
             return opentype.parse ( buffer );
         }
 
+        const COMPILE_OPTIONS = {
+            noEscape: true,
+        }
+
         let schema = new Schema ();
 
         this.maxWidthInInches = 0;
@@ -222,14 +244,20 @@ export class InventoryService extends Service {
                 for ( let command of layout.commands ) {
                     if ( command.type === LAYOUT_COMMAND.DRAW_TEXT_BOX ) {
                         for ( let segment of command.segments ) {
-                            segment.template = handlebars.compile ( segment.template );
+                            segment.template = handlebars.compile ( segment.template, COMPILE_OPTIONS );
                         }
                     }
                     else {
-                        command.template = handlebars.compile ( command.template );
+                        command.template = handlebars.compile ( command.template, COMPILE_OPTIONS );
                     }
+                    command.wrap = command.wrap && handlebars.compile ( command.wrap, COMPILE_OPTIONS );
                 }
+                layout.wrap = layout.wrap && handlebars.compile ( layout.wrap, COMPILE_OPTIONS );
                 this.layouts [ layoutName ] = layout;
+            }
+
+            for ( let iconName in template.icons ) {
+                this.icons [ iconName ] = _.cloneDeep ( template.icons [ iconName ]);
             }
 
             this.onProgress ( 'Fetching Fonts' );
@@ -262,12 +290,9 @@ export class InventoryService extends Service {
         // TODO: properly handle layout field alternatives; doing this here is a big, fat hack
         let assetsWithLayouts = {};
         for ( let assetID in assets ) {
-
             const asset = assets [ assetID ];
-            const layoutName = _.has ( asset.fields, 'layout' ) ? asset.fields.layout.value : '';
-            
-            if ( this.layouts [ layoutName ]) {
-                assetsWithLayouts [ assetID ] = asset;
+            if ( this.getLayoutLayers ( asset )) {
+                assetsWithLayouts [ assetID ] = assets [ assetID ];
             }
         }
 

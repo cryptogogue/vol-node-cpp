@@ -4,6 +4,7 @@ import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
 import * as pdf417                  from './util/pdf417';
 import * as qrcode                  from './util/qrcode';
 import { TextFitter, JUSTIFY }      from './util/textLayout';
+import _                            from 'lodash';
 import moize                        from 'moize';
 
 //================================================================//
@@ -12,25 +13,55 @@ import moize                        from 'moize';
 export class AssetLayout {
 
     //----------------------------------------------------------------//
-    constructor ( inventory, assetId, filters ) {
+    constructor ( inventory, assetID, filters ) {
 
-        const asset         = inventory.assets [ assetId ];
-        const context       = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetId });
+        const asset     = inventory.assets [ assetID ];
+        const context   = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetID });
+        const layers    = inventory.getLayoutLayers ( asset );
 
-        const layout        = inventory.layouts [ context.layout ]
+        const resources = {
+            fonts:      inventory.fonts,
+            icons:      inventory.icons,
+        };
+
+        this.width      = 0;
+        this.height     = 0;
+        this.dpi        = false;
+        this.context    = context;
+
+        // this.context    = context;
 
         let items = [];
-        items.push ( `<g>` );
+        for ( const layer of layers ) {
+            context [ '$$' ] = '';
+            items.push ( this.layout ( layer, context, resources ));
+        }
+        this.svg = `<g>${ items.join ( '' )}</g>`;
+    }
+
+    //----------------------------------------------------------------//
+    layout ( layout, context, resources ) {
+
+        if ( this.dpi && ( layout.dpi !== this.dpi )) return;
+
+        this.width      = Math.max ( this.width, layout.width );
+        this.height     = Math.max ( this.height, layout.height );
+        this.dpi        = layout.dpi;
+
+        let items = [];
 
         for ( let i in layout.commands ) {
             
+            context [ '$$' ] = '';
+
             const command = layout.commands [ i ];
             
-
             const x = command.x || 0;
             const y = command.y || 0;
             const w = command.width || 0;
             const h = command.height || 0;
+
+            let svg = false;
 
             switch ( command.type ) {
 
@@ -67,27 +98,22 @@ export class AssetLayout {
                         }
                     }
 
-                    items.push (`
-                        <g>
-                            <rect x = ${ x } y = ${ y } width = ${ w } height = ${ h } fill = 'white'/>
-                            ${ svgTag }
-                        </g>
-                    `);
+                    svg = `
+                        <rect x = ${ x } y = ${ y } width = ${ w } height = ${ h } fill = 'white'/>
+                        ${ svgTag }
+                    `;
                     break;
                 }
 
                 case LAYOUT_COMMAND.DRAW_SVG: {
 
-                    const value = command.template && command.template ( context ) || null;
-                    if ( !value ) break;
-
-                    items.push ( `<g>${ value }</g>` );
+                    svg = command.template && command.template ( context ) || false;
                     break;
                 }
 
                 case LAYOUT_COMMAND.DRAW_TEXT_BOX: {
 
-                    const fitter = new TextFitter ( inventory.fonts, x, y, w, h, command.vJustify );
+                    const fitter = new TextFitter ( resources, x, y, w, h, command.vJustify );
 
                     for ( let segment of command.segments ) {
 
@@ -97,19 +123,20 @@ export class AssetLayout {
                         fitter.pushSection ( value, segment.fontName, segment.fontSize, segment.hJustify );
                     }
                     fitter.fit ();
-                    items.push ( `<g>${ fitter.toSVG ()}</g>` );
+                    svg = fitter.toSVG ();
                     break;
                 }
             }
+
+            if ( svg ) {
+                context [ '$$' ] = svg;
+                svg = command.wrap ? command.wrap ( context ) : `<g>${ svg }</g>`;
+                items.push ( svg );
+            }
         }
 
-        items.push ( `</g>` );
-
-        this.width      = layout.width;
-        this.height     = layout.height;
-        this.dpi        = layout.dpi;
-
-        this.context    = context;
-        this.svg        = items.join ( '' );
+        const svg = items.join ( '' );
+        context [ '$$' ] = svg;
+        return layout.wrap ? layout.wrap ( context ) : `<g>${ svg }</g>`;
     }
 }

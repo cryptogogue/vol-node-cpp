@@ -235,6 +235,7 @@ class SchemaBuilder {
         this.schema = {
             name:               name,
             fonts:              {},
+            icons:              {},
             lua:                '',
             definitions:        {},
             layouts:            {},
@@ -288,6 +289,7 @@ class SchemaBuilder {
                 height:         height || 0,
                 codeType:       codeType || pdf417.CONSTS.ID,
                 options:        options || {},
+                wrap:           false,
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
@@ -364,6 +366,7 @@ class SchemaBuilder {
                 width:          width || 0,
                 height:         height || 0,
                 vJustify:       vJustify || JUSTIFY.VERTICAL.TOP,
+                wrap:           false,
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
@@ -416,6 +419,25 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
+    icon ( name, width, height, template ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_FONT,
+            {
+                svg:        template,
+                width:      width || 1,
+                height:     height || 1,
+            },
+            ( schema, icon ) => {
+                schema.icons [ name ] = icon;
+            }
+        );
+        return this;
+    }
+
+    //----------------------------------------------------------------//
     italic ( url ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_FONT ));
@@ -424,7 +446,7 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    layout ( name, width, height, dpi ) {
+    layout ( name, width, height, dpi, wrap ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_SCHEMA ));
 
@@ -435,6 +457,7 @@ class SchemaBuilder {
                 height:         height || 0,
                 dpi:            dpi || 300,
                 commands:       [],
+                wrap:           wrap || false,
             },
             ( schema, layout ) => {
                 schema.layouts [ name ] = layout;
@@ -581,6 +604,18 @@ class SchemaBuilder {
     //----------------------------------------------------------------//
     top () {
         return this.stack [ this.stack.length - 1 ].container;
+    }
+
+    //----------------------------------------------------------------//
+    wrapSVG ( template ) {
+
+        assert (
+            this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_BARCODE ) ||
+            this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_SVG ) ||
+            this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX )
+        );
+        this.top ().wrap = template;
+        return this;
     }
 }
 

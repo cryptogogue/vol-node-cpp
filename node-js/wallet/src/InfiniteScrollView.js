@@ -25,7 +25,6 @@ export const InfiniteScrollView = ( props ) => {
     const totalRows     = hasDimensions ? Math.ceil ( totalCards / cardsPerRow ) : 1;    
 
     const onResize = ({ width, height }) => {
-        console.log ( 'RESIZE', width, height );
         setRowWidth ( width );
     }
 
