@@ -193,6 +193,20 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     @action
+    deleteNode ( nodeURL ) {
+
+        console.log ( 'DELETE NODE', nodeURL );
+
+        if ( nodeURL === this.node ) {
+            this.node = '';
+        }
+
+        delete this.nodes[ nodeURL ];
+
+    }
+
+    //----------------------------------------------------------------//
+    @action
     deleteNodeList () {
 
         console.log ( 'DELETE NODE LIST' );
