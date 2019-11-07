@@ -47,14 +47,20 @@ DONE: commands for test account
 DONE: provision every asset in set
 DONE: provision beta account - generate key
 DONE: add banner at the top of wallet showing mining network name
+DONE: implement massively complicated layout engine
+DONE: add support for QR codes
+DONE: support loading genesis chain
 
-implement massively complicated layout engine
-add support for QR codes
+upgrade & rebuild versioned store; restore from chain (discard by tag?)
+version versioned store (store metadata)
+batch transfer assets to other accounts
+batch transactions in solo mode
+implement way to expire transactions
+
+layout engine - implement underline and divider
 
 rework node control endpoints into "control" transactions
 
-support loading genesis chain
-implement way to expire transactions
 provision any asset
 discard all (by set)
 handle unrecognized account - reject transactions
@@ -65,8 +71,6 @@ MVP
 logic for attachments (i.e. equip one asset with another)
 
 tagging sets of cards and deck building
-
-batch transfer assets to other accounts
 
 display all (historic) transactions of selected account
 customize asset fields - images, text
