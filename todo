@@ -50,6 +50,8 @@ DONE: add banner at the top of wallet showing mining network name
 DONE: implement massively complicated layout engine
 DONE: add support for QR codes
 DONE: support loading genesis chain
+DONE: layout engine - implement underline and divider
+DONE: layout engine - bump icons up and down
 
 upgrade & rebuild versioned store; restore from chain (discard by tag?)
 version versioned store (store metadata)
@@ -57,10 +59,9 @@ batch transfer assets to other accounts
 batch transactions in solo mode
 implement way to expire transactions
 
-layout engine - implement underline and divider
-layout engine - bump icons up and down
 layout engine - named text styles
 layout engine - nested layouts
+layout engine - set underline style for text box (color, weight)
 
 rework node control endpoints into "control" transactions
 

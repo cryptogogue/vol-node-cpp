@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import * as color                   from './color';
+import { JUSTIFY }                  from './textLayout';
 import _                            from 'lodash';
 
 // https://regex101.com/
@@ -9,6 +10,7 @@ const NAMED_PARAM_REGEX     = /\w+:[\w-.%]+/;
 const NUMBER_REGEX          = /([0-9]*\.[0-9]+)|([0-9]+)/;
 const PERCENTAGE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)%/;
 const POINT_SIZE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)p/;
+const SIMPLE_COMMAND_REGEX  = /^[biulrc]$/;
 const STYLE_COMMAND_REGEX   = /<.*?>/;
 const WS_REGEX              = /\s+/;
 
@@ -22,7 +24,8 @@ const PARAM_TYPE = {
 };
 
 const PARAM_NAME = {
-    ICON_Y:          'icon_y',
+    ICON_Y:         'icon_y',
+    ICON_FIT:       'icon_fit',
 };
 
 //================================================================//
@@ -207,14 +210,28 @@ const parseStyle = ( params ) => {
         if ( param.length === 0 ) continue;
         style = style || {};
 
-        if ( param === 'b' ) {
-            style.bold = true;
-        }
-        else if ( param === 'i' ) {
-            style.italic = true;
-        }
-        else if ( param === 'u' ) {
-            style.underline = true;
+        if ( SIMPLE_COMMAND_REGEX.test ( param )) {
+
+            switch ( param ) {
+                case 'b':
+                    style.bold = true;
+                    break;
+                case 'i':
+                    style.italic = true;
+                    break;
+                case 'u':
+                    style.underline = true;
+                    break;
+                case 'l':
+                    style.hJustify = JUSTIFY.HORIZONTAL.LEFT;
+                    break;
+                case 'r':
+                    style.hJustify = JUSTIFY.HORIZONTAL.RIGHT;
+                    break;
+                case 'c':
+                    style.hJustify = JUSTIFY.HORIZONTAL.CENTER;
+                    break;
+            }
         }
         else if ( NAMED_PARAM_REGEX.test ( param )) {
 
@@ -223,13 +240,18 @@ const parseStyle = ( params ) => {
             param = pair [ 1 ];
 
             const paramInfo = parseParam ( param );
-            console.log ( 'NAMED PARAM:', name, paramInfo );
 
             switch ( name ) {
+                
                 case PARAM_NAME.ICON_Y:
                     if ( paramInfo.type === PARAM_TYPE.PERCENTAGE ) {
                         style.iconY = paramInfo.value;
-                        console.log ( 'ICON Y:', style.iconY );
+                    }
+                    break;
+
+                case PARAM_NAME.ICON_FIT:
+                    if ( paramInfo.type === PARAM_TYPE.STRING ) {
+                        style.iconFit = paramInfo.value;
                     }
                     break;
             }

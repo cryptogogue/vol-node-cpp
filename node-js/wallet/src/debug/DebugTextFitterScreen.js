@@ -37,6 +37,12 @@ const SVG_TRIANGLE_ICON = {
     height:     1,
 };
 
+const SVG_DIVIDER_ICON = {
+    svg:        `<rect width="250" height="2"/>`,
+    width:      250,
+    height:     2,
+};
+
 const FONTS = {
     roboto: {
         [ FONT_FACE.REGULAR ]:      'http://localhost:3000/fonts/roboto/roboto-regular.ttf',
@@ -51,7 +57,7 @@ const FONTS = {
 //================================================================//
 class DebugTextFitterService extends Service {
 
-    @observable svg = [ '<svg/>' ];
+    @observable svg = [];
 
     //----------------------------------------------------------------//
     constructor ( values ) {
@@ -60,8 +66,9 @@ class DebugTextFitterService extends Service {
         this.resources = {
             fonts: {},
             icons: {
-                circle: SVG_CIRCLE_ICON,
-                triangle: SVG_TRIANGLE_ICON,
+                circle:     SVG_CIRCLE_ICON,
+                triangle:   SVG_TRIANGLE_ICON,
+                divider:    SVG_DIVIDER_ICON,
             },
         }
     }
@@ -159,6 +166,27 @@ class DebugTextFitterService extends Service {
         fitter.pushSection ( text6, 'roboto', 38, JUSTIFY.HORIZONTAL.LEFT );
         fitter.fit ();
         this.pushSVG ( fitter.toSVG (), 600, 80 );
+
+        const text7 = '\nhere\n<$r>we<$>\ntest\n<$c>inlined<$>\njustification\n<$r>changes,<$>\nhunty';
+
+        fitter = new TextFitter ( this.resources, 0, 0, 128, 200, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text7, 'roboto', 24, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.fit ();
+        this.pushSVG ( fitter.toSVG (), 128, 200 );
+
+        const text8 = 'This is a textbox with a divider!\n<$c icon_fit:none><@divider><$>\n<$r>Isn\'t it delightful?';
+
+        fitter = new TextFitter ( this.resources, 0, 0, 300, 150, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text8, 'roboto', 100, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.fit ();
+        this.pushSVG ( fitter.toSVG (), 300, 150 );
+
+        const text9 = 'And <$u>in this<$> text <$u>box we<$> test <$u>out<$> our handy <$u>underlining feature.<$>';
+
+        fitter = new TextFitter ( this.resources, 0, 0, 300, 100, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text9, 'roboto', 32, JUSTIFY.HORIZONTAL.CENTER );
+        fitter.fit ();
+        this.pushSVG ( fitter.toSVG (), 300, 100 );
     }
 }
 
