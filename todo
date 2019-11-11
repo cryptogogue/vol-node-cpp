@@ -58,6 +58,9 @@ batch transactions in solo mode
 implement way to expire transactions
 
 layout engine - implement underline and divider
+layout engine - bump icons up and down
+layout engine - named text styles
+layout engine - nested layouts
 
 rework node control endpoints into "control" transactions
 

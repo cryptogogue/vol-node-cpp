@@ -82,6 +82,14 @@ bool CryptoKey::hasCurve ( string groupName ) {
 //----------------------------------------------------------------//
 Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm ) const {
 
+    Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
+    Poco::DigestOutputStream signatureStream ( digestEngine );
+    digestFunc ( signatureStream );
+    signatureStream.close ();
+    
+    Digest digest = digestEngine.digest ();
+    Digest sig;
+
     if ( this->mKeyPair ) {
         switch ( this->mKeyPair->type ()) {
                 
@@ -93,16 +101,11 @@ Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm )
                 EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
                 assert ( pKey );
             
-                Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
-                Poco::DigestOutputStream signatureStream ( digestEngine );
-                digestFunc ( signatureStream );
-                signatureStream.close ();
                 
-                Digest digest = digestEngine.digest ();
             
                 uint sigLen = ( unsigned int )ECDSA_size ( pKey );
             
-                Digest sig;
+                
                 sig.resize ( sigLen );
             
                 int result = ECDSA_sign ( 0,
@@ -113,15 +116,16 @@ Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm )
                 assert ( result == 1 );
                 
                 if ( sigLen < sig.size ()) sig.resize ( sigLen );
-                return Signature ( digest, sig, hashAlgorithm );
+                break;
             }
             
             case Poco::Crypto::KeyPair::KT_RSA: {
                 // TODO: RSA
+                break;
             }
         }
     }
-    return Signature ();
+    return Signature ( digest, sig, hashAlgorithm );
 }
 
 //----------------------------------------------------------------//

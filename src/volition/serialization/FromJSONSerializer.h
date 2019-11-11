@@ -279,6 +279,15 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static void fromJSONFile ( AbstractSerializable& serializable, string filename ) {
+
+        fstream inStream;
+        inStream.open ( filename, ios_base::in );
+        FromJSONSerializer::fromJSON ( serializable, inStream );
+        inStream.close ();
+    }
+
+    //----------------------------------------------------------------//
     static void fromJSONString ( AbstractSerializable& serializable, string json ) {
 
         istringstream str ( json );
