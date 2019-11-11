@@ -26,13 +26,15 @@ const SVG_TEMPLATE = handlebars.compile (`
 `);
 
 const SVG_CIRCLE_ICON = {
-    svg:    `<circle cx = '0.5' cy = '0.5' r = '0.5'/>`,
-    width:  1,
+    svg:        `<circle cx = '0.5' cy = '0.5' r = '0.5'/>`,
+    width:      1,
+    height:     1,
 };
 
 const SVG_TRIANGLE_ICON = {
-    svg:    `<polygon points = '0,1 1,1 0.5,0'/>`,
-    width:  1,
+    svg:        `<polygon points = '0,1 1,1 0.5,0'/>`,
+    width:      1,
+    height:     1,
 };
 
 const FONTS = {
@@ -147,9 +149,16 @@ class DebugTextFitterService extends Service {
         const text5 = 'This is a <@triangle circle triangle> test of inline ic<@circle>ns.';
 
         fitter = new TextFitter ( this.resources, 0, 0, 600, 50, JUSTIFY.VERTICAL.TOP );
-        fitter.pushSection ( text5, 'roboto', 42, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.pushSection ( text5, 'roboto', 38, JUSTIFY.HORIZONTAL.LEFT );
         fitter.fit ();
         this.pushSVG ( fitter.toSVG (), 600, 50 );
+
+        const text6 = 'This is a <@triangle><$icon_y:-100%><@circle><$><@triangle> test of inline ic<$icon_y:25%><@circle><$>ns.';
+
+        fitter = new TextFitter ( this.resources, 0, 0, 600, 200, JUSTIFY.VERTICAL.TOP );
+        fitter.pushSection ( text6, 'roboto', 38, JUSTIFY.HORIZONTAL.LEFT );
+        fitter.fit ();
+        this.pushSVG ( fitter.toSVG (), 600, 80 );
     }
 }
 

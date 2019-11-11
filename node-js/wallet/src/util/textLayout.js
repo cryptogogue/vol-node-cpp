@@ -91,12 +91,13 @@ class TextLine {
             if ( style.icon ) {
 
                 const icon = this.icons [ style.icon ] || DEFAULT_ICON_SVG;
+                const iconY = style.iconY || 0;
 
                 const width = ascender * ( icon.width / icon.height );
                 const height = ascender;  
 
                 const x = this.cursor;
-                const y = -height;
+                const y = -( height * ( iconY + 1 ));
 
                 this.segments.push ({
                     svg:        `<g transform='translate ( ${ x }, ${ y }) scale ( ${ ascender / icon.height })'>${ icon.svg }</g>`,
