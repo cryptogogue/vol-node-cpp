@@ -71,7 +71,7 @@ export const DebugSchemaScreen = observer (( props ) => {
             flexFlow: 'column',
             height: '100vh',
         }}>
-            <SingleColumnContainerView>
+            <SingleColumnContainerView width = { 0 }>
                 <Segment>
                     <Form error = { controller.errorMsg !== false }>
                     
@@ -101,7 +101,7 @@ export const DebugSchemaScreen = observer (( props ) => {
             <If condition = { inventory.loading === false }>
                 <div style = {{ flex: 1 }}>
                     <InventoryView
-                        inventory   = { inventory }
+                        inventory  = { inventory }
                     />
                 </div>
             </If>
