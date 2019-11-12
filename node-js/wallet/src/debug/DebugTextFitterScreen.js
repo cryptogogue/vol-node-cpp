@@ -174,7 +174,7 @@ class DebugTextFitterService extends Service {
         fitter.fit ();
         this.pushSVG ( fitter.toSVG (), 128, 200 );
 
-        const text8 = 'This is a textbox with a divider!\n<$c icon_fit:none><@divider><$>\n<$r>Isn\'t it delightful?';
+        const text8 = 'This is a textbox with a divider!\n<$c 25% icon_fit:none><@divider><$>\n<$r>Isn\'t it delightful?';
 
         fitter = new TextFitter ( this.resources, 0, 0, 300, 150, JUSTIFY.VERTICAL.TOP );
         fitter.pushSection ( text8, 'roboto', 100, JUSTIFY.HORIZONTAL.LEFT );
