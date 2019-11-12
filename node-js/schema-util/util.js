@@ -1,7 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 
-import fs                       from 'fs';
 import * as excel               from './excel'
+import fs                       from 'fs';
+import handlebars               from 'handlebars';
+
+const COMPILE_OPTIONS = {
+    noEscape: true,
+}
 
 //----------------------------------------------------------------//
 function javascriptEscape ( str ) {
@@ -44,6 +49,23 @@ export function escapeName ( name ) {
 export function parseVolitionXLSX ( schemaBuilder ) {
 
     const book = new excel.Workbook ( 'cardlist.xlsx' );
+
+    const macros = {};
+    const macrosSheet = book.getSheet ( 'macros' );
+
+    if ( macrosSheet ) {
+
+        for ( let row = 0; row < macrosSheet.height; ++row ) {
+
+            const key = String ( macrosSheet.getValueByCoord ( 0, row ));
+            const val = String ( macrosSheet.getValueByCoord ( 1, row ));
+
+            if ( key.length > 0 ) {
+                macros [ key ] = val;
+            }
+        }
+    }
+
     const sheet = book.getSheet ( 0 );
 
     for ( let row = 0; row < sheet.height; ++row ) {
@@ -71,6 +93,7 @@ export function parseVolitionXLSX ( schemaBuilder ) {
                 case 'string':
                     value = String ( raw );
                     if ( typeof ( value ) !== fieldType ) continue;
+                    value = handlebars.compile ( value, COMPILE_OPTIONS )( macros );
                     break;
                 default:
                     continue;

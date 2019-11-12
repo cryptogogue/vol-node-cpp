@@ -54,14 +54,13 @@ DONE: layout engine - implement underline and divider
 DONE: layout engine - bump icons up and down
 DONE: layout engine - nested layouts
 DONE: layout engine - set underline style for text box (color, weight)
+DONE: layout engine - named text styles (implemented as spreadsheet macros)
+DONE: upgrade & rebuild versioned store; restore from chain
 
-upgrade & rebuild versioned store; restore from chain (discard by tag?)
 version versioned store (store metadata)
 batch transfer assets to other accounts
 batch transactions in solo mode
 implement way to expire transactions
-
-layout engine - named text styles
 
 rework node control endpoints into "control" transactions
 
