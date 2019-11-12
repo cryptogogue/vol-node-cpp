@@ -53,6 +53,7 @@ DONE: support loading genesis chain
 DONE: layout engine - implement underline and divider
 DONE: layout engine - bump icons up and down
 DONE: layout engine - nested layouts
+DONE: layout engine - set underline style for text box (color, weight)
 
 upgrade & rebuild versioned store; restore from chain (discard by tag?)
 version versioned store (store metadata)
@@ -61,7 +62,6 @@ batch transactions in solo mode
 implement way to expire transactions
 
 layout engine - named text styles
-layout engine - set underline style for text box (color, weight)
 
 rework node control endpoints into "control" transactions
 

@@ -26,6 +26,7 @@ const PARAM_TYPE = {
 const PARAM_NAME = {
     ICON_Y:         'icon_y',
     ICON_FIT:       'icon_fit',
+    UNDERLINE:      'underline',
 };
 
 //================================================================//
@@ -252,6 +253,13 @@ const parseStyle = ( params ) => {
                 case PARAM_NAME.ICON_FIT:
                     if ( paramInfo.type === PARAM_TYPE.STRING ) {
                         style.iconFit = paramInfo.value;
+                    }
+                    break;
+
+                case PARAM_NAME.UNDERLINE:
+                    if ( paramInfo.type === PARAM_TYPE.NUMBER ) {
+                        style.underline = paramInfo.value > 0;
+                        style.underlineWeight = paramInfo.value;
                     }
                     break;
             }

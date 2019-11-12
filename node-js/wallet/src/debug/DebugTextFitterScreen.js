@@ -181,7 +181,7 @@ class DebugTextFitterService extends Service {
         fitter.fit ();
         this.pushSVG ( fitter.toSVG (), 300, 150 );
 
-        const text9 = 'And <$u>in this<$> text <$u>box we<$> test <$u>out<$> our handy <$u>underlining feature.<$>';
+        const text9 = 'And <$u>in <$#ff0000>this<$><$> text <$u>box we<$> test <$underline:5>out<$> our handy <$u>underlining feature.<$>';
 
         fitter = new TextFitter ( this.resources, 0, 0, 300, 100, JUSTIFY.VERTICAL.TOP );
         fitter.pushSection ( text9, 'roboto', 32, JUSTIFY.HORIZONTAL.CENTER );

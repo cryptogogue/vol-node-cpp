@@ -282,18 +282,25 @@ class TextLine {
         let underline = false;
         const underlines = [];
 
-        const updateUnderline = ( x0, x1 ) => {
-            if ( underline === false ) {
-                underline = { x0: x0 };
-            }
-            underline.x1 = x1;
-        }
-
         const finishUnderline = () => {
             if ( underline ) {
                 underlines.push ( underline );
                 underline = false;
             }
+        }
+
+        const nextUnderline = ( x0, x1, c, w ) => {
+
+            if ( underline ) {
+                underline.x1 = x0;
+                finishUnderline ();
+            }
+            underline = {
+                x0:         x0,
+                x1:         x1,
+                color:      c,
+                weight:     w,
+            };
         }
 
         // render segments
@@ -307,7 +314,7 @@ class TextLine {
             paths.push ( `<g fill='${ hexColor }' opacity='${ opacity }'>${ segment.svg || segment.path.toSVG ()}</g>` );
 
             if ( style.underline ) {
-                updateUnderline ( bounds.x0, bounds.x1 );
+                nextUnderline ( bounds.x0, bounds.x1, style.color, style.underlineWeight );
             }
             else {
                 finishUnderline ();
@@ -319,11 +326,17 @@ class TextLine {
         for ( let underline of underlines ) {
 
             const x0 = underline.x0;
+
             const width = underline.x1 - x0;
-            const height = 1;
+            const height = underline.weight;
+            
+            const y0 = this.descender - height;
+
+            const hexColor = color.toHexRGB ( underline.color );
+            const opacity = underline.color.a || 1;
 
             // TODO: support underline styling from text box
-            paths.push ( `<rect fill='black' x='${ x0 }' y='0' width='${ width }' height='${ height }'/>` );
+            paths.push ( `<g fill='${ hexColor }' opacity='${ opacity }'><rect x='${ x0 }' y=${ y0 } width='${ width }' height='${ height }'/></g>` );
         }
 
         paths.push ( '</g>' );
@@ -365,10 +378,12 @@ export class TextBox {
         this.lines = [];
 
         this.baseStyle = {
-            font:   fontName,
-            size:   fontSize,
-            color:  color.make ( 0, 0, 0, 1 ),
-            scale:  1,
+            font:               fontName,
+            size:               fontSize,
+            color:              color.make ( 0, 0, 0, 1 ),
+            scale:              1,
+            underline:          false,
+            underlineWeight:    2,
         }
 
         this.styledText     = textStyle.parse ( text, this.baseStyle );
