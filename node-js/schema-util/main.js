@@ -177,7 +177,13 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
 
         .drawSVG (`
             <circle cx='375' cy='525' r='372' stroke='#00ffff' stroke-width='20' fill='none'/>
-        `) 
+        `)
+
+    //----------------------------------------------------------------//
+    .layout ( 'dude-overlay', 750, 1050, 300 )
+
+        .drawLayout ( 'dude' )
+        .drawLayout ( 'overlay' )
 
 const schema = util.parseVolitionXLSX ( schemaBuilder );
 

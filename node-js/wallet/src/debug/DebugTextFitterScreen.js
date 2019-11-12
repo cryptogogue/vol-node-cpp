@@ -20,7 +20,7 @@ const SVG_TEMPLATE = handlebars.compile (`
         viewBox="0 0 {{ width }} {{ height }}"
         preserveAspectRatio="none"
     >
-        <rect width="100%" height="100%" fill="#7f7f7f" />
+        <rect width="100%" height="100%" fill="#bfbfbf" />
         {{{ text }}}
     </svg>
 `);
