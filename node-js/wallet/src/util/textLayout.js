@@ -323,14 +323,10 @@ class TextLine {
             const height = 1;
 
             // TODO: support underline styling from text box
-            paths.push ( `<g><rect fill='black' x='${ x0 }' y='${ 0 }' width='${ width }' height='${ height }'></g>` );
+            paths.push ( `<rect fill='black' x='${ x0 }' y='0' width='${ width }' height='${ height }'/>` );
         }
 
         paths.push ( '</g>' );
-
-        if ( underlines.length > 0 ) {
-            console.log ( 'PATHS', paths );
-        }
         
         return paths.join ( '' );
     }
@@ -680,8 +676,6 @@ export class TextFitter {
 
     //----------------------------------------------------------------//
     toSVG () {
-
-        console.log ( '-------TO SVG-------' );
 
         if (( this.fitHeight === 0 ) || ( this.sections.length === 0 )) return '';
 
