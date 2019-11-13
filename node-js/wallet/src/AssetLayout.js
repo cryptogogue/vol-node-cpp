@@ -17,7 +17,6 @@ export class AssetLayout {
 
         const asset     = inventory.assets [ assetID ];
         const context   = inventory.composeAssetContext ( asset, filters, {[ '$' ]: assetID });
-        const layers    = inventory.getLayoutLayers ( asset );
 
         const resources = {
             fonts:      inventory.fonts,
@@ -31,18 +30,34 @@ export class AssetLayout {
 
         // this.context    = context;
 
-        let items = [];
-        for ( const layer of layers ) {
-            context [ '$$' ] = '';
-            items.push ( this.layout ( layer, context, resources ));
-        }
-        this.svg = `<g>${ items.join ( '' )}</g>`;
+        const layoutNameList = inventory.getAssetField ( asset, 'layout', '' );
+        this.svg = this.layoutList ( layoutNameList, context, inventory, []);
     }
 
     //----------------------------------------------------------------//
-    layout ( layout, context, resources ) {
+    layoutList ( layoutNameList, context, inventory, stack ) {
+
+        const layoutNames = inventory.tokenizeLayoutNames ( layoutNameList );
+
+        let items = [];
+        for ( const layoutName of layoutNames ) {
+            context [ '$$' ] = '';
+            items.push ( this.layoutSingle ( layoutName, context, inventory, stack ));
+        }
+        return `<g>${ items.join ( '' )}</g>`;
+    }
+
+    //----------------------------------------------------------------//
+    layoutSingle ( layoutName, context, inventory, stack ) {
+
+        const layout = inventory.layouts [ layoutName ]; 
+        if ( !layout ) return;
 
         if ( this.dpi && ( layout.dpi !== this.dpi )) return;
+
+        if ( stack.includes ( layoutName )) return;
+        stack.push ( layoutName );
+        
 
         this.width      = Math.max ( this.width, layout.width );
         this.height     = Math.max ( this.height, layout.height );
@@ -105,6 +120,14 @@ export class AssetLayout {
                     break;
                 }
 
+                case LAYOUT_COMMAND.DRAW_LAYOUT: {
+
+                    const layoutNameList = command.template ( context );
+                    svg = this.layoutList ( layoutNameList, context, inventory, stack );
+
+                    break;
+                }
+
                 case LAYOUT_COMMAND.DRAW_SVG: {
 
                     svg = command.template && command.template ( context ) || false;
@@ -112,6 +135,11 @@ export class AssetLayout {
                 }
 
                 case LAYOUT_COMMAND.DRAW_TEXT_BOX: {
+
+                    const resources = {
+                        fonts:  inventory.fonts,
+                        icons:  inventory.icons,
+                    };
 
                     const fitter = new TextFitter ( resources, x, y, w, h, command.vJustify );
 
@@ -134,6 +162,8 @@ export class AssetLayout {
                 items.push ( svg );
             }
         }
+
+        stack.pop ();
 
         const svg = items.join ( '' );
         context [ '$$' ] = svg;

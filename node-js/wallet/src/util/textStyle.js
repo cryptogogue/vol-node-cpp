@@ -1,14 +1,33 @@
 /* eslint-disable no-whitespace-before-property */
 
 import * as color                   from './color';
+import { JUSTIFY }                  from './textLayout';
 import _                            from 'lodash';
 
 // https://regex101.com/
 const COLOR_REGEX           = /#[0-9a-fA-F]+/;
-const FONT_SCALE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)%/;
+const NAMED_PARAM_REGEX     = /\w+:[\w-.%]+/;
+const NUMBER_REGEX          = /([0-9]*\.[0-9]+)|([0-9]+)/;
+const PERCENTAGE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)%/;
 const POINT_SIZE_REGEX      = /([0-9]*\.[0-9]+)|([0-9]+)p/;
+const SIMPLE_COMMAND_REGEX  = /^[biulrc]$/;
 const STYLE_COMMAND_REGEX   = /<.*?>/;
 const WS_REGEX              = /\s+/;
+
+const PARAM_TYPE = {
+    COLOR:          'COLOR',
+    NUMBER:         'NUMBER',
+    PERCENTAGE:     'PERCENTAGE',
+    POINT_SIZE:     'POINT_SIZE',
+    STRING:         'STRING',
+    UNKNOWN:        'UNKNOWN',
+};
+
+const PARAM_NAME = {
+    ICON_Y:         'icon_y',
+    ICON_FIT:       'icon_fit',
+    UNDERLINE:      'underline',
+};
 
 //================================================================//
 // parseTextStyles
@@ -73,7 +92,7 @@ export function parse ( text, baseStyle ) {
                 buffer += text.slice ( 0, index );
             }
 
-            const slice = () => {
+            const tokenize = () => {
                 return match.slice ( 2, match.length - 1 ).split ( WS_REGEX );
             }
 
@@ -87,7 +106,7 @@ export function parse ( text, baseStyle ) {
                     }
 
                     flush ();
-                    const iconNames = slice ();
+                    const iconNames = tokenize ();
 
                     for ( let iconName of iconNames ) {
                         pushStyle ({ icon: iconName });
@@ -105,7 +124,7 @@ export function parse ( text, baseStyle ) {
                     }
 
                     flush ();
-                    const style = parseStyle ( slice ());
+                    const style = parseStyle ( tokenize ());
 
                     if ( style ) {
                         pushStyle ( style );
@@ -154,6 +173,36 @@ export function parse ( text, baseStyle ) {
 }
 
 //----------------------------------------------------------------//
+const parseParam = ( param ) => {
+
+
+    let type = PARAM_TYPE.STRING;
+    let value = param;
+
+    if ( COLOR_REGEX.test ( param )) {
+        type    = PARAM_TYPE.COLOR;
+        value   = color.fromHex ( param );
+    }
+    else if ( PERCENTAGE_REGEX.test ( param )) {
+        type    = PARAM_TYPE.PERCENTAGE;
+        value   = Number ( param.slice ( 0, param.length - 1 )) / 100;
+    }
+    else if ( POINT_SIZE_REGEX.test ( param )) {
+        type    = PARAM_TYPE.POINT_SIZE;
+        value   = Number ( param.slice ( 0, param.length - 1 ));
+    }
+    else if ( NUMBER_REGEX.test ( param )) {
+        type    = PARAM_TYPE.NUMBER;
+        value   = Number ( param );
+    }
+    
+    return {
+        type:   type,
+        value:  value,
+    };
+}
+
+//----------------------------------------------------------------//
 const parseStyle = ( params ) => {
 
     let style = false;
@@ -162,23 +211,84 @@ const parseStyle = ( params ) => {
         if ( param.length === 0 ) continue;
         style = style || {};
 
-        if ( param === 'b' ) {
-            style.bold = true;
+        if ( SIMPLE_COMMAND_REGEX.test ( param )) {
+
+            switch ( param ) {
+                case 'b':
+                    style.bold = true;
+                    break;
+                case 'i':
+                    style.italic = true;
+                    break;
+                case 'u':
+                    style.underline = true;
+                    break;
+                case 'l':
+                    style.hJustify = JUSTIFY.HORIZONTAL.LEFT;
+                    break;
+                case 'r':
+                    style.hJustify = JUSTIFY.HORIZONTAL.RIGHT;
+                    break;
+                case 'c':
+                    style.hJustify = JUSTIFY.HORIZONTAL.CENTER;
+                    break;
+            }
         }
-        else if ( param === 'i' ) {
-            style.italic = true;
-        }
-        else if ( COLOR_REGEX.test ( param )) {
-            style.color = color.fromHex ( param );
-        }
-        else if ( FONT_SCALE_REGEX.test ( param )) {
-            style.scale = Number ( param.slice ( 0, param.length - 1 )) / 100;
-        }
-        else if ( POINT_SIZE_REGEX.test ( param )) {
-            style.size = Number ( param.slice ( 0, param.length - 1 ));
+        else if ( NAMED_PARAM_REGEX.test ( param )) {
+
+            const pair = param.split ( ':' );
+            const name = pair [ 0 ];
+            param = pair [ 1 ];
+
+            const paramInfo = parseParam ( param );
+
+            switch ( name ) {
+                
+                case PARAM_NAME.ICON_Y:
+                    if ( paramInfo.type === PARAM_TYPE.PERCENTAGE ) {
+                        style.iconY = paramInfo.value;
+                    }
+                    break;
+
+                case PARAM_NAME.ICON_FIT:
+                    if ( paramInfo.type === PARAM_TYPE.STRING ) {
+                        style.iconFit = paramInfo.value;
+                    }
+                    break;
+
+                case PARAM_NAME.UNDERLINE:
+                    if ( paramInfo.type === PARAM_TYPE.NUMBER ) {
+                        style.underline = paramInfo.value > 0;
+                        style.underlineWeight = paramInfo.value;
+                    }
+                    break;
+            }
         }
         else {
-            style.font = param;
+
+            const paramInfo = parseParam ( param );
+
+            switch ( paramInfo.type ) {
+
+                case PARAM_TYPE.COLOR:
+                    style.color = paramInfo.value;
+                    break;
+
+                case PARAM_TYPE.NUMBER:
+                    break;
+
+                case PARAM_TYPE.PERCENTAGE:
+                    style.scale = paramInfo.value;
+                    break;
+
+                case PARAM_TYPE.POINT_SIZE:
+                    style.size = paramInfo.value;
+                    break;
+
+                case PARAM_TYPE.STRING:
+                    style.font = param;
+                    break;
+            }
         }
     }
     return style;

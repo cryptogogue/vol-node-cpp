@@ -13,6 +13,14 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+void Block::affirmHash () {
+
+    if ( !this->mSignature.getDigest ()) {
+        this->sign ( CryptoKey ());
+    }
+}
+
+//----------------------------------------------------------------//
 bool Block::apply ( Ledger& ledger ) const {
 
     if ( ledger.getVersion () != this->mHeight ) return false;
@@ -190,6 +198,12 @@ size_t Block::countTransactions () const {
 }
 
 //----------------------------------------------------------------//
+string Block::getHash () const {
+
+    return this->mSignature.getDigest ().toString ();
+}
+
+//----------------------------------------------------------------//
 size_t Block::getHeight () const {
 
     return this->mHeight;
@@ -228,6 +242,12 @@ size_t Block::getScore () const {
 u64 Block::getTime () const {
 
     return this->mTime;
+}
+
+//----------------------------------------------------------------//
+bool Block::isGenesis () const {
+
+    return ( this->mHeight == 0 );
 }
 
 //----------------------------------------------------------------//
@@ -322,7 +342,8 @@ void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
     serializer.serialize ( "time", iso8601 );
     this->mTime = Format::fromISO8601 ( iso8601 );
     
-    if ( this->mHeight > 0 ) {
+    if ( !this->isGenesis ()) {
+    
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
         serializer.serialize ( "allure",        this->mAllure );
@@ -330,6 +351,8 @@ void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
     
     serializer.serialize ( "signature",     this->mSignature );
     serializer.serialize ( "transactions",  this->mTransactions );
+    
+    this->affirmHash ();
 }
 
 //----------------------------------------------------------------//
@@ -340,7 +363,7 @@ void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer 
     string iso8601 = Format::toISO8601 ( this->mTime );
     serializer.serialize ( "time", iso8601 );
     
-    if ( this->mHeight > 0 ) {
+     if ( !this->isGenesis ()) {
         
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );

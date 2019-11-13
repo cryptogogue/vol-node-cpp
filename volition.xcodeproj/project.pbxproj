@@ -268,6 +268,9 @@
 		CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */; };
 		CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */; };
 		CDDB4BBC233374B100EEAA60 /* HTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BBB233374B100EEAA60 /* HTTP.h */; };
+		CDE9F7782375380600DB62EF /* AbstractChainRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE9F7742375380600DB62EF /* AbstractChainRecorder.h */; };
+		CDE9F7792375380600DB62EF /* SimpleChainRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE9F7752375380600DB62EF /* SimpleChainRecorder.cpp */; };
+		CDE9F77A2375380600DB62EF /* SimpleChainRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE9F7762375380600DB62EF /* SimpleChainRecorder.h */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -832,6 +835,9 @@
 		CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKeyInfo.h; path = src/volition/CryptoKeyInfo.h; sourceTree = "<group>"; };
 		CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResetChainHandler.h; path = "src/volition/web-miner-api/ResetChainHandler.h"; sourceTree = "<group>"; };
 		CDDB4BBB233374B100EEAA60 /* HTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTP.h; path = src/volition/HTTP.h; sourceTree = "<group>"; };
+		CDE9F7742375380600DB62EF /* AbstractChainRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractChainRecorder.h; path = src/volition/AbstractChainRecorder.h; sourceTree = "<group>"; };
+		CDE9F7752375380600DB62EF /* SimpleChainRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleChainRecorder.cpp; path = src/volition/SimpleChainRecorder.cpp; sourceTree = "<group>"; };
+		CDE9F7762375380600DB62EF /* SimpleChainRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimpleChainRecorder.h; path = src/volition/SimpleChainRecorder.h; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -1140,6 +1146,7 @@
 				CD762ACC2328256D005AC85D /* entitlements */,
 				CD4665AA20BFE49000A02D55 /* ledger */,
 				CD0C3E0F20C14410006E3B1C /* miner */,
+				CDE9F771237537E600DB62EF /* recorder */,
 				CDED587020BCDBD7003A2969 /* router */,
 				CD36664720F72F94000E0B43 /* serialization */,
 				CD8BAE2C21EBAEBE00B5040E /* squap */,
@@ -1391,6 +1398,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CDE9F771237537E600DB62EF /* recorder */ = {
+			isa = PBXGroup;
+			children = (
+				CDE9F7742375380600DB62EF /* AbstractChainRecorder.h */,
+				CDE9F7752375380600DB62EF /* SimpleChainRecorder.cpp */,
+				CDE9F7762375380600DB62EF /* SimpleChainRecorder.h */,
+			);
+			name = recorder;
+			sourceTree = "<group>";
+		};
 		CDED581320BA1EF7003A2969 /* 3rd-party */ = {
 			isa = PBXGroup;
 			children = (
@@ -1476,6 +1493,7 @@
 				CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */,
 				CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */,
 				CD4E81CE2105941A007DA585 /* TheTransactionBodyFactory.h in Headers */,
+				CDE9F7782375380600DB62EF /* AbstractChainRecorder.h in Headers */,
 				CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */,
 				CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */,
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
@@ -1553,6 +1571,7 @@
 				CDBFD54F218B8999002AB0C3 /* SendAssets.h in Headers */,
 				CDF8AD5621F2D106000E285F /* Transactions.h in Headers */,
 				CDB8B40221ACC874004EE816 /* AccountKeyListHandler.h in Headers */,
+				CDE9F77A2375380600DB62EF /* SimpleChainRecorder.h in Headers */,
 				CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */,
 				CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
@@ -1781,7 +1800,7 @@
 		CD9345BA2093EB140077BAD4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1120;
 				ORGANIZATIONNAME = "Patrick Meehan";
 				TargetAttributes = {
 					CD0C3E3F20C86D88006E3B1C = {
@@ -1975,6 +1994,7 @@
 				CD4E81CB2105941A007DA585 /* AbstractTransactionBody.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
+				CDE9F7792375380600DB62EF /* SimpleChainRecorder.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */,
 				CD73D82C2166D68700F43CC7 /* SimMiner.cpp in Sources */,
 				CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */,

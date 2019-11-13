@@ -25,6 +25,7 @@ const MEDIA_VIDEO       = 'MEDIA_VIDEO';
 const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION            = 'SCHEMA_BUILDER_ADDING_ASSET_DEFINITION';
 const SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD      = 'SCHEMA_BUILDER_ADDING_ASSET_DEFINITION_FIELD';
 const SCHEMA_BUILDER_ADDING_DRAW_BARCODE                = 'SCHEMA_BUILDER_ADDING_DRAW_BARCODE';
+const SCHEMA_BUILDER_ADDING_DRAW_LAYOUT                 = 'SCHEMA_BUILDER_ADDING_DRAW_LAYOUT';
 const SCHEMA_BUILDER_ADDING_DRAW_SVG                    = 'SCHEMA_BUILDER_ADDING_DRAW_SVG';
 const SCHEMA_BUILDER_ADDING_DRAW_TEXT                   = 'SCHEMA_BUILDER_ADDING_DRAW_TEXT';
 const SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX               = 'SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX';
@@ -35,6 +36,7 @@ const SCHEMA_BUILDER_ADDING_SCHEMA                      = 'SCHEMA_BUILDER_ADDING
 
 export const LAYOUT_COMMAND = {
     DRAW_BARCODE:       'DRAW_BARCODE',
+    DRAW_LAYOUT:        'DRAW_LAYOUT',
     DRAW_SVG:           'DRAW_SVG',
     DRAW_TEXT_BOX:      'DRAW_TEXT_BOX',
 };
@@ -311,6 +313,24 @@ class SchemaBuilder {
             qrType:     qrType || qrcode.CONSTS.AUTOSELECT_TYPE,
         };
         return this.drawBarcode ( template, x, y, size, size, qrcode.CONSTS.ID, options );
+    }
+
+    //----------------------------------------------------------------//
+    drawLayout ( template ) {
+
+        assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
+
+        this.push (
+            SCHEMA_BUILDER_ADDING_DRAW_LAYOUT,
+            {
+                type:           LAYOUT_COMMAND.DRAW_LAYOUT,
+                template:       template || '',
+            },
+            ( layout, item ) => {
+                layout.commands.push ( item );
+            }
+        );
+        return this;
     }
 
     //----------------------------------------------------------------//
@@ -611,6 +631,7 @@ class SchemaBuilder {
 
         assert (
             this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_BARCODE ) ||
+            this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_LAYOUT ) ||
             this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_SVG ) ||
             this.popTo ( SCHEMA_BUILDER_ADDING_DRAW_TEXT_BOX )
         );

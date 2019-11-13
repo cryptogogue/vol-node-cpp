@@ -52,6 +52,7 @@ target_sources ( volition-lib
         src/volition/PathEntitlement.cpp
         src/volition/RouteTable.cpp
         src/volition/Signature.cpp
+        src/volition/SimpleChainRecorder.cpp
         src/volition/SquapFactory.cpp
         src/volition/SyncChainTask.cpp
         src/volition/TheContext.cpp

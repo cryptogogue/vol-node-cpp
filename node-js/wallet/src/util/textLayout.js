@@ -27,6 +27,11 @@ export const FONT_FACE = {
     BOLD_ITALIC:    'boldItalic',
 };
 
+export const ICON_FIT = {
+    ASCENDER:   'ascender',
+    NONE:       'none',
+}
+
 export const JUSTIFY = {
     HORIZONTAL: {
         LEFT:       'LEFT',
@@ -77,6 +82,10 @@ class TextLine {
 
         const pushSegment = () => {
 
+            if ( this.segments.length === 0 ) {
+                this.hJustify = style.hJustify || this.hJustify;
+            }
+
             const fontMetrics = this.getFontMetrics ( style );
             if ( !fontMetrics ) return;
 
@@ -91,35 +100,56 @@ class TextLine {
             if ( style.icon ) {
 
                 const icon = this.icons [ style.icon ] || DEFAULT_ICON_SVG;
+                const iconY = style.iconY || 0;
 
-                const width = ascender * ( icon.width / icon.height );
-                const height = ascender;  
+                const fitMode = style.iconFit || ICON_FIT.ASCENDER;
+
+                let height;
+
+                switch ( fitMode ) {
+
+                    case ICON_FIT.NONE:
+                        height = icon.height;
+                        break;
+
+                    case ICON_FIT.ASCENDER:
+                    default:
+                        height = ascender;
+                }
+
+                const width = height * ( icon.width / icon.height );
+                const scale = height / icon.height;
 
                 const x = this.cursor;
-                const y = -height;
+                const y = (( ascender - height ) / 2 ) - ( ascender + ( height * iconY ));
+
+                let bounds = rect.make ( x, y, x + width, y + height );
 
                 this.segments.push ({
-                    svg:        `<g transform='translate ( ${ x }, ${ y }) scale ( ${ ascender / icon.height })'>${ icon.svg }</g>`,
+                    svg:        `<g transform='translate ( ${ x }, ${ y }) scale ( ${ scale })'>${ icon.svg }</g>`,
                     style:      style,
+                    bounds:     bounds,
                 });
 
-                this.bounds = rect.grow ( this.bounds, rect.make ( x, y, x + width, y + height ));
+                this.bounds = rect.grow ( this.bounds, bounds );
                 this.cursor += width;
-                return;
             }
+            else {
 
-            const advance   = font.getAdvanceWidth ( buffer, size, OPENTYPE_OPTIONS );
-            const path      = font.getPath ( buffer, this.cursor, 0, size, OPENTYPE_OPTIONS );
-            let bb          = path.getBoundingBox ();
-            bb              = rect.make ( this.cursor, bb.y1, this.cursor + advance, bb.y2 );
+                const advance   = font.getAdvanceWidth ( buffer, size, OPENTYPE_OPTIONS );
+                const path      = font.getPath ( buffer, this.cursor, 0, size, OPENTYPE_OPTIONS );
+                let bounds      = path.getBoundingBox ();
+                bounds          = rect.make ( this.cursor, bounds.y1, this.cursor + advance, bounds.y2 );
 
-            this.segments.push ({
-                path:       path,
-                style:      style,
-            });
+                this.segments.push ({
+                    path:       path,
+                    style:      style,
+                    bounds:     bounds,
+                });
 
-            this.bounds = rect.grow ( this.bounds, bb );
-            this.cursor += advance;
+                this.bounds = rect.grow ( this.bounds, bounds );
+                this.cursor += advance;
+            }
         }
 
         const grow = () => {
@@ -148,6 +178,8 @@ class TextLine {
 
     //----------------------------------------------------------------//
     constructor ( context ) {
+
+        this.hJustify       = context.hJustify || JUSTIFY.HORIZONTAL.LEFT;
 
         this.fonts          = context.fonts;
         this.fontScale      = context.fontScale;
@@ -247,16 +279,68 @@ class TextLine {
         const paths = [];
         paths.push ( `<g transform = 'translate ( ${ x }, ${ y })'>` );
 
+        let underline = false;
+        const underlines = [];
+
+        const finishUnderline = () => {
+            if ( underline ) {
+                underlines.push ( underline );
+                underline = false;
+            }
+        }
+
+        const nextUnderline = ( x0, x1, c, w ) => {
+
+            if ( underline ) {
+                underline.x1 = x0;
+                finishUnderline ();
+            }
+            underline = {
+                x0:         x0,
+                x1:         x1,
+                color:      c,
+                weight:     w,
+            };
+        }
+
+        // render segments
         for ( let segment of this.segments ) {
+
             const style = segment.style;
+            const bounds = segment.bounds;
             const hexColor = color.toHexRGB ( style.color );
             const opacity = style.color.a || 1;
 
             paths.push ( `<g fill='${ hexColor }' opacity='${ opacity }'>${ segment.svg || segment.path.toSVG ()}</g>` );
+
+            if ( style.underline ) {
+                nextUnderline ( bounds.x0, bounds.x1, style.color, style.underlineWeight );
+            }
+            else {
+                finishUnderline ();
+            }
         }
+        finishUnderline ();
+
+        // render underlines
+        for ( let underline of underlines ) {
+
+            const x0 = underline.x0;
+
+            const width = underline.x1 - x0;
+            const height = underline.weight;
+            
+            const y0 = this.descender - height;
+
+            const hexColor = color.toHexRGB ( underline.color );
+            const opacity = underline.color.a || 1;
+
+            // TODO: support underline styling from text box
+            paths.push ( `<g fill='${ hexColor }' opacity='${ opacity }'><rect x='${ x0 }' y=${ y0 } width='${ width }' height='${ height }'/></g>` );
+        }
+
         paths.push ( '</g>' );
         
-        // return font.getPath ( this.text, this.xOff, this.yOff, fontSize ).toSVG ();
         return paths.join ( '' );
     }
 }
@@ -294,10 +378,12 @@ export class TextBox {
         this.lines = [];
 
         this.baseStyle = {
-            font:   fontName,
-            size:   fontSize,
-            color:  color.make ( 0, 0, 0, 1 ),
-            scale:  1,
+            font:               fontName,
+            size:               fontSize,
+            color:              color.make ( 0, 0, 0, 1 ),
+            scale:              1,
+            underline:          false,
+            underlineWeight:    2,
         }
 
         this.styledText     = textStyle.parse ( text, this.baseStyle );
@@ -357,7 +443,7 @@ export class TextBox {
             const lineWidth = rect.width ( line.bounds );
 
             // horizontal layout
-            switch ( this.hJustify ) {
+            switch ( line.hJustify ) {
 
                 case JUSTIFY.HORIZONTAL.LEFT:
                     line.xOff = this.bounds.x0 + lineLeft;

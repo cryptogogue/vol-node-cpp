@@ -190,6 +190,15 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static void toJSONFile ( const AbstractSerializable& serializable, string filename, unsigned int indent = 4, int step = -1 ) {
+
+        fstream outStream;
+        outStream.open ( filename, ios_base::out );
+        ToJSONSerializer::toJSON ( serializable, outStream, indent, step );
+        outStream.close ();
+    }
+    
+    //----------------------------------------------------------------//
     static string toJSONString ( const AbstractSerializable& serializable ) {
 
         stringstream strStream;
