@@ -59,16 +59,17 @@ DONE: upgrade & rebuild versioned store; restore from chain
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
+node - provision any asset
+node - handle unrecognized account - reject transactions
 
 wallet - (simple) tagging sets of cards and deck building
+wallet - discard all (by set)
 
 inventory view - remove hardcoded card size
 inventory view - handle different sized cards
 inventory view - better error reporting from card layouts (missing fonts, icons)
 
-node - provision any asset
-wallet - discard all (by set)
-node - handle unrecognized account - reject transactions
+layout tool - schema from spreadsheet
 
 ----------------------------------------------------------------
 MVP
