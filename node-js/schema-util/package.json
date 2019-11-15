@@ -5,6 +5,7 @@
   "dependencies": {
     "dotenv": "^6.1.0",
     "esm": "^3.2.25",
+    "handlebars": "^4.5.1",
     "npm": "^6.4.1",
     "xlsx": "^0.14.4"
   },

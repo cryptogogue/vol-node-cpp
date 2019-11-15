@@ -60,17 +60,20 @@ public:
     }
 
     //----------------------------------------------------------------//
+    void                affirmHash                          ();
     bool                apply                               ( Ledger& ledger ) const;
     static int          compare                             ( const Block& block0, const Block& block1 );
                         Block                               ();
                         Block                               ( string minerID, time_t now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
                         ~Block                              ();
     size_t              countTransactions                   () const;
+    string              getHash                             () const;
     size_t              getHeight                           () const;
     string              getMinerID                          () const;
     size_t              getScore                            () const;
     const Signature&    getSignature                        () const;
     u64                 getTime                             () const;
+    bool                isGenesis                           () const;
     bool                isInRewriteWindow                   ( time_t now ) const;
     bool                isParent                            ( const Block& block ) const;
     void                pushTransaction                     ( shared_ptr < Transaction > transaction );

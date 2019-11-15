@@ -5,6 +5,7 @@
 #include <volition/Block.h>
 #include <volition/FileSys.h>
 #include <volition/RouteTable.h>
+#include <volition/SimpleChainRecorder.h>
 #include <volition/Singleton.h>
 #include <volition/TheContext.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -86,6 +87,13 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "simple-recorder-folder", "srf", "path to simple recorder folder" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "simple-recorder-folder" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "solo", "s", "operate in solo mode" )
                 .required ( false )
                 .argument ( "value" )
@@ -110,18 +118,19 @@ protected:
         }
 //      this->printProperties ();
         
-        string genesis          = configuration.getString ( "genesis" );
-        string keyfile          = configuration.getString ( "keyfile" );
-        int port                = configuration.getInt ( "port", 9090 );
-        string nodelist         = configuration.getString ( "nodelist", "" );
-        string redisConf        = configuration.getString ( "redis-conf", "./redis.conf" );
-        string redisHost        = configuration.getString ( "redis-conf", "127.0.0.1" );
-        string redisFolder      = configuration.getString ( "redis-folder", "./redis" );
-        int redisPort           = configuration.getInt ( "redis-port", 0 );
-        bool solo               = configuration.getBool ( "solo", false );
-        string sslCertFile      = configuration.getString ( "openSSL.server.certificateFile", "" );
+        string genesis                  = configuration.getString ( "genesis" );
+        string keyfile                  = configuration.getString ( "keyfile" );
+        int port                        = configuration.getInt ( "port", 9090 );
+        string nodelist                 = configuration.getString ( "nodelist", "" );
+        string redisConf                = configuration.getString ( "redis-conf", "./redis.conf" );
+        string redisHost                = configuration.getString ( "redis-conf", "127.0.0.1" );
+        string redisFolder              = configuration.getString ( "redis-folder", "./redis" );
+        int redisPort                   = configuration.getInt ( "redis-port", 0 );
+        string simpleRecorderFolder     = configuration.getString ( "simple-recorder-folder", "" );
+        bool solo                       = configuration.getBool ( "solo", false );
+        string sslCertFile              = configuration.getString ( "openSSL.server.certificateFile", "" );
         
-        string minerID          = to_string ( port );
+        string minerID                  = to_string ( port );
     
         Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
         
@@ -148,15 +157,16 @@ protected:
                 webMiner.setSolo ( true );
             }
             
-            webMiner.setPersistenceProvider ( persistenceProvider );
+            LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
+            if ( !Volition::FileSys::exists ( genesis )) {
+                LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+                return Application::EXIT_CONFIG;
+            }
+            webMiner.loadGenesis ( genesis );
             
-            if ( webMiner.getBestBranch () == NULL ) {
-                LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
-                if ( !Volition::FileSys::exists ( genesis )) {
-                    LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
-                    return Application::EXIT_CONFIG;
-                }
-                webMiner.loadGenesis ( genesis );
+            if ( simpleRecorderFolder.size () > 0 ) {
+                shared_ptr < Volition::AbstractChainRecorder > chainRecorder = make_shared < Volition::SimpleChainRecorder >( webMiner, simpleRecorderFolder );
+                webMiner.setChainRecorder ( chainRecorder );
             }
             
             LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());

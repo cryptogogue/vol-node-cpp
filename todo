@@ -47,26 +47,43 @@ DONE: commands for test account
 DONE: provision every asset in set
 DONE: provision beta account - generate key
 DONE: add banner at the top of wallet showing mining network name
+DONE: implement massively complicated layout engine
+DONE: add support for QR codes
+DONE: support loading genesis chain
+DONE: layout engine - implement underline and divider
+DONE: layout engine - bump icons up and down
+DONE: layout engine - nested layouts
+DONE: layout engine - set underline style for text box (color, weight)
+DONE: layout engine - named text styles (implemented as spreadsheet macros)
+DONE: upgrade & rebuild versioned store; restore from chain
 
-implement massively complicated layout engine
-add support for QR codes
+node - batch transactions in solo mode
+node - implement way to expire transactions
 
-rework node control endpoints into "control" transactions
+wallet - (simple) tagging sets of cards and deck building
 
-support loading genesis chain
-implement way to expire transactions
-provision any asset
-discard all (by set)
-handle unrecognized account - reject transactions
+inventory view - remove hardcoded card size
+inventory view - handle different sized cards
+inventory view - better error reporting from card layouts (missing fonts, icons)
+
+node - provision any asset
+wallet - discard all (by set)
+node - handle unrecognized account - reject transactions
 
 ----------------------------------------------------------------
 MVP
 
-logic for attachments (i.e. equip one asset with another)
-
-tagging sets of cards and deck building
+layout engine - line spacing
+layout engine - kerning
+layout engine - paragraph styles (leading indent)
+layout engine - justify text
 
 batch transfer assets to other accounts
+rework node control endpoints into "control" transactions
+
+version versioned store (store metadata)
+
+logic for attachments (i.e. equip one asset with another)
 
 display all (historic) transactions of selected account
 customize asset fields - images, text

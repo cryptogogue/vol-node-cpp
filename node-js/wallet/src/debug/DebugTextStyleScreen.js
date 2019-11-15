@@ -5,7 +5,7 @@ import { InventoryService }                 from '../InventoryService';
 import { InventoryView }                    from '../InventoryView';
 import { Service, useService }              from '../Service';
 import { SingleColumnContainerView }        from '../SingleColumnContainerView'
-import * as textStyles                      from '../util/textStyle';
+import * as textStyle                       from '../util/textStyle';
 import { action, computed, extendObservable, runInAction, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -19,7 +19,7 @@ export const DebugTextStyleScreen = observer (( props ) => {
     const [ text, setText ]     = useState ( '' );
 
     const onSubmit = () => {
-        textStyles.parse ();
+        textStyle.parse ( text );
     }
 
     return (

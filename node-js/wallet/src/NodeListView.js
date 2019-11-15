@@ -3,7 +3,7 @@
 import { NODE_TYPE, NODE_STATUS }   from './AppStateService';
 import React, { useState }          from 'react';
 import { observer }                 from 'mobx-react';
-import { Button, Form, Segment, Icon }    from 'semantic-ui-react';
+import { Button, Form, Input, Label, List, Icon, Segment }    from 'semantic-ui-react';
 //import validator                    from 'validator';
 
 //================================================================//
@@ -12,6 +12,7 @@ import { Button, Form, Segment, Icon }    from 'semantic-ui-react';
 export const NodeListView = observer (( props ) => {
     
     const [ nodeURL, setNodeURL ] = useState ( '' );
+    const [ nodeUrlError, setNodeUrlError ] = useState ( '' );
 
     const appState = props.appState;
     const nodes = appState.nodes;
@@ -29,7 +30,7 @@ export const NodeListView = observer (( props ) => {
             appState.affirmNodeURL ( nodeURL.toLowerCase().slice( 0, -1 ));
         }
         else if ( !nodeURL.startsWith ( 'http' )) {
-            console.log ( 'URL must start with http or https' );
+            setNodeUrlError ( 'URL must start with http or https' );
         }
         else {
             appState.affirmNodeURL ( nodeURL.toLowerCase() );
@@ -38,7 +39,10 @@ export const NodeListView = observer (( props ) => {
     };
 
     const onClickClear = ( url ) => { appState.deleteNode ( url )};
-    let onChange = ( event ) => { setNodeURL ( event.target.value )};
+    let onChange = ( event ) => {
+        setNodeURL ( event.target.value )
+        setNodeUrlError ( '' );
+    };
 
     let urlList = [];
     for ( let url in nodes ) {
@@ -59,27 +63,37 @@ export const NodeListView = observer (( props ) => {
                 textColor = 'pink';
         }
         urlList.push (
-            <div style = {{ color: textColor, flex: '1 1 auto', float: 'left' }} key = { urlList.length }>
-                <Icon fitted name = 'trash alternate' style = {{ paddingRight: '10px'}} onClick = { () => onClickClear ( url ) }/> { `${ nodeInfo.type } - ${ url }` }
-            </div>
+                <List.Item key = { urlList.length }>
+                    <List.Content floated = 'right'>
+                        <Icon fitted name = 'trash alternate' onClick = {() => onClickClear ( url )}/>
+                    </List.Content>
+                    <List.Content style = {{ textAlign: 'left' }}>
+                        <List.Header style = {{ color: textColor }}>{ nodeInfo.type }</List.Header>
+                        <List.Description>{ url }</List.Description>
+                    </List.Content>
+                </List.Item>
         )
     }
 
     return (
 
         <div>
-            <div style = {{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0 6px', marginBottom: '12px' }}>
+            <List divided relaxed verticalAlign = 'middle' style = {{ padding: '0 3px', width: '100%' }}>
                 { urlList }
-            </div>
+            </List>
             <Form size = "large">
                 <Segment stacked>
-                    <Form.Input
-                        fluid
-                        placeholder = "Node URL"
-                        name = "nodeURL"
-                        value = { nodeURL }
-                        onChange = { onChange }
-                    />
+                    <Form.Field>
+                        <Input
+                            fluid
+                            placeholder = "Node URL"
+                            name = "nodeURL"
+                            type = "url"
+                            value = { nodeURL }
+                            onChange = { onChange }
+                        />
+                        { nodeUrlError && <Label pointing prompt>{ nodeUrlError }</Label> }
+                    </Form.Field>
                     <Button color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClickAdd }>
                         Add
                     </Button>

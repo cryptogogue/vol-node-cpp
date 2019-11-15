@@ -15,6 +15,7 @@
 
 namespace Volition {
 
+class AbstractChainRecorder;
 class AbstractHashable;
 class Block;
 
@@ -33,14 +34,13 @@ protected:
     list < shared_ptr < Transaction >>              mPendingTransactions;
     bool                                            mLazy;
 
-    shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
+    shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
     shared_ptr < Chain >                            mBestBranch;
     set < shared_ptr < Chain >>                     mBranches;
     
     //----------------------------------------------------------------//
     void                    addTransactions         ( Chain& chain, Block& block );
-    void                    extendChain             ( Chain& chain, u64 minTime );
     void                    saveChain               ();
     void                    submitChainRecurse      ( const Chain& chain, size_t blockID );
 
@@ -70,7 +70,7 @@ public:
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
     void                    pushTransaction         ( shared_ptr < Transaction > transaction );
-    void                    setPersistenceProvider  ( shared_ptr < AbstractPersistenceProvider > persistence );
+    void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );

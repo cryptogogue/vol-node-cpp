@@ -108,6 +108,12 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
+    getAssetField ( asset, fieldName, fallback ) {
+
+        return _.has ( asset.fields, fieldName ) ? asset.fields [ fieldName ].value : fallback;
+    }
+
+    //----------------------------------------------------------------//
     @action
     getAssetLayout ( assetID ) {
         if ( !_.has ( this.assetLayouts, assetID )) {
@@ -157,20 +163,17 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
-    getLayoutLayers ( asset ) {
+    hasLayoutsForAsset ( asset ) {
 
-        const LAYOUT_LIST_SEPARATOR_REGEX   = /[\s,]+/;
-        const layers = [];
-
-        let layoutNames = _.has ( asset.fields, 'layout' ) ? asset.fields.layout.value : '';
-        layoutNames = layoutNames.split ( LAYOUT_LIST_SEPARATOR_REGEX );
+        let layoutField = this.getAssetField ( asset, 'layout', '' );
+        let layoutNames = this.tokenizeLayoutNames ( layoutField );
 
         for ( let layoutName of layoutNames ) {
             if ( _.has ( this.layouts, layoutName )) {
-                layers.push ( this.layouts [ layoutName ]);
+                return true;
             }
         }
-        return layers.length > 0 ? layers : false;
+        return false;
     }
 
     //----------------------------------------------------------------//
@@ -208,6 +211,13 @@ export class InventoryService extends Service {
     }
 
     //----------------------------------------------------------------//
+    tokenizeLayoutNames ( layoutNameList ) {
+
+        const LAYOUT_LIST_SEPARATOR_REGEX   = /[\s,]+/;
+        return layoutNameList.split ( LAYOUT_LIST_SEPARATOR_REGEX );
+    }
+
+    //----------------------------------------------------------------//
     async update ( templates, assets ) {
 
         const fetchFont = async ( url ) => {
@@ -227,6 +237,7 @@ export class InventoryService extends Service {
         this.maxHeightInInches = 0;
 
         for ( let template of templates ) {
+
             this.onProgress ( 'Applying Template' );
             await schema.applyTemplate ( template );
 
@@ -291,8 +302,8 @@ export class InventoryService extends Service {
         let assetsWithLayouts = {};
         for ( let assetID in assets ) {
             const asset = assets [ assetID ];
-            if ( this.getLayoutLayers ( asset )) {
-                assetsWithLayouts [ assetID ] = assets [ assetID ];
+            if ( this.hasLayoutsForAsset ( asset )) {
+                assetsWithLayouts [ assetID ] = asset;
             }
         }
 

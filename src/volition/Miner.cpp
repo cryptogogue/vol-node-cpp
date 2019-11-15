@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
 #include <volition/Miner.h>
 #include <volition/TheContext.h>
@@ -220,23 +221,18 @@ void Miner::reset () {
 //----------------------------------------------------------------//
 void Miner::saveChain () {
 
-//    if ( this->mPersistenceProvider ) {
-//        this->mChain.persist ( this->mPersistenceProvider, MASTER_BRANCH );
-//        this->mPersistenceProvider->flush ();
-//    }
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->saveChain ( *this );
+    }
 }
 
 //----------------------------------------------------------------//
-void Miner::setPersistenceProvider ( shared_ptr < AbstractPersistenceProvider > persistence ) {
-    UNUSED ( persistence );
+void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorder ) {
 
-//    this->mPersistenceProvider = persistence;
-//    if ( persistence ) {
-//        this->mChain.takeSnapshot ( persistence, MASTER_BRANCH );
-//    }
-//    else {
-//        this->mBranches;
-//    }
+    this->mChainRecorder = chainRecorder;
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->loadChain ( *this );
+    }
 }
 
 //----------------------------------------------------------------//
