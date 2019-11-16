@@ -125,6 +125,8 @@ class TextLine {
 
                 let bounds = rect.make ( x, y, x + width, y + height );
 
+                if ( x === NaN ) throw 'xOff is NaN!';
+
                 this.segments.push ({
                     svg:        `<g transform='translate ( ${ x }, ${ y }) scale ( ${ scale })'>${ icon.svg }</g>`,
                     style:      style,
@@ -272,6 +274,8 @@ class TextLine {
 
     //----------------------------------------------------------------//
     toSVG ( xOff, yOff ) {
+
+        if ( this.bounds === false ) return;
 
         const x = this.xOff + ( xOff || 0 );
         const y = this.yOff + ( yOff || 0 );
@@ -438,6 +442,7 @@ export class TextBox {
         for ( let i in this.lines ) {
 
             const line = this.lines [ i ];
+            if ( line.bounds === false ) continue;
 
             const lineLeft = -line.bounds.x0;
             const lineWidth = rect.width ( line.bounds );
