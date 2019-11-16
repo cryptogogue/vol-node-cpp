@@ -8,7 +8,7 @@
     "handlebars": "^4.5.1",
     "lodash": "^4.17.15",
     "npm": "^6.13.0",
-    "xlsx": "^0.14.4"
+    "xlsx": "^0.14.5"
   },
   "scripts": {
     "start": "node -r esm main.js"

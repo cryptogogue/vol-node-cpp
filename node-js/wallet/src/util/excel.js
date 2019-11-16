@@ -1,6 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { buildSchema, op }      from '../wallet/src/Schema/SchemaBuilder.js';
 import fs                       from 'fs';
 import _                        from 'lodash';
 import XLSX                     from 'xlsx';
@@ -101,9 +100,9 @@ export class Worksheet {
 export class Workbook {
 
     //----------------------------------------------------------------//
-    constructor ( filename ) {
+    constructor ( blobOrPath, options ) {
 
-        this.book           = XLSX.readFile ( filename );
+        this.book           = XLSX.read ( blobOrPath, options || { type: 'file' }); // defaut to file path
         this.sheets         = this.book.Sheets;
         this.sheetNames     = this.book.SheetNames;
     }

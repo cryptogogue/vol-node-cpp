@@ -1,6 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
-import * as excel               from './excel'
+import * as excel               from '../wallet/src/util/excel'
 import { buildSchema, op }      from '../wallet/src/Schema/SchemaBuilder';
 import { JUSTIFY }              from '../wallet/src/util/textLayout';
 import fs                       from 'fs';

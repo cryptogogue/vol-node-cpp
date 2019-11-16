@@ -62,6 +62,8 @@ node - implement way to expire transactions
 node - provision any asset
 node - handle unrecognized account - reject transactions
 
+node/schema - provision updated assets; link asset types between schemas (asset versioning)
+
 wallet - (simple) tagging sets of cards and deck building
 wallet - discard all (by set)
 
