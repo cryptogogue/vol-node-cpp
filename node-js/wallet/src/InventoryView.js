@@ -72,6 +72,9 @@ export const InventoryView = observer (( props ) => {
                             </Modal.Content>
                         </Modal>
                     }
+                    <Icon name = 'circle' />
+                    <Icon name = 'ellipsis horizontal'/>
+                    <Icon name = 'zoom' />
                 </Card>
             );
         }

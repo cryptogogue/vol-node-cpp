@@ -40,6 +40,10 @@
     margin-bottom: auto;
 }
 
+.ui.card:hover .circle, .ui.card:hover .ellipsis.horizontal, .ui.card:hover .zoom {
+    display: block;
+}
+
 .asset-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -48,4 +52,30 @@
 
 .AutoSizerWrapper {
     height: 100vh;
+}
+
+.ui.card .circle {
+    display: none;
+    font-size: 2em;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+}
+
+.ui.card .ellipsis.horizontal {
+    display: none;
+    font-size: 1.5em;
+    color: white;
+    position: absolute;
+    right: 12px;
+    bottom: 15px;
+}
+
+.ui.card .zoom {
+    display: none;
+    font-size: 2em;
+    color: red;
+    position: absolute;
+    right: 8px;
+    top: 8px;
 }
