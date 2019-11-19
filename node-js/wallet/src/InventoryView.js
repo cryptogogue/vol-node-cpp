@@ -13,26 +13,33 @@ import { Link }                                             from 'react-router-d
 import { Dropdown, Grid, Icon, List, Menu, Card, Group, Modal, Divider } from 'semantic-ui-react';
 import { is }                                               from '@babel/types';
 import { InfiniteScrollView }                               from './InfiniteScrollView';
+import zoom from './assets/zoom.png';
 
 //================================================================//
 // InventoryView
 //================================================================//
 export const InventoryView = observer (( props ) => {
 
-    const [ selection, setSelection ]   = useState ({});
+    const [ zoomedAsset, setZoomedAsset ]   = useState ( false );
 
-    const isSelected = ( asset ) => {
-        return selection [ asset.assetID ] || false;
-    }
-
-    const inventory     = props.inventory;
-    const assetArray    = props.assetArray || inventory.availableAssetsArray;
-    const scale         = props.scale || 1;
+    const controller    = props.controller;
+    const inventory     = controller.inventory;
+    const assetArray    = controller.sortedAssets || inventory.availableAssetsArray;
+    const scale         = controller.scale || 1;
 
     const onClickCard = ( asset ) => {
-        const newSelection = Object.assign ({}, selection );
-        newSelection [ asset.assetID ] = !isSelected ( asset );
-        setSelection ( newSelection );
+
+        if ( controller.isSelected ( asset ) ) {
+            controller.deselectAsset ( asset );
+        }
+        else {
+            controller.selectAsset ( asset );
+        }
+    }
+
+    const onClickZoom = ( asset, e ) => {
+        setZoomedAsset ( asset );
+        e.stopPropagation ();
     }
 
     const assetLayoutCache = [];
@@ -41,7 +48,7 @@ export const InventoryView = observer (( props ) => {
         if ( !assetLayoutCache.includes ( i )) {
             
             const asset = assetArray [ i ];
-            const color = isSelected ( asset ) ? 'red' : 'white';
+            const color = controller.isSelected ( asset ) ? 'red' : 'white';
 
             assetLayoutCache [ i ] = (
                 <Card
@@ -55,26 +62,24 @@ export const InventoryView = observer (( props ) => {
                         inches = { true }
                         scale = { scale }
                     />
-                    { isSelected ( asset ) &&
-                        <Modal style={{ height : 'auto' }} size = "small" open = { isSelected ( asset )}>
-                            <Modal.Content>
-                                <center>
-                                    <h3>Card Info</h3>
-                                    <Divider/>
-                                    <AssetView
-                                        assetId = { asset.assetID }
-                                        inventory = { inventory }
-                                        inches = 'true'
-                                        scale = '1.3'
-                                    />
-                                    <p>Asset ID: { asset.assetID }</p>
-                                </center>
-                            </Modal.Content>
-                        </Modal>
-                    }
+                    <Modal style={{ height : 'auto' }} size = "small" open = { asset === zoomedAsset } onClose = { () => setZoomedAsset ( false )}>
+                        <Modal.Content>
+                            <center>
+                                <h3>Card Info</h3>
+                                <Divider/>
+                                <AssetView
+                                    assetId = { asset.assetID }
+                                    inventory = { inventory }
+                                    inches = 'true'
+                                    scale = '1.3'
+                                />
+                                <p>Asset ID: { asset.assetID }</p>
+                            </center>
+                        </Modal.Content>
+                    </Modal>
                     <Icon name = 'circle' />
                     <Icon name = 'ellipsis horizontal'/>
-                    <Icon name = 'zoom' />
+                    <img className = 'zoom' src = { zoom } onClick = {( e ) => onClickZoom ( asset, e )} />
                 </Card>
             );
         }
@@ -82,9 +87,12 @@ export const InventoryView = observer (( props ) => {
     }
 
     return (
-        <InfiniteScrollView 
-            onGetAsset  = { getAsset }
-            totalCards  = { assetArray.length }
-        />
+        <div style = {{ height: '100%' }}>
+            <div style = {{ display: 'none' }}>{ Object.keys (controller.selection).length }</div>
+            <InfiniteScrollView 
+                onGetAsset  = { getAsset }
+                totalCards  = { assetArray.length }
+            />
+        </div>
     )
 });

@@ -90,7 +90,22 @@ class InventoryScreenController extends Service {
             layoutName:     WEB_LAYOUT,
             sortMode:       SORT_MODE.ALPHA_ATOZ,
             scale:          DEFAULT_SCALE,
+            selection:      {},
         });
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    deselectAsset ( asset ) {
+
+        delete this.selection [ asset.assetID ];
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get hasSelection () {
+
+        return Object.keys ( this.selection ).length !== 0;
     }
 
     //----------------------------------------------------------------//
@@ -100,6 +115,17 @@ class InventoryScreenController extends Service {
         let assetArray = this.inventory.availableAssetsArray;
         assetArray.sort (( asset0, asset1 ) => this.compareForSort ( asset0, asset1 ));
         return assetArray;
+    }
+
+    isSelected ( asset ) {
+        return _.has ( this.selection, asset.assetID );
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    selectAsset ( asset ) {
+
+        this.selection [ asset.assetID ] = asset;
     }
 
     //----------------------------------------------------------------//
@@ -199,6 +225,10 @@ const InventoryFilterMenu = observer (( props ) => {
                 </Dropdown>
             </If>
 
+            <Menu.Item>
+                <Icon name = 'tags' disabled = { !controller.hasSelection }/>
+            </Menu.Item>
+
             <Menu.Menu position = "right">
 
                 <If condition = { printLayout }>
@@ -272,9 +302,7 @@ export const InventoryScreen = observer (( props ) => {
                         <div style = {{ flex: 1 }}>
                             <InventoryView
                                 key         = { `${ controller.sortMode } ${ controller.scale }` }
-                                inventory   = { controller.inventory }
-                                assetArray  = { controller.sortedAssets }
-                                scale       = { controller.scale }
+                                controller   = { controller }
                             />
                         </div>
                     </Otherwise>

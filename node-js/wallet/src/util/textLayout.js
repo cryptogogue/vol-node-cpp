@@ -439,6 +439,7 @@ export class TextBox {
 
             const line = this.lines [ i ];
 
+            if ( line.segments.length === 0 ) continue;
             const lineLeft = -line.bounds.x0;
             const lineWidth = rect.width ( line.bounds );
 

@@ -73,9 +73,8 @@
 
 .ui.card .zoom {
     display: none;
-    font-size: 2em;
-    color: red;
     position: absolute;
     right: 8px;
     top: 8px;
+    width: 15%;
 }
