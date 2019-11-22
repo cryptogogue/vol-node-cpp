@@ -5,7 +5,6 @@ import * as pdf417                  from './util/pdf417';
 import * as qrcode                  from './util/qrcode';
 import { TextFitter, JUSTIFY }      from './util/textLayout';
 import _                            from 'lodash';
-import moize                        from 'moize';
 
 //================================================================//
 // AssetLayout

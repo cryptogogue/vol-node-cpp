@@ -3,6 +3,9 @@
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 
+import * as cardmotron from 'cardmotron/export';
+import * as fgc from 'fgc/export';
+
 import { configure } from 'mobx';
 configure ({
     enforceActions:     'always',
@@ -11,20 +14,7 @@ configure ({
 import { AccountRequestScreen }         from './AccountRequestScreen';
 import { AccountScreen }                from './AccountScreen';
 import { CraftingScreen }               from './CraftingScreen';
-import { DebugAESScreen }               from './debug/DebugAESScreen';
-import { DebugBarcodePDF417Screen }     from './debug/DebugBarcodePDF417Screen';
-import { DebugBarcodeQRScreen }         from './debug/DebugBarcodeQRScreen';
-import { DebugCryptoKeyScreen }         from './debug/DebugCryptoKeyScreen';
-import { DebugDropzoneScreen }          from './debug/DebugDropzoneScreen';
-import { DebugFilePickerScreen }        from './debug/DebugFilePickerScreen';
-import { DebugHandlebarsScreen }        from './debug/DebugHandlebarsScreen';
-import { DebugInfiniteScrollScreen }    from './debug/DebugInfiniteScrollScreen';
-import { DebugMobXScreen }              from './debug/DebugMobXScreen';
-import { DebugPrintScreen }             from './debug/DebugPrintScreen';
-import { DebugSchemaScreen }            from './debug/DebugSchemaScreen';
 import { DebugStripeScreen }            from './debug/DebugStripeScreen';
-import { DebugTextFitterScreen }        from './debug/DebugTextFitterScreen';
-import { DebugTextStyleScreen }         from './debug/DebugTextStyleScreen';
 import { ImportAccountScreen }          from './ImportAccountScreen';
 import { InventoryScreen }              from './InventoryScreen';
 import { LoginScreen }                  from './LoginScreen';
@@ -72,20 +62,20 @@ const App = () => {
                 <Route exact path = "/:userID/login" component = { LoginScreen }/>
                 <Route exact path = "/login" component = { LoginScreen }/>
 
-                <Route exact path = "/debug/aes"                component = { DebugAESScreen }/>
-                <Route exact path = "/debug/barcode/pdf417"     component = { DebugBarcodePDF417Screen }/>
-                <Route exact path = "/debug/barcode/qr"         component = { DebugBarcodeQRScreen }/>
-                <Route exact path = "/debug/cryptokey"          component = { DebugCryptoKeyScreen }/>
-                <Route exact path = "/debug/dropzone"           component = { DebugDropzoneScreen }/>
-                <Route exact path = "/debug/filepicker"         component = { DebugFilePickerScreen }/>
-                <Route exact path = "/debug/handlebars"         component = { DebugHandlebarsScreen }/>
-                <Route exact path = "/debug/infinitescroll"     component = { DebugInfiniteScrollScreen }/>
-                <Route exact path = "/debug/mobx"               component = { DebugMobXScreen }/>
-                <Route exact path = "/debug/print"              component = { DebugPrintScreen }/>
-                <Route exact path = "/debug/schema"             component = { DebugSchemaScreen }/>
+                <Route exact path = "/debug/aes"                component = { fgc.debug.AESScreen }/>
+                <Route exact path = "/debug/barcode/pdf417"     component = { fgc.debug.BarcodePDF417Screen }/>
+                <Route exact path = "/debug/barcode/qr"         component = { fgc.debug.BarcodeQRScreen }/>
+                <Route exact path = "/debug/cardmotron"         component = { cardmotron.EditorScreen }/>
+                <Route exact path = "/debug/cryptokey"          component = { fgc.debug.CryptoKeyScreen }/>
+                <Route exact path = "/debug/dropzone"           component = { fgc.debug.DropzoneScreen }/>
+                <Route exact path = "/debug/filepicker"         component = { fgc.debug.FilePickerScreen }/>
+                <Route exact path = "/debug/handlebars"         component = { fgc.debug.HandlebarsScreen }/>
+                <Route exact path = "/debug/infinitescroll"     component = { fgc.debug.InfiniteScrollScreen }/>
+                <Route exact path = "/debug/mobx"               component = { fgc.debug.MobXScreen }/>
+                <Route exact path = "/debug/print"              component = { fgc.debug.PrintScreen }/>
                 <Route exact path = "/debug/stripe"             component = { DebugStripeScreen }/>
-                <Route exact path = "/debug/textfitter"         component = { DebugTextFitterScreen }/>
-                <Route exact path = "/debug/textstyle"          component = { DebugTextStyleScreen }/>
+                <Route exact path = "/debug/textfitter"         component = { fgc.debug.TextFitterScreen }/>
+                <Route exact path = "/debug/textstyle"          component = { fgc.debug.TextStyleScreen }/>
 
                 <Route exact path = "/:userID/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>

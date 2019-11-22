@@ -8,3 +8,9 @@ url=git@github.com:cryptogogue/simple-cpp-router.git
 [submodule "3rd-party/padamose"]
 	path = 3rd-party/padamose
 	url = git@github.com:cryptogogue/padamose.git
+[submodule "node-js/wallet/src/packages/fgc-common-js-src"]
+	path = node-js/wallet/src/packages/fgc-common-js-src
+	url = git@github.com:fallguyconsulting/fgc-common-js-src.git
+[submodule "node-js/wallet/src/packages/vol-cardmotron-js-src"]
+	path = node-js/wallet/src/packages/vol-cardmotron-js-src
+	url = git@github.com:cryptogogue/vol-cardmotron-js-src.git
