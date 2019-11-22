@@ -6,8 +6,9 @@
     "dotenv": "^6.1.0",
     "esm": "^3.2.25",
     "handlebars": "^4.5.1",
-    "npm": "^6.4.1",
-    "xlsx": "^0.14.4"
+    "lodash": "^4.17.15",
+    "npm": "^6.13.0",
+    "xlsx": "^0.14.5"
   },
   "scripts": {
     "start": "node -r esm main.js"

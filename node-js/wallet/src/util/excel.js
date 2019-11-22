@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import fs                       from 'fs';
-import { buildSchema, op }      from '../wallet/src/Schema/SchemaBuilder.js';
+import _                        from 'lodash';
 import XLSX                     from 'xlsx';
 
 const aaaCache = [];
@@ -100,18 +100,36 @@ export class Worksheet {
 export class Workbook {
 
     //----------------------------------------------------------------//
-    constructor ( filename ) {
+    constructor ( blobOrPath, options ) {
 
-        this.book           = XLSX.readFile ( filename );
+        this.book           = XLSX.read ( blobOrPath, options || { type: 'file' }); // defaut to file path
         this.sheets         = this.book.Sheets;
         this.sheetNames     = this.book.SheetNames;
+    }
+
+    //----------------------------------------------------------------//
+    findSheet ( sheetname ) {
+
+        let sheetID = this.sheetNames [ sheetname ] || false;
+
+        if ( !sheetID ) {
+            for ( name in this.sheetNames ) {
+                if ( name.localeCompare ( sheetname, undefined, { sensitivity: 'accent' }) === 0 ) {
+                    sheetname = name;
+                    break;
+                }
+            }
+        }
+
+        return sheetname ? getSheet ( sheetname ) : false;
     }
 
     //----------------------------------------------------------------//
     getSheet ( sheetname ) {
 
         sheetname = ( typeof ( sheetname ) === 'string' ) ? sheetname : this.sheetNames [ sheetname ]
-        return new Worksheet ( this, this.sheets [ sheetname ]);
+        const sheet = this.sheets [ sheetname ];
+        return sheet ? new Worksheet ( this, sheet ) : false;
     }
 }
 

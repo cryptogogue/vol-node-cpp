@@ -619,7 +619,7 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
 			<rect x='21.5' y='485' width='707.5' height='495' fill='#ffffff' fill-opacity='0.85' stroke='url(#{{ $ }}Stroke-Color)' stroke-width='5'/>
 		// rarity box
 			<rect x='320' y='995' width='110' height='28' fill='url(#{{ $ }}Stroke-Color)' fill-opacity='0.25' stroke='url(#{{ $ }}Stroke-Color)' stroke-width='2'/>
-        		`)
+        `)
         // rules
         .drawTextBox ( 37, 500, 672, 480, JUSTIFY.VERTICAL.TOP  )
             .drawText ( '{{ rules }}', 'roboto', 35, JUSTIFY.HORIZONTAL.LEFT )
@@ -841,7 +841,9 @@ let schemaBuilder = buildSchema ( 'TEST_SCHEMA' )
         .drawLayout ( 'overlay' )
 
 const schema = util.parseVolitionXLSX ( schemaBuilder );
-
-//util.writeJavascript ( schema, 'schema.js' );
 util.writeJSON ( schema, 'schema.json' );
 //util.writeTransaction ( schema, 'publish-schema-transaction.json' );
+
+const schemaBuilder2 = util.parseVolitionXLSX2 ( 'TEST_SCHEMA' );
+const schema2 = util.parseVolitionXLSX ( schemaBuilder2 );
+util.writeJSON ( schema2, 'schema2.json' );

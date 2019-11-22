@@ -316,7 +316,7 @@ class SchemaBuilder {
     }
 
     //----------------------------------------------------------------//
-    drawLayout ( template ) {
+    drawLayout ( template, x, y, wrap ) {
 
         assert ( this.popTo ( SCHEMA_BUILDER_ADDING_LAYOUT ));
 
@@ -325,6 +325,9 @@ class SchemaBuilder {
             {
                 type:           LAYOUT_COMMAND.DRAW_LAYOUT,
                 template:       template || '',
+                x:              x || 0,
+                y:              y || 0,
+                wrap:           wrap || false,
             },
             ( layout, item ) => {
                 layout.commands.push ( item );
