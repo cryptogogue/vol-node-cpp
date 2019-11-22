@@ -3,8 +3,8 @@
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 
-import * as cardmotron from 'cardmotron/export';
-import * as fgc from 'fgc/export';
+import * as cardmotron from 'cardmotron';
+import * as fgc from 'fgc';
 
 import { configure } from 'mobx';
 configure ({
