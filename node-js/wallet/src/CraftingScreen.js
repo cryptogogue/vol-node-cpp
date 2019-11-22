@@ -1,10 +1,9 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AssetView }                                        from './AssetView';
 import { CraftingForm }                                     from './CraftingForm';
 import { AccountInfoService }                               from './AccountInfoService';
 import { AppStateService }                                  from './AppStateService';
-import { InventoryService }                                 from './InventoryService';
+import { InventoryService } from 'cardmotron';
 import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';

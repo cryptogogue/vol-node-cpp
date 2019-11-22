@@ -1,8 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { AssetView }                    from './AssetView';
 import { TransactionForm }              from './TransactionForm';
 import { TRANSACTION_TYPE }             from './Transaction';
+import { AssetView } from 'cardmotron';
 import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
 import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
