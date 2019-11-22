@@ -1,9 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
-import * as pdf417                  from './util/pdf417';
-import * as qrcode                  from './util/qrcode';
-import { TextFitter, JUSTIFY }      from './util/textLayout';
+import { assert, pdf417, qrcode, textLayout } from 'fgc';
+import { LAYOUT_COMMAND }           from 'cardmotron';
 import _                            from 'lodash';
 
 //================================================================//

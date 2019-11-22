@@ -1,12 +1,8 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { LAYOUT_COMMAND }           from './schema/SchemaBuilder';
-import { barcodeToSVG }             from './util/pdf417';
-import { fitText, JUSTIFY }         from './util/textLayout';
 import handlebars                   from 'handlebars';
 import { observer }                 from 'mobx-react';
 import React                        from 'react';
-import { forOfStatement } from '@babel/types';
 
 //================================================================//
 // AssetView

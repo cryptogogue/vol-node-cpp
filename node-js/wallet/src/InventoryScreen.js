@@ -5,18 +5,16 @@ import './InventoryScreen.css';
 import { AssetView }                                        from './AssetView';
 import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
-import { Service, useService }                              from './Service';
 import { InventoryService }                                 from './InventoryService';
-import * as util                                            from './util/util';
 import { InventoryPrintView, PRINT_LAYOUT }                 from './InventoryPrintView';
 import { InventoryView }                                    from './InventoryView';
+import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
 import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
 import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-react';
-import { SingleColumnContainerView }                        from './SingleColumnContainerView';
 
 const SORT_MODE = {
     ALPHA_ATOZ:     'ALPHA_ATOZ',

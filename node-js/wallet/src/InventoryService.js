@@ -1,13 +1,9 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AssetLayout }                          from './AssetLayout';
-import { barcodeToSVG }                         from './util/pdf417';
-import { Service }                              from './Service';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
-import { Binding }                              from './schema/Binding';
-import { Schema }                               from './schema/Schema';
-import { buildSchema, op, LAYOUT_COMMAND }      from './schema/SchemaBuilder';
-import { JUSTIFY }                              from './util/textLayout';
+import { Binding, Schema, LAYOUT_COMMAND }      from 'cardmotron';
+import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
 import handlebars                               from 'handlebars';
 import _                                        from 'lodash';
 import * as opentype                            from 'opentype.js';
