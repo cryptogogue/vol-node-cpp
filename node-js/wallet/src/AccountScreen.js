@@ -54,6 +54,7 @@ const AccountDetailsView = observer (( props ) => {
                         <center>
                             <h3>Public Key</h3>
                             <Divider/>
+                            <p>{ publicKey }</p>
                             <p>{ keyEntitlements }</p>
                         </center>
                     </Modal.Content>
