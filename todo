@@ -56,6 +56,19 @@ DONE: layout engine - nested layouts
 DONE: layout engine - set underline style for text box (color, weight)
 DONE: layout engine - named text styles (implemented as spreadsheet macros)
 DONE: upgrade & rebuild versioned store; restore from chain
+DONE: inventory view - remove hardcoded card size
+DONE: layout tool - schema from spreadsheet
+DONE: layout tool - favicon
+DONE: layout tool - cors-anywhere (fork and host) - sovled with nginx
+DONE: layout tool - provision temporary assets based on * column
+DONE: layout tool - finish automatic definition name generation
+DONE: layout tool - implement INCLUDES directive
+DONE: layout tool - as-defined sort order option
+DONE: layout tool - fix space-before-line-break bug
+DONE: inventory view - handle different sized cards
+DONE: layout tool - handle oversized assets
+DONE: layout tool - print layout for variable-sized assets
+DONE: layout tool - factor out selection behavior (no tags)
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
@@ -67,19 +80,19 @@ node/schema - provision updated assets; link asset types between schemas (asset 
 wallet - (simple) tagging sets of cards and deck building
 wallet - discard all (by set)
 
-inventory view - remove hardcoded card size
-inventory view - handle different sized cards
 inventory view - better error reporting from card layouts (missing fonts, icons)
 
-layout tool - schema from spreadsheet
+
+layout tool - finish docs + coding style guide
 
 ----------------------------------------------------------------
 MVP
 
-layout engine - line spacing
-layout engine - kerning
-layout engine - paragraph styles (leading indent)
-layout engine - justify text
+layout tool - line spacing
+layout tool - kerning
+layout tool - paragraph styles (leading indent)
+layout tool - justify text
+layout tool - layouts-as-icons (and/or "layered" icons)
 
 batch transfer assets to other accounts
 rework node control endpoints into "control" transactions
