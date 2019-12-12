@@ -93,6 +93,10 @@ export const InventoryScreen = observer (( props ) => {
         console.log ( 'ELLIPSIS!' );
     }
 
+    const onDeselect = () => {
+        controller.clearSelection ();
+    }
+
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));
 
     return (
@@ -139,6 +143,7 @@ export const InventoryScreen = observer (( props ) => {
                                     onSelect    = { onAssetSelect }
                                     onMagnify   = { onAssetMagnify }
                                     onEllipsis  = { onAssetEllipsis }
+                                    onDeselect  = { onDeselect }
                                 />
                             </div>
                             <AssetModal
