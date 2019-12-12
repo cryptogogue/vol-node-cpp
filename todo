@@ -69,21 +69,25 @@ DONE: inventory view - handle different sized cards
 DONE: layout tool - handle oversized assets
 DONE: layout tool - print layout for variable-sized assets
 DONE: layout tool - factor out selection behavior (no tags)
+DONE: layout tool - finish docs + coding style guide
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
+node - param lists for crafting
+node - param lists for transfers
 node - provision any asset
+node - upgrade assets
 node - handle unrecognized account - reject transactions
 
 node/schema - provision updated assets; link asset types between schemas (asset versioning)
 
-wallet - (simple) tagging sets of cards and deck building
+wallet - (simple) tagging sets of cards
+wallet - deck building - decks are sets of filters and quantities
 wallet - discard all (by set)
+wallet - schema explorer
+wallet - provision local cards
 
-inventory view - better error reporting from card layouts (missing fonts, icons)
-
-
-layout tool - finish docs + coding style guide
+layout tool - better error reporting from card layouts (missing fonts, icons)
 
 ----------------------------------------------------------------
 MVP

@@ -4,7 +4,7 @@ import './InventoryScreen.css';
 
 import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
-import { inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
+import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
 import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
 import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
@@ -37,23 +37,21 @@ const InventoryMenu = observer (( props ) => {
 
     return (
         <Menu>
-            <inventoryMenuItems.SortModeFragment controller = { controller }/>
-            <inventoryMenuItems.LayoutOptionsDropdown controller = { controller }/>
-            <inventoryMenuItems.ZoomOptionsDropdown controller = { controller }/>
-
-            <Menu.Item>
-                <Icon name = 'tags' disabled = { !controller.hasSelection }/>
-            </Menu.Item>
+            <inventoryMenuItems.SortModeFragment        controller = { controller }/>
+            <inventoryMenuItems.LayoutOptionsDropdown   controller = { controller }/>
+            <inventoryMenuItems.ZoomOptionsDropdown     controller = { controller }/>
+            <inventoryMenuItems.SelectionTags           controller = { controller }/>
+            <inventoryMenuItems.VisibilityDropdown      controller = { controller }/>
 
             <Menu.Menu position = "right">
 
-                <If condition = { controller.isPrintLayout ()}>
+                <If condition = { controller.isPrintLayout }>
                     <Menu.Item name = "Print" onClick = {() => { window.print ()}}>
                         <Icon name = 'print'/>
                     </Menu.Item>
                 </If>
 
-                <If condition = { !controller.isPrintLayout ()}>
+                <If condition = { !controller.isPrintLayout }>
                     <Dropdown item icon = "industry">
                         <Dropdown.Menu>
                             { methodListItems }
@@ -73,6 +71,7 @@ export const InventoryScreen = observer (( props ) => {
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
     const [ progressMessage, setProgressMessage ] = useState ( '' );
+    const [ zoomedAssetID, setZoomedAssetID ] = useState ( false );
     const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
     const inventory     = useService (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
     const controller    = useService (() => new InventoryViewController ( inventory ));
@@ -80,6 +79,18 @@ export const InventoryScreen = observer (( props ) => {
     if ( appState.accountID !== accountIDFromEndpoint ) {
         //TODO 404 error (need make 404 screen)
         return appState.redirect ( `/accounts/${ appState.accountID }/inventory` );
+    }
+
+    const onAssetSelect = ( asset ) => {
+        controller.toggleAssetSelection ( asset );
+    }
+
+    const onAssetMagnify = ( asset ) => {
+        setZoomedAssetID ( asset.assetID );
+    }
+
+    const onAssetEllipsis = ( asset ) => {
+        console.log ( 'ELLIPSIS!' );
     }
 
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));
@@ -112,7 +123,7 @@ export const InventoryScreen = observer (( props ) => {
 
                 <When condition = { hasAssets }>
                     <Choose>
-                        <When condition = { controller.isPrintLayout ()}>
+                        <When condition = { controller.isPrintLayout }>
                             <InventoryPrintView
                                 key             = { controller.sortMode }
                                 inventory       = { controller.inventory }
@@ -125,8 +136,16 @@ export const InventoryScreen = observer (( props ) => {
                                 <InventoryView
                                     key         = { `${ controller.sortMode } ${ controller.zoom }` }
                                     controller  = { controller }
+                                    onSelect    = { onAssetSelect }
+                                    onMagnify   = { onAssetMagnify }
+                                    onEllipsis  = { onAssetEllipsis }
                                 />
                             </div>
+                            <AssetModal
+                                inventory       = { controller.inventory }
+                                assetID         = { zoomedAssetID }
+                                onClose         = {() => { setZoomedAssetID ( false )}}
+                            />
                         </Otherwise>
                     </Choose>
                 </When>
