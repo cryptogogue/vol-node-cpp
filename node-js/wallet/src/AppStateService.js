@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { assert, crypto, excel, Service, SingleColumnContainerView, storage, useService, util } from 'fgc';
+import { assert, crypto, excel, Service, SingleColumnContainerView, storage, StorageContext, useService, util } from 'fgc';
 import * as bcrypt          from 'bcryptjs';
 import _                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
@@ -31,22 +31,6 @@ export const NODE_STATUS = {
 // AppStateService
 //================================================================//
 export class AppStateService extends Service {
-
-    @observable userID;
-    @observable accountID;
-    @observable accountInfo;
-    @observable nextTransactionCost;
-
-    @observable keyName;
-
-    // persisted
-    @observable accounts;
-    @observable node;
-    @observable nodes;
-    @observable passwordHash;
-    @observable pendingAccounts;
-    @observable session;
-    @observable transactions;
 
     //----------------------------------------------------------------//
     @action
@@ -98,17 +82,6 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
-    affirmObservers () {
-
-        this.observeMember ( 'accounts',            () => { this.persistValue ( STORE_ACCOUNTS, this.accounts )});
-        this.observeMember ( 'node',                () => { this.persistValue ( STORE_NODE, this.node )});
-        this.observeMember ( 'nodes',               () => { this.persistValue ( STORE_NODES, this.nodes )});
-        this.observeMember ( 'passwordHash',        () => { this.persistValue ( STORE_PASSWORD_HASH, this.passwordHash )});
-        this.observeMember ( 'pendingAccounts',     () => { this.persistValue ( STORE_PENDING_ACCOUNTS, this.pendingAccounts )});
-        this.observeMember ( 'session',             () => { this.persistValue ( STORE_SESSION, this.session )});
-    }
-
-    //----------------------------------------------------------------//
     checkPassword ( password ) {
         const passwordHash = ( this.passwordHash ) || '';
         return (( passwordHash.length > 0 ) && bcrypt.compareSync ( password, passwordHash ));
@@ -121,23 +94,6 @@ export class AppStateService extends Service {
         if ( this.hasAccount ) {
             this.account.pendingTransactions = [];
         }
-    }
-
-    //----------------------------------------------------------------//
-    // CLEAR App State (reset to initial state)
-    @action
-    clearState () {
-
-        this.nextTransactionCost = 0;
-
-        this.accounts           = {};
-        this.session            = this.makeSession ( false );
-        this.node               = '';
-        this.nodes              = {};
-        this.passwordHash       = '';
-        this.transactions       = [];
-
-        this.setAccountInfo ();
     }
 
     //----------------------------------------------------------------//
@@ -163,11 +119,42 @@ export class AppStateService extends Service {
     constructor ( userID, accountID ) {
         super ();
 
-        this.minerURLs = new Set ();
-        this.marketURLs = new Set ();
-        this.urlBackoff = {};
+        this.minerURLs      = new Set ();
+        this.marketURLs     = new Set ();
+        this.urlBackoff     = {};
 
-        this.loadState ( userID, accountID );
+
+        userID      = userID || '';
+        accountID   = accountID || '';
+
+        extendObservable ( this, {
+            userID:                 userID,
+            accountID:              '',
+            accountInfo:            null,
+            keyName:                '',
+            nextTransactionCost:    0,
+        });
+
+        const loadNodes = ( nodes ) => {
+            for ( let url in nodes ) {
+                nodes [ url ].status = NODE_STATUS.UNKNOWN;
+            }
+            return nodes;
+        }
+
+        const storageContext = new StorageContext ( userID );
+
+        storageContext.persist ( this, 'accounts',          STORE_ACCOUNTS,            {});
+        storageContext.persist ( this, 'node',              STORE_NODE,                '' );
+        storageContext.persist ( this, 'nodes',             STORE_NODES,               {}, loadNodes );
+        storageContext.persist ( this, 'passwordHash',      STORE_PASSWORD_HASH,       '' );
+        storageContext.persist ( this, 'pendingAccounts',   STORE_PENDING_ACCOUNTS,    {});
+        storageContext.persist ( this, 'session',           STORE_SESSION,              this.makeSession ( false ));
+
+        this.storage = storageContext;
+
+        this.setAccount ( accountID );
+        this.setAccountInfo ();
     }
 
     //----------------------------------------------------------------//
@@ -192,34 +179,26 @@ export class AppStateService extends Service {
     @action
     deleteNode ( nodeURL ) {
 
-        console.log ( 'DELETE NODE', nodeURL );
-
         if ( nodeURL === this.node ) {
             this.node = '';
         }
-
         delete this.nodes[ nodeURL ];
-
     }
 
     //----------------------------------------------------------------//
     @action
     deleteNodeList () {
 
-        console.log ( 'DELETE NODE LIST' );
-
         this.node = '';
         this.nodes = {};
     }
 
     //----------------------------------------------------------------//
+    @action
     deleteStorage () {
 
         storage.clear ();
-
-        this.disposeObservers ();
-        this.clearState ();
-        this.affirmObservers ();
+        this.deleteUserStorage ();
     }
 
     //----------------------------------------------------------------//
@@ -233,18 +212,12 @@ export class AppStateService extends Service {
     }
 
     //----------------------------------------------------------------//
+    @action
     deleteUserStorage () {
 
-        storage.removeItem ( this.prefixStoreKey ( STORE_ACCOUNTS ));
-        storage.removeItem ( this.prefixStoreKey ( STORE_NODE ));
-        storage.removeItem ( this.prefixStoreKey ( STORE_NODES ));
-        storage.removeItem ( this.prefixStoreKey ( STORE_PASSWORD_HASH ));
-        storage.removeItem ( this.prefixStoreKey ( STORE_PENDING_ACCOUNTS ));
-        storage.removeItem ( this.prefixStoreKey ( STORE_SESSION ));
-
-        this.disposeObservers ();
-        this.clearState ();
-        this.affirmObservers ();
+        this.storage.reset ();
+        this.nextTransactionCost = 0;
+        this.setAccountInfo ();
     }
 
     //----------------------------------------------------------------//
@@ -401,9 +374,7 @@ export class AppStateService extends Service {
     //----------------------------------------------------------------//
     @computed
     get key () {
-        console.log ( 'COMPUTED KEY' );
         const account = this.getAccount ();
-        console.log ( account );
         return account ? account.keys [ this.keyName ] : null;
     }
 
@@ -482,31 +453,6 @@ export class AppStateService extends Service {
     //----------------------------------------------------------------//
     isLoggedIn () {
         return ( this.session.isLoggedIn === true );
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    loadState ( userID, accountID ) {
-
-        this.disposeObservers ();
-        this.clearState ();
-
-        userID = userID || '';
-        this.userID = userID;
-
-        this.accounts               = storage.getItem ( userID + STORE_ACCOUNTS ) || this.accounts;
-        this.node                   = storage.getItem ( userID + STORE_NODE ) || this.node;
-        this.nodes                  = storage.getItem ( userID + STORE_NODES ) || this.nodes;
-        this.passwordHash           = storage.getItem ( userID + STORE_PASSWORD_HASH ) || this.passwordHash;
-        this.pendingAccounts        = storage.getItem ( userID + STORE_PENDING_ACCOUNTS ) || {};
-        this.session                = storage.getItem ( userID + STORE_SESSION ) || this.session;
-
-        for ( let url in this.nodes ) {
-            this.nodes [ url ].status = NODE_STATUS.UNKNOWN;
-        }
-
-        this.setAccount ( accountID );
-        this.affirmObservers ();
     }
 
     //----------------------------------------------------------------//
