@@ -2,7 +2,7 @@
 
 import { AppStateService }                  from './AppStateService';
 import { KeySelector }                      from './KeySelector';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -118,9 +118,9 @@ export const AccountScreen = observer (( props ) => {
 
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
-    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
-    const accountInfoService    = useService (() => new AccountInfoService ( appState ));
-    const nodeInfoService       = useService (() => new NodeInfoService ( appState ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
+    const nodeInfoService       = hooks.useFinalizable (() => new NodeInfoService ( appState ));
 
     const userID        = appState.userID;
     const accountID     = appState.accountID;

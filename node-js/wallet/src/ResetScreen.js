@@ -5,7 +5,7 @@ import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
 import { NodeInfoService }                  from './NodeInfoService';
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, runInAction, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -137,8 +137,8 @@ export const ResetScreen = observer (( props ) => {
 
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
-    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
-    const controller            = useService (() => new ResetScreenController ( appState ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const controller            = hooks.useFinalizable (() => new ResetScreenController ( appState ));
 
     const accountID             = appState.accountID;
 

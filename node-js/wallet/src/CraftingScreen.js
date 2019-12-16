@@ -4,7 +4,7 @@ import { CraftingForm }                                     from './CraftingForm
 import { AccountInfoService }                               from './AccountInfoService';
 import { AppStateService }                                  from './AppStateService';
 import { InventoryService } from 'cardmotron';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import { NavigationBar }                                    from './NavigationBar';
@@ -19,9 +19,9 @@ export const CraftingScreen = observer (( props ) => {
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
     const methodNameFromEndpoint = util.getMatch ( props, 'methodName' );
 
-    const appState              = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
-    const accountInfoService    = useService (() => new AccountInfoService ( appState ));
-    const inventory             = useService (() => new InventoryService ( appState ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
+    const inventory             = hooks.useFinalizable (() => new InventoryService ( appState ));
 
     const [ selectedMethod, setSelectedMethod ] = useState ( methodNameFromEndpoint );
 

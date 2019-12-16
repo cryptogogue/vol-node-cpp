@@ -3,7 +3,7 @@
 
 import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -228,8 +228,8 @@ function renderButton ( service ) {
 //================================================================//
 export const NewAccountScreen = observer (( props ) => {
 
-    const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
-    const controller    = useService (() => new NewAccountScreenController ( appState ));
+    const appState      = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const controller    = hooks.useFinalizable (() => new NewAccountScreenController ( appState ));
 
     if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountID );
 

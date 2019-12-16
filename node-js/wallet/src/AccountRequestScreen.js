@@ -4,7 +4,7 @@
 import { AccountRequestService }            from './AccountRequestService';
 import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                         from 'mobx-react';
@@ -165,8 +165,8 @@ const ImportAccountView = observer (( props ) => {
 //================================================================//
 export const AccountRequestScreen = observer (( props ) => {
 
-    const appState                  = useService (() => new AppStateService ( util.getUserId ( props )));
-    const accountRequestService     = useService (() => new AccountRequestService ( appState ));
+    const appState                  = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const accountRequestService     = hooks.useFinalizable (() => new AccountRequestService ( appState ));
 
     const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { assert, excel, Service, SingleColumnContainerView, storage, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, storage, util } from 'fgc';
 import { action, computed, extendObservable, observe, observable } from 'mobx';
 
 //================================================================//

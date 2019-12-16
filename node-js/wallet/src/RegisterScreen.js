@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AppStateService }                  from './AppStateService';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -61,8 +61,8 @@ class RegisterScreenController extends Service {
 //================================================================//
 export const RegisterScreen = observer (( props ) => {
     
-    const appState = useService (() => new AppStateService ( util.getUserId ( props )));
-    const controller = useService (() => new RegisterScreenController ( appState ));
+    const appState = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const controller = hooks.useFinalizable (() => new RegisterScreenController ( appState ));
 
     if ( appState.hasUser ()) {
         const to = appState.isLoggedIn () ? '/accounts' : '/login';

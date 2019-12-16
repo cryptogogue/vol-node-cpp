@@ -3,7 +3,7 @@
 
 import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
-import { assert, crypto, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, crypto, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -155,8 +155,8 @@ class ImportAccountScreenController extends Service {
 //================================================================//
 export const ImportAccountScreen = observer (( props ) => {
 
-    const appState      = useService (() => new AppStateService ( util.getUserId ( props )));
-    const controller    = useService (() => new ImportAccountScreenController ( appState ));
+    const appState      = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const controller    = hooks.useFinalizable (() => new ImportAccountScreenController ( appState ));
 
     if ( !appState.hasUser ()) return appState.redirect ( '/' );
     if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );

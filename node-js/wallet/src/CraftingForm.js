@@ -3,7 +3,7 @@
 import { TransactionForm }              from './TransactionForm';
 import { TRANSACTION_TYPE }             from './Transaction';
 import { AssetView } from 'cardmotron';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
 import React, { useState }              from 'react';
@@ -277,7 +277,7 @@ export const CraftingForm = observer (( props ) => {
 
     const { appState, inventory, methodName } = props;
 
-    const controller = useService (() => new CraftingFormController ( appState, inventory, methodName ));
+    const controller = hooks.useFinalizable (() => new CraftingFormController ( appState, inventory, methodName ));
 
     let ingredientList = [];
     const ingredients = controller.ingredients;

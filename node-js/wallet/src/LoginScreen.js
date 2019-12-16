@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AppStateService }                  from './AppStateService';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -17,7 +17,7 @@ export const LoginScreen = observer (( props ) => {
     const [ errorMessage, setErrorMessage ] = useState ( '' );
     const [ password, setPassword ] = useState ( '' );
 
-    const appState = useService (() => new AppStateService ( util.getUserId ( props )));
+    const appState = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
 
     if ( !appState.hasUser ()) return appState.redirect ( '/' );
     if ( appState.isLoggedIn ()) return appState.redirect ( '/accounts' );

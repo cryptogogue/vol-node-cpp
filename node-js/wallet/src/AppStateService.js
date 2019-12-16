@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { assert, crypto, excel, Service, SingleColumnContainerView, storage, StorageContext, useService, util } from 'fgc';
+import { assert, crypto, excel, hooks, Service, SingleColumnContainerView, storage, StorageContext, util } from 'fgc';
 import * as bcrypt          from 'bcryptjs';
 import _                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';

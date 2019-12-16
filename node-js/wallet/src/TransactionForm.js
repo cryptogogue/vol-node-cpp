@@ -3,7 +3,7 @@
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
 import { makeControllerForTransactionType } from './TransactionFormController';
 import { TransactionFormInput }             from './TransactionFormInput';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -16,7 +16,7 @@ export const TransactionForm = observer (( props ) => {
 
     const { appState, transactionType, onSubmit } = props;
 
-    const controller = useService (() => makeControllerForTransactionType ( appState, transactionType ));
+    const controller = hooks.useFinalizable (() => makeControllerForTransactionType ( appState, transactionType ));
 
     // add the fields in order
     let fields = [];

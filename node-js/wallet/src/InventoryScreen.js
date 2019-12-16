@@ -5,7 +5,7 @@ import './InventoryScreen.css';
 import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
 import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
-import { assert, excel, Service, SingleColumnContainerView, useService, util } from 'fgc';
+import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
 import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
@@ -72,9 +72,9 @@ export const InventoryScreen = observer (( props ) => {
 
     const [ progressMessage, setProgressMessage ] = useState ( '' );
     const [ zoomedAssetID, setZoomedAssetID ] = useState ( false );
-    const appState      = useService (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
-    const inventory     = useService (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
-    const controller    = useService (() => new InventoryViewController ( inventory ));
+    const appState      = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
+    const controller    = hooks.useFinalizable (() => new InventoryViewController ( inventory ));
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
         //TODO 404 error (need make 404 screen)
