@@ -3,7 +3,7 @@
 import { TransactionForm }              from './TransactionForm';
 import { TRANSACTION_TYPE }             from './Transaction';
 import { AssetView } from 'cardmotron';
-import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, observable } from "mobx";
 import { observer }                     from "mobx-react";
 import React, { useState }              from 'react';
@@ -20,7 +20,7 @@ const CRAFTING_STATE = {
 //================================================================//
 // CraftingFormController
 //================================================================//
-class CraftingFormController extends Service {
+class CraftingFormController {
 
     @observable state;
 
@@ -35,7 +35,7 @@ class CraftingFormController extends Service {
 
     //----------------------------------------------------------------//
     constructor ( appState, inventory, methodName ) {
-        super ();
+        
         this.appState       = appState;
         this.inventory      = inventory;
         this.methodName     = methodName;
@@ -63,6 +63,10 @@ class CraftingFormController extends Service {
 
         transaction.setAssetsUtilized ( Object.values ( this.fieldValues ));
         transaction.setNote ( this.methodName );
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
     }
 
     //----------------------------------------------------------------//

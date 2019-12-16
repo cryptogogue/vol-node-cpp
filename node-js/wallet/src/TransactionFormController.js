@@ -2,7 +2,7 @@
 
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
 import * as inputType                       from './TransactionFormInputTypes';
-import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
@@ -20,17 +20,20 @@ const MAKER_FORMAT = {
 //================================================================//
 // TransactionFormController
 //================================================================//
-export class TransactionFormController extends Service {
+export class TransactionFormController {
 
     //----------------------------------------------------------------//
     constructor () {
-        super ();
     }
 
     //----------------------------------------------------------------//
     composeBody ( fieldValues ) {
 
         return this.formatBody ( fieldValues, this.format );
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
     }
 
     //----------------------------------------------------------------//

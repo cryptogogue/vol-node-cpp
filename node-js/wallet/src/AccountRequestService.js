@@ -2,18 +2,19 @@
 /* eslint-disable no-loop-func */
 
 import { NODE_TYPE, NODE_STATUS }   from './AppStateService';
-import { assert, excel, hooks, Service, SingleColumnContainerView, storage, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, storage, util } from 'fgc';
 import _                            from 'lodash';
 import { action, computed, extendObservable, observe, observable } from 'mobx';
 
 //================================================================//
 // NodeInfoService
 //================================================================//
-export class AccountRequestService extends Service {
+export class AccountRequestService {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
-        super ();
+        
+        this.revocable = new RevocableContext ();
 
         this.checkPendingRequests ( appState, 5000 );
     }
@@ -31,7 +32,7 @@ export class AccountRequestService extends Service {
                 try {
 
                     const keyID = pendingAccount.keyID;
-                    const data = await this.revocableFetchJSON ( appState.node + '/keys/' + keyID );
+                    const data = await this.revocable.fetchJSON ( appState.node + '/keys/' + keyID );
 
                     const keyInfo = data && data.keyInfo;
 
@@ -48,8 +49,14 @@ export class AccountRequestService extends Service {
                 }
             }
 
-            this.revocableTimeout (() => { this.checkPendingRequests ( appState, delay )}, delay );
+            this.revocable.timeout (() => { this.checkPendingRequests ( appState, delay )}, delay );
         }
         _fetch ();
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
     }
 }

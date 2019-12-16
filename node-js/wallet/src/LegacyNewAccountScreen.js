@@ -3,7 +3,7 @@
 
 import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
-import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -21,7 +21,7 @@ const STATUS_DONE                       = 5;
 //================================================================//
 // NewAccountScreenController
 //================================================================//
-class NewAccountScreenController extends Service {
+class NewAccountScreenController {
     
     //----------------------------------------------------------------//
     async acceptBid () {
@@ -42,7 +42,7 @@ class NewAccountScreenController extends Service {
 
         try {
 
-            let data = await this.revocableFetchJSON ( bid.provider + '/bid', {
+            let data = await this.revocable.fetchJSON ( bid.provider + '/bid', {
                 method : 'POST',
                 headers : { 'content-type': 'application/json' },
                 body : JSON.stringify ( order )
@@ -61,9 +61,9 @@ class NewAccountScreenController extends Service {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
-        super ();
-
-        this.appState = appState;
+        
+        this.revocable  = new RevocableContext ();
+        this.appState   = appState;
 
         // Create random string for account ID
         const accountID = 'vol_' + Math.random ().toString ( 36 ).substr ( 2, 9 );
@@ -86,7 +86,13 @@ class NewAccountScreenController extends Service {
 
         this.miners = [];
 
-        this.revocableTimeout (() => { this.searchForBids ()}, 0 );
+        this.revocable.timeout (() => { this.searchForBids ()}, 0 );
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
     }
 
     //----------------------------------------------------------------//
@@ -106,7 +112,7 @@ class NewAccountScreenController extends Service {
             console.log ( 'POST TO MINER:', url );
 
             try {
-                await this.revocableFetch ( url + '/transactions', {
+                await this.revocable.fetch ( url + '/transactions', {
                     method : 'POST',
                     headers : { 'content-type': 'application/json' },
                     body : JSON.stringify ( transaction )
@@ -152,7 +158,7 @@ class NewAccountScreenController extends Service {
         let checkBid = async ( url ) => {
 
             try {
-                const data = await ( await this.revocableFetch ( url + '/bid')).json ();
+                const data = await ( await this.revocable.fetch ( url + '/bid')).json ();
 
                 if (( data.type === 'VOL_BID' ) && ( !bestBid  || ( data.volPrice <= bestBid.volPrice ))) {
                     bestBid = data;

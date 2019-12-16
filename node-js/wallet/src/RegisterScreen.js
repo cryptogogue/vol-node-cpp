@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AppStateService }                  from './AppStateService';
-import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -12,19 +12,22 @@ import * as bcrypt              from 'bcryptjs';
 //================================================================//
 // RegisterScreenController
 //================================================================//
-class RegisterScreenController extends Service {
+class RegisterScreenController {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
-        super ();
 
-        this.appState = appState;
+        this.appState   = appState;
 
         extendObservable ( this, {
             password: '',
             confirmPassword: '',
             errorMessage: '',
         });
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
     }
 
     //----------------------------------------------------------------//

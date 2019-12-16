@@ -5,7 +5,7 @@ import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
 import { NodeInfoService }                  from './NodeInfoService';
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
-import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, runInAction, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -14,12 +14,12 @@ import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Message, Modal, Se
 //================================================================//
 // ResetScreenController
 //================================================================//
-class ResetScreenController extends Service {
+class ResetScreenController {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
-        super ();
 
+        this.revocable  = new RevocableContext ();
         this.appState   = appState;
         this.schema     = false;
 
@@ -30,6 +30,12 @@ class ResetScreenController extends Service {
             busy:           false,
             errorMsg:       false,
         });
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
     }
 
     //----------------------------------------------------------------//
@@ -44,7 +50,7 @@ class ResetScreenController extends Service {
         const _fetch = async () => {
             try {
 
-                await this.revocableFetch ( this.nodeURL + '/', {
+                await this.revocable.fetch ( this.nodeURL + '/', {
                     method :    'DELETE'
                 });
 

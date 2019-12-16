@@ -5,7 +5,7 @@ import './InventoryScreen.css';
 import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
 import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
-import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';

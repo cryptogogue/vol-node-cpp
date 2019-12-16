@@ -1,17 +1,18 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { assert, excel, hooks, Service, SingleColumnContainerView, storage, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, storage, util } from 'fgc';
 import { action, computed, extendObservable, observe, observable } from 'mobx';
 
 //================================================================//
 // AppStateService
 //================================================================//
-export class AccountInfoService extends Service {
+export class AccountInfoService {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
-        super ();
+
+        this.revocable = new RevocableContext ();
 
         extendObservable ( this, {
             appState:   appState,
@@ -22,6 +23,12 @@ export class AccountInfoService extends Service {
             this.syncAccountInfo ( 5000 );
         });
         this.syncAccountInfo ( 5000 );
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
     }
 
     //----------------------------------------------------------------//
@@ -40,14 +47,14 @@ export class AccountInfoService extends Service {
                 throw error;
             }
         }
-        this.revocablePromiseWithBackoff (() => updateInfo (), delay, true );
+        this.revocable.promiseWithBackoff (() => updateInfo (), delay, true );
     }
 
     //----------------------------------------------------------------//
     static async update ( service, appState ) {
 
         const accountID = appState.accountID;
-        const data = await service.revocableFetchJSON ( appState.node + '/accounts/' + accountID );
+        const data = await service.revocable.fetchJSON ( appState.node + '/accounts/' + accountID );
 
         const account = data.account;
         const entitlements = data.entitlements;

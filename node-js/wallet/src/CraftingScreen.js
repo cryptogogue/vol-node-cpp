@@ -4,7 +4,7 @@ import { CraftingForm }                                     from './CraftingForm
 import { AccountInfoService }                               from './AccountInfoService';
 import { AppStateService }                                  from './AppStateService';
 import { InventoryService } from 'cardmotron';
-import { assert, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import { NavigationBar }                                    from './NavigationBar';

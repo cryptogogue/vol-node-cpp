@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { assert, crypto, excel, hooks, Service, SingleColumnContainerView, storage, StorageContext, util } from 'fgc';
+import { assert, crypto, excel, hooks, RevocableContext, SingleColumnContainerView, storage, StorageContext, util } from 'fgc';
 import * as bcrypt          from 'bcryptjs';
 import _                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
@@ -30,7 +30,7 @@ export const NODE_STATUS = {
 //================================================================//
 // AppStateService
 //================================================================//
-export class AppStateService extends Service {
+export class AppStateService {
 
     //----------------------------------------------------------------//
     @action
@@ -117,7 +117,8 @@ export class AppStateService extends Service {
 
     //----------------------------------------------------------------//
     constructor ( userID, accountID ) {
-        super ();
+
+        this.revocable      = new RevocableContext ();
 
         this.minerURLs      = new Set ();
         this.marketURLs     = new Set ();
@@ -218,6 +219,12 @@ export class AppStateService extends Service {
         this.storage.reset ();
         this.nextTransactionCost = 0;
         this.setAccountInfo ();
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
     }
 
     //----------------------------------------------------------------//
@@ -671,7 +678,7 @@ export class AppStateService extends Service {
                     signature:      key.sign ( envelope.body ),
                 };
                 
-                await this.revocableFetch ( this.node + '/transactions', {
+                await this.revocable.fetch ( this.node + '/transactions', {
                     method :    'POST',
                     headers :   { 'content-type': 'application/json' },
                     body :      JSON.stringify ( envelope, null, 4 ),

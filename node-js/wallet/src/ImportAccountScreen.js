@@ -3,7 +3,7 @@
 
 import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
-import { assert, crypto, excel, hooks, Service, SingleColumnContainerView, util } from 'fgc';
+import { assert, crypto, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -18,7 +18,7 @@ const STATUS_DONE                       = 2;
 //================================================================//
 // ImportAccountScreenController
 //================================================================//
-class ImportAccountScreenController extends Service {
+class ImportAccountScreenController {
 
     @observable accountID       = '';
     @observable errorMessage    = '';
@@ -35,9 +35,15 @@ class ImportAccountScreenController extends Service {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
-        super ();
+        this.revocable  = new RevocableContext ();
         this.appState   = appState;
         this.key        = false;
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
     }
 
     //----------------------------------------------------------------//
@@ -84,7 +90,7 @@ class ImportAccountScreenController extends Service {
         let keyName = false;
 
         try {
-            const data = await this.revocableFetchJSON ( appState.node + '/keys/' + keyID );
+            const data = await this.revocable.fetchJSON ( appState.node + '/keys/' + keyID );
 
             const keyInfo = data && data.keyInfo;
 

@@ -2,19 +2,19 @@
 /* eslint-disable no-loop-func */
 
 import { NODE_TYPE, NODE_STATUS }   from './AppStateService';
-import { assert, excel, hooks, Service, SingleColumnContainerView, storage, util } from 'fgc';
+import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, storage, util } from 'fgc';
 import { action, computed, extendObservable, observe, observable } from 'mobx';
 
 //================================================================//
 // NodeInfoService
 //================================================================//
-export class NodeInfoService extends Service {
+export class NodeInfoService {
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
-        super ();
-
-        this.pendingURLs = {};
+        
+        this.revocable      = new RevocableContext ();
+        this.pendingURLs    = {};
 
         extendObservable ( this, {
             appState:   appState,
@@ -42,16 +42,22 @@ export class NodeInfoService extends Service {
         for ( let url in this.appState.nodes ) {
             if ( !( url in this.pendingURLs )) {
                 this.pendingURLs [ url ] = true;
-                this.revocablePromiseWithBackoff (() => discoverNode ( url ), delay );
+                this.revocable.promiseWithBackoff (() => discoverNode ( url ), delay );
             }
         }
-        this.revocableTimeout (() => { this.discoverNodes ( delay )}, delay );
+        this.revocable.timeout (() => { this.discoverNodes ( delay )}, delay );
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
     }
 
     //----------------------------------------------------------------//
     static async update ( service, appState, url ) {
 
-        const data = await service.revocableFetchJSON ( url );
+        const data = await service.revocable.fetchJSON ( url );
 
         let { type } = appState.getNodeInfo ( url );
 
