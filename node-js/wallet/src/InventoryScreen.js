@@ -4,7 +4,7 @@ import './InventoryScreen.css';
 
 import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
-import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
+import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryTagController, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
@@ -18,7 +18,7 @@ import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-re
 //================================================================//
 const InventoryMenu = observer (( props ) => {
 
-    const { appState, controller } = props;
+    const { appState, controller, tags } = props;
 
     let methodListItems = [];
     const methodBindings = controller.inventory.getCraftingMethodBindings ();
@@ -40,8 +40,8 @@ const InventoryMenu = observer (( props ) => {
             <inventoryMenuItems.SortModeFragment        controller = { controller }/>
             <inventoryMenuItems.LayoutOptionsDropdown   controller = { controller }/>
             <inventoryMenuItems.ZoomOptionsDropdown     controller = { controller }/>
-            <inventoryMenuItems.SelectionTags           controller = { controller }/>
-            <inventoryMenuItems.VisibilityDropdown      controller = { controller }/>
+            <inventoryMenuItems.SelectionTags           controller = { controller } tags = { tags }/>
+            <inventoryMenuItems.VisibilityDropdown      tags = { tags }/>
 
             <Menu.Menu position = "right">
 
@@ -68,18 +68,24 @@ const InventoryMenu = observer (( props ) => {
 //================================================================//
 export const InventoryScreen = observer (( props ) => {
 
-    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
+    const userIDFromEndpoint        = util.getMatch ( props, 'userID' );
+    const accountIDFromEndpoint     = util.getMatch ( props, 'accountID' );
 
-    const [ progressMessage, setProgressMessage ] = useState ( '' );
-    const [ zoomedAssetID, setZoomedAssetID ] = useState ( false );
-    const appState      = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const [ progressMessage, setProgressMessage ]   = useState ( '' );
+    const [ zoomedAssetID, setZoomedAssetID ]       = useState ( false );
+    const appState      = hooks.useFinalizable (() => new AppStateService ( userIDFromEndpoint, accountIDFromEndpoint ));
     const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
     const controller    = hooks.useFinalizable (() => new InventoryViewController ( inventory ));
+    const tags          = hooks.useFinalizable (() => new InventoryTagController ( userIDFromEndpoint ));
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
         //TODO 404 error (need make 404 screen)
         return appState.redirect ( `/accounts/${ appState.accountID }/inventory` );
     }
+
+    controller.setFilterFunc (( assetID ) => {
+        return tags.isAssetVisible ( assetID );
+    });
 
     const onAssetSelect = ( asset ) => {
         controller.toggleAssetSelection ( asset );
@@ -108,7 +114,7 @@ export const InventoryScreen = observer (( props ) => {
             <div className = "no-print">
                 <SingleColumnContainerView>
                     <NavigationBar navTitle = "Inventory" appState = { appState }/>
-                    <InventoryMenu appState = { appState } controller = { controller }/>
+                    <InventoryMenu appState = { appState } controller = { controller } tags = { tags }/>
                 </SingleColumnContainerView>
             </div>
 
