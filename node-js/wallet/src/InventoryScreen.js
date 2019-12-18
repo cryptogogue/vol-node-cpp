@@ -2,9 +2,12 @@
 
 import './InventoryScreen.css';
 
+import { InventoryFilterDropdown }                          from './InventoryFilterDropdown';
+import { InventoryTagController }                           from './InventoryTagController';
+import { InventoryTagDropdown }                             from './InventoryTagDropdown';
 import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
-import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryTagController, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
+import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
@@ -40,8 +43,8 @@ const InventoryMenu = observer (( props ) => {
             <inventoryMenuItems.SortModeFragment        controller = { controller }/>
             <inventoryMenuItems.LayoutOptionsDropdown   controller = { controller }/>
             <inventoryMenuItems.ZoomOptionsDropdown     controller = { controller }/>
-            <inventoryMenuItems.SelectionTags           controller = { controller } tags = { tags }/>
-            <inventoryMenuItems.VisibilityDropdown      tags = { tags }/>
+            <InventoryTagDropdown                       controller = { controller } tags = { tags }/>
+            <InventoryFilterDropdown                    tags = { tags }/>
 
             <Menu.Menu position = "right">
 
