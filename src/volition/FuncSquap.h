@@ -16,10 +16,11 @@ class FuncSquap :
      public AbstractSquap {
 public:
 
-    SerializableVector < SerializableSharedPtr < AbstractSquap, SquapFactory >>     mArgs;
+    string  mFuncName;
+    SerializableVector < SerializableSharedPtr < AbstractSquap, SquapFactory >> mArgs;
     
     //----------------------------------------------------------------//
-    AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
+    AssetFieldVariant AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         UNUSED ( context );
         
         return AssetFieldValue ();
@@ -28,6 +29,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
+        serializer.serialize ( "func",      this->mFuncName );
         serializer.serialize ( "args",      this->mArgs );
     }
     
@@ -35,6 +37,7 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractSquap::AbstractSerializable_serializeTo ( serializer );
         
+        serializer.serialize ( "func",      this->mFuncName );
         serializer.serialize ( "args",      this->mArgs );
     }
 };

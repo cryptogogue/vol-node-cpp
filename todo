@@ -70,6 +70,7 @@ DONE: layout tool - handle oversized assets
 DONE: layout tool - print layout for variable-sized assets
 DONE: layout tool - factor out selection behavior (no tags)
 DONE: layout tool - finish docs + coding style guide
+DONE: wallet - (simple) tagging sets of cards
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
@@ -81,17 +82,15 @@ node - handle unrecognized account - reject transactions
 
 node/schema - provision updated assets; link asset types between schemas (asset versioning)
 
-wallet - (simple) tagging sets of cards
+----------------------------------------------------------------
+MVP
+
 wallet - deck building - decks are sets of filters and quantities
 wallet - discard all (by set)
 wallet - schema explorer
 wallet - provision local cards
 
 layout tool - better error reporting from card layouts (missing fonts, icons)
-
-----------------------------------------------------------------
-MVP
-
 layout tool - line spacing
 layout tool - kerning
 layout tool - paragraph styles (leading indent)

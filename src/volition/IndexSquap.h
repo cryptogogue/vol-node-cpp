@@ -20,23 +20,25 @@ public:
     string  mIndexer;
     
     //----------------------------------------------------------------//
-    AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
+    AssetFieldVariant AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
         // TODO: right now, only supporting single assets
         const Asset* asset = context.getAsset ();
         if ( !asset ) return AssetFieldValue ();
         
-        switch ( this->mOpCode ) {
-            
-            case ASSET_TYPE:
-                return ( asset->mType == this->mIndexer );
-
-            case FIELD:
-                return asset->getField ( this->mIndexer );
-
-            default:
-                return AssetFieldValue ();
-        };
+        return asset->getField ( this->mIndexer ); // TODO: handle symbols
+        
+//        switch ( this->mOpCode ) {
+//
+//            case ASSET_TYPE:
+//                return ( asset->mType == this->mIndexer );
+//
+//            case FIELD:
+//                return asset->getField ( this->mIndexer );
+//
+//            default:
+//                return AssetFieldValue ();
+//        };
     }
     
     //----------------------------------------------------------------//

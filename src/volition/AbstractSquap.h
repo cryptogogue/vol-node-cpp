@@ -52,14 +52,13 @@ public:
     enum OpCode : u64 {
         ADD                 = FNV1a::const_hash_64 ( "ADD" ),
         AND                 = FNV1a::const_hash_64 ( "AND" ),
-        ASSET_TYPE          = FNV1a::const_hash_64 ( "ASSET_TYPE" ),
         CONST               = FNV1a::const_hash_64 ( "CONST" ),
         EQUAL               = FNV1a::const_hash_64 ( "EQUAL" ),
         DIV                 = FNV1a::const_hash_64 ( "DIV" ),
-        FIELD               = FNV1a::const_hash_64 ( "FIELD" ),
+        FUNC                = FNV1a::const_hash_64 ( "FUNC" ),
         GREATER             = FNV1a::const_hash_64 ( "GREATER" ),
         GREATER_OR_EQUAL    = FNV1a::const_hash_64 ( "GREATER_OR_EQUAL" ),
-        KEYWORD             = FNV1a::const_hash_64 ( "KEYWORD" ),
+        INDEX               = FNV1a::const_hash_64 ( "INDEX" ),
         LESS                = FNV1a::const_hash_64 ( "LESS" ),
         LESS_OR_EQUAL       = FNV1a::const_hash_64 ( "LESS_OR_EQUAL" ),
         MOD                 = FNV1a::const_hash_64 ( "MOD" ),
@@ -74,7 +73,7 @@ public:
     OpCode      mOpCode;
     
     //----------------------------------------------------------------//
-    virtual AssetFieldValue     AbstractSquap_evaluate      ( const SquapEvaluationContext& context ) const = 0;
+    virtual AssetFieldVariant     AbstractSquap_evaluate      ( const SquapEvaluationContext& context ) const = 0;
     
     //----------------------------------------------------------------//
     AssetFieldValue evaluate ( const SquapEvaluationContext& context ) const {
@@ -87,14 +86,13 @@ public:
         switch ( opCode ) {
             case ADD:                   return "ADD";
             case AND:                   return "AND";
-            case ASSET_TYPE:            return "ASSET_TYPE";
             case CONST:                 return "CONST";
             case EQUAL:                 return "EQUAL";
             case DIV:                   return "DIV";
-            case FIELD:                 return "FIELD";
+            case FUNC:                  return "FUNC";
             case GREATER:               return "GREATER";
             case GREATER_OR_EQUAL:      return "GREATER_OR_EQUAL";
-            case KEYWORD:               return "KEYWORD";
+            case INDEX:                 return "INDEX";
             case LESS:                  return "LESS";
             case LESS_OR_EQUAL:         return "LESS_OR_EQUAL";
             case MOD:                   return "MOD";

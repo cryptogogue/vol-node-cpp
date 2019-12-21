@@ -20,12 +20,12 @@ public:
     SerializableSharedPtr < AbstractSquap, SquapFactory >   mRight;
     
     //----------------------------------------------------------------//
-    AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
+    AssetFieldVariant AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
         if ( !( this->mLeft && this->mRight )) return AssetFieldValue ();
         
-        AssetFieldValue lval = this->mLeft->evaluate ( context );
-        AssetFieldValue rval = this->mRight->evaluate ( context );
+        AssetFieldVariant lval = this->mLeft->evaluate ( context );
+        AssetFieldVariant rval = this->mRight->evaluate ( context );
         
         switch ( this->mOpCode ) {
             case AND:
@@ -45,9 +45,6 @@ public:
                 
             case GREATER_OR_EQUAL:
                 return AssetFieldValue::greaterOrEqual ( lval, rval );
-            
-            case KEYWORD:
-                return false; // TODO: squap
             
             case LESS:
                 return AssetFieldValue::less ( lval, rval );
