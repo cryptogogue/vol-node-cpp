@@ -73,7 +73,7 @@ public:
     OpCode      mOpCode;
     
     //----------------------------------------------------------------//
-    virtual AssetFieldVariant     AbstractSquap_evaluate      ( const SquapEvaluationContext& context ) const = 0;
+    virtual AssetFieldValue     AbstractSquap_evaluate      ( const SquapEvaluationContext& context ) const = 0;
     
     //----------------------------------------------------------------//
     AssetFieldValue evaluate ( const SquapEvaluationContext& context ) const {

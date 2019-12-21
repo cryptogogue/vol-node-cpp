@@ -11,9 +11,9 @@
 namespace Volition {
 
 //================================================================//
-// AssetDefinitionField
+// AssetFieldDefinition
 //================================================================//
-class AssetDefinitionField :
+class AssetFieldDefinition :
     public AssetFieldValue {
 public:
 
@@ -21,7 +21,7 @@ public:
     bool    mScriptable;
 
     //----------------------------------------------------------------//
-    AssetDefinitionField () :
+    AssetFieldDefinition () :
         mMutable ( false ),
         mScriptable ( true ) {
     }
@@ -50,18 +50,18 @@ class AssetDefinition :
      public AbstractSerializable {
 public:
 
-    typedef SerializableMap < string, AssetDefinitionField > Fields;
+    typedef SerializableMap < string, AssetFieldDefinition > Fields;
 
     Fields      mFields;        // default values for fields
     
     //----------------------------------------------------------------//
-    AssetDefinitionField getField ( string fieldName ) const {
+    AssetFieldDefinition getField ( string fieldName ) const {
     
         Fields::const_iterator fieldsIt = this->mFields.find ( fieldName );
         if ( fieldsIt != this->mFields.cend ()) {
             return fieldsIt->second;
         }
-        return AssetDefinitionField ();
+        return AssetFieldDefinition ();
     }
     
     //----------------------------------------------------------------//
@@ -69,7 +69,7 @@ public:
     
         Fields::const_iterator fieldIt = this->mFields.find ( name );
         if ( fieldIt != this->mFields.cend ()) {
-            const AssetDefinitionField& field = fieldIt->second;
+            const AssetFieldDefinition& field = fieldIt->second;
             return ( field.mMutable && ( field.getType () == type ));
         }
         return false;

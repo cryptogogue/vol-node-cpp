@@ -20,12 +20,12 @@ public:
     SerializableSharedPtr < AbstractSquap, SquapFactory >   mRight;
     
     //----------------------------------------------------------------//
-    AssetFieldVariant AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
+    AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
         if ( !( this->mLeft && this->mRight )) return AssetFieldValue ();
         
-        AssetFieldVariant lval = this->mLeft->evaluate ( context );
-        AssetFieldVariant rval = this->mRight->evaluate ( context );
+        AssetFieldValue lval = this->mLeft->evaluate ( context );
+        AssetFieldValue rval = this->mRight->evaluate ( context );
         
         switch ( this->mOpCode ) {
             case AND:

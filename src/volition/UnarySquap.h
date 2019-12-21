@@ -19,7 +19,7 @@ public:
     SerializableSharedPtr < AbstractSquap, SquapFactory >   mOperand;
     
     //----------------------------------------------------------------//
-    AssetFieldVariant AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
+    AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
         if ( this->mOperand && ( this->mOpCode == NOT )) {
             return AssetFieldValue::booleanNot ( !this->mOperand->evaluate ( context ));

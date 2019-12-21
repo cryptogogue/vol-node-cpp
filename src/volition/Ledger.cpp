@@ -209,7 +209,7 @@ shared_ptr < Asset > Ledger::getAsset ( Asset::Index index ) const {
         
         string fieldName = fieldIt->first;
         
-        const AssetDefinitionField& field = fieldIt->second;
+        const AssetFieldDefinition& field = fieldIt->second;
         AssetFieldValue value = field;
         
 //        if ( field.mMutable ) {

@@ -75,7 +75,7 @@ public:
 //            for ( ; definitionFieldsIt != this->mDefinition->mFields.cend (); ++definitionFieldsIt ) {
 //
 //                string fieldName = definitionFieldsIt->first;
-//                const AssetDefinitionField& definitionField = definitionFieldsIt->second;
+//                const AssetFieldDefinition& definitionField = definitionFieldsIt->second;
 //                
 //                this->mFields [ fieldName ].serializeValue ( serializer, definitionField.getType (), fieldName );
 //            }
