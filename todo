@@ -80,7 +80,8 @@ node - provision any asset
 node - upgrade assets
 node - handle unrecognized account - reject transactions
 
-node/schema - provision updated assets; link asset types between schemas (asset versioning)
+node/schema - asset updates
+node/schema - reaplce schema name with version (schema is a composite; one per ledger)
 
 ----------------------------------------------------------------
 MVP

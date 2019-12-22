@@ -78,6 +78,8 @@ const App = () => {
                 <Route exact path = "/debug/textfitter"         component = { fgc.debug.TextFitterScreen }/>
                 <Route exact path = "/debug/textstyle"          component = { fgc.debug.TextStyleScreen }/>
 
+                <Route exact path = "/util/schema"              component = { cardmotron.SchemaScreen }/>
+
                 <Route exact path = "/:userID/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>
             </Switch>
