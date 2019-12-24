@@ -32,6 +32,44 @@ namespace Volition {
 class Transaction;
 
 //================================================================//
+// SchemaHandle
+//================================================================//
+class SchemaHandle {
+private:
+
+    shared_ptr < Schema >   mSchema;
+
+public:
+
+    //----------------------------------------------------------------//
+    operator bool () const {
+        return ( this->mSchema != NULL );
+    }
+    
+    //----------------------------------------------------------------//
+    const Schema* operator -> () const {
+        return this->mSchema.get ();
+    }
+    
+    //----------------------------------------------------------------//
+    const Schema& operator * () const {
+        assert ( this->mSchema );
+        return *this->mSchema;
+    }
+
+    //----------------------------------------------------------------//
+    void reset ( const Ledger& ledger ) {
+        this->mSchema = make_shared < Schema >();
+        ledger.getSchema ( *this->mSchema );
+    }
+
+    //----------------------------------------------------------------//
+    SchemaHandle ( const Ledger& ledger ) {
+        this->reset ( ledger );
+    }
+};
+
+//================================================================//
 // AbstractTransactionBody
 //================================================================//
 class AbstractTransactionBody :
@@ -48,7 +86,7 @@ protected:
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
     //----------------------------------------------------------------//
-    virtual bool            AbstractTransactionBody_apply           ( Ledger& ledger ) const = 0;
+    virtual bool            AbstractTransactionBody_apply           ( Ledger& ledger, SchemaHandle& schemaHandle ) const = 0;
     virtual u64             AbstractTransactionBody_maturity        () const = 0;
     virtual string          AbstractTransactionBody_typeString      () const = 0;
     virtual u64             AbstractTransactionBody_weight          () const = 0;
@@ -58,7 +96,7 @@ public:
     //----------------------------------------------------------------//
                             AbstractTransactionBody                 ();
                             ~AbstractTransactionBody                ();
-    bool                    apply                                   ( Ledger& ledger ) const;
+    bool                    apply                                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
     u64                     maturity                                () const;
     string                  typeString                              () const;
     u64                     weight                                  () const;

@@ -11,10 +11,10 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Transaction::apply ( Ledger& ledger ) const {
+bool Transaction::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
     
     if ( this->checkMaker ( ledger )) {
-        if ( this->mBody->apply ( ledger )) {
+        if ( this->mBody->apply ( ledger, schemaHandle )) {
             if ( this->mBody->mMaker ) {
                 ledger.incrementNonce ( *this->mBody->mMaker );
             }

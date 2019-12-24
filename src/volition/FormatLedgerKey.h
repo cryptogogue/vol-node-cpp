@@ -44,20 +44,6 @@ public:
 // FormatLedgerKey
 //================================================================//
 class FormatLedgerKey {
-private:
-
-//    static constexpr const char* ACCOUNT                = "account";
-//    static constexpr const char* ACCOUNT_ALIAS          = "alias";
-//    static constexpr const char* ACCOUNT_COUNTER        = "accountCounter";
-//    static constexpr const char* BLOCK_KEY              = "block";
-//    static constexpr const char* KEY_ID                 = "keyID.";
-//    static constexpr const char* ENTROPY                = "entropy";
-//    static constexpr const char* IDENTITY               = "identity";
-//    static constexpr const char* MINERS                 = "miners";
-//    static constexpr const char* MINER_INFO             = "minerInfo";
-//    static constexpr const char* MINER_URLS             = "minerUrls";
-//    static constexpr const char* UNFINISHED             = "unfinished";
-
 public:
 
     static constexpr const char* ACCOUNT_NAME           = "name";

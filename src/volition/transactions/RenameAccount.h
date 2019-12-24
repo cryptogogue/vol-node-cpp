@@ -45,7 +45,8 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
+        UNUSED ( schemaHandle );
         
         return ledger.renameAccount ( this->mMaker->getAccountName (), this->mRevealedName, this->mNameHash, this->mNameSecret );
     }

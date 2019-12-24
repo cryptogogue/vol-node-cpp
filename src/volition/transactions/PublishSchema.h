@@ -39,9 +39,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
         
-        return ledger.publishSchema ( this->mMaker->getAccountName (), this->mSchema );
+        bool result = ledger.publishSchema ( this->mMaker->getAccountName (), this->mSchema );
+        if ( result ) {
+            schemaHandle.reset ( ledger );
+        }
+        return result;
     }
 };
 

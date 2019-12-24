@@ -19,8 +19,11 @@ class LuaContext {
 private:
 
     friend class Ledger;
+    
+    static constexpr const char* CONTEXT_KEY    = "vol.context";
 
-    Schema          mSchema;
+    Ledger&         mLedger;
+    const Schema&   mSchema;
     lua_State*      mLuaState;
 
     //----------------------------------------------------------------//
@@ -36,12 +39,12 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    bool            invoke                      ( Ledger& ledger, string accountName );
-    bool            invoke                      ( Ledger& ledger, string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation );
+    bool            invoke                      ( string accountName );
+    bool            invoke                      ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation );
     void            miningReward                ( Ledger& ledger, string rewardName );
     void            publish                     ( Ledger& ledger );
     bool            runMethod                   ( Ledger& ledger, string methodName, u64 weight, u64 maturity, const string* assets, size_t nAssets );
-                    LuaContext                  ( string lua );
+                    LuaContext                  ( Ledger& ledger, const Schema& schema, string lua );
                     ~LuaContext                 ();
 };
 

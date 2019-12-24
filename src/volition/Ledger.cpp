@@ -57,12 +57,10 @@ bool Ledger::affirmKey ( string accountName, string makerKeyName, string keyName
 }
 
 //----------------------------------------------------------------//
-bool Ledger::awardAsset ( string accountName, string assetType, int quantity ) {
+bool Ledger::awardAsset ( const Schema& schema, string accountName, string assetType, int quantity ) {
 
     if ( quantity == 0 ) return true;
 
-    Schema schema;
-    this->getSchema ( schema );
     if ( !schema.getDefinitionOrNull ( assetType )) return false;
 
     Account::Index accountIndex = this->getAccountIndex ( accountName );
@@ -187,16 +185,13 @@ string Ledger::getAccountName ( Account::Index accountIndex ) const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Asset > Ledger::getAsset ( Asset::Index index ) const {
+shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, Asset::Index index ) const {
 
     string KEY_FOR_ASSET_OWNER = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_OWNER );
     if ( !this->hasValue ( KEY_FOR_ASSET_OWNER )) return NULL;
 
     LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_TYPE );
     string typeName = this->getValue < string >( KEY_FOR_ASSET_TYPE );
-
-    Schema schema;
-    this->getSchema ( schema );
 
     const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( typeName );
     if ( !assetDefinition ) return NULL;
@@ -264,7 +259,7 @@ string Ledger::getIdentity () const {
 }
 
 //----------------------------------------------------------------//
-SerializableList < Asset > Ledger::getInventory ( string accountName ) const {
+SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string accountName ) const {
 
     SerializableList < Asset > assets;
 
@@ -276,7 +271,7 @@ SerializableList < Asset > Ledger::getInventory ( string accountName ) const {
     
     while ( cursor != Asset::NULL_INDEX ) {
     
-        shared_ptr < Asset > asset = this->getAsset ( cursor );
+        shared_ptr < Asset > asset = this->getAsset ( schema, cursor );
         assert ( asset );
         assets.push_back ( *asset );
     
@@ -368,10 +363,7 @@ void Ledger::init () {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocation ) {
-
-    Schema schema;
-    this->getSchema ( schema ); // TODO: hideosly slow; cache this
+bool Ledger::invoke ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation ) {
 
     const AssetMethod* method = schema.getMethodOrNull ( invocation.mMethodName );
     if ( !( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ))) return false;
@@ -381,8 +373,8 @@ bool Ledger::invoke ( string accountName, const AssetMethodInvocation& invocatio
     if ( accountIndex == Account::NULL_INDEX ) return false;
 
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
-    LuaContext lua ( method->mLua );
-    return lua.invoke ( *this, accountName, *method, invocation );
+    LuaContext lua ( *this, schema, method->mLua );
+    return lua.invoke ( accountName, *method, invocation );
 }
 
 //----------------------------------------------------------------//
@@ -610,7 +602,7 @@ void Ledger::setAccount ( string accountName, const Account& account ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::setAssetFieldValue ( Asset::Index index, string fieldName, const AssetFieldValue& field ) {
+bool Ledger::setAssetFieldValue ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field ) {
 
     // make sure the asset exists
     LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_TYPE );
@@ -618,9 +610,6 @@ bool Ledger::setAssetFieldValue ( Asset::Index index, string fieldName, const As
     string assetType = this->getValue < string >( KEY_FOR_ASSET_TYPE );
 
     // make sure the field exists
-    Schema schema;
-    this->getSchema ( schema );
-    
     const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
     if ( !assetDefinition ) return false;
     if ( !assetDefinition->hasMutableField ( fieldName, field.getType ())) return false;
@@ -775,10 +764,7 @@ bool Ledger::sponsorAccount ( string sponsorName, string keyName, string suffix,
 }
 
 //----------------------------------------------------------------//
-bool Ledger::verify ( const AssetMethodInvocation& invocation ) const {
-
-    Schema schema;
-    this->getSchema ( schema );
+bool Ledger::verify ( const Schema& schema, const AssetMethodInvocation& invocation ) const {
 
     const AssetMethod* method = schema.getMethodOrNull ( invocation.mMethodName );
     return ( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ));

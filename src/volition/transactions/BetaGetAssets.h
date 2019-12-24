@@ -39,16 +39,14 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
         
-        Schema schema;
-        ledger.getSchema ( schema );
-        const Schema::Definitions& definitions = schema.getDefinitions ();
+        const Schema::Definitions& definitions = schemaHandle->getDefinitions ();
         
         Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
         for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
         
-            ledger.awardAsset ( this->mMaker->getAccountName (), definitionIt->first, ( int )this->mNumAssets );
+            ledger.awardAsset ( *schemaHandle, this->mMaker->getAccountName (), definitionIt->first, ( int )this->mNumAssets );
         }
         return true;
     }

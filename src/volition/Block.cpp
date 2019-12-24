@@ -95,6 +95,8 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
     size_t nextMaturity = this->mHeight;
     size_t height = ledger.getVersion ();
 
+    SchemaHandle schemaHandle ( ledger );
+
     if ( ledger.getVersion () >= this->mHeight ) {
         
         // apply block transactions.
@@ -103,7 +105,7 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
             
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
-                transaction.apply ( ledger );
+                transaction.apply ( ledger, schemaHandle );
             }
             
             if ( nextMaturity < transactionMaturity ) {

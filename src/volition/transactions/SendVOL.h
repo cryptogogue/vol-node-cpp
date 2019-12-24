@@ -42,7 +42,8 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
+    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
+        UNUSED ( schemaHandle );
         
         return ledger.sendVOL ( this->mMaker->getAccountName (), this->mAccountName, this->mAmount );
     }
