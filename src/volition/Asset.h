@@ -32,16 +32,9 @@ public:
     string      mType;
     string      mOwner;
     Fields      mFields;
-    
-    shared_ptr < AssetDefinition > mDefinition;
-    
+        
     //----------------------------------------------------------------//
     Asset () {
-    }
-    
-    //----------------------------------------------------------------//
-    Asset ( shared_ptr < AssetDefinition > definition ) :
-        mDefinition ( definition ) {
     }
     
     //----------------------------------------------------------------//

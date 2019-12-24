@@ -15,6 +15,8 @@ class ToJSONSerializer :
     public AbstractSerializerTo {
 protected:
 
+    friend class SerializableOpaque;
+
     Poco::JSON::Array::Ptr      mArray;
     Poco::JSON::Object::Ptr     mObject;
     ToJSONSerializer*           mParent;

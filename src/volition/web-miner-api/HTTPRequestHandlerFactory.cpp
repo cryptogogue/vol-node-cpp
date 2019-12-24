@@ -13,7 +13,7 @@
 #include <volition/web-miner-api/KeyDetailsHandler.h>
 #include <volition/web-miner-api/MinerListHandler.h>
 #include <volition/web-miner-api/ResetChainHandler.h>
-#include <volition/web-miner-api/SchemaListHandler.h>
+#include <volition/web-miner-api/SchemaHandler.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
 #include <volition/web-miner-api/TransactionHandler.h>
@@ -36,7 +36,7 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >         ( HTTP::GET,        "/blocks/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >        ( HTTP::GET,        "/keys/:keyHash/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >         ( HTTP::GET,        "/miners/?" );
-    this->mRouteTable.addEndpoint < WebMinerAPI::SchemaListHandler >        ( HTTP::GET,        "/schemas/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::SchemaHandler >            ( HTTP::GET,        "/schema/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >       ( HTTP::POST,       "/test/extendChain/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >         ( HTTP::POST,       "/test/keyid/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >     ( HTTP::POST,       "/test/signature/?" );

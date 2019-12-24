@@ -23,27 +23,25 @@ public:
     TRANSACTION_MATURITY ( 0 )
 
     Schema      mSchema;
-    string      mSchemaString;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "schema",        this->mSchema );
-        serializer.stringFromTree ( "schema",   this->mSchemaString );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.stringToTree ( "schema",     this->mSchemaString );
+        serializer.serialize ( "schema",        this->mSchema );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
-        return ledger.publishSchema ( this->mMaker->getAccountName (), this->mSchema, this->mSchemaString );
+        return ledger.publishSchema ( this->mMaker->getAccountName (), this->mSchema );
     }
 };
 

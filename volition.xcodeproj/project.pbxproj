@@ -27,7 +27,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		CD09ED752207D82500B09249 /* SchemaListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaListHandler.h */; };
+		CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaHandler.h */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
 		CD0C3E5820C86D88006E3B1C /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
@@ -144,6 +144,7 @@
 		CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD8232827B3005AC85D /* EntitlementFactory.h */; };
 		CD762ADC23284438005AC85D /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
 		CD762AE12328D109005AC85D /* Entitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AE02328D109005AC85D /* Entitlements.h */; };
+		CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747823B052BF00FBE468 /* SerializableOpaque.h */; };
 		CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1D0228F47DA000C2A54 /* FileSys.cpp */; };
 		CD85B1D3228F47DA000C2A54 /* FileSys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD85B1D1228F47DA000C2A54 /* FileSys.h */; };
 		CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */; };
@@ -629,7 +630,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CD09ED742207D82500B09249 /* SchemaListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaListHandler.h; path = "src/volition/web-miner-api/SchemaListHandler.h"; sourceTree = "<group>"; };
+		CD09ED742207D82500B09249 /* SchemaHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaHandler.h; path = "src/volition/web-miner-api/SchemaHandler.h"; sourceTree = "<group>"; };
 		CD0C3E1020C14460006E3B1C /* WebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebMiner.cpp; path = src/volition/WebMiner.cpp; sourceTree = "<group>"; };
 		CD0C3E1120C14460006E3B1C /* WebMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebMiner.h; path = src/volition/WebMiner.h; sourceTree = "<group>"; };
 		CD0C3E1420C14E8A006E3B1C /* TheTransactionBodyFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheTransactionBodyFactory.cpp; path = src/volition/TheTransactionBodyFactory.cpp; sourceTree = "<group>"; };
@@ -716,6 +717,7 @@
 		CD762AE02328D109005AC85D /* Entitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entitlements.h; path = src/volition/Entitlements.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
+		CD7C747823B052BF00FBE468 /* SerializableOpaque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableOpaque.h; path = src/volition/serialization/SerializableOpaque.h; sourceTree = "<group>"; };
 		CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFormatUtils.cpp; path = src/volition/gtest/TestFormatUtils.cpp; sourceTree = "<group>"; };
 		CD85B1D0228F47DA000C2A54 /* FileSys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileSys.cpp; path = src/volition/FileSys.cpp; sourceTree = "<group>"; };
 		CD85B1D1228F47DA000C2A54 /* FileSys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileSys.h; path = src/volition/FileSys.h; sourceTree = "<group>"; };
@@ -1030,6 +1032,7 @@
 				CD36664B20F730AA000E0B43 /* FromJSONSerializer.h */,
 				CDB8B3C921AC7EBF004EE816 /* SerializableList.h */,
 				CD8BAE4821EBEB4100B5040E /* SerializableMap.h */,
+				CD7C747823B052BF00FBE468 /* SerializableOpaque.h */,
 				CD7791FC20F93B1E0058EBAC /* SerializableSet.h */,
 				CD7791FD20F93B1E0058EBAC /* SerializableVector.h */,
 				CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */,
@@ -1273,7 +1276,7 @@
 				CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */,
 				CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */,
 				CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */,
-				CD09ED742207D82500B09249 /* SchemaListHandler.h */,
+				CD09ED742207D82500B09249 /* SchemaHandler.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
 				CDB8B40021ACC874004EE816 /* TransactionHandler.h */,
@@ -1550,9 +1553,10 @@
 				CD4E8198210593BD007DA585 /* Chain.h in Headers */,
 				CDF8AD5821F39969000E285F /* Entropy.h in Headers */,
 				CDBFD549218B8999002AB0C3 /* GenesisMiner.h in Headers */,
+				CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
 				CD4E81A0210593BD007DA585 /* TheContext.h in Headers */,
-				CD09ED752207D82500B09249 /* SchemaListHandler.h in Headers */,
+				CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */,
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,
 				CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */,
 				CDBFD54C218B8999002AB0C3 /* PublishSchema.h in Headers */,

@@ -11,6 +11,7 @@
 #include <volition/serialization/AbstractStringifiable.h>
 #include <volition/serialization/SerializableList.h>
 #include <volition/serialization/SerializableMap.h>
+#include <volition/serialization/SerializableOpaque.h>
 #include <volition/serialization/SerializablePtrFactory.h>
 #include <volition/serialization/SerializableSet.h>
 #include <volition/serialization/SerializableSharedPtr.h>

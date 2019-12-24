@@ -46,17 +46,17 @@ public:
 class FormatLedgerKey {
 private:
 
-    static constexpr const char* ACCOUNT                = "account";
-    static constexpr const char* ACCOUNT_ALIAS          = "alias";
-    static constexpr const char* ACCOUNT_COUNTER        = "accountCounter";
-    static constexpr const char* BLOCK_KEY              = "block";
-    static constexpr const char* KEY_ID                 = "keyID.";
-    static constexpr const char* ENTROPY                = "entropy";
-    static constexpr const char* IDENTITY               = "identity";
-    static constexpr const char* MINERS                 = "miners";
-    static constexpr const char* MINER_INFO             = "minerInfo";
-    static constexpr const char* MINER_URLS             = "minerUrls";
-    static constexpr const char* UNFINISHED             = "unfinished";
+//    static constexpr const char* ACCOUNT                = "account";
+//    static constexpr const char* ACCOUNT_ALIAS          = "alias";
+//    static constexpr const char* ACCOUNT_COUNTER        = "accountCounter";
+//    static constexpr const char* BLOCK_KEY              = "block";
+//    static constexpr const char* KEY_ID                 = "keyID.";
+//    static constexpr const char* ENTROPY                = "entropy";
+//    static constexpr const char* IDENTITY               = "identity";
+//    static constexpr const char* MINERS                 = "miners";
+//    static constexpr const char* MINER_INFO             = "minerInfo";
+//    static constexpr const char* MINER_URLS             = "minerUrls";
+//    static constexpr const char* UNFINISHED             = "unfinished";
 
 public:
 
@@ -109,12 +109,6 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forAssetDefinition ( string assetType ) {
-
-        return Format::write ( "asset.%s.definition", assetType.c_str ());
-    }
-
-    //----------------------------------------------------------------//
     static LedgerKey forAssetField ( Asset::Index index, string fieldName ) {
 
         return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
@@ -153,12 +147,6 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forMethod ( string methodName ) {
-
-        return Format::write ( "method.%s", methodName.c_str ());
-    }
-
-    //----------------------------------------------------------------//
     static LedgerKey forMiners () {
 
         return "miners";
@@ -171,21 +159,9 @@ public:
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey forSchema ( Schema::Index index ) {
+    static LedgerKey forSchema () {
 
-        return Format::write ( "schema.%d", index );
-    }
-    
-    //----------------------------------------------------------------//
-    static LedgerKey forSchemaAlias ( string schemaName ) {
-
-        return Format::write ( "schemaAlias.%s", schemaName.c_str ());
-    }
-
-    //----------------------------------------------------------------//
-    static LedgerKey forSchemaCount () {
-
-        return "schema.count";
+        return "schema";
     }
     
     //----------------------------------------------------------------//

@@ -127,14 +127,11 @@ public:
     Entropy                             getEntropy                  () const;
     string                              getIdentity                 () const;
     SerializableList < Asset >          getInventory                ( string accountName ) const;
-    shared_ptr < AssetMethod >          getMethod                   ( string methodName ) const;
     shared_ptr < MinerInfo >            getMinerInfo                ( string accountName ) const;
     map < string, MinerInfo >           getMiners                   () const;
     shared_ptr < MinerURLMap >          getMinerURLs                () const;
-    shared_ptr < Schema >               getSchema                   ( Schema::Index schemaIndex ) const;
-    Schema::Index                       getSchemaCount              () const;
-    Schema::Index                       getSchemaIndex              ( string schemaName ) const;
-    string                              getSchemaString             ( Schema::Index schemaIndex ) const;
+    void                                getSchema                   ( Schema& schema ) const;
+    string                              getSchemaString             () const;
     UnfinishedBlockList                 getUnfinished               ();
     void                                incrementNonce              ( const TransactionMaker& makerSignature );
     void                                init                        ();
@@ -147,7 +144,7 @@ public:
                                         Ledger                      ( Ledger& other );
                                         ~Ledger                     ();
     bool                                newAccount                  ( string accountName, u64 balance, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
-    bool                                publishSchema               ( string accountName, const Schema& schema, string schemaString );
+    bool                                publishSchema               ( string accountName, const Schema& schema );
     bool                                registerMiner               ( string accountName, string keyName, string url );
     bool                                renameAccount               ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
     bool                                sendVOL                     ( string accountName, string recipientName, u64 amount );

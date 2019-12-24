@@ -15,6 +15,8 @@ class FromJSONSerializer :
     public AbstractSerializerFrom {
 protected:
 
+    friend class SerializableOpaque;
+
     const Poco::JSON::Array*    mArray;
     const Poco::JSON::Object*   mObject;
     const FromJSONSerializer*   mParent;

@@ -41,18 +41,15 @@ public:
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger ) const override {
         
-        Schema::Index schemaCount = ledger.getSchemaCount ();
-        for ( Schema::Index i = 0; i < schemaCount; ++i ) {
-            shared_ptr < Schema > schema = ledger.getSchema ( i );
-            const Schema::Definitions& definitions = schema->getDefinitions ();
-            
-            Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
-            for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
-            
-                ledger.awardAsset ( this->mMaker->getAccountName (), definitionIt->first, ( int )this->mNumAssets );
-            }
-        }
+        Schema schema;
+        ledger.getSchema ( schema );
+        const Schema::Definitions& definitions = schema.getDefinitions ();
         
+        Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
+        for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
+        
+            ledger.awardAsset ( this->mMaker->getAccountName (), definitionIt->first, ( int )this->mNumAssets );
+        }
         return true;
     }
 };

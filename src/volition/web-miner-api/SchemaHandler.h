@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_SCHEMALISTHANDLER_H
-#define VOLITION_WEBMINERAPI_SCHEMALISTHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_SCHEMAHANDLER_H
+#define VOLITION_WEBMINERAPI_SCHEMAHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
@@ -14,9 +14,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// SchemaListHandler
+// SchemaHandler
 //================================================================//
-class SchemaListHandler :
+class SchemaHandler :
     public AbstractAPIRequestHandler {
 public:
 
@@ -30,18 +30,13 @@ public:
         try {
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-        
-            Poco::JSON::Array::Ptr jsonArray = new Poco::JSON::Array ();
-            Schema::Index schemaCount = ledger.getSchemaCount ();
-            for ( Schema::Index i = 0; i < schemaCount; ++i ) {
-                string schemaString = ledger.getSchemaString ( i );
-                
-                Poco::JSON::Parser parser;
-                Poco::JSON::Object::Ptr object = parser.parse ( schemaString ).extract < Poco::JSON::Object::Ptr >();
-                
-                jsonArray->set (( uint )i, object );
-            }
-            jsonOut.set ( "schemas", jsonArray );
+            
+            string schemaString = ledger.getSchemaString ();
+            
+            Poco::JSON::Parser parser;
+            Poco::JSON::Object::Ptr object = parser.parse ( schemaString ).extract < Poco::JSON::Object::Ptr >();
+
+            jsonOut.set ( "schema", object );
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
