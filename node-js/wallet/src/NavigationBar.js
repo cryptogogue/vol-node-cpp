@@ -26,6 +26,7 @@ export const NavigationBar = observer (( props ) => {
     const inventoryURL          = appState.prefixURL ( `/accounts/${ accountID }/inventory` );
     const craftingURL           = appState.prefixURL ( `/accounts/${ accountID }/crafting` );
     const resetURL              = appState.prefixURL ( `/accounts/${ accountID }/reset` );
+    const upgradesURL           = appState.prefixURL ( `/accounts/${ accountID }/upgrades` );
     const previewSchemaURL      = `/debug/schema`;
 
     return (
@@ -36,6 +37,7 @@ export const NavigationBar = observer (( props ) => {
                         <Dropdown.Item icon = "add square" text = "Accounts" as = { Link } to = { accountsURL }/>
                         <Dropdown.Item disabled = { !appState.hasAccount } icon = "add square" text = "Inventory" as = { Link } to = { inventoryURL }/>
                         <Dropdown.Item disabled = { !appState.hasAccount } icon = "add square" text = "Crafting" as = { Link } to = { craftingURL }/>
+                        <Dropdown.Item disabled = { !appState.hasAccount } icon = "add square" text = "Upgrades" as = { Link } to = { upgradesURL }/>
                     </Dropdown.Menu>
                 </Dropdown>
             </Menu.Menu>

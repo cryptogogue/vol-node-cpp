@@ -20,6 +20,7 @@ import { InventoryScreen }              from './InventoryScreen';
 import { LoginScreen }                  from './LoginScreen';
 import { RegisterScreen }               from './RegisterScreen';
 import { ResetScreen }                  from './ResetScreen';
+import { UpgradesScreen }               from './UpgradesScreen';
 import registerServiceWorker            from './util/registerServiceWorker';
 import React                            from 'react';
 import ReactDOM                         from 'react-dom';
@@ -52,6 +53,9 @@ const App = () => {
 
                 <Route exact path = "/:userID/accounts/:accountID/inventory" component = { InventoryScreen }/>
                 <Route exact path = "/accounts/:accountID/inventory" component = { InventoryScreen }/>
+
+                <Route exact path = "/:userID/accounts/:accountID/upgrades" component = { UpgradesScreen }/>
+                <Route exact path = "/accounts/:accountID/upgrades" component = { UpgradesScreen }/>
 
                 <Route exact path = "/:userID/accounts/:accountID/reset" component = { ResetScreen }/>
                 <Route exact path = "/accounts/:accountID/reset" component = { ResetScreen }/>
