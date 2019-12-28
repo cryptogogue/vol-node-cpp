@@ -1,7 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import './InventoryScreen.css';
-
 import { InventoryFilterDropdown }                          from './InventoryFilterDropdown';
 import { InventoryTagController }                           from './InventoryTagController';
 import { InventoryTagDropdown }                             from './InventoryTagDropdown';
@@ -14,7 +12,7 @@ import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
-import { Button, Checkbox, Dropdown, Grid, Icon, List, Menu, Loader } from 'semantic-ui-react';
+import { Button, Checkbox, Dropdown, Grid, Icon, Label, List, Menu, Loader, Segment, Table } from 'semantic-ui-react';
 
 //================================================================//
 // UpgradesController
@@ -139,24 +137,35 @@ const UpgradeItem = observer (( props ) => {
 
     const name = upgrade.asset.fields.name ? upgrade.asset.fields.name.value : upgrade.assetID;
 
+    const toggle = ( event ) => {
+        event.stopPropagation ();
+        controller.toggle ( upgradeID );
+    }
+
     return (
-        <React.Fragment>
-            <Checkbox
-                label           = { name }
-                checked         = { upgrade.enabled }
-                onChange        = {( event ) => {
-                    controller.toggle ( upgradeID );
-                }}
-            />
-            <Dropdown
-                text = { controller.getFriendlyName ( upgrade.selected )}
-                disabled = { !upgrade.enabled }
+        <Table.Row>
+            <Table.Cell
+                collapsing
+                onClick             = { toggle }
             >
-                <Dropdown.Menu>
-                    { options }
-                </Dropdown.Menu>
-            </Dropdown>
-        </React.Fragment>
+                { name }
+            </Table.Cell>
+            <Table.Cell>
+                <Dropdown
+                    fluid
+                    selection
+                    text = { controller.getFriendlyName ( upgrade.selected )}
+                    disabled = { !upgrade.enabled }
+                    options = { options }
+                />
+            </Table.Cell>
+            <Table.Cell collapsing>
+                <Checkbox
+                    checked         = { upgrade.enabled }
+                    onChange        = { toggle }
+                />
+            </Table.Cell>
+        </Table.Row>
     );
 });
 
@@ -198,11 +207,13 @@ export const UpgradesScreen = observer (( props ) => {
     }
 
     return (
-        <SingleColumnContainerView>
-            <NavigationBar navTitle = "Upgrades" appState = { appState }/>
-        
-            <Choose>
+        <React.Fragment>
 
+            <SingleColumnContainerView>
+                <NavigationBar navTitle = "Upgrades" appState = { appState }/>
+            </SingleColumnContainerView>
+
+            <Choose>
                 <When condition = { inventory.loading }>
                     <Loader
                         active
@@ -215,36 +226,54 @@ export const UpgradesScreen = observer (( props ) => {
                 </When>
 
                 <When condition = { hasAssets }>
-                    { upgradeList }
-                    <Button
-                        fluid
-                        size = "large"
-                        color = "teal"
-                        disabled = { controller.totalEnabled === controller.total }
-                        onClick = {() => { controller.enableAll ( true )}}
-                    >
-                        Select All
-                    </Button>
-                    <Button
-                        fluid
-                        size = "large"
-                        color = "red"
-                        disabled = { controller.totalEnabled === 0 }
-                        onClick = {() => { controller.enableAll ( false )}}
-                    >
-                        Deselect All
-                    </Button>
-                    <Button
-                        fluid
-                        size = "large"
-                        color = "orange" 
-                        disabled = { controller.totalEnabled === 0 }
-                    >
-                        Submit
-                    </Button>
-                </When>
 
+                    <Table celled unstackable>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell>Name</Table.HeaderCell>
+                                <Table.HeaderCell>Upgrade</Table.HeaderCell>
+                                <Table.HeaderCell/>
+                            </Table.Row>
+                        </Table.Header>
+
+                        <Table.Body>
+                            { upgradeList }
+                        </Table.Body>
+
+                        <Table.Footer fullWidth>
+                            <Table.Row>
+        
+                                <Table.HeaderCell colSpan='4'>
+                                    <Button
+                                        floated = 'right'
+                                        primary
+                                    >
+                                        Submit
+                                    </Button>
+
+                                    <Button
+                                        color = 'teal'
+                                        disabled = { controller.totalEnabled === controller.total }
+                                        onClick = {() => { controller.enableAll ( true )}}
+                                    >
+                                        Select All
+                                    </Button>
+                                    
+                                    <Button
+                                        color = 'red'
+                                        disabled = { controller.totalEnabled === 0 }
+                                        onClick = {() => { controller.enableAll ( false )}}
+                                    >
+                                        Deselect All
+                                    </Button>
+                                </Table.HeaderCell>
+                            </Table.Row>
+                        </Table.Footer>
+                    </Table>
+
+                </When>
             </Choose>
-        </SingleColumnContainerView>
+
+        </React.Fragment>
     );
 });
