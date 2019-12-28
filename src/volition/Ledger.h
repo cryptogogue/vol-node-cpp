@@ -158,6 +158,7 @@ public:
     void                                serializeEntitlements       ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setUnfinished               ( const UnfinishedBlockList& unfinished );
     bool                                sponsorAccount              ( string sponsorName, string keyName, string suffix, u64 grant, const CryptoKey& key, const Policy* keyPolicy, const Policy* accountPolicy );
+    bool                                upgradeAsset                ( const Schema& schema, Account::Index accountIndex, Asset::Index assetIndex, string upgradeType );
     bool                                verify                      ( const Schema& schema, const AssetMethodInvocation& invocation ) const;
 
     //----------------------------------------------------------------//

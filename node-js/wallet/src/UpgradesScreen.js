@@ -5,6 +5,7 @@ import { InventoryTagController }                           from './InventoryTag
 import { InventoryTagDropdown }                             from './InventoryTagDropdown';
 import { NavigationBar }                                    from './NavigationBar';
 import { AppStateService }                                  from './AppStateService';
+import { Transaction, TRANSACTION_TYPE }                    from './Transaction';
 import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                                    from 'lodash';
@@ -23,9 +24,11 @@ export class UpgradesController {
 
     //----------------------------------------------------------------//
     @action
-    affirm ( inventory ) {
+    affirm ( inventory, appState ) {
 
         if ( this.upgrades ) return;
+
+        const assetsUtilized = appState ? appState.assetsUtilized : [];
 
         this.inventory = inventory;
 
@@ -35,7 +38,9 @@ export class UpgradesController {
         const upgrades = [];
 
         for ( let asset of assets ) {
-            console.log ( 'ASSET', asset );
+
+            if ( assetsUtilized.includes ( asset.assetID )) continue;
+
             const forAsset = inventory.getUpgradesForAssetID ( asset.assetID );
             if ( forAsset ) {
                 upgrades.push ({
@@ -48,6 +53,13 @@ export class UpgradesController {
             }
         }
         this.upgrades = upgrades;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    clear () {
+
+        this.upgrades = false;
     }
 
     //----------------------------------------------------------------//
@@ -97,6 +109,19 @@ export class UpgradesController {
             }
         }
         return enabled;
+    }
+
+    //----------------------------------------------------------------//
+    @computed
+    get upgradeMap () {
+
+        const map = {};
+        for ( let upgrade of this.upgrades ) {
+            if ( upgrade.enabled ) {
+                map [ upgrade.assetID ] = upgrade.selected;
+            }
+        }
+        return map;
     }
 
     //----------------------------------------------------------------//
@@ -188,22 +213,42 @@ export const UpgradesScreen = observer (( props ) => {
         return appState.redirect ( `/accounts/${ appState.accountID }/inventory` );
     }
 
-    const upgradeList = [];
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));
 
     if ( hasAssets ) {
+        controller.affirm ( inventory, appState );
+    }
 
-        controller.affirm ( inventory );
+    const upgradeList = [];
+    for ( let i in controller.upgrades ) {
+        upgradeList.push (
+            <UpgradeItem
+                key = { i }
+                controller = { controller }
+                upgradeID = { i }
+            />
+        );
+    }
 
-        for ( let i in controller.upgrades ) {
-            upgradeList.push (
-                <UpgradeItem
-                    key = { i }
-                    controller = { controller }
-                    upgradeID = { i }
-                />
-            );
+    const onSubmit = () => {
+
+        const upgradeMap = controller.upgradeMap;
+
+        const body = {
+            maker: {
+                accountName:    appState.accountID,
+                keyName:        appState.keyName,
+                nonce:          -1,
+                gratuity:       0,
+            },
+            upgrades:   upgradeMap,
         }
+
+        const transaction = new Transaction ( TRANSACTION_TYPE.UPGRADE_ASSETS, body );
+        transaction.setAssetsUtilized ( Object.keys ( upgradeMap ));
+        appState.pushTransaction ( transaction );
+
+        controller.clear ();
     }
 
     return (
@@ -225,7 +270,7 @@ export const UpgradesScreen = observer (( props ) => {
                     </Loader>
                 </When>
 
-                <When condition = { hasAssets }>
+                <When condition = { controller.total > 0 }>
 
                     <Table celled unstackable>
                         <Table.Header>
@@ -247,6 +292,8 @@ export const UpgradesScreen = observer (( props ) => {
                                     <Button
                                         floated = 'right'
                                         primary
+                                        disabled = { controller.totalEnabled === 0 }
+                                        onClick = { onSubmit }
                                     >
                                         Submit
                                     </Button>

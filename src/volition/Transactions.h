@@ -18,5 +18,6 @@
 #include <volition/transactions/RunScript.h>
 #include <volition/transactions/SendAssets.h>
 #include <volition/transactions/SendVOL.h>
+#include <volition/transactions/UpgradeAssets.h>
 
 #endif

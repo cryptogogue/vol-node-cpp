@@ -80,6 +80,16 @@ private:
 public:
 
     //----------------------------------------------------------------//
+    bool canUpgrade ( string type, string upgrade ) const {
+    
+        Upgrades::const_iterator typeIt = this->mUpgrades.find ( type );
+        for ( ; typeIt != this->mUpgrades.cend (); typeIt = this->mUpgrades.find ( typeIt->second )) {
+            if ( typeIt->second == upgrade ) return true;
+        }
+        return false;
+    }
+
+    //----------------------------------------------------------------//
     bool compose ( const Schema& other ) {
     
         if ( Schema::hasCollisions ( this->mDefinitions, other.mDefinitions )) return false;

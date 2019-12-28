@@ -82,7 +82,7 @@ bool Ledger::awardAsset ( const Schema& schema, string accountName, string asset
     Asset::Index accountTailIndex = this->getValueOrFallback < Asset::Index >( KEY_FOR_ACCOUNT_TAIL, Asset::NULL_INDEX );
     
     if ( accountTailIndex != Asset::NULL_INDEX ) {
-        this->setValue < Asset::Index >( FormatLedgerKey::forAssetMember ( accountTailIndex, FormatLedgerKey::ASSET_NEXT ), firstAssetIndex );
+        this->setValue < Asset::Index >( FormatLedgerKey::forAssetRecordMember ( accountTailIndex, FormatLedgerKey::ASSET_NEXT ), firstAssetIndex );
     }
     Asset::Index firstElementPrev = accountTailIndex;
     accountTailIndex = ( firstAssetIndex + quantity ) - 1;
@@ -91,11 +91,11 @@ bool Ledger::awardAsset ( const Schema& schema, string accountName, string asset
     // now add the assets
     for ( Asset::Index i = firstAssetIndex; i <= accountTailIndex; ++i ) {
         
-        this->setValue < string >( FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_OWNER ), accountName );
-        this->setValue < string >( FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_TYPE ), assetType );
+        this->setValue < Account::Index >( FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_OWNER_INDEX ), accountIndex );
+        this->setValue < string >( FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_TYPE ), assetType );
         
-        string KEY_FOR_ASSET_PREV = FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_PREV );
-        string KEY_FOR_ASSET_NEXT = FormatLedgerKey::forAssetMember ( i, FormatLedgerKey::ASSET_NEXT );
+        string KEY_FOR_ASSET_PREV = FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_PREV );
+        string KEY_FOR_ASSET_NEXT = FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_NEXT );
         
         if ( i == firstAssetIndex ) {
             this->setValue < Asset::Index >( KEY_FOR_ASSET_PREV, firstElementPrev );
@@ -187,10 +187,11 @@ string Ledger::getAccountName ( Account::Index accountIndex ) const {
 //----------------------------------------------------------------//
 shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, Asset::Index index ) const {
 
-    string KEY_FOR_ASSET_OWNER = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_OWNER );
-    if ( !this->hasValue ( KEY_FOR_ASSET_OWNER )) return NULL;
+    string KEY_FOR_ASSET_OWNER_INDEX = FormatLedgerKey::forAssetRecordMember ( index, FormatLedgerKey::ASSET_OWNER_INDEX );
+    if ( !this->hasValue ( KEY_FOR_ASSET_OWNER_INDEX )) return NULL;
+    Account::Index ownerIndex = this->getValue < Account::Index >( KEY_FOR_ASSET_OWNER_INDEX );
 
-    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_TYPE );
+    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetRecordMember ( index, FormatLedgerKey::ASSET_TYPE );
     string typeName = this->getValue < string >( KEY_FOR_ASSET_TYPE );
 
     const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( typeName );
@@ -199,7 +200,7 @@ shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, Asset::Index index
     shared_ptr < Asset > asset = make_shared < Asset >();
     asset->mType    = typeName;
     asset->mIndex   = index;
-    asset->mOwner   = this->getValue < string >( KEY_FOR_ASSET_OWNER );
+    asset->mOwner   = this->getAccountName ( ownerIndex );
     
     // copy the fields and apply any overrides
     AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
@@ -212,14 +213,14 @@ shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, Asset::Index index
         
 //        if ( field.mMutable ) {
 //
-//            string keyForAssetField = this->formatKeyForAssetField ( identifier, fieldName );
+//            string keyforAssetModifiedField = this->formatKeyforAssetModifiedField ( identifier, fieldName );
 //
 //            switch ( field.mType ) {
 //                case AssetTemplateField::Type::NUMERIC:
-//                    value = this->getValueOrFallback < double >( keyForAssetField, value.mNumeric );
+//                    value = this->getValueOrFallback < double >( keyforAssetModifiedField, value.mNumeric );
 //                    break;
 //                case AssetTemplateField::Type::STRING:
-//                    value = this->getValueOrFallback < string >( keyForAssetField, value.mString );
+//                    value = this->getValueOrFallback < string >( keyforAssetModifiedField, value.mString );
 //                    break;
 //            }
 //            asset->mFields [ fieldName ] = value;
@@ -275,7 +276,7 @@ SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string a
         assert ( asset );
         assets.push_back ( *asset );
     
-        cursor = this->getValue < Asset::Index >( FormatLedgerKey::forAssetMember ( cursor, FormatLedgerKey::ASSET_NEXT ));
+        cursor = this->getValue < Asset::Index >( FormatLedgerKey::forAssetRecordMember ( cursor, FormatLedgerKey::ASSET_NEXT ));
     }
     return assets;
 }
@@ -605,7 +606,7 @@ void Ledger::setAccount ( string accountName, const Account& account ) {
 bool Ledger::setAssetFieldValue ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field ) {
 
     // make sure the asset exists
-    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetMember ( index, FormatLedgerKey::ASSET_TYPE );
+    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetRecordMember ( index, FormatLedgerKey::ASSET_TYPE );
     if ( !this->hasValue ( KEY_FOR_ASSET_TYPE )) return false;
     string assetType = this->getValue < string >( KEY_FOR_ASSET_TYPE );
 
@@ -615,14 +616,14 @@ bool Ledger::setAssetFieldValue ( const Schema& schema, Asset::Index index, stri
     if ( !assetDefinition->hasMutableField ( fieldName, field.getType ())) return false;
 
 //    // set the field
-//    string keyForAssetField = Ledger::formatKeyForAssetField ( identifier, fieldName );
+//    string keyforAssetModifiedField = Ledger::formatKeyforAssetModifiedField ( identifier, fieldName );
 //
 //    switch ( field.mType ) {
 //        case AssetTemplateField::Type::NUMERIC:
-//            this->setValue < double >( keyForAssetField, field.mValue.mNumeric );
+//            this->setValue < double >( keyforAssetModifiedField, field.mValue.mNumeric );
 //            break;
 //        case AssetTemplateField::Type::STRING:
-//            this->setValue < string >( keyForAssetField, field.mValue.mString );
+//            this->setValue < string >( keyforAssetModifiedField, field.mValue.mString );
 //            break;
 //    }
 
@@ -761,6 +762,25 @@ bool Ledger::sponsorAccount ( string sponsorName, string keyName, string suffix,
         return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+bool Ledger::upgradeAsset ( const Schema& schema, Account::Index accountIndex, Asset::Index assetIndex, string upgradeType ) {
+
+    string KEY_FOR_ASSET_OWNER_INDEX = FormatLedgerKey::forAssetRecordMember ( assetIndex, FormatLedgerKey::ASSET_OWNER_INDEX );
+    if ( !this->hasValue ( KEY_FOR_ASSET_OWNER_INDEX )) return NULL;
+
+    Account::Index ownerIndex = this->getValue < Account::Index >( KEY_FOR_ASSET_OWNER_INDEX );
+    if ( ownerIndex != accountIndex ) return false;
+
+    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetRecordMember ( assetIndex, FormatLedgerKey::ASSET_TYPE );
+    string typeName = this->getValue < string >( KEY_FOR_ASSET_TYPE );
+
+    if ( !schema.canUpgrade ( typeName, upgradeType )) return false;
+
+    this->setValue < string >( KEY_FOR_ASSET_TYPE, upgradeType );
+
+    return true;
 }
 
 //----------------------------------------------------------------//

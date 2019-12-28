@@ -31,6 +31,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::RunScript >();
     this->registerTransaction < Volition::Transactions::SendAssets >();
     this->registerTransaction < Volition::Transactions::SendVOL >();
+    this->registerTransaction < Volition::Transactions::UpgradeAssets >();
 }
 
 //----------------------------------------------------------------//

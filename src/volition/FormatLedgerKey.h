@@ -52,7 +52,7 @@ public:
     static constexpr const char* ACCOUNT_MINER_INFO     = "miner";
 
     static constexpr const char* ASSET_NEXT             = "next";
-    static constexpr const char* ASSET_OWNER            = "owner";
+    static constexpr const char* ASSET_OWNER_INDEX      = "owner";
     static constexpr const char* ASSET_PREV             = "prev";
     static constexpr const char* ASSET_TYPE             = "type";
 
@@ -95,13 +95,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forAssetField ( Asset::Index index, string fieldName ) {
+    static LedgerKey forAssetModifiedField ( Asset::Index index, string fieldName ) {
 
         return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forAssetMember ( Asset::Index index, string member ) {
+    static LedgerKey forAssetRecordMember ( Asset::Index index, string member ) {
 
         assert ( member.size () > 0 );
         return Format::write ( "asset.%d.%s", index, member.c_str ());

@@ -43,6 +43,7 @@ public:
         entitlements->setPath ( "RENAME_ACCOUNT",       BooleanEntitlement ( true ));
         entitlements->setPath ( "SEND_ASSETS",          BooleanEntitlement ( true ));
         entitlements->setPath ( "SEND_VOL",             BooleanEntitlement ( true ));
+        entitlements->setPath ( "UPGRADE_ASSETS",       BooleanEntitlement ( true ));
         return entitlements;
     }
 };
