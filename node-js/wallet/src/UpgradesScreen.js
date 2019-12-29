@@ -256,71 +256,70 @@ export const UpgradesScreen = observer (( props ) => {
 
             <SingleColumnContainerView>
                 <NavigationBar navTitle = "Upgrades" appState = { appState }/>
+            
+                <Choose>
+                    <When condition = { inventory.loading }>
+                        <Loader
+                            active
+                            inline = 'centered'
+                            size = 'massive'
+                            style = {{ marginTop:'5%' }}
+                        >
+                            { progressMessage }
+                        </Loader>
+                    </When>
+
+                    <When condition = { controller.total > 0 }>
+
+                        <Table celled unstackable>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                    <Table.HeaderCell>Upgrade</Table.HeaderCell>
+                                    <Table.HeaderCell/>
+                                </Table.Row>
+                            </Table.Header>
+
+                            <Table.Body>
+                                { upgradeList }
+                            </Table.Body>
+
+                            <Table.Footer fullWidth>
+                                <Table.Row>
+            
+                                    <Table.HeaderCell colSpan='4'>
+                                        <Button
+                                            floated = 'right'
+                                            primary
+                                            disabled = { controller.totalEnabled === 0 }
+                                            onClick = { onSubmit }
+                                        >
+                                            Submit
+                                        </Button>
+
+                                        <Button
+                                            color = 'teal'
+                                            disabled = { controller.totalEnabled === controller.total }
+                                            onClick = {() => { controller.enableAll ( true )}}
+                                        >
+                                            Select All
+                                        </Button>
+                                        
+                                        <Button
+                                            color = 'red'
+                                            disabled = { controller.totalEnabled === 0 }
+                                            onClick = {() => { controller.enableAll ( false )}}
+                                        >
+                                            Deselect All
+                                        </Button>
+                                    </Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Footer>
+                        </Table>
+
+                    </When>
+                </Choose>
             </SingleColumnContainerView>
-
-            <Choose>
-                <When condition = { inventory.loading }>
-                    <Loader
-                        active
-                        inline = 'centered'
-                        size = 'massive'
-                        style = {{ marginTop:'5%' }}
-                    >
-                        { progressMessage }
-                    </Loader>
-                </When>
-
-                <When condition = { controller.total > 0 }>
-
-                    <Table celled unstackable>
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.HeaderCell>Name</Table.HeaderCell>
-                                <Table.HeaderCell>Upgrade</Table.HeaderCell>
-                                <Table.HeaderCell/>
-                            </Table.Row>
-                        </Table.Header>
-
-                        <Table.Body>
-                            { upgradeList }
-                        </Table.Body>
-
-                        <Table.Footer fullWidth>
-                            <Table.Row>
-        
-                                <Table.HeaderCell colSpan='4'>
-                                    <Button
-                                        floated = 'right'
-                                        primary
-                                        disabled = { controller.totalEnabled === 0 }
-                                        onClick = { onSubmit }
-                                    >
-                                        Submit
-                                    </Button>
-
-                                    <Button
-                                        color = 'teal'
-                                        disabled = { controller.totalEnabled === controller.total }
-                                        onClick = {() => { controller.enableAll ( true )}}
-                                    >
-                                        Select All
-                                    </Button>
-                                    
-                                    <Button
-                                        color = 'red'
-                                        disabled = { controller.totalEnabled === 0 }
-                                        onClick = {() => { controller.enableAll ( false )}}
-                                    >
-                                        Deselect All
-                                    </Button>
-                                </Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Footer>
-                    </Table>
-
-                </When>
-            </Choose>
-
         </React.Fragment>
     );
 });

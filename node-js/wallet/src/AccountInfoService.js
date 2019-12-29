@@ -19,7 +19,7 @@ export class AccountInfoService {
         });
 
         observe ( appState, 'accountID', ( change ) => {
-            this.revokeAll ();
+            this.revocable.revokeAll ();
             this.syncAccountInfo ( 5000 );
         });
         this.syncAccountInfo ( 5000 );

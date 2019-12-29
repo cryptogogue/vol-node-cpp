@@ -3,11 +3,11 @@
 
 import { AppStateService }                  from './AppStateService';
 import { NavigationBar }                    from './NavigationBar';
-import { assert, crypto, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
+import { assert, crypto, excel, FilePickerMenuItem, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
+import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Menu, Modal, Segment } from 'semantic-ui-react';
 
 // https://www.npmjs.com/package/js-crypto-utils
 
@@ -182,6 +182,10 @@ export const ImportAccountScreen = observer (( props ) => {
         );
     }
 
+    const loadFile = ( text ) => {
+        controller.setPhraseOrKey ( text )
+    }
+
     return (
         <SingleColumnContainerView>
         
@@ -190,16 +194,15 @@ export const ImportAccountScreen = observer (( props ) => {
             { warning }
             <Form size = "large" onSubmit = {() => { controller.import ()}}>
                 <Segment stacked>
-                    <Form.Input
-                        fluid
-                        icon = "lock"
-                        iconPosition = "left"
-                        placeholder = "Wallet Password"
-                        type = "password"
-                        value = { controller.password }
-                        onChange = {( event ) => { controller.setPassword ( event.target.value )}}
-                    />
-                    <div className = "ui hidden divider" ></div>
+                    
+                    <Menu fluid>
+                        <FilePickerMenuItem
+                            loadFile = { loadFile }
+                            format = 'text'
+                            accept = { '.json, .pem' }
+                        />
+                    </Menu>
+
                     <Form.TextArea
                         placeholder = "Mnemonic Phrase or Private Key"
                         rows = { 8 }
@@ -209,7 +212,19 @@ export const ImportAccountScreen = observer (( props ) => {
                         error = { controller.keyError }
                         disabled = { !inputEnabled }
                     />
+
                     {( controller.keyError > 0 ) && <span>{ 'Invalid Key Type' }</span>}
+
+                    <Form.Input
+                        fluid
+                        icon = "lock"
+                        iconPosition = "left"
+                        placeholder = "Wallet Password"
+                        type = "password"
+                        value = { controller.password }
+                        onChange = {( event ) => { controller.setPassword ( event.target.value )}}
+                    />
+                    
                     <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
                         Import
                     </Button>
