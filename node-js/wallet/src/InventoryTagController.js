@@ -25,9 +25,9 @@ export class InventoryTagController {
     }
 
     //----------------------------------------------------------------//
-    constructor ( userID ) {
+    constructor () {
 
-        const storageContext = new StorageContext ( userID );
+        const storageContext = new StorageContext ();
 
         storageContext.persist ( this, 'tags',          STORE_TAGS,            {});
         storageContext.persist ( this, 'assetTags',     STORE_ASSET_TAGS,       {});

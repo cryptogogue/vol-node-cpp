@@ -7,6 +7,7 @@ import { assert, crypto, excel, FilePickerMenuItem, hooks, RevocableContext, Sin
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
+import { Redirect }                         from 'react-router';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Menu, Modal, Segment } from 'semantic-ui-react';
 
 // https://www.npmjs.com/package/js-crypto-utils
@@ -161,17 +162,17 @@ class ImportAccountScreenController {
 //================================================================//
 export const ImportAccountScreen = observer (( props ) => {
 
-    const appState      = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const appState      = hooks.useFinalizable (() => new AppStateService ());
     const controller    = hooks.useFinalizable (() => new ImportAccountScreenController ( appState ));
 
-    if ( !appState.hasUser ()) return appState.redirect ( '/' );
-    if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );
+    if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
+    if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
 
     const hasMiners         = appState.node.length > 0;
     const inputEnabled      = hasMiners;
     const submitEnabled     = inputEnabled && controller.checkPassword () && controller.hasValidKey ();
 
-    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountID );
+    if ( controller.status === STATUS_DONE ) return (<Redirect to = { `/accounts/${ controller.accountID }` }/>);
 
     let warning;
     if ( !appState.node.length > 0 ) {

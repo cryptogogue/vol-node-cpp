@@ -6,6 +6,7 @@ import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
+import { Redirect }                         from 'react-router';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
 import { NavigationBar }                    from './NavigationBar';
@@ -118,31 +119,25 @@ export const AccountScreen = observer (( props ) => {
 
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
-    const appState              = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
     const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
     const nodeInfoService       = hooks.useFinalizable (() => new NodeInfoService ( appState ));
 
-    const userID        = appState.userID;
     const accountID     = appState.accountID;
 
     // TODO: move redirects to a HOC
-    if ( !appState.hasUser ()) return appState.redirect ( '/' );
-    if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );
+    if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
+    if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
 
     console.log ( 'APPSTATE ACCOUNT ID:', accountID );
 
     if ( accountID !== accountIDFromEndpoint ) {
-        return appState.redirect ( '/accounts/' + accountID );
-    }
-
-    let userName;
-    if ( userID.length > 0 ) {
-        userName = (<Header as = 'h2'>{ userID }</Header>);
+        return (<Redirect to = { '/accounts/' + accountID }/>);
     }
 
     return (
         <SingleColumnContainerView>
-            <div style = {{ 
+            <div style = {{
                 backgroundColor :   'LightSlateGray',
                 color           :   'white',
                 height          :   '20px',

@@ -6,7 +6,6 @@ import * as bcrypt          from 'bcryptjs';
 import _                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import React                from 'react';
-import { Redirect }         from 'react-router';
 
 const STORE_ACCOUNTS            = '.vol_accounts';
 const STORE_NODE                = '.vol_node';
@@ -116,7 +115,7 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    constructor ( userID, accountID ) {
+    constructor ( accountID ) {
 
         this.revocable      = new RevocableContext ();
 
@@ -124,12 +123,9 @@ export class AppStateService {
         this.marketURLs     = new Set ();
         this.urlBackoff     = {};
 
-
-        userID      = userID || '';
-        accountID   = accountID || '';
+        accountID = accountID || '';
 
         extendObservable ( this, {
-            userID:                 userID,
             accountID:              '',
             accountInfo:            null,
             keyName:                '',
@@ -143,7 +139,7 @@ export class AppStateService {
             return nodes;
         }
 
-        const storageContext = new StorageContext ( userID );
+        const storageContext = new StorageContext ();
 
         storageContext.persist ( this, 'accounts',          STORE_ACCOUNTS,            {});
         storageContext.persist ( this, 'node',              STORE_NODE,                '' );
@@ -485,22 +481,12 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    persistValue ( key, value ) {
-        return storage.setItem ( this.prefixStoreKey ( key ), value );
-    }
-
-    //----------------------------------------------------------------//
-    prefixStoreKey ( key ) {
-        return this.userID + key;
-    }
-
-    //----------------------------------------------------------------//
     prefixURL ( url ) {
 
-        const userID = this.userID;
-        if ( userID && userID.length ) {
-            return '/' + userID + url;
-        }
+        // const userID = this.userID;
+        // if ( userID && userID.length ) {
+        //     return '/' + userID + url;
+        // }
         return url;
     }
 
@@ -523,12 +509,6 @@ export class AppStateService {
         this.account.stagedTransactions.push ( memo );
 
         this.setNextTransactionCost ( 0 );
-    }
-
-    //----------------------------------------------------------------//
-    redirect ( url ) {
-        console.log ( 'REDIRECT:', this.prefixURL ( url ));
-        return (<Redirect to = { this.prefixURL ( url )}/>);
     }
 
     //----------------------------------------------------------------//

@@ -22,11 +22,11 @@ export const NavigationBar = observer (( props ) => {
     let onClickLogout                   = () => { appState.login ( false )};
     let onClickResetMiningNode          = () => { appState.affirmLocalhostNodes ()};
 
-    const accountsURL           = appState.prefixURL ( `/accounts/${ accountID }` );
-    const inventoryURL          = appState.prefixURL ( `/accounts/${ accountID }/inventory` );
-    const craftingURL           = appState.prefixURL ( `/accounts/${ accountID }/crafting` );
-    const resetURL              = appState.prefixURL ( `/accounts/${ accountID }/reset` );
-    const upgradesURL           = appState.prefixURL ( `/accounts/${ accountID }/upgrades` );
+    const accountsURL           = `/accounts/${ accountID }`;
+    const inventoryURL          = `/accounts/${ accountID }/inventory`;
+    const craftingURL           = `/accounts/${ accountID }/crafting`;
+    const resetURL              = `/accounts/${ accountID }/reset`;
+    const upgradesURL           = `/accounts/${ accountID }/upgrades`;
     const previewSchemaURL      = `/debug/schema`;
 
     return (
@@ -53,8 +53,8 @@ export const NavigationBar = observer (( props ) => {
             <Menu.Menu position = "right">
                 <Dropdown item icon = "settings">
                     <Dropdown.Menu>
-                        <Dropdown.Item icon = "add square"  text = "Create Account"                 as = { Link } to = { appState.prefixURL ( '/accounts/new' )}/>
-                        <Dropdown.Item icon = "add square"  text = "Import Account"                 as = { Link } to = { appState.prefixURL ( '/accounts/import' )}/>
+                        <Dropdown.Item icon = "add square"  text = "Create Account"                 as = { Link } to = { '/accounts/new' }/>
+                        <Dropdown.Item icon = "add square"  text = "Import Account"                 as = { Link } to = { '/accounts/import' }/>
                         <Dropdown.Item icon = "log out"     text = "Logout"                         onClick = { onClickLogout }/>
                         <Dropdown.Item icon = "globe"       text = "DEBUG: Preview Schema"          as = { Link } to = { previewSchemaURL }/>
                         <Dropdown.Item icon = "globe"       text = "DEBUG: Reset Mining Node"       as = { Link } to = { resetURL }/>

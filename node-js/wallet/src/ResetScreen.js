@@ -143,17 +143,17 @@ export const ResetScreen = observer (( props ) => {
 
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
-    const appState              = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
     const controller            = hooks.useFinalizable (() => new ResetScreenController ( appState ));
 
     const accountID             = appState.accountID;
 
     // TODO: move redirects to a HOC
-    if ( !appState.hasUser ()) return appState.redirect ( '/' );
-    if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );
+    if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
+    if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
 
     if ( accountID !== accountIDFromEndpoint ) {
-        return appState.redirect ( `/accounts/${ accountID }/reset` );
+        return (<Redirect to = { `/accounts/${ accountID }/reset` }/>);
     }
 
     // if ( controller.showInventory ) return appState.redirect ( `/accounts/${ accountID }/inventory` );

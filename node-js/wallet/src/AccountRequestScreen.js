@@ -9,6 +9,7 @@ import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
+import { Redirect }                         from 'react-router';
 import { Button, Divider, Dropdown, Form, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
 
 //================================================================//
@@ -18,8 +19,8 @@ const AccountReqestForm = observer (( props ) => {
 
     const { appState } = props;
 
-    if ( !appState.hasUser ()) return appState.redirect ( '/' );
-    if ( !appState.isLoggedIn ()) return appState.redirect ( '/login' );
+    if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
+    if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
 
     const [ password, setPassword ]         = useState ( '' );
     const [ phraseOrKey, setPhraseOrKey ]   = useState ( false );
@@ -165,7 +166,7 @@ const ImportAccountView = observer (( props ) => {
 //================================================================//
 export const AccountRequestScreen = observer (( props ) => {
 
-    const appState                  = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const appState                  = hooks.useFinalizable (() => new AppStateService ());
     const accountRequestService     = hooks.useFinalizable (() => new AccountRequestService ( appState ));
 
     const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;

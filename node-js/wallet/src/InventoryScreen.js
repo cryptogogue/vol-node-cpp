@@ -13,6 +13,7 @@ import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
+import { Redirect }                                         from 'react-router';
 import { Link }                                             from 'react-router-dom';
 import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-react';
 
@@ -34,7 +35,7 @@ const InventoryMenu = observer (( props ) => {
             text = { methodName }
             disabled = { disabled }
             as = { Link }
-            to = { appState.prefixURL ( `/accounts/${ appState.accountID }/crafting/${ methodName }` )}
+            to = { `/accounts/${ appState.accountID }/crafting/${ methodName }` }
         />);
     }
 
@@ -71,19 +72,18 @@ const InventoryMenu = observer (( props ) => {
 //================================================================//
 export const InventoryScreen = observer (( props ) => {
 
-    const userIDFromEndpoint        = util.getMatch ( props, 'userID' );
     const accountIDFromEndpoint     = util.getMatch ( props, 'accountID' );
 
     const [ progressMessage, setProgressMessage ]   = useState ( '' );
     const [ zoomedAssetID, setZoomedAssetID ]       = useState ( false );
-    const appState      = hooks.useFinalizable (() => new AppStateService ( userIDFromEndpoint, accountIDFromEndpoint ));
+    const appState      = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
     const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
     const controller    = hooks.useFinalizable (() => new InventoryViewController ( inventory ));
-    const tags          = hooks.useFinalizable (() => new InventoryTagController ( userIDFromEndpoint ));
+    const tags          = hooks.useFinalizable (() => new InventoryTagController ());
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
         //TODO 404 error (need make 404 screen)
-        return appState.redirect ( `/accounts/${ appState.accountID }/inventory` );
+        return (<Redirect to = { `/accounts/${ appState.accountID }/inventory` }/>);
     }
 
     controller.setFilterFunc (( assetID ) => {

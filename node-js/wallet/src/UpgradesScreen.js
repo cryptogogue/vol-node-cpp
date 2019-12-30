@@ -199,18 +199,17 @@ const UpgradeItem = observer (( props ) => {
 //================================================================//
 export const UpgradesScreen = observer (( props ) => {
 
-    const userIDFromEndpoint        = util.getMatch ( props, 'userID' );
     const accountIDFromEndpoint     = util.getMatch ( props, 'accountID' );
 
     const [ progressMessage, setProgressMessage ]   = useState ( '' );
     const [ upgradeTable, setUpgradeTable ]         = useState ( false );
-    const appState      = hooks.useFinalizable (() => new AppStateService ( userIDFromEndpoint, accountIDFromEndpoint ));
+    const appState      = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
     const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
     const controller    = hooks.useFinalizable (() => new UpgradesController ());
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
         //TODO 404 error (need make 404 screen)
-        return appState.redirect ( `/accounts/${ appState.accountID }/inventory` );
+        return (<Redirect to = { `/accounts/${ appState.accountID }/inventory` }/>);
     }
 
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));

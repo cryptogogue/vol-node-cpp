@@ -5,6 +5,7 @@ import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
+import { Redirect }                         from 'react-router';
 import { Button, Divider, Dropdown, Form, Icon, Modal, Segment }  from 'semantic-ui-react';
 
 import * as bcrypt              from 'bcryptjs';
@@ -64,12 +65,12 @@ class RegisterScreenController {
 //================================================================//
 export const RegisterScreen = observer (( props ) => {
     
-    const appState = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const appState = hooks.useFinalizable (() => new AppStateService ());
     const controller = hooks.useFinalizable (() => new RegisterScreenController ( appState ));
 
     if ( appState.hasUser ()) {
         const to = appState.isLoggedIn () ? '/accounts' : '/login';
-        return appState.redirect ( to );
+        return (<Redirect to = { to }/>);
     }
 
     let onChange        = ( event ) => { controller.handleChange ( event )};

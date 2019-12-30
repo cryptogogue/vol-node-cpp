@@ -234,10 +234,10 @@ function renderButton ( service ) {
 //================================================================//
 export const NewAccountScreen = observer (( props ) => {
 
-    const appState      = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
+    const appState      = hooks.useFinalizable (() => new AppStateService ());
     const controller    = hooks.useFinalizable (() => new NewAccountScreenController ( appState ));
 
-    if ( controller.status === STATUS_DONE ) return appState.redirect ( '/accounts/' + controller.accountID );
+    if ( controller.status === STATUS_DONE ) return (<Redirect to = { `/accounts/${ controller.accountID }` }/>);
 
     return (
         <div>

@@ -36,34 +36,16 @@ const App = () => {
     return (<BrowserRouter>
         <div>
             <Switch>
-                <Route exact path = "/:userID/accounts/import" component = { ImportAccountScreen }/>
                 <Route exact path = "/accounts/import" component = { ImportAccountScreen }/>
-
-                <Route exact path = "/:userID/accounts/new" component = { AccountRequestScreen }/>
                 <Route exact path = "/accounts/new" component = { AccountRequestScreen }/>
-
-                <Route exact path = "/:userID/accounts/:accountID" component = { AccountScreen }/>
                 <Route exact path = "/accounts/:accountID" component = { AccountScreen }/>
-
-                <Route exact path = "/:userID/accounts/:accountID/crafting/:methodName" component = { CraftingScreen }/>
                 <Route exact path = "/accounts/:accountID/crafting/:methodName" component = { CraftingScreen }/>
-
-                <Route exact path = "/:userID/accounts/:accountID/crafting" component = { CraftingScreen }/>
                 <Route exact path = "/accounts/:accountID/crafting" component = { CraftingScreen }/>
-
-                <Route exact path = "/:userID/accounts/:accountID/inventory" component = { InventoryScreen }/>
                 <Route exact path = "/accounts/:accountID/inventory" component = { InventoryScreen }/>
-
-                <Route exact path = "/:userID/accounts/:accountID/upgrades" component = { UpgradesScreen }/>
                 <Route exact path = "/accounts/:accountID/upgrades" component = { UpgradesScreen }/>
-
-                <Route exact path = "/:userID/accounts/:accountID/reset" component = { ResetScreen }/>
                 <Route exact path = "/accounts/:accountID/reset" component = { ResetScreen }/>
-
-                <Route exact path = "/:userID/accounts" component = { AccountScreen }/>
                 <Route exact path = "/accounts" component = { AccountScreen }/>
                 
-                <Route exact path = "/:userID/login" component = { LoginScreen }/>
                 <Route exact path = "/login" component = { LoginScreen }/>
 
                 <Route exact path = "/debug/aes"                component = { fgc.debug.AESScreen }/>
@@ -84,7 +66,6 @@ const App = () => {
 
                 <Route exact path = "/util/schema"              component = { cardmotron.SchemaScreen }/>
 
-                <Route exact path = "/:userID/" component = { RegisterScreen }/>
                 <Route exact path = "/" component = { RegisterScreen }/>
             </Switch>
         </div>

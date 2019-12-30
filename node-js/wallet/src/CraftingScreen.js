@@ -9,6 +9,7 @@ import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import { NavigationBar }                                    from './NavigationBar';
 import React, { useState }                                  from 'react';
+import { Redirect }                                         from 'react-router';
 import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-react';
 
 //================================================================//
@@ -19,14 +20,14 @@ export const CraftingScreen = observer (( props ) => {
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
     const methodNameFromEndpoint = util.getMatch ( props, 'methodName' );
 
-    const appState              = hooks.useFinalizable (() => new AppStateService ( util.getMatch ( props, 'userID' ), accountIDFromEndpoint ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
     const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
     const inventory             = hooks.useFinalizable (() => new InventoryService ( appState ));
 
     const [ selectedMethod, setSelectedMethod ] = useState ( methodNameFromEndpoint );
 
     if (( appState.accountID !== accountIDFromEndpoint ) || ( selectedMethod !== methodNameFromEndpoint )) {
-        return appState.redirect ( `/accounts/${ appState.accountID }/crafting/${ selectedMethod }` );
+        return (<Redirect to = { `/accounts/${ appState.accountID }/crafting/${ selectedMethod }` }/>);
     }
 
     if ( inventory.loading === true ) {
