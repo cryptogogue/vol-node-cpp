@@ -12,7 +12,6 @@ import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } f
 import { NavigationBar }                    from './NavigationBar';
 import { NodeListView }                     from './NodeListView';
 import { PendingTransactionsView }          from './PendingTransactionsView';
-import { StagedTransactionsView }           from './StagedTransactionsView';
 
 import { AccountInfoService }               from './AccountInfoService';
 import { NodeInfoService }                  from './NodeInfoService';
@@ -50,7 +49,15 @@ const AccountDetailsView = observer (( props ) => {
             </h4>
 
             <If condition = { keyEntitlements }>
-                <Modal style={{ height:'auto' }} size = "small" trigger = { <Header.Subheader>{ publicKey && publicKey.substr ( 0, 30 ) + "..." }</Header.Subheader> }>
+                <Modal
+                    style={{ height:'auto' }}
+                    size = "small"
+                    trigger = {
+                        <Header.Subheader>
+                            { publicKey && publicKey.substr ( 0, 30 ) + "..." }
+                        </Header.Subheader>
+                    }
+                >
                     <Modal.Content>
                         <center>
                             <h3>Public Key</h3>
@@ -86,37 +93,11 @@ const AccountDetailsView = observer (( props ) => {
 });
 
 //================================================================//
-// AccountSelector
-//================================================================//
-const AccountSelector = observer (( props ) => {
-
-    const { appState } = props;
-    const accounts = appState.accounts;
-    let options = [];
-
-    Object.keys ( accounts ).forEach (( accountID ) => {
-        options.push ({ key:accountID, value:accountID, text:accountID });
-    });
-
-    return (
-        <Dropdown 
-            placeholder = "Select Account"
-            fluid
-            search
-            selection
-            options = { options }
-            onChange = {( event, data ) => {
-                appState.setAccount ( data.value );
-            }}
-        />
-    );
-});
-
-//================================================================//
 // AccountScreen
 //================================================================//
 export const AccountScreen = observer (( props ) => {
 
+    const networkIDFromEndpoint = util.getMatch ( props, 'networkID' );
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
     const appState              = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
@@ -129,44 +110,23 @@ export const AccountScreen = observer (( props ) => {
     if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
     if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
 
-    console.log ( 'APPSTATE ACCOUNT ID:', accountID );
-
-    if ( accountID !== accountIDFromEndpoint ) {
-        return (<Redirect to = { '/accounts/' + accountID }/>);
-    }
+    appState.setAccount ( accountIDFromEndpoint );
 
     return (
         <SingleColumnContainerView>
-            <div style = {{
-                backgroundColor :   'LightSlateGray',
-                color           :   'white',
-                height          :   '20px',
-                left            :   '0',
-                position        :   'fixed',
-                top             :   '0',
-                width           :   '100%',
-                zIndex          :   '1000'
-            }}>
-                Network: { appState.nodeInfo.network || 'UNKNOWN' }
-            </div>
 
-            <NavigationBar navTitle = "Accounts" appState = { appState }/>
-
-            <If condition = { Object.keys ( appState.accounts ).length > 1 }>
-                <AccountSelector appState = { appState }/>
-            </If>
+            <NavigationBar
+                navTitle    = "Account"
+                appState    = { appState }
+                networkID   = { networkIDFromEndpoint }
+                accountID   = { accountIDFromEndpoint }
+            />
 
             <If condition = { appState.hasAccount }>
 
                 <Segment>
                     <AccountDetailsView appState = { appState }/>
                 </Segment>
-
-                <If condition = { appState.stagedTransactions.length > 0 }>
-                    <Segment>
-                        <StagedTransactionsView appState = { appState }/>
-                    </Segment>
-                </If>
 
                 <If condition = { appState.pendingTransactions.length > 0 }>
                     <Segment>

@@ -72,7 +72,8 @@ const InventoryMenu = observer (( props ) => {
 //================================================================//
 export const InventoryScreen = observer (( props ) => {
 
-    const accountIDFromEndpoint     = util.getMatch ( props, 'accountID' );
+    const networkIDFromEndpoint = util.getMatch ( props, 'networkID' );
+    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
     const [ progressMessage, setProgressMessage ]   = useState ( '' );
     const [ zoomedAssetID, setZoomedAssetID ]       = useState ( false );
@@ -82,8 +83,8 @@ export const InventoryScreen = observer (( props ) => {
     const tags          = hooks.useFinalizable (() => new InventoryTagController ());
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
-        //TODO 404 error (need make 404 screen)
-        return (<Redirect to = { `/accounts/${ appState.accountID }/inventory` }/>);
+        appState.setAccount ( accountIDFromEndpoint );
+        inventory.fetchInventory ( appState.node, appState.accountID );
     }
 
     controller.setFilterFunc (( assetID ) => {
@@ -116,7 +117,13 @@ export const InventoryScreen = observer (( props ) => {
         }}>
             <div className = "no-print">
                 <SingleColumnContainerView>
-                    <NavigationBar navTitle = "Inventory" appState = { appState }/>
+                    <NavigationBar
+                        navTitle    = "Inventory"
+                        appState    = { appState }
+                        networkID   = { networkIDFromEndpoint }
+                        accountID   = { accountIDFromEndpoint }
+                        tab         = 'inventory'
+                    />
                     <InventoryMenu appState = { appState } controller = { controller } tags = { tags }/>
                 </SingleColumnContainerView>
             </div>

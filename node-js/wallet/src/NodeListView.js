@@ -63,15 +63,15 @@ export const NodeListView = observer (( props ) => {
                 textColor = 'pink';
         }
         urlList.push (
-                <List.Item key = { urlList.length }>
-                    <List.Content floated = 'right'>
-                        <Icon fitted name = 'trash alternate' onClick = {() => onClickClear ( url )}/>
-                    </List.Content>
-                    <List.Content style = {{ textAlign: 'left' }}>
-                        <List.Header style = {{ color: textColor }}>{ nodeInfo.type }</List.Header>
-                        <List.Description>{ url }</List.Description>
-                    </List.Content>
-                </List.Item>
+            <List.Item key = { urlList.length }>
+                <List.Content floated = 'right'>
+                    <Icon fitted name = 'trash alternate' onClick = {() => onClickClear ( url )}/>
+                </List.Content>
+                <List.Content style = {{ textAlign: 'left' }}>
+                    <List.Header style = {{ color: textColor }}>{ nodeInfo.type }</List.Header>
+                    <List.Description>{ url }</List.Description>
+                </List.Content>
+            </List.Item>
         )
     }
 

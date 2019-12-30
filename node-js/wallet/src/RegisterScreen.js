@@ -81,34 +81,34 @@ export const RegisterScreen = observer (( props ) => {
     return (
         <SingleColumnContainerView title = 'Choose a password for your wallet.'>
 
-                <Form size = "large" onSubmit = { onSubmit }>
-                    <Segment stacked>
-                        <Form.Input
-                            fluid
-                            icon = "lock"
-                            iconPosition = "left"
-                            placeholder = "Password"
-                            type = "password"
-                            name = "password"
-                            value = { controller.password }
-                            onChange = { onChange }
-                        />
-                        <Form.Input
-                            fluid
-                            icon = "lock"
-                            iconPosition = "left"
-                            placeholder = "Confirm password"
-                            type = "password"
-                            name = "confirmPassword"
-                            value = { controller.confirmPassword }
-                            onChange = { onChange }
-                        />
-                        { controller.errorMessage && <span>{ controller.errorMessage }</span>}
-                        <Button color = "red" fluid size = "large" disabled = { !isEnabled }>
-                            Create Password
-                        </Button>
-                    </Segment>
-                </Form>
+            <Form size = "large" onSubmit = { onSubmit }>
+                <Segment stacked>
+                    <Form.Input
+                        fluid
+                        icon = "lock"
+                        iconPosition = "left"
+                        placeholder = "Password"
+                        type = "password"
+                        name = "password"
+                        value = { controller.password }
+                        onChange = { onChange }
+                    />
+                    <Form.Input
+                        fluid
+                        icon = "lock"
+                        iconPosition = "left"
+                        placeholder = "Confirm password"
+                        type = "password"
+                        name = "confirmPassword"
+                        value = { controller.confirmPassword }
+                        onChange = { onChange }
+                    />
+                    { controller.errorMessage && <span>{ controller.errorMessage }</span>}
+                    <Button color = "red" fluid size = "large" disabled = { !isEnabled }>
+                        Create Password
+                    </Button>
+                </Segment>
+            </Form>
 
         </SingleColumnContainerView>
     );

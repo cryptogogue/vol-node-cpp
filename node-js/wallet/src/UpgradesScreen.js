@@ -199,7 +199,8 @@ const UpgradeItem = observer (( props ) => {
 //================================================================//
 export const UpgradesScreen = observer (( props ) => {
 
-    const accountIDFromEndpoint     = util.getMatch ( props, 'accountID' );
+    const networkIDFromEndpoint = util.getMatch ( props, 'networkID' );
+    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
     const [ progressMessage, setProgressMessage ]   = useState ( '' );
     const [ upgradeTable, setUpgradeTable ]         = useState ( false );
@@ -208,8 +209,9 @@ export const UpgradesScreen = observer (( props ) => {
     const controller    = hooks.useFinalizable (() => new UpgradesController ());
 
     if ( appState.accountID !== accountIDFromEndpoint ) {
-        //TODO 404 error (need make 404 screen)
-        return (<Redirect to = { `/accounts/${ appState.accountID }/inventory` }/>);
+        controller.clear ();
+        appState.setAccount ( accountIDFromEndpoint );
+        inventory.fetchInventory ( appState.node, appState.accountID );
     }
 
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));
@@ -254,8 +256,14 @@ export const UpgradesScreen = observer (( props ) => {
         <React.Fragment>
 
             <SingleColumnContainerView>
-                <NavigationBar navTitle = "Upgrades" appState = { appState }/>
-            
+                <NavigationBar
+                    navTitle    = "Upgrades"
+                    appState    = { appState }
+                    networkID   = { networkIDFromEndpoint }
+                    accountID   = { accountIDFromEndpoint }
+                    tab         = 'upgrades'
+                />
+
                 <Choose>
                     <When condition = { inventory.loading }>
                         <Loader

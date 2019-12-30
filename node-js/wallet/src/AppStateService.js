@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { assert, crypto, excel, hooks, RevocableContext, SingleColumnContainerView, storage, StorageContext, util } from 'fgc';
+import { assert, crypto, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, storage, StorageContext, util } from 'fgc';
 import * as bcrypt          from 'bcryptjs';
 import _                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
@@ -504,8 +504,6 @@ export class AppStateService {
             assets:             transaction.assetsUtilized,
         }
 
-        console.log ( 'ASSETS UTILIZED:', memo.assets );
-
         this.account.stagedTransactions.push ( memo );
 
         this.setNextTransactionCost ( 0 );
@@ -685,8 +683,6 @@ export class AppStateService {
     //----------------------------------------------------------------//
     @action
     updateAccount ( accountUpdate, entitlements ) {
-
-        console.log ( 'UPDATE ACCOUNT' );
 
         let account = this.accounts [ this.accountID ];
         if ( !account ) return;
