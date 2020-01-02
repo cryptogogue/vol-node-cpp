@@ -7,7 +7,7 @@ import { InventoryService } from 'cardmotron';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
-import { NavigationBar }                                    from './NavigationBar';
+import { AccountNavigationBar, ACCOUNT_TABS }               from './AccountNavigationBar';
 import React, { useState }                                  from 'react';
 import { Redirect }                                         from 'react-router';
 import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-react';
@@ -17,8 +17,9 @@ import { Dropdown, Grid, Icon, List, Menu, Loader }         from 'semantic-ui-re
 //================================================================//
 export const CraftingScreen = observer (( props ) => {
 
-    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
-    const methodNameFromEndpoint = util.getMatch ( props, 'methodName' );
+    const networkIDFromEndpoint     = util.getMatch ( props, 'networkID' );
+    const accountIDFromEndpoint     = util.getMatch ( props, 'accountID' );
+    const methodNameFromEndpoint    = util.getMatch ( props, 'methodName' );
 
     const appState              = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
     const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
@@ -60,7 +61,13 @@ export const CraftingScreen = observer (( props ) => {
     return (
         <div>
             <SingleColumnContainerView>
-                <NavigationBar navTitle = "Crafting" appState = { appState }/>
+
+                <AccountNavigationBar
+                    appState    = { appState }
+                    tab         = { ACCOUNT_TABS.CRAFTING }
+                    networkID   = { networkIDFromEndpoint }
+                    accountID   = { accountIDFromEndpoint }
+                />
 
                 <div>
                     <Dropdown

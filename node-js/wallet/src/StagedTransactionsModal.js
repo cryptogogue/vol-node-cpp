@@ -10,7 +10,7 @@ import { Button, Divider, Form, Header, Icon, Label, Modal, Segment } from 'sema
 //================================================================//
 export const StagedTransactionsModal = observer (( props ) => {
 
-    const appState = props.appState;
+    const { appState, trigger } = props;
 
     const [ password, setPassword ] = useState ( '' );
 
@@ -21,23 +21,11 @@ export const StagedTransactionsModal = observer (( props ) => {
 
     const stagedTransactions = appState.stagedTransactions.length;
 
-    const makeTrigger = () => {
-        return (
-            <Label
-                color = { stagedTransactions > 0 ? 'green' : 'grey' }
-                disabled = { stagedTransactions === 0 }
-            >
-                <Icon name = 'cloud upload'/>
-                { stagedTransactions }
-            </Label>
-        );
-    }
-
     return (
 
         <Choose>
             <When condition = { stagedTransactions === 0 }>
-                { makeTrigger ()}
+                { trigger }
             </When>
 
             <Otherwise>
@@ -45,7 +33,7 @@ export const StagedTransactionsModal = observer (( props ) => {
                     style={{ height:'auto' }}
                     size = 'small'
                     
-                    trigger = { makeTrigger ()}
+                    trigger = { trigger }
                 >
                     <Modal.Header>Staged Transactions</Modal.Header>
 

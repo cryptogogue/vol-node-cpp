@@ -2,7 +2,7 @@
 /* eslint-disable no-loop-func */
 
 import { AppStateService }                  from './AppStateService';
-import { NavigationBar }                    from './NavigationBar';
+import { NetworkNavigationBar }             from './NetworkNavigationBar';
 import { assert, crypto, excel, FilePickerMenuItem, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
@@ -17,9 +17,9 @@ const STATUS_VERIFYING_KEY              = 1;
 const STATUS_DONE                       = 2;
 
 //================================================================//
-// ImportAccountScreenController
+// ImportAccountController
 //================================================================//
-class ImportAccountScreenController {
+class ImportAccountController {
 
     @observable accountID       = '';
     @observable errorMessage    = '';
@@ -158,15 +158,13 @@ class ImportAccountScreenController {
 }
 
 //================================================================//
-// ImportAccountScreen
+// ImportAccountModal
 //================================================================//
-export const ImportAccountScreen = observer (( props ) => {
+export const ImportAccountModal = observer (( props ) => {
 
-    const appState      = hooks.useFinalizable (() => new AppStateService ());
-    const controller    = hooks.useFinalizable (() => new ImportAccountScreenController ( appState ));
+    const { appState, trigger } = props;
 
-    if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
-    if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
+    const controller        = hooks.useFinalizable (() => new ImportAccountController ( appState ));
 
     const hasMiners         = appState.node.length > 0;
     const inputEnabled      = hasMiners;
@@ -177,7 +175,7 @@ export const ImportAccountScreen = observer (( props ) => {
     let warning;
     if ( !appState.node.length > 0 ) {
         warning = (
-            <Header as="h4" color="red" textAlign="center">
+            <Header as = "h4" color = "red" textAlign = "center">
                 No mining node specified.
             </Header>
         );
@@ -188,14 +186,18 @@ export const ImportAccountScreen = observer (( props ) => {
     }
 
     return (
-        <SingleColumnContainerView>
-        
-            <NavigationBar navTitle = "Import Account" appState = { appState }/>
+        <Modal
+            size = 'small'
+            closeIcon
+            trigger = { trigger }
+        >
+            <Modal.Header>Import Account</Modal.Header>
+            
+            <Modal.Content>
 
-            { warning }
-            <Form size = "large" onSubmit = {() => { controller.import ()}}>
-                <Segment stacked>
-                    
+                <Form >
+                    { warning }
+     
                     <Menu fluid>
                         <FilePickerMenuItem
                             loadFile = { loadFile }
@@ -225,13 +227,18 @@ export const ImportAccountScreen = observer (( props ) => {
                         value = { controller.password }
                         onChange = {( event ) => { controller.setPassword ( event.target.value )}}
                     />
-                    
-                    <Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
-                        Import
-                    </Button>
-                </Segment>
-            </Form>
+                </Form>
 
-        </SingleColumnContainerView>
+            </Modal.Content>
+
+            <Modal.Actions>
+                <Button
+                    positive
+                    disabled = { !submitEnabled }
+                    onClick = {() => { controller.import ()}}>
+                    Import
+                </Button>
+            </Modal.Actions>
+        </Modal>
     );
 });

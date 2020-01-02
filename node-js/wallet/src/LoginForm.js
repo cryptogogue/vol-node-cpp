@@ -1,28 +1,23 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AppStateService }                  from './AppStateService';
-import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
+import { assert, hooks }                    from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
-import { Button, Divider, Dropdown, Form, Icon, Modal, Segment } from 'semantic-ui-react';
-
-import * as bcrypt              from 'bcryptjs';
+import { Button, Divider, Dropdown, Form, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
 //================================================================//
-// LoginScreen
+// LoginForm
 //================================================================//
-export const LoginScreen = observer (( props ) => {
+export const LoginForm = observer (( props ) => {
+
+    const { appState } = props;
 
     const [ errorMessage, setErrorMessage ] = useState ( '' );
     const [ password, setPassword ] = useState ( '' );
 
-    const appState = hooks.useFinalizable (() => new AppStateService ( util.getUserId ( props )));
-
-    if ( !appState.hasUser ()) return appState.redirect ( '/' );
-    if ( appState.isLoggedIn ()) return appState.redirect ( '/accounts' );
-
-    const onChange      = ( event ) => { setPassword ( event.target.value )};
+    const onChange = ( event ) => { setPassword ( event.target.value )};
 
     const onSubmit = () => {
         
@@ -37,7 +32,12 @@ export const LoginScreen = observer (( props ) => {
     const isEnabled = password.length > 0;
 
     return (
-        <SingleColumnContainerView title = 'Login to your wallet'>
+        <React.Fragment>
+
+            <Header as="h2" color="teal" textAlign="center">
+                { 'Login to your wallet.' }
+            </Header>
+
             <Form size = "large" onSubmit = { onSubmit }>
                 <Segment stacked>
                     <Form.Input
@@ -57,6 +57,7 @@ export const LoginScreen = observer (( props ) => {
                     </Button>
                 </Segment>
             </Form>
-        </SingleColumnContainerView>
+
+        </React.Fragment>
     );
 });

@@ -10,11 +10,11 @@ import { Button, Form, Input, Label, List, Icon, Segment }    from 'semantic-ui-
 // NodeListView
 //================================================================//
 export const NodeListView = observer (( props ) => {
-    
+
     const [ nodeURL, setNodeURL ] = useState ( '' );
     const [ nodeUrlError, setNodeUrlError ] = useState ( '' );
 
-    const appState = props.appState;
+    const { appState } = props;    
     const nodes = appState.nodes;
 
     //const isEnabled = validator.isURL ( this.state.nodeURL, { protocols: [ 'http','https' ], require_protocol: true });
@@ -77,7 +77,7 @@ export const NodeListView = observer (( props ) => {
 
     return (
 
-        <div>
+        <Segment>
             <List divided relaxed verticalAlign = 'middle' style = {{ padding: '0 3px', width: '100%' }}>
                 { urlList }
             </List>
@@ -100,6 +100,6 @@ export const NodeListView = observer (( props ) => {
                     { isClearEnabled && <Button color = "red" fluid onClick = { onClickClear }>Clear</Button> }
                 </Segment>
             </Form>
-        </div>
+        </Segment>
     );
 });

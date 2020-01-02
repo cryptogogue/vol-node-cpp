@@ -3,7 +3,7 @@
 import { InventoryFilterDropdown }                          from './InventoryFilterDropdown';
 import { InventoryTagController }                           from './InventoryTagController';
 import { InventoryTagDropdown }                             from './InventoryTagDropdown';
-import { NavigationBar }                                    from './NavigationBar';
+import { AccountNavigationBar, ACCOUNT_TABS }               from './AccountNavigationBar';
 import { AppStateService }                                  from './AppStateService';
 import { Transaction, TRANSACTION_TYPE }                    from './Transaction';
 import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
@@ -256,12 +256,12 @@ export const UpgradesScreen = observer (( props ) => {
         <React.Fragment>
 
             <SingleColumnContainerView>
-                <NavigationBar
-                    navTitle    = "Upgrades"
+
+                <AccountNavigationBar
                     appState    = { appState }
+                    tab         = { ACCOUNT_TABS.UPGRADES }
                     networkID   = { networkIDFromEndpoint }
                     accountID   = { accountIDFromEndpoint }
-                    tab         = 'upgrades'
                 />
 
                 <Choose>

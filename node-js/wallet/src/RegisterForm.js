@@ -6,7 +6,7 @@ import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
-import { Button, Divider, Dropdown, Form, Icon, Modal, Segment }  from 'semantic-ui-react';
+import { Button, Divider, Dropdown, Form, Header, Icon, Modal, Segment }  from 'semantic-ui-react';
 
 import * as bcrypt              from 'bcryptjs';
 
@@ -61,17 +61,13 @@ class RegisterScreenController {
 }
     
 //================================================================//
-// RegisterScreen
+// RegisterForm
 //================================================================//
-export const RegisterScreen = observer (( props ) => {
+export const RegisterForm = observer (( props ) => {
     
-    const appState = hooks.useFinalizable (() => new AppStateService ());
-    const controller = hooks.useFinalizable (() => new RegisterScreenController ( appState ));
+    const { appState } = props;
 
-    if ( appState.hasUser ()) {
-        const to = appState.isLoggedIn () ? '/accounts' : '/login';
-        return (<Redirect to = { to }/>);
-    }
+    const controller = hooks.useFinalizable (() => new RegisterScreenController ( appState ));
 
     let onChange        = ( event ) => { controller.handleChange ( event )};
     let onSubmit        = () => { controller.handleSubmit ()};
@@ -79,7 +75,11 @@ export const RegisterScreen = observer (( props ) => {
     const isEnabled = controller.readyToSubmit;
 
     return (
-        <SingleColumnContainerView title = 'Choose a password for your wallet.'>
+        <React.Fragment>
+
+            <Header as="h2" color="teal" textAlign="center">
+                { 'Choose a password for your wallet.' }
+            </Header>
 
             <Form size = "large" onSubmit = { onSubmit }>
                 <Segment stacked>
@@ -110,6 +110,6 @@ export const RegisterScreen = observer (( props ) => {
                 </Segment>
             </Form>
 
-        </SingleColumnContainerView>
+        </React.Fragment>
     );
 });

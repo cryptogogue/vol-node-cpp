@@ -14,12 +14,10 @@ configure ({
 import { AccountRequestScreen }         from './AccountRequestScreen';
 import { AccountScreen }                from './AccountScreen';
 import { CraftingScreen }               from './CraftingScreen';
+import { DashboardScreen }              from './DashboardScreen';
 import { DebugStripeScreen }            from './debug/DebugStripeScreen';
-import { ImportAccountScreen }          from './ImportAccountScreen';
 import { InventoryScreen }              from './InventoryScreen';
-import { LoginScreen }                  from './LoginScreen';
 import { NetworkScreen }                from './NetworkScreen';
-import { RegisterScreen }               from './RegisterScreen';
 import { ResetScreen }                  from './ResetScreen';
 import { UpgradesScreen }               from './UpgradesScreen';
 import registerServiceWorker            from './util/registerServiceWorker';
@@ -33,18 +31,15 @@ const App = () => {
     return (<BrowserRouter>
         <div>
             <Switch>
-                <Route exact path = "/:networkID/account-import"                   component = { ImportAccountScreen }/>
-                <Route exact path = "/:networkID/account-new"                      component = { AccountRequestScreen }/>
-                <Route exact path = "/:networkID/accounts/:accountID"              component = { AccountScreen }/>
-                <Route exact path = "/:networkID/accounts/:accountID/crafting/:methodName" component = { CraftingScreen }/>
-                <Route exact path = "/:networkID/accounts/:accountID/crafting"     component = { CraftingScreen }/>
-                <Route exact path = "/:networkID/accounts/:accountID/inventory"    component = { InventoryScreen }/>
-                <Route exact path = "/:networkID/accounts/:accountID/upgrades"     component = { UpgradesScreen }/>
-                <Route exact path = "/:networkID/accounts/:accountID/reset"        component = { ResetScreen }/>
-                <Route exact path = "/:networkID"                                  component = { NetworkScreen }/>
+                <Route exact path = "/net/:networkID/account/:accountID"                component = { AccountScreen }/>
+                <Route exact path = "/net/:networkID/account/:accountID/crafting/:methodName" component = { CraftingScreen }/>
+                <Route exact path = "/net/:networkID/account/:accountID/crafting"       component = { CraftingScreen }/>
+                <Route exact path = "/net/:networkID/account/:accountID/inventory"      component = { InventoryScreen }/>
+                <Route exact path = "/net/:networkID/account/:accountID/upgrades"       component = { UpgradesScreen }/>
+                <Route exact path = "/net/:networkID/account/:accountID/reset"          component = { ResetScreen }/>
+                <Route exact path = "/net/:networkID/account-requests"                  component = { AccountRequestScreen }/>
+                <Route exact path = "/net/:networkID"                                   component = { NetworkScreen }/>
                 
-                <Route exact path = "/login"                    component = { LoginScreen }/>
-
                 <Route exact path = "/debug/aes"                component = { fgc.debug.AESScreen }/>
                 <Route exact path = "/debug/barcode/pdf417"     component = { fgc.debug.BarcodePDF417Screen }/>
                 <Route exact path = "/debug/barcode/qr"         component = { fgc.debug.BarcodeQRScreen }/>
@@ -63,7 +58,7 @@ const App = () => {
 
                 <Route exact path = "/util/schema"              component = { cardmotron.SchemaScreen }/>
 
-                <Route exact path = "/" component = { RegisterScreen }/>
+                <Route exact path = "/"                         component = { DashboardScreen }/>
             </Switch>
         </div>
     </BrowserRouter>);

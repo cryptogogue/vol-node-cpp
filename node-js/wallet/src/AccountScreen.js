@@ -9,7 +9,7 @@ import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
-import { NavigationBar }                    from './NavigationBar';
+import { AccountNavigationBar, ACCOUNT_TABS } from './AccountNavigationBar';
 import { NodeListView }                     from './NodeListView';
 import { PendingTransactionsView }          from './PendingTransactionsView';
 
@@ -115,9 +115,9 @@ export const AccountScreen = observer (( props ) => {
     return (
         <SingleColumnContainerView>
 
-            <NavigationBar
-                navTitle    = "Account"
+            <AccountNavigationBar
                 appState    = { appState }
+                tab         = { ACCOUNT_TABS.ACCOUNT }
                 networkID   = { networkIDFromEndpoint }
                 accountID   = { accountIDFromEndpoint }
             />
@@ -138,10 +138,6 @@ export const AccountScreen = observer (( props ) => {
                     <TransactionFormSelector appState = { appState }/>
                 </Segment>
             </If>
-
-            <Segment>
-                <NodeListView appState = { appState }/>
-            </Segment>
 
         </SingleColumnContainerView>
     );

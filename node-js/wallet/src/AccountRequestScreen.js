@@ -3,7 +3,7 @@
 
 import { AccountRequestService }            from './AccountRequestService';
 import { AppStateService }                  from './AppStateService';
-import { NavigationBar }                    from './NavigationBar';
+import { NetworkNavigationBar, NETWORK_TABS } from './NetworkNavigationBar';
 import { assert, crypto, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
@@ -166,6 +166,7 @@ const ImportAccountView = observer (( props ) => {
 //================================================================//
 export const AccountRequestScreen = observer (( props ) => {
 
+    const networkIDFromEndpoint     = util.getMatch ( props, 'networkID' );
     const appState                  = hooks.useFinalizable (() => new AppStateService ());
     const accountRequestService     = hooks.useFinalizable (() => new AccountRequestService ( appState ));
 
@@ -185,7 +186,11 @@ export const AccountRequestScreen = observer (( props ) => {
 
     return (
         <SingleColumnContainerView>
-            <NavigationBar navTitle = "New Account" appState = { appState }/>
+            <NetworkNavigationBar
+                appState = { appState }
+                tab = { NETWORK_TABS.ACCOUNT_REQUESTS }
+                networkID = { networkIDFromEndpoint }
+            />
             <AccountReqestForm appState = { appState }/>
             { requests }
         </SingleColumnContainerView>
