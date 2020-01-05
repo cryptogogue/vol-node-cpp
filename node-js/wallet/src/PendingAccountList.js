@@ -1,9 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import { AccountRequestService }            from './AccountRequestService';
 import { AppStateService }                  from './AppStateService';
-import { NetworkNavigationBar, NETWORK_TABS } from './NetworkNavigationBar';
 import { assert, crypto, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe }              from 'mobx';
