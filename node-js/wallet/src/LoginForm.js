@@ -29,7 +29,7 @@ export const LoginForm = observer (( props ) => {
         }
     }
 
-    const isEnabled = password.length > 0;
+    const isEnabled = appState.checkPassword ( password );
 
     return (
         <React.Fragment>
@@ -42,7 +42,7 @@ export const LoginForm = observer (( props ) => {
                 <Segment stacked>
                     <Form.Input
                         fluid
-                        icon = "lock"
+                        icon = { isEnabled ? 'unlock' : 'lock' }
                         iconPosition = "left"
                         placeholder = "Password"
                         type = "password"

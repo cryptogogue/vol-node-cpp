@@ -8,6 +8,7 @@ import { action, computed, extendObservable, observable, observe, runInAction } 
 import React                from 'react';
 
 const STORE_ACCOUNTS            = '.vol_accounts';
+const STORE_NETWORKS            = '.vol_networks';
 const STORE_NODE                = '.vol_node';
 const STORE_NODES               = '.vol_nodes';
 const STORE_PASSWORD_HASH       = '.vol_password_hash';
@@ -35,9 +36,12 @@ export class AppStateService {
     @action
     affirmAccountAndKey ( password, accountID, keyName, phraseOrKey, privateKeyHex, publicKeyHex ) {
 
-        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+        console.log ( 'AFFIRMING ACCOUNT AND KEY!' );
 
-        let accounts = this.accounts;
+        this.assertHasNetwork ();
+        this.assertPassword ( password );
+
+        const accounts = this.network.accounts;
 
         let account = accounts [ accountID ] || {
             keys: {},
@@ -53,31 +57,38 @@ export class AppStateService {
 
         account.keys [ keyName ] = key;
 
-        // Add new account to StateManager state
-        this.accounts [ accountID ] = account;
+        accounts [ accountID ] = account;
     }
 
     //----------------------------------------------------------------//
     @action
-    affirmLocalhostNodes () {
+    affirmNetwork ( name, nodeURL ) {
 
-        console.log ( 'AFFIRM LOCALHOST NODE LIST' );
-
-        this.affirmNodeURL ( 'http://localhost:9090' );
-        this.affirmNodeURL ( 'http://localhost:7777' );
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    affirmNodeURL ( nodeURL ) {
-
-        if ( !( nodeURL in this.nodes )) {
-            this.nodes [ nodeURL ] = this.makeNodeInfo ();
-
-            if ( Object.keys ( this.nodes ).length === 1 ) {
-                this.node = nodeURL;
-            }
+        if ( !_.has ( this.networks, name )) {
+            this.networks [ name ] = {
+                nodeURL:    nodeURL,
+                accounts:   {},
+            };
         }
+        else {
+            this.networks [ name ].nodeUTL = nodeURL;
+        }
+    }
+
+    //----------------------------------------------------------------//
+    assertHasAccount () {
+        this.assertHasNetwork ();
+        if ( !this.hasAccount ) throw new Error ( 'No account selected.' );
+    }
+
+    //----------------------------------------------------------------//
+    assertHasNetwork () {
+        if ( !this.hasNetwork ) throw new Error ( 'No network selected.' );
+    }
+
+    //----------------------------------------------------------------//
+    assertPassword ( password ) {
+        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password.' );
     }
 
     //----------------------------------------------------------------//
@@ -108,61 +119,72 @@ export class AppStateService {
     @action
     confirmTransactions ( nonce ) {
 
-        let pendingTransactions = this.account.pendingTransactions;
-        while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce <= nonce )) {
-            pendingTransactions.shift ();
+        if ( this.hasAccount ) {
+            let pendingTransactions = this.account.pendingTransactions;
+            while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce <= nonce )) {
+                pendingTransactions.shift ();
+            }
         }
     }
 
     //----------------------------------------------------------------//
-    constructor ( accountID ) {
+    constructor ( networkID, accountID ) {
 
         this.revocable      = new RevocableContext ();
 
-        this.minerURLs      = new Set ();
-        this.marketURLs     = new Set ();
-        this.urlBackoff     = {};
-
+        networkID = networkID || '';
         accountID = accountID || '';
 
         extendObservable ( this, {
+            networkID:              '',
             accountID:              '',
-            accountInfo:            null,
             keyName:                '',
+            accountInfo:            null,
             nextTransactionCost:    0,
         });
 
-        const loadNodes = ( nodes ) => {
-            for ( let url in nodes ) {
-                nodes [ url ].status = NODE_STATUS.UNKNOWN;
-            }
-            return nodes;
-        }
-
         const storageContext = new StorageContext ();
 
-        storageContext.persist ( this, 'accounts',          STORE_ACCOUNTS,            {});
-        storageContext.persist ( this, 'node',              STORE_NODE,                '' );
-        storageContext.persist ( this, 'nodes',             STORE_NODES,               {}, loadNodes );
-        storageContext.persist ( this, 'passwordHash',      STORE_PASSWORD_HASH,       '' );
-        storageContext.persist ( this, 'pendingAccounts',   STORE_PENDING_ACCOUNTS,    {});
+        storageContext.persist ( this, 'networks',          STORE_NETWORKS,             {}); // account names index by network name
+        storageContext.persist ( this, 'passwordHash',      STORE_PASSWORD_HASH,        '' );
+        storageContext.persist ( this, 'pendingAccounts',   STORE_PENDING_ACCOUNTS,     {});
         storageContext.persist ( this, 'session',           STORE_SESSION,              this.makeSession ( false ));
 
         this.storage = storageContext;
 
-        this.setAccount ( accountID );
+        runInAction (() => {
+
+            if ( _.has ( this.networks, networkID )) {
+
+                this.networkID = networkID;
+                const network = this.network;
+
+                if ( _.has ( network.accounts, accountID )) {
+                    this.accountID = accountID;
+                    this.keyName = this.getDefaultAccountKeyName ();
+                }
+            }
+        });
+
         this.setAccountInfo ();
     }
 
     //----------------------------------------------------------------//
     @action
-    deleteAccount () {
+    deleteAccount ( accountID ) {
 
-        if ( this.accountID in this.accounts ) {
-            delete this.accounts [ this.accountID ];
+        this.assertHasNetwork ();
+
+        accountID = accountID || this.accountID;
+
+        if ( accountID in this.network.accounts ) {
+            delete this.network.accounts [ accountID ];
         }
-        this.accountID = '';
-        this.setAccountInfo ();
+        
+        if ( accountID === this.accountID ) {
+            this.accountID = '';
+            this.setAccountInfo ();
+        }
     }
 
     //----------------------------------------------------------------//
@@ -174,20 +196,9 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @action
-    deleteNode ( nodeURL ) {
+    deleteNetwork ( networkName ) {
 
-        if ( nodeURL === this.node ) {
-            this.node = '';
-        }
-        delete this.nodes[ nodeURL ];
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    deleteNodeList () {
-
-        this.node = '';
-        this.nodes = {};
+        delete this.networks [ networkName ];
     }
 
     //----------------------------------------------------------------//
@@ -195,7 +206,11 @@ export class AppStateService {
     deleteStorage () {
 
         storage.clear ();
-        this.deleteUserStorage ();
+        this.networkID = '';
+        this.accountID = '';
+        this.keyName = '';
+        this.nextTransactionCost = 0;
+        this.setAccountInfo ();
     }
 
     //----------------------------------------------------------------//
@@ -209,15 +224,6 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    @action
-    deleteUserStorage () {
-
-        this.storage.reset ();
-        this.nextTransactionCost = 0;
-        this.setAccountInfo ();
-    }
-
-    //----------------------------------------------------------------//
     finalize () {
 
         this.revocable.finalize ();
@@ -226,12 +232,14 @@ export class AppStateService {
     //----------------------------------------------------------------//
     findAccountIdByPublicKey ( publicKey ) {
 
-        const accounts = this.accounts;
-        for ( let accountID in accounts ) {
-            const account = accounts [ accountID ];
-            for ( let keyName in account.keys ) {
-                const key = account.keys [ keyName ];
-                if ( key.publicKey === publicKey ) return accountID;
+        if ( this.hasNetwork ) {
+            const accounts = this.network.accounts;
+            for ( let accountID in accounts ) {
+                const account = accounts [ accountID ];
+                for ( let keyName in account.keys ) {
+                    const key = account.keys [ keyName ];
+                    if ( key.publicKey === publicKey ) return accountID;
+                }
             }
         }
         return false;
@@ -245,53 +253,20 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     getAccount ( accountID ) {
-        accountID = accountID || this.accountID;
-        const accounts = this.accounts;
-        return ( accountID in accounts ) && accounts [ accountID ] || null;
-    }
 
-    //----------------------------------------------------------------//
-    getAccountIdOrDefault () {
-
-        if ( !accountID ) {
-            const accountNames = Object.keys ( appState.accounts );
-            accountID = accountNames && accountNames.length && accountNames [ 0 ];
+        if ( this.hasNetwork ) {
+            accountID = accountID || this.accountID;
+            const accounts = this.network.accounts;
+            return _.has ( accounts, accountID ) ? accounts [ accountID ] : false;
         }
+        return false;
     }
 
     //----------------------------------------------------------------//
     @computed
     get accountKeyNames () {
-        const account = this.account
+        const account = this.account;
         return ( account && Object.keys ( account.keys )) || [];
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get activeMarketCount () {
-        
-        let count = 0;
-        for ( let url in this.nodes ) {
-            const info = this.nodes [ url ];
-            if (( info.type === NODE_TYPE.MARKET ) && ( info.status === NODE_STATUS.ONLINE )) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get activeMinerCount () {
-        
-        let count = 0;
-        for ( let url in this.nodes ) {
-            const info = this.nodes [ url ];
-            if (( info.type === NODE_TYPE.MINING ) && ( info.status === NODE_STATUS.ONLINE )) {
-                count++;
-            }
-        }
-        return count;
     }
 
     //----------------------------------------------------------------//
@@ -335,15 +310,16 @@ export class AppStateService {
     @computed
     get canSubmitTransactions () {
 
+        if ( !this.hasAccount ) return false;
         if ( this.nextNonce < 0 ) return false;
-        if ( this.node.length === 0 ) return false;
         if ( this.account.stagedTransactions.length === 0 ) return false;
 
-        return this.hasActiveMiningNode;
+        return true;
     }
 
     //----------------------------------------------------------------//
     getDefaultAccountKeyName () {
+
         const defaultKeyName = 'master';
         const accountKeyNames = this.accountKeyNames;
         if ( accountKeyNames.includes ( defaultKeyName )) return defaultKeyName;
@@ -353,7 +329,7 @@ export class AppStateService {
     //----------------------------------------------------------------//
     @computed
     get hasAccount () {
-        return (( this.accountID.length > 0 ) && this.account );
+        return ( this.accountID && this.account );
     }
 
     //----------------------------------------------------------------//
@@ -364,14 +340,8 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @computed
-    get hasActiveMiningNode () {
-
-        const nodeInfo = this.nodeInfo;
-
-        if ( nodeInfo.type !== NODE_TYPE.MINING ) return false;
-        if ( nodeInfo.status !== NODE_STATUS.ONLINE ) return false;
-
-        return true;
+    get hasNetwork () {
+        return ( this.networkID && this.network );
     }
 
     //----------------------------------------------------------------//
@@ -395,14 +365,15 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @computed
-    get nodeInfo () {
-        return this.getNodeInfo ();
+    get network () {
+        return this.getNetwork ();
     }
 
     //----------------------------------------------------------------//
-    getNodeInfo ( url ) {
-
-        return this.nodes [ url || this.node || '' ] || this.makeNodeInfo ();
+    getNetwork ( networkID ) {
+        networkID = networkID || this.networkID;
+        const networks = this.networks;
+        return _.has ( networks, networkID ) ? networks [ networkID ] : null;
     }
 
     //----------------------------------------------------------------//
@@ -433,24 +404,24 @@ export class AppStateService {
     @action
     importAccountRequest ( requestID, password ) {
 
-        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+        // if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
 
-        const pending = this.pendingAccounts [ requestID ];
-        if ( !pending ) throw new Error ( 'Account request not found' );
+        // const pending = this.pendingAccounts [ requestID ];
+        // if ( !pending ) throw new Error ( 'Account request not found' );
 
-        const phraseOrKey       = crypto.aesCipherToPlain ( pending.phraseOrKeyAES, password );
-        const privateKeyHex     = crypto.aesCipherToPlain ( pending.privateKeyHexAES, password );
+        // const phraseOrKey       = crypto.aesCipherToPlain ( pending.phraseOrKeyAES, password );
+        // const privateKeyHex     = crypto.aesCipherToPlain ( pending.privateKeyHexAES, password );
 
-        this.affirmAccountAndKey (
-            password,
-            pending.accountID,
-            pending.keyName,
-            phraseOrKey,
-            privateKeyHex,
-            pending.publicKeyHex,
-        );
+        // this.affirmAccountAndKey (
+        //     password,
+        //     pending.accountID,
+        //     pending.keyName,
+        //     phraseOrKey,
+        //     privateKeyHex,
+        //     pending.publicKeyHex,
+        // );
 
-        delete this.pendingAccounts [ requestID ];
+        // delete this.pendingAccounts [ requestID ];
     }
 
     //----------------------------------------------------------------//
@@ -466,33 +437,15 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    makeNodeInfo ( type, status, network ) {
-
-        return {
-            type:       type || NODE_TYPE.UNKNOWN,
-            status:     status || NODE_STATUS.UNKNOWN,
-            network:    network,
-        };
-    }
-
-    //----------------------------------------------------------------//
     makeSession ( isLoggedIn ) {
         return { isLoggedIn: isLoggedIn };
     }
 
     //----------------------------------------------------------------//
-    prefixURL ( url ) {
-
-        // const userID = this.userID;
-        // if ( userID && userID.length ) {
-        //     return '/' + userID + url;
-        // }
-        return url;
-    }
-
-    //----------------------------------------------------------------//
     @action
     pushTransaction ( transaction ) {
+
+        this.assertHasAccount ();
 
         let account = this.account;
 
@@ -505,7 +458,6 @@ export class AppStateService {
         }
 
         this.account.stagedTransactions.push ( memo );
-
         this.setNextTransactionCost ( 0 );
     }
 
@@ -521,35 +473,24 @@ export class AppStateService {
     @action
     renameAccount ( oldName, newName ) {
 
-        if ( !_.has ( this.accounts, oldName )) return;        
+        // if ( !_.has ( this.accounts, oldName )) return;        
         
-        this.accounts [ newName ] = _.cloneDeep ( this.accounts [ oldName ]); // or mobx will bitch at us
-        delete this.accounts [ oldName ];
+        // this.accounts [ newName ] = _.cloneDeep ( this.accounts [ oldName ]); // or mobx will bitch at us
+        // delete this.accounts [ oldName ];
 
-        if ( this.accountID === oldName ) {
-            this.setAccount ( newName );
-        }
+        // if ( this.accountID === oldName ) {
+        //     this.setAccount ( newName );
+        // }
     }
 
     //----------------------------------------------------------------//
     @action
     selectKey ( keyName ) {
 
+        this.assertHasAccount ();
+
         if (( this.keyName !== keyName ) && this.accountKeyNames.includes ( keyName )) {
             this.keyName = keyName;
-        }
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    setAccount ( accountID ) {
-
-        const accountNames = Object.keys ( this.accounts );
-        accountID = (( accountID in this.accounts ) && accountID ) || ( accountNames.length && accountNames [ 0 ]) || '';
-        if ( this.accountID !== accountID ) {
-            this.accountID = accountID;
-            this.keyName = this.getDefaultAccountKeyName ();
-            this.setAccountInfo ();
         }
     }
 
@@ -613,21 +554,10 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @action
-    setNodeInfo ( nodeURL, type, status, network ) {
-
-        if ( nodeURL in this.nodes ) {
-            const info = this.nodes [ nodeURL ];
-            if (( info.type !== type ) || ( info.status !== status )) {
-                this.nodes [ nodeURL ] = this.makeNodeInfo ( type, status, network || info.network );
-            }
-        }
-    }
-
-    //----------------------------------------------------------------//
-    @action
     async submitTransactions ( password ) {
 
-        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+        this.assertHasAccount ();
+        this.assertPassword ( password );
 
         let stagedTransactions      = this.account.stagedTransactions;
         let pendingTransactions     = this.account.pendingTransactions;
@@ -656,7 +586,7 @@ export class AppStateService {
                     signature:      key.sign ( envelope.body ),
                 };
                 
-                await this.revocable.fetch ( this.node + '/transactions', {
+                await this.revocable.fetch ( `${ this.network.nodeURL }/transactions`, {
                     method :    'POST',
                     headers :   { 'content-type': 'application/json' },
                     body :      JSON.stringify ( envelope, null, 4 ),
@@ -684,7 +614,7 @@ export class AppStateService {
     @action
     updateAccount ( accountUpdate, entitlements ) {
 
-        let account = this.accounts [ this.accountID ];
+        let account = this.account;
         if ( !account ) return;
 
         account.policy          = accountUpdate.policy;

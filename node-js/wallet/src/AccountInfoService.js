@@ -13,10 +13,7 @@ export class AccountInfoService {
     constructor ( appState ) {
 
         this.revocable = new RevocableContext ();
-
-        extendObservable ( this, {
-            appState:   appState,
-        });
+        this.appState = appState;
 
         observe ( appState, 'accountID', ( change ) => {
             this.revocable.revokeAll ();
@@ -54,7 +51,7 @@ export class AccountInfoService {
     static async update ( service, appState ) {
 
         const accountID = appState.accountID;
-        const data = await service.revocable.fetchJSON ( appState.node + '/accounts/' + accountID );
+        const data = await service.revocable.fetchJSON ( `${ appState.network.nodeURL }accounts/${ accountID }` );
 
         const account = data.account;
         const entitlements = data.entitlements;

@@ -4,7 +4,7 @@ import { StagedTransactionsModal }          from './StagedTransactionsModal';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
-import { Link }                             from 'react-router-dom';
+import { Link, useParams }                  from 'react-router-dom';
 import { Dropdown, Icon, Label, Menu }      from 'semantic-ui-react';
   
 //================================================================//
@@ -12,57 +12,58 @@ import { Dropdown, Icon, Label, Menu }      from 'semantic-ui-react';
 //================================================================//
 export const NavigationBar = observer (( props ) => {
 
-    const { appState } = props;
-    const networkID = props.networkID || '';
-    const accountID = props.accountID || '';
+    const params = useParams ();
+
+    const networkID = params.networkID || '';
+    const accountID = params.accountID || '';
+
     const accountTab = props.accountTab || '';
     const networkTab = props.networkTab || '';
 
-    const [ redirect, setRedirect ] = useState ( false );
+    const { appState } = props;
 
-    if ( redirect ) {
-        const temp = redirect;
-        setRedirect ( false );
-        return (<Redirect to = { temp }/>); 
+    if ( !appState.hasUser ())      return (<Redirect to = { '/' }/>);
+    if ( !appState.isLoggedIn ())   return (<Redirect to = { '/' }/>);
+
+    if (( appState.networkID !== networkID ) || ( appState.accountID !== accountID )) {
+
+        if ( networkID && accountID )   return (<Redirect to = { `/net/${ networkID }/account/${ accountID }${ accountTab }` }/>);
+        if ( networkID )   return (<Redirect to = { `/net/${ networkID }` }/>);
+        return (<Redirect to = { '/' }/>); 
     }
 
-    const networks = {
-        network0:       [ '9090', '9091', '9092' ],
-        network1:       [ '9093', '9094' ],
-        network2:       [ '9095', '9096', '9097' ],
-    };
-
+    const networkDropdown = [];
     const accountDropdown = [];
+
+    for ( let networkName in appState.networks ) {
+
+        networkDropdown.push (
+            <Dropdown.Item
+                key         = { networkName }
+                as          = { Link }
+                to          = { `/net/${ networkName }${ networkTab }` }
+            >
+                <span className='text'>{ networkName }</span>
+            </Dropdown.Item>
+        );
+    }
+
     if ( networkID.length > 0 ) {
-        const accounts = networks [ networkID ];
-        for ( let account of accounts ) {
+        const accounts = appState.networks [ networkID ].accounts;
+        for ( let accountID in accounts ) {
             accountDropdown.push (
                 <Dropdown.Item
-                    key         = { account }
+                    key         = { accountID }
                     as          = { Link }
-                    to          = { `/net/${ networkID }/account/${ account }/${ accountTab }` }
+                    to          = { `/net/${ networkID }/account/${ accountID }${ accountTab }` }
                 >
-                    { account }
+                    { accountID }
                 </Dropdown.Item>
             );
         }
     }
 
     let onClickLogout = () => { appState.login ( false )};
-
-    const networkDropdown = [];
-    for ( let network in networks ) {
-
-        networkDropdown.push (
-            <Dropdown.Item
-                key         = { network }
-                as          = { Link }
-                to          = { `/net/${ network }/${ networkTab }` }
-            >
-                <span className='text'>{ network }</span>
-            </Dropdown.Item>
-        );
-    }
 
     return (
         <Menu attached = 'top' borderless inverted>
@@ -73,27 +74,28 @@ export const NavigationBar = observer (( props ) => {
                 to          = { `/` }
             />
 
-            <Dropdown
-                item
-                text = { networkID }
-                placeholder = '--'
-            >
-                <Dropdown.Menu>
-                    { networkDropdown }
-                </Dropdown.Menu>
-            </Dropdown>
-
-            <If condition = { accountDropdown.length > 0 }>
+            <If condition = { networkDropdown.length > 0 }>
                 <Dropdown
                     item
-                    text = { accountID }
+                    text = { networkID }
                     placeholder = '--'
                 >
                     <Dropdown.Menu>
-                        { accountDropdown }
+                        { networkDropdown }
                     </Dropdown.Menu>
                 </Dropdown>
 
+                <If condition = { accountDropdown.length > 0 }>
+                    <Dropdown
+                        item
+                        text = { accountID }
+                        placeholder = '--'
+                    >
+                        <Dropdown.Menu>
+                            { accountDropdown }
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </If>
             </If>
 
             <Menu.Menu position = "right">

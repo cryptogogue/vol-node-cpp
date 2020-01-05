@@ -7,6 +7,7 @@ import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
+import { useParams }                        from 'react-router-dom';
 import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
 
 import { AccountNavigationBar, ACCOUNT_TABS } from './AccountNavigationBar';
@@ -30,17 +31,16 @@ const AccountDetailsView = observer (( props ) => {
 
     const key           = appState.key;
     const publicKey     = key.publicKeyHex;
-    const nodes         = appState.nodes;
 
     const balance       = appState.balance;
     const textColor     = balance > 0 ? 'black' : 'red';
 
-    const keyEntitlements = key.entitlements ? JSON.stringify ( key.entitlements.policy, null, 4 ) : false;
+    const keyEntitlements = key.entitlements ? JSON.stringify ( key.entitlements.policy, null, 4 ) : 'entootlements';
 
     return (
-        <div>
+        <div style = {{ textAlign: 'center' }}>
             <Header as = "h2" icon>
-                <Icon name = "key" circular />
+                <Icon name = "trophy" circular />
                 { appState.accountID }
             </Header>
 
@@ -50,7 +50,7 @@ const AccountDetailsView = observer (( props ) => {
 
             <If condition = { keyEntitlements }>
                 <Modal
-                    style={{ height:'auto' }}
+                    style = {{ height:'auto' }}
                     size = "small"
                     trigger = {
                         <Header.Subheader>
@@ -70,10 +70,6 @@ const AccountDetailsView = observer (( props ) => {
             </If>
 
             <Choose>
-
-                <When condition = { nodes.length === 0 }>
-                    <p>No nodes have been defined. Add nodes below to sync account with chain.</p>
-                </When>
 
                 <When condition = { appState.hasAccountInfo }>
                     <Header as = "h2">
@@ -97,20 +93,15 @@ const AccountDetailsView = observer (( props ) => {
 //================================================================//
 export const AccountScreen = observer (( props ) => {
 
-    const networkIDFromEndpoint = util.getMatch ( props, 'networkID' );
-    const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
+    const networkID = util.getMatch ( props, 'networkID' );
+    const accountID = util.getMatch ( props, 'accountID' );
 
-    const appState              = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( networkID, accountID ));
     const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
-    const nodeInfoService       = hooks.useFinalizable (() => new NodeInfoService ( appState ));
 
-    const accountID     = appState.accountID;
-
-    // TODO: move redirects to a HOC
-    if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
-    if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
-
-    appState.setAccount ( accountIDFromEndpoint );
+    // // TODO: move redirects to a HOC
+    // if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
+    // if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
 
     return (
         <SingleColumnContainerView>
@@ -118,8 +109,6 @@ export const AccountScreen = observer (( props ) => {
             <AccountNavigationBar
                 appState    = { appState }
                 tab         = { ACCOUNT_TABS.ACCOUNT }
-                networkID   = { networkIDFromEndpoint }
-                accountID   = { accountIDFromEndpoint }
             />
 
             <If condition = { appState.hasAccount }>

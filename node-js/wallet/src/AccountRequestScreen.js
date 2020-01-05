@@ -167,7 +167,7 @@ const ImportAccountView = observer (( props ) => {
 export const AccountRequestScreen = observer (( props ) => {
 
     const networkIDFromEndpoint     = util.getMatch ( props, 'networkID' );
-    const appState                  = hooks.useFinalizable (() => new AppStateService ());
+    const appState                  = hooks.useFinalizable (() => new AppStateService ( networkIDFromEndpoint ));
     const accountRequestService     = hooks.useFinalizable (() => new AccountRequestService ( appState ));
 
     const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;

@@ -1,6 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { ImportAccountModal }               from './ImportAccountModal';
 import { NavigationBar }                    from './NavigationBar';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -67,18 +66,6 @@ export const NetworkNavigationBar = observer (( props ) => {
                         <Dropdown.Item text = { getAccountTabTitle ( NETWORK_TABS.ACCOUNT_REQUESTS )} as = { Link } to = { requestAccountURL }/>
                     </Dropdown.Menu>
                 </Dropdown>
-                
-
-                <Menu.Menu position = 'right'>
-
-                    <ImportAccountModal
-                        appState = { appState }
-                        trigger = {
-                            <Menu.Item icon = "add square" text = "Import Account"/>
-                        }
-                    />
-
-                </Menu.Menu>
 
             </Menu>
         </React.Fragment>

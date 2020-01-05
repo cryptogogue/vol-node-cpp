@@ -21,7 +21,7 @@ export const CraftingScreen = observer (( props ) => {
     const accountIDFromEndpoint     = util.getMatch ( props, 'accountID' );
     const methodNameFromEndpoint    = util.getMatch ( props, 'methodName' );
 
-    const appState              = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
+    const appState              = hooks.useFinalizable (() => new AppStateService ( networkIDFromEndpoint, accountIDFromEndpoint ));
     const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
     const inventory             = hooks.useFinalizable (() => new InventoryService ( appState ));
 
@@ -65,8 +65,6 @@ export const CraftingScreen = observer (( props ) => {
                 <AccountNavigationBar
                     appState    = { appState }
                     tab         = { ACCOUNT_TABS.CRAFTING }
-                    networkID   = { networkIDFromEndpoint }
-                    accountID   = { accountIDFromEndpoint }
                 />
 
                 <div>

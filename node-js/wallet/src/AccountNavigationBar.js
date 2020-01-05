@@ -5,7 +5,7 @@ import { StagedTransactionsModal }          from './StagedTransactionsModal';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
-import { Link }                             from 'react-router-dom';
+import { Link, useParams }                  from 'react-router-dom';
 import { Button, Dropdown, Header, Icon, Label, Menu } from 'semantic-ui-react';
 
 export const ACCOUNT_TABS = {
@@ -44,7 +44,12 @@ function getAccountTabURL ( tab ) {
 //================================================================//
 export const AccountNavigationBar = observer (( props ) => {
 
-    const { appState, networkID, accountID, tab } = props;
+    const params = useParams ();
+
+    const networkID = params.networkID || '';
+    const accountID = params.accountID || '';
+
+    const { appState, tab } = props;
 
     const accountsURL           = `/net/${ networkID }/account/${ accountID }${ getAccountTabURL ( ACCOUNT_TABS.ACCOUNT )}`;
     const inventoryURL          = `/net/${ networkID }/account/${ accountID }${ getAccountTabURL ( ACCOUNT_TABS.INVENTORY )}`;

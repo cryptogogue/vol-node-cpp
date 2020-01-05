@@ -204,15 +204,9 @@ export const UpgradesScreen = observer (( props ) => {
 
     const [ progressMessage, setProgressMessage ]   = useState ( '' );
     const [ upgradeTable, setUpgradeTable ]         = useState ( false );
-    const appState      = hooks.useFinalizable (() => new AppStateService ( accountIDFromEndpoint ));
+    const appState      = hooks.useFinalizable (() => new AppStateService ( networkIDFromEndpoint, accountIDFromEndpoint ));
     const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
     const controller    = hooks.useFinalizable (() => new UpgradesController ());
-
-    if ( appState.accountID !== accountIDFromEndpoint ) {
-        controller.clear ();
-        appState.setAccount ( accountIDFromEndpoint );
-        inventory.fetchInventory ( appState.node, appState.accountID );
-    }
 
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));
 
@@ -260,8 +254,6 @@ export const UpgradesScreen = observer (( props ) => {
                 <AccountNavigationBar
                     appState    = { appState }
                     tab         = { ACCOUNT_TABS.UPGRADES }
-                    networkID   = { networkIDFromEndpoint }
-                    accountID   = { accountIDFromEndpoint }
                 />
 
                 <Choose>

@@ -2,13 +2,14 @@
 /* eslint-disable no-loop-func */
 
 import { AppStateService }                  from './AppStateService';
+import { KeyAndPasswordForm }               from './KeyAndPasswordForm';
 import { NetworkNavigationBar }             from './NetworkNavigationBar';
 import { assert, crypto, excel, FilePickerMenuItem, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Menu, Modal, Segment } from 'semantic-ui-react';
+import * as UI                              from 'semantic-ui-react';
 
 // https://www.npmjs.com/package/js-crypto-utils
 
@@ -22,23 +23,12 @@ const STATUS_DONE                       = 2;
 class ImportAccountController {
 
     @observable accountID       = '';
-    @observable errorMessage    = '';
-    @observable phraseOrKey     = '';
-    @observable keyError        = false;
     @observable status          = STATUS_WAITING_FOR_INPUT;
-    @observable password        = '';
-
-    //----------------------------------------------------------------//
-    checkPassword () {
-    
-        return this.appState.checkPassword ( this.password );
-    }
 
     //----------------------------------------------------------------//
     constructor ( appState ) {
+
         this.revocable  = new RevocableContext ();
-        this.appState   = appState;
-        this.key        = false;
     }
 
     //----------------------------------------------------------------//
@@ -49,23 +39,7 @@ class ImportAccountController {
 
     //----------------------------------------------------------------//
     @action
-    handleChange ( event ) {
-
-        this [ event.target.name ] = event.target.value;
-    }
-
-    //----------------------------------------------------------------//
-    hasValidKey () {
-
-        return (( this.phraseOrKey.length > 0 ) && ( !this.keyError ));
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    async import () {
-
-        const appState = this.appState;
-        const key = this.key;
+    async import ( appState, key, phraseOrKey, password ) {
 
         const publicKey = key.getPublicHex ();
         console.log ( 'PUBLIC_KEY', publicKey );
@@ -74,12 +48,8 @@ class ImportAccountController {
         let accountID = appState.findAccountIdByPublicKey ( publicKey );
 
         if ( accountID ) {
-
-            console.log ( 'ACCOUNT KEY ALREADY EXISTS' );
-
             this.accountID = accountID;
             this.status = STATUS_DONE;
-
             return;
         }
 
@@ -91,7 +61,8 @@ class ImportAccountController {
         let keyName = false;
 
         try {
-            const data = await this.revocable.fetchJSON ( appState.node + '/keys/' + keyID );
+
+            const data = await this.revocable.fetchJSON ( `${ appState.network.nodeURL }keys/${ keyID }` );
 
             const keyInfo = data && data.keyInfo;
 
@@ -109,10 +80,10 @@ class ImportAccountController {
 
                 const privateKey = key.getPrivateHex ();
                 appState.affirmAccountAndKey (
-                    this.password,
+                    password,
                     accountID,
                     keyName,
-                    this.phraseOrKey,
+                    phraseOrKey,
                     privateKey,
                     publicKey
                 );
@@ -121,124 +92,86 @@ class ImportAccountController {
                 this.status = STATUS_DONE;
             }
             else {
-                this.errorMessage = 'Account not found.';
                 this.status = STATUS_WAITING_FOR_INPUT;
             }
         });
     }
-
-    //----------------------------------------------------------------//
-    @action
-    setPassword ( password ) {
-
-        this.password = password;
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    async setPhraseOrKey ( phraseOrKey ) {
-
-        this.phraseOrKey = phraseOrKey;
-        this.keyError = false;
-        this.key = false;
-
-        try {
-            const key = await crypto.loadKeyAsync ( this.phraseOrKey );
-            
-            console.log ( 'KEY_ID',         key.getKeyID ());
-            console.log ( 'PUBLIC_KEY',     key.getPublicHex ());
-            console.log ( 'PRIVATE_KEY',    key.getPrivateHex ());
-
-            runInAction (() => { this.key = key });
-        }
-        catch ( error ) {
-            runInAction (() => { this.keyError = true });
-        }
-    }
 }
+
+//================================================================//
+// ImportAccountModalBody
+//================================================================//
+const ImportAccountModalBody = observer (( props ) => {
+
+    const { appState, open, onClose } = props;
+
+    const controller = hooks.useFinalizable (() => new ImportAccountController ( appState ));
+
+    const [ key, setKey ]                   = useState ( false );
+    const [ phraseOrKey, setPhraseOrKey ]   = useState ( '' );
+    const [ password, setPassword ]         = useState ( '' );
+
+    const onSubmit = async () => {
+        controller.import ( appState, key, phraseOrKey, password );
+    }
+
+    if ( controller.status === STATUS_DONE ) {
+        onClose ();
+    }
+
+    const submitEnabled = key && password;
+
+    return (
+        <UI.Modal
+            size = 'small'
+            closeIcon
+            onClose = {() => { onClose ()}}
+            open = { open }
+        >
+            <UI.Modal.Header>Import Account</UI.Modal.Header>
+            
+            <UI.Modal.Content>
+                <KeyAndPasswordForm
+                    appState        = { appState }
+                    setKey          = { setKey }
+                    setPhraseOrKey  = { setPhraseOrKey }
+                    setPassword     = { setPassword }
+                />
+            </UI.Modal.Content>
+
+            <UI.Modal.Actions>
+                <UI.Button
+                    positive
+                    disabled = { !submitEnabled }
+                    onClick = {() => { onSubmit ()}}
+                >
+                    Import
+                </UI.Button>
+            </UI.Modal.Actions>
+        </UI.Modal>
+    );
+});
 
 //================================================================//
 // ImportAccountModal
 //================================================================//
 export const ImportAccountModal = observer (( props ) => {
 
-    const { appState, trigger } = props;
+    const { appState, open } = props;
+    const [ counter, setCounter ] = useState ( 0 );
 
-    const controller        = hooks.useFinalizable (() => new ImportAccountController ( appState ));
-
-    const hasMiners         = appState.node.length > 0;
-    const inputEnabled      = hasMiners;
-    const submitEnabled     = inputEnabled && controller.checkPassword () && controller.hasValidKey ();
-
-    if ( controller.status === STATUS_DONE ) return (<Redirect to = { `/accounts/${ controller.accountID }` }/>);
-
-    let warning;
-    if ( !appState.node.length > 0 ) {
-        warning = (
-            <Header as = "h4" color = "red" textAlign = "center">
-                No mining node specified.
-            </Header>
-        );
-    }
-
-    const loadFile = ( text ) => {
-        controller.setPhraseOrKey ( text )
+    const onClose = () => {
+        setCounter ( counter + 1 );
+        props.onClose ();
     }
 
     return (
-        <Modal
-            size = 'small'
-            closeIcon
-            trigger = { trigger }
-        >
-            <Modal.Header>Import Account</Modal.Header>
-            
-            <Modal.Content>
-
-                <Form >
-                    { warning }
-     
-                    <Menu fluid>
-                        <FilePickerMenuItem
-                            loadFile = { loadFile }
-                            format = 'text'
-                            accept = { '.json, .pem' }
-                        />
-                    </Menu>
-
-                    <Form.TextArea
-                        placeholder = "Mnemonic Phrase or Private Key"
-                        rows = { 8 }
-                        name = "phraseOrKey"
-                        value = { controller.phraseOrKey }
-                        onChange = {( event ) => { controller.setPhraseOrKey ( event.target.value )}}
-                        error = { controller.keyError }
-                        disabled = { !inputEnabled }
-                    />
-
-                    {( controller.keyError > 0 ) && <span>{ 'Invalid Key Type' }</span>}
-
-                    <Form.Input
-                        fluid
-                        icon = "lock"
-                        iconPosition = "left"
-                        placeholder = "Wallet Password"
-                        type = "password"
-                        value = { controller.password }
-                        onChange = {( event ) => { controller.setPassword ( event.target.value )}}
-                    />
-                </Form>
-
-            </Modal.Content>
-
-            <Modal.Actions>
-                <Button
-                    positive
-                    disabled = { !submitEnabled }
-                    onClick = {() => { controller.import ()}}>
-                    Import
-                </Button>
-            </Modal.Actions>
-        </Modal>
+        <div key = { counter }>
+            <ImportAccountModalBody
+                appState    = { appState }
+                open        = { open }
+                onClose     = { onClose }
+            />
+        </div>
     );
 });
