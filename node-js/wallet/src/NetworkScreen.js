@@ -30,7 +30,7 @@ export const NetworkActionsSegment = observer (( props ) => {
         <div ref = { segmentRef }>
 
             <UI.Popup
-                open = {(( Object.keys ( appState.network.accounts ).length === 0 ) && !anyModalOpen ) ? true : false }
+                open = {( appState.flags.promptFirstAccount && !anyModalOpen ) ? true : false }
                 content = 'Add or import an account.'
                 position = 'bottom center'
                 context = { segmentRef }

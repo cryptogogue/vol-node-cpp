@@ -99,7 +99,7 @@ export const AccountActionsSegment = observer (( props ) => {
         <div ref = { segmentRef }>
 
             <UI.Popup
-                open = {( appState.account.promptFirstTransaction && !transactionModalOpen ) ? true : false }
+                open = {( appState.flags.promptFirstTransaction && !transactionModalOpen ) ? true : false }
                 content = 'Create and submit transactions.'
                 position = 'bottom center'
                 context = { segmentRef }

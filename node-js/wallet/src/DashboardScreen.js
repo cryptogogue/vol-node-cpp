@@ -87,7 +87,7 @@ export const DashboardActionsSegment = observer (( props ) => {
         <div ref = { segmentRef }>
 
             <UI.Popup
-                open = {(( Object.keys ( appState.networks ).length === 0 ) && !addNetworkModalOpen ) ? true : false }
+                open = {( appState.flags.promptFirstNetwork && !addNetworkModalOpen ) ? true : false }
                 content = 'Add the first mining network.'
                 position = 'bottom center'
                 context = { segmentRef }

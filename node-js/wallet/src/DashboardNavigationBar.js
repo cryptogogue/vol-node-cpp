@@ -1,5 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
+import { ChangePasswordModal }              from './ChangePasswordModal';
 import { NavigationBar }                    from './NavigationBar';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -13,10 +14,7 @@ import { Dropdown, Icon, Label, Menu }      from 'semantic-ui-react';
 export const DashboardNavigationBar = observer (( props ) => {
 
     const { appState } = props;
-
-    let onClickDeleteLocalStorage           = () => { appState.deleteStorage ()};
-
-    const previewSchemaURL      = `/util/schema`;
+    const [ changePasswordModalOpen, setChangePasswordModalOpen ] = useState ( false );
 
     return (
         <React.Fragment>
@@ -25,16 +23,27 @@ export const DashboardNavigationBar = observer (( props ) => {
             />
 
             <Menu borderless attached = 'bottom'>
-
                 <Menu.Menu position = 'right'>
-                    <Dropdown item icon = "settings">
+                    <Dropdown
+                        item
+                        icon = "settings"
+                        disabled = { appState.flags.promptFirstNetwork }
+                    >
                         <Dropdown.Menu>
-                            <Dropdown.Item icon = "wrench"          text = 'Schema Util'            as = { Link } to = { previewSchemaURL }/>
-                            <Dropdown.Item icon = "warning circle"  text = 'Delete Local Storage'   onClick = { onClickDeleteLocalStorage }/>
+                            <Dropdown.Item icon = "wrench"          text = 'Schema Util'            as = { Link } to = { `/util/schema` }/>
+                            <Dropdown.Item icon = "lock"            text = 'Change Password'        onClick = {() => { setChangePasswordModalOpen ( true )}}/>
+                            <Dropdown.Item icon = "warning circle"  text = 'Delete Local Storage'   onClick = {() => { appState.deleteStorage ()}}/>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Menu.Menu>
             </Menu>
+
+            <ChangePasswordModal
+                appState    = { appState }
+                open        = { changePasswordModalOpen }
+                onClose     = {() => { setChangePasswordModalOpen ( false )}}
+            />
+
         </React.Fragment>
     );
 });

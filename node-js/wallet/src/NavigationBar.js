@@ -62,7 +62,7 @@ export const NavigationBar = observer (( props ) => {
         }
     }
 
-    let onClickLogout = () => { appState.login ( false )};
+    let onClickLogout = () => { appState.login ()};
 
     return (
         <Menu attached = 'top' borderless inverted>

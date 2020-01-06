@@ -2,16 +2,14 @@
 /* eslint-disable no-loop-func */
 
 import * as entitlements    from './util/entitlements';
-import { assert, crypto, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, storage, StorageContext, util } from 'fgc';
+import { assert, crypto, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, StorageContext, util } from 'fgc';
 import * as bcrypt          from 'bcryptjs';
 import _                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import React                from 'react';
 
-const STORE_ACCOUNTS            = '.vol_accounts';
+const STORE_FLAGS               = '.vol_flags';
 const STORE_NETWORKS            = '.vol_networks';
-const STORE_NODE                = '.vol_node';
-const STORE_NODES               = '.vol_nodes';
 const STORE_PASSWORD_HASH       = '.vol_password_hash';
 const STORE_PENDING_ACCOUNTS    = '.vol_pending_accounts';
 const STORE_SESSION             = '.vol_session';
@@ -50,9 +48,7 @@ export class AppStateService {
     @action
     affirmAccountAndKey ( password, accountID, keyName, phraseOrKey, privateKeyHex, publicKeyHex ) {
 
-        console.log ( 'AFFIRMING ACCOUNT AND KEY!' );
-
-        console.log ( 'PHRASE OR KEY:', phraseOrKey );
+        this.flags.promptFirstAccount = false;
 
         this.assertHasNetwork ();
         this.assertPassword ( password );
@@ -63,7 +59,6 @@ export class AppStateService {
             keys: {},
             pendingTransactions: [],
             stagedTransactions: [],
-            promptFirstTransaction: true,
         };
 
         let key = account.keys [ keyName ] || {};
@@ -80,6 +75,8 @@ export class AppStateService {
     //----------------------------------------------------------------//
     @action
     affirmNetwork ( name, nodeURL ) {
+
+        this.flags.promptFirstNetwork = false;
 
         if ( !_.has ( this.networks, name )) {
             this.networks [ name ] = {
@@ -157,9 +154,33 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
+    @action
+    changePassword ( password, newPassword ) {
+
+        this.assertPassword ( password );
+
+        for ( let networkName in this.networks ) {
+            const network = this.networks [ networkName ];
+            for ( let accountName in network.accounts ) {
+                const account = network.accounts [ accountName ];
+                for ( let keyName in account.keys ) {
+                    const key = account.keys [ keyName ];
+
+                    key.phraseOrKeyAES = crypto.aesPlainToCipher ( crypto.aesCipherToPlain ( key.phraseOrKeyAES, password ), newPassword );
+                    key.privateKeyHexAES = crypto.aesPlainToCipher ( crypto.aesCipherToPlain ( key.privateKeyHexAES, password ), newPassword );
+                }
+            }
+        }
+        this.setPassword ( newPassword, false );
+    }
+
+    //----------------------------------------------------------------//
     checkPassword ( password ) {
-        const passwordHash = ( this.passwordHash ) || '';
-        return (( passwordHash.length > 0 ) && bcrypt.compareSync ( password, passwordHash ));
+        if ( password ) {
+            const passwordHash = ( this.passwordHash ) || '';
+            return (( passwordHash.length > 0 ) && bcrypt.compareSync ( password, passwordHash ));
+        }
+        return false;
     }
 
     //----------------------------------------------------------------//
@@ -222,6 +243,13 @@ export class AppStateService {
 
         const storageContext = new StorageContext ();
 
+        const flags = {
+            promptFirstNetwork:         true,
+            promptFirstAccount:         true,
+            promptFirstTransaction:     true,
+        };
+
+        storageContext.persist ( this, 'flags',             STORE_FLAGS,                flags );
         storageContext.persist ( this, 'networks',          STORE_NETWORKS,             {}); // account names index by network name
         storageContext.persist ( this, 'passwordHash',      STORE_PASSWORD_HASH,        '' );
         storageContext.persist ( this, 'pendingAccounts',   STORE_PENDING_ACCOUNTS,     {});
@@ -281,7 +309,7 @@ export class AppStateService {
     @action
     deleteStorage () {
 
-        storage.clear ();
+        this.storage.clear ();
         this.networkID = '';
         this.accountID = '';
         this.nextTransactionCost = 0;
@@ -496,6 +524,8 @@ export class AppStateService {
 
         this.assertHasAccount ();
 
+        this.flags.promptFirstTransaction = false;
+
         let account = this.account;
 
         let memo = {
@@ -506,17 +536,8 @@ export class AppStateService {
             assets:             transaction.assetsUtilized,
         }
 
-        account.promptFirstTransaction = false;
         account.stagedTransactions.push ( memo );
         this.setNextTransactionCost ( 0 );
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    register ( passwordHash ) {
-
-        this.session = this.makeSession ( true );
-        this.passwordHash = passwordHash;
     }
 
     //----------------------------------------------------------------//
@@ -548,6 +569,8 @@ export class AppStateService {
     setAccountRequest ( password, phraseOrKey, keyID, privateKeyHex, publicKeyHex ) {
 
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+
+        this.flags.promptFirstAccount = false;
 
         const phraseOrKeyAES = crypto.aesPlainToCipher ( phraseOrKey, password );
         if ( phraseOrKey !== crypto.aesCipherToPlain ( phraseOrKeyAES, password )) throw new Error ( 'AES error' );
@@ -589,6 +612,28 @@ export class AppStateService {
     setNextTransactionCost ( cost ) {
 
         this.nextTransactionCost = cost || 0;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    setFlag ( name, value ) {
+
+        this.flags [ name ] = value;
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    setPassword ( password, login ) {
+
+        // Hash password with salt
+        let passwordHash = bcrypt.hashSync ( password, 10 );
+        assert ( passwordHash.length > 0 );
+
+        this.passwordHash = passwordHash;
+
+        if ( login ) {
+            this.login ( password );
+        }
     }
 
     //----------------------------------------------------------------//
