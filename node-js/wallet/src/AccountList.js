@@ -27,7 +27,7 @@ export const AccountList = observer (( props ) => {
     const { appState } = props;
 
     const asyncGetInfo = async ( revocable, accountID ) => {
-        return await revocable.fetchJSON ( `${ appState.network.nodeURL }accounts/${ accountID }` );
+        return await revocable.fetchJSON ( `${ appState.network.nodeURL }/accounts/${ accountID }` );
     }
 
     const checkIdentifier = ( accountID ) => {

@@ -205,7 +205,7 @@ export const UpgradesScreen = observer (( props ) => {
     const [ progressMessage, setProgressMessage ]   = useState ( '' );
     const [ upgradeTable, setUpgradeTable ]         = useState ( false );
     const appState      = hooks.useFinalizable (() => new AppStateService ( networkIDFromEndpoint, accountIDFromEndpoint ));
-    const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
+    const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.network.nodeURL, appState.accountID ));
     const controller    = hooks.useFinalizable (() => new UpgradesController ());
 
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));

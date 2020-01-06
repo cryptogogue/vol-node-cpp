@@ -431,9 +431,9 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @action
-    login ( status ) {
+    login ( password ) {
 
-        this.session = this.makeSession ( status );
+        this.session = this.makeSession ( this.checkPassword ( password ));
     }
 
     //----------------------------------------------------------------//

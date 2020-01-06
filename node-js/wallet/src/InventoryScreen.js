@@ -78,7 +78,7 @@ export const InventoryScreen = observer (( props ) => {
     const [ progressMessage, setProgressMessage ]   = useState ( '' );
     const [ zoomedAssetID, setZoomedAssetID ]       = useState ( false );
     const appState      = hooks.useFinalizable (() => new AppStateService ( networkIDFromEndpoint, accountIDFromEndpoint ));
-    const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.node, appState.accountID ));
+    const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.network.nodeURL, appState.accountID ));
     const controller    = hooks.useFinalizable (() => new InventoryViewController ( inventory ));
     const tags          = hooks.useFinalizable (() => new InventoryTagController ());
 

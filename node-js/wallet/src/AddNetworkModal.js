@@ -111,7 +111,7 @@ export const AddNetworkModalBody = observer (( props ) => {
         if ( url ) {
             url = url.toLowerCase ();
             if ( url.startsWith ( 'http://' ) || url.startsWith ( 'https://' )) {
-                setTestURL ( url.endsWith ( '/' ) ? url : `${ url }/` );
+                setTestURL ( url.replace ( /\/+$/, '' ));
             }
         }
     };

@@ -3,6 +3,7 @@
 
 import { AppStateService }                  from './AppStateService';
 import { NetworkNavigationBar }             from './NetworkNavigationBar';
+import { PasswordInputField }               from './PasswordInputField';
 import { assert, crypto, excel, FilePickerMenuItem, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
@@ -19,8 +20,6 @@ export const KeyAndPasswordForm = observer (( props ) => {
 
     const [ phraseOrKey, setPhraseOrKey ]       = useState ( '' );
     const [ keyError, setKeyError ]             = useState ( false );
-    const [ passwordInput, setPasswordInput ]   = useState ( '' );
-    const [ passwordError, setPasswordError ]   = useState ( false );
 
     const onPhraseOrKey = async ( phraseOrKey ) => {
 
@@ -46,13 +45,6 @@ export const KeyAndPasswordForm = observer (( props ) => {
         catch ( error ) {
             setKeyError ( true );
         }
-    }
-
-    const onPasswordInput = ( input ) => {
-        setPasswordInput ( input );
-        const valid = appState.checkPassword ( input );
-        setPassword ( valid ? input : '' );
-        setPasswordError ( !valid );
     }
 
     const loadFile = ( text ) => {
@@ -82,14 +74,9 @@ export const KeyAndPasswordForm = observer (( props ) => {
                 error = { keyError ? 'Invalid Phrase or Key.' : false }
             />
 
-            <UI.Form.Input
-                fluid
-                icon = {( !passwordInput || passwordError ) ? 'lock' : 'unlock' }
-                iconPosition = 'left'
-                placeholder = 'Wallet Password'
-                type = 'password'
-                value = { passwordInput }
-                onChange = {( event ) => { onPasswordInput ( event.target.value )}}
+            <PasswordInputField
+                appState = { appState }
+                setPassword = { setPassword }
             />
         </UI.Form>
     );
