@@ -2,21 +2,108 @@
 
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
 import { makeControllerForTransactionType } from './TransactionFormController';
-import { TransactionFormInput }             from './TransactionFormInput';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
-import { Button, Divider, Dropdown, Form, Icon, Modal, Segment, Select } from 'semantic-ui-react';
+import * as UI                              from 'semantic-ui-react';
 
 //================================================================//
-// GenericTransactionForm
+// TransactionFormInput
+//================================================================//
+const TransactionFormInput = observer (( props ) => {
+
+    const { appState, field, value, onChange, error } = props;
+
+    const name = field.name;
+
+    const errorMsg = error || '';
+    const hasError = ( errorMsg.length > 0 );
+
+    const commonProps = {
+        placeholder:    field.friendlyName,
+        name:           name,
+        value:          value,
+        onChange:       onChange,
+        error:          hasError ? errorMsg : false,
+    }
+
+    switch ( field.fieldType ) {
+
+        case 'INTEGER':
+            return (
+                 <UI.Form.Input
+                    fluid
+                    type = 'number'
+                    { ...commonProps }
+                />
+            );
+
+        case 'STRING':
+            return (
+                 <UI.Form.Input
+                    fluid
+                    type = 'string'
+                    { ...commonProps }
+                />
+            );
+
+        case 'TEXT':
+            return (
+                 <UI.Form.TextArea
+                    rows = { field.rows || 8 }
+                    { ...commonProps }
+                />
+            );
+    }
+
+    return <div/>;
+});
+
+//================================================================//
+// KeySelector
+//================================================================//
+export const KeySelector = observer (( props ) => {
+
+    const { controller } = props;
+    const appState = controller.appState;
+
+    const account = appState.account;
+    const accountKeyNames = appState.getKeyNamesForTransaction ( controller.type );
+
+    let defaultKeyName = appState.getDefaultAccountKeyName ();
+    defaultKeyName = accountKeyNames.includes ( defaultKeyName ) ? defaultKeyName : accountKeyNames [ 0 ];
+
+    const options = [];
+    for ( let keyName of accountKeyNames ) {
+
+        const key = account.keys [ keyName ];
+
+        options.push ({
+            key:        keyName,
+            text:       keyName,
+            value:      keyName,
+        });
+    }
+
+    return (
+        <UI.Form.Dropdown
+            fluid
+            search
+            selection        
+            options         = { options }
+            defaultValue    = { defaultKeyName }
+            onChange        = {( event, data ) => { controller.setKeyName ( data.value )}}
+        />
+    );
+});
+
+//================================================================//
+// TransactionForm
 //================================================================//
 export const TransactionForm = observer (( props ) => {
 
-    const { appState, transactionType, onSubmit } = props;
-
-    const controller = hooks.useFinalizable (() => makeControllerForTransactionType ( appState, transactionType ));
+    const { controller } = props;
 
     // add the fields in order
     let fields = [];
@@ -31,28 +118,31 @@ export const TransactionForm = observer (( props ) => {
 
         const onChange = ( event ) => { controller.handleChange ( field, event.target.type, event.target.value )};
 
-        fields.push (<TransactionFormInput
-            key         = { name }
-            appState    = { appState }
-            field       = { field }
-            value       = { value }
-            onChange    = { onChange }
-            error       = { error }
-        />);
+        fields.push (
+            <TransactionFormInput
+                key         = { name }
+                appState    = { controller.appState }
+                field       = { field }
+                value       = { value }
+                onChange    = { onChange }
+                error       = { error }
+            />
+        );
     }
 
-    const isSubmitEnabled = controller.isCompleteAndErrorFree;
-
-    const onClick = () => {
-        onSubmit ( controller.transaction );
-    }
+    const balance       = controller.balance;
+    const textColor     = balance > 0 ? 'black' : 'red';
 
     return (
-        <Form size = "large">
+        <UI.Form>
+            <UI.Header
+                as = 'h4'
+                style = {{ color: textColor }}
+            >
+                Balance: { balance }
+            </UI.Header>
             { fields }
-            <Button type = 'button' color = "teal" fluid disabled = { !isSubmitEnabled } onClick = { onClick }>
-                Stage Transaction
-            </Button>
-        </Form>
+            <KeySelector controller = { controller }/>
+        </UI.Form>
     );
 });

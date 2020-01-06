@@ -40,30 +40,36 @@ const InventoryMenu = observer (( props ) => {
     }
 
     return (
-        <Menu>
-            <inventoryMenuItems.SortModeFragment        controller = { controller }/>
-            <inventoryMenuItems.LayoutOptionsDropdown   controller = { controller }/>
-            <inventoryMenuItems.ZoomOptionsDropdown     controller = { controller }/>
-            <InventoryTagDropdown                       controller = { controller } tags = { tags }/>
-            <InventoryFilterDropdown                    tags = { tags }/>
+        <React.Fragment>
+            <Menu attached = 'top'>
+                <inventoryMenuItems.SortModeFragment        controller = { controller }/>
+                <inventoryMenuItems.LayoutOptionsDropdown   controller = { controller }/>
+                
+                <Choose>
+                    <When condition = { controller.isPrintLayout }>
+                        <Menu.Item name = "Print" onClick = {() => { window.print ()}}>
+                            <Icon name = 'print'/>
+                        </Menu.Item>
+                    </When>
 
-            <Menu.Menu position = "right">
+                    <Otherwise>
+                        <inventoryMenuItems.ZoomOptionsDropdown     controller = { controller }/>
+                    </Otherwise>
+                </Choose>
+            </Menu>
+            <Menu attached = 'bottom'>
+                <InventoryTagDropdown                       controller = { controller } tags = { tags }/>
+                <InventoryFilterDropdown                    tags = { tags }/>
 
-                <If condition = { controller.isPrintLayout }>
-                    <Menu.Item name = "Print" onClick = {() => { window.print ()}}>
-                        <Icon name = 'print'/>
-                    </Menu.Item>
-                </If>
-
-                <If condition = { !controller.isPrintLayout }>
-                    <Dropdown item icon = "industry">
+                <Menu.Menu position = "right">
+                    <Dropdown item icon = "industry" disabled>
                         <Dropdown.Menu>
                             { methodListItems }
                         </Dropdown.Menu>
                     </Dropdown>
-                </If>
-            </Menu.Menu>
-        </Menu>
+                </Menu.Menu>
+            </Menu>
+        </React.Fragment>
     );
 });
 
@@ -94,9 +100,9 @@ export const InventoryScreen = observer (( props ) => {
         setZoomedAssetID ( asset.assetID );
     }
 
-    const onAssetEllipsis = ( asset ) => {
-        console.log ( 'ELLIPSIS!' );
-    }
+    // const onAssetEllipsis = ( asset ) => {
+    //     console.log ( 'ELLIPSIS!' );
+    // }
 
     const onDeselect = () => {
         controller.clearSelection ();
@@ -150,7 +156,6 @@ export const InventoryScreen = observer (( props ) => {
                                     controller  = { controller }
                                     onSelect    = { onAssetSelect }
                                     onMagnify   = { onAssetMagnify }
-                                    onEllipsis  = { onAssetEllipsis }
                                     onDeselect  = { onDeselect }
                                 />
                             </div>

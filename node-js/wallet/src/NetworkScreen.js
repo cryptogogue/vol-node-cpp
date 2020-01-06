@@ -30,39 +30,6 @@ export const NetworkScreen = observer (( props ) => {
     return (
         <SingleColumnContainerView>
 
-            <ImportAccountModal
-                appState = { appState }
-                open = { importAccountModalOpen }
-                onClose = {() => { setImportAccountModalOpen ( false )}}
-            />
-
-            <RequestAccountModal
-                appState = { appState }
-                open = { requestAccountModalOpen }
-                onClose = {() => { setRequestAccountModalOpen ( false )}}
-            />
-
-            <UI.Popup
-                open = {(( Object.keys ( appState.network.accounts ).length === 0 ) && !anyModalOpen ) ? true : false }
-                content = 'Add or import an account.'
-                position = 'bottom center'
-                context = { segmentRef }
-            />
-
-            <RequestAccountModal
-                appState = { appState }
-                trigger = {
-                    <UI.Button
-                        fluid
-                        color = 'teal'
-                        attached = 'bottom'
-                    >
-                        <UI.Icon name = 'envelope'/>
-                        Request Account
-                    </UI.Button>
-                }
-            />
-
             <NetworkNavigationBar
                 appState = { appState }
                 tab = { NETWORK_TABS.NETWORK }
@@ -73,6 +40,14 @@ export const NetworkScreen = observer (( props ) => {
             <PendingAccountList appState = { appState }/>
 
             <div ref = { segmentRef }>
+
+                <UI.Popup
+                    open = {(( Object.keys ( appState.network.accounts ).length === 0 ) && !anyModalOpen ) ? true : false }
+                    content = 'Add or import an account.'
+                    position = 'bottom center'
+                    context = { segmentRef }
+                />
+
                 <UI.Segment>
                     <UI.Button
                         fluid
@@ -94,6 +69,18 @@ export const NetworkScreen = observer (( props ) => {
                         Request Account
                     </UI.Button>
                 </UI.Segment>
+
+                <ImportAccountModal
+                    appState = { appState }
+                    open = { importAccountModalOpen }
+                    onClose = {() => { setImportAccountModalOpen ( false )}}
+                />
+
+                <RequestAccountModal
+                    appState = { appState }
+                    open = { requestAccountModalOpen }
+                    onClose = {() => { setRequestAccountModalOpen ( false )}}
+                />
             </div>
 
         </SingleColumnContainerView>

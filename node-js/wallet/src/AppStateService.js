@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
+import * as entitlements    from './util/entitlements';
 import { assert, crypto, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, storage, StorageContext, util } from 'fgc';
 import * as bcrypt          from 'bcryptjs';
 import _                    from 'lodash';
@@ -98,6 +99,19 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
+    checkTransactionEntitlements ( transactionType ) {
+
+        const account = this.account;
+        if ( account ) {
+            for ( let keyName in account.keys ) {
+                const key = account.keys [ keyName ];
+                if ( entitlements.check ( key.entitlements.policy, transactionType )) return true;
+            }
+        }
+        return false;
+    }
+
+    //----------------------------------------------------------------//
     @action
     clearPendingTransactions () {
 
@@ -138,7 +152,6 @@ export class AppStateService {
         extendObservable ( this, {
             networkID:              '',
             accountID:              '',
-            keyName:                '',
             accountInfo:            null,
             nextTransactionCost:    0,
         });
@@ -161,7 +174,6 @@ export class AppStateService {
 
                 if ( _.has ( network.accounts, accountID )) {
                     this.accountID = accountID;
-                    this.keyName = this.getDefaultAccountKeyName ();
                 }
             }
         });
@@ -208,7 +220,6 @@ export class AppStateService {
         storage.clear ();
         this.networkID = '';
         this.accountID = '';
-        this.keyName = '';
         this.nextTransactionCost = 0;
         this.setAccountInfo ();
     }
@@ -345,10 +356,26 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    @computed
-    get key () {
+    getKey ( keyName ) {
         const account = this.getAccount ();
-        return account ? account.keys [ this.keyName ] : null;
+        return account ? account.keys [ keyName || this.getDefaultAccountKeyName ()] : null;
+    }
+
+    //----------------------------------------------------------------//
+    getKeyNamesForTransaction ( transactionType ) {
+
+        const keyNames = [];
+
+        const account = this.account;
+        if ( account ) {
+            for ( let keyName in account.keys ) {
+                const key = account.keys [ keyName ];
+                if ( entitlements.check ( key.entitlements.policy, transactionType )) {
+                    keyNames.push ( keyName );
+                }
+            }
+        }
+        return keyNames;
     }
 
     //----------------------------------------------------------------//
@@ -481,17 +508,6 @@ export class AppStateService {
         // if ( this.accountID === oldName ) {
         //     this.setAccount ( newName );
         // }
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    selectKey ( keyName ) {
-
-        this.assertHasAccount ();
-
-        if (( this.keyName !== keyName ) && this.accountKeyNames.includes ( keyName )) {
-            this.keyName = keyName;
-        }
     }
 
     //----------------------------------------------------------------//

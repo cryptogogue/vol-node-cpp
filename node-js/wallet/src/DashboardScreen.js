@@ -86,19 +86,6 @@ export const DashboardScreen = observer (( props ) => {
     return (
         <SingleColumnContainerView>
 
-            <AddNetworkModal
-                appState = { appState }
-                open = { addNetworkModalOpen }
-                onClose = {() => { setAddNetworkModalOpen ( false )}}
-            />
-
-            <UI.Popup
-                open = {(( Object.keys ( appState.networks ).length === 0 ) && !addNetworkModalOpen ) ? true : false }
-                content = 'Add the first mining network.'
-                position = 'bottom center'
-                context = { segmentRef }
-            />
-
             <Choose>
 
                 <When condition = { !appState.hasUser ()}>
@@ -117,6 +104,14 @@ export const DashboardScreen = observer (( props ) => {
                     <NetworkList appState = { appState }/>
 
                     <div ref = { segmentRef }>
+
+                        <UI.Popup
+                            open = {(( Object.keys ( appState.networks ).length === 0 ) && !addNetworkModalOpen ) ? true : false }
+                            content = 'Add the first mining network.'
+                            position = 'bottom center'
+                            context = { segmentRef }
+                        />
+
                         <UI.Segment>
                             <UI.Button
                                 fluid
@@ -127,6 +122,12 @@ export const DashboardScreen = observer (( props ) => {
                                 Add Network
                             </UI.Button>
                         </UI.Segment>
+
+                        <AddNetworkModal
+                            appState = { appState }
+                            open = { addNetworkModalOpen }
+                            onClose = {() => { setAddNetworkModalOpen ( false )}}
+                        />
                     </div>
                 </Otherwise>
             </Choose>

@@ -1,14 +1,14 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AppStateService }                  from './AppStateService';
-import { KeySelector }                      from './KeySelector';
+import { NewTransactionModal }              from './NewTransactionModal';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
-import React, { useState }                  from 'react';
+import React, { useState, useRef }          from 'react';
 import { Redirect }                         from 'react-router';
 import { useParams }                        from 'react-router-dom';
-import { Button, Divider, Dropdown, Form, Grid, Header, Icon, Modal, Segment } from 'semantic-ui-react';
+import * as UI                              from 'semantic-ui-react';
 
 import { AccountNavigationBar, ACCOUNT_TABS } from './AccountNavigationBar';
 import { NodeListView }                     from './NodeListView';
@@ -16,8 +16,6 @@ import { PendingTransactionsView }          from './PendingTransactionsView';
 
 import { AccountInfoService }               from './AccountInfoService';
 import { NodeInfoService }                  from './NodeInfoService';
-
-import { TransactionFormSelector }          from './TransactionFormSelector';
 
 //================================================================//
 // AccountDetailsView
@@ -29,55 +27,52 @@ const AccountDetailsView = observer (( props ) => {
 
     if ( !account ) return;
 
-    const key           = appState.key;
-    const publicKey     = key.publicKeyHex;
+    // const key           = appState.key;
+    // const publicKey     = key.publicKeyHex;
 
     const balance       = appState.balance;
     const textColor     = balance > 0 ? 'black' : 'red';
 
-    const keyEntitlements = key.entitlements ? JSON.stringify ( key.entitlements.policy, null, 4 ) : 'entootlements';
+    // const keyEntitlements = key.entitlements ? JSON.stringify ( key.entitlements.policy, null, 4 ) : 'entootlements';
+
+    /*
+    <If condition = { keyEntitlements }>
+        <UI.Modal
+            style = {{ height:'auto' }}
+            size = "small"
+            trigger = {
+                <UI.Header.Subheader>
+                    { publicKey && publicKey.substr ( 0, 30 ) + "..." }
+                </UI.Header.Subheader>
+            }
+        >
+            <UI.Modal.Content>
+                <center>
+                    <h3>Public Key</h3>
+                    <UI.Divider/>
+                    <p>{ publicKey }</p>
+                    <p>{ keyEntitlements }</p>
+                </center>
+            </UI.Modal.Content>
+        </UI.Modal>
+    </If>
+    */
 
     return (
         <div style = {{ textAlign: 'center' }}>
-            <Header as = "h2" icon>
-                <Icon name = "trophy" circular />
+            <UI.Header as = "h2" icon>
+                <UI.Icon name = "trophy" circular />
                 { appState.accountID }
-            </Header>
-
-            <h4>
-                <KeySelector appState = { appState }/>
-            </h4>
-
-            <If condition = { keyEntitlements }>
-                <Modal
-                    style = {{ height:'auto' }}
-                    size = "small"
-                    trigger = {
-                        <Header.Subheader>
-                            { publicKey && publicKey.substr ( 0, 30 ) + "..." }
-                        </Header.Subheader>
-                    }
-                >
-                    <Modal.Content>
-                        <center>
-                            <h3>Public Key</h3>
-                            <Divider/>
-                            <p>{ publicKey }</p>
-                            <p>{ keyEntitlements }</p>
-                        </center>
-                    </Modal.Content>
-                </Modal>
-            </If>
+            </UI.Header>
 
             <Choose>
-
                 <When condition = { appState.hasAccountInfo }>
-                    <Header as = "h2">
+                    <UI.Header as = "h2">
                         <p style = {{ color: textColor }}>Balance: { balance }</p>
-                        <Header.Subheader>
+                        <UI.Header.Subheader>
                             <p>Nonce: { appState.nonce }</p>
-                        </Header.Subheader>
-                    </Header>
+                        </UI.Header.Subheader>
+                    </UI.Header>
                 </When>
                 
                 <Otherwise>
@@ -99,6 +94,9 @@ export const AccountScreen = observer (( props ) => {
     const appState              = hooks.useFinalizable (() => new AppStateService ( networkID, accountID ));
     const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
 
+    const segmentRef = useRef ();
+    const [ transactionModalOpen, setTransactionModalOpen ] = useState ( false );
+
     // // TODO: move redirects to a HOC
     // if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
     // if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
@@ -113,19 +111,36 @@ export const AccountScreen = observer (( props ) => {
 
             <If condition = { appState.hasAccount }>
 
-                <Segment>
+                <UI.Segment>
                     <AccountDetailsView appState = { appState }/>
-                </Segment>
+                </UI.Segment>
 
                 <If condition = { appState.pendingTransactions.length > 0 }>
-                    <Segment>
+                    <UI.Segment>
                         <PendingTransactionsView appState = { appState }/>
-                    </Segment>
+                    </UI.Segment>
                 </If>
 
-                <Segment>
-                    <TransactionFormSelector appState = { appState }/>
-                </Segment>
+                <div ref = { segmentRef }>
+                    <UI.Segment>
+                        <UI.Button
+                            fluid
+                            color = 'teal'
+                            attached = 'bottom'
+                            onClick = {() => { setTransactionModalOpen ( true )}}
+                        >
+                            <UI.Icon name = 'envelope'/>
+                            New Transaction
+                        </UI.Button>
+                    </UI.Segment>
+
+                    <NewTransactionModal
+                        appState = { appState }
+                        open = { transactionModalOpen }
+                        onClose = {() => { setTransactionModalOpen ( false )}}
+                    />
+
+                </div>
             </If>
 
         </SingleColumnContainerView>

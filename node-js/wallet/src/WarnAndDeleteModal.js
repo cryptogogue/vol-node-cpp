@@ -2,7 +2,6 @@
 
 import { AddNetworkModal }                  from './AddNetworkModal';
 import { AppStateService }                  from './AppStateService';
-import { KeySelector }                      from './KeySelector';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
@@ -20,8 +19,6 @@ import { RegisterForm }                        from './RegisterForm';
 
 import { AccountInfoService }               from './AccountInfoService';
 import { NodeInfoService }                  from './NodeInfoService';
-
-import { TransactionFormSelector }          from './TransactionFormSelector';
 
 //================================================================//
 // WarnAndDeleteModal

@@ -2,12 +2,10 @@
 
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
 import * as inputType                       from './TransactionFormInputTypes';
-import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
+import { assert, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
-import React, { useState }                  from 'react';
-import { Button, Divider, Dropdown, Form, Icon, Modal, Segment, Select } from 'semantic-ui-react';
 
 //----------------------------------------------------------------//
 const MAKER_FORMAT = {
@@ -21,6 +19,15 @@ const MAKER_FORMAT = {
 // TransactionFormController
 //================================================================//
 export class TransactionFormController {
+
+    @observable     cost = 0;
+
+    //----------------------------------------------------------------//
+    @computed get
+    balance () {
+
+        return this.appState.balance - this.cost;
+    }
 
     //----------------------------------------------------------------//
     constructor () {
@@ -69,7 +76,7 @@ export class TransactionFormController {
         this.fieldValues [ field.name ] = typedValue;
         this.transaction = this.makeTransaction ();
 
-        this.appState.setNextTransactionCost ( this.transaction.getCost ());
+        this.cost = this.transaction.getCost ();
 
         this.validate ();
     }
@@ -89,7 +96,7 @@ export class TransactionFormController {
         }
 
         fieldValues.makerAccountName    = appState.accountID;
-        fieldValues.makerKeyName        = appState.keyName,
+        fieldValues.makerKeyName        = appState.getDefaultAccountKeyName (),
         fieldValues.makerNonce          = -1;
 
         extendObservable ( this, {
@@ -110,6 +117,21 @@ export class TransactionFormController {
     }
 
     //----------------------------------------------------------------//
+    @computed get
+    key () {
+
+        console.log ( 'KEY', this.fieldValues.makerKeyName );
+        return this.appState.getKey ( this.fieldValues.makerKeyName );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    keyName () {
+
+        return this.fieldValues.makerKeyName;
+    }
+
+    //----------------------------------------------------------------//
     @action
     makeTransaction () {
 
@@ -119,6 +141,13 @@ export class TransactionFormController {
             fieldValues [ field.name ] = ( value === null ) ? field.defaultValue : value;
         }
         return Transaction.transactionWithBody ( this.type, this.composeBody ( fieldValues ));
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    setKeyName ( keyName ) {
+        
+        return this.fieldValues.makerKeyName = keyName;
     }
 
     //----------------------------------------------------------------//
