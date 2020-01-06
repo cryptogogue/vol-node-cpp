@@ -13,7 +13,7 @@ import { action, computed, extendObservable, observable }   from "mobx";
 import { observer }                                         from 'mobx-react';
 import React, { useState }                                  from 'react';
 import { Link }                                             from 'react-router-dom';
-import { Button, Checkbox, Dropdown, Grid, Icon, Label, List, Menu, Loader, Segment, Table } from 'semantic-ui-react';
+import * as UI                                              from 'semantic-ui-react';
 
 //================================================================//
 // UpgradesController
@@ -48,7 +48,6 @@ export class UpgradesController {
                     assetID:    asset.assetID,
                     selected:   forAsset [ forAsset.length - 1 ],
                     options:    forAsset,
-                    enabled:    true,
                 });
             }
         }
@@ -71,7 +70,7 @@ export class UpgradesController {
     enableAll ( enabled ) {
 
         for ( let upgrade of this.upgrades ) {
-            upgrade.enabled = enabled;
+            upgrade.selected = enabled ? upgrade.options [ upgrade.options.length - 1 ] : upgrade.asset.type;
         }
     }
 
@@ -90,6 +89,14 @@ export class UpgradesController {
     }
 
     //----------------------------------------------------------------//
+    @action
+    isEnabled ( upgradeID ) {
+
+        const upgrade = this.upgrades [ upgradeID ];
+        return ( upgrade.asset.type !== upgrade.selected );
+    }
+
+    //----------------------------------------------------------------//
     @computed
     get total () {
 
@@ -104,7 +111,7 @@ export class UpgradesController {
         
         let enabled = 0;
         for ( let upgrade of this.upgrades ) {
-            if ( upgrade.enabled ) {
+            if ( upgrade.asset.type !== upgrade.selected ) {
                 ++enabled;
             }
         }
@@ -117,7 +124,7 @@ export class UpgradesController {
 
         const map = {};
         for ( let upgrade of this.upgrades ) {
-            if ( upgrade.enabled ) {
+            if ( upgrade.asset.type !== upgrade.selected ) {
                 map [ upgrade.assetID ] = upgrade.selected;
             }
         }
@@ -135,7 +142,10 @@ export class UpgradesController {
     @action
     toggle ( upgradeID ) {
 
-        this.upgrades [ upgradeID ].enabled = !this.upgrades [ upgradeID ].enabled;
+        const upgrade = this.upgrades [ upgradeID ];
+        const max = upgrade.options [ upgrade.options.length - 1 ];
+
+        upgrade.selected = ( upgrade.asset.type === upgrade.selected ) ? max : upgrade.asset.type;
     }
 };
 
@@ -152,7 +162,7 @@ const UpgradeItem = observer (( props ) => {
     for ( let option of upgrade.options ) {
 
         options.push (
-            <Dropdown.Item
+            <UI.Dropdown.Item
                 key         = { option }
                 text        = { controller.getFriendlyName ( option )}
                 onClick     = {() => { controller.select ( upgradeID, option )}}
@@ -160,37 +170,44 @@ const UpgradeItem = observer (( props ) => {
         );
     }
 
-    const name = upgrade.asset.fields.name ? upgrade.asset.fields.name.value : upgrade.assetID;
+    const toggle = () => { controller.toggle ( upgradeID )}
 
-    const toggle = ( event ) => {
-        event.stopPropagation ();
-        controller.toggle ( upgradeID );
-    }
+    const name = upgrade.asset.fields.name ? upgrade.asset.fields.name.value : upgrade.assetID;
+    const enabled = controller.isEnabled ( upgradeID );
 
     return (
-        <Table.Row>
-            <Table.Cell
+        <UI.Table.Row
+            positive = { enabled }
+            negative = { !enabled }
+        >
+            <UI.Table.Cell
                 collapsing
-                onClick             = { toggle }
+                onClick = { toggle }
             >
                 { name }
-            </Table.Cell>
-            <Table.Cell>
-                <Dropdown
+            </UI.Table.Cell>
+            <UI.Table.Cell>
+                <UI.Dropdown
                     fluid
                     selection
                     text = { controller.getFriendlyName ( upgrade.selected )}
-                    disabled = { !upgrade.enabled }
                     options = { options }
                 />
-            </Table.Cell>
-            <Table.Cell collapsing>
-                <Checkbox
-                    checked         = { upgrade.enabled }
-                    onChange        = { toggle }
-                />
-            </Table.Cell>
-        </Table.Row>
+            </UI.Table.Cell>
+            <UI.Table.Cell
+                collapsing
+                onClick = { toggle }
+            >
+                <Choose>
+                    <When condition = { enabled }>
+                        <UI.Icon name = 'check'/>
+                    </When>
+                    <Otherwise>
+                        <UI.Icon name = 'dont'/>
+                    </Otherwise>
+                </Choose>
+            </UI.Table.Cell>
+        </UI.Table.Row>
     );
 });
 
@@ -258,63 +275,63 @@ export const UpgradesScreen = observer (( props ) => {
 
                 <Choose>
                     <When condition = { inventory.loading }>
-                        <Loader
+                        <UI.Loader
                             active
                             inline = 'centered'
                             size = 'massive'
                             style = {{ marginTop:'5%' }}
                         >
                             { progressMessage }
-                        </Loader>
+                        </UI.Loader>
                     </When>
 
                     <When condition = { controller.total > 0 }>
 
-                        <Table celled unstackable>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell>Name</Table.HeaderCell>
-                                    <Table.HeaderCell>Upgrade</Table.HeaderCell>
-                                    <Table.HeaderCell/>
-                                </Table.Row>
-                            </Table.Header>
+                        <UI.Table celled unstackable>
+                            <UI.Table.Header>
+                                <UI.Table.Row>
+                                    <UI.Table.HeaderCell>Name</UI.Table.HeaderCell>
+                                    <UI.Table.HeaderCell>Upgrade</UI.Table.HeaderCell>
+                                    <UI.Table.HeaderCell/>
+                                </UI.Table.Row>
+                            </UI.Table.Header>
 
-                            <Table.Body>
+                            <UI.Table.Body>
                                 { upgradeList }
-                            </Table.Body>
+                            </UI.Table.Body>
 
-                            <Table.Footer fullWidth>
-                                <Table.Row>
+                            <UI.Table.Footer fullWidth>
+                                <UI.Table.Row>
             
-                                    <Table.HeaderCell colSpan='4'>
-                                        <Button
+                                    <UI.Table.HeaderCell colSpan='4'>
+                                        <UI.Button
                                             floated = 'right'
                                             primary
                                             disabled = { controller.totalEnabled === 0 }
                                             onClick = { onSubmit }
                                         >
                                             Submit
-                                        </Button>
+                                        </UI.Button>
 
-                                        <Button
+                                        <UI.Button
                                             color = 'teal'
                                             disabled = { controller.totalEnabled === controller.total }
                                             onClick = {() => { controller.enableAll ( true )}}
                                         >
                                             Select All
-                                        </Button>
+                                        </UI.Button>
                                         
-                                        <Button
+                                        <UI.Button
                                             color = 'red'
                                             disabled = { controller.totalEnabled === 0 }
                                             onClick = {() => { controller.enableAll ( false )}}
                                         >
                                             Deselect All
-                                        </Button>
-                                    </Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Footer>
-                        </Table>
+                                        </UI.Button>
+                                    </UI.Table.HeaderCell>
+                                </UI.Table.Row>
+                            </UI.Table.Footer>
+                        </UI.Table>
 
                     </When>
                 </Choose>

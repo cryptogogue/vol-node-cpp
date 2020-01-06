@@ -68,7 +68,7 @@ export const NavigationBar = observer (( props ) => {
         <Menu attached = 'top' borderless inverted>
 
             <Menu.Item
-                icon = 'globe'
+                icon        = 'globe'
                 as          = { Link }
                 to          = { `/` }
             />
