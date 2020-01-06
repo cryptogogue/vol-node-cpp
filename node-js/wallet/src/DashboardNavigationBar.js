@@ -1,7 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { NavigationBar }                    from './NavigationBar';
-import { StagedTransactionsModal }          from './StagedTransactionsModal';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
@@ -33,9 +32,6 @@ export const DashboardNavigationBar = observer (( props ) => {
             <Menu borderless attached = 'bottom'>
 
                 <Menu.Menu position = 'right'>
-
-                    
-
                     <Dropdown item icon = "settings">
                         <Dropdown.Menu>
                             <Dropdown.Item icon = "wrench"          text = 'Preview Schema'         as = { Link } to = { previewSchemaURL }/>
@@ -43,7 +39,6 @@ export const DashboardNavigationBar = observer (( props ) => {
                         </Dropdown.Menu>
                     </Dropdown>
                 </Menu.Menu>
-                
             </Menu>
         </React.Fragment>
     );

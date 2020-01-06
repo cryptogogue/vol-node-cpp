@@ -1,6 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { StagedTransactionsModal }          from './StagedTransactionsModal';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';

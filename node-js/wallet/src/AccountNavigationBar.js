@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { NavigationBar }                    from './NavigationBar';
-import { StagedTransactionsModal }          from './StagedTransactionsModal';
+import { StagedTransactionsLabel }          from './StagedTransactionsLabel';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
@@ -56,8 +56,6 @@ export const AccountNavigationBar = observer (( props ) => {
     const craftingURL           = `/net/${ networkID }/account/${ accountID }${ getAccountTabURL ( ACCOUNT_TABS.CRAFTING )}`;
     const upgradesURL           = `/net/${ networkID }/account/${ accountID }${ getAccountTabURL ( ACCOUNT_TABS.UPGRADES )}`;
 
-    const stagedTransactions = appState.stagedTransactions.length;
-
     return (
         <React.Fragment>
             <NavigationBar
@@ -79,22 +77,9 @@ export const AccountNavigationBar = observer (( props ) => {
                 </Dropdown>
 
                 <Menu.Menu position = 'right'>
-
                     <Menu.Item>
-                        <StagedTransactionsModal
-                            appState = { appState }
-                            trigger = {
-                                <Label
-                                    color = { stagedTransactions > 0 ? 'green' : 'grey' }
-                                    disabled = { stagedTransactions === 0 }
-                                >
-                                    <Icon name = 'cloud upload'/>
-                                    { stagedTransactions }
-                                </Label>
-                            }
-                        />
+                        <StagedTransactionsLabel appState = { appState }/>
                     </Menu.Item>
-                    
                 </Menu.Menu>
             </Menu>
         </React.Fragment>
