@@ -82,15 +82,15 @@ export class TransactionFormController {
     }
 
     //----------------------------------------------------------------//
-    initialize ( appState, type, fields, format ) {
+    initialize ( appState, type, fields, format, fieldValues ) {
 
         this.appState   = appState;
         this.type       = type;
         this.fields     = fields;
         this.format     = format;
 
-        let fieldValues = {};
         // populate fields with null
+        fieldValues = fieldValues || {};
         for ( let field of this.fields ) {
             fieldValues [ field.name ] = null;
         }
@@ -120,7 +120,6 @@ export class TransactionFormController {
     @computed get
     key () {
 
-        console.log ( 'KEY', this.fieldValues.makerKeyName );
         return this.appState.getKey ( this.fieldValues.makerKeyName );
     }
 
@@ -568,6 +567,41 @@ export class TransactionFormController_SendVol extends TransactionFormController
         }
     }
 };
+
+//================================================================//
+// TransactionFormController_UpgradeAssets
+//================================================================//
+export class TransactionFormController_UpgradeAssets extends TransactionFormController {
+
+    //----------------------------------------------------------------//
+    composeBody ( fieldValues ) {
+
+        const body = this.formatBody ( fieldValues, this.format );
+        body.upgrades = _.clone ( this.fieldValues.upgrades );
+        return body;
+    }
+
+    //----------------------------------------------------------------//
+    constructor ( appState, upgradeMap ) {
+        super ();
+
+        const type = TRANSACTION_TYPE.UPGRADE_ASSETS;
+
+        const fields = [
+            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
+        ];
+
+        const format = {
+            maker:              MAKER_FORMAT,
+        };
+
+        const fieldValues = {
+            upgrades:           upgradeMap,
+        }
+
+        this.initialize ( appState, type, fields, format, fieldValues );
+    }
+}
 
 //================================================================//
 // factory

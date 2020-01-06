@@ -2,7 +2,7 @@
 
 import { Transaction, TRANSACTION_TYPE }        from './Transaction';
 import { TransactionForm }                      from './TransactionForm';
-import { makeControllerForTransactionType }     from './TransactionFormController';
+import * as controllers                         from './TransactionFormController';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                             from 'mobx-react';
@@ -20,6 +20,23 @@ export const gTransactionTypes = [
     TRANSACTION_TYPE.REGISTER_MINER,
     TRANSACTION_TYPE.RENAME_ACCOUNT,
 ];
+
+//----------------------------------------------------------------//
+function makeControllerForTransactionType ( appState, transactionType ) {
+
+    switch ( transactionType ) {
+        case TRANSACTION_TYPE.ACCOUNT_POLICY:   return new controllers.TransactionFormController_AccountPolicy ( appState );
+        case TRANSACTION_TYPE.AFFIRM_KEY:       return new controllers.TransactionFormController_AffirmKey ( appState );
+        case TRANSACTION_TYPE.BETA_GET_ASSETS:  return new controllers.TransactionFormController_BetaGetAssets ( appState );
+        case TRANSACTION_TYPE.KEY_POLICY:       return new controllers.TransactionFormController_KeyPolicy ( appState );
+        case TRANSACTION_TYPE.OPEN_ACCOUNT:     return new controllers.TransactionFormController_OpenAccount ( appState );
+        case TRANSACTION_TYPE.PUBLISH_SCHEMA:   return new controllers.TransactionFormController_PublishSchema ( appState );
+        case TRANSACTION_TYPE.REGISTER_MINER:   return new controllers.TransactionFormController_RegisterMiner ( appState );
+        case TRANSACTION_TYPE.RENAME_ACCOUNT:   return new controllers.TransactionFormController_RenameAccount ( appState );
+        case TRANSACTION_TYPE.SEND_VOL:         return new controllers.TransactionFormController_SendVol ( appState );
+    }
+    return new TransactionFormController ( appState );
+}
 
 //================================================================//
 // DropdownMenu
@@ -52,8 +69,6 @@ const NewTransactionModalBody = observer (( props ) => {
         controller = hooks.useFinalizable (() => makeControllerForTransactionType ( appState, transactionType ));
     }
 
-    // disabled    = { !entitlements.check ( controller.key.entitlements.policy, transactionType )}
-
     let options = [];
     for ( let typeID in gTransactionTypes ) {
         const transactionType = gTransactionTypes [ typeID ];
@@ -72,7 +87,7 @@ const NewTransactionModalBody = observer (( props ) => {
         onClose ();
     }
 
-    const submitEnabled = controller && controller.isCompleteAndErrorFree;
+    const submitEnabled = appState.hasAccountInfo && controller && controller.isCompleteAndErrorFree;
 
     return (
         <UI.Modal

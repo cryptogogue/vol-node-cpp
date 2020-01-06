@@ -1,7 +1,6 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
-import { makeControllerForTransactionType } from './TransactionFormController';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';

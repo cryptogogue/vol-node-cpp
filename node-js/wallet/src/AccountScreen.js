@@ -27,36 +27,8 @@ const AccountDetailsView = observer (( props ) => {
 
     if ( !account ) return;
 
-    // const key           = appState.key;
-    // const publicKey     = key.publicKeyHex;
-
     const balance       = appState.balance;
     const textColor     = balance > 0 ? 'black' : 'red';
-
-    // const keyEntitlements = key.entitlements ? JSON.stringify ( key.entitlements.policy, null, 4 ) : 'entootlements';
-
-    /*
-    <If condition = { keyEntitlements }>
-        <UI.Modal
-            style = {{ height:'auto' }}
-            size = "small"
-            trigger = {
-                <UI.Header.Subheader>
-                    { publicKey && publicKey.substr ( 0, 30 ) + "..." }
-                </UI.Header.Subheader>
-            }
-        >
-            <UI.Modal.Content>
-                <center>
-                    <h3>Public Key</h3>
-                    <UI.Divider/>
-                    <p>{ publicKey }</p>
-                    <p>{ keyEntitlements }</p>
-                </center>
-            </UI.Modal.Content>
-        </UI.Modal>
-    </If>
-    */
 
     return (
         <div style = {{ textAlign: 'center' }}>

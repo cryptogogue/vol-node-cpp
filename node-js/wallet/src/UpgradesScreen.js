@@ -1,11 +1,13 @@
 /* eslint-disable no-whitespace-before-property */
 
+import { AccountInfoService }                               from './AccountInfoService';
+import { AccountNavigationBar, ACCOUNT_TABS }               from './AccountNavigationBar';
+import { AppStateService }                                  from './AppStateService';
 import { InventoryFilterDropdown }                          from './InventoryFilterDropdown';
 import { InventoryTagController }                           from './InventoryTagController';
 import { InventoryTagDropdown }                             from './InventoryTagDropdown';
-import { AccountNavigationBar, ACCOUNT_TABS }               from './AccountNavigationBar';
-import { AppStateService }                                  from './AppStateService';
-import { Transaction, TRANSACTION_TYPE }                    from './Transaction';
+import { TransactionFormController_UpgradeAssets }          from './TransactionFormController';
+import { TransactionModal }                                 from './TransactionModal';
 import { AssetModal, AssetTagsModal, inventoryMenuItems, InventoryService, InventoryViewController, InventoryPrintView, InventoryView } from 'cardmotron';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                                    from 'lodash';
@@ -97,41 +99,6 @@ export class UpgradesController {
     }
 
     //----------------------------------------------------------------//
-    @computed
-    get total () {
-
-        return this.upgrades ? this.upgrades.length : 0;
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get totalEnabled () {
-
-        if ( !this.upgrades ) return 0;
-        
-        let enabled = 0;
-        for ( let upgrade of this.upgrades ) {
-            if ( upgrade.asset.type !== upgrade.selected ) {
-                ++enabled;
-            }
-        }
-        return enabled;
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get upgradeMap () {
-
-        const map = {};
-        for ( let upgrade of this.upgrades ) {
-            if ( upgrade.asset.type !== upgrade.selected ) {
-                map [ upgrade.assetID ] = upgrade.selected;
-            }
-        }
-        return map;
-    }
-
-    //----------------------------------------------------------------//
     @action
     select ( upgradeID, option ) {
 
@@ -146,6 +113,43 @@ export class UpgradesController {
         const max = upgrade.options [ upgrade.options.length - 1 ];
 
         upgrade.selected = ( upgrade.asset.type === upgrade.selected ) ? max : upgrade.asset.type;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    total () {
+
+        return this.upgrades ? this.upgrades.length : 0;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    totalEnabled () {
+
+        if ( !this.upgrades ) return 0;
+        
+        let enabled = 0;
+        for ( let upgrade of this.upgrades ) {
+            if ( upgrade.asset.type !== upgrade.selected ) {
+                ++enabled;
+            }
+        }
+        return enabled;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    upgradeMap () {
+
+        const map = {};
+        if ( this.upgrades ) {
+            for ( let upgrade of this.upgrades ) {
+                if ( upgrade.asset.type !== upgrade.selected ) {
+                    map [ upgrade.assetID ] = upgrade.selected;
+                }
+            }
+        }
+        return map;
     }
 };
 
@@ -219,11 +223,13 @@ export const UpgradesScreen = observer (( props ) => {
     const networkIDFromEndpoint = util.getMatch ( props, 'networkID' );
     const accountIDFromEndpoint = util.getMatch ( props, 'accountID' );
 
-    const [ progressMessage, setProgressMessage ]   = useState ( '' );
-    const [ upgradeTable, setUpgradeTable ]         = useState ( false );
-    const appState      = hooks.useFinalizable (() => new AppStateService ( networkIDFromEndpoint, accountIDFromEndpoint ));
-    const inventory     = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.network.nodeURL, appState.accountID ));
-    const controller    = hooks.useFinalizable (() => new UpgradesController ());
+    const [ progressMessage, setProgressMessage ]               = useState ( '' );
+    const [ transactionController, setTransactionController ]   = useState ( false );
+
+    const appState              = hooks.useFinalizable (() => new AppStateService ( networkIDFromEndpoint, accountIDFromEndpoint ));
+    const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
+    const inventory             = hooks.useFinalizable (() => new InventoryService ( setProgressMessage, appState.network.nodeURL, appState.accountID ));
+    const controller            = hooks.useFinalizable (() => new UpgradesController ());
 
     const hasAssets = (( inventory.loading === false ) && ( inventory.availableAssetsArray.length > 0 ));
 
@@ -242,24 +248,17 @@ export const UpgradesScreen = observer (( props ) => {
         );
     }
 
-    const onSubmit = () => {
+    const openTransactionModal = () => {
+        setTransactionController (
+            new TransactionFormController_UpgradeAssets (
+                appState,
+                controller.upgradeMap
+            )
+        );
+    }
 
-        const upgradeMap = controller.upgradeMap;
-
-        const body = {
-            maker: {
-                accountName:    appState.accountID,
-                keyName:        appState.keyName,
-                nonce:          -1,
-                gratuity:       0,
-            },
-            upgrades:   upgradeMap,
-        }
-
-        const transaction = new Transaction ( TRANSACTION_TYPE.UPGRADE_ASSETS, body );
-        transaction.setAssetsUtilized ( Object.keys ( upgradeMap ));
-        appState.pushTransaction ( transaction );
-
+    const onCloseTransactionModal = () => {
+        setTransactionController ( false );
         controller.clear ();
     }
 
@@ -302,16 +301,7 @@ export const UpgradesScreen = observer (( props ) => {
 
                             <UI.Table.Footer fullWidth>
                                 <UI.Table.Row>
-            
                                     <UI.Table.HeaderCell colSpan='4'>
-                                        <UI.Button
-                                            floated = 'right'
-                                            primary
-                                            disabled = { controller.totalEnabled === 0 }
-                                            onClick = { onSubmit }
-                                        >
-                                            Submit
-                                        </UI.Button>
 
                                         <UI.Button
                                             color = 'teal'
@@ -328,6 +318,16 @@ export const UpgradesScreen = observer (( props ) => {
                                         >
                                             Deselect All
                                         </UI.Button>
+
+                                        <UI.Button
+                                            floated = 'right'
+                                            primary
+                                            disabled = { controller.totalEnabled === 0 }
+                                            onClick = { openTransactionModal }
+                                        >
+                                            Submit
+                                        </UI.Button>
+
                                     </UI.Table.HeaderCell>
                                 </UI.Table.Row>
                             </UI.Table.Footer>
@@ -335,6 +335,14 @@ export const UpgradesScreen = observer (( props ) => {
 
                     </When>
                 </Choose>
+
+                <TransactionModal
+                    appState    = { appState }
+                    controller  = { transactionController }
+                    onClose     = { onCloseTransactionModal }
+                    title       = 'Upgrade Assets'
+                />
+
             </SingleColumnContainerView>
         </React.Fragment>
     );
