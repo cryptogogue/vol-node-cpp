@@ -15,8 +15,8 @@ import { AccountScreen }                from './AccountScreen';
 import { CraftingScreen }               from './CraftingScreen';
 import { DashboardScreen }              from './DashboardScreen';
 import { InventoryScreen }              from './InventoryScreen';
+import { KeysScreen }                   from './KeysScreen';
 import { NetworkScreen }                from './NetworkScreen';
-import { ResetScreen }                  from './ResetScreen';
 import { UpgradesScreen }               from './UpgradesScreen';
 import registerServiceWorker            from './util/registerServiceWorker';
 import React                            from 'react';
@@ -34,8 +34,8 @@ const App = () => {
             <Route exact path = "/net/:networkID/account/:accountID/crafting/:methodName" component = { CraftingScreen }/>
             <Route exact path = "/net/:networkID/account/:accountID/crafting"       component = { CraftingScreen }/>
             <Route exact path = "/net/:networkID/account/:accountID/inventory"      component = { InventoryScreen }/>
+            <Route exact path = "/net/:networkID/account/:accountID/keys"           component = { KeysScreen }/>
             <Route exact path = "/net/:networkID/account/:accountID/upgrades"       component = { UpgradesScreen }/>
-            <Route exact path = "/net/:networkID/account/:accountID/reset"          component = { ResetScreen }/>
             <Route exact path = "/net/:networkID"                                   component = { NetworkScreen }/>
             
             <Route exact path = "/debug/aes"                component = { fgc.debug.AESScreen }/>

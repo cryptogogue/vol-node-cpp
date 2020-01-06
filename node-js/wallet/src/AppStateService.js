@@ -34,10 +34,25 @@ export const NODE_STATUS = {
 export class AppStateService {
 
     //----------------------------------------------------------------//
+    @computed get
+    account () {
+        return this.getAccount ();
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    accountKeyNames () {
+        const account = this.account;
+        return ( account && Object.keys ( account.keys )) || [];
+    }
+
+    //----------------------------------------------------------------//
     @action
     affirmAccountAndKey ( password, accountID, keyName, phraseOrKey, privateKeyHex, publicKeyHex ) {
 
         console.log ( 'AFFIRMING ACCOUNT AND KEY!' );
+
+        console.log ( 'PHRASE OR KEY:', phraseOrKey );
 
         this.assertHasNetwork ();
         this.assertPassword ( password );
@@ -91,6 +106,54 @@ export class AppStateService {
     //----------------------------------------------------------------//
     assertPassword ( password ) {
         if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password.' );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    assetsUtilized () {
+
+        let assetsUtilized = [];
+
+        const pendingTransactions = this.pendingTransactions;
+        for ( let i in pendingTransactions ) {
+            assetsUtilized = assetsUtilized.concat ( pendingTransactions [ i ].assets );
+        }
+
+        const stagedTransactions = this.stagedTransactions;
+        for ( let i in stagedTransactions ) {
+            assetsUtilized = assetsUtilized.concat ( stagedTransactions [ i ].assets );
+        }
+        return assetsUtilized;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    balance () {
+
+        let cost = 0;
+
+        const pendingTransactions = this.pendingTransactions;
+        for ( let i in pendingTransactions ) {
+            cost += pendingTransactions [ i ].cost;
+        }
+
+        const stagedTransactions = this.stagedTransactions;
+        for ( let i in stagedTransactions ) {
+            cost += stagedTransactions [ i ].cost;
+        }
+
+        return this.accountInfo.balance - cost - this.nextTransactionCost;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    canSubmitTransactions () {
+
+        if ( !this.hasAccount ) return false;
+        if ( this.nextNonce < 0 ) return false;
+        if ( this.account.stagedTransactions.length === 0 ) return false;
+
+        return true;
     }
 
     //----------------------------------------------------------------//
@@ -257,11 +320,7 @@ export class AppStateService {
         return false;
     }
 
-    //----------------------------------------------------------------//
-    @computed
-    get account () {
-        return this.getAccount ();
-    }
+    
 
     //----------------------------------------------------------------//
     getAccount ( accountID ) {
@@ -275,61 +334,6 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    @computed
-    get accountKeyNames () {
-        const account = this.account;
-        return ( account && Object.keys ( account.keys )) || [];
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get assetsUtilized () {
-
-        let assetsUtilized = [];
-
-        const pendingTransactions = this.pendingTransactions;
-        for ( let i in pendingTransactions ) {
-            assetsUtilized = assetsUtilized.concat ( pendingTransactions [ i ].assets );
-        }
-
-        const stagedTransactions = this.stagedTransactions;
-        for ( let i in stagedTransactions ) {
-            assetsUtilized = assetsUtilized.concat ( stagedTransactions [ i ].assets );
-        }
-        return assetsUtilized;
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get balance () {
-
-        let cost = 0;
-
-        const pendingTransactions = this.pendingTransactions;
-        for ( let i in pendingTransactions ) {
-            cost += pendingTransactions [ i ].cost;
-        }
-
-        const stagedTransactions = this.stagedTransactions;
-        for ( let i in stagedTransactions ) {
-            cost += stagedTransactions [ i ].cost;
-        }
-
-        return this.accountInfo.balance - cost - this.nextTransactionCost;
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get canSubmitTransactions () {
-
-        if ( !this.hasAccount ) return false;
-        if ( this.nextNonce < 0 ) return false;
-        if ( this.account.stagedTransactions.length === 0 ) return false;
-
-        return true;
-    }
-
-    //----------------------------------------------------------------//
     getDefaultAccountKeyName () {
 
         const defaultKeyName = 'master';
@@ -338,23 +342,7 @@ export class AppStateService {
         return (( accountKeyNames.length > 0 ) && accountKeyNames [ 0 ]) || '';
     }
 
-    //----------------------------------------------------------------//
-    @computed
-    get hasAccount () {
-        return ( this.accountID && this.account );
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get hasAccountInfo () {
-        return ( this.accountInfo.nonce >= 0 );
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get hasNetwork () {
-        return ( this.networkID && this.network );
-    }
+    
 
     //----------------------------------------------------------------//
     getKey ( keyName ) {
@@ -380,24 +368,6 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    @computed
-    get nextNonce () {
-
-        if ( this.nonce < 0 ) return -1;
-
-        const pendingTransactions = this.pendingTransactions;
-        const pendingTop = pendingTransactions.length;
-
-        return pendingTop > 0 ? pendingTransactions [ pendingTop - 1 ].nonce + 1 : this.nonce;
-    }
-
-    //----------------------------------------------------------------//
-    @computed
-    get network () {
-        return this.getNetwork ();
-    }
-
-    //----------------------------------------------------------------//
     getNetwork ( networkID ) {
         networkID = networkID || this.networkID;
         const networks = this.networks;
@@ -405,25 +375,45 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
-    @computed
-    get nonce () {
-        return this.accountInfo.nonce;
+    getPrivateKeyInfo ( keyName, password ) {
+
+        if ( this.checkPassword ( password )) {
+
+            try {
+                const key = this.account.keys [ keyName ];
+
+                return {
+                    phraseOrKey:    crypto.aesCipherToPlain ( key.phraseOrKeyAES, password ),
+                    privateKeyHex:  crypto.aesCipherToPlain ( key.privateKeyHexAES, password ),
+                }
+            }
+            catch ( error ) {
+                console.log ( error );
+            }
+        }
+        return false;
     }
 
     //----------------------------------------------------------------//
-    @computed
-    get pendingTransactions () {
-        return this.account.pendingTransactions || [];
-    }
-
-
-    //----------------------------------------------------------------//
-    @computed
-    get stagedTransactions () {
-        return this.account.stagedTransactions || [];
+    @computed get
+    hasAccount () {
+        return ( this.accountID && this.account );
     }
 
     //----------------------------------------------------------------//
+    @computed get
+    hasAccountInfo () {
+        return ( this.accountInfo.nonce >= 0 );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    hasNetwork () {
+        return ( this.networkID && this.network );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
     hasUser () {
         return ( this.passwordHash.length > 0 );
     }
@@ -453,6 +443,7 @@ export class AppStateService {
     }
 
     //----------------------------------------------------------------//
+    @computed get
     isLoggedIn () {
         return ( this.session.isLoggedIn === true );
     }
@@ -467,6 +458,36 @@ export class AppStateService {
     //----------------------------------------------------------------//
     makeSession ( isLoggedIn ) {
         return { isLoggedIn: isLoggedIn };
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    nextNonce () {
+
+        if ( this.nonce < 0 ) return -1;
+
+        const pendingTransactions = this.pendingTransactions;
+        const pendingTop = pendingTransactions.length;
+
+        return pendingTop > 0 ? pendingTransactions [ pendingTop - 1 ].nonce + 1 : this.nonce;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    network () {
+        return this.getNetwork ();
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    nonce () {
+        return this.accountInfo.nonce;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    pendingTransactions () {
+        return this.account.pendingTransactions || [];
     }
 
     //----------------------------------------------------------------//
@@ -568,6 +589,12 @@ export class AppStateService {
     setNextTransactionCost ( cost ) {
 
         this.nextTransactionCost = cost || 0;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    stagedTransactions () {
+        return this.account.stagedTransactions || [];
     }
 
     //----------------------------------------------------------------//

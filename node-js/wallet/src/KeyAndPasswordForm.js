@@ -40,7 +40,7 @@ export const KeyAndPasswordForm = observer (( props ) => {
             const key = await crypto.loadKeyAsync ( phraseOrKey );
             setKeyError ( false );
             setKey ( key );
-            props.setPhraseOrKey && props.setPhraseOrKey ( '' );
+            props.setPhraseOrKey && props.setPhraseOrKey ( phraseOrKey );
         }
         catch ( error ) {
             setKeyError ( true );

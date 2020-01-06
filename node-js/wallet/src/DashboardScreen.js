@@ -125,11 +125,11 @@ export const DashboardScreen = observer (( props ) => {
 
             <Choose>
 
-                <When condition = { !appState.hasUser ()}>
+                <When condition = { !appState.hasUser }>
                     <RegisterForm appState = { appState }/>
                 </When>
 
-                <When condition = { !appState.isLoggedIn ()}>
+                <When condition = { !appState.isLoggedIn }>
                     <LoginForm appState = { appState }/>
                 </When>
 

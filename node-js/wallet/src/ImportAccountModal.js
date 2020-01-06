@@ -78,6 +78,8 @@ class ImportAccountController {
         runInAction (() => {
             if ( accountID ) {
 
+                console.log ( 'PHRASE OR KEY:', phraseOrKey );
+
                 const privateKey = key.getPrivateHex ();
                 appState.affirmAccountAndKey (
                     password,
@@ -112,6 +114,7 @@ const ImportAccountModalBody = observer (( props ) => {
     const [ password, setPassword ]         = useState ( '' );
 
     const onSubmit = async () => {
+        console.log ( 'PHRASE OR KEY:', phraseOrKey );
         controller.import ( appState, key, phraseOrKey, password );
     }
 
@@ -119,7 +122,7 @@ const ImportAccountModalBody = observer (( props ) => {
         onClose ();
     }
 
-    const submitEnabled = key && password;
+    const submitEnabled = key && phraseOrKey && password;
 
     return (
         <UI.Modal

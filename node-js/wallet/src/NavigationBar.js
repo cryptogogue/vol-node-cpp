@@ -21,8 +21,8 @@ export const NavigationBar = observer (( props ) => {
 
     const { appState } = props;
 
-    if ( !appState.hasUser ())      return (<Redirect to = { '/' }/>);
-    if ( !appState.isLoggedIn ())   return (<Redirect to = { '/' }/>);
+    if ( !appState.hasUser )      return (<Redirect to = { '/' }/>);
+    if ( !appState.isLoggedIn )   return (<Redirect to = { '/' }/>);
 
     if (( appState.networkID !== networkID ) || ( appState.accountID !== accountID )) {
 
