@@ -74,12 +74,49 @@ export const NetworkList = observer (( props ) => {
 });
 
 //================================================================//
-// DashboardScreen
+// DashboardActionsSegment
 //================================================================//
-export const DashboardScreen = observer (( props ) => {
+export const DashboardActionsSegment = observer (( props ) => {
+
+    const { appState } = props;
 
     const segmentRef                                        = useRef ();
     const [ addNetworkModalOpen, setAddNetworkModalOpen ]   = useState ( false );
+
+    return (
+        <div ref = { segmentRef }>
+
+            <UI.Popup
+                open = {(( Object.keys ( appState.networks ).length === 0 ) && !addNetworkModalOpen ) ? true : false }
+                content = 'Add the first mining network.'
+                position = 'bottom center'
+                context = { segmentRef }
+            />
+
+            <UI.Segment>
+                <UI.Button
+                    fluid
+                    color = 'teal'
+                    onClick = {() => { setAddNetworkModalOpen ( true )}}
+                >
+                    <UI.Icon name = 'add square'/>
+                    Add Network
+                </UI.Button>
+            </UI.Segment>
+
+            <AddNetworkModal
+                appState = { appState }
+                open = { addNetworkModalOpen }
+                onClose = {() => { setAddNetworkModalOpen ( false )}}
+            />
+        </div>
+    );
+});
+
+//================================================================//
+// DashboardScreen
+//================================================================//
+export const DashboardScreen = observer (( props ) => {
 
     const appState = hooks.useFinalizable (() => new AppStateService ());
 
@@ -100,35 +137,8 @@ export const DashboardScreen = observer (( props ) => {
                     <DashboardNavigationBar
                         appState = { appState }
                     />
-
                     <NetworkList appState = { appState }/>
-
-                    <div ref = { segmentRef }>
-
-                        <UI.Popup
-                            open = {(( Object.keys ( appState.networks ).length === 0 ) && !addNetworkModalOpen ) ? true : false }
-                            content = 'Add the first mining network.'
-                            position = 'bottom center'
-                            context = { segmentRef }
-                        />
-
-                        <UI.Segment>
-                            <UI.Button
-                                fluid
-                                color = 'teal'
-                                onClick = {() => { setAddNetworkModalOpen ( true )}}
-                            >
-                                <UI.Icon name = 'add square'/>
-                                Add Network
-                            </UI.Button>
-                        </UI.Segment>
-
-                        <AddNetworkModal
-                            appState = { appState }
-                            open = { addNetworkModalOpen }
-                            onClose = {() => { setAddNetworkModalOpen ( false )}}
-                        />
-                    </div>
+                    <DashboardActionsSegment appState = { appState }/>
                 </Otherwise>
             </Choose>
 

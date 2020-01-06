@@ -61,24 +61,67 @@ const AccountDetailsView = observer (( props ) => {
     return (
         <div style = {{ textAlign: 'center' }}>
             <UI.Header as = "h2" icon>
-                <UI.Icon name = "trophy" circular />
+                <Choose>
+                    <When condition = { appState.hasAccountInfo }>
+                        <UI.Icon name = 'trophy' circular />
+                    </When>
+
+                    <Otherwise>
+                        <UI.Icon name = 'circle notched' loading circular/>
+                    </Otherwise>
+                </Choose>
                 { appState.accountID }
             </UI.Header>
 
-            <Choose>
-                <When condition = { appState.hasAccountInfo }>
-                    <UI.Header as = "h2">
-                        <p style = {{ color: textColor }}>Balance: { balance }</p>
-                        <UI.Header.Subheader>
-                            <p>Nonce: { appState.nonce }</p>
-                        </UI.Header.Subheader>
-                    </UI.Header>
-                </When>
-                
-                <Otherwise>
-                    <p>Checking balance...</p>
-                </Otherwise>
-            </Choose>
+            <div style = {{ display: appState.hasAccountInfo ? 'visible' : 'hidden' }}>
+                <UI.Header as = "h2">
+                    <p style = {{ color: textColor }}>Balance: { balance }</p>
+                    <UI.Header.Subheader>
+                        <p>Nonce: { appState.nonce }</p>
+                    </UI.Header.Subheader>
+                </UI.Header>
+            </div>
+        </div>
+    );
+});
+
+//================================================================//
+// AccountActionsSegment
+//================================================================//
+export const AccountActionsSegment = observer (( props ) => {
+
+    const { appState } = props;
+
+    const segmentRef = useRef ();
+    const [ transactionModalOpen, setTransactionModalOpen ] = useState ( false );
+
+    return (
+        <div ref = { segmentRef }>
+
+            <UI.Popup
+                open = {( appState.account.promptFirstTransaction && !transactionModalOpen ) ? true : false }
+                content = 'Create and submit transactions.'
+                position = 'bottom center'
+                context = { segmentRef }
+            />
+
+            <UI.Segment>
+                <UI.Button
+                    fluid
+                    color = 'teal'
+                    attached = 'bottom'
+                    onClick = {() => { setTransactionModalOpen ( true )}}
+                >
+                    <UI.Icon name = 'envelope'/>
+                    New Transaction
+                </UI.Button>
+            </UI.Segment>
+
+            <NewTransactionModal
+                appState = { appState }
+                open = { transactionModalOpen }
+                onClose = {() => { setTransactionModalOpen ( false )}}
+            />
         </div>
     );
 });
@@ -93,13 +136,6 @@ export const AccountScreen = observer (( props ) => {
 
     const appState              = hooks.useFinalizable (() => new AppStateService ( networkID, accountID ));
     const accountInfoService    = hooks.useFinalizable (() => new AccountInfoService ( appState ));
-
-    const segmentRef = useRef ();
-    const [ transactionModalOpen, setTransactionModalOpen ] = useState ( false );
-
-    // // TODO: move redirects to a HOC
-    // if ( !appState.hasUser ()) return (<Redirect to = { '/' }/>);
-    // if ( !appState.isLoggedIn ()) return (<Redirect to = { '/login' }/>);
 
     return (
         <SingleColumnContainerView>
@@ -121,26 +157,7 @@ export const AccountScreen = observer (( props ) => {
                     </UI.Segment>
                 </If>
 
-                <div ref = { segmentRef }>
-                    <UI.Segment>
-                        <UI.Button
-                            fluid
-                            color = 'teal'
-                            attached = 'bottom'
-                            onClick = {() => { setTransactionModalOpen ( true )}}
-                        >
-                            <UI.Icon name = 'envelope'/>
-                            New Transaction
-                        </UI.Button>
-                    </UI.Segment>
-
-                    <NewTransactionModal
-                        appState = { appState }
-                        open = { transactionModalOpen }
-                        onClose = {() => { setTransactionModalOpen ( false )}}
-                    />
-
-                </div>
+                <AccountActionsSegment appState = { appState }/>
             </If>
 
         </SingleColumnContainerView>

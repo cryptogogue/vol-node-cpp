@@ -48,6 +48,7 @@ export class AppStateService {
             keys: {},
             pendingTransactions: [],
             stagedTransactions: [],
+            promptFirstTransaction: true,
         };
 
         let key = account.keys [ keyName ] || {};
@@ -105,7 +106,7 @@ export class AppStateService {
         if ( account ) {
             for ( let keyName in account.keys ) {
                 const key = account.keys [ keyName ];
-                if ( entitlements.check ( key.entitlements.policy, transactionType )) return true;
+                if ( key.entitlements && entitlements.check ( key.entitlements.policy, transactionType )) return true;
             }
         }
         return false;
@@ -484,7 +485,8 @@ export class AppStateService {
             assets:             transaction.assetsUtilized,
         }
 
-        this.account.stagedTransactions.push ( memo );
+        account.promptFirstTransaction = false;
+        account.stagedTransactions.push ( memo );
         this.setNextTransactionCost ( 0 );
     }
 
