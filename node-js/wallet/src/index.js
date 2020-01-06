@@ -38,6 +38,8 @@ const App = () => {
             <Route exact path = "/net/:networkID/account/:accountID/upgrades"       component = { UpgradesScreen }/>
             <Route exact path = "/net/:networkID"                                   component = { NetworkScreen }/>
             
+            <Route exact path = "/util/schema"              component = { cardmotron.SchemaScreen }/>
+
             <Route exact path = "/debug/aes"                component = { fgc.debug.AESScreen }/>
             <Route exact path = "/debug/barcode/pdf417"     component = { fgc.debug.BarcodePDF417Screen }/>
             <Route exact path = "/debug/barcode/qr"         component = { fgc.debug.BarcodeQRScreen }/>

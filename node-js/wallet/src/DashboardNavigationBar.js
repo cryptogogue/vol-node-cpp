@@ -14,14 +14,9 @@ export const DashboardNavigationBar = observer (( props ) => {
 
     const { appState } = props;
 
-    // let onClickDeleteAccount            = () => { appState.deleteAccount ()};
     let onClickDeleteLocalStorage           = () => { appState.deleteStorage ()};
-    // let onClickDeleteTransactions       = () => { appState.deleteTransactions ()};
-    // let onClickDeleteUserStorage        = () => { appState.deleteUserStorage ()};
-    // let onClickDeleteNodeList           = () => { appState.deleteNodeList ()};
 
-    const previewSchemaURL      = `/debug/schema`;
-    const resetURL              = `/debug/reset`;
+    const previewSchemaURL      = `/util/schema`;
 
     return (
         <React.Fragment>
@@ -34,7 +29,7 @@ export const DashboardNavigationBar = observer (( props ) => {
                 <Menu.Menu position = 'right'>
                     <Dropdown item icon = "settings">
                         <Dropdown.Menu>
-                            <Dropdown.Item icon = "wrench"          text = 'Preview Schema'         as = { Link } to = { previewSchemaURL }/>
+                            <Dropdown.Item icon = "wrench"          text = 'Schema Util'            as = { Link } to = { previewSchemaURL }/>
                             <Dropdown.Item icon = "warning circle"  text = 'Delete Local Storage'   onClick = { onClickDeleteLocalStorage }/>
                         </Dropdown.Menu>
                     </Dropdown>
@@ -44,14 +39,3 @@ export const DashboardNavigationBar = observer (( props ) => {
     );
 });
 
-/*
-<Dropdown.Menu>
-    <Dropdown.Item icon = "globe"       text = "DEBUG: Preview Schema"          as = { Link } to = { previewSchemaURL }/>
-    <Dropdown.Item icon = "globe"       text = "DEBUG: Reset Mining Node"       as = { Link } to = { resetURL }/>
-    <Dropdown.Item icon = "globe"       text = "DEBUG: Delete Account"          onClick = { onClickDeleteAccount }/>
-    <Dropdown.Item icon = "globe"       text = "DEBUG: Delete Node List"        onClick = { onClickDeleteNodeList }/>
-    <Dropdown.Item icon = "globe"       text = "DEBUG: Delete Transactions"     onClick = { onClickDeleteTransactions }/>
-    <Dropdown.Item icon = "globe"       text = "DEBUG: Delete User Storage"     onClick = { onClickDeleteUserStorage }/>
-    <Dropdown.Item icon = "globe"       text = "DEBUG: Delete All Storage"      onClick = { onClickDeleteAllStorage }/>
-</Dropdown.Menu>
-*/
