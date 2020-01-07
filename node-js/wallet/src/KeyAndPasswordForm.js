@@ -67,6 +67,7 @@ export const KeyAndPasswordForm = observer (( props ) => {
 
             <UI.Form.TextArea
                 placeholder = 'Mnemonic Phrase or Private Key'
+                style = {{ fontFamily: 'monospace' }}
                 rows = { 8 }
                 name = 'phraseOrKey'
                 value = { phraseOrKey }

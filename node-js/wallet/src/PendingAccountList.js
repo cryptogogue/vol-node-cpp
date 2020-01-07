@@ -2,13 +2,27 @@
 /* eslint-disable no-loop-func */
 
 import { AppStateService }                  from './AppStateService';
+import { WarnAndDeleteModal }               from './WarnAndDeleteModal';
 import { assert, crypto, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
-import { action, computed, extendObservable, observable, observe }              from 'mobx';
+import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
 import * as UI                              from 'semantic-ui-react';
+
+const REQUEST_DELETE_WARNING_0 = `
+    Deleting an account request will also delete the locally
+    stored private key used to generate the request. If you have
+    already submitted the request, the account may still be created
+    but you may will not be able to access or use it.
+`;
+
+const REQUEST_DELETE_WARNING_1 = `
+    If you you haven't backed up the private key in this account
+    request, there will be no way to recover it. Are you sure
+    you want to delete this request?
+`;
 
 //================================================================//
 // AccountRequestService
@@ -70,23 +84,66 @@ export class AccountRequestService {
 const PendingAccountView = observer (( props ) => {
 
     const { appState, pending } = props;
+    const textAreaRef           = React.useRef ();
 
-    const createAccountRequest = () => {
+    const onCopy = () => {
+        if ( textAreaRef.current ) {
+            textAreaRef.current.select ();
+            document.execCommand ( 'copy' );
+        }
+    }
+
+    const onDelete = () => {
         appState.deleteAccountRequest ( pending.requestID );
     }
 
     return (
-        <UI.Form size = "large" onSubmit = {() => { createAccountRequest ()}}>
-            <UI.Segment stacked>
-                <UI.Header as="h2" color="teal" textAlign="center">Account Request</UI.Header>
-                <UI.Segment style = {{ wordWrap: 'break-word' }}>
+        <React.Fragment>
+
+            <UI.Menu
+                borderless
+                attached = 'top'
+                color = 'orange'
+                inverted
+            >
+                <UI.Menu.Item>
+                    <UI.Menu.Header as = 'h5'>Account Request</UI.Menu.Header>
+                </UI.Menu.Item>
+
+                <WarnAndDeleteModal
+                    trigger = {
+                        <UI.Menu.Item position = 'right'>
+                            <UI.Icon name = 'close'/>
+                        </UI.Menu.Item>
+                    }
+                    warning0 = { REQUEST_DELETE_WARNING_0 }
+                    warning1 = { REQUEST_DELETE_WARNING_1 }
+                    onDelete = { onDelete }
+                />
+            </UI.Menu>
+
+            <UI.Segment attached = 'bottom'>
+                <UI.Segment
+                    raised
+                    style = {{
+                        wordWrap: 'break-word',
+                        fontFamily: 'monospace',
+                        cursor: 'copy',
+                    }}
+                    onClick = { onCopy }
+                >
                     { pending.encoded }
                 </UI.Segment>
-                <UI.Button color = "red" fluid size = "large">
-                    Delete
-                </UI.Button>
             </UI.Segment>
-        </UI.Form>
+
+            <textarea
+                readOnly
+                ref     = { textAreaRef }
+                value   = { util.wrapLines ( pending.encoded, 32 )}
+                style   = {{ position: 'absolute', top: '-1000px' }}
+            />
+
+        </React.Fragment>
     );
 });
 

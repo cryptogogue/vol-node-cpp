@@ -33,7 +33,7 @@ function getAccountTabTitle ( tab ) {
 function getAccountTabURL ( tab ) {
 
     switch ( tab ) {
-        case ACCOUNT_TABS.ACCOUNT:      return '/';
+        case ACCOUNT_TABS.ACCOUNT:      return '';
         case ACCOUNT_TABS.CRAFTING:     return '/crafting';
         case ACCOUNT_TABS.INVENTORY:    return '/inventory';
         case ACCOUNT_TABS.KEYS:         return '/keys';

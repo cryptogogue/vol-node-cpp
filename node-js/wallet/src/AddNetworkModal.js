@@ -124,7 +124,7 @@ export const AddNetworkModalBody = observer (( props ) => {
     };
 
     let onSubmit = () => {
-        appState.affirmNetwork ( name, testURL )
+        appState.affirmNetwork ( name, controller.info.identity, testURL )
         onClose ();
     };
 

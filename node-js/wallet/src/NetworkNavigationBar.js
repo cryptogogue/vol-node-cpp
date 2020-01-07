@@ -26,7 +26,7 @@ function getAccountTabTitle ( tab ) {
 function getAccountTabURL ( tab ) {
 
     switch ( tab ) {
-        case NETWORK_TABS.NETWORK:              return '/';
+        case NETWORK_TABS.NETWORK:              return '';
         case NETWORK_TABS.CHAIN:                return '/chain';
     }
     return '/';

@@ -26,8 +26,10 @@ export const NavigationBar = observer (( props ) => {
 
     if (( appState.networkID !== networkID ) || ( appState.accountID !== accountID )) {
 
-        if ( networkID && accountID )   return (<Redirect to = { `/net/${ networkID }/account/${ accountID }${ accountTab }` }/>);
-        if ( networkID )   return (<Redirect to = { `/net/${ networkID }` }/>);
+        if ( networkID && accountID ) {
+            return (<Redirect to = { `/net/${ appState.networkID }/account/${ appState.accountID }${ accountTab }` }/>);
+        }
+        if ( networkID ) return (<Redirect to = { `/net/${ appState.networkID }` }/>);
         return (<Redirect to = { '/' }/>); 
     }
 

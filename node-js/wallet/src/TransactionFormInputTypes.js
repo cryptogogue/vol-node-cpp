@@ -1,6 +1,21 @@
 /* eslint-disable no-whitespace-before-property */
 
 //----------------------------------------------------------------//
+export function cryptoField ( fieldName, friendlyName, rows, defaultValue ) {
+
+    const isRequired = typeof ( defaultValue ) !== 'string';
+
+    return {
+        fieldType:          'CRYPTO',
+        name:               fieldName,
+        friendlyName:       friendlyName,
+        rows:               rows,
+        defaultValue:       isRequired ? null : defaultValue,
+        isRequired:         isRequired,
+    };
+}
+
+//----------------------------------------------------------------//
 export function integerField ( fieldName, friendlyName, defaultValue ) {
 
     const isRequired = typeof ( defaultValue ) !== 'number';

@@ -47,6 +47,9 @@ export const NetworkList = observer (( props ) => {
     }
 
     const makeItemMessageBody = ( networkName ) => {
+
+        const nodeURL = appState.networks [ networkName ].nodeURL;
+
         return (
             <React.Fragment>
                 <UI.Message.Header
@@ -55,7 +58,7 @@ export const NetworkList = observer (( props ) => {
                 >
                     { networkName }
                 </UI.Message.Header>
-                { appState.networks [ networkName ].nodeURL }
+                <a href = { nodeURL } target = '_blank'>{ nodeURL }</a>
             </React.Fragment>
         );
     }

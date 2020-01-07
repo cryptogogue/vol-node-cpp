@@ -84,6 +84,11 @@ export class TransactionFormController {
     //----------------------------------------------------------------//
     initialize ( appState, type, fields, format, fieldValues ) {
 
+        fields = fields || [];
+        fields.push (
+            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
+        );
+
         this.appState   = appState;
         this.type       = type;
         this.fields     = fields;
@@ -186,7 +191,6 @@ export class TransactionFormController_AccountPolicy extends TransactionFormCont
         const fields = [
             inputType.stringField       ( 'policyName',     'Policy Name' ),
             inputType.textField         ( 'policy',         'Policy', 8 ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -214,7 +218,6 @@ export class TransactionFormController_AffirmKey extends TransactionFormControll
             inputType.stringField       ( 'keyName',        'Key Name' ),
             inputType.stringField       ( 'key',            'Key' ),
             inputType.stringField       ( 'policyName',     'Policy' ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -241,7 +244,6 @@ export class TransactionFormController_BetaGetAssets extends TransactionFormCont
 
         const fields = [
             inputType.integerField      ( 'numAssets',      'Copies', 1 ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -267,7 +269,6 @@ export class TransactionFormController_KeyPolicy extends TransactionFormControll
         const fields = [
             inputType.stringField       ( 'policyName',     'Policy Name' ),
             inputType.textField         ( 'policy',         'Policy', 8 ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -288,7 +289,7 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
     //----------------------------------------------------------------//
     composeBody ( fieldValues ) {
 
-        const request = this.decodeRequest ();
+        const request       = this.decodeRequest ();
 
         let body = {};
         body.maker          = this.formatBody ( fieldValues, MAKER_FORMAT );
@@ -306,9 +307,8 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
         const type = TRANSACTION_TYPE.OPEN_ACCOUNT;
 
         const fields = [
-            inputType.textField         ( 'request',        'New Account Request', 6 ),
+            inputType.cryptoField       ( 'request',        'New Account Request', 6 ),
             inputType.integerField      ( 'grant',          'Grant', 0 ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -320,27 +320,36 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
         };
 
         this.initialize ( appState, type, fields, format );
-
         this.initSuffix ();
     }
 
     //----------------------------------------------------------------//
     decodeRequest () {
 
-        const encoded = this.fieldValues.request;
+        console.log ( 'DECODE REQUEST', this.fieldValues.request );
+
+        let encoded = this.fieldValues.request;
         if ( encoded && encoded.length ) {
             try {
+
+                encoded = encoded.replace ( /(\r\n|\n|\r )/gm, '' );
+                console.log ( 'ENCODED:', encoded );
+
                 const requestJSON = Buffer.from ( encoded, 'base64' ).toString ( 'utf8' );
                 const request = JSON.parse ( requestJSON );
 
                 if ( !request ) return false;
                 if ( !request.key ) return false;
+                if ( request.networkID !== this.appState.network.identity ) return false;
+
+                console.log ( 'DECODED REQUEST:', request );
 
                 // TODO: check key format and validity!
 
                 return request;
             }
             catch ( error ) {
+                console.log ( error );
             }
         }
         return false;
@@ -400,7 +409,6 @@ export class TransactionFormController_PublishSchema extends TransactionFormCont
 
         const fields = [
             inputType.textField         ( 'schema',         'Schema', 8 ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -441,7 +449,6 @@ export class TransactionFormController_RegisterMiner extends TransactionFormCont
 
         const fields = [
             inputType.stringField       ( 'url',            'Miner URL' ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -483,10 +490,13 @@ export class TransactionFormController_RenameAccount extends TransactionFormCont
         const type = TRANSACTION_TYPE.RENAME_ACCOUNT;
 
         const fields = [
-            inputType.stringField       ( 'revealedName',   'Revealed Name' ),
-            inputType.stringField       ( 'secretName',     'Secret Name' ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
+            inputType.stringField       ( 'revealedName',   'New Name' ),
         ];
+
+        // const fields = [
+        //     inputType.stringField       ( 'revealedName',   'Revealed Name' ),
+        //     inputType.stringField       ( 'secretName',     'Secret Name' ),
+        // ];
 
         this.initialize ( appState, type, fields );
     }
@@ -538,7 +548,6 @@ export class TransactionFormController_SendVol extends TransactionFormController
         const fields = [
             inputType.stringField       ( 'recipient',      'Recipient' ),
             inputType.integerField      ( 'amount',         'Amount' ),
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
         ];
 
         const format = {
@@ -586,10 +595,6 @@ export class TransactionFormController_UpgradeAssets extends TransactionFormCont
         super ();
 
         const type = TRANSACTION_TYPE.UPGRADE_ASSETS;
-
-        const fields = [
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
-        ];
 
         const format = {
             maker:              MAKER_FORMAT,

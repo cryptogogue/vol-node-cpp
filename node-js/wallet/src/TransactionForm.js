@@ -29,6 +29,15 @@ const TransactionFormInput = observer (( props ) => {
 
     switch ( field.fieldType ) {
 
+        case 'CRYPTO':
+            return (
+                 <UI.Form.TextArea
+                    style = {{ fontFamily: 'monospace' }}
+                    rows = { field.rows || 8 }
+                    { ...commonProps }
+                />
+            );
+
         case 'INTEGER':
             return (
                  <UI.Form.Input

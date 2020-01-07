@@ -71,17 +71,20 @@ DONE: layout tool - print layout for variable-sized assets
 DONE: layout tool - factor out selection behavior (no tags)
 DONE: layout tool - finish docs + coding style guide
 DONE: wallet - (simple) tagging sets of cards
+DONE: upgrade assets
+DONE: asset updates
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
 node - param lists for crafting
 node - param lists for transfers
 node - provision any asset
-node - upgrade assets
 node - handle unrecognized account - reject transactions
 
-node/schema - asset updates
-node/schema - reaplce schema name with version (schema is a composite; one per ledger)
+node - properly check account name changes to exclude illegal characters
+wallet - validate name change requests
+
+node/schema - replace schema name with version (schema is a composite; one per ledger)
 
 ----------------------------------------------------------------
 MVP

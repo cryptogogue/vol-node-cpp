@@ -11,7 +11,6 @@ import React                from 'react';
 const STORE_FLAGS               = '.vol_flags';
 const STORE_NETWORKS            = '.vol_networks';
 const STORE_PASSWORD_HASH       = '.vol_password_hash';
-const STORE_PENDING_ACCOUNTS    = '.vol_pending_accounts';
 const STORE_SESSION             = '.vol_session';
 
 export const NODE_TYPE = {
@@ -35,6 +34,12 @@ export class AppStateService {
     @computed get
     account () {
         return this.getAccount ();
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    accounts () {
+        return this.network.accounts;
     }
 
     //----------------------------------------------------------------//
@@ -77,14 +82,16 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @action
-    affirmNetwork ( name, nodeURL ) {
+    affirmNetwork ( name, identity, nodeURL ) {
 
         this.flags.promptFirstNetwork = false;
 
         if ( !_.has ( this.networks, name )) {
             this.networks [ name ] = {
-                nodeURL:    nodeURL,
-                accounts:   {},
+                nodeURL:            nodeURL,
+                identity:           identity,
+                accounts:           {},
+                pendingAccounts:    {},
             };
         }
         else {
@@ -164,14 +171,23 @@ export class AppStateService {
 
         for ( let networkName in this.networks ) {
             const network = this.networks [ networkName ];
+
             for ( let accountName in network.accounts ) {
                 const account = network.accounts [ accountName ];
+                
                 for ( let keyName in account.keys ) {
                     const key = account.keys [ keyName ];
 
                     key.phraseOrKeyAES = crypto.aesPlainToCipher ( crypto.aesCipherToPlain ( key.phraseOrKeyAES, password ), newPassword );
                     key.privateKeyHexAES = crypto.aesPlainToCipher ( crypto.aesCipherToPlain ( key.privateKeyHexAES, password ), newPassword );
                 }
+            }
+
+            for ( let requestID in network.pendingAccounts ) {
+                const request = network.pendingAccounts [ requestID ];
+                
+                request.phraseOrKeyAES = crypto.aesPlainToCipher ( crypto.aesCipherToPlain ( request.phraseOrKeyAES, password ), newPassword );
+                request.privateKeyHexAES = crypto.aesPlainToCipher ( crypto.aesCipherToPlain ( request.privateKeyHexAES, password ), newPassword );
             }
         }
         this.setPassword ( newPassword, false );
@@ -255,7 +271,6 @@ export class AppStateService {
         storageContext.persist ( this, 'flags',             STORE_FLAGS,                flags );
         storageContext.persist ( this, 'networks',          STORE_NETWORKS,             {}); // account names index by network name
         storageContext.persist ( this, 'passwordHash',      STORE_PASSWORD_HASH,        '' );
-        storageContext.persist ( this, 'pendingAccounts',   STORE_PENDING_ACCOUNTS,     {});
         storageContext.persist ( this, 'session',           STORE_SESSION,              this.makeSession ( false ));
 
         this.storage = storageContext;
@@ -512,6 +527,12 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @computed get
+    pendingAccounts () {
+        return this.network.pendingAccounts || {};
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
     pendingTransactions () {
         return this.account.pendingTransactions || [];
     }
@@ -542,14 +563,16 @@ export class AppStateService {
     @action
     renameAccount ( oldName, newName ) {
 
-        // if ( !_.has ( this.accounts, oldName )) return;        
-        
-        // this.accounts [ newName ] = _.cloneDeep ( this.accounts [ oldName ]); // or mobx will bitch at us
-        // delete this.accounts [ oldName ];
+        console.log ( 'RENAME ACCOUNT', oldName, newName );
 
-        // if ( this.accountID === oldName ) {
-        //     this.setAccount ( newName );
-        // }
+        if ( !_.has ( this.accounts, oldName )) return;        
+        
+        this.accounts [ newName ] = _.cloneDeep ( this.accounts [ oldName ]); // or mobx will bitch at us
+        delete this.accounts [ oldName ];
+
+        if ( this.accountID === oldName ) {
+            this.accountID = newName;
+        }
     }
 
     //----------------------------------------------------------------//
@@ -582,10 +605,11 @@ export class AppStateService {
         } while ( _.has ( this.pendingAccounts, requestID ));
 
         const request = {
+            networkID:          this.network.identity,
             key: {
-                type:               'EC_HEX',
-                groupName:          'secp256k1',
-                publicKey:          publicKeyHex,
+                type:           'EC_HEX',
+                groupName:      'secp256k1',
+                publicKey:      publicKeyHex,
             },
         }
 

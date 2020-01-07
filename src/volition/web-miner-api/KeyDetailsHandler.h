@@ -45,7 +45,7 @@ public:
                 return Poco::Net::HTTPResponse::HTTP_OK;
             }
         }
-        return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
 
