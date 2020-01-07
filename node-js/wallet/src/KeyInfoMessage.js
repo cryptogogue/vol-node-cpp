@@ -124,6 +124,7 @@ export const KeyInfoMessage = observer (( props ) => {
                     trigger     = {<UI.Message.Header style = {{ cursor: 'pointer' }}>{ keyName }</UI.Message.Header>}
                     content     = {
                         <JSONTree
+                            hideRoot
                             data = { key.entitlements }
                             theme = 'bright'
                         />

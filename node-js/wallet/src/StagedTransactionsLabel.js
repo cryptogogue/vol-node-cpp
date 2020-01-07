@@ -52,9 +52,10 @@ const StagedTransactionsModalBody = observer (( props ) => {
 
                 <UI.Button
                     negative
+                    disabled = { !submitEnabled }
                     onClick = { onClickClear }
                 >
-                    Clear
+                    Clear All
                 </UI.Button>
 
                 <UI.Button
