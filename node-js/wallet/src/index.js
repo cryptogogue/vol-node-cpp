@@ -17,6 +17,7 @@ import { DashboardScreen }              from './DashboardScreen';
 import { InventoryScreen }              from './InventoryScreen';
 import { KeysScreen }                   from './KeysScreen';
 import { NetworkScreen }                from './NetworkScreen';
+import { SchemaUtilScreen }             from './SchemaUtilScreen';
 import { UpgradesScreen }               from './UpgradesScreen';
 import registerServiceWorker            from './util/registerServiceWorker';
 import React                            from 'react';
@@ -38,7 +39,7 @@ const App = () => {
             <Route exact path = "/net/:networkID/account/:accountID/upgrades"       component = { UpgradesScreen }/>
             <Route exact path = "/net/:networkID"                                   component = { NetworkScreen }/>
             
-            <Route exact path = "/util/schema"              component = { cardmotron.SchemaScreen }/>
+            <Route exact path = "/util/schema"              component = { SchemaUtilScreen }/>
 
             <Route exact path = "/debug/aes"                component = { fgc.debug.AESScreen }/>
             <Route exact path = "/debug/barcode/pdf417"     component = { fgc.debug.BarcodePDF417Screen }/>

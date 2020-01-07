@@ -23,6 +23,7 @@ const AccountDetailsView = observer (( props ) => {
 
     if ( !account ) return;
 
+    const accountURL    = `${ appState.network.nodeURL }/accounts/${ appState.accountID }`;
     const hasInfo       = appState.hasAccountInfo;
     
     return (
@@ -37,11 +38,11 @@ const AccountDetailsView = observer (( props ) => {
                         <UI.Icon name = 'circle notched' loading circular/>
                     </Otherwise>
                 </Choose>
-                { appState.accountID }
+                <a href = { accountURL } target = '_blank'>{ appState.accountID }</a>
             </UI.Header>
 
             <div style = {{ display: hasInfo ? 'visible' : 'hidden' }}>
-                <UI.Header as = 'h2'>
+                <UI.Header as = 'h3'>
                     { `Balance: ${ appState.balance }` }
                 </UI.Header>
 
