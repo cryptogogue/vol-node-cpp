@@ -7,9 +7,9 @@ import { observer }                 from 'mobx-react';
 import * as UI                      from 'semantic-ui-react';
 
 //================================================================//
-// StagedTransactionsModalBody
+// TransactionQueueModalBody
 //================================================================//
-const StagedTransactionsModalBody = observer (( props ) => {
+const TransactionQueueModalBody = observer (( props ) => {
 
     const { appState, open, onClose } = props;
 
@@ -25,9 +25,11 @@ const StagedTransactionsModalBody = observer (( props ) => {
         onClose ();
     };
 
-    const submitEnabled = ( appState.checkPassword ( password ) && appState.canSubmitTransactions );
+    const allTransactions = appState.pendingTransactions.concat ( appState.stagedTransactions );
 
-    const stagedTransactions = appState.stagedTransactions.length;
+    const passwordIsValid = appState.checkPassword ( password );
+    const clearEnabled = ( passwordIsValid && ( appState.stagedTransactions.length > 0 ));
+    const submitEnabled = ( passwordIsValid && appState.canSubmitTransactions );
 
     return (
         <UI.Modal
@@ -39,7 +41,7 @@ const StagedTransactionsModalBody = observer (( props ) => {
             <UI.Modal.Header>Staged Transactions</UI.Modal.Header>
 
             <UI.Modal.Content>
-                <TransactionListView transactions = { appState.stagedTransactions }/>
+                <TransactionListView transactions = { allTransactions }/>
                 <UI.Form>
                     <PasswordInputField
                         appState = { appState }
@@ -52,10 +54,10 @@ const StagedTransactionsModalBody = observer (( props ) => {
 
                 <UI.Button
                     negative
-                    disabled = { !submitEnabled }
+                    disabled = { !clearEnabled }
                     onClick = { onClickClear }
                 >
-                    Clear All
+                    Clear
                 </UI.Button>
 
                 <UI.Button
@@ -72,9 +74,9 @@ const StagedTransactionsModalBody = observer (( props ) => {
 });
 
 //================================================================//
-// StagedTransactionsModalLabel
+// TransactionQueueLabel
 //================================================================//
-export const StagedTransactionsLabel = observer (( props ) => {
+export const TransactionQueueLabel = observer (( props ) => {
 
     const { appState } = props;
     const [ open, setOpen ] = useState ( false );
@@ -85,13 +87,15 @@ export const StagedTransactionsLabel = observer (( props ) => {
         setCounter ( counter + 1 );
     }
 
-    const stagedTransactions = appState.stagedTransactions.length;
+    const stagedCount       = appState.stagedTransactions.length;
+    const pendingCount      = appState.pendingTransactions.length;
+    const hasTransactions   = (( stagedCount + pendingCount ) > 0 );
 
     return (
         <React.Fragment>
 
             <div key = { counter }>
-                <StagedTransactionsModalBody
+                <TransactionQueueModalBody
                     appState = { appState }
                     open = { open }
                     onClose = { onClose }
@@ -99,12 +103,12 @@ export const StagedTransactionsLabel = observer (( props ) => {
             </div>
 
             <UI.Label
-                color = { stagedTransactions > 0 ? 'green' : 'grey' }
-                disabled = { stagedTransactions === 0 }
-                onClick = {() => { stagedTransactions && setOpen ( true )}}
+                color = { stagedCount > 0 ? 'green' : 'grey' }
+                disabled = { !hasTransactions }
+                onClick = {() => { hasTransactions && setOpen ( true )}}
             >
                 <UI.Icon name = 'cloud upload'/>
-                { stagedTransactions }
+                { pendingCount ? `${ stagedCount }/${ pendingCount }` : `${ stagedCount }` }
             </UI.Label>
 
         </React.Fragment>

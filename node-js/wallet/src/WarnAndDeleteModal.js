@@ -11,15 +11,6 @@ import { Redirect }                         from 'react-router';
 import { Link }                             from 'react-router-dom';
 import * as UI                              from 'semantic-ui-react';
 
-import { LoginForm }                        from './LoginForm';
-import { DashboardNavigationBar }           from './DashboardNavigationBar';
-import { NodeListView }                     from './NodeListView';
-import { PendingTransactionsView }          from './PendingTransactionsView';
-import { RegisterForm }                        from './RegisterForm';
-
-import { AccountInfoService }               from './AccountInfoService';
-import { NodeInfoService }                  from './NodeInfoService';
-
 //================================================================//
 // WarnAndDeleteModal
 //================================================================//

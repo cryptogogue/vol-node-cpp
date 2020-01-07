@@ -11,11 +11,7 @@ import { useParams }                        from 'react-router-dom';
 import * as UI                              from 'semantic-ui-react';
 
 import { AccountNavigationBar, ACCOUNT_TABS } from './AccountNavigationBar';
-import { NodeListView }                     from './NodeListView';
-import { PendingTransactionsView }          from './PendingTransactionsView';
-
 import { AccountInfoService }               from './AccountInfoService';
-import { NodeInfoService }                  from './NodeInfoService';
 
 //================================================================//
 // AccountDetailsView
@@ -27,17 +23,16 @@ const AccountDetailsView = observer (( props ) => {
 
     if ( !account ) return;
 
-    const balance       = appState.balance;
-    const textColor     = balance > 0 ? 'black' : 'red';
-
+    const hasInfo       = appState.hasAccountInfo;
+    
     return (
         <div style = {{ textAlign: 'center' }}>
+
             <UI.Header as = "h2" icon>
                 <Choose>
-                    <When condition = { appState.hasAccountInfo }>
+                    <When condition = { hasInfo }>
                         <UI.Icon name = 'trophy' circular />
                     </When>
-
                     <Otherwise>
                         <UI.Icon name = 'circle notched' loading circular/>
                     </Otherwise>
@@ -45,14 +40,15 @@ const AccountDetailsView = observer (( props ) => {
                 { appState.accountID }
             </UI.Header>
 
-            <div style = {{ display: appState.hasAccountInfo ? 'visible' : 'hidden' }}>
-                <UI.Header as = "h2">
-                    <p style = {{ color: textColor }}>Balance: { balance }</p>
-                    <UI.Header.Subheader>
-                        <p>Nonce: { appState.nonce }</p>
-                    </UI.Header.Subheader>
+            <div style = {{ display: hasInfo ? 'visible' : 'hidden' }}>
+                <UI.Header as = 'h2'>
+                    { `Balance: ${ appState.balance }` }
                 </UI.Header>
-            </div>
+
+                <UI.Header.Subheader>
+                    { `Nonce: ${ appState.nonce }` }
+                </UI.Header.Subheader>
+                </div>
         </div>
     );
 });
@@ -122,12 +118,6 @@ export const AccountScreen = observer (( props ) => {
                 <UI.Segment>
                     <AccountDetailsView appState = { appState }/>
                 </UI.Segment>
-
-                <If condition = { appState.pendingTransactions.length > 0 }>
-                    <UI.Segment>
-                        <PendingTransactionsView appState = { appState }/>
-                    </UI.Segment>
-                </If>
 
                 <AccountActionsSegment appState = { appState }/>
             </If>

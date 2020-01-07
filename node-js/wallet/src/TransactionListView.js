@@ -1,6 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { Transaction }      from './Transaction';
+import _                    from 'lodash';
 import JSONTree             from 'react-json-tree';
 import React, { useState }  from 'react';
 import { observer }         from 'mobx-react';
@@ -20,8 +21,20 @@ export const TransactionListView = observer (( props ) => {
         const transaction = transactions [ i ];
         let friendlyName = Transaction.friendlyNameForType ( transaction.type );
 
+        let json = {};
+        if ( transaction.envelope ) {
+            json = _.cloneDeep ( transaction.envelope );
+            json.body = JSON.parse ( transaction.envelope.body );
+        }
+        else {
+            json = JSON.parse ( transaction.body );
+        }
+
         transactionList.push (
-            <UI.Table.Row key = { i }>
+            <UI.Table.Row
+                key = { i }
+                positive = { transaction.envelope }
+            >
                 <UI.Table.Cell collapsing>
                     <UI.Modal
                         header      = 'Transaction Body'
@@ -36,7 +49,7 @@ export const TransactionListView = observer (( props ) => {
                         content     = {
                             <JSONTree
                                 hideRoot
-                                data = { JSON.parse ( transaction.body )}
+                                data = { json }
                                 theme = 'bright'
                             />
                         }
@@ -44,9 +57,7 @@ export const TransactionListView = observer (( props ) => {
                 </UI.Table.Cell>
                 <UI.Table.Cell collapsing>{ transaction.cost }</UI.Table.Cell>
                 <UI.Table.Cell>{ transaction.note }</UI.Table.Cell>
-                <If condition = { showNonce }>
-                    <UI.Table.Cell collapsing>{ transaction.nonce || 0 }</UI.Table.Cell>
-                </If>
+                <UI.Table.Cell collapsing>{ typeof ( transaction.nonce ) === 'number' ? transaction.nonce : '--' }</UI.Table.Cell>
             </UI.Table.Row>
         );
     }
@@ -58,9 +69,7 @@ export const TransactionListView = observer (( props ) => {
                     <UI.Table.HeaderCell>Type</UI.Table.HeaderCell>
                     <UI.Table.HeaderCell>Cost</UI.Table.HeaderCell>
                     <UI.Table.HeaderCell>Note</UI.Table.HeaderCell>
-                    <If condition = { showNonce }>
-                        <UI.Table.HeaderCell>Nonce</UI.Table.HeaderCell>
-                    </If>
+                    <UI.Table.HeaderCell>Nonce</UI.Table.HeaderCell>
                 </UI.Table.Row>
             </UI.Table.Header>
             <UI.Table.Body>

@@ -239,7 +239,7 @@ export class AppStateService {
 
         if ( this.hasAccount ) {
             let pendingTransactions = this.account.pendingTransactions;
-            while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce <= nonce )) {
+            while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce < nonce )) {
                 pendingTransactions.shift ();
             }
         }
@@ -678,7 +678,7 @@ export class AppStateService {
 
             while ( this.canSubmitTransactions ) {
 
-                let memo = stagedTransactions [ 0 ];
+                let memo = _.cloneDeep ( stagedTransactions [ 0 ]);
                 let nonce = this.nextNonce;
 
                 let body = JSON.parse ( memo.body );
@@ -704,16 +704,12 @@ export class AppStateService {
                     body :      JSON.stringify ( envelope, null, 4 ),
                 });
 
+                memo.envelope   = envelope;
+                memo.nonce      = nonce;
+
                 runInAction (() => {
                     stagedTransactions.shift ();
-                    pendingTransactions.push ({
-                        type:                       memo.type,
-                        note:                       memo.note,
-                        cost:                       memo.cost,
-                        body:                       envelope,
-                        nonce:                      nonce,
-                        assets:                     memo.assets,
-                    });
+                    pendingTransactions.push ( memo );
                 });
             }
         }

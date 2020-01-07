@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { NavigationBar }                    from './NavigationBar';
-import { StagedTransactionsLabel }          from './StagedTransactionsLabel';
+import { TransactionQueueLabel }            from './TransactionQueueLabel';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
 import { Redirect }                         from 'react-router';
@@ -82,7 +82,7 @@ export const AccountNavigationBar = observer (( props ) => {
 
                 <Menu.Menu position = 'right'>
                     <Menu.Item>
-                        <StagedTransactionsLabel appState = { appState }/>
+                        <TransactionQueueLabel appState = { appState }/>
                     </Menu.Item>
                 </Menu.Menu>
             </Menu>
