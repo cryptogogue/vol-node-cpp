@@ -14,23 +14,6 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Miner::addTransactions ( Chain& chain, Block& block ) {
-
-    Ledger ledger;
-    ledger.takeSnapshot ( chain );
-
-    list < shared_ptr < Transaction >>::iterator transactionIt = this->mPendingTransactions.begin ();
-    for ( ; transactionIt != this->mPendingTransactions.end (); ++transactionIt ) {
-        shared_ptr < Transaction > transaction = *transactionIt;
-        
-        // TODO: don't need to fully apply; should just check maker's nonce and sig
-        if ( transaction->checkMaker ( ledger )) {
-            block.pushTransaction ( transaction );
-        }
-    }
-}
-
-//----------------------------------------------------------------//
 bool Miner::checkBestBranch ( string miners ) const {
 
     assert ( this->mBestBranch );
@@ -86,7 +69,7 @@ void Miner::extend ( bool force ) {
     assert ( prevBlock );
     
     Block block ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
-    this->addTransactions ( fork, block );
+    this->fillBlock ( fork, block );
     
     if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
     
@@ -183,12 +166,6 @@ void Miner::loadKey ( string keyfile, string password ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::pushTransaction ( shared_ptr < Transaction > transaction ) {
-
-    this->mPendingTransactions.push_back ( transaction );
-}
-
-//----------------------------------------------------------------//
 void Miner::setLazy ( bool lazy ) {
 
     this->mLazy = lazy;
@@ -212,7 +189,7 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::reset () {
 
-    this->mPendingTransactions.clear ();
+    this->PendingTransactionQueue::reset ();
     this->mBestBranch->reset ( 1 );
     this->mBranches.clear ();
     this->mBranches.insert ( this->mBestBranch );

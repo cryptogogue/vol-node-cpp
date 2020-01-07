@@ -20,7 +20,7 @@ public:
      //----------------------------------------------------------------//
     static bool canOpenAccount ( const Entitlements& entitlements ) {
     
-        return entitlements.check ( "openAccount" );
+        return entitlements.check ( "OPEN_ACCOUNT" );
     }
 
     //----------------------------------------------------------------//

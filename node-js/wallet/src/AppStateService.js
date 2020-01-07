@@ -51,7 +51,10 @@ export class AppStateService {
         this.flags.promptFirstAccount = false;
 
         this.assertHasNetwork ();
-        this.assertPassword ( password );
+
+        if ( password ) {
+            this.assertPassword ( password );
+        }
 
         const accounts = this.network.accounts;
 
@@ -63,8 +66,8 @@ export class AppStateService {
 
         let key = account.keys [ keyName ] || {};
 
-        key.phraseOrKeyAES      = crypto.aesPlainToCipher ( phraseOrKey, password );
-        key.privateKeyHexAES    = crypto.aesPlainToCipher ( privateKeyHex, password );
+        key.phraseOrKeyAES      = password ? crypto.aesPlainToCipher ( phraseOrKey, password ) : phraseOrKey;
+        key.privateKeyHexAES    = password ? crypto.aesPlainToCipher ( privateKeyHex, password ) : privateKeyHex;
         key.publicKeyHex        = publicKeyHex;
 
         account.keys [ keyName ] = key;
@@ -448,26 +451,21 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @action
-    importAccountRequest ( requestID, password ) {
+    importAccountRequest ( requestID, accountID, keyName ) {
 
-        // if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+        if ( !_.has ( this.pendingAccounts, requestID )) return;
 
-        // const pending = this.pendingAccounts [ requestID ];
-        // if ( !pending ) throw new Error ( 'Account request not found' );
+        let request = this.pendingAccounts [ requestID ];
 
-        // const phraseOrKey       = crypto.aesCipherToPlain ( pending.phraseOrKeyAES, password );
-        // const privateKeyHex     = crypto.aesCipherToPlain ( pending.privateKeyHexAES, password );
-
-        // this.affirmAccountAndKey (
-        //     password,
-        //     pending.accountID,
-        //     pending.keyName,
-        //     phraseOrKey,
-        //     privateKeyHex,
-        //     pending.publicKeyHex,
-        // );
-
-        // delete this.pendingAccounts [ requestID ];
+        this.affirmAccountAndKey (
+            false,
+            accountID,
+            keyName,
+            request.phraseOrKeyAES,
+            request.privateKeyHexAES,
+            request.publicKeyHex,
+        );
+        delete this.pendingAccounts [ requestID ];
     }
 
     //----------------------------------------------------------------//
@@ -568,7 +566,7 @@ export class AppStateService {
     @action
     setAccountRequest ( password, phraseOrKey, keyID, privateKeyHex, publicKeyHex ) {
 
-        if ( !this.checkPassword ( password )) throw new Error ( 'Invalid wallet password' );
+        this.assertPassword ( password );
 
         this.flags.promptFirstAccount = false;
 
@@ -726,15 +724,5 @@ export class AppStateService {
                 key.entitlements    = entitlements.keys [ keyName ];
             }
         }
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    updateAccountRequest ( requestID, accountName, keyName ) {
-
-        let pendingAccount = this.pendingAccounts [ requestID ];
-        pendingAccount.accountID = accountName;
-        pendingAccount.keyName = keyName;
-        pendingAccount.readyToImport = true;
     }
 }

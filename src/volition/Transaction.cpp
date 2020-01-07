@@ -49,6 +49,12 @@ bool Transaction::checkMaker ( const Ledger& ledger ) const {
 }
 
 //----------------------------------------------------------------//
+const TransactionMaker* Transaction::getMaker () const {
+
+    return ( this->mBody && this->mBody->mMaker ) ? this->mBody->mMaker.get () : NULL;
+}
+
+//----------------------------------------------------------------//
 u64 Transaction::maturity () const {
     return this->mBody->maturity ();
 }

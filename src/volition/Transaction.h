@@ -36,13 +36,14 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    bool                apply                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
-    bool                checkMaker              ( const Ledger& ledger ) const;
-    u64                 maturity                () const;
-    void                setBody                 ( shared_ptr < AbstractTransactionBody > body );
-                        Transaction             ();
-                        ~Transaction            ();
-    u64                 weight                  () const;
+    bool                        apply                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
+    bool                        checkMaker              ( const Ledger& ledger ) const;
+    const TransactionMaker*     getMaker                () const;
+    u64                         maturity                () const;
+    void                        setBody                 ( shared_ptr < AbstractTransactionBody > body );
+                                Transaction             ();
+                                ~Transaction            ();
+    u64                         weight                  () const;
 };
 
 } // namespace Volition

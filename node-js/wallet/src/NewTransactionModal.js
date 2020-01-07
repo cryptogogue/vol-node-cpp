@@ -46,6 +46,7 @@ const DropdownMenu = observer (( props ) => {
     return (
         <UI.Dropdown
             fluid           = { props.fluid }
+            search
             item            = { props.item }
             placeholder     = { props.text ? undefined : props.placeholder }
             text            = { props.text }

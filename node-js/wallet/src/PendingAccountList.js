@@ -11,6 +11,60 @@ import { Redirect }                         from 'react-router';
 import * as UI                              from 'semantic-ui-react';
 
 //================================================================//
+// AccountRequestService
+//================================================================//
+export class AccountRequestService {
+
+    //----------------------------------------------------------------//
+    constructor ( appState ) {
+        
+        this.revocable = new RevocableContext ();
+        this.checkPendingRequests ( appState, 5000 );
+    }
+
+    //----------------------------------------------------------------//
+    checkPendingRequests ( appState, delay ) {
+
+        const _fetch = async () => {
+
+            for ( let requestID in appState.pendingAccounts ) {
+
+                const pendingAccount = appState.pendingAccounts [ requestID ];
+                if ( pendingAccount.readyToImport ) continue;
+
+                try {
+
+                    const keyID = pendingAccount.keyID;
+                    const data = await this.revocable.fetchJSON ( `${ appState.network.nodeURL }/keys/${ keyID }` );
+
+                    const keyInfo = data && data.keyInfo;
+
+                    if ( keyInfo ) {
+                        appState.importAccountRequest (
+                            requestID,
+                            keyInfo.accountName,
+                            keyInfo.keyName
+                        );
+                    }
+                }
+                catch ( error ) {
+                    console.log ( error );
+                }
+            }
+
+            this.revocable.timeout (() => { this.checkPendingRequests ( appState, delay )}, delay );
+        }
+        _fetch ();
+    }
+
+    //----------------------------------------------------------------//
+    finalize () {
+
+        this.revocable.finalize ();
+    }
+}
+
+//================================================================//
 // PendingAccountView
 //================================================================//
 const PendingAccountView = observer (( props ) => {
@@ -37,59 +91,24 @@ const PendingAccountView = observer (( props ) => {
 });
 
 //================================================================//
-// ImportAccountView
-//================================================================//
-const ImportAccountView = observer (( props ) => {
-
-    const { appState, pending } = props;
-    const [ password, setPassword ] = useState ( '' );
-
-    const importAccount = () => {
-        appState.importAccountRequest ( pending.requestID, password );
-    }
-
-    const submitEnabled = appState.checkPassword ( password );
-
-    return (
-        <UI.Form size = "large" onSubmit = {() => { importAccount ()}}>
-            <UI.Segment>
-                <h3>{ pending.accountID }</h3>
-                <UI.Form.Input
-                    fluid
-                    icon = "lock"
-                    iconPosition = "left"
-                    placeholder = "Wallet Password"
-                    type = "password"
-                    value = { password }
-                    onChange = {( event ) => { setPassword ( event.target.value )}}
-                />
-                <UI.Button color = "teal" fluid size = "large" disabled = { !submitEnabled }>
-                    Import
-                </UI.Button>
-            </UI.Segment>
-        </UI.Form>
-    );
-});
-
-//================================================================//
 // PendingAccountList
 //================================================================//
 export const PendingAccountList = observer (( props ) => {
 
     const { appState } = props;
 
-    const pending = _.values ( appState.pendingAccounts )[ 0 ] || false;
+    const service = hooks.useFinalizable (() => new AccountRequestService ( appState ));
 
     let requests = [];
     for ( let requestID in appState.pendingAccounts ) {
         const pending = appState.pendingAccounts [ requestID ];
-        
-        if ( pending.readyToImport ) {
-            requests.push (<ImportAccountView key = { requestID } appState = { appState } pending = { pending }/>);
-        }
-        else {
-            requests.push (<PendingAccountView key = { requestID } appState = { appState } pending = { pending }/>);
-        }
+        requests.push (
+            <PendingAccountView
+                key = { requestID }
+                appState = { appState }
+                pending = { pending }
+            />
+        );
     }
 
     return (
@@ -98,3 +117,4 @@ export const PendingAccountList = observer (( props ) => {
         </UI.List>
     );
 });
+
