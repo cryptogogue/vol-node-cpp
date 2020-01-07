@@ -19,32 +19,30 @@ export const InventoryFilterDropdown = observer (( props ) => {
 
     let options = [];
 
-    options.push (
-        <Dropdown.Item
-            key         = { '' }
-            icon        = 'eye'
-            onClick     = {() => { tags.setFilter ( '' )}}
-        />
-    );
-
     for ( let tagName of tagNames ) {
         options.push (
             <Dropdown.Item
-                key         = { tagName }
-                text        = { tagName }
-                onClick     = {() => { tags.setFilter ( tagName )}}
+                aria-disabled = { tags.filter === '' ? 'true' : 'false' }
+                key     = { tagName }
+                icon    = 'tags'
+                text    = { tagName }
+                onClick = {() => { tags.setFilter ( tagName )}}
             />
         );
     }
 
     return (
-        <Dropdown
-            item
-            icon = { tags.filter === '' ? 'eye' : null }
-            text = { tags.filter }
-        >
+        <Dropdown item icon = 'filter' disabled = { options.length === 0 ? true : false }>
             <Dropdown.Menu>
-                { options }
+                {/* <Input icon = 'search' iconPosition = 'left' className = 'search' onClick = { ( e ) => e.stopPropagation ()} /> */}
+                <Dropdown.Menu scrolling>
+                    <Dropdown.Header
+                        content = 'Clear Filters'
+                        onClick     = {() => { tags.setFilter ( '' )}}
+                    />
+                    <Dropdown.Divider />
+                    { options }
+                </Dropdown.Menu>
             </Dropdown.Menu>
         </Dropdown>
     );

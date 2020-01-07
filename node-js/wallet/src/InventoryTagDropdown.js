@@ -41,6 +41,7 @@ export const InventoryTagDropdown = observer (( props ) => {
         tagList.push (
             <div
                 key = { tagName }
+                style = {{ marginBottom: '12px' }}
             >
                 <Checkbox
                     label           = { tagName }
@@ -53,7 +54,10 @@ export const InventoryTagDropdown = observer (( props ) => {
                     }}
                 />
                 <Button
+                    floated         = 'right'
                     icon            = 'trash'
+                    size            = 'mini'
+                    style           = {{ marginTop: '-5px'}}
                     onClick         = {() => { tags.deleteTag ( tagName )}}
                 />
             </div>
@@ -67,7 +71,7 @@ export const InventoryTagDropdown = observer (( props ) => {
             <Icon name = 'tags'/>
             <Modal
                 style = {{ height : 'auto' }}
-                size = 'small'
+                size = 'mini'
                 open = { isOpen }
                 onClose = {() => {
                     controller.clearSelection ();
@@ -78,7 +82,10 @@ export const InventoryTagDropdown = observer (( props ) => {
                     <div>
                         { tagList }
                         <Input
+                            fluid
+                            maxLength = '20'
                             placeholder = 'New Tag...'
+                            style = {{ marginTop: '6px' }}
                             value = { tagInput }
                             onChange = {( event ) => { setTagInput ( event.target.value )}}
                             onKeyPress = {( event ) => { onTagInputKey ( event.key )}}
