@@ -31,6 +31,7 @@ const KeyInfoModalBody = observer (( props ) => {
 
     const onClosePrivate = () => {
         setPrivateKeyInfo ( false );
+        setPassword ( '' );
     }
 
     return (
