@@ -22,11 +22,11 @@ export const InventoryFilterDropdown = observer (( props ) => {
     for ( let tagName of tagNames ) {
         options.push (
             <Dropdown.Item
-                aria-disabled = { tags.filter === '' ? 'true' : 'false' }
-                key     = { tagName }
-                icon    = 'tags'
-                text    = { tagName }
-                onClick = {() => { tags.setFilter ( tagName )}}
+                disabled    = { tags.countAssetsByTag ( tagName ) === 0 ? true : false }
+                key         = { tagName }
+                icon        = 'tags'
+                text        = { tagName }
+                onClick     = {() => { tags.setFilter ( tagName )}}
             />
         );
     }

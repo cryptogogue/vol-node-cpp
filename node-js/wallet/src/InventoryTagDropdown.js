@@ -44,7 +44,7 @@ export const InventoryTagDropdown = observer (( props ) => {
                 style = {{ marginBottom: '12px' }}
             >
                 <Checkbox
-                    label           = { tagName }
+                    label           = { tagName + ' (' + tags.countAssetsByTag ( tagName ) + ')' }
                     checked         = { allTagged }
                     indeterminate   = { indeterminate }
                     disabled        = { selectionSize === 0 }

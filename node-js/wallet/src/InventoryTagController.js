@@ -36,6 +36,21 @@ export class InventoryTagController {
     }
 
     //----------------------------------------------------------------//
+    countAssetsByTag ( tagName ) {
+
+        let count = 0;
+
+        for ( let assetID in this.assetTags ) {
+            let tagsForAsset = this.assetTags [ assetID ];
+            if ( tagsForAsset && ( tagsForAsset [ tagName ] === true )) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+
+    //----------------------------------------------------------------//
     countSelectedAssetsWithTag ( selection, tagName ) {
 
         let count = 0;
