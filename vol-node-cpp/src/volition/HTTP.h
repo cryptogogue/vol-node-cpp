@@ -27,6 +27,9 @@ public:
         UNKNOWN         = 0,
     };
     
+    static const Method GET_POST    = ( Method )( GET | POST );
+    static const Method GET_PUT     = ( Method )( GET | PUT );
+    
     //----------------------------------------------------------------//
     static HTTP::Method getMethodForString ( string method ) {
         switch ( FNV1a::hash_64 ( method.c_str ())) {

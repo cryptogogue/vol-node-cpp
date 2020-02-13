@@ -89,6 +89,12 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey forAccountTransactionNote ( Account::Index index, u64 nonce ) {
+
+        return Format::write ( "account.%d.transaction.%d", index, nonce );
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey forAssetCount () {
 
         return Format::write ( "asset.count" );

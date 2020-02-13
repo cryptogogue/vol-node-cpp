@@ -126,7 +126,7 @@ string Miner::getMinerID () const {
 //----------------------------------------------------------------//
 time_t Miner::getTime () const {
 
-    return Miner_getTime ();
+    return this->Miner_getTime ();
 }
 
 //----------------------------------------------------------------//
@@ -189,7 +189,7 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::reset () {
 
-    this->PendingTransactionQueue::reset ();
+    this->TransactionQueue::reset ();
     this->mBestBranch->reset ( 1 );
     this->mBranches.clear ();
     this->mBranches.insert ( this->mBestBranch );

@@ -29,6 +29,11 @@ u64 AbstractTransactionBody::maturity () const {
 }
 
 //----------------------------------------------------------------//
+string AbstractTransactionBody::note () const {
+    return this->mNote;
+}
+
+//----------------------------------------------------------------//
 string AbstractTransactionBody::typeString () const {
     return this->AbstractTransactionBody_typeString ();
 }
@@ -49,6 +54,7 @@ void AbstractTransactionBody::AbstractSerializable_serializeFrom ( const Abstrac
     
     serializer.serialize ( "type",      type );
     serializer.serialize ( "maker",     this->mMaker );
+    serializer.serialize ( "note",      this->mNote );
     
     assert ( type == this->typeString ());
 }
@@ -58,6 +64,7 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
 
     serializer.serialize ( "type",      this->typeString ());
     serializer.serialize ( "maker",     this->mMaker );
+    serializer.serialize ( "note",      this->mNote );
 }
 
 } // namespace Volition

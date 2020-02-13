@@ -16,7 +16,7 @@ bool Transaction::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
     if ( this->checkMaker ( ledger )) {
         if ( this->mBody->apply ( ledger, schemaHandle )) {
             if ( this->mBody->mMaker ) {
-                ledger.incrementNonce ( *this->mBody->mMaker );
+                ledger.incrementNonce ( *this->mBody->mMaker, this->mBody->note ());
             }
             return true;
         }
@@ -28,8 +28,8 @@ bool Transaction::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
 bool Transaction::checkMaker ( const Ledger& ledger ) const {
 
     if ( !this->mBody ) return false;
-    
     if ( ledger.isGenesis ()) return true;
+    if ( this->mBody->note ().size () == 0 ) return false;
 
     TransactionMaker* maker = this->mBody->mMaker.get ();
     Signature* signature = this->mSignature.get ();
@@ -49,10 +49,26 @@ bool Transaction::checkMaker ( const Ledger& ledger ) const {
 }
 
 //----------------------------------------------------------------//
+bool Transaction::checkMaker ( string accountName, u64 nonce ) const {
+
+    if ( !this->mBody ) return false;
+    if ( this->mBody->note ().size () == 0 ) return false;
+    TransactionMaker* maker = this->mBody->mMaker.get ();
+    return ( maker && ( maker->getAccountName () == accountName ) && ( maker->getNonce () == nonce ));
+}
+
+//----------------------------------------------------------------//
 const TransactionMaker* Transaction::getMaker () const {
 
     return ( this->mBody && this->mBody->mMaker ) ? this->mBody->mMaker.get () : NULL;
 }
+
+//----------------------------------------------------------------//
+string Transaction::getNote () const {
+
+    return this->mBody ? this->mBody->note () : "";
+}
+
 
 //----------------------------------------------------------------//
 u64 Transaction::maturity () const {

@@ -154,6 +154,14 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @computed get
+    canClearTransactions () {
+
+        if ( !this.hasAccount ) return false;
+        return (( this.account.stagedTransactions.length > 0 ) || ( this.account.pendingTransactions.length > 0 ));
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
     canSubmitTransactions () {
 
         if ( !this.hasAccount ) return false;
@@ -289,6 +297,7 @@ export class AppStateService {
         });
 
         this.setAccountInfo ();
+        this.processTransactionsAsync ();
     }
 
     //----------------------------------------------------------------//
@@ -365,8 +374,6 @@ export class AppStateService {
         }
         return false;
     }
-
-    
 
     //----------------------------------------------------------------//
     getAccount ( accountID ) {
@@ -539,24 +546,57 @@ export class AppStateService {
 
     //----------------------------------------------------------------//
     @action
+    async processTransactionsAsync () {
+
+        console.log ( 'PROCESS TRANSACTIONS' );
+
+        let pendingTransactions     = this.account.pendingTransactions;
+
+        for ( let memo of this.pendingTransactions ) {
+
+            const accountName   = memo.body.maker.accountName;
+            const nonce         = memo.nonce; 
+            
+            try {
+
+                const url = `${ this.network.nodeURL }/accounts/${ accountName }/transactions/${ nonce }`;
+
+                const checkResult = await this.revocable.fetchJSON ( url );
+
+                // TODO: handle mismatched notes
+                if ( !checkResult.note ) {
+                    await this.revocable.fetchJSON ( url, {
+                        method :    'PUT',
+                        headers :   { 'content-type': 'application/json' },
+                        body :      JSON.stringify ( memo.envelope, null, 4 ),
+                    });
+                }
+            }
+            catch ( error ) {
+                console.log ( 'AN ERROR!', error );
+            }
+        }
+        
+        this.revocable.timeout (() => { this.processTransactionsAsync ()}, 5000 );
+    }
+
+    //----------------------------------------------------------------//
+    @action
     pushTransaction ( transaction ) {
 
         this.assertHasAccount ();
-
-        this.flags.promptFirstTransaction = false;
-
-        let account = this.account;
 
         let memo = {
             type:               transaction.type,
             note:               transaction.note,
             cost:               transaction.getCost (),
-            body:               JSON.stringify ( transaction.body, null, 4 ),
+            body:               transaction.body,
             assets:             transaction.assetsUtilized,
         }
 
-        account.stagedTransactions.push ( memo );
+        this.account.stagedTransactions.push ( memo );
         this.setNextTransactionCost ( 0 );
+        this.flags.promptFirstTransaction = false;
     }
 
     //----------------------------------------------------------------//
@@ -681,11 +721,12 @@ export class AppStateService {
                 let memo = _.cloneDeep ( stagedTransactions [ 0 ]);
                 let nonce = this.nextNonce;
 
-                let body = JSON.parse ( memo.body );
+                let body = memo.body;
+                body.note = randomBytes ( 12 ).toString ( 'hex' );
                 body.maker.nonce = nonce;
 
                 let envelope = {
-                    body: JSON.stringify ( body, null, 4 ),
+                    body: JSON.stringify ( body ),
                 };
 
                 const hexKey            = this.account.keys [ body.maker.keyName ];
@@ -697,12 +738,6 @@ export class AppStateService {
                     digest:         key.hash ( envelope.body ),
                     signature:      key.sign ( envelope.body ),
                 };
-                
-                await this.revocable.fetch ( `${ this.network.nodeURL }/transactions`, {
-                    method :    'POST',
-                    headers :   { 'content-type': 'application/json' },
-                    body :      JSON.stringify ( envelope, null, 4 ),
-                });
 
                 memo.envelope   = envelope;
                 memo.nonce      = nonce;

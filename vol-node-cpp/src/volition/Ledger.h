@@ -132,8 +132,9 @@ public:
     shared_ptr < MinerURLMap >          getMinerURLs                () const;
     void                                getSchema                   ( Schema& schema ) const;
     string                              getSchemaString             () const;
+    string                              getTransactionNote          ( string accountName, u64 nonce ) const;
     UnfinishedBlockList                 getUnfinished               ();
-    void                                incrementNonce              ( const TransactionMaker& makerSignature );
+    void                                incrementNonce              ( const TransactionMaker& makerSignature, string note );
     void                                init                        ();
     bool                                invoke                      ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation );
     static bool                         isAccountName               ( string accountName );

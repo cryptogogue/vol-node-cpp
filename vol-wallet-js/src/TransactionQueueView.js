@@ -8,9 +8,9 @@ import { observer }         from 'mobx-react';
 import * as UI              from 'semantic-ui-react';
 
 //================================================================//
-// TransactionListView
+// TransactionQueueView
 //================================================================//
-export const TransactionListView = observer (( props ) => {
+export const TransactionQueueView = observer (( props ) => {
     
     const { transactions } = props;
     const showNonce = props.showNonce || false;
@@ -27,13 +27,13 @@ export const TransactionListView = observer (( props ) => {
             json.body = JSON.parse ( transaction.envelope.body );
         }
         else {
-            json = JSON.parse ( transaction.body );
+            json = transaction.body;
         }
 
         transactionList.push (
             <UI.Table.Row
                 key = { i }
-                positive = { transaction.envelope }
+                positive = { Boolean ( transaction.envelope )}
             >
                 <UI.Table.Cell collapsing>
                     <UI.Modal

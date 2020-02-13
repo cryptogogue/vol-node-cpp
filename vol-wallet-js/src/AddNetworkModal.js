@@ -1,6 +1,5 @@
 /* eslint-disable no-whitespace-before-property */
 
-import { TransactionListView }      from './TransactionListView';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import React, { useState }          from 'react';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';

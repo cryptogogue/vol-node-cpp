@@ -27,6 +27,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */; };
 		CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaHandler.h */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
@@ -159,8 +160,8 @@
 		CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4621EBD46C00B5040E /* UnarySquap.h */; };
 		CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4821EBEB4100B5040E /* SerializableMap.h */; };
 		CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */; };
-		CD964FA323C48EAB009010C3 /* PendingTransactionQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD964FA123C48EAB009010C3 /* PendingTransactionQueue.cpp */; };
-		CD964FA423C48EAB009010C3 /* PendingTransactionQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD964FA223C48EAB009010C3 /* PendingTransactionQueue.h */; };
+		CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */; };
+		CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD964FA223C48EAB009010C3 /* TransactionQueue.h */; };
 		CD9FE6AD22699CCF009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
 		CD9FE6AE22699CCF009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CD9FE6B322699D51009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
@@ -633,6 +634,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountTransactionHandler.h; path = "src/volition/web-miner-api/AccountTransactionHandler.h"; sourceTree = "<group>"; };
 		CD09ED742207D82500B09249 /* SchemaHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaHandler.h; path = "src/volition/web-miner-api/SchemaHandler.h"; sourceTree = "<group>"; };
 		CD0C3E1020C14460006E3B1C /* WebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebMiner.cpp; path = src/volition/WebMiner.cpp; sourceTree = "<group>"; };
 		CD0C3E1120C14460006E3B1C /* WebMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebMiner.h; path = src/volition/WebMiner.h; sourceTree = "<group>"; };
@@ -737,8 +739,8 @@
 		CD8BAE4821EBEB4100B5040E /* SerializableMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableMap.h; path = src/volition/serialization/SerializableMap.h; sourceTree = "<group>"; };
 		CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerKeys.h; path = src/volition/serialization/SerializerKeys.h; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
-		CD964FA123C48EAB009010C3 /* PendingTransactionQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PendingTransactionQueue.cpp; path = src/volition/PendingTransactionQueue.cpp; sourceTree = "<group>"; };
-		CD964FA223C48EAB009010C3 /* PendingTransactionQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PendingTransactionQueue.h; path = src/volition/PendingTransactionQueue.h; sourceTree = "<group>"; };
+		CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionQueue.cpp; path = src/volition/TransactionQueue.cpp; sourceTree = "<group>"; };
+		CD964FA223C48EAB009010C3 /* TransactionQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueue.h; path = src/volition/TransactionQueue.h; sourceTree = "<group>"; };
 		CDB8B3C521AC7DB8004EE816 /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asset.h; path = src/volition/Asset.h; sourceTree = "<group>"; };
 		CDB8B3C921AC7EBF004EE816 /* SerializableList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableList.h; path = src/volition/serialization/SerializableList.h; sourceTree = "<group>"; };
 		CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestWebMiner.cpp; path = src/volition/gtest/TestWebMiner.cpp; sourceTree = "<group>"; };
@@ -1016,12 +1018,12 @@
 			children = (
 				CD36658920EB3BE0000E0B43 /* Miner.cpp */,
 				CD36658A20EB3BE0000E0B43 /* Miner.h */,
-				CD964FA123C48EAB009010C3 /* PendingTransactionQueue.cpp */,
-				CD964FA223C48EAB009010C3 /* PendingTransactionQueue.h */,
 				CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */,
 				CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */,
 				CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */,
 				CD36662D20F56D9A000E0B43 /* TheWebMiner.h */,
+				CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */,
+				CD964FA223C48EAB009010C3 /* TransactionQueue.h */,
 				CD0C3E1020C14460006E3B1C /* WebMiner.cpp */,
 				CD0C3E1120C14460006E3B1C /* WebMiner.h */,
 			);
@@ -1275,6 +1277,7 @@
 			children = (
 				CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */,
 				CDB8B3F821ACC874004EE816 /* AccountKeyListHandler.h */,
+				CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */,
 				CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */,
 				CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */,
 				CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */,
@@ -1506,6 +1509,7 @@
 				CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */,
 				CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */,
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
+				CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,
@@ -1589,7 +1593,7 @@
 				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
 				CD8BAE4521EBD46200B5040E /* BinarySquap.h in Headers */,
 				CD63A1C422AC6B4100D5C801 /* AssetDefinition.h in Headers */,
-				CD964FA423C48EAB009010C3 /* PendingTransactionQueue.h in Headers */,
+				CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */,
 				CD762AD4232826D7005AC85D /* BooleanEntitlement.h in Headers */,
 				CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */,
 				CD762AD5232826D7005AC85D /* PathEntitlement.h in Headers */,
@@ -2008,7 +2012,7 @@
 				CDE9F7792375380600DB62EF /* SimpleChainRecorder.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */,
 				CD73D82C2166D68700F43CC7 /* SimMiner.cpp in Sources */,
-				CD964FA323C48EAB009010C3 /* PendingTransactionQueue.cpp in Sources */,
+				CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */,
 				CD73D82E2166D68700F43CC7 /* Simulation.cpp in Sources */,
 				CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */,
 				CD73D82A2166D68700F43CC7 /* Cohort.cpp in Sources */,

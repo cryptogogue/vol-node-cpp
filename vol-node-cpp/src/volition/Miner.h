@@ -9,7 +9,7 @@
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
 #include <volition/Ledger.h>
-#include <volition/PendingTransactionQueue.h>
+#include <volition/TransactionQueue.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
 #include <volition/Transaction.h>
@@ -25,7 +25,7 @@ class Block;
 //================================================================//
 class Miner :
     public AbstractSerializable,
-    public PendingTransactionQueue {
+    public TransactionQueue {
 protected:
 
     static constexpr const char* MASTER_BRANCH      = "master";

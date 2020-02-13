@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_PENDINGTRANSACTIONQUEUE_H
-#define VOLITION_PENDINGTRANSACTIONQUEUE_H
+#ifndef VOLITION_TRANSACTIONQUEUE_H
+#define VOLITION_TRANSACTIONQUEUE_H
 
 #include <volition/common.h>
 #include <volition/CryptoKey.h>
@@ -20,14 +20,14 @@ class AbstractHashable;
 class Block;
 
 //================================================================//
-// PendingTransactionQueue
+// TransactionQueue
 //================================================================//
-class PendingTransactionQueue {
+class TransactionQueue {
 protected:
 
-    typedef map < u64, shared_ptr < Transaction >>  MakerQueue;
+    typedef map < u64, shared_ptr < Transaction >>  MakerQueue; // nonce: transaction
 
-    map < string, MakerQueue > mDatabase;
+    map < string, MakerQueue > mDatabase; // accountName: queue
     
     //----------------------------------------------------------------//
     void                    reset                   ();
@@ -35,10 +35,12 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    void                    fillBlock                   ( Chain& chain, Block& block );
-    bool                    pushTransaction             ( shared_ptr < Transaction > transaction );
-                            PendingTransactionQueue     ();
-    virtual                 ~PendingTransactionQueue    ();
+    void            fillBlock               ( Chain& chain, Block& block );
+    string          getTransactionNote      ( string accountName, u64 nonce ) const;
+    void            pruneTransactions       ( const Chain& chain );
+    bool            pushTransaction         ( shared_ptr < Transaction > transaction );
+                    TransactionQueue        ();
+    virtual         ~TransactionQueue       ();
 };
 
 } // namespace Volition

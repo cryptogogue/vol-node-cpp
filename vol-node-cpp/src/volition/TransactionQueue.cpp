@@ -3,18 +3,18 @@
 
 #include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
-#include <volition/PendingTransactionQueue.h>
+#include <volition/TransactionQueue.h>
 #include <volition/TheContext.h>
 #include <volition/SyncChainTask.h>
 
 namespace Volition {
 
 //================================================================//
-// PendingTransactionQueue
+// TransactionQueue
 //================================================================//
 
 //----------------------------------------------------------------//
-void PendingTransactionQueue::fillBlock ( Chain& chain, Block& block ) {
+void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
 
     Ledger ledger;
     ledger.takeSnapshot ( chain );
@@ -24,10 +24,14 @@ void PendingTransactionQueue::fillBlock ( Chain& chain, Block& block ) {
     // for example, the current implementation naively re-applies previously recorded
     // transactions with no consideration of the nonce.
 
+    // visit each account
     map < string, MakerQueue >::iterator makerQueueIt = this->mDatabase.begin ();
     for ( ; makerQueueIt != this->mDatabase.end (); ++makerQueueIt ) {
         MakerQueue& makerQueue = makerQueueIt->second;
     
+        // TODO: get the account nonce and skip ahead
+    
+        // visit each transaction (ordered by nonce)
         map < u64, shared_ptr < Transaction >>::iterator transactionIt = makerQueue.begin ();
         for ( ; transactionIt != makerQueue.end (); ++transactionIt ) {
         
@@ -36,7 +40,7 @@ void PendingTransactionQueue::fillBlock ( Chain& chain, Block& block ) {
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
-            // TODO: don't need to fully apply; should just check maker's nonce and sig
+            // TODO: if there's an error, delete the transaction and stop processing
             if ( transaction->apply ( ledger, schemaHandle )) {
                 block.pushTransaction ( transaction );
             }
@@ -49,15 +53,50 @@ void PendingTransactionQueue::fillBlock ( Chain& chain, Block& block ) {
 }
 
 //----------------------------------------------------------------//
-PendingTransactionQueue::PendingTransactionQueue () {
+string TransactionQueue::getTransactionNote ( string accountName, u64 nonce ) const {
+
+    map < string, MakerQueue >::const_iterator makerIt = this->mDatabase.find ( accountName );
+    if ( makerIt != this->mDatabase.cend ()) {
+        const MakerQueue& queue = makerIt->second;
+        map < u64, shared_ptr < Transaction >>::const_iterator transactionIt = queue.find ( nonce );
+        if ( transactionIt != queue.cend ()) {
+            return transactionIt->second->getNote ();
+        }
+    }
+    return "";
 }
 
 //----------------------------------------------------------------//
-PendingTransactionQueue::~PendingTransactionQueue () {
+void TransactionQueue::pruneTransactions ( const Chain& chain ) {
+
+    // TODO: fix this brute force
+    map < string, MakerQueue >::iterator makerItCursor = this->mDatabase.begin ();
+    while ( makerItCursor != this->mDatabase.end ()) {
+        map < string, MakerQueue >::iterator makerIt = makerItCursor++;
+    
+        shared_ptr < Account > account = chain.getAccount ( makerIt->first );
+        if ( account ) {
+        
+            u64 nonce = account->getNonce ();
+            MakerQueue& queue = makerIt->second;
+        
+            map < u64, shared_ptr < Transaction >>::iterator queueItCursor = queue.begin ();
+            while ( queueItCursor != queue.end ()) {
+            
+                map < u64, shared_ptr < Transaction >>::iterator queueIt = queueItCursor++;
+            
+                if ( queueIt->first < nonce ) {
+                    queue.erase ( queueIt );
+                }
+            }
+            if ( queue.size () > 0 ) continue; // skip erasing the queue
+        }
+        this->mDatabase.erase ( makerIt );
+    }
 }
 
 //----------------------------------------------------------------//
-bool PendingTransactionQueue::pushTransaction ( shared_ptr < Transaction > transaction ) {
+bool TransactionQueue::pushTransaction ( shared_ptr < Transaction > transaction ) {
 
     const TransactionMaker* maker = transaction->getMaker ();
     if ( !maker ) return false;
@@ -68,9 +107,17 @@ bool PendingTransactionQueue::pushTransaction ( shared_ptr < Transaction > trans
 }
 
 //----------------------------------------------------------------//
-void PendingTransactionQueue::reset () {
+void TransactionQueue::reset () {
 
     this->mDatabase.clear ();
+}
+
+//----------------------------------------------------------------//
+TransactionQueue::TransactionQueue () {
+}
+
+//----------------------------------------------------------------//
+TransactionQueue::~TransactionQueue () {
 }
 
 //================================================================//

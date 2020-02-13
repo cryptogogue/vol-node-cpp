@@ -133,6 +133,9 @@ void WebMiner::runSolo () {
 
     size_t height = 0;
     while ( !this->isStopped ()) {
+    
+        Poco::Timestamp timestamp;
+    
         {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
@@ -146,9 +149,16 @@ void WebMiner::runSolo () {
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
                 height = nextHeight;
                 this->saveChain ();
+                this->pruneTransactions ( chain );
             }
         }
-        Poco::Thread::sleep ( 200 );
+        
+        u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
+        u32 updateMillis = this->mSoloUpdateIntervalInSeconds * 1000;
+        
+        if ( elapsedMillis < updateMillis ) {
+            Poco::Thread::sleep ( updateMillis - elapsedMillis );
+        }
     }
 }
 
@@ -208,7 +218,8 @@ void WebMiner::updateMiners () {
 WebMiner::WebMiner () :
     Poco::Activity < WebMiner >( this, &WebMiner::runActivity ),
     mTaskManager ( this->mTaskManagerThreadPool ),
-    mSolo ( false ) {
+    mSolo ( false ),
+    mSoloUpdateIntervalInSeconds ( 60 ) {
     
     this->mTaskManager.addObserver (
         Poco::Observer < WebMiner, Poco::TaskFinishedNotification > ( *this, &WebMiner::onSyncChainNotification )

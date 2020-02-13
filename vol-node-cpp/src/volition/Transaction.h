@@ -38,7 +38,9 @@ public:
     //----------------------------------------------------------------//
     bool                        apply                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
     bool                        checkMaker              ( const Ledger& ledger ) const;
+    bool                        checkMaker              ( string accountName, u64 nonce ) const;
     const TransactionMaker*     getMaker                () const;
+    string                      getNote                 () const;
     u64                         maturity                () const;
     void                        setBody                 ( shared_ptr < AbstractTransactionBody > body );
                                 Transaction             ();

@@ -78,8 +78,9 @@ protected:
 
     friend class Transaction;
 
-    SerializableUniquePtr < TransactionMaker >  mMaker;
-    u64                                         mMaxHeight; // expiration block
+    SerializableUniquePtr < TransactionMaker >      mMaker;
+    u64                                             mMaxHeight; // expiration block
+    string                                          mNote;
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -98,6 +99,7 @@ public:
                             ~AbstractTransactionBody                ();
     bool                    apply                                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
     u64                     maturity                                () const;
+    string                  note                                    () const;
     string                  typeString                              () const;
     u64                     weight                                  () const;
 };

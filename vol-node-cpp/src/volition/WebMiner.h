@@ -65,6 +65,7 @@ private:
     map < string, RemoteMiner >         mRemoteMiners;
 
     bool                                        mSolo;
+    u32                                         mSoloUpdateIntervalInSeconds;
     list < unique_ptr < BlockQueueEntry >>      mBlockQueue;
 
     //----------------------------------------------------------------//

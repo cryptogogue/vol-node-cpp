@@ -332,6 +332,18 @@ string Ledger::getSchemaString () const {
 }
 
 //----------------------------------------------------------------//
+string Ledger::getTransactionNote ( string accountName, u64 nonce ) const {
+
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex != Account::NULL_INDEX ) {
+
+        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccountTransactionNote ( accountIndex, nonce );
+        return this->getValueOrFallback < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, "" );
+    }
+    return "";
+}
+
+//----------------------------------------------------------------//
 UnfinishedBlockList Ledger::getUnfinished () {
 
     shared_ptr < UnfinishedBlockList > unfinished = this->getObjectOrNull < UnfinishedBlockList >( FormatLedgerKey::forUnfinished ());
@@ -339,13 +351,17 @@ UnfinishedBlockList Ledger::getUnfinished () {
 }
 
 //----------------------------------------------------------------//
-void Ledger::incrementNonce ( const TransactionMaker& maker ) {
+void Ledger::incrementNonce ( const TransactionMaker& maker, string note ) {
 
     u64 nonce = maker.getNonce ();
     string accountName = maker.getAccountName ();
 
     shared_ptr < Account > account = this->getAccount ( accountName );
-    if ( account && ( account->mNonce <= nonce )) {
+    if ( account && ( account->mNonce == nonce )) {
+    
+        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccountTransactionNote ( account->mIndex, nonce );
+        this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
+    
         Account updatedAccount = *account;
         updatedAccount.mNonce = nonce + 1;
         this->setAccount ( accountName, updatedAccount );
