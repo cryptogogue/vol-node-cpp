@@ -57,6 +57,8 @@ class WebMiner :
     public Poco::Activity < WebMiner > {
 private:
 
+    static const u32                    DEFAULT_UPDATE_INTERVAL = 60;
+
     Poco::Mutex                         mMutex;
 
     Poco::ThreadPool                    mTaskManagerThreadPool;

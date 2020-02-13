@@ -219,7 +219,7 @@ WebMiner::WebMiner () :
     Poco::Activity < WebMiner >( this, &WebMiner::runActivity ),
     mTaskManager ( this->mTaskManagerThreadPool ),
     mSolo ( false ),
-    mSoloUpdateIntervalInSeconds ( 60 ) {
+    mSoloUpdateIntervalInSeconds ( DEFAULT_UPDATE_INTERVAL ) {
     
     this->mTaskManager.addObserver (
         Poco::Observer < WebMiner, Poco::TaskFinishedNotification > ( *this, &WebMiner::onSyncChainNotification )
