@@ -15,8 +15,10 @@ import * as UI                                  from 'semantic-ui-react';
 //================================================================//
 const TransactionModalBody = observer (( props ) => {
 
-    const { appState, open, onClose }       = props;
-    const [ controller, setController ]     = useState ( props.controller );
+    const { appState, open, onClose }                               = props;
+    const [ controllerFromDropdown, setControllerFromDropdown ]     = useState ( false );
+
+    const controller = props.controller || controllerFromDropdown;
 
     const submitTransaction = () => {
         appState.pushTransaction ( controller.transaction );
@@ -43,7 +45,7 @@ const TransactionModalBody = observer (( props ) => {
                     <TransactionDropdown
                         appState                = { appState }
                         controller              = { controller }
-                        setController           = { setController }
+                        setController           = { setControllerFromDropdown }
                     />
                 </If>
                 

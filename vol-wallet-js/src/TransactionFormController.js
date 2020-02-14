@@ -101,7 +101,9 @@ export class TransactionFormController {
             keyName:            this.fields.makerKeyName.value,
             nonce:              -1,
         }
-        return Transaction.transactionWithBody ( this.type, body );
+        const transaction = Transaction.transactionWithBody ( this.type, body );
+        this.virtual_decorateTransaction ( transaction );
+        return transaction;
     }
 
     //----------------------------------------------------------------//
@@ -150,7 +152,10 @@ export class TransactionFormController {
     }
 
     //----------------------------------------------------------------//
-    @action
+    virtual_decorateTransaction ( transaction ) {
+    }
+
+    //----------------------------------------------------------------//
     virtual_validate () {
     }
 }

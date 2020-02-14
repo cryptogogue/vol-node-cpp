@@ -25,7 +25,7 @@ export class TransactionFormFieldController {
     //----------------------------------------------------------------//
     @computed
     get isComplete () {
-        return ( this.inputString || !this.isRequired);
+        return ( this.inputString || !this.isRequired );
     }
 
     //----------------------------------------------------------------//
@@ -38,10 +38,7 @@ export class TransactionFormFieldController {
     @computed
     get value () {
 
-        if ( this.inputString ) {
-            return this.coerce ? this.coerce ( this.inputString ) : this.inputString;
-        }
-        return this.defaultValue;
+        return this.virtual_format ( this.inputString ? this.virtual_coerce ( this.inputString ) : this.defaultValue );
     }
 
     //----------------------------------------------------------------//
@@ -49,6 +46,16 @@ export class TransactionFormFieldController {
     setInputString ( inputString ) {
 
         this.inputString = String ( inputString ) || '';
+    }
+
+    //----------------------------------------------------------------//
+    virtual_coerce ( inputValue ) {
+        return inputValue;
+    }
+
+    //----------------------------------------------------------------//
+    virtual_format ( value ) {
+        return value;
     }
 }
 
@@ -60,6 +67,22 @@ export class TransactionFormFieldController_AccountKey extends TransactionFormFi
     //----------------------------------------------------------------//
     constructor ( fieldName, friendlyName, value ) {
         super ( fieldName, friendlyName, value );
+    }
+}
+
+//================================================================//
+// TransactionFormFieldController_AssetSelection
+//================================================================//
+export class TransactionFormFieldController_AssetSelection extends TransactionFormFieldController {
+
+    //----------------------------------------------------------------//
+    constructor ( fieldName, friendlyName, value ) {
+        super ( fieldName, friendlyName, value );
+    }
+
+    //----------------------------------------------------------------//
+    virtual_format ( value ) {
+        return Object.keys ( value );
     }
 }
 
@@ -94,7 +117,11 @@ export class TransactionFormFieldController_Integer extends TransactionFormField
     //----------------------------------------------------------------//
     constructor ( fieldName, friendlyName, defaultValue, initialValue ) {
         super ( fieldName, friendlyName, defaultValue, initialValue );
-        this.coerce = ( input ) => { return Number ( input )};
+    }
+
+    //----------------------------------------------------------------//
+    virtual_coerce ( inputValue ) {
+        return Number ( inputValue );
     }
 }
 
@@ -134,6 +161,7 @@ export class TransactionFormFieldController_Text extends TransactionFormFieldCon
 
 export const FIELD_CLASS = {
     ACCOUNT_KEY:        TransactionFormFieldController_AccountKey,
+    ASSET_SELECTION:    TransactionFormFieldController_AssetSelection,
     CONST:              TransactionFormFieldController_Const,
     CRYPTO_KEY:         TransactionFormFieldController_CryptoKey,
     INTEGER:            TransactionFormFieldController_Integer,

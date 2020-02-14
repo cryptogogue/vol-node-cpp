@@ -1,12 +1,12 @@
 /* eslint-disable no-whitespace-before-property */
 /* eslint-disable no-loop-func */
 
-import * as entitlements    from './util/entitlements';
+import * as entitlements        from './util/entitlements';
 import { assert, crypto, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, StorageContext, util } from 'fgc';
-import * as bcrypt          from 'bcryptjs';
-import _                    from 'lodash';
+import * as bcrypt              from 'bcryptjs';
+import _                        from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
-import React                from 'react';
+import React                    from 'react';
 
 const STORE_FLAGS               = '.vol_flags';
 const STORE_NETWORKS            = '.vol_networks';
@@ -121,14 +121,20 @@ export class AppStateService {
 
         let assetsUtilized = [];
 
+        // touch .length to force update if change (mobx)
         const pendingTransactions = this.pendingTransactions;
-        for ( let i in pendingTransactions ) {
-            assetsUtilized = assetsUtilized.concat ( pendingTransactions [ i ].assets );
+        if ( pendingTransactions.length ) {
+            for ( let i in pendingTransactions ) {
+                assetsUtilized = assetsUtilized.concat ( pendingTransactions [ i ].assets );
+            }
         }
 
+        // touch .length to force update if change (mobx)
         const stagedTransactions = this.stagedTransactions;
-        for ( let i in stagedTransactions ) {
-            assetsUtilized = assetsUtilized.concat ( stagedTransactions [ i ].assets );
+        if ( stagedTransactions.length ) {
+            for ( let i in stagedTransactions ) {
+                assetsUtilized = assetsUtilized.concat ( stagedTransactions [ i ].assets );
+            }
         }
         return assetsUtilized;
     }
@@ -535,13 +541,13 @@ export class AppStateService {
     //----------------------------------------------------------------//
     @computed get
     pendingAccounts () {
-        return this.network.pendingAccounts || {};
+        return this.network.pendingAccounts;
     }
 
     //----------------------------------------------------------------//
     @computed get
     pendingTransactions () {
-        return this.account.pendingTransactions || [];
+        return this.account.pendingTransactions;
     }
 
     //----------------------------------------------------------------//
@@ -699,7 +705,7 @@ export class AppStateService {
     //----------------------------------------------------------------//
     @computed get
     stagedTransactions () {
-        return this.account.stagedTransactions || [];
+        return this.account.stagedTransactions;
     }
 
     //----------------------------------------------------------------//

@@ -13,6 +13,7 @@ export const TRANSACTION_TYPE = {
     REGISTER_MINER:     'REGISTER_MINER',
     RENAME_ACCOUNT:     'RENAME_ACCOUNT',
     RUN_SCRIPT:         'RUN_SCRIPT',
+    SEND_ASSETS:        'SEND_ASSETS',
     SEND_VOL:           'SEND_VOL',
     UPGRADE_ASSETS:     'UPGRADE_ASSETS',
 };
@@ -48,6 +49,7 @@ export class Transaction {
             case TRANSACTION_TYPE.REGISTER_MINER:   return 'Register Miner';
             case TRANSACTION_TYPE.RENAME_ACCOUNT:   return 'Rename Account';
             case TRANSACTION_TYPE.RUN_SCRIPT:       return 'Run Script';
+            case TRANSACTION_TYPE.SEND_ASSETS:      return 'Send Assets';
             case TRANSACTION_TYPE.SEND_VOL:         return 'Send VOL';
             case TRANSACTION_TYPE.UPGRADE_ASSETS:   return 'Upgrade Assets';
         }
