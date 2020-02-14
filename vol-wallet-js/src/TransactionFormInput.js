@@ -2,7 +2,9 @@
 
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
 import { FIELD_CLASS }                      from './TransactionFormFieldControllers';
-import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
+import { ScannerReportModal, SchemaScannerXLSX } from 'cardmotron';
+import { assert, excel, hooks, FilePickerMenuItem, util } from 'fgc';
+import JSONTree                             from 'react-json-tree';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 import React, { useState }                  from 'react';
@@ -48,6 +50,50 @@ export const KeySelector = observer (( props ) => {
             defaultValue    = { defaultKeyName }
             onChange        = { onChange }
         />
+    );
+});
+
+//================================================================//
+// SchemaFileInput
+//================================================================//
+export const SchemaFileInput = observer (( props ) => {
+
+    const { field, controller } = props;
+
+    const [ scanner, setScanner ]   = useState ( false );
+    const [ schema, setSchema ]     = useState ( false );
+
+    const loadFile = ( binary ) => {
+
+        setSchema ( false );
+        field.setInputString ( '' );
+
+        const book = new excel.Workbook ( binary, { type: 'binary' });
+        if ( book ) {
+            const scanner = new SchemaScannerXLSX ( book );
+            setSchema ( scanner.schema );
+            field.setInputString ( JSON.stringify ( scanner.schema ));
+            if ( scanner.hasMessages ()) {
+                setScanner ( scanner );
+            }
+        }
+        controller.validate ();
+    }
+
+    return (
+        <React.Fragment>
+            <UI.Menu fluid>
+                <FilePickerMenuItem
+                    loadFile = { loadFile }
+                    format = 'binary'
+                    accept = { '.xls, .xlsx' }
+                />
+                <ScannerReportModal scanner = { scanner }/>
+            </UI.Menu>
+            <If condition = { schema }>
+                <JSONTree hideRoot data = { schema } theme = 'bright'/>
+            </If>
+        </React.Fragment>
     );
 });
 
@@ -99,6 +145,14 @@ export const TransactionFormInput = observer (( props ) => {
                     fluid
                     type = 'number'
                     { ...commonProps }
+                />
+            );
+
+        case FIELD_CLASS.SCHEMA:
+            return (
+                 <SchemaFileInput
+                    field       = { field }
+                    controller  = { controller }
                 />
             );
 

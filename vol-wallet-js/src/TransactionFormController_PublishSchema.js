@@ -18,7 +18,7 @@ export class TransactionFormController_PublishSchema extends TransactionFormCont
         super ();
 
         const fieldsArray = [
-            new FIELD_CLASS.TEXT    ( 'schema',         'Schema', 8 ),
+            new FIELD_CLASS.SCHEMA  ( 'schema',     'Schema' ),
         ];
         this.initialize ( appState, TRANSACTION_TYPE.PUBLISH_SCHEMA, fieldsArray );
     }

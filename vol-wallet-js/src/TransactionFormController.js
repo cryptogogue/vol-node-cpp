@@ -141,8 +141,6 @@ export class TransactionFormController {
         if ( this.appState.balance < cost ) {
             this.isErrorFree = false;
         }
-
-        console.log ( 'VALIDATE:', this.isComplete, this.isErrorFree );
     }
 
     //----------------------------------------------------------------//

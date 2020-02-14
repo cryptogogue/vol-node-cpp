@@ -15,7 +15,6 @@ export const TransactionQueueLabel = observer (( props ) => {
     const [ open, setOpen ] = useState ( false );
 
     const onClose = () => {
-        console.log ( 'ON CLOSE!' );
         setOpen ( false );
     }
 

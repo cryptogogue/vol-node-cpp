@@ -99,6 +99,17 @@ export class TransactionFormFieldController_Integer extends TransactionFormField
 }
 
 //================================================================//
+// TransactionFormFieldController_Schema
+//================================================================//
+export class TransactionFormFieldController_Schema extends TransactionFormFieldController {
+
+    //----------------------------------------------------------------//
+    constructor ( fieldName, friendlyName, defaultValue, initialValue ) {
+        super ( fieldName, friendlyName, defaultValue, initialValue );
+    }
+}
+
+//================================================================//
 // TransactionFormFieldController_String
 //================================================================//
 export class TransactionFormFieldController_String extends TransactionFormFieldController {
@@ -126,6 +137,7 @@ export const FIELD_CLASS = {
     CONST:              TransactionFormFieldController_Const,
     CRYPTO_KEY:         TransactionFormFieldController_CryptoKey,
     INTEGER:            TransactionFormFieldController_Integer,
+    SCHEMA:             TransactionFormFieldController_Schema,
     STRING:             TransactionFormFieldController_String,
     TEXT:               TransactionFormFieldController_Text,
 }
