@@ -31,18 +31,20 @@ export const TransactionForm = observer (( props ) => {
         );
     }
 
-    const balance       = controller.balance;
+    const balance       = controller.balance > 0 ? controller.balance : 0;
     const textColor     = balance > 0 ? 'black' : 'red';
 
     return (
-        <UI.Form>
+        <UI.Segment>
             <UI.Header
                 as = 'h4'
                 style = {{ color: textColor }}
             >
                 Balance: { balance }
             </UI.Header>
-            { fields }
-        </UI.Form>
+            <UI.Form>    
+                { fields }
+            </UI.Form>
+        </UI.Segment>
     );
 });

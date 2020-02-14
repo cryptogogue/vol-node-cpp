@@ -2,6 +2,8 @@
 
 import { Transaction, TRANSACTION_TYPE }        from './Transaction';
 import { TransactionForm }                      from './TransactionForm';
+import * as controllers                         from './TransactionFormController';
+import { TransactionDropdown }                  from './TransactionDropdown';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                             from 'mobx-react';
@@ -13,17 +15,21 @@ import * as UI                                  from 'semantic-ui-react';
 //================================================================//
 const TransactionModalBody = observer (( props ) => {
 
-    const { appState, open, onClose, title, controller } = props;
+    const { appState, open, onClose }       = props;
+    const [ controller, setController ]     = useState ( props.controller );
 
     const submitTransaction = () => {
         appState.pushTransaction ( controller.transaction );
         onClose ();
     }
 
-    const submitEnabled = appState.hasAccountInfo && controller && controller.isCompleteAndErrorFree;
+    const showDropdown      = !props.controller;
+    const title             = showDropdown ? 'New Transaction' : controller.friendlyName;
+    const submitEnabled     = appState.hasAccountInfo && controller && controller.isCompleteAndErrorFree;
 
     return (
         <UI.Modal
+            key = { controller ? controller.type : -1 }
             size = 'small'
             closeIcon
             onClose = {() => { onClose ()}}
@@ -32,10 +38,17 @@ const TransactionModalBody = observer (( props ) => {
             <UI.Modal.Header>{ title }</UI.Modal.Header>
             
             <UI.Modal.Content>
+
+                <If condition = { showDropdown }>
+                    <TransactionDropdown
+                        appState                = { appState }
+                        controller              = { controller }
+                        setController           = { setController }
+                    />
+                </If>
+                
                 <If condition = { controller }>
-                    <UI.Segment>
-                        <TransactionForm controller = { controller }/>
-                    </UI.Segment>
+                    <TransactionForm controller = { controller }/>
                 </If>
             </UI.Modal.Content>
 
@@ -57,10 +70,10 @@ const TransactionModalBody = observer (( props ) => {
 //================================================================//
 export const TransactionModal = observer (( props ) => {
 
-    const { appState, title, controller } = props;
+    const { appState } = props;
     const [ counter, setCounter ] = useState ( 0 );
 
-    const open = Boolean ( props.open || controller );
+    const open = Boolean ( props.open || props.controller );
 
     const onClose = () => {
         setCounter ( counter + 1 );
@@ -73,8 +86,7 @@ export const TransactionModal = observer (( props ) => {
                 appState                = { appState }
                 open                    = { open }
                 onClose                 = { onClose }
-                title                   = { title }
-                controller              = { controller }
+                controller              = { props.controller || false }
             />
         </div>
     );

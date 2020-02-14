@@ -548,8 +548,6 @@ export class AppStateService {
     @action
     async processTransactionsAsync () {
 
-        console.log ( 'PROCESS TRANSACTIONS' );
-
         let pendingTransactions     = this.account.pendingTransactions;
 
         for ( let memo of this.pendingTransactions ) {

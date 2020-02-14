@@ -340,7 +340,6 @@ export const UpgradesScreen = observer (( props ) => {
                     appState    = { appState }
                     controller  = { transactionController }
                     onClose     = { onCloseTransactionModal }
-                    title       = 'Upgrade Assets'
                 />
 
             </SingleColumnContainerView>

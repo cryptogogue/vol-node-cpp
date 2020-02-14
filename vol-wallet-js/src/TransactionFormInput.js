@@ -66,8 +66,6 @@ export const TransactionFormInput = observer (( props ) => {
         controller.validate ();
     };
 
-    console.log ( 'INPUT STRING', field.inputString );
-
     const commonProps = {
         placeholder:    field.friendlyName,
         name:           field.fieldName,

@@ -1,7 +1,7 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { AppStateService }                  from './AppStateService';
-import { NewTransactionModal }              from './NewTransactionModal';
+import { TransactionModal }                 from './TransactionModal';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import { action, computed, extendObservable, observable, observe } from 'mobx';
 import { observer }                         from 'mobx-react';
@@ -86,7 +86,7 @@ export const AccountActionsSegment = observer (( props ) => {
                 </UI.Button>
             </UI.Segment>
 
-            <NewTransactionModal
+            <TransactionModal
                 appState = { appState }
                 open = { transactionModalOpen }
                 onClose = {() => { setTransactionModalOpen ( false )}}

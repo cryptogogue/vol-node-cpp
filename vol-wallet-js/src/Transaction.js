@@ -85,7 +85,7 @@ export class Transaction {
 
         switch ( type ) {
             case TRANSACTION_TYPE.OPEN_ACCOUNT: return new Transaction_OpenAccount ( type, body );
-            case TRANSACTION_TYPE.SEND_VOL:     return new Transaction_SendVol ( type, body );
+            case TRANSACTION_TYPE.SEND_VOL:     return new Transaction_SendVOL ( type, body );
             default:                            return new Transaction ( type, body );
         }
     }
@@ -104,9 +104,9 @@ class Transaction_OpenAccount extends Transaction {
 };
 
 //================================================================//
-// Transaction_SendVol
+// Transaction_SendVOL
 //================================================================//
-class Transaction_SendVol extends Transaction {
+class Transaction_SendVOL extends Transaction {
 
     //----------------------------------------------------------------//
     getCost () {

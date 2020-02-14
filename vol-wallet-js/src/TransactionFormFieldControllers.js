@@ -49,7 +49,6 @@ export class TransactionFormFieldController {
     setInputString ( inputString ) {
 
         this.inputString = String ( inputString ) || '';
-        console.log ( 'SET INPUT STRING', this.fieldName, inputString, this.inputString );
     }
 }
 
@@ -65,9 +64,9 @@ export class TransactionFormFieldController_AccountKey extends TransactionFormFi
 }
 
 //================================================================//
-// TransactionFormConstFieldController
+// TransactionFormFieldController_Const
 //================================================================//
-export class TransactionFormConstFieldController extends TransactionFormFieldController {
+export class TransactionFormFieldController_Const extends TransactionFormFieldController {
 
     //----------------------------------------------------------------//
     constructor ( fieldName, friendlyName, value ) {
@@ -76,9 +75,9 @@ export class TransactionFormConstFieldController extends TransactionFormFieldCon
 }
 
 //================================================================//
-// TransactionFormCryptoKeyFieldController
+// TransactionFormFieldController_CryptoKey
 //================================================================//
-export class TransactionFormCryptoKeyFieldController extends TransactionFormFieldController {
+export class TransactionFormFieldController_CryptoKey extends TransactionFormFieldController {
 
     //----------------------------------------------------------------//
     constructor ( fieldName, friendlyName, rows, defaultValue, initialValue ) {
@@ -88,9 +87,9 @@ export class TransactionFormCryptoKeyFieldController extends TransactionFormFiel
 }
 
 //================================================================//
-// TransactionFormIntegerFieldController
+// TransactionFormFieldController_Integer
 //================================================================//
-export class TransactionFormIntegerFieldController extends TransactionFormFieldController {
+export class TransactionFormFieldController_Integer extends TransactionFormFieldController {
 
     //----------------------------------------------------------------//
     constructor ( fieldName, friendlyName, defaultValue, initialValue ) {
@@ -100,9 +99,9 @@ export class TransactionFormIntegerFieldController extends TransactionFormFieldC
 }
 
 //================================================================//
-// TransactionFormStringFieldController
+// TransactionFormFieldController_String
 //================================================================//
-export class TransactionFormStringFieldController extends TransactionFormFieldController {
+export class TransactionFormFieldController_String extends TransactionFormFieldController {
 
     //----------------------------------------------------------------//
     constructor ( fieldName, friendlyName, defaultValue, initialValue ) {
@@ -111,9 +110,9 @@ export class TransactionFormStringFieldController extends TransactionFormFieldCo
 }
 
 //================================================================//
-// TransactionFormTextFieldController
+// TransactionFormFieldController_Text
 //================================================================//
-export class TransactionFormTextFieldController extends TransactionFormFieldController {
+export class TransactionFormFieldController_Text extends TransactionFormFieldController {
 
     //----------------------------------------------------------------//
     constructor ( fieldName, friendlyName, rows, defaultValue, initialValue ) {
@@ -124,9 +123,9 @@ export class TransactionFormTextFieldController extends TransactionFormFieldCont
 
 export const FIELD_CLASS = {
     ACCOUNT_KEY:        TransactionFormFieldController_AccountKey,
-    CONST:              TransactionFormConstFieldController,
-    CRYPTO_KEY:         TransactionFormCryptoKeyFieldController,
-    INTEGER:            TransactionFormIntegerFieldController,
-    STRING:             TransactionFormStringFieldController,
-    TEXT:               TransactionFormTextFieldController,
+    CONST:              TransactionFormFieldController_Const,
+    CRYPTO_KEY:         TransactionFormFieldController_CryptoKey,
+    INTEGER:            TransactionFormFieldController_Integer,
+    STRING:             TransactionFormFieldController_String,
+    TEXT:               TransactionFormFieldController_Text,
 }

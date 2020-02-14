@@ -7,15 +7,9 @@ import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 
-const MAKER_FORMAT = {
-    gratuity:           'gratuity',
-    accountName:        'makerAccountName',
-    keyName:            'makerKeyName',
-    nonce:              'makerNonce',
-}
-
 const SPECIAL_FIELDS = [
     'gratuity',
+    'makerKeyName',
 ];
 
 //================================================================//
@@ -51,6 +45,13 @@ export class TransactionFormController {
             }
         }
         return result;
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    friendlyName () {
+
+        return Transaction.friendlyNameForType ( this.type );
     }
 
     //----------------------------------------------------------------//
@@ -233,12 +234,19 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
     constructor ( appState ) {
         super ();
 
+        // TODO: replace with something deterministic        
+        const suffixPart = () => {
+            return randomBytes ( 2 ).toString ( 'hex' ).substring ( 0, 3 );
+        }
+        const suffix = `${ suffixPart ()}.${ suffixPart ()}.${ suffixPart()}`.toUpperCase ();
+        console.log ( 'SUFFIX:', suffix );
+
         const fieldsArray = [
+            new FIELD_CLASS.CONST           ( 'suffix',         'Suffix', suffix ),
             new FIELD_CLASS.CRYPTO_KEY      ( 'request',        'New Account Request', 6 ),
             new FIELD_CLASS.INTEGER         ( 'grant',          'Grant', 0, 0 ),
         ];
         this.initialize ( appState, TRANSACTION_TYPE.OPEN_ACCOUNT, fieldsArray );
-        this.initSuffix ();
     }
 
     //----------------------------------------------------------------//
@@ -274,26 +282,14 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
     }
 
     //----------------------------------------------------------------//
-    @action
-    initSuffix () {
-
-        // TODO: replace with something deterministic        
-        const suffixPart = () => {
-            return randomBytes ( 2 ).toString ( 'hex' ).substring ( 0, 3 );
-        }
-        this.fieldValues.suffix = `${ suffixPart ()}.${ suffixPart ()}.${ suffixPart()}`.toUpperCase ();
-        console.log ( 'SUFFIX:', this.fieldValues.suffix );
-    }
-
-    //----------------------------------------------------------------//
     virtual_composeBody ( fieldValues ) {
 
         const request = this.decodeRequest ();
 
         let body = {
-            suffix:     fieldValues.suffix || '',
+            suffix:     this.fields.suffix.value,
             key:        request && request.key || false,
-            grant:      fieldValues.grant || 0,
+            grant:      this.fields.grant.value,
         };
         return body;
     }
@@ -331,9 +327,14 @@ export class TransactionFormController_PublishSchema extends TransactionFormCont
     //----------------------------------------------------------------//
     virtual_composeBody ( fieldValues ) {
 
-        let body = {
-            schema:     JSON.parse ( this.fieldValues.schema ),
-        };
+        const body = {};
+        if ( this.fields.schema.value ) {
+            try {
+                body.schema = JSON.parse ( this.fields.schema.value );
+            }
+            catch ( error ) {
+            }
+        }
         return body;
     }
 
@@ -342,7 +343,7 @@ export class TransactionFormController_PublishSchema extends TransactionFormCont
     virtual_validate () {
 
         try {
-            this.schema = JSON.parse ( this.fields.schema.value );
+            this.fields.schema.value && JSON.parse ( this.fields.schema.value );
         }
         catch ( error ) {
             this.fields.schema.error  = 'Error parsing JSON.';
@@ -375,13 +376,9 @@ export class TransactionFormController_RenameAccount extends TransactionFormCont
     constructor ( appState ) {
         super ();
 
-        // const fields = [
-        //     new FIELD_CLASS.STRING       ( 'revealedName',   'Revealed Name' ),
-        //     new FIELD_CLASS.STRING       ( 'secretName',     'Secret Name' ),
-        // ];
-
         const fieldsArray = [
             new FIELD_CLASS.STRING      ( 'revealedName',   'New Name' ),
+            // new FIELD_CLASS.STRING       ( 'secretName',     'Secret Name' ),
         ];
         this.initialize ( appState, TRANSACTION_TYPE.RENAME_ACCOUNT, fieldsArray );
     }
@@ -403,14 +400,15 @@ export class TransactionFormController_RenameAccount extends TransactionFormCont
     //----------------------------------------------------------------//
     virtual_composeBody ( fieldValues ) {
 
-        const makerAccountName  = this.makerAccountName;
-        const secretName        = this.secretName;
-
         let body = {
             revealedName: this.revealedName,
         };
 
-        if ( secretName.length ) {
+        if ( this.fields.secretName ) {
+            
+            const makerAccountName  = this.makerAccountName;
+            const secretName    = this.fields.secretName.value;
+
             body.nameHash       = sha256 ( secretName );
             body.nameSecret     = sha256 ( `${ makerAccountName }:${ secretName }` );
         }
@@ -492,23 +490,4 @@ export class TransactionFormController_UpgradeAssets extends TransactionFormCont
         ];
         this.initialize ( appState, TRANSACTION_TYPE.UPGRADE_ASSETS, fieldsArray );
     }
-}
-
-//================================================================//
-// factory
-//================================================================//
-export function makeControllerForTransactionType ( appState, transactionType ) {
-
-    switch ( transactionType ) {
-        case TRANSACTION_TYPE.ACCOUNT_POLICY:   return new TransactionFormController_AccountPolicy ( appState );
-        case TRANSACTION_TYPE.AFFIRM_KEY:       return new TransactionFormController_AffirmKey ( appState );
-        case TRANSACTION_TYPE.BETA_GET_ASSETS:  return new TransactionFormController_BetaGetAssets ( appState );
-        case TRANSACTION_TYPE.KEY_POLICY:       return new TransactionFormController_KeyPolicy ( appState );
-        case TRANSACTION_TYPE.OPEN_ACCOUNT:     return new TransactionFormController_OpenAccount ( appState );
-        case TRANSACTION_TYPE.PUBLISH_SCHEMA:   return new TransactionFormController_PublishSchema ( appState );
-        case TRANSACTION_TYPE.REGISTER_MINER:   return new TransactionFormController_RegisterMiner ( appState );
-        case TRANSACTION_TYPE.RENAME_ACCOUNT:   return new TransactionFormController_RenameAccount ( appState );
-        case TRANSACTION_TYPE.SEND_VOL:         return new TransactionFormController_SendVol ( appState );
-    }
-    return new TransactionFormController ( appState );
 }
