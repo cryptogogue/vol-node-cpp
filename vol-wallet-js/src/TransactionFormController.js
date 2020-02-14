@@ -1,19 +1,22 @@
 /* eslint-disable no-whitespace-before-property */
 
 import { Transaction, TRANSACTION_TYPE }    from './Transaction';
-import * as inputType                       from './TransactionFormInputTypes';
+import { FIELD_CLASS }                      from './TransactionFormFieldControllers';
 import { assert, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, util } from 'fgc';
 import _                                    from 'lodash';
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';
 
-//----------------------------------------------------------------//
 const MAKER_FORMAT = {
     gratuity:           'gratuity',
     accountName:        'makerAccountName',
     keyName:            'makerKeyName',
     nonce:              'makerNonce',
 }
+
+const SPECIAL_FIELDS = [
+    'gratuity',
+];
 
 //================================================================//
 // TransactionFormController
@@ -34,80 +37,45 @@ export class TransactionFormController {
     }
 
     //----------------------------------------------------------------//
-    composeBody ( fieldValues ) {
-
-        return this.formatBody ( fieldValues, this.format );
-    }
-
-    //----------------------------------------------------------------//
     finalize () {
     }
 
     //----------------------------------------------------------------//
-    formatBody ( fieldValues, format ) {
+    formatBody () {
         
         let result = {};
-        for ( let fieldName in format ) {
-
-            const fieldSource = format [ fieldName ];
-            let fieldValue;
-
-            if (( typeof fieldSource ) === 'object' ) {
-                fieldValue = this.formatBody ( fieldValues, fieldSource );
+        for ( let field of this.fieldsArray ) {
+            const fieldName = field.fieldName;
+            if ( !SPECIAL_FIELDS.includes ( fieldName )) {
+                result [ fieldName ] = field.value;
             }
-            else {
-                fieldValue = fieldValues [ fieldSource ];
-            }
-            result [ fieldName ] = fieldValue;
         }
-
         return result;
     }
 
     //----------------------------------------------------------------//
-    @action
-    handleChange ( field, type, value ) {
-        
-        let typedValue = null;
+    initialize ( appState, type, fieldsArray ) {
 
-        if ( value && ( value.length > 0 )) {
-            typedValue = ( type === 'number' ) ? Number ( value ) : String ( value );
-        }
-        this.fieldValues [ field.name ] = typedValue;
-        this.transaction = this.makeTransaction ();
+        this.appState               = appState;
+        this.type                   = type;
+        this.makerAccountName       = appState.accountID;
 
-        this.cost = this.transaction.getCost ();
-
-        this.validate ();
-    }
-
-    //----------------------------------------------------------------//
-    initialize ( appState, type, fields, format, fieldValues ) {
-
-        fields = fields || [];
-        fields.push (
-            inputType.integerField      ( 'gratuity',       'Gratuity', 0 ),
+        fieldsArray = fieldsArray || [];
+        fieldsArray.push (
+            new FIELD_CLASS.INTEGER         ( 'gratuity',       'Gratuity', 0 ),
+            new FIELD_CLASS.ACCOUNT_KEY     ( 'makerKeyName',   'Maker Key', appState.getDefaultAccountKeyName ()),
         );
 
-        this.appState   = appState;
-        this.type       = type;
-        this.fields     = fields;
-        this.format     = format;
-
-        // populate fields with null
-        fieldValues = fieldValues || {};
-        for ( let field of this.fields ) {
-            fieldValues [ field.name ] = null;
+        const fields = {};
+        for ( let field of fieldsArray ) {
+            fields [ field.fieldName ] = field;
         }
 
-        fieldValues.makerAccountName    = appState.accountID;
-        fieldValues.makerKeyName        = appState.getDefaultAccountKeyName (),
-        fieldValues.makerNonce          = -1;
-
         extendObservable ( this, {
-            fieldValues:    fieldValues,
-            fieldErrors:    {},
-            isComplete:     false,
+            fields:             fields,
+            fieldsArray:        fieldsArray,
+            isComplete:         false,
+            isErrorFree:        false,
         });
 
         this.transaction = this.makeTransaction ();
@@ -118,62 +86,73 @@ export class TransactionFormController {
     @computed
     get isCompleteAndErrorFree () {
 
-        return this.isComplete && ( Object.keys ( this.fieldErrors ).length === 0 );
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    key () {
-
-        return this.appState.getKey ( this.fieldValues.makerKeyName );
-    }
-
-    //----------------------------------------------------------------//
-    @computed get
-    keyName () {
-
-        return this.fieldValues.makerKeyName;
+        return this.isComplete && this.isErrorFree;
     }
 
     //----------------------------------------------------------------//
     @action
     makeTransaction () {
 
-        const fieldValues = _.cloneDeep ( this.fieldValues );
-        for ( let field of this.fields ) {
-            let value = fieldValues [ field.name ];
-            fieldValues [ field.name ] = ( value === null ) ? field.defaultValue : value;
+        const body = this.virtual_composeBody ();
+        body.maker = {
+            gratuity:           this.fields.gratuity.value,
+            accountName:        this.makerAccountName,
+            keyName:            this.fields.makerKeyName.value,
+            nonce:              -1,
         }
-        return Transaction.transactionWithBody ( this.type, this.composeBody ( fieldValues ));
-    }
-
-    //----------------------------------------------------------------//
-    @action
-    setKeyName ( keyName ) {
-        
-        return this.fieldValues.makerKeyName = keyName;
+        return Transaction.transactionWithBody ( this.type, body );
     }
 
     //----------------------------------------------------------------//
     @action
     validate () {
 
-        this.fieldErrors = {};
-        this.isComplete = false;
+        this.transaction    = this.makeTransaction ();
+        this.cost           = this.transaction.getCost ();
 
-        const cost = this.transaction.getCost ();
-        if ( this.appState.balance < cost ) return false;
-
-        for ( let field of this.fields ) {
-
-            if ( field.isRequired === false ) continue;
-            
-            const fieldValue = this.fieldValues [ field.name ];
-            if ( fieldValue === null ) {
-                return;
+        // check for completion
+        this.isComplete = true;
+        for ( let field of this.fieldsArray ) {
+            if ( !field.isComplete ) {
+                console.log ( 'MISSING REQUIRED FIELD', field.fieldName );
+                this.isComplete = false;
+                break;
             }
         }
-        this.isComplete = true;
+
+        // reset errors
+        for ( let field of this.fieldsArray ) {
+            field.error = false;
+        }
+
+        // check error free
+        this.isErrorFree = true;
+        this.virtual_validate ();
+        for ( let field of this.fieldsArray ) {
+            if ( field.error ) {
+                this.isErrorFree = false;
+                break;
+            }
+        }
+
+        // check balance
+        const cost = this.transaction.getCost ();
+        if ( this.appState.balance < cost ) {
+            this.isErrorFree = false;
+        }
+
+        console.log ( 'VALIDATE:', this.isComplete, this.isErrorFree );
+    }
+
+    //----------------------------------------------------------------//
+    virtual_composeBody () {
+
+        return this.formatBody ();
+    }
+
+    //----------------------------------------------------------------//
+    @action
+    virtual_validate () {
     }
 }
 
@@ -186,20 +165,11 @@ export class TransactionFormController_AccountPolicy extends TransactionFormCont
     constructor ( appState ) {
         super ();
 
-        const type = TRANSACTION_TYPE.ACCOUNT_POLICY;
-
-        const fields = [
-            inputType.stringField       ( 'policyName',     'Policy Name' ),
-            inputType.textField         ( 'policy',         'Policy', 8 ),
+        const fieldsArray = [
+            new FIELD_CLASS.STRING  ( 'policyName',     'Policy Name' ),
+            new FIELD_CLASS.TEXT    ( 'policy',         'Policy', 8 ),
         ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            policy:             'policy',
-            policyName:         'policyName',
-        };
-
-        this.initialize ( appState, type, fields, format );
+        this.initialize ( appState, TRANSACTION_TYPE.ACCOUNT_POLICY, fieldsArray );
     }
 }
 
@@ -212,22 +182,12 @@ export class TransactionFormController_AffirmKey extends TransactionFormControll
     constructor ( appState ) {
         super ();
 
-        const type = TRANSACTION_TYPE.AFFIRM_KEY;
-
-        const fields = [
-            inputType.stringField       ( 'keyName',        'Key Name' ),
-            inputType.stringField       ( 'key',            'Key' ),
-            inputType.stringField       ( 'policyName',     'Policy' ),
+        const fieldsArray = [
+            new FIELD_CLASS.STRING      ( 'keyName',        'Key Name' ),
+            new FIELD_CLASS.STRING      ( 'key',            'Key' ),
+            new FIELD_CLASS.STRING      ( 'policyName',     'Policy' ),
         ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            key:                'key',
-            keyName:            'keyName',
-            policyName:         'policyName',
-        };
-
-        this.initialize ( appState, type, fields, format );
+        this.initialize ( appState, TRANSACTION_TYPE.AFFIRM_KEY, fieldsArray );
     }
 }
 
@@ -240,18 +200,10 @@ export class TransactionFormController_BetaGetAssets extends TransactionFormCont
     constructor ( appState ) {
         super ();
 
-        const type = TRANSACTION_TYPE.BETA_GET_ASSETS;
-
-        const fields = [
-            inputType.integerField      ( 'numAssets',      'Copies', 1 ),
+        const fieldsArray = [
+            new FIELD_CLASS.INTEGER     ( 'numAssets',      'Copies', 1, 1 ),
         ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            numAssets:          'numAssets',
-        };
-
-        this.initialize ( appState, type, fields, format );
+        this.initialize ( appState, TRANSACTION_TYPE.BETA_GET_ASSETS, fieldsArray );
     }
 }
 
@@ -264,20 +216,11 @@ export class TransactionFormController_KeyPolicy extends TransactionFormControll
     constructor ( appState ) {
         super ();
 
-        const type = TRANSACTION_TYPE.KEY_POLICY;
-
-        const fields = [
-            inputType.stringField       ( 'policyName',     'Policy Name' ),
-            inputType.textField         ( 'policy',         'Policy', 8 ),
+        const fieldsArray = [
+            new FIELD_CLASS.STRING      ( 'policyName',     'Policy Name' ),
+            new FIELD_CLASS.TEXT        ( 'policy',         'Policy', 8 ),
         ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            policy:             'policy',
-            policyName:         'policyName',
-        };
-
-        this.initialize ( appState, type, fields, format );
+        this.initialize ( appState, TRANSACTION_TYPE.KEY_POLICY, fieldsArray );
     }
 }
 
@@ -287,48 +230,23 @@ export class TransactionFormController_KeyPolicy extends TransactionFormControll
 export class TransactionFormController_OpenAccount extends TransactionFormController {
 
     //----------------------------------------------------------------//
-    composeBody ( fieldValues ) {
-
-        const request       = this.decodeRequest ();
-
-        let body = {};
-        body.maker          = this.formatBody ( fieldValues, MAKER_FORMAT );
-        body.suffix         = fieldValues.suffix || '';
-        body.key            = request && request.key || false;
-        body.grant          = fieldValues.grant || 0;
-
-        return body;
-    }
-
-    //----------------------------------------------------------------//
     constructor ( appState ) {
         super ();
 
-        const type = TRANSACTION_TYPE.OPEN_ACCOUNT;
-
-        const fields = [
-            inputType.cryptoField       ( 'request',        'New Account Request', 6 ),
-            inputType.integerField      ( 'grant',          'Grant', 0 ),
+        const fieldsArray = [
+            new FIELD_CLASS.CRYPTO_KEY      ( 'request',        'New Account Request', 6 ),
+            new FIELD_CLASS.INTEGER         ( 'grant',          'Grant', 0, 0 ),
         ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            accountName:        'accountName',
-            amount:             'amount',
-            key:                'key',
-            keyName:            'keyName',
-        };
-
-        this.initialize ( appState, type, fields, format );
+        this.initialize ( appState, TRANSACTION_TYPE.OPEN_ACCOUNT, fieldsArray );
         this.initSuffix ();
     }
 
     //----------------------------------------------------------------//
     decodeRequest () {
 
-        console.log ( 'DECODE REQUEST', this.fieldValues.request );
+        console.log ( 'DECODE REQUEST', this.fields.request.value );
 
-        let encoded = this.fieldValues.request;
+        let encoded = this.fields.request.value;
         if ( encoded && encoded.length ) {
             try {
 
@@ -368,19 +286,28 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
     }
 
     //----------------------------------------------------------------//
+    virtual_composeBody ( fieldValues ) {
+
+        const request = this.decodeRequest ();
+
+        let body = {
+            suffix:     fieldValues.suffix || '',
+            key:        request && request.key || false,
+            grant:      fieldValues.grant || 0,
+        };
+        return body;
+    }
+
+    //----------------------------------------------------------------//
     @action
-    validate () {
-        super.validate ();
+    virtual_validate () {
 
-        const fieldValues = this.fieldValues;
-        const fieldErrors = this.fieldErrors;
-
-        const encoded = fieldValues.request || '';
+        const encoded = this.fields.request.value || '';
 
         if ( encoded.length > 0 ) {
             const request = this.decodeRequest ();
             if ( !request ) {
-                fieldErrors.request = 'Problem decoding request.';
+                this.fields.request.error = 'Problem decoding request.';
             }
         }
     }
@@ -392,46 +319,33 @@ export class TransactionFormController_OpenAccount extends TransactionFormContro
 export class TransactionFormController_PublishSchema extends TransactionFormController {
 
     //----------------------------------------------------------------//
-    composeBody ( fieldValues ) {
+    constructor ( appState ) {
+        super ();
 
-        let body = {};
-        body.maker          = this.formatBody ( fieldValues, MAKER_FORMAT );
-        body.schema         = JSON.parse ( this.fieldValues.schema );
+        const fieldsArray = [
+            new FIELD_CLASS.TEXT    ( 'schema',         'Schema', 8 ),
+        ];
+        this.initialize ( appState, TRANSACTION_TYPE.PUBLISH_SCHEMA, fieldsArray );
+    }
 
+    //----------------------------------------------------------------//
+    virtual_composeBody ( fieldValues ) {
+
+        let body = {
+            schema:     JSON.parse ( this.fieldValues.schema ),
+        };
         return body;
     }
 
     //----------------------------------------------------------------//
-    constructor ( appState ) {
-        super ();
-
-        const type = TRANSACTION_TYPE.PUBLISH_SCHEMA;
-
-        const fields = [
-            inputType.textField         ( 'schema',         'Schema', 8 ),
-        ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            schema:             'schema',
-        };
-
-        this.initialize ( appState, type, fields, format );
-    }
-
-    //----------------------------------------------------------------//
     @action
-    validate () {
-        super.validate ();
-
-        const fieldValues = this.fieldValues;
-        const fieldErrors = this.fieldErrors;
+    virtual_validate () {
 
         try {
-            this.schema = JSON.parse ( this.fieldValues.schema );
+            this.schema = JSON.parse ( this.fields.schema.value );
         }
         catch ( error ) {
-            fieldErrors.schema = 'Error parsing JSON.';
+            this.fields.schema.error  = 'Error parsing JSON.';
         }
     }
 }
@@ -445,18 +359,10 @@ export class TransactionFormController_RegisterMiner extends TransactionFormCont
     constructor ( appState ) {
         super ();
 
-        const type = TRANSACTION_TYPE.REGISTER_MINER;
-
-        const fields = [
-            inputType.stringField       ( 'url',            'Miner URL' ),
+        const fieldsArray = [
+            new FIELD_CLASS.STRING      ( 'url',            'Miner URL' ),
         ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            url:                'url',
-        };
-
-        this.initialize ( appState, type, fields, format );
+        this.initialize ( appState, TRANSACTION_TYPE.REGISTER_MINER, fieldsArray );
     }
 }
 
@@ -466,49 +372,57 @@ export class TransactionFormController_RegisterMiner extends TransactionFormCont
 export class TransactionFormController_RenameAccount extends TransactionFormController {
 
     //----------------------------------------------------------------//
-    composeBody ( fieldValues ) {
+    constructor ( appState ) {
+        super ();
 
-        const makerAccountName = fieldValues.makerAccountName;
-        const secretName = fieldValues.secretName || '';
+        // const fields = [
+        //     new FIELD_CLASS.STRING       ( 'revealedName',   'Revealed Name' ),
+        //     new FIELD_CLASS.STRING       ( 'secretName',     'Secret Name' ),
+        // ];
 
-        let body = {};
-        body.maker          = this.formatBody ( fieldValues, MAKER_FORMAT );
-        body.revealedName   = fieldValues.revealedName || '';
+        const fieldsArray = [
+            new FIELD_CLASS.STRING      ( 'revealedName',   'New Name' ),
+        ];
+        this.initialize ( appState, TRANSACTION_TYPE.RENAME_ACCOUNT, fieldsArray );
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    revealedName () {
+
+        this.fields.revealedName && this.fields.revealedName.value || '';
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    secretName () {
+        
+        this.fields.secretName && this.fields.secretName.value || '';
+    }
+
+    //----------------------------------------------------------------//
+    virtual_composeBody ( fieldValues ) {
+
+        const makerAccountName  = this.makerAccountName;
+        const secretName        = this.secretName;
+
+        let body = {
+            revealedName: this.revealedName,
+        };
 
         if ( secretName.length ) {
             body.nameHash       = sha256 ( secretName );
             body.nameSecret     = sha256 ( `${ makerAccountName }:${ secretName }` );
         }
-
         return body;
     }
 
     //----------------------------------------------------------------//
-    constructor ( appState ) {
-        super ();
-
-        const type = TRANSACTION_TYPE.RENAME_ACCOUNT;
-
-        const fields = [
-            inputType.stringField       ( 'revealedName',   'New Name' ),
-        ];
-
-        // const fields = [
-        //     inputType.stringField       ( 'revealedName',   'Revealed Name' ),
-        //     inputType.stringField       ( 'secretName',     'Secret Name' ),
-        // ];
-
-        this.initialize ( appState, type, fields );
-    }
-
-    //----------------------------------------------------------------//
     @action
-    validate () {
+    virtual_validate () {
         
-        const fieldValues = this.fieldValues;
-
-        const revealedName = fieldValues.revealedName;
-        const secretName = fieldValues.secretName;
+        const revealedName = this.revealedName;
+        const secretName = this.secretName;
 
         this.isComplete = (
             ( revealedName && ( revealedName.length > 0 )) ||
@@ -519,16 +433,16 @@ export class TransactionFormController_RenameAccount extends TransactionFormCont
 
         const fieldErrors = this.fieldErrors;
 
-        if ( fieldValues.makerAccountName === revealedName ) {
-            fieldErrors.revealedName = 'Revealed name should be different from current account name.';
+        if ( this.makerAccountName === revealedName ) {
+            this.fields.revealedName.error = 'Revealed name should be different from current account name.';
         }
 
         if ( secretName && ( secretName.length > 0 )) {
-            if ( fieldValues.makerAccountName === secretName ) {
-                fieldErrors.secretName = 'Secret name should be different from current account name.';
+            if ( this.makerAccountName === secretName ) {
+                this.fields.secretName.error = 'Secret name should be different from current account name.';
             }
             else if ( secretName === revealedName ) {
-                fieldErrors.secretName = 'Secret name should be different from revealed name.';
+                this.fields.secretName.error = 'Secret name should be different from revealed name.';
             }
         }
     }
@@ -543,36 +457,23 @@ export class TransactionFormController_SendVol extends TransactionFormController
     constructor ( appState ) {
         super ();
 
-        const type = TRANSACTION_TYPE.SEND_VOL;
-
-        const fields = [
-            inputType.stringField       ( 'recipient',      'Recipient' ),
-            inputType.integerField      ( 'amount',         'Amount' ),
+        const fieldsArray = [
+            new FIELD_CLASS.STRING      ( 'accountName',    'Recipient' ),
+            new FIELD_CLASS.INTEGER     ( 'amount',         'Amount' ),
         ];
-
-        const format = {
-            maker:              MAKER_FORMAT,
-            accountName:        'recipient',
-            amount:             'amount',
-        };
-
-        this.initialize ( appState, type, fields, format );
+        this.initialize ( appState, TRANSACTION_TYPE.SEND_VOL, fieldsArray );
     }
 
     //----------------------------------------------------------------//
     @action
-    validate () {
-        super.validate ();
+    virtual_validate () {
 
-        const fieldValues = this.fieldValues;
-        const fieldErrors = this.fieldErrors;
-
-        if ( fieldValues.makerAccountName === fieldValues.recipient ) {
-            fieldErrors.recipient = 'Maker cannot also be recipient.';
+        if ( this.makerAccountName === this.fields.accountName.value ) {
+            this.fields.accountName.error = 'Maker cannot also be recipient.';
         }
 
-        if ( fieldValues.amount === 0 ) {
-            fieldErrors.amount = 'Pick a non-zero amount.';
+        if ( this.fields.amount.value === 0 ) {
+            this.fields.amount.error = 'Pick a non-zero amount.';
         }
     }
 };
@@ -583,28 +484,13 @@ export class TransactionFormController_SendVol extends TransactionFormController
 export class TransactionFormController_UpgradeAssets extends TransactionFormController {
 
     //----------------------------------------------------------------//
-    composeBody ( fieldValues ) {
-
-        const body = this.formatBody ( fieldValues, this.format );
-        body.upgrades = _.clone ( this.fieldValues.upgrades );
-        return body;
-    }
-
-    //----------------------------------------------------------------//
     constructor ( appState, upgradeMap ) {
         super ();
 
-        const type = TRANSACTION_TYPE.UPGRADE_ASSETS;
-
-        const format = {
-            maker:              MAKER_FORMAT,
-        };
-
-        const fieldValues = {
-            upgrades:           upgradeMap,
-        }
-
-        this.initialize ( appState, type, fields, format, fieldValues );
+        const fieldsArray = [
+            new FIELD_CLASS.CONST       ( 'upgrades', 'Upgrades', upgradeMap ),
+        ];
+        this.initialize ( appState, TRANSACTION_TYPE.UPGRADE_ASSETS, fieldsArray );
     }
 }
 
