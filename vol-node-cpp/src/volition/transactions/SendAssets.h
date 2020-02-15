@@ -22,12 +22,14 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
+    string                          mAccountName;
     SerializableVector < string >   mAssetIdentifiers;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
+        serializer.serialize ( "accountName",               this->mAccountName );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
     }
     
@@ -35,16 +37,15 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
+        serializer.serialize ( "accountName",               this->mAccountName );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
     }
 
     //----------------------------------------------------------------//
     bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( ledger );
         UNUSED ( schemaHandle );
         
-        //return ledger.sendVOL ( this->mMaker->getAccountName (), this->mAccountName, this->mAmount );
-        return false;
+        return ledger.sendAssets ( this->mMaker->getAccountName (), this->mAccountName, this->mAssetIdentifiers.data (), this->mAssetIdentifiers.size ());
     }
 };
 

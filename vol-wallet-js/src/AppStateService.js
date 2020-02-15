@@ -554,6 +554,8 @@ export class AppStateService {
     @action
     async processTransactionsAsync () {
 
+        if ( !this.hasAccount ) return;
+
         let pendingTransactions     = this.account.pendingTransactions;
 
         for ( let memo of this.pendingTransactions ) {

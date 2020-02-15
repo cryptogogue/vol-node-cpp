@@ -148,6 +148,7 @@ public:
     bool                                publishSchema               ( string accountName, const Schema& schema );
     bool                                registerMiner               ( string accountName, string keyName, string url );
     bool                                renameAccount               ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
+    bool                                sendAssets                  ( string accountName, string recipientName, const string* assetIdentifiers, size_t totalAssets );
     bool                                sendVOL                     ( string accountName, string recipientName, u64 amount );
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
     bool                                setAssetFieldValue          ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field );

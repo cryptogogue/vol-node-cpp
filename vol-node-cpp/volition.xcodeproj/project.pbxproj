@@ -28,6 +28,7 @@
 
 /* Begin PBXBuildFile section */
 		CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */; };
+		CD039C7123F7D7A90012CE4F /* LedgerODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C7023F7D7A90012CE4F /* LedgerODBM.h */; };
 		CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaHandler.h */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
@@ -635,6 +636,7 @@
 
 /* Begin PBXFileReference section */
 		CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountTransactionHandler.h; path = "src/volition/web-miner-api/AccountTransactionHandler.h"; sourceTree = "<group>"; };
+		CD039C7023F7D7A90012CE4F /* LedgerODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerODBM.h; path = src/volition/LedgerODBM.h; sourceTree = "<group>"; };
 		CD09ED742207D82500B09249 /* SchemaHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaHandler.h; path = "src/volition/web-miner-api/SchemaHandler.h"; sourceTree = "<group>"; };
 		CD0C3E1020C14460006E3B1C /* WebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebMiner.cpp; path = src/volition/WebMiner.cpp; sourceTree = "<group>"; };
 		CD0C3E1120C14460006E3B1C /* WebMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebMiner.h; path = src/volition/WebMiner.h; sourceTree = "<group>"; };
@@ -1076,6 +1078,7 @@
 				CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */,
 				CDC2B31420CCAD2400300A96 /* Ledger.cpp */,
 				CDC2B31520CCAD2400300A96 /* Ledger.h */,
+				CD039C7023F7D7A90012CE4F /* LedgerODBM.h */,
 				CDF8AD5A21F52B34000E285F /* LuaContext.cpp */,
 				CDF8AD5B21F52B34000E285F /* LuaContext.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
@@ -1579,6 +1582,7 @@
 				CD63A1C822AC6BEA00D5C801 /* AssetMethod.h in Headers */,
 				CD4E8194210593A4007DA585 /* Signature.h in Headers */,
 				CD4E81B5210593E5007DA585 /* AbstractSerializerFrom.h in Headers */,
+				CD039C7123F7D7A90012CE4F /* LedgerODBM.h in Headers */,
 				CD4E81A8210593CA007DA585 /* Miner.h in Headers */,
 				CD4E81A4210593BD007DA585 /* Ledger.h in Headers */,
 				CDBFD54F218B8999002AB0C3 /* SendAssets.h in Headers */,

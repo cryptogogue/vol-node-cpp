@@ -7,6 +7,7 @@
 #include <volition/Block.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
+#include <volition/LedgerODBM.h>
 #include <volition/LuaContext.h>
 #include <volition/TransactionMaker.h>
 
@@ -63,57 +64,27 @@ bool Ledger::awardAsset ( const Schema& schema, string accountName, string asset
 
     if ( !schema.getDefinitionOrNull ( assetType )) return false;
 
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return false;
+    AccountODBM accountODBM ( *this, this->getAccountIndex ( accountName ));
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
 
-    LedgerKey KEY_FOR_ASSET_COUNT = FormatLedgerKey::forAssetCount ();
-    Asset::Index firstAssetIndex = this->getValue < Asset::Index >( KEY_FOR_ASSET_COUNT );
+    LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = FormatLedgerKey::forGlobalAssetCount ();
+    size_t globalAssetCount = this->getValueOrFallback < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
 
-    // update head
-    LedgerKey KEY_FOR_ACCOUNT_HEAD = FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_HEAD );
-    Asset::Index accountHeadIndex = this->getValueOrFallback < Asset::Index >( KEY_FOR_ACCOUNT_HEAD, Asset::NULL_INDEX );
-
-    if ( accountHeadIndex == Asset::NULL_INDEX ) {
-        this->setValue < Asset::Index >( KEY_FOR_ACCOUNT_HEAD, firstAssetIndex );
-    }
-
-    // update tail
-    string KEY_FOR_ACCOUNT_TAIL = FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_TAIL );
-    Asset::Index accountTailIndex = this->getValueOrFallback < Asset::Index >( KEY_FOR_ACCOUNT_TAIL, Asset::NULL_INDEX );
+    size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
     
-    if ( accountTailIndex != Asset::NULL_INDEX ) {
-        this->setValue < Asset::Index >( FormatLedgerKey::forAssetRecordMember ( accountTailIndex, FormatLedgerKey::ASSET_NEXT ), firstAssetIndex );
-    }
-    Asset::Index firstElementPrev = accountTailIndex;
-    accountTailIndex = ( firstAssetIndex + quantity ) - 1;
-    this->setValue < Asset::Index >( KEY_FOR_ACCOUNT_TAIL, accountTailIndex );
-    
-    // now add the assets
-    for ( Asset::Index i = firstAssetIndex; i <= accountTailIndex; ++i ) {
+    for ( int i = 0; i < quantity; ++i ) {
         
-        this->setValue < Account::Index >( FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_OWNER_INDEX ), accountIndex );
-        this->setValue < string >( FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_TYPE ), assetType );
+        AssetODBM assetODBM ( *this, globalAssetCount + i );
+                
+        assetODBM.mOwner.set ( accountODBM.mIndex );
+        assetODBM.mPosition.set ( accountAssetCount + i );
+        assetODBM.mType.set ( assetType );
         
-        string KEY_FOR_ASSET_PREV = FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_PREV );
-        string KEY_FOR_ASSET_NEXT = FormatLedgerKey::forAssetRecordMember ( i, FormatLedgerKey::ASSET_NEXT );
-        
-        if ( i == firstAssetIndex ) {
-            this->setValue < Asset::Index >( KEY_FOR_ASSET_PREV, firstElementPrev );
-        }
-        else {
-            this->setValue < Asset::Index >( KEY_FOR_ASSET_PREV, i - 1 );
-        }
-        
-        if ( i < accountTailIndex ) {
-            this->setValue < Asset::Index >( KEY_FOR_ASSET_NEXT, i + 1 );
-        }
-        else {
-            this->setValue < Asset::Index >( KEY_FOR_ASSET_NEXT, Asset::NULL_INDEX );
-        }
+        accountODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
     }
     
-    // increment total asset count
-    this->setValue < size_t >( KEY_FOR_ASSET_COUNT, accountTailIndex + 1 );
+    this->setValue < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, globalAssetCount + quantity );
+    accountODBM.mAssetCount.set ( accountAssetCount + quantity );
 
     return true;
 }
@@ -144,7 +115,7 @@ shared_ptr < Account > Ledger::getAccount ( string accountName ) const {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex == Account::NULL_INDEX ) return NULL;
 
-    return this->getObjectOrNull < Account >( FormatLedgerKey::forAccount ( accountIndex ));
+    return this->getObjectOrNull < Account >( FormatLedgerKey::forAccount_body ( accountIndex ));
 }
 
 //----------------------------------------------------------------//
@@ -181,26 +152,22 @@ shared_ptr < AccountKeyLookup > Ledger::getAccountKeyLookup ( string keyID ) con
 //----------------------------------------------------------------//
 string Ledger::getAccountName ( Account::Index accountIndex ) const {
 
-    return this->getValueOrFallback < string >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_NAME ), "" );
+    return this->getValueOrFallback < string >( FormatLedgerKey::forAccount_name ( accountIndex ), "" );
 }
 
 //----------------------------------------------------------------//
 shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, Asset::Index index ) const {
 
-    string KEY_FOR_ASSET_OWNER_INDEX = FormatLedgerKey::forAssetRecordMember ( index, FormatLedgerKey::ASSET_OWNER_INDEX );
-    if ( !this->hasValue ( KEY_FOR_ASSET_OWNER_INDEX )) return NULL;
-    Account::Index ownerIndex = this->getValue < Account::Index >( KEY_FOR_ASSET_OWNER_INDEX );
+    AssetODBM assetODBM ( *this, index );
+    if ( !assetODBM.mOwner.exists ()) return NULL;
 
-    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetRecordMember ( index, FormatLedgerKey::ASSET_TYPE );
-    string typeName = this->getValue < string >( KEY_FOR_ASSET_TYPE );
-
-    const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( typeName );
+    const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetODBM.mType.get ());
     if ( !assetDefinition ) return NULL;
     
     shared_ptr < Asset > asset = make_shared < Asset >();
-    asset->mType    = typeName;
-    asset->mIndex   = index;
-    asset->mOwner   = this->getAccountName ( ownerIndex );
+    asset->mType    = assetODBM.mType.get ();
+    asset->mIndex   = assetODBM.mIndex;
+    asset->mOwner   = this->getAccountName ( assetODBM.mOwner.get ());
     
     // copy the fields and apply any overrides
     AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
@@ -264,19 +231,17 @@ SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string a
 
     SerializableList < Asset > assets;
 
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return assets;
+    AccountODBM accountODBM ( *this, this->getAccountIndex ( accountName ));
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return assets;
 
-    LedgerKey KEY_FOR_ACCOUNT_HEAD = FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_HEAD );
-    Asset::Index cursor = this->getValueOrFallback < Asset::Index >( KEY_FOR_ACCOUNT_HEAD, Asset::NULL_INDEX );
+    size_t assetCount = accountODBM.mAssetCount.get ();
     
-    while ( cursor != Asset::NULL_INDEX ) {
+    for ( size_t i = 0; i < assetCount; ++i ) {
     
-        shared_ptr < Asset > asset = this->getAsset ( schema, cursor );
+        Asset::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
+        shared_ptr < Asset > asset = this->getAsset ( schema, assetIndex );
         assert ( asset );
         assets.push_back ( *asset );
-    
-        cursor = this->getValue < Asset::Index >( FormatLedgerKey::forAssetRecordMember ( cursor, FormatLedgerKey::ASSET_NEXT ));
     }
     return assets;
 }
@@ -287,7 +252,7 @@ shared_ptr < MinerInfo > Ledger::getMinerInfo ( string accountName ) const {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex == Account::NULL_INDEX ) return NULL;
 
-    return this->getObjectOrNull < MinerInfo >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_MINER_INFO ));
+    return this->getObjectOrNull < MinerInfo >( FormatLedgerKey::forAccount_minerInfo ( accountIndex ));
 }
 
 //----------------------------------------------------------------//
@@ -337,7 +302,7 @@ string Ledger::getTransactionNote ( string accountName, u64 nonce ) const {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex != Account::NULL_INDEX ) {
 
-        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccountTransactionNote ( accountIndex, nonce );
+        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccount_transactionNoteField ( accountIndex, nonce );
         return this->getValueOrFallback < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, "" );
     }
     return "";
@@ -359,7 +324,7 @@ void Ledger::incrementNonce ( const TransactionMaker& maker, string note ) {
     shared_ptr < Account > account = this->getAccount ( accountName );
     if ( account && ( account->mNonce == nonce )) {
     
-        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccountTransactionNote ( account->mIndex, nonce );
+        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccount_transactionNoteField ( account->mIndex, nonce );
         this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
     
         Account updatedAccount = *account;
@@ -374,8 +339,8 @@ void Ledger::init () {
     this->clear ();
     this->setObject < SerializableSet < string >>( FormatLedgerKey::forMiners (), SerializableSet < string > ());
     this->setObject < SerializableMap < string, string >>( FormatLedgerKey::forMinerURLs (), SerializableMap < string, string > ());
-    this->setValue < Asset::Index >( FormatLedgerKey::forAccountCount (), 0 );
-    this->setValue < Asset::Index >( FormatLedgerKey::forAssetCount (), 0 );
+    this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAccountCount (), 0 );
+    this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAssetCount (), 0 );
     this->setValue < string >( FormatLedgerKey::forSchema (), "" );
 }
 
@@ -458,9 +423,9 @@ bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key,
     if ( this->hasKey ( KEY_FOR_ACCOUNT_ALIAS )) return false; // alias already exists
 
     // provision the account ID
-    LedgerKey KEY_FOR_ACCOUNT_COUNT = FormatLedgerKey::forAccountCount ();
-    Account::Index accountIndex = this->getValue < Account::Index >( KEY_FOR_ACCOUNT_COUNT );
-    this->setValue < Account::Index >( KEY_FOR_ACCOUNT_COUNT, accountIndex + 1 ); // increment counter
+    LedgerKey KEY_FOR_GLOBAL_ACCOUNT_COUNT = FormatLedgerKey::forGlobalAccountCount ();
+    Account::Index accountIndex = this->getValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT );
+    this->setValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, accountIndex + 1 ); // increment counter
 
     // store the account
     Account account;
@@ -470,7 +435,7 @@ bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key,
     account.mBalance = balance;
     account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
     
-    this->setObject < Account >( FormatLedgerKey::forAccount ( accountIndex ), account );
+    this->setObject < Account >( FormatLedgerKey::forAccount_body ( accountIndex ), account );
 
     // store the key (for reverse lookup):
     string keyID = key.getKeyID ();
@@ -479,7 +444,7 @@ bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key,
 
     // store the alias
     this->setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
-    this->setValue < string >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_NAME ), accountName );
+    this->setValue < string >( FormatLedgerKey::forAccount_name ( accountIndex ), accountName );
 
     return true;
 }
@@ -515,7 +480,7 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
         Account::Index accountIndex = account->mIndex;
 
         this->setObject < MinerInfo >(
-            FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_MINER_INFO ),
+            FormatLedgerKey::forAccount_minerInfo ( accountIndex ),
             MinerInfo ( accountIndex, url, accountKey.mKeyAndPolicy->mKey )
         );
         
@@ -579,11 +544,52 @@ bool Ledger::renameAccount ( string accountName, string revealedName, Digest nam
     if ( !account ) return false;
     
     this->setValue < Account::Index >( FormatLedgerKey::forAccountAlias ( revealedName ), account->mIndex );
-    this->setValue < string >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_NAME ), revealedName );
+    this->setValue < string >( FormatLedgerKey::forAccount_name ( accountIndex ), revealedName );
  
     account->mName = revealedName;
-    this->setObject < Account >( FormatLedgerKey::forAccount ( account->mIndex ), *account );
+    this->setObject < Account >( FormatLedgerKey::forAccount_body ( account->mIndex ), *account );
  
+    return true;
+}
+
+//----------------------------------------------------------------//
+bool Ledger::sendAssets ( string accountName, string recipientName, const string* assetIdentifiers, size_t totalAssets ) {
+
+    AccountODBM senderODBM ( *this, this->getAccountIndex ( accountName ));
+    AccountODBM receiverODBM ( *this, this->getAccountIndex ( recipientName ));
+
+    if ( senderODBM.mIndex == Account::NULL_INDEX ) return false;
+    if ( receiverODBM.mIndex == Account::NULL_INDEX ) return false;
+
+    size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
+    size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
+
+    for ( size_t i = 0; i < totalAssets; ++i, --senderAssetCount, ++receiverAssetCount ) {
+        
+        AssetODBM assetODBM ( *this, AssetID::decode ( assetIdentifiers [ i ]));
+        if ( assetODBM.mIndex == Asset::NULL_INDEX ) return false;
+        if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return false;
+        
+        // fill the asset's original position by swapping in the tail
+        size_t position = assetODBM.mPosition.get ();
+        if ( position < senderAssetCount ) {
+            LedgerFieldODBM < Asset::Index > senderInventoryField = senderODBM.getInventoryField ( position );
+            LedgerFieldODBM < Asset::Index > senderInventoryTailField = senderODBM.getInventoryField ( senderAssetCount - 1 );
+            
+            AssetODBM tailAssetODBM ( *this, senderInventoryTailField.get ());
+            tailAssetODBM.mPosition.set ( position );
+            senderInventoryField.set ( tailAssetODBM.mIndex );
+        }
+        
+        // transfer asset ownership to the receiver
+        assetODBM.mOwner.set ( receiverODBM.mIndex );
+        assetODBM.mPosition.set ( receiverAssetCount );
+        receiverODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
+    }
+    
+    senderODBM.mAssetCount.set ( senderAssetCount );
+    receiverODBM.mAssetCount.set ( receiverAssetCount );
+
     return true;
 }
 
@@ -615,14 +621,14 @@ void Ledger::setAccount ( string accountName, const Account& account ) {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     assert ( accountIndex != Account::NULL_INDEX );
 
-    this->setObject < Account >( FormatLedgerKey::forAccount ( accountIndex ), account );
+    this->setObject < Account >( FormatLedgerKey::forAccount_body ( accountIndex ), account );
 }
 
 //----------------------------------------------------------------//
 bool Ledger::setAssetFieldValue ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field ) {
 
     // make sure the asset exists
-    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetRecordMember ( index, FormatLedgerKey::ASSET_TYPE );
+    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAsset_type ( index );
     if ( !this->hasValue ( KEY_FOR_ASSET_TYPE )) return false;
     string assetType = this->getValue < string >( KEY_FOR_ASSET_TYPE );
 
@@ -732,7 +738,7 @@ void Ledger::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     assert ( accountIndex != Account::NULL_INDEX );
 
-    this->setObject < MinerInfo >( FormatLedgerKey::forAccountMember ( accountIndex, FormatLedgerKey::ACCOUNT_MINER_INFO ), minerInfo );
+    this->setObject < MinerInfo >( FormatLedgerKey::forAccount_minerInfo ( accountIndex ), minerInfo );
 }
 
 //----------------------------------------------------------------//
@@ -783,18 +789,13 @@ bool Ledger::sponsorAccount ( string sponsorName, string keyName, string suffix,
 //----------------------------------------------------------------//
 bool Ledger::upgradeAsset ( const Schema& schema, Account::Index accountIndex, Asset::Index assetIndex, string upgradeType ) {
 
-    string KEY_FOR_ASSET_OWNER_INDEX = FormatLedgerKey::forAssetRecordMember ( assetIndex, FormatLedgerKey::ASSET_OWNER_INDEX );
-    if ( !this->hasValue ( KEY_FOR_ASSET_OWNER_INDEX )) return NULL;
+    AssetODBM assetODBM ( *this, assetIndex );
 
-    Account::Index ownerIndex = this->getValue < Account::Index >( KEY_FOR_ASSET_OWNER_INDEX );
-    if ( ownerIndex != accountIndex ) return false;
+    if ( !assetODBM.mOwner.exists ()) return false;
+    if ( assetODBM.mOwner.get () != accountIndex ) return false;
+    if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return false;
 
-    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAssetRecordMember ( assetIndex, FormatLedgerKey::ASSET_TYPE );
-    string typeName = this->getValue < string >( KEY_FOR_ASSET_TYPE );
-
-    if ( !schema.canUpgrade ( typeName, upgradeType )) return false;
-
-    this->setValue < string >( KEY_FOR_ASSET_TYPE, upgradeType );
+    assetODBM.mType.set ( upgradeType );
 
     return true;
 }
