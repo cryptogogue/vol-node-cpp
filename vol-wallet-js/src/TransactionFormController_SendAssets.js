@@ -18,7 +18,8 @@ export class TransactionFormController_SendAssets extends TransactionFormControl
         super ();
 
         const fieldsArray = [
-            new FIELD_CLASS.ASSET_SELECTION     ( 'assetIdentifiers', 'Assets', _.cloneDeep ( selection )),
+            new FIELD_CLASS.STRING              ( 'accountName',        'Recipient' ),
+            new FIELD_CLASS.ASSET_SELECTION     ( 'assetIdentifiers',   'Assets', _.cloneDeep ( selection )),
         ];
         this.initialize ( appState, TRANSACTION_TYPE.SEND_ASSETS, fieldsArray );
     }
