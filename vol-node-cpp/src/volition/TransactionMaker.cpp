@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/Ledger.h>
 #include <volition/TransactionMaker.h>
 
 namespace Volition {
@@ -12,6 +13,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 TransactionMaker::TransactionMaker () :
     mGratuity ( 0 ),
+    mKeyName ( Ledger::MASTER_KEY_NAME ),
     mNonce ( 0 ) {
 }
 

@@ -155,9 +155,12 @@ void WebMiner::runSolo () {
         
         u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
         u32 updateMillis = this->mUpdateIntervalInSeconds * 1000;
-        
+                
         if ( elapsedMillis < updateMillis ) {
             Poco::Thread::sleep ( updateMillis - elapsedMillis );
+        }
+        else {
+            Poco::Thread::sleep ( 1 );
         }
     }
 }

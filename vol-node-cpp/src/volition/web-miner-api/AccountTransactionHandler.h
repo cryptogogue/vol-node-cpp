@@ -34,6 +34,11 @@ public:
     
             case HTTP::GET: {
 
+                if ( miner.isRejected ( accountName )) {
+                    jsonOut.set ( "status", "REJECTED" );
+                    return Poco::Net::HTTPResponse::HTTP_OK;
+                }
+
                 const Chain& chain = *miner.getBestBranch ();
                 string note = chain.getTransactionNote ( accountName, nonce );
 

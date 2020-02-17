@@ -28,14 +28,14 @@ export class TransactionFormController_RenameAccount extends TransactionFormCont
     @computed get
     revealedName () {
 
-        this.fields.revealedName && this.fields.revealedName.value || '';
+        return this.fields.revealedName && this.fields.revealedName.value || '';
     }
 
     //----------------------------------------------------------------//
     @computed get
     secretName () {
         
-        this.fields.secretName && this.fields.secretName.value || '';
+        return this.fields.secretName && this.fields.secretName.value || '';
     }
 
     //----------------------------------------------------------------//
@@ -63,10 +63,7 @@ export class TransactionFormController_RenameAccount extends TransactionFormCont
         const revealedName = this.revealedName;
         const secretName = this.secretName;
 
-        this.isComplete = (
-            ( revealedName && ( revealedName.length > 0 )) ||
-            ( secretName && ( secretName.length > 0 ))
-        );
+        this.isComplete = ( revealedName || secretName );
 
         this.fieldErrors = {};
 

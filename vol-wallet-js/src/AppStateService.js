@@ -235,6 +235,7 @@ export class AppStateService {
 
         if ( this.hasAccount ) {
             this.account.pendingTransactions = [];
+            this.account.showRejectedWarning = false;
         }
     }
 
@@ -255,6 +256,7 @@ export class AppStateService {
             let pendingTransactions = this.account.pendingTransactions;
             while (( pendingTransactions.length > 0 ) && ( pendingTransactions [ 0 ].nonce < nonce )) {
                 pendingTransactions.shift ();
+                this.account.showRejectedWarning = false;
             }
         }
     }
@@ -571,6 +573,13 @@ export class AppStateService {
 
                 // TODO: handle mismatched notes
                 if ( !checkResult.note ) {
+
+                    if ( checkResult.status === 'REJECTED' ) {
+                        runInAction (() => {
+                            this.account.showRejectedWarning = true;
+                        });
+                    }
+
                     await this.revocable.fetchJSON ( url, {
                         method :    'PUT',
                         headers :   { 'content-type': 'application/json' },
@@ -702,6 +711,12 @@ export class AppStateService {
         if ( login ) {
             this.login ( password );
         }
+    }
+
+    //----------------------------------------------------------------//
+    @computed get
+    showRejectedWarning () {
+        return this.account.showRejectedWarning || false;
     }
 
     //----------------------------------------------------------------//

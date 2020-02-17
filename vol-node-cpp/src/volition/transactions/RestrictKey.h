@@ -22,13 +22,15 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    Policy   mPolicy;
+    SerializableSharedPtr < Policy >    mPolicy;
+    SerializableSharedPtr < Policy >    mBequest;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "bequest",       this->mBequest );
     }
     
     //----------------------------------------------------------------//
@@ -36,12 +38,39 @@ public:
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "bequest",       this->mBequest );
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( ledger );
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+        
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTRICT_KEY )) return false;
+        
+        Ledger& ledger = context.mLedger;
+        KeyAndPolicy keyUpdated = context.mKeyAndPolicy;
+        
+        // restrict the policy
+        if ( this->mPolicy ) {
+        
+            // new policy *must* be more restrictive than original
+            if ( !ledger.isMoreRestrictivePolicy < KeyEntitlements >( *this->mPolicy, keyUpdated.mPolicy )) return false;
+            keyUpdated.mPolicy = *this->mPolicy;
+            
+            // if there's a bequest, blow it away if it is *less* restrictive than the new policy
+            if ( keyUpdated.mBequest && !ledger.isMoreRestrictivePolicy < KeyEntitlements >( *keyUpdated.mBequest, keyUpdated.mPolicy )) {
+                keyUpdated.mBequest.reset ();
+            }
+        }
+        
+        if ( this->mBequest ) {
+            if ( !ledger.isMoreRestrictivePolicy < KeyEntitlements >( *this->mBequest, keyUpdated.mPolicy )) return false;
+            keyUpdated.mBequest = this->mBequest;
+        }
+        
+        Account accountUpdated = context.mAccount;
+        accountUpdated.mKeys [ this->mMaker->getKeyName ()] = keyUpdated;
+        ledger.setAccount ( accountUpdated );
+        
         return true;
     }
 };

@@ -15,14 +15,17 @@ namespace Volition {
 class AccountEntitlements {
 public:
 
+    static constexpr const char* MAX_ASSETS         = "MAX_ASSETS";
+    static constexpr const char* MAX_VOL            = "MAX_VOL";
+
     //----------------------------------------------------------------//
     static shared_ptr < Entitlements > getMasterEntitlements () {
     
         shared_ptr < Entitlements > entitlements = make_shared < Entitlements >();
         assert ( entitlements );
         
-        entitlements->setPath ( "maxAssets",        NumericEntitlement ());
-        entitlements->setPath ( "maxVOL",           NumericEntitlement ());
+        entitlements->setPath ( MAX_ASSETS,         NumericEntitlement ());
+        entitlements->setPath ( MAX_VOL,            NumericEntitlement ());
         return entitlements;
     }
 };

@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/Munge.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -22,10 +23,9 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string          mSuffix;        // child name formatted <hex3>.<hex3>.<hex3>
-    CryptoKey       mKey;           // key
-    u64             mGrant;         // amount to fund
-
+    string                              mSuffix;        // child name formatted <hex3>.<hex3>.<hex3>
+    CryptoKey                           mKey;           // key
+    u64                                 mGrant;         // amount to fund
     SerializableSharedPtr < Policy >    mAccountPolicy;
     SerializableSharedPtr < Policy >    mKeyPolicy;
 
@@ -52,19 +52,43 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        assert ( this->mKey );
-        return ledger.sponsorAccount (
-            this->mMaker->getAccountName (),
-            this->mMaker->getKeyName (),
-            this->mSuffix,
-            this->mGrant,
-            this->mKey,
-            this->mAccountPolicy.get (),
-            this->mKeyPolicy.get ()
-        );
+        Ledger& ledger = context.mLedger;
+        const Account& account = context.mAccount;
+        
+        if ( account.mBalance < this->mGrant ) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return false;
+        
+        string sponsorName = Format::write ( "%0lx", Munge::spin ( Munge::munge ( context.mAccount.mIndex )));
+        string suffix = this->mSuffix;
+        const KeyAndPolicy& sponsorKeyAndPolicy = context.mKeyAndPolicy;
+        
+        if ( Ledger::isChildName ( sponsorName )) return false;
+        if ( !Ledger::isSuffix ( suffix )) return false;
+        
+        // the child name will be prepended with the sponsor name following a tilde: "~<sponsorName>.<childSuffix>"
+        // i.e. "~maker.000.000.000"
+        // this prevents it from sponsoring any new accounts until it is renamed.
+
+        string childName = Format::write ( "~%s.%s", sponsorName.c_str (), suffix.c_str ());
+        assert ( Ledger::isChildName ( childName ));
+
+        const Policy* keyBequest = ledger.resolveBequest < KeyEntitlements >( sponsorKeyAndPolicy.mPolicy, sponsorKeyAndPolicy.getBequest (), this->mKeyPolicy.get ());
+        if ( !keyBequest ) return false;
+        
+        const Policy* accountBequest = ledger.resolveBequest < AccountEntitlements >( account.mPolicy, account.getBequest (), this->mAccountPolicy.get ());
+        if ( !accountBequest ) return false;
+
+        if ( !ledger.newAccount ( childName, this->mGrant, Ledger::MASTER_KEY_NAME, this->mKey, *keyBequest, *accountBequest )) return false;
+
+        if ( !ledger.isGenesis ()) {
+            Account accountUpdated = account;
+            accountUpdated.mBalance -= this->mGrant;
+            ledger.setAccount ( accountUpdated );
+        }
+
+        return true;
     }
 };
 

@@ -39,14 +39,15 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        const Schema::Definitions& definitions = schemaHandle->getDefinitions ();
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_ASSETS )) return false;
+        
+        const Schema::Definitions& definitions = context.mSchemaHandle->getDefinitions ();
         
         Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
         for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
-        
-            ledger.awardAsset ( *schemaHandle, this->mMaker->getAccountName (), definitionIt->first, ( size_t )this->mNumAssets );
+            context.mLedger.awardAsset ( *context.mSchemaHandle, this->mMaker->getAccountName (), definitionIt->first, ( size_t )this->mNumAssets );
         }
         return true;
     }

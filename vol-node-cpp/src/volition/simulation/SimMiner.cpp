@@ -6,7 +6,7 @@
 #include <volition/simulation/SimMiner.h>
 #include <volition/simulation/Simulation.h>
 #include <volition/TheContext.h>
-#include <volition/transactions/GenesisMiner.h>
+#include <volition/transactions/Genesis.h>
 
 namespace Volition {
 namespace Simulation {
@@ -38,12 +38,12 @@ void SimMiner::log ( string prefix ) const {
 //----------------------------------------------------------------//
 void SimMiner::pushGenesisTransaction ( Block& block ) const {
 
-    unique_ptr < Transactions::GenesisMiner > genesisMinerTransactionBody = make_unique < Transactions::GenesisMiner >();
+    unique_ptr < Transactions::Genesis> genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
     
-    genesisMinerTransactionBody->mAccountName = this->mMinerID;
-    genesisMinerTransactionBody->mKey = this->mKeyPair;
-    genesisMinerTransactionBody->mAmount = 0;
-    genesisMinerTransactionBody->mURL = "";
+//    genesisMinerTransactionBody->mAccountName = this->mMinerID;
+//    genesisMinerTransactionBody->mKey = this->mKeyPair;
+//    genesisMinerTransactionBody->mAmount = 0;
+//    genesisMinerTransactionBody->mURL = "";
 
     shared_ptr < Transaction > transaction = make_shared < Transaction >();
     transaction->setBody ( move ( genesisMinerTransactionBody ));

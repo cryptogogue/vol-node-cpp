@@ -28,6 +28,7 @@ protected:
     typedef map < u64, shared_ptr < Transaction >>  MakerQueue; // nonce: transaction
 
     map < string, MakerQueue > mDatabase; // accountName: queue
+    set < string > mRejected;
     
     //----------------------------------------------------------------//
     void                    reset                   ();
@@ -37,6 +38,7 @@ public:
     //----------------------------------------------------------------//
     void            fillBlock               ( Chain& chain, Block& block );
     string          getTransactionNote      ( string accountName, u64 nonce ) const;
+    bool            isRejected              ( string accountName ) const;
     void            pruneTransactions       ( const Chain& chain );
     bool            pushTransaction         ( shared_ptr < Transaction > transaction );
                     TransactionQueue        ();

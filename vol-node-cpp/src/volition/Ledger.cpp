@@ -47,7 +47,7 @@ bool Ledger::affirmKey ( string accountName, string makerKeyName, string keyName
             }
             
             account->mKeys [ keyName ] = KeyAndPolicy ( key, *selectedPolicy );
-            this->setAccount ( accountName, *account );
+            this->setAccount ( *account );
             
             this->setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( account->mIndex, keyName ));
             
@@ -95,17 +95,16 @@ bool Ledger::deleteKey ( string accountName, string keyName ) {
     if ( accountKey ) {
         Account updatedAccount = *accountKey.mAccount;
         updatedAccount.mKeys.erase ( keyName );
-        this->setAccount ( accountName, updatedAccount );
+        this->setAccount ( updatedAccount );
         return true;
     }
     return false;
 }
 
 //----------------------------------------------------------------//
-bool Ledger::genesisMiner ( string accountName, u64 balance, const CryptoKey& key, string url ) {
+shared_ptr < Account > Ledger::getAccount ( Account::Index index ) const {
 
-    if ( !this->newAccount ( accountName, balance, key, Policy (), Policy ())) return false;
-    return this->registerMiner ( accountName, MASTER_KEY_NAME, url );
+    return this->getObjectOrNull < Account >( FormatLedgerKey::forAccount_body ( index ));
 }
 
 //----------------------------------------------------------------//
@@ -113,8 +112,7 @@ shared_ptr < Account > Ledger::getAccount ( string accountName ) const {
 
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex == Account::NULL_INDEX ) return NULL;
-
-    return this->getObjectOrNull < Account >( FormatLedgerKey::forAccount_body ( accountIndex ));
+    return this->getAccount ( accountIndex );
 }
 
 //----------------------------------------------------------------//
@@ -315,21 +313,18 @@ UnfinishedBlockList Ledger::getUnfinished () {
 }
 
 //----------------------------------------------------------------//
-void Ledger::incrementNonce ( const TransactionMaker& maker, string note ) {
+void Ledger::incrementNonce ( Account::Index index, u64 nonce, string note ) {
 
-    u64 nonce = maker.getNonce ();
-    string accountName = maker.getAccountName ();
+    shared_ptr < Account > account = this->getAccount ( index );
+    assert ( account );
+    assert ( account->mNonce == nonce );
+    
+    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccount_transactionNoteField ( index, nonce );
+    this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
 
-    shared_ptr < Account > account = this->getAccount ( accountName );
-    if ( account && ( account->mNonce == nonce )) {
-    
-        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccount_transactionNoteField ( account->mIndex, nonce );
-        this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
-    
-        Account updatedAccount = *account;
-        updatedAccount.mNonce = nonce + 1;
-        this->setAccount ( accountName, updatedAccount );
-    }
+    Account updatedAccount = *account;
+    updatedAccount.mNonce = nonce + 1;
+    this->setAccount ( updatedAccount );
 }
 
 //----------------------------------------------------------------//
@@ -415,7 +410,7 @@ Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
+bool Ledger::newAccount ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
 
     // check to see if there is already an alias for this account name
     LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( accountName );
@@ -439,7 +434,7 @@ bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key,
     // store the key (for reverse lookup):
     string keyID = key.getKeyID ();
     assert ( keyID.size ());
-    this->setObject < AccountKeyLookup >( FormatLedgerKey::forAccountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, MASTER_KEY_NAME ));
+    this->setObject < AccountKeyLookup >( FormatLedgerKey::forAccountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, keyName ));
 
     // store the alias
     this->setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
@@ -449,8 +444,7 @@ bool Ledger::newAccount ( string accountName, u64 balance, const CryptoKey& key,
 }
 
 //----------------------------------------------------------------//
-bool Ledger::publishSchema ( string accountName, const Schema& schema ) {
-    UNUSED ( accountName );
+bool Ledger::publishSchema ( const Schema& schema ) {
 
     // TODO: check account permissions
 
@@ -536,18 +530,25 @@ bool Ledger::renameAccount ( string accountName, string revealedName, Digest nam
     if ( Ledger::isChildName ( revealedName )) return false; // new names must not begin with a '~'
     if ( !Ledger::isAccountName ( revealedName )) return false; // make sure it's a valid account name
     
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return false;
-    
     shared_ptr < Account > account = this->getAccount ( accountName );
     if ( !account ) return false;
     
-    this->setValue < Account::Index >( FormatLedgerKey::forAccountAlias ( revealedName ), account->mIndex );
-    this->setValue < string >( FormatLedgerKey::forAccount_name ( accountIndex ), revealedName );
+    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( revealedName );
+    
+    // check to see if the alias already exists
+    if ( this->hasValue ( KEY_FOR_ACCOUNT_ALIAS )) {
+        // if it does, then it should also belong to this account
+        Account::Index aliasIndex = this->getValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS );
+        if ( aliasIndex != account->mIndex ) return false;
+    }
+    else {
+        this->setValue < Account::Index >(KEY_FOR_ACCOUNT_ALIAS, account->mIndex );
+    }
+    this->setValue < string >( FormatLedgerKey::forAccount_name ( account->mIndex ), revealedName );
  
     account->mName = revealedName;
     this->setObject < Account >( FormatLedgerKey::forAccount_body ( account->mIndex ), *account );
- 
+
     return true;
 }
 
@@ -593,34 +594,10 @@ bool Ledger::sendAssets ( string accountName, string recipientName, const string
 }
 
 //----------------------------------------------------------------//
-bool Ledger::sendVOL ( string accountName, string recipientName, u64 amount ) {
+void Ledger::setAccount ( const Account& account ) {
 
-    shared_ptr < Account > account      = this->getAccount ( accountName );
-    shared_ptr < Account > recipient    = this->getAccount ( recipientName );
-
-    if ( account && recipient && ( account->mBalance >= amount )) {
-    
-        Account accountUpdated = *account;
-        Account recipientUpdated = *recipient;
-    
-        accountUpdated.mBalance -= amount;
-        recipientUpdated.mBalance += amount;
-        
-        this->setAccount ( accountName, accountUpdated );
-        this->setAccount ( recipientName, recipientUpdated );
-        
-        return true;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
-void Ledger::setAccount ( string accountName, const Account& account ) {
-
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    assert ( accountIndex != Account::NULL_INDEX );
-
-    this->setObject < Account >( FormatLedgerKey::forAccount_body ( accountIndex ), account );
+    assert ( account.mIndex != Account::NULL_INDEX );
+    this->setObject < Account >( FormatLedgerKey::forAccount_body ( account.mIndex ), account );
 }
 
 //----------------------------------------------------------------//
@@ -680,26 +657,6 @@ bool Ledger::setIdentity ( string identity ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::setKeyBequest ( string accountName, string keyName, const Policy* bequest ) {
-
-    shared_ptr < Account > account = this->getAccount ( accountName );
-    if ( account ) {
-
-        const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( keyName );
-        if ( !keyAndPolicy ) return false;
-        
-        if ( bequest ) {
-            if ( !this->isMoreRestrictivePolicy < KeyEntitlements >( *bequest, keyAndPolicy->mPolicy )) return false;
-        }
-        account->mKeys [ keyName ].mBequest = bequest ? make_shared < Policy >( *bequest ) : NULL;
-        this->setAccount ( accountName, *account );
-        
-        return true;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
 void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerTo& serializer ) const {
 
     serializer.context ( "account", [ & ]( AbstractSerializerTo& serializer ) {
@@ -732,71 +689,9 @@ void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerT
 }
 
 //----------------------------------------------------------------//
-void Ledger::setMinerInfo ( string accountName, const MinerInfo& minerInfo ) {
-
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    assert ( accountIndex != Account::NULL_INDEX );
-
-    this->setObject < MinerInfo >( FormatLedgerKey::forAccount_minerInfo ( accountIndex ), minerInfo );
-}
-
-//----------------------------------------------------------------//
 void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
     this->setObject < UnfinishedBlockList >( FormatLedgerKey::forUnfinished (), unfinished );
-}
-
-//----------------------------------------------------------------//
-bool Ledger::sponsorAccount ( string sponsorName, string keyName, string suffix, u64 grant, const CryptoKey& key, const Policy* keyPolicy, const Policy* accountPolicy ) {
-
-    if ( Ledger::isChildName ( sponsorName )) return false;
-    if ( !Ledger::isSuffix ( suffix )) return false;
-    
-    // the child name will be prepended with the sponsor name following a tilde: "~<sponsorName>.<childSuffix>"
-    // i.e. "~maker.000.000.000"
-    // this prevents it from sponsoring any new accounts until it is renamed.
-
-    string childName = Format::write ( "~%s.%s", sponsorName.c_str (), suffix.c_str ());
-    assert ( Ledger::isChildName ( childName ));
-
-    shared_ptr < Account > account = this->getAccount ( sponsorName );
-    if ( account && ( account->mBalance >= grant )) {
-
-        const KeyAndPolicy* sponsorKeyAndPolicy = account->getKeyAndPolicyOrNull ( keyName );
-        if ( !sponsorKeyAndPolicy ) return false;
-
-        const Policy& sponsorKeyPolicy = sponsorKeyAndPolicy->mPolicy;
-        Entitlements sponsorKeyEntitlements = this->getEntitlements < KeyEntitlements >( sponsorKeyPolicy );
-        if ( !KeyEntitlements::canOpenAccount ( sponsorKeyEntitlements )) return false;
-
-        const Policy* keyBequest = this->resolveBequest < KeyEntitlements >( sponsorKeyPolicy, sponsorKeyAndPolicy->getBequest (), keyPolicy );
-        if ( !keyBequest ) return false;
-        
-        const Policy* accountBequest = this->resolveBequest < AccountEntitlements >( account->mPolicy, account->getBequest (), accountPolicy );
-        if ( !accountBequest ) return false;
-
-        if ( !this->newAccount ( childName, grant, key, *keyBequest, *accountBequest )) return false;
-
-        account->mBalance -= grant;
-        this->setAccount ( sponsorName, *account );
-
-        return true;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
-bool Ledger::upgradeAsset ( const Schema& schema, Account::Index accountIndex, Asset::Index assetIndex, string upgradeType ) {
-
-    AssetODBM assetODBM ( *this, assetIndex );
-
-    if ( !assetODBM.mOwner.exists ()) return false;
-    if ( assetODBM.mOwner.get () != accountIndex ) return false;
-    if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return false;
-
-    assetODBM.mType.set ( upgradeType );
-
-    return true;
 }
 
 //----------------------------------------------------------------//

@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/Account.h>
 #include <volition/AccountEntitlements.h>
+#include <volition/AccountKeyLookup.h>
 #include <volition/Asset.h>
 #include <volition/Entropy.h>
 #include <volition/FormatLedgerKey.h>
@@ -35,7 +36,7 @@ public:
     
     shared_ptr < Account >              mAccount;
     const KeyAndPolicy*                 mKeyAndPolicy;
-    shared_ptr < PathEntitlement >      mEntitlements;
+//    shared_ptr < PathEntitlement >      mEntitlements;
     
     //----------------------------------------------------------------//
     operator bool () const {
@@ -99,15 +100,7 @@ class Ledger :
     public VersionedStore {
 public:
 
-    static constexpr const char* MASTER_KEY_NAME    = "master";
-
-protected:
-
-    //----------------------------------------------------------------//
-    void                                setAccount                  ( string accountName, const Account& account );
-    void                                setMinerInfo                ( string accountName, const MinerInfo& minerInfo );
-
-public:
+    static constexpr const char* MASTER_KEY_NAME = "master";
 
     typedef SerializableMap < string, string > MinerURLMap;
 
@@ -115,7 +108,7 @@ public:
     bool                                affirmKey                   ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
     bool                                awardAsset                  ( const Schema& schema, string accountName, string assetType, size_t quantity );
     bool                                deleteKey                   ( string accountName, string keyName );
-    bool                                genesisMiner                ( string accountName, u64 balance, const CryptoKey& key, string url );
+    shared_ptr < Account >              getAccount                  ( Account::Index index ) const;
     shared_ptr < Account >              getAccount                  ( string accountName ) const;
     Account::Index                      getAccountIndex             ( string accountName ) const;
     AccountKey                          getAccountKey               ( string accountName, string keyName ) const;
@@ -134,7 +127,7 @@ public:
     string                              getSchemaString             () const;
     string                              getTransactionNote          ( string accountName, u64 nonce ) const;
     UnfinishedBlockList                 getUnfinished               ();
-    void                                incrementNonce              ( const TransactionMaker& makerSignature, string note );
+    void                                incrementNonce              ( Account::Index index, u64 nonce, string note );
     void                                init                        ();
     bool                                invoke                      ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation );
     static bool                         isAccountName               ( string accountName );
@@ -144,23 +137,20 @@ public:
                                         Ledger                      ();
                                         Ledger                      ( Ledger& other );
                                         ~Ledger                     ();
-    bool                                newAccount                  ( string accountName, u64 balance, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
-    bool                                publishSchema               ( string accountName, const Schema& schema );
+    bool                                newAccount                  ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
+    bool                                publishSchema               ( const Schema& schema );
     bool                                registerMiner               ( string accountName, string keyName, string url );
     bool                                renameAccount               ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
     bool                                sendAssets                  ( string accountName, string recipientName, const string* assetIdentifiers, size_t totalAssets );
-    bool                                sendVOL                     ( string accountName, string recipientName, u64 amount );
+    void                                setAccount                  ( const Account& account );
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
     bool                                setAssetFieldValue          ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field );
     void                                setBlock                    ( const Block& block );
     void                                setEntitlements             ( string name, const Entitlements& entitlements );
     void                                setEntropyString            ( string entropy );
     bool                                setIdentity                 ( string identity );
-    bool                                setKeyBequest               ( string accountName, string keyName, const Policy* bequest );
     void                                serializeEntitlements       ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setUnfinished               ( const UnfinishedBlockList& unfinished );
-    bool                                sponsorAccount              ( string sponsorName, string keyName, string suffix, u64 grant, const CryptoKey& key, const Policy* keyPolicy, const Policy* accountPolicy );
-    bool                                upgradeAsset                ( const Schema& schema, Account::Index accountIndex, Asset::Index assetIndex, string upgradeType );
     bool                                verify                      ( const Schema& schema, const AssetMethodInvocation& invocation ) const;
 
     //----------------------------------------------------------------//

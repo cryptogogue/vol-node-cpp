@@ -17,17 +17,19 @@ namespace Volition {
 class KeyEntitlements {
 public:
 
-     //----------------------------------------------------------------//
-    static bool canOpenAccount ( const Entitlements& entitlements ) {
-    
-        return entitlements.check ( "OPEN_ACCOUNT" );
-    }
-
-    //----------------------------------------------------------------//
-    static bool canPerformTransaction ( const Entitlements& entitlements, string transactionType ) {
-    
-        return entitlements.check ( transactionType );
-    }
+    static constexpr const char* AFFIRM_KEY         = "AFFIRM_KEY";
+    static constexpr const char* BETA_GET_ASSETS    = "BETA_GET_ASSETS";
+    static constexpr const char* OPEN_ACCOUNT       = "OPEN_ACCOUNT";
+    static constexpr const char* PUBLISH_SCHEMA     = "PUBLISH_SCHEMA";
+    static constexpr const char* REGISTER_MINER     = "REGISTER_MINER";
+    static constexpr const char* RENAME_ACCOUNT     = "RENAME_ACCOUNT";
+    static constexpr const char* RESTRICT_ACCOUNT   = "RESTRICT_ACCOUNT";
+    static constexpr const char* RESTRICT_KEY       = "RESTRICT_KEY";
+    static constexpr const char* RUN_SCRIPT         = "RUN_SCRIPT";
+    static constexpr const char* SEND_ASSETS        = "SEND_ASSETS";
+    static constexpr const char* SEND_VOL           = "SEND_VOL";
+    static constexpr const char* SET_ENTITLEMENTS   = "SET_ENTITLEMENTS";
+    static constexpr const char* UPGRADE_ASSETS     = "UPGRADE_ASSETS";
 
     //----------------------------------------------------------------//
     static shared_ptr < Entitlements > getMasterEntitlements () {
@@ -35,15 +37,19 @@ public:
         shared_ptr < Entitlements > entitlements = make_shared < Entitlements >();
         assert ( entitlements );
         
-        entitlements->setPath ( "AFFIRM_KEY",           BooleanEntitlement ( true ));
-        entitlements->setPath ( "BETA_GET_ASSETS",      BooleanEntitlement ( true ));
-        entitlements->setPath ( "OPEN_ACCOUNT",         BooleanEntitlement ( true ));
-        entitlements->setPath ( "PUBLISH_SCHEMA",       BooleanEntitlement ( true ));
-        entitlements->setPath ( "REGISTER_MINER",       BooleanEntitlement ( true ));
-        entitlements->setPath ( "RENAME_ACCOUNT",       BooleanEntitlement ( true ));
-        entitlements->setPath ( "SEND_ASSETS",          BooleanEntitlement ( true ));
-        entitlements->setPath ( "SEND_VOL",             BooleanEntitlement ( true ));
-        entitlements->setPath ( "UPGRADE_ASSETS",       BooleanEntitlement ( true ));
+        entitlements->setPath ( AFFIRM_KEY,             BooleanEntitlement ( true ));
+        entitlements->setPath ( BETA_GET_ASSETS,        BooleanEntitlement ( true ));
+        entitlements->setPath ( OPEN_ACCOUNT,           BooleanEntitlement ( true ));
+        entitlements->setPath ( PUBLISH_SCHEMA,         BooleanEntitlement ( true ));
+        entitlements->setPath ( REGISTER_MINER,         BooleanEntitlement ( true ));
+        entitlements->setPath ( RENAME_ACCOUNT,         BooleanEntitlement ( true ));
+        entitlements->setPath ( RESTRICT_ACCOUNT,       BooleanEntitlement ( true ));
+        entitlements->setPath ( RESTRICT_KEY,           BooleanEntitlement ( true ));
+        entitlements->setPath ( RUN_SCRIPT,             BooleanEntitlement ( true ));
+        entitlements->setPath ( SEND_ASSETS,            BooleanEntitlement ( true ));
+        entitlements->setPath ( SEND_VOL,               BooleanEntitlement ( true ));
+        entitlements->setPath ( SET_ENTITLEMENTS,       BooleanEntitlement ( true ));
+        entitlements->setPath ( UPGRADE_ASSETS,         BooleanEntitlement ( true ));
         return entitlements;
     }
 };

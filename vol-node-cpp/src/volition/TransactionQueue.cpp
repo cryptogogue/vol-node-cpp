@@ -21,8 +21,6 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
     SchemaHandle schemaHandle ( ledger );
 
     // TODO: this is the naive implementation; there's so much more to do here.
-    // for example, the current implementation naively re-applies previously recorded
-    // transactions with no consideration of the nonce.
 
     // visit each account
     map < string, MakerQueue >::iterator makerQueueIt = this->mDatabase.begin ();
@@ -32,21 +30,23 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
         // TODO: get the account nonce and skip ahead
     
         // visit each transaction (ordered by nonce)
-        map < u64, shared_ptr < Transaction >>::iterator transactionIt = makerQueue.begin ();
-        for ( ; transactionIt != makerQueue.end (); ++transactionIt ) {
-        
-            shared_ptr < Transaction > transaction = transactionIt->second;
+        map < u64, shared_ptr < Transaction >>::iterator queueIt = makerQueue.begin ();
+        for ( ; queueIt != makerQueue.end (); ++queueIt ) {
+            
+            shared_ptr < Transaction > transaction = queueIt->second;
             
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
-            // TODO: if there's an error, delete the transaction and stop processing
             if ( transaction->apply ( ledger, schemaHandle )) {
                 block.pushTransaction ( transaction );
             }
             else {
-                // didn't like that transaction; revert and continue
+                // didn't like that transaction; empty the queue, revert and continue
+                this->mRejected.insert ( makerQueueIt->first );
+                makerQueue.clear (); // TODO: record the error
                 ledger.popVersion ();
+                break;
             }
         }
     }
@@ -64,6 +64,12 @@ string TransactionQueue::getTransactionNote ( string accountName, u64 nonce ) co
         }
     }
     return "";
+}
+
+//----------------------------------------------------------------//
+bool TransactionQueue::isRejected ( string accountName ) const {
+
+    return ( this->mRejected.find ( accountName ) != this->mRejected.cend ());
 }
 
 //----------------------------------------------------------------//
@@ -101,7 +107,10 @@ bool TransactionQueue::pushTransaction ( shared_ptr < Transaction > transaction 
     const TransactionMaker* maker = transaction->getMaker ();
     if ( !maker ) return false;
 
-    MakerQueue& queue = this->mDatabase [ maker->getAccountName ()];
+    string accountName = maker->getAccountName ();
+    this->mRejected.erase ( accountName );
+
+    MakerQueue& queue = this->mDatabase [ accountName ];
     queue [ maker->getNonce ()] = transaction;
     return true;
 }

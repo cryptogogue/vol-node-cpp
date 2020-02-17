@@ -52,10 +52,10 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "port", "p", "set port to serve from" )
-                .required ( false )
+            Poco::Util::Option ( "miner", "m", "miner name" )
+                .required ( true )
                 .argument ( "value", true )
-                .binding ( "port" )
+                .binding ( "miner" )
         );
         
         options.addOption (
@@ -63,6 +63,13 @@ protected:
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "nodelist" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "port", "p", "set port to serve from" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "port" )
         );
         
         options.addOption (
@@ -128,8 +135,9 @@ protected:
         string genesis                  = configuration.getString   ( "genesis" );
         int interval                    = configuration.getInt      ( "interval", Volition::WebMiner::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile" );
-        int port                        = configuration.getInt      ( "port", 9090 );
+        string minerID                  = configuration.getString   ( "miner" );
         string nodelist                 = configuration.getString   ( "nodelist", "" );
+        int port                        = configuration.getInt      ( "port", 9090 );
         string redisConf                = configuration.getString   ( "redis-conf", "./redis.conf" );
         string redisHost                = configuration.getString   ( "redis-conf", "127.0.0.1" );
         string redisFolder              = configuration.getString   ( "redis-folder", "./redis" );
@@ -137,9 +145,7 @@ protected:
         string simpleRecorderFolder     = configuration.getString   ( "simple-recorder-folder", "" );
         bool solo                       = configuration.getBool     ( "solo", false );
         string sslCertFile              = configuration.getString   ( "openSSL.server.certificateFile", "" );
-        
-        string minerID                  = to_string ( port );
-    
+            
         Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
         
         Padamose::RedisServerProc redisServerProc;

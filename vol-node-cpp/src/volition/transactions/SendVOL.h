@@ -42,10 +42,29 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        return ledger.sendVOL ( this->mMaker->getAccountName (), this->mAccountName, this->mAmount );
+        Ledger& ledger = context.mLedger;
+        const Account& account = context.mAccount;
+        
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return false;
+        if ( account.mBalance < this->mAmount ) return false;
+        
+        shared_ptr < Account > recipient = ledger.getAccount ( this->mAccountName );
+        if ( !recipient ) return false;
+        if ( account.mIndex == recipient->mIndex ) return false;
+        
+        Account recipientUpdated = *recipient;
+        recipientUpdated.mBalance += this->mAmount;
+        ledger.setAccount ( recipientUpdated );
+        
+        if ( !ledger.isGenesis ()) {
+            Account accountUpdated = account;
+            accountUpdated.mBalance -= this->mAmount;
+            ledger.setAccount ( accountUpdated );
+        }
+        
+        return true;
     }
 };
 

@@ -45,10 +45,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        return ledger.renameAccount ( this->mMaker->getAccountName (), this->mRevealedName, this->mNameHash, this->mNameSecret );
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RENAME_ACCOUNT )) return false;
+        
+        return context.mLedger.renameAccount ( this->mMaker->getAccountName (), this->mRevealedName, this->mNameHash, this->mNameSecret );
     }
 };
 

@@ -39,11 +39,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        bool result = ledger.publishSchema ( this->mMaker->getAccountName (), this->mSchema );
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA )) return false;
+        
+        bool result = context.mLedger.publishSchema ( this->mSchema );
         if ( result ) {
-            schemaHandle.reset ( ledger );
+            context.mSchemaHandle.reset ( context.mLedger );
         }
         return result;
     }

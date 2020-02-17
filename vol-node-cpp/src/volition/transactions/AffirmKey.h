@@ -45,10 +45,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
-        return ledger.affirmKey (
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::AFFIRM_KEY )) return false;
+    
+        return context.mLedger.affirmKey (
             this->mMaker->getAccountName (),
             this->mMaker->getKeyName (),
             this->mKeyName,

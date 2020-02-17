@@ -19,8 +19,8 @@ AbstractTransactionBody::~AbstractTransactionBody () {
 }
 
 //----------------------------------------------------------------//
-bool AbstractTransactionBody::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
-    return this->AbstractTransactionBody_apply ( ledger, schemaHandle );
+bool AbstractTransactionBody::apply ( TransactionContext& context ) const {
+    return this->AbstractTransactionBody_apply ( context );
 }
 
 //----------------------------------------------------------------//

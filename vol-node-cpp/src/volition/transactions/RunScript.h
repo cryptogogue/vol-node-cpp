@@ -49,13 +49,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        if ( !this->verifyMetrics ( ledger, schemaHandle )) return false;
+        if ( !this->verifyMetrics ( context )) return false;
         
         Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
         for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
-            if ( !ledger.invoke ( *schemaHandle, this->mMaker->getAccountName (), *invocationIt )) return false;
+            if ( !context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt )) return false;
         }
         return true;
     }
@@ -73,14 +73,16 @@ public:
     }
     
     //----------------------------------------------------------------//
-    bool verifyMetrics ( const Ledger& ledger, SchemaHandle& schemaHandle ) const {
+    bool verifyMetrics ( TransactionContext& context ) const {
+        
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RUN_SCRIPT )) return false;
         
         u64 totalWeight = MIN_WEIGHT;
         u64 maxMaturity = MIN_MATURITY;
     
         Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
         for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
-            if ( !ledger.verify ( *schemaHandle, *invocationIt )) return false;
+            if ( !context.mLedger.verify ( *context.mSchemaHandle, *invocationIt )) return false;
             totalWeight += invocationIt->mWeight;
             
             if ( maxMaturity < invocationIt->mMaturity ) {

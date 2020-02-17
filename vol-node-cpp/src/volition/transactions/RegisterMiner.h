@@ -39,10 +39,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
-        return ledger.registerMiner ( this->mMaker->getAccountName (), this->mMaker->getKeyName (), this->mURL );
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return false;
+    
+        return context.mLedger.registerMiner ( this->mMaker->getAccountName (), this->mMaker->getKeyName (), this->mURL );
     }
 };
 

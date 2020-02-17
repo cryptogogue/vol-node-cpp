@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_GENESIS_BLOCK_H
-#define VOLITION_TRANSACTIONS_GENESIS_BLOCK_H
+#ifndef VOLITION_TRANSACTIONS_SET_POLICY_H
+#define VOLITION_TRANSACTIONS_SET_POLICY_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -12,40 +12,41 @@ namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// GenesisBlock
+// SetEntitlements
 //================================================================//
-class GenesisBlock :
+class SetEntitlements :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "GENESIS_BLOCK" )
-    TRANSACTION_WEIGHT ( 0 )
+    TRANSACTION_TYPE ( "SET_ENTITLEMENTS" )
+    TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string      mIdentity;
+    string          mName;
+    Entitlements    mEntitlements;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "identity",      this->mIdentity );
+        serializer.serialize ( "name",              this->mName );
+        serializer.serialize ( "entitlements",      this->mEntitlements  );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "identity",      this->mIdentity );
+        serializer.serialize ( "name",              this->mName );
+        serializer.serialize ( "entitlements",      this->mEntitlements  );
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( schemaHandle );
-    
-        if ( ledger.isGenesis ()) {
-            ledger.setIdentity ( this->mIdentity );
-        }
-        return false;
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+                
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_ENTITLEMENTS )) return false;
+        context.mLedger.setEntitlements ( this->mName, this->mEntitlements );
+        return true;
     }
 };
 

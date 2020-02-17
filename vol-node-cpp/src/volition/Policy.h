@@ -8,6 +8,17 @@
 #include <volition/Entitlements.h>
 #include <volition/serialization/Serialization.h>
 
+// Keys and accounts have "policies," which limit what they can do. The "base" policy
+// is awlays the most permissive; all other policies must be more restrictive.
+
+// No key or account can create another key or account with a less restrictive policy. In
+// addition, the type of policies a key or account can create may be restricted by a "bequest."
+// If a is specified, then any derived policy must be no less restrictive than the bequest.
+
+// Policy entitlements are derived from "base" restrictions, which are held in the ledger.
+// To the "base" restrictions, further restrictions may be applied. This way, a set of "global"
+// entitlement profiles can be created and shared.
+
 namespace Volition {
 
 //================================================================//
@@ -17,7 +28,7 @@ class Policy :
     public AbstractSerializable {
 private:
 
-    string                                      mBase;
+    string                                      mBase; // If empty string, will load the base (i.e. most permissive) policy.
     SerializableSharedPtr < Entitlements >      mRestrictions;
 
 public:

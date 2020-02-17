@@ -39,14 +39,25 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
 
-        Account::Index accountIndex = ledger.getAccountIndex ( this->mMaker->getAccountName ());
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::UPGRADE_ASSETS )) return false;
+
+        const Schema& schema = *context.mSchemaHandle;
+
+        Account::Index accountIndex = context.mAccount.mIndex;
 
         SerializableMap < string, string >::const_iterator upgradeIt = this->mUpgrades.cbegin ();
         for ( ; upgradeIt != this->mUpgrades.end (); ++upgradeIt ) {
+            
             Asset::Index assetIndex = AssetID::decode ( upgradeIt->first );
-            if ( !ledger.upgradeAsset ( *schemaHandle, accountIndex, assetIndex, upgradeIt->second )) return false;
+            AssetODBM assetODBM ( context.mLedger, assetIndex );
+
+            if ( !assetODBM.mOwner.exists ()) return false;
+            if ( assetODBM.mOwner.get () != accountIndex ) return false;
+            if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeIt->second )) return false;
+
+            assetODBM.mType.set ( upgradeIt->second );
         }
         return true;
     }

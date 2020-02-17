@@ -79,6 +79,8 @@ void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const
         FromJSONSerializer::fromJSONFile ( block, blockPath );
         
         Miner::SubmissionResponse response = miner.submitBlock ( block );
+        string accountName = chain->getAccountName ( 2 );
+        shared_ptr < Account > account = chain->getAccount ( accountName );
         assert ( response == Miner::SubmissionResponse::ACCEPTED );
     }
 }

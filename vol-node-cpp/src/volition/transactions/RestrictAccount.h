@@ -39,9 +39,10 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( ledger );
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+        
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTRICT_ACCOUNT )) return false;
+        
         return true;
     }
 };

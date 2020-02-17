@@ -42,10 +42,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const override {
-        UNUSED ( schemaHandle );
+    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        return ledger.sendAssets ( this->mMaker->getAccountName (), this->mAccountName, this->mAssetIdentifiers.data (), this->mAssetIdentifiers.size ());
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_ASSETS )) return false;
+        
+        return context.mLedger.sendAssets ( this->mMaker->getAccountName (), this->mAccountName, this->mAssetIdentifiers.data (), this->mAssetIdentifiers.size ());
     }
 };
 

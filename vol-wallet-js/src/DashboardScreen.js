@@ -140,13 +140,17 @@ export const DashboardScreen = observer (( props ) => {
                     <DashboardNavigationBar
                         appState = { appState }
                     />
-                    <img 
-                        src = { './volwal.png' }
-                        style = {{
-                            width: '100%',
-                            height: 'auto',
-                        }}
-                    />
+                    <div style = {{
+                        minHeight: '90px',
+                    }}>
+                        <img 
+                            src = { './volwal.png' }
+                            style = {{
+                                width: '100%',
+                                height: 'auto',
+                            }}
+                        />
+                    </div>
                     <NetworkList appState = { appState }/>
                     <DashboardActionsSegment appState = { appState }/>
                 </Otherwise>

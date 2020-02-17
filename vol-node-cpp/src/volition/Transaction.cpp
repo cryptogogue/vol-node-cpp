@@ -2,7 +2,9 @@
 // http://cryptogogue.com
 
 #include <volition/Transaction.h>
+#include <volition/TransactionContext.h>
 #include <volition/TransactionMaker.h>
+#include <volition/transactions/Genesis.h>
 
 namespace Volition {
 
@@ -13,36 +15,30 @@ namespace Volition {
 //----------------------------------------------------------------//
 bool Transaction::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
     
-    if ( this->checkMaker ( ledger )) {
-        if ( this->mBody->apply ( ledger, schemaHandle )) {
-            if ( this->mBody->mMaker ) {
-                ledger.incrementNonce ( *this->mBody->mMaker, this->mBody->note ());
+    if ( !this->mBody ) return false;
+    
+    shared_ptr < const Account > account;
+    const KeyAndPolicy* keyAndPolicy = NULL;
+    
+    TransactionMaker* maker = this->mBody->mMaker.get ();
+    if ( maker ) {
+        account = ledger.getAccount ( maker->getAccountName ());
+        keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
+        if ( !( account && keyAndPolicy )) return false;
+    }
+    else if ( ledger.isGenesis ()) {
+        const Transactions::Genesis* genesis = dynamic_cast < const Transactions::Genesis* >( this->mBody.get ());
+        return genesis ? genesis->genesis ( ledger ) : false;
+    }
+    
+    if ( this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy )) {
+    
+        TransactionContext context ( ledger, schemaHandle, *account, *keyAndPolicy );
+        if ( this->mBody->apply ( context )) {
+            if ( !ledger.isGenesis ()) {
+                ledger.incrementNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
             }
             return true;
-        }
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
-bool Transaction::checkMaker ( const Ledger& ledger ) const {
-
-    if ( !this->mBody ) return false;
-    if ( ledger.isGenesis ()) return true;
-    if ( this->mBody->note ().size () == 0 ) return false;
-
-    TransactionMaker* maker = this->mBody->mMaker.get ();
-    Signature* signature = this->mSignature.get ();
-
-    if ( maker && signature ) {
-        
-        AccountKey accountKey = ledger.getAccountKey ( maker->getAccountName (), maker->getKeyName ());
-        if ( accountKey ) {
-        
-            if ( accountKey.mAccount->getNonce () != maker->getNonce ()) return false;
-
-            const CryptoKey& key = accountKey.mKeyAndPolicy->mKey;
-            return key.verify ( *signature, this->mBodyString );
         }
     }
     return false;
@@ -55,6 +51,23 @@ bool Transaction::checkMaker ( string accountName, u64 nonce ) const {
     if ( this->mBody->note ().size () == 0 ) return false;
     TransactionMaker* maker = this->mBody->mMaker.get ();
     return ( maker && ( maker->getAccountName () == accountName ) && ( maker->getNonce () == nonce ));
+}
+
+//----------------------------------------------------------------//
+bool Transaction::checkNonceAndSignature ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const {
+
+    if ( ledger.isGenesis ()) return true;
+    if ( this->mBody->note ().size () == 0 ) return false;
+
+    TransactionMaker* maker = this->mBody->mMaker.get ();
+    Signature* signature = this->mSignature.get ();
+
+    if ( maker && signature ) {
+        if ( account.getNonce () != maker->getNonce ()) return false;
+        const CryptoKey& key = keyAndPolicy.mKey;
+        return key.verify ( *signature, this->mBodyString );
+    }
+    return false;
 }
 
 //----------------------------------------------------------------//
