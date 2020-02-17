@@ -60,7 +60,7 @@ public:
         if ( account.mBalance < this->mGrant ) return false;
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return false;
         
-        string sponsorName = Format::write ( "%0lx", Munge::spin ( Munge::munge ( context.mAccount.mIndex )));
+        string sponsorName = account.mName;
         string suffix = this->mSuffix;
         const KeyAndPolicy& sponsorKeyAndPolicy = context.mKeyAndPolicy;
         
