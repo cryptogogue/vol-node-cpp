@@ -46,7 +46,7 @@ public:
         Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
         for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
         
-            ledger.awardAsset ( *schemaHandle, this->mMaker->getAccountName (), definitionIt->first, ( int )this->mNumAssets );
+            ledger.awardAsset ( *schemaHandle, this->mMaker->getAccountName (), definitionIt->first, ( size_t )this->mNumAssets );
         }
         return true;
     }

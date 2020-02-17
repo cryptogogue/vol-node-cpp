@@ -58,7 +58,7 @@ bool Ledger::affirmKey ( string accountName, string makerKeyName, string keyName
 }
 
 //----------------------------------------------------------------//
-bool Ledger::awardAsset ( const Schema& schema, string accountName, string assetType, int quantity ) {
+bool Ledger::awardAsset ( const Schema& schema, string accountName, string assetType, size_t quantity ) {
 
     if ( quantity == 0 ) return true;
 
@@ -69,10 +69,9 @@ bool Ledger::awardAsset ( const Schema& schema, string accountName, string asset
 
     LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = FormatLedgerKey::forGlobalAssetCount ();
     size_t globalAssetCount = this->getValueOrFallback < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
-
     size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
     
-    for ( int i = 0; i < quantity; ++i ) {
+    for ( size_t i = 0; i < quantity; ++i ) {
         
         AssetODBM assetODBM ( *this, globalAssetCount + i );
                 

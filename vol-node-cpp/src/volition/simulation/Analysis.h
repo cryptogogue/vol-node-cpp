@@ -65,8 +65,8 @@ public:
     
     //----------------------------------------------------------------//
     void        clear               ();
-    void        logTree             ( string prefix, bool verbose, int maxDepth = 0, int depth = 0 ) const;
-    size_t      measureChain        ( float threshold ) const;
+    void        logTree             ( string prefix, bool verbose, size_t maxDepth = 0, size_t depth = 0 ) const;
+    size_t      measureChain        ( double threshold ) const;
     void        summarize           ( const Tree& tree );
                 TreeSummary         ();
 };
@@ -84,7 +84,7 @@ private:
     size_t                  mPasses;
     
     size_t                  mChainLength;
-    float                   mAverageIncrease;
+    double                  mAverageIncrease;
 
 public:
 
@@ -93,7 +93,7 @@ public:
     void        clear               ();
     size_t      countLevels         () const;
     float       getLevelPercent     ( size_t level ) const;
-    void        log                 ( string prefix, bool verbose = false, int maxDepth = 0 ) const;
+    void        log                 ( string prefix, bool verbose = false, size_t maxDepth = 0 ) const;
     void        logLevels           ( string prefix ) const;
     void        update              ( const Tree& tree );
 };

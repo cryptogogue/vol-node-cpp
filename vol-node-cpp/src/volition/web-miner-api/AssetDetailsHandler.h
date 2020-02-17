@@ -32,7 +32,7 @@ public:
             string assetIndexOrID = this->getMatchString ( "assetIndexOrID" );
             assert ( assetIndexOrID.size () > 0 );
             
-            u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoll ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
+            u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoull ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
             
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();

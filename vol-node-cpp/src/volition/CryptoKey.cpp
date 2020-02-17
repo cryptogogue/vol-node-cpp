@@ -109,7 +109,7 @@ Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm )
                 sig.resize ( sigLen );
             
                 int result = ECDSA_sign ( 0,
-                    &digest [ 0 ], ( uint )digest.size (),
+                    &digest [ 0 ], ( int )digest.size (),
                     &sig [ 0 ], &sigLen,
                     pKey
                 );
@@ -175,8 +175,8 @@ bool CryptoKey::verify ( const Signature& signature, const DigestFunc& digestFun
                 Digest sig = signature.getSignature ();
             
                 result = 1 == ECDSA_verify ( 0,
-                    &digest [ 0 ], ( uint )digest.size (),
-                    &sig [ 0 ], ( uint )sig.size (),
+                    &digest [ 0 ], ( int )digest.size (),
+                    &sig [ 0 ], ( int )sig.size (),
                     pKey
                 );
                 break;

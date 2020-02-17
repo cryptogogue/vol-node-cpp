@@ -113,7 +113,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                                affirmKey                   ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
-    bool                                awardAsset                  ( const Schema& schema, string accountName, string assetType, int quantity );
+    bool                                awardAsset                  ( const Schema& schema, string accountName, string assetType, size_t quantity );
     bool                                deleteKey                   ( string accountName, string keyName );
     bool                                genesisMiner                ( string accountName, u64 balance, const CryptoKey& key, string url );
     shared_ptr < Account >              getAccount                  ( string accountName ) const;

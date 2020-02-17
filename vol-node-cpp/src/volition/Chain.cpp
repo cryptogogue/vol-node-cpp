@@ -74,7 +74,7 @@ int Chain::compare ( const Chain& chain0, const Chain& chain1, time_t now ) {
     assert ( forkHeight < minHeight ); // TODO: handle gracefully
     
     // TODO: maybe use time of top block (instead of current time)
-    u64 evalCount = ( difftime ( now, minTime ) / TheContext::get ().getWindow ()) + 1;
+    size_t evalCount = (( size_t )( difftime ( now, minTime ) / TheContext::get ().getWindow ())) + 1;
 
     // only need to compare blocks up through evalCount, starting just after the fork
     int result = Chain::compareSegment ( chain0, chain1, forkHeight + 1, evalCount );

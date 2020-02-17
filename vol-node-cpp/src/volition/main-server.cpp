@@ -38,6 +38,13 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "interval", "i", "set update interval (in seconds)" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "interval" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "keyfile", "k", "path to key file" )
                 .required ( false )
                 .argument ( "value", true )
@@ -108,7 +115,7 @@ protected:
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
-        string configfile   = configuration.getString ( "config", "" );
+        string configfile = configuration.getString ( "config", "" );
         
         if ( configfile.size () > 0 ) {
             this->loadConfiguration ( configfile, PRIO_APPLICATION - 1 );
@@ -118,17 +125,18 @@ protected:
         }
 //      this->printProperties ();
         
-        string genesis                  = configuration.getString ( "genesis" );
-        string keyfile                  = configuration.getString ( "keyfile" );
-        int port                        = configuration.getInt ( "port", 9090 );
-        string nodelist                 = configuration.getString ( "nodelist", "" );
-        string redisConf                = configuration.getString ( "redis-conf", "./redis.conf" );
-        string redisHost                = configuration.getString ( "redis-conf", "127.0.0.1" );
-        string redisFolder              = configuration.getString ( "redis-folder", "./redis" );
-        int redisPort                   = configuration.getInt ( "redis-port", 0 );
-        string simpleRecorderFolder     = configuration.getString ( "simple-recorder-folder", "" );
-        bool solo                       = configuration.getBool ( "solo", false );
-        string sslCertFile              = configuration.getString ( "openSSL.server.certificateFile", "" );
+        string genesis                  = configuration.getString   ( "genesis" );
+        int interval                    = configuration.getInt      ( "interval", Volition::WebMiner::DEFAULT_UPDATE_INTERVAL );
+        string keyfile                  = configuration.getString   ( "keyfile" );
+        int port                        = configuration.getInt      ( "port", 9090 );
+        string nodelist                 = configuration.getString   ( "nodelist", "" );
+        string redisConf                = configuration.getString   ( "redis-conf", "./redis.conf" );
+        string redisHost                = configuration.getString   ( "redis-conf", "127.0.0.1" );
+        string redisFolder              = configuration.getString   ( "redis-folder", "./redis" );
+        int redisPort                   = configuration.getInt      ( "redis-port", 0 );
+        string simpleRecorderFolder     = configuration.getString   ( "simple-recorder-folder", "" );
+        bool solo                       = configuration.getBool     ( "solo", false );
+        string sslCertFile              = configuration.getString   ( "openSSL.server.certificateFile", "" );
         
         string minerID                  = to_string ( port );
     
@@ -156,6 +164,8 @@ protected:
                 webMiner.setLazy ( true );
                 webMiner.setSolo ( true );
             }
+            
+            webMiner.setUpdateInterval (( u32 )interval );
             
             LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
             if ( !Volition::FileSys::exists ( genesis )) {
@@ -228,16 +238,12 @@ protected:
 
         Poco::Net::HTTPServer server (
             new Volition::WebMinerAPI::HTTPRequestHandlerFactory (),
-            ssl ? Poco::Net::SecureServerSocket ( port ) : Poco::Net::ServerSocket ( port ),
+            ssl ? Poco::Net::SecureServerSocket (( Poco::UInt16 )port ) : Poco::Net::ServerSocket (( Poco::UInt16 )port ),
             new Poco::Net::HTTPServerParams ()
         );
         server.start ();
 
         LOG_F ( INFO, "\nSERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
-
-//        Poco::Thread::sleep ( 3000 );
-//        server.stop ();
-//        return;
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
         // need to find out how to stop POCO from doing this. in the meantime, this hack.

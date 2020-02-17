@@ -20,7 +20,7 @@ const SimMiner* SimMiner::nextMiner () {
 
     if ( this->mMinerCursor < this->mMinerQueue.size ()) {
     
-        int minerIdx = this->mMinerQueue [ this->mMinerCursor++ ];
+        size_t minerIdx = this->mMinerQueue [ this->mMinerCursor++ ];
         const SimMiner* miner = &this->mSimulation.getMiner ( minerIdx );
         return ( this == miner ) ? this->nextMiner () : miner;
     }

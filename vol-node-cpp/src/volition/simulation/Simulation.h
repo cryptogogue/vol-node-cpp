@@ -31,14 +31,14 @@ private:
     Analysis                                mAnalysis;
     vector < unique_ptr < SimMiner >>       mMiners;
     float                                   mDropRate;
-    int                                     mCyclesPerStep;
+    size_t                                  mCyclesPerStep;
     bool                                    mRandomizeScore;
     default_random_engine                   mRand;
     u64                                     mStepSize;
     
     //----------------------------------------------------------------//
     bool                drop                    ();
-    void                resetMinerQueue         ( vector < int >& minerQueue, bool shuffle );
+    void                resetMinerQueue         ( vector < size_t >& minerQueue, bool shuffle );
     void                step                    ( size_t step );
 
 protected:
@@ -50,20 +50,20 @@ protected:
 public:
     
     //----------------------------------------------------------------//
-    void                applyCohort             ( Cohort& cohort, string name, int baseMinerID, int size = 1 );
-    int                 countMiners             () const;
+    void                applyCohort             ( Cohort& cohort, string name, size_t baseMinerID, size_t size = 1 );
+    size_t              countMiners             () const;
     const Analysis&     getAnalysis             () const;
-    const SimMiner&     getMiner                ( int minerID ) const;
-    void                initMiners              ( int nMiners, TheContext::ScoringMode scoringMode = TheContext::ScoringMode::ALLURE, double window = 600, double stepSize = 6 );
+    const SimMiner&     getMiner                ( size_t minerID ) const;
+    void                initMiners              ( size_t nMiners, TheContext::ScoringMode scoringMode = TheContext::ScoringMode::ALLURE, double window = 600, u64 stepSize = 6 );
     void                logMiners               ( string prefix ) const;
-    void                logTree                 ( string prefix, bool verbose = false, int maxDepth = 0 ) const;
+    void                logTree                 ( string prefix, bool verbose = false, size_t maxDepth = 0 ) const;
     size_t              rand                    ();
     void                reset                   ();
     void                run                     ();
     void                run                     ( size_t iterations, bool force = false );
-    void                setCyclesPerStep        ( int cycles );
+    void                setCyclesPerStep        ( size_t cycles );
     void                setDropRate             ( float percentage );
-    void                setPlayerVerbose        ( int minerID, bool verbose );
+    void                setPlayerVerbose        ( size_t minerID, bool verbose );
     void                setScoreRandomizer      ( bool randomize );
     void                setStepSize             ( u64 stepSize );
                         Simulation              ();

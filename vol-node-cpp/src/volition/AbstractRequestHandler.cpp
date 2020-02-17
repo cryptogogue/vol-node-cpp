@@ -29,7 +29,7 @@ string AbstractRequestHandler::getMatchString ( string key ) const {
 //----------------------------------------------------------------//
 u64 AbstractRequestHandler::getMatchU64 ( string key ) const {
 
-    return stoll ( this->getMatchString ( key ));
+    return stoull ( this->getMatchString ( key ));
 }
 
 //----------------------------------------------------------------//

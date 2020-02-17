@@ -5,6 +5,9 @@
 
 namespace Volition {
 
+int     to_lower_int    ( int _c );
+int     to_upper_int    ( int _c );
+
 //----------------------------------------------------------------//
 int to_lower_int ( int _c ) {
     return ( toupper ( _c ));
@@ -59,19 +62,19 @@ string toupper ( string str ) {
 char* vsnprintf_alloc ( char* s, size_t n, const char* format, va_list arg ) {
 
     char* buffer = s;
-    int buffSize = ( int )n;
+    size_t buffSize = n;
     
-    int result;
+    size_t result;
     
     while ( buffer ) {
         
         va_list copy;
         va_copy ( copy, arg );
-        result = vsnprintf ( buffer, buffSize, format, copy );
+        result = ( size_t )vsnprintf ( buffer, buffSize, format, copy );
         va_end ( copy );
 
         // thanks to http://perfec.to/vsnprintf/ for a discussion of vsnprintf portability issues
-        if (( result == buffSize ) || ( result == -1 ) || ( result == buffSize - 1 ))  {
+        if (( result == buffSize ) || ( result == ( size_t )-1 ) || ( result == buffSize - 1 ))  {
             buffSize = buffSize << 1;
         }
         else if ( result > buffSize ) {

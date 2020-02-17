@@ -25,13 +25,13 @@ private:
 
     Cohort*                 mCohort;
     Simulation&             mSimulation;
-    int                     mFrequency;
+    size_t                  mFrequency;
     bool                    mVerbose;
 
     time_t                  mNow;
 
     size_t                  mMinerCursor; // where we are in the check
-    vector < int >          mMinerQueue; // miner ID's to check
+    vector < size_t >       mMinerQueue; // miner ID's to check
 
     //----------------------------------------------------------------//
     void                pushGenesisTransaction      ( Block& block ) const;

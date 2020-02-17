@@ -57,8 +57,6 @@ class WebMiner :
     public Poco::Activity < WebMiner > {
 private:
 
-    static const u32                    DEFAULT_UPDATE_INTERVAL = 60;
-
     Poco::Mutex                         mMutex;
 
     Poco::ThreadPool                    mTaskManagerThreadPool;
@@ -67,7 +65,7 @@ private:
     map < string, RemoteMiner >         mRemoteMiners;
 
     bool                                        mSolo;
-    u32                                         mSoloUpdateIntervalInSeconds;
+    u32                                         mUpdateIntervalInSeconds;
     list < unique_ptr < BlockQueueEntry >>      mBlockQueue;
 
     //----------------------------------------------------------------//
@@ -81,9 +79,12 @@ private:
 
 public:
 
+    static const u32                    DEFAULT_UPDATE_INTERVAL = 60;
+
     //----------------------------------------------------------------//
     Poco::Mutex&    getMutex                ();
     void            setSolo                 ( bool solo );
+    void            setUpdateInterval       ( u32 updateIntervalInSeconds );
     void            shutdown                ();
                     WebMiner                ();
                     ~WebMiner               ();

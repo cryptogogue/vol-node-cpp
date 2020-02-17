@@ -370,7 +370,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    bool strictNumber () const {
+    double strictNumber () const {
         assert ( this->mType == Type::TYPE_NUMBER );
         return this->mNumeric;
     }

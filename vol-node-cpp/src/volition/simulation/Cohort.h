@@ -22,12 +22,12 @@ private:
 
     string  mName;
 
-    int     mBasePlayer;
+    size_t  mBasePlayer;
     
     bool    mIsPaused;
-    int     mGroupFlags;
-    int     mRequestFlags;
-    int     mRespondFlags;
+    u64     mGroupFlags;
+    u64     mRequestFlags;
+    u64     mRespondFlags;
 
     list < SimMiner* > mMiners;
 
@@ -36,9 +36,9 @@ public:
     //----------------------------------------------------------------//
                     Cohort                  ();
     void            pause                   ( bool paused );
-    void            randomizeFrequencies    ( int max );
-    void            setFlags                ( int group, int request, int respond );
-    void            setFrequency            ( int frequency );
+    void            randomizeFrequencies    ( size_t max );
+    void            setFlags                ( u64 group, u64 request, u64 respond );
+    void            setFrequency            ( size_t frequency );
     void            setName                 ( string name );
     void            setVerbose              ( bool verbose );
 };

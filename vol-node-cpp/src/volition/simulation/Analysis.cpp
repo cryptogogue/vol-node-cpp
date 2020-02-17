@@ -8,10 +8,12 @@
 namespace Volition {
 namespace Simulation {
 
-//----------------------------------------------------------------//
-void print_indent ( string& str, int indent ) {
+void print_indent ( string& str, size_t indent );
 
-    for ( int i = 0; i < indent; ++i ) {
+//----------------------------------------------------------------//
+void print_indent ( string& str, size_t indent ) {
+
+    for ( size_t i = 0; i < indent; ++i ) {
         Format::write ( str, ".   " );
     }
 }
@@ -113,7 +115,7 @@ size_t TreeSummary::computeSize () {
 }
 
 //----------------------------------------------------------------//
-void TreeSummary::logTree ( string prefix, bool verbose, int maxDepth, int depth ) const {
+void TreeSummary::logTree ( string prefix, bool verbose, size_t maxDepth, size_t depth ) const {
 
     if (( maxDepth > 0 ) && ( depth >= maxDepth )) return;
 
@@ -142,7 +144,7 @@ void TreeSummary::logTree ( string prefix, bool verbose, int maxDepth, int depth
 }
 
 //----------------------------------------------------------------//
-size_t TreeSummary::measureChain ( float threshold ) const {
+size_t TreeSummary::measureChain ( double threshold ) const {
 
     assert ( threshold > 0.5 );
 
@@ -162,7 +164,7 @@ size_t TreeSummary::measureChain ( float threshold ) const {
             }
         }
         
-        float ratio = bestChain ? ( float )bestChain->mChains / ( float )this->mChains : 0.0;
+        double ratio = bestChain ? ( double )bestChain->mChains / ( double )this->mChains : 0.0;
         if ( ratio < threshold ) break;
         
         cursor = bestChain;
@@ -252,7 +254,7 @@ float Analysis::getLevelPercent ( size_t level ) const {
 }
 
 //----------------------------------------------------------------//
-void Analysis::log ( string prefix, bool verbose, int maxDepth ) const {
+void Analysis::log ( string prefix, bool verbose, size_t maxDepth ) const {
 
     LGN_LOG ( VOL_FILTER_ROOT, INFO, "%sPASS: %d, AVG: %g LEN: %d\n", prefix.c_str (), ( int )this->mPasses, this->mAverageIncrease, ( int )this->mChainLength );
     this->logLevels ( prefix );
@@ -284,9 +286,9 @@ void Analysis::update ( const Tree& tree ) {
     
     if ( this->mPasses > 0 ) {
         
-        int increase = this->mChainLength - ( float )this->mPassesToLength [ this->mPasses - 1 ];
+        size_t increase = this->mChainLength - this->mPassesToLength [ this->mPasses - 1 ];
         size_t nextPasses = this->mPasses + 1;
-        this->mAverageIncrease = ( this->mAverageIncrease * (( float )this->mPasses / ( float )nextPasses )) + (( float )increase / ( float )nextPasses );
+        this->mAverageIncrease = ( this->mAverageIncrease * (( double )this->mPasses / ( double )nextPasses )) + (( double )increase / ( double )nextPasses );
     }
     
     this->mPasses++;

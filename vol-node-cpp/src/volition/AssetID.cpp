@@ -61,7 +61,7 @@ static const u64 FORTY_EIGHT_BITS   = 0x0000ffffffffffff;
 
 //----------------------------------------------------------------//
 u8          _check              ( u64 number );
-u16         _decode16           ( char* buffer );
+u16         _decode16           ( const char* buffer );
 u8          _decodeConsonant    ( char vowel );
 u8          _decodeVowel        ( char vowel );
 void        _encode16           ( char* buffer, u16 number );
@@ -151,7 +151,7 @@ void _encode16 ( char* buffer, u16 number ) {
 u64 _munge ( u64 number ) {
 
     u64 munge = number & 0x0f;
-    return ((( number ^ sMungeTable [ munge ]) & ~0x0f ) | munge ) & FORTY_EIGHT_BITS;
+    return ((( number ^ sMungeTable [ munge ]) & ~(( u64 )0x0f )) | munge ) & FORTY_EIGHT_BITS;
 }
 
 //----------------------------------------------------------------//

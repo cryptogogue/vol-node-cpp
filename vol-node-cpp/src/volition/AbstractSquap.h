@@ -46,7 +46,7 @@ public:
 // AbstractSquap
 //================================================================//
 class AbstractSquap :
-     public AbstractSerializable {
+     public virtual AbstractSerializable {
 public:
 
     enum OpCode : u64 {

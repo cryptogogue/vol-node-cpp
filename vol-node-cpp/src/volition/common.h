@@ -6,11 +6,15 @@
 
 #if __clang__
     #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wsign-compare"
+    #pragma clang diagnostic ignored "-Wsign-conversion"
     #pragma clang diagnostic ignored "-Wunused-parameter"
 #endif
 
 #if __GNUC__
     #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-compare"
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
     #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 

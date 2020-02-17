@@ -154,7 +154,7 @@ void WebMiner::runSolo () {
         }
         
         u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
-        u32 updateMillis = this->mSoloUpdateIntervalInSeconds * 1000;
+        u32 updateMillis = this->mUpdateIntervalInSeconds * 1000;
         
         if ( elapsedMillis < updateMillis ) {
             Poco::Thread::sleep ( updateMillis - elapsedMillis );
@@ -166,6 +166,12 @@ void WebMiner::runSolo () {
 void WebMiner::setSolo ( bool solo ) {
 
     this->mSolo = solo;
+}
+
+//----------------------------------------------------------------//
+void WebMiner::setUpdateInterval ( u32 updateIntervalInSeconds ) {
+
+    this->mUpdateIntervalInSeconds = updateIntervalInSeconds;
 }
 
 //----------------------------------------------------------------//
@@ -219,7 +225,7 @@ WebMiner::WebMiner () :
     Poco::Activity < WebMiner >( this, &WebMiner::runActivity ),
     mTaskManager ( this->mTaskManagerThreadPool ),
     mSolo ( false ),
-    mSoloUpdateIntervalInSeconds ( DEFAULT_UPDATE_INTERVAL ) {
+    mUpdateIntervalInSeconds ( DEFAULT_UPDATE_INTERVAL ) {
     
     this->mTaskManager.addObserver (
         Poco::Observer < WebMiner, Poco::TaskFinishedNotification > ( *this, &WebMiner::onSyncChainNotification )

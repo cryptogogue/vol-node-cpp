@@ -16,9 +16,9 @@ namespace Simulation {
 Cohort::Cohort () :
     mBasePlayer ( 0 ),
     mIsPaused ( false ),
-    mGroupFlags ( -1 ),
-    mRequestFlags ( -1 ),
-    mRespondFlags ( -1 ) {
+    mGroupFlags (( u64 )-1 ),
+    mRequestFlags (( u64 )-1 ),
+    mRespondFlags (( u64 )-1 ) {
 }
 
 //----------------------------------------------------------------//
@@ -28,7 +28,7 @@ void Cohort::pause ( bool paused ) {
 }
 
 //----------------------------------------------------------------//
-void Cohort::randomizeFrequencies ( int max ) {
+void Cohort::randomizeFrequencies ( size_t max ) {
 
     list < SimMiner* >::iterator minerIt = this->mMiners.begin ();
     for ( ; minerIt != this->mMiners.end (); ++minerIt ) {
@@ -38,7 +38,7 @@ void Cohort::randomizeFrequencies ( int max ) {
 }
 
 //----------------------------------------------------------------//
-void Cohort::setFlags ( int group, int request, int respond ) {
+void Cohort::setFlags ( u64 group, u64 request, u64 respond ) {
 
     this->mGroupFlags       = group;
     this->mRequestFlags     = request;
@@ -46,7 +46,7 @@ void Cohort::setFlags ( int group, int request, int respond ) {
 }
 
 //----------------------------------------------------------------//
-void Cohort::setFrequency ( int frequency ) {
+void Cohort::setFrequency ( size_t frequency ) {
 
     list < SimMiner* >::iterator minerIt = this->mMiners.begin ();
     for ( ; minerIt != this->mMiners.end (); ++minerIt ) {

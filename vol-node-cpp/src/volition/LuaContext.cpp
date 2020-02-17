@@ -17,6 +17,7 @@ static const char* MAIN_FUNC_NAME       = "main";
 //----------------------------------------------------------------//
 //LuaContext*      _get_schema         ( lua_State* L );
 int             _lua_call           ( lua_State* L, int nargs, int nresults );
+int             _print              ( lua_State *L );
 int             _traceback          ( lua_State* L );
 
 ////----------------------------------------------------------------//
@@ -162,7 +163,7 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     
     string accountName      = lua_tostring ( L, 2 );
     string assetType        = lua_tostring ( L, 3 );
-    int quantity            = ( int )lua_tointeger ( L, 4 );
+    size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
     self->mLedger.awardAsset ( self->mSchema, accountName, assetType, quantity );
 

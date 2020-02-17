@@ -32,23 +32,23 @@ void Simulation::Simulation_report ( size_t step ) const {
 }
 
 //----------------------------------------------------------------//
-void Simulation::applyCohort ( Cohort& cohort, string name, int baseMinerID, int size ) {
+void Simulation::applyCohort ( Cohort& cohort, string name, size_t baseMinerID, size_t size ) {
 
     cohort.mName        = name;
     cohort.mBasePlayer  = baseMinerID;
     
     cohort.mMiners.clear ();
-    for ( int i = 0; i < size; ++i ) {
-        int idx = i + baseMinerID;
+    for ( size_t i = 0; i < size; ++i ) {
+        size_t idx = i + baseMinerID;
         this->mMiners [ idx ]->mCohort = &cohort;
         cohort.mMiners.push_back ( this->mMiners [ idx ].get ());
     }
 }
 
 //----------------------------------------------------------------//
-int Simulation::countMiners () const {
+size_t Simulation::countMiners () const {
 
-    return ( int )this->mMiners.size ();
+    return this->mMiners.size ();
 }
 
 //----------------------------------------------------------------//
@@ -64,13 +64,13 @@ const Analysis& Simulation::getAnalysis () const {
 }
 
 //----------------------------------------------------------------//
-const SimMiner& Simulation::getMiner ( int minerID ) const {
+const SimMiner& Simulation::getMiner ( size_t minerID ) const {
 
     return *this->mMiners [ minerID ];
 }
 
 //----------------------------------------------------------------//
-void Simulation::initMiners ( int nMiners, TheContext::ScoringMode scoringMode, double window, double stepSize ) {
+void Simulation::initMiners ( size_t nMiners, TheContext::ScoringMode scoringMode, double window, u64 stepSize ) {
 
     TheContext::get ().setScoringMode ( scoringMode, nMiners );
     TheContext::get ().setWindow ( window );
@@ -90,7 +90,7 @@ void Simulation::initMiners ( int nMiners, TheContext::ScoringMode scoringMode, 
     time_t now;
     time ( &now );
 
-    for ( int i = 0; i < nMiners; ++i ) {
+    for ( size_t i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ] = make_unique < SimMiner >( *this );
         SimMiner& miner = *this->mMiners [ i ];
         
@@ -105,7 +105,7 @@ void Simulation::initMiners ( int nMiners, TheContext::ScoringMode scoringMode, 
     genesisBlock.sign ( this->mGenesisKey );
     TheContext::get ().setGenesisBlockDigest ( genesisBlock.getSignature ().getDigest ());
     
-    for ( int i = 0; i < nMiners; ++i ) {
+    for ( size_t i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ]->setGenesis ( genesisBlock );
     }
 }
@@ -113,14 +113,14 @@ void Simulation::initMiners ( int nMiners, TheContext::ScoringMode scoringMode, 
 //----------------------------------------------------------------//
 void Simulation::logMiners ( string prefix ) const {
 
-    int nMiners = this->countMiners ();
-    for ( int i = 0; i < nMiners; ++i ) {
+    size_t nMiners = this->countMiners ();
+    for ( size_t i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ]->log ( prefix );
     }
 }
 
 //----------------------------------------------------------------//
-void Simulation::logTree ( string prefix, bool verbose, int maxDepth ) const {
+void Simulation::logTree ( string prefix, bool verbose, size_t maxDepth ) const {
 
     this->mAnalysis.log ( prefix, verbose, maxDepth );
 }
@@ -143,14 +143,14 @@ void Simulation::reset () {
 }
 
 //----------------------------------------------------------------//
-void Simulation::resetMinerQueue ( vector < int >& minerQueue, bool shuffle ) {
+void Simulation::resetMinerQueue ( vector < size_t >& minerQueue, bool shuffle ) {
 
-    int nMiners = this->countMiners ();
+    size_t nMiners = this->countMiners ();
 
     minerQueue.clear ();
     minerQueue.reserve ( nMiners );
     
-    for ( int i = 0; i < nMiners; ++i ) {
+    for ( size_t i = 0; i < nMiners; ++i ) {
         minerQueue.push_back ( i );
     }
     
@@ -176,7 +176,7 @@ void Simulation::run ( size_t iterations, bool force ) {
 }
 
 //----------------------------------------------------------------//
-void Simulation::setCyclesPerStep ( int cycles ) {
+void Simulation::setCyclesPerStep ( size_t cycles ) {
 
     this->mCyclesPerStep = cycles;
 }
@@ -188,7 +188,7 @@ void Simulation::setDropRate ( float percentage ) {
 }
 
 //----------------------------------------------------------------//
-void Simulation::setPlayerVerbose ( int minerID, bool verbose ) {
+void Simulation::setPlayerVerbose ( size_t minerID, bool verbose ) {
 
     this->mMiners [ minerID ]->mVerbose = verbose;
 }
@@ -217,21 +217,21 @@ Simulation::~Simulation () {
 //----------------------------------------------------------------//
 void Simulation::step ( size_t step ) {
 
-    int nMiners = this->countMiners ();
-    int cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
+    size_t nMiners = this->countMiners ();
+    size_t cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
 
-    for ( int i = 0; i < cycles; ++i ) {
+    for ( size_t i = 0; i < cycles; ++i ) {
 
-        map < SimMiner*, int > schedule;
+        map < SimMiner*, size_t > schedule;
 
-        for ( int j = 0; j < nMiners; ++j ) {
+        for ( size_t j = 0; j < nMiners; ++j ) {
             SimMiner& miner = *this->mMiners [ j ];
             schedule [ &miner ] = miner.mFrequency;
         }
 
         while ( schedule.size ()) {
 
-            map < SimMiner*, int >::iterator scheduleIt = next ( schedule.begin (), this->rand () % schedule.size ());
+            map < SimMiner*, size_t >::iterator scheduleIt = next ( schedule.begin (), ( int )( this->rand () % schedule.size ()));
 
             SimMiner* miner = scheduleIt->first;
             if ( !this->drop ()) {
@@ -247,7 +247,7 @@ void Simulation::step ( size_t step ) {
     }
     
     Tree tree;
-    for ( int i = 0; i < nMiners; ++i ) {
+    for ( size_t i = 0; i < nMiners; ++i ) {
         tree.addChain ( *this->mMiners [ i ]->getBestBranch ());
     }
     this->mAnalysis.update ( tree );

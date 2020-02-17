@@ -19,7 +19,7 @@ private:
     u8     mBytes [ BUFFERSIZE ];
     
     //----------------------------------------------------------------//
-    u8 hexToByte ( u32 c ) {
+    u8 hexToByte ( const char c ) {
 
         if (( c >= '0' ) && ( c <= '9' )) return ( u8 )( c - '0' );
         if (( c >= 'a' ) && ( c <= 'f' )) return ( u8 )( c + 10 - 'a' );
@@ -116,7 +116,7 @@ public:
                     if ( nBits >= 8 ) {
                     
                         // take the whole byte, shifted up by the cursor;
-                        result |= this->mBytes [ i ] << resultCursor;
+                        result |= ( u64 )this->mBytes [ i ] << resultCursor;
                         
                         // step the cursor 8 bits forward.
                         resultCursor += 8;
@@ -128,7 +128,7 @@ public:
                     
                         // this is the end... less than one byte remains to be sampled.
                         // in this one case we have to mask to get rid of anything that might be in the upper byte.
-                        result |= ( this->mBytes [ i ] & (( 1 << nBits ) - 1 )) << resultCursor;
+                        result |= (( u64 )this->mBytes [ i ] & (( 1 << nBits ) - 1 )) << resultCursor;
                         
                         // we don't have to do this, but in the interest of being thorough.
                         // and heck, might use it for error reporting later.

@@ -60,6 +60,7 @@ target_sources ( volition-lib
         src/volition/TheWebMiner.cpp
         src/volition/Transaction.cpp
         src/volition/TransactionMaker.cpp
+        src/volition/TransactionQueue.cpp
         src/volition/WebMiner.cpp
         src/volition/simulation/Analysis.cpp
         src/volition/simulation/Cohort.cpp

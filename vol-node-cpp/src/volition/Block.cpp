@@ -235,13 +235,13 @@ size_t Block::getScore () const {
     
     size_t modulo = TheContext::get ().getScoringModulo ();
     size_t height = ( this->mHeight - 1 ) % modulo;
-    size_t minerID = strtol ( this->mMinerID.c_str (), 0, 10 );
+    size_t minerID = ( size_t )strtol ( this->mMinerID.c_str (), 0, 10 );
     
     return height <= minerID ? minerID - height : (( modulo - height ) + minerID );
 }
 
 //----------------------------------------------------------------//
-u64 Block::getTime () const {
+time_t Block::getTime () const {
 
     return this->mTime;
 }

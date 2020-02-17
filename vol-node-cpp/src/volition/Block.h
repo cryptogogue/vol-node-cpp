@@ -72,7 +72,7 @@ public:
     string              getMinerID                          () const;
     size_t              getScore                            () const;
     const Signature&    getSignature                        () const;
-    u64                 getTime                             () const;
+    time_t              getTime                             () const;
     bool                isGenesis                           () const;
     bool                isInRewriteWindow                   ( time_t now ) const;
     bool                isParent                            ( const Block& block ) const;

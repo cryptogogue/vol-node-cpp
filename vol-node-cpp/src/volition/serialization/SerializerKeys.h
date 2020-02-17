@@ -31,7 +31,7 @@ public:
             assert ( index < this->mKeys.size ());
             return SerializerPropertyName ( this->mKeys [ index ]);
         }
-        return SerializerPropertyName ( -1 ); // TODO: fix this up
+        return SerializerPropertyName (( size_t )-1 ); // TODO: fix this up
     }
 
     //----------------------------------------------------------------//

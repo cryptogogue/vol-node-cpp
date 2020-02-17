@@ -184,8 +184,8 @@ public:
 
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) :
-        mIndex ( index ),
         mLedger ( ledger ),
+        mIndex ( index ),
         mBody ( ledger,          FormatLedgerKey::forAccount_body ( this->mIndex )),
         mAssetCount ( ledger,    FormatLedgerKey::forAccount_assetCount ( this->mIndex )),
         mMinerInfo ( ledger,     FormatLedgerKey::forAccount_minerInfo ( this->mIndex )),
