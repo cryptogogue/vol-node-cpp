@@ -69,12 +69,12 @@ public:
     bool                    hasBranch               ( string miners ) const;
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
+                            Miner                   ();
+    virtual                 ~Miner                  ();
     void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );
-                            Miner                   ();
-    virtual                 ~Miner                  ();
     void                    reset                   ();
     void                    selectBranch            ();
     SubmissionResponse      submitBlock             ( const Block& block );

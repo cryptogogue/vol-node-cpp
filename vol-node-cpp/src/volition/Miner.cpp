@@ -163,6 +163,7 @@ void Miner::loadKey ( string keyfile, string password ) {
     assert ( inStream.is_open ());
     
     Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
+    assert ( this->mKeyPair );
     
     if ( this->mMinerID.size () == 0 ) {
         string keyID = this->mKeyPair.getKeyID ();
@@ -172,6 +173,16 @@ void Miner::loadKey ( string keyfile, string password ) {
             this->mMinerID = ledger.getAccountName ( accountKeyLookup->mAccountIndex );
         }
     }
+    assert ( this->mMinerID.size () > 0 );
+}
+
+//----------------------------------------------------------------//
+Miner::Miner () :
+    mLazy ( false ) {
+}
+
+//----------------------------------------------------------------//
+Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
@@ -184,15 +195,6 @@ void Miner::setLazy ( bool lazy ) {
 void Miner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
-}
-
-//----------------------------------------------------------------//
-Miner::Miner () :
-    mLazy ( false ) {
-}
-
-//----------------------------------------------------------------//
-Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//

@@ -56,7 +56,9 @@ export const NetworkNavigationBar = observer (( props ) => {
                 <Dropdown item text = { getAccountTabTitle ( tab )} style = {{ textTransform: 'uppercase' }}>
                     <Dropdown.Menu>
                         <Dropdown.Item text = { getAccountTabTitle ( NETWORK_TABS.NETWORK )} as = { Link } to = { networkURL }/>
-                        <Dropdown.Item text = { getAccountTabTitle ( NETWORK_TABS.CHAIN )} as = { Link } to = { chainURL }/>
+                        <If condition = { false }>
+                            <Dropdown.Item text = { getAccountTabTitle ( NETWORK_TABS.CHAIN )} as = { Link } to = { chainURL }/>
+                        </If>
                     </Dropdown.Menu>
                 </Dropdown>
 

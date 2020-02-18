@@ -207,13 +207,6 @@ export const InventoryScreen = observer (( props ) => {
                 </When>
 
                 <Otherwise>
-                    <img 
-                        src = { './cardmotron.png' }
-                        style = {{
-                            width: '100%',
-                            height: 'auto',
-                        }}
-                    />
                 </Otherwise>
 
             </Choose>

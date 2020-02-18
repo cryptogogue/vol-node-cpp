@@ -12,16 +12,16 @@
                         "grant" :           1000000,
                         "url" :             "http://127.0.0.1:9090/",
                         "key" : {
-                            "type" :            "EC_PEM",
-                            "publicKey" :       "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbeoS+2ToK5C92wKnkuSI4gKFfXDdqbQI\nkC507t01tdxyLoal4hSKOCcgapeMVT8d9BkEDDkYyu2iOffJ40K7kQ==\n-----END PUBLIC KEY-----\n"
+                            "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbDmeorItBB1rjT3MpoDHq\/ZR0\/SEyGDF\nIbw0DY8utz2bY++duQlgJsB\/lJNEidf8rH+us0MP\/CEqcGQxTHJvzg==\n-----END PUBLIC KEY-----\n",
+                            "type" : "EC_PEM"
                         }
                     },
                     {
                         "name" :            "beta",
                         "grant" :           1000000,
                         "key" : {
-                            "type" :            "EC_PEM",
-                            "publicKey" :       "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n" 
+                            "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAES93M5rogLEBC6EfMTiKmiyUEQNU\/GYRL\nmnRQDI9jPnGKzTNjk3IHmvo9KKofd2\/5v+jVFWbRBPqhqaPG5qU3aA==\n-----END PUBLIC KEY-----\n",
+                            "type" : "EC_PEM"
                         }
                     }
                 ]
@@ -69,20 +69,6 @@
                 "type" :            "RESTRICT_KEY",
                 "bequest" : {
                     "base" : "beta-account"
-                }
-            }
-        },
-        {
-            "bodyIn" : {
-                "maker" : {
-                    "accountName" : "beta"
-                },
-                "type" :            "OPEN_ACCOUNT",
-                "suffix" :          "123.456.789",
-                "grant" :           1000,
-                "key" : {
-                    "type" :        "EC_PEM",
-                    "publicKey" :   "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEsrq4Yrw\/CVrEC6v8uU7Td6qS3\/8yLaKd\n78oXuBulIBMbifgfxt8pUL89BgV0XblZsFL8WvtjV86ZwZhFq4fCag==\n-----END PUBLIC KEY-----\n"
                 }
             }
         }

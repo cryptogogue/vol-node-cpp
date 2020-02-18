@@ -49,6 +49,7 @@ target_sources ( volition-lib
         src/volition/LuaContext.cpp
         src/volition/Miner.cpp
         src/volition/MinerInfo.cpp
+        src/volition/Munge.cpp
         src/volition/PathEntitlement.cpp
         src/volition/RouteTable.cpp
         src/volition/Signature.cpp
