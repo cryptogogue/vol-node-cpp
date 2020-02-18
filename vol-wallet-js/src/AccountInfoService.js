@@ -1,5 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
-/* eslint-disable no-loop-func */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, storage, util } from 'fgc';
 import { action, computed, extendObservable, observe, observable } from 'mobx';

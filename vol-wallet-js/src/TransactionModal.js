@@ -1,4 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import { Transaction, TRANSACTION_TYPE }        from './Transaction';
 import { TransactionForm }                      from './TransactionForm';

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Cryptogogue, Inc. All Rights Reserved.
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import _                                                    from 'lodash';
 import { action, computed, extendObservable, observable }   from "mobx";

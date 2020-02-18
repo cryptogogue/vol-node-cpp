@@ -1,4 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import React, { Component }         from 'react';
 import { CardNumberElement, CardExpiryElement, CardCVCElement, PostalCodeElement, injectStripe } from 'react-stripe-elements';

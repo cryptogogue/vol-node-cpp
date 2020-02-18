@@ -1,5 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
-/* eslint-disable no-loop-func */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import { NODE_TYPE, NODE_STATUS }   from './AppStateService';
 import { assert, excel, hooks, RevocableContext, SingleColumnContainerView, storage, util } from 'fgc';

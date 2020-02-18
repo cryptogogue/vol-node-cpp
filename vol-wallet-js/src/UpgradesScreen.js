@@ -1,4 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import { AccountInfoService }                               from './AccountInfoService';
 import { AccountNavigationBar, ACCOUNT_TABS }               from './AccountNavigationBar';

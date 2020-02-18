@@ -1,4 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import { action, computed, extendObservable, observable, observe, runInAction } from 'mobx';
 import { observer }                         from 'mobx-react';

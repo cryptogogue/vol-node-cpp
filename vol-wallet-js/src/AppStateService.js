@@ -1,5 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
-/* eslint-disable no-loop-func */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import * as entitlements        from './util/entitlements';
 import { assert, crypto, excel, hooks, randomBytes, RevocableContext, SingleColumnContainerView, StorageContext, util } from 'fgc';

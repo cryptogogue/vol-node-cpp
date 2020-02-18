@@ -1,4 +1,4 @@
-/* eslint-disable no-whitespace-before-property */
+// Copyright (c) 2020 Cryptogogue, Inc. All Rights Reserved.
 
 import { AppStateService }                  from './AppStateService';
 import { ConfirmPasswordInputField }        from './ConfirmPasswordInputField';
