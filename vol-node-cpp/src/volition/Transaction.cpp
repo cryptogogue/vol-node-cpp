@@ -22,9 +22,12 @@ bool Transaction::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
     
     TransactionMaker* maker = this->mBody->mMaker.get ();
     if ( maker ) {
+        
         account = ledger.getAccount ( maker->getAccountName ());
+        if ( !account ) return false;
+        
         keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
-        if ( !( account && keyAndPolicy )) return false;
+        if ( !keyAndPolicy ) return false;
     }
     else if ( ledger.isGenesis ()) {
         const Transactions::Genesis* genesis = dynamic_cast < const Transactions::Genesis* >( this->mBody.get ());

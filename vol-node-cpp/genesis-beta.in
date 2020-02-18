@@ -1,0 +1,90 @@
+{
+    "height" : 0,
+    "time" : "1970-01-01T00:00:00UTC",
+    "transactions" : [
+        {
+            "bodyIn" : {
+                "type" :            "GENESIS",
+                "identity" :        "VOLITION_TEST_NET",
+                "accounts" : [
+                    {
+                        "name" :            "root",
+                        "grant" :           1000000,
+                        "url" :             "http://127.0.0.1:9090/",
+                        "key" : {
+                            "type" :            "EC_PEM",
+                            "publicKey" :       "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbeoS+2ToK5C92wKnkuSI4gKFfXDdqbQI\nkC507t01tdxyLoal4hSKOCcgapeMVT8d9BkEDDkYyu2iOffJ40K7kQ==\n-----END PUBLIC KEY-----\n"
+                        }
+                    },
+                    {
+                        "name" :            "beta",
+                        "grant" :           1000000,
+                        "key" : {
+                            "type" :            "EC_PEM",
+                            "publicKey" :       "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n" 
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "beta"
+                },
+                "type" :            "SET_ENTITLEMENTS",
+                "name" :            "beta-account",
+                "entitlements" : {
+                    "type" : "path",
+                    "children" : {
+                        "BETA_GET_ASSETS": {
+                            "type": "boolean",
+                            "value": true
+                        },
+                        "RENAME_ACCOUNT": {
+                            "type": "boolean",
+                            "value": true
+                        },
+                        "SEND_ASSETS": {
+                            "type": "boolean",
+                            "value": true
+                        },
+                        "SEND_VOL": {
+                            "type": "boolean",
+                            "value": true
+                        },
+                        "UPGRADE_ASSETS": {
+                            "type": "boolean",
+                            "value": true
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "beta"
+                },
+                "type" :            "RESTRICT_KEY",
+                "bequest" : {
+                    "base" : "beta-account"
+                }
+            }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "beta"
+                },
+                "type" :            "OPEN_ACCOUNT",
+                "suffix" :          "123.456.789",
+                "grant" :           1000,
+                "key" : {
+                    "type" :        "EC_PEM",
+                    "publicKey" :   "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEsrq4Yrw\/CVrEC6v8uU7Td6qS3\/8yLaKd\n78oXuBulIBMbifgfxt8pUL89BgV0XblZsFL8WvtjV86ZwZhFq4fCag==\n-----END PUBLIC KEY-----\n"
+                }
+            }
+        }
+    ]
+}

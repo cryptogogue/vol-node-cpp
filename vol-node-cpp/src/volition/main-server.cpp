@@ -53,7 +53,7 @@ protected:
         
         options.addOption (
             Poco::Util::Option ( "miner", "m", "miner name" )
-                .required ( true )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "miner" )
         );
@@ -135,7 +135,7 @@ protected:
         string genesis                  = configuration.getString   ( "genesis" );
         int interval                    = configuration.getInt      ( "interval", Volition::WebMiner::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile" );
-        string minerID                  = configuration.getString   ( "miner" );
+        string minerID                  = configuration.getString   ( "miner", "" );
         string nodelist                 = configuration.getString   ( "nodelist", "" );
         int port                        = configuration.getInt      ( "port", 9090 );
         string redisConf                = configuration.getString   ( "redis-conf", "./redis.conf" );
@@ -165,6 +165,8 @@ protected:
             Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
             Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
         
+            webMiner.setMinerID ( minerID );
+        
             if ( solo ) {
                 LOG_F ( INFO, "LAZY and SOLO" );
                 webMiner.setLazy ( true );
@@ -192,8 +194,7 @@ protected:
             }
             webMiner.loadKey ( keyfile );
             
-            LOG_F ( INFO, "MINER ID: %s", minerID.c_str ());
-            webMiner.setMinerID ( minerID );
+            LOG_F ( INFO, "MINER ID: %s", webMiner.getMinerID ().c_str ());
             webMiner.start ();
         }
 

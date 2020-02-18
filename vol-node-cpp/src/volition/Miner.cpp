@@ -163,6 +163,15 @@ void Miner::loadKey ( string keyfile, string password ) {
     assert ( inStream.is_open ());
     
     Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
+    
+    if ( this->mMinerID.size () == 0 ) {
+        string keyID = this->mKeyPair.getKeyID ();
+        const Ledger& ledger = this->getLedger ();
+        shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );
+        if ( accountKeyLookup ) {
+            this->mMinerID = ledger.getAccountName ( accountKeyLookup->mAccountIndex );
+        }
+    }
 }
 
 //----------------------------------------------------------------//

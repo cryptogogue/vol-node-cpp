@@ -78,10 +78,6 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-m root"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "--simple-recorder-folder persist-chain"
             isEnabled = "YES">
          </CommandLineArgument>
