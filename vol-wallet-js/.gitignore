@@ -2,6 +2,7 @@
 
 /build
 /node_modules
+/public/meta.json
 
 # for now
 package-lock.json
