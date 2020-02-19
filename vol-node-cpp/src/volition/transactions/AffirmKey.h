@@ -45,9 +45,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::AFFIRM_KEY )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::AFFIRM_KEY )) return "Permission denied.";
     
         return context.mLedger.affirmKey (
             this->mMaker->getAccountName (),

@@ -34,8 +34,11 @@ public:
     
             case HTTP::GET: {
 
-                if ( miner.isRejected ( accountName )) {
+                if ( miner.hasError ( accountName )) {
+                    TransactionResult lastResult = miner.getLastResult ( accountName );
                     jsonOut.set ( "status", "REJECTED" );
+                    jsonOut.set ( "message", lastResult.getMessage ());
+                    jsonOut.set ( "note", lastResult.getNote ());
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
 
@@ -54,6 +57,8 @@ public:
                     jsonOut.set ( "note", note );
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
+                
+                jsonOut.set ( "status", "UNKNOWN" );
                 return Poco::Net::HTTPResponse::HTTP_OK;
             }
             

@@ -33,7 +33,7 @@ private:
     Signature       mSignature;
 
     // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
-    SerializableVector < SerializableSharedPtr < Transaction >>     mTransactions;
+    SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;
 
     //----------------------------------------------------------------//
     void                applyEntropy                        ( Ledger& ledger ) const;
@@ -76,7 +76,7 @@ public:
     bool                isGenesis                           () const;
     bool                isInRewriteWindow                   ( time_t now ) const;
     bool                isParent                            ( const Block& block ) const;
-    void                pushTransaction                     ( shared_ptr < Transaction > transaction );
+    void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
     void                setAllure                           ( const Digest& allure );
     void                setMinerID                          ( string minerID );
     const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );

@@ -267,7 +267,7 @@ bool Block::isParent ( const Block& block ) const {
 }
 
 //----------------------------------------------------------------//
-void Block::pushTransaction ( shared_ptr < Transaction > transaction ) {
+void Block::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
     this->mTransactions.push_back ( transaction );
 }

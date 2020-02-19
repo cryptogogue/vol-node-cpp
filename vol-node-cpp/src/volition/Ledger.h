@@ -114,6 +114,7 @@ public:
     AccountKey                          getAccountKey               ( string accountName, string keyName ) const;
     shared_ptr < AccountKeyLookup >     getAccountKeyLookup         ( string keyID ) const;
     string                              getAccountName              ( Account::Index accountIndex ) const;
+    u64                                 getAccountNonce             ( Account::Index accountIndex ) const;
     shared_ptr < Asset >                getAsset                    ( const Schema& schema, Asset::Index index ) const;
     shared_ptr < Block >                getBlock                    () const;
     shared_ptr < Block >                getBlock                    ( size_t height ) const;
@@ -140,8 +141,6 @@ public:
     bool                                newAccount                  ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
     bool                                publishSchema               ( const Schema& schema );
     bool                                registerMiner               ( string accountName, string keyName, string url );
-    bool                                renameAccount               ( string accountName, string revealedName, Digest nameHash, Digest nameSecret );
-    bool                                sendAssets                  ( string accountName, string recipientName, const string* assetIdentifiers, size_t totalAssets );
     void                                setAccount                  ( const Account& account );
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
     bool                                setAssetFieldValue          ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field );

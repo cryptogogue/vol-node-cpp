@@ -33,6 +33,32 @@ namespace Volition {
 class Transaction;
 
 //================================================================//
+// TransactionResult
+//================================================================//
+class TransactionResult {
+private:
+
+    bool        mStatus;
+    string      mMessage;
+    string      mNote;
+
+public:
+
+    //----------------------------------------------------------------//
+    operator bool () const {
+        return ( this->mStatus );
+    }
+
+    //----------------------------------------------------------------//
+    string      getMessage                  () const;
+    string      getNote                     () const;
+    void        setTransactionDetails       ( const Transaction& transaction );
+                TransactionResult           ( bool status );
+                TransactionResult           ( const char* message );
+                TransactionResult           ( string message );
+};
+
+//================================================================//
 // AbstractTransactionBody
 //================================================================//
 class AbstractTransactionBody :
@@ -50,17 +76,17 @@ protected:
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
     //----------------------------------------------------------------//
-    virtual bool            AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
-    virtual u64             AbstractTransactionBody_maturity        () const = 0;
-    virtual string          AbstractTransactionBody_typeString      () const = 0;
-    virtual u64             AbstractTransactionBody_weight          () const = 0;
+    virtual TransactionResult   AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
+    virtual u64                 AbstractTransactionBody_maturity        () const = 0;
+    virtual string              AbstractTransactionBody_typeString      () const = 0;
+    virtual u64                 AbstractTransactionBody_weight          () const = 0;
 
 public:
 
     //----------------------------------------------------------------//
                             AbstractTransactionBody                 ();
                             ~AbstractTransactionBody                ();
-    bool                    apply                                   ( TransactionContext& context ) const;
+    TransactionResult       apply                                   ( TransactionContext& context ) const;
     u64                     maturity                                () const;
     string                  note                                    () const;
     string                  typeString                              () const;

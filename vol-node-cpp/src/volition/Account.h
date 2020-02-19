@@ -25,7 +25,6 @@ public:
     Index                               mIndex;
     string                              mName;
     u64                                 mBalance;
-    u64                                 mNonce;
     Policy                              mPolicy;
     SerializableSharedPtr < Policy >    mBequest;
 
@@ -42,7 +41,6 @@ public:
         serializer.serialize ( "index",             this->mIndex );
         serializer.serialize ( "name",              this->mName );
         serializer.serialize ( "balance",           this->mBalance );
-        serializer.serialize ( "nonce",             this->mNonce );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
         serializer.serialize ( "bequest",           this->mBequest );
@@ -54,7 +52,6 @@ public:
         serializer.serialize ( "index",             this->mIndex );
         serializer.serialize ( "name",              this->mName );
         serializer.serialize ( "balance",           this->mBalance );
-        serializer.serialize ( "nonce",             this->mNonce );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
         serializer.serialize ( "bequest",           this->mBequest );
@@ -62,8 +59,7 @@ public:
 
     //----------------------------------------------------------------//
     Account () :
-        mBalance ( 0 ),
-        mNonce ( 0 ) {
+        mBalance ( 0 ) {
     }
 
     //----------------------------------------------------------------//
@@ -93,11 +89,6 @@ public:
         for ( ; keyIt != this->mKeys.end (); ++keyIt ) {
             keys [ keyIt->first ] = keyIt->second;
         }
-    }
-    
-    //----------------------------------------------------------------//
-    u64 getNonce () const {
-        return this->mNonce;
     }
     
     //----------------------------------------------------------------//

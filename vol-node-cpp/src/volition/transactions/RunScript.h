@@ -49,13 +49,15 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        if ( !this->verifyMetrics ( context )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RUN_SCRIPT )) return "Permission denied.";
+        
+        if ( !this->verifyMetrics ( context )) return "Transaction metrics are incorrect.";
         
         Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
         for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
-            if ( !context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt )) return false;
+            if ( !context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt )) return "Script error.";
         }
         return true;
     }
@@ -74,8 +76,6 @@ public:
     
     //----------------------------------------------------------------//
     bool verifyMetrics ( TransactionContext& context ) const {
-        
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RUN_SCRIPT )) return false;
         
         u64 totalWeight = MIN_WEIGHT;
         u64 maxMaturity = MIN_MATURITY;

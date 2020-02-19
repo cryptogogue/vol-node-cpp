@@ -7,6 +7,43 @@
 namespace Volition {
 
 //================================================================//
+// TransactionResult
+//================================================================//
+
+//----------------------------------------------------------------//
+string TransactionResult::getMessage () const {
+    return this->mMessage;
+}
+
+//----------------------------------------------------------------//
+string TransactionResult::getNote () const {
+    return this->mNote;
+}
+
+//----------------------------------------------------------------//
+void TransactionResult::setTransactionDetails ( const Transaction& transaction ) {
+    this->mNote = transaction.getNote ();
+}
+
+//----------------------------------------------------------------//
+TransactionResult::TransactionResult ( bool status ) :
+    mStatus ( status ),
+    mMessage ( status ? "OK" : "UNSPECIFIED ERROR" ) {
+}
+
+//----------------------------------------------------------------//
+TransactionResult::TransactionResult ( const char* message ) :
+    mMessage ( message ) {
+    this->mStatus = ( this->mMessage.size () == 0 );
+}
+
+//----------------------------------------------------------------//
+TransactionResult::TransactionResult ( string message ) :
+    mStatus ( message.size () == 0 ),
+    mMessage ( message ) {
+}
+
+//================================================================//
 // AbstractTransactionBody
 //================================================================//
 
@@ -19,7 +56,7 @@ AbstractTransactionBody::~AbstractTransactionBody () {
 }
 
 //----------------------------------------------------------------//
-bool AbstractTransactionBody::apply ( TransactionContext& context ) const {
+TransactionResult AbstractTransactionBody::apply ( TransactionContext& context ) const {
     return this->AbstractTransactionBody_apply ( context );
 }
 

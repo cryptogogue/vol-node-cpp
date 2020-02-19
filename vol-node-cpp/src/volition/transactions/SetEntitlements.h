@@ -42,9 +42,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
                 
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_ENTITLEMENTS )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_ENTITLEMENTS )) return "Permission denied.";
         context.mLedger.setEntitlements ( this->mName, this->mEntitlements );
         return true;
     }

@@ -39,9 +39,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA )) return "Permission denied.";
         
         bool result = context.mLedger.publishSchema ( this->mSchema );
         if ( result ) {

@@ -53,6 +53,7 @@
 		CD4665A320BE9CE000A02D55 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4665A420BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
 		CD4665A520BE9CE000A02D55 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A120BE9CE000A02D55 /* libssl.a */; };
+		CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4B5F0123FD6274005EB2CC /* KeyAccountDetailsHandler.h */; };
 		CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD4E8152210579C8007DA585 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4665A020BE9CE000A02D55 /* libcrypto.a */; };
 		CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
@@ -684,6 +685,7 @@
 		CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractRequestHandler.h; path = src/volition/AbstractRequestHandler.h; sourceTree = "<group>"; };
 		CD4665AB20BFF3DD00A02D55 /* AbstractTransactionBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractTransactionBody.cpp; path = src/volition/AbstractTransactionBody.cpp; sourceTree = "<group>"; };
 		CD4665AC20BFF3DD00A02D55 /* AbstractTransactionBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractTransactionBody.h; path = src/volition/AbstractTransactionBody.h; sourceTree = "<group>"; };
+		CD4B5F0123FD6274005EB2CC /* KeyAccountDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyAccountDetailsHandler.h; path = "src/volition/web-miner-api/KeyAccountDetailsHandler.h"; sourceTree = "<group>"; };
 		CD4E80D62102BB57007DA585 /* CryptoKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoKey.cpp; path = src/volition/CryptoKey.cpp; sourceTree = "<group>"; };
 		CD4E80D72102BB57007DA585 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
 		CD4E80DC21031AB0007DA585 /* Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Digest.h; path = src/volition/Digest.h; sourceTree = "<group>"; };
@@ -1036,8 +1038,6 @@
 				CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */,
 				CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */,
 				CD36662D20F56D9A000E0B43 /* TheWebMiner.h */,
-				CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */,
-				CD964FA223C48EAB009010C3 /* TransactionQueue.h */,
 				CD0C3E1020C14460006E3B1C /* WebMiner.cpp */,
 				CD0C3E1120C14460006E3B1C /* WebMiner.h */,
 			);
@@ -1209,6 +1209,8 @@
 				CD2AB814230E79D400805F70 /* Transaction.cpp */,
 				CD2AB815230E79D400805F70 /* Transaction.h */,
 				CDA1573823FA7B8800DFACCF /* TransactionContext.h */,
+				CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */,
+				CD964FA223C48EAB009010C3 /* TransactionQueue.h */,
 				CDF8AD5521F2D106000E285F /* Transactions.h */,
 			);
 			name = transaction;
@@ -1305,6 +1307,7 @@
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
 				CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */,
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
+				CD4B5F0123FD6274005EB2CC /* KeyAccountDetailsHandler.h */,
 				CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */,
 				CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */,
 				CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */,
@@ -1532,6 +1535,7 @@
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
 				CDA1573723FA59FE00DFACCF /* KeyAndPolicy.h in Headers */,
 				CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */,
+				CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,

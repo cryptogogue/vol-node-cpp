@@ -57,7 +57,7 @@ public:
     SerializableVector < GenesisAccount >   mAccounts;
 
     //----------------------------------------------------------------//
-    bool genesis ( Ledger& ledger ) const {
+    TransactionResult genesis ( Ledger& ledger ) const {
     
         ledger.setIdentity ( this->mIdentity );
         
@@ -89,7 +89,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         UNUSED ( context );
         return false;
     }

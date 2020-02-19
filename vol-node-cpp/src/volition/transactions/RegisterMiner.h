@@ -39,9 +39,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
     
         return context.mLedger.registerMiner ( this->mMaker->getAccountName (), this->mMaker->getKeyName (), this->mURL );
     }

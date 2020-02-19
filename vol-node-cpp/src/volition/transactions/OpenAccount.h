@@ -52,20 +52,20 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
         Ledger& ledger = context.mLedger;
         const Account& account = context.mAccount;
         
-        if ( account.mBalance < this->mGrant ) return false;
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return false;
+        if ( account.mBalance < this->mGrant ) return "Insufficient funds.";
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return "Permission denied.";
         
         string sponsorName = account.mName;
         string suffix = this->mSuffix;
         const KeyAndPolicy& sponsorKeyAndPolicy = context.mKeyAndPolicy;
         
-        if ( Ledger::isChildName ( sponsorName )) return false;
-        if ( !Ledger::isSuffix ( suffix )) return false;
+        if ( Ledger::isChildName ( sponsorName )) return "Cannot sponsor from child account.";
+        if ( !Ledger::isSuffix ( suffix )) return "Account name suffix error.";
         
         // the child name will be prepended with the sponsor name following a tilde: "~<sponsorName>.<childSuffix>"
         // i.e. "~maker.000.000.000"
@@ -75,12 +75,12 @@ public:
         assert ( Ledger::isChildName ( childName ));
 
         const Policy* keyBequest = ledger.resolveBequest < KeyEntitlements >( sponsorKeyAndPolicy.mPolicy, sponsorKeyAndPolicy.getBequest (), this->mKeyPolicy.get ());
-        if ( !keyBequest ) return false;
+        if ( !keyBequest ) return "Missing account key bequest.";
         
         const Policy* accountBequest = ledger.resolveBequest < AccountEntitlements >( account.mPolicy, account.getBequest (), this->mAccountPolicy.get ());
-        if ( !accountBequest ) return false;
+        if ( !accountBequest ) return "Missing account bequest.";
 
-        if ( !ledger.newAccount ( childName, this->mGrant, Ledger::MASTER_KEY_NAME, this->mKey, *keyBequest, *accountBequest )) return false;
+        if ( !ledger.newAccount ( childName, this->mGrant, Ledger::MASTER_KEY_NAME, this->mKey, *keyBequest, *accountBequest )) return "Failed to create account.";;
 
         if ( !ledger.isGenesis ()) {
             Account accountUpdated = account;

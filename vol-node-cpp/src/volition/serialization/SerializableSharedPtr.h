@@ -9,10 +9,10 @@
 namespace Volition {
 
 //================================================================//
-// SerializableSharedPtr
+// BaseSerializableSharedPtr
 //================================================================//
-template < typename TYPE, typename FACTORY = SerializablePtrFactory < TYPE >>
-class SerializableSharedPtr :
+template < typename TYPE, typename FACTORY_PRODUCT_TYPE, typename FACTORY = SerializablePtrFactory < FACTORY_PRODUCT_TYPE >>
+class BaseSerializableSharedPtr :
     public AbstractSerializable,
     public shared_ptr < TYPE > {
 public:
@@ -21,7 +21,7 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
         
         FACTORY factory;
-        unique_ptr < TYPE > value = factory.make ( serializer );
+        unique_ptr < FACTORY_PRODUCT_TYPE > value = factory.make ( serializer );
         
         if ( value ) {
             value->serializeFrom ( serializer );
@@ -39,19 +39,25 @@ public:
     }
 
     //----------------------------------------------------------------//
-    SerializableSharedPtr () {
+    BaseSerializableSharedPtr () {
     }
     
     //----------------------------------------------------------------//
-    SerializableSharedPtr ( shared_ptr < TYPE >& other ) :
+    BaseSerializableSharedPtr ( shared_ptr < TYPE >& other ) :
         shared_ptr < TYPE >( other ) {
     }
     
     //----------------------------------------------------------------//
-    SerializableSharedPtr ( const shared_ptr < TYPE >& other ) :
+    BaseSerializableSharedPtr ( const shared_ptr < TYPE >& other ) :
         shared_ptr < TYPE >( other ) {
     }
 };
+
+template < typename TYPE, typename FACTORY = SerializablePtrFactory < TYPE >>
+using SerializableSharedConstPtr = BaseSerializableSharedPtr < const TYPE, TYPE, FACTORY >;
+
+template < typename TYPE, typename FACTORY = SerializablePtrFactory < TYPE >>
+using SerializableSharedPtr = BaseSerializableSharedPtr < TYPE, TYPE, FACTORY >;
 
 } // namespace Volition
 #endif

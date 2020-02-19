@@ -39,9 +39,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTRICT_ACCOUNT )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTRICT_ACCOUNT )) return "Permission denied.";
         
         return true;
     }

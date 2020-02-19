@@ -30,15 +30,18 @@ protected:
     SignaturePtr            mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
+    TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
+    
+    //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
     void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
     //----------------------------------------------------------------//
-    bool                        apply                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
+    TransactionResult           apply                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
     bool                        checkMaker              ( string accountName, u64 nonce ) const;
-    bool                        checkNonceAndSignature  ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const;
+    TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const;
     const TransactionMaker*     getMaker                () const;
     string                      getNote                 () const;
     u64                         maturity                () const;

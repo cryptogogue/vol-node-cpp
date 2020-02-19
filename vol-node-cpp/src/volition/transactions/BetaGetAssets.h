@@ -39,9 +39,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_ASSETS )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_ASSETS )) return "Permission denied.";
         
         const Schema::Definitions& definitions = context.mSchemaHandle->getDefinitions ();
         

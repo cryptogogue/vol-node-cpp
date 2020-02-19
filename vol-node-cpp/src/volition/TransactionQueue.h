@@ -20,29 +20,59 @@ class AbstractHashable;
 class Block;
 
 //================================================================//
+// MakerQueue
+//================================================================//
+class MakerQueue {
+protected:
+
+    friend class TransactionQueue;
+
+    typedef map < u64, shared_ptr < const Transaction >>::iterator TransactionIt;
+    typedef map < u64, shared_ptr < const Transaction >>::const_iterator TransactionConstIt;
+    typedef map < u64, shared_ptr < const Transaction >>  Queue;
+    
+    Queue                   mQueue;
+    TransactionResult       mLastResult;
+
+public:
+
+    //----------------------------------------------------------------//
+    shared_ptr < const Transaction >    getTransaction          ( u64 nonce ) const;
+    bool                                hasError                () const;
+    bool                                hasTransaction          ( u64 nonce ) const;
+    bool                                hasTransactions         () const;
+                                        MakerQueue              ();
+    bool                                pushTransaction         ( shared_ptr < const Transaction > transaction );
+    void                                prune                   ( u64 nonce );
+    void                                setError                ( TransactionResult error );
+};
+
+//================================================================//
 // TransactionQueue
 //================================================================//
 class TransactionQueue {
 protected:
 
-    typedef map < u64, shared_ptr < Transaction >>  MakerQueue; // nonce: transaction
+    typedef map < string, MakerQueue >::iterator MakerQueueIt;
+    typedef map < string, MakerQueue >::const_iterator MakerQueueConstIt;
 
-    map < string, MakerQueue > mDatabase; // accountName: queue
-    set < string > mRejected;
+    map < string, MakerQueue > mDatabase;
     
     //----------------------------------------------------------------//
+    const MakerQueue*       getMakerQueueOrNull     ( string accountName ) const;
     void                    reset                   ();
     
 public:
 
     //----------------------------------------------------------------//
-    void            fillBlock               ( Chain& chain, Block& block );
-    string          getTransactionNote      ( string accountName, u64 nonce ) const;
-    bool            isRejected              ( string accountName ) const;
-    void            pruneTransactions       ( const Chain& chain );
-    bool            pushTransaction         ( shared_ptr < Transaction > transaction );
-                    TransactionQueue        ();
-    virtual         ~TransactionQueue       ();
+    void                    fillBlock               ( Chain& chain, Block& block );
+    TransactionResult       getLastResult           ( string accountName ) const;
+    string                  getTransactionNote      ( string accountName, u64 nonce ) const;
+    bool                    hasError                ( string accountName );
+    void                    pruneTransactions       ( const Chain& chain );
+    bool                    pushTransaction         ( shared_ptr < const Transaction > transaction );
+                            TransactionQueue        ();
+    virtual                 ~TransactionQueue       ();
 };
 
 } // namespace Volition

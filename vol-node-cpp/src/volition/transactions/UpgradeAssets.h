@@ -5,6 +5,7 @@
 #define VOLITION_TRANSACTIONS_UPGRADE_ASSETS_H
 
 #include <volition/common.h>
+#include <volition/Format.h>
 #include <volition/AbstractTransactionBody.h>
 #include <volition/Policy.h>
 
@@ -39,24 +40,35 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
 
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::UPGRADE_ASSETS )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::UPGRADE_ASSETS )) return "Permission denied.";
 
+        Ledger& ledger = context.mLedger;
+        const Account& account = context.mAccount;
         const Schema& schema = *context.mSchemaHandle;
 
-        Account::Index accountIndex = context.mAccount.mIndex;
+        Account::Index accountIndex = account.mIndex;
 
+        // check the upgrades
         SerializableMap < string, string >::const_iterator upgradeIt = this->mUpgrades.cbegin ();
         for ( ; upgradeIt != this->mUpgrades.end (); ++upgradeIt ) {
             
-            Asset::Index assetIndex = AssetID::decode ( upgradeIt->first );
-            AssetODBM assetODBM ( context.mLedger, assetIndex );
+            string assetID = upgradeIt->first;
+            string upgradeType = upgradeIt->second;
+            
+            AssetODBM assetODBM ( ledger, AssetID::decode ( assetID ));
 
-            if ( !assetODBM.mOwner.exists ()) return false;
-            if ( assetODBM.mOwner.get () != accountIndex ) return false;
-            if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeIt->second )) return false;
-
+            if ( !assetODBM.mOwner.exists ()) return Format::write ( "Asset %s does not exist.", assetID.c_str ());
+            if ( assetODBM.mOwner.get () != accountIndex ) return Format::write ( "Asset %s does not belong to account %s.", assetID.c_str (), account.mName.c_str ());
+            if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return Format::write (  "Cannot upgrade asset %s to %s.",  assetID.c_str (),  upgradeType.c_str ());
+        }
+        
+        // perform the upgrades
+        upgradeIt = this->mUpgrades.cbegin ();
+        for ( ; upgradeIt != this->mUpgrades.end (); ++upgradeIt ) {
+            
+            AssetODBM assetODBM ( ledger, AssetID::decode ( upgradeIt->first ) );
             assetODBM.mType.set ( upgradeIt->second );
         }
         return true;

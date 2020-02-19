@@ -42,17 +42,17 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
         Ledger& ledger = context.mLedger;
         const Account& account = context.mAccount;
         
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return false;
-        if ( account.mBalance < this->mAmount ) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return "Permission denied.";
+        if ( account.mBalance < this->mAmount ) return "Insufficient funds.";
         
         shared_ptr < Account > recipient = ledger.getAccount ( this->mAccountName );
-        if ( !recipient ) return false;
-        if ( account.mIndex == recipient->mIndex ) return false;
+        if ( !recipient ) return "Could not find recipient account.";
+        if ( account.mIndex == recipient->mIndex ) return "Cannot send VOL to self.";
         
         Account recipientUpdated = *recipient;
         recipientUpdated.mBalance += this->mAmount;
@@ -63,7 +63,6 @@ public:
             accountUpdated.mBalance -= this->mAmount;
             ledger.setAccount ( accountUpdated );
         }
-        
         return true;
     }
 };

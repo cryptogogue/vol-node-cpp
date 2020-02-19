@@ -42,9 +42,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool AbstractTransactionBody_apply ( TransactionContext& context ) const override {
+    TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTRICT_KEY )) return false;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTRICT_KEY )) return "Permission denied.";
         
         Ledger& ledger = context.mLedger;
         KeyAndPolicy keyUpdated = context.mKeyAndPolicy;

@@ -120,7 +120,8 @@ Account::Index Ledger::getAccountIndex ( string accountName ) const {
 
     if ( accountName.size () == 0 ) return Account::NULL_INDEX;
 
-    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( accountName );
+    string lowerName = Format::tolower ( accountName );
+    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( lowerName );
     return this->getValueOrFallback < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, Account::NULL_INDEX );
 }
 
@@ -150,6 +151,12 @@ shared_ptr < AccountKeyLookup > Ledger::getAccountKeyLookup ( string keyID ) con
 string Ledger::getAccountName ( Account::Index accountIndex ) const {
 
     return this->getValueOrFallback < string >( FormatLedgerKey::forAccount_name ( accountIndex ), "" );
+}
+
+//----------------------------------------------------------------//
+u64 Ledger::getAccountNonce ( Account::Index accountIndex ) const {
+
+    return this->getValueOrFallback < u64 >( FormatLedgerKey::forAccount_nonce ( accountIndex ), 0 );
 }
 
 //----------------------------------------------------------------//
@@ -315,16 +322,14 @@ UnfinishedBlockList Ledger::getUnfinished () {
 //----------------------------------------------------------------//
 void Ledger::incrementNonce ( Account::Index index, u64 nonce, string note ) {
 
-    shared_ptr < Account > account = this->getAccount ( index );
-    assert ( account );
-    assert ( account->mNonce == nonce );
+    AccountODBM accountODBM ( *this, index );
+    if ( !accountODBM.mBody.exists ()) return;
+    if ( accountODBM.mNonce.get ( 0 ) != nonce ) return;
     
     LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccount_transactionNoteField ( index, nonce );
     this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
 
-    Account updatedAccount = *account;
-    updatedAccount.mNonce = nonce + 1;
-    this->setAccount ( updatedAccount );
+    accountODBM.mNonce.set ( nonce + 1 );
 }
 
 //----------------------------------------------------------------//
@@ -355,8 +360,12 @@ bool Ledger::invoke ( const Schema& schema, string accountName, const AssetMetho
 
 //----------------------------------------------------------------//
 bool Ledger::isAccountName ( string accountName ) {
-    UNUSED ( accountName );
 
+    size_t size = accountName.size ();
+    for ( size_t i = 0; i < size; ++i ) {
+        const char c = accountName [ i ];
+        if ( !isgraph ( c )) return false;
+    }
     return true;
 }
 
@@ -413,7 +422,8 @@ Ledger::~Ledger () {
 bool Ledger::newAccount ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
 
     // check to see if there is already an alias for this account name
-    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( accountName );
+    string lowerName = Format::tolower ( accountName );
+    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( lowerName );
     if ( this->hasKey ( KEY_FOR_ACCOUNT_ALIAS )) return false; // alias already exists
 
     // provision the account ID
@@ -494,103 +504,6 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
         return true;
     }
     return false;
-}
-
-//----------------------------------------------------------------//
-bool Ledger::renameAccount ( string accountName, string revealedName, Digest nameHash, Digest nameSecret ) {
-    UNUSED ( nameHash );
-    UNUSED ( nameSecret );
-
-    // nameHash <- SHA256 ( "<new name>" )
-    // nameSecret <- SHA256 ( "<current name>:<new name>" )
-
-    // if provided, nameHash and nameSecret may be used to reduce the chances of an account
-    // name being intercepted and registered by an attacker.
-    
-    // nameHash establishes the uniqueness of an account name without revealing it. nameSecret
-    // binds the account name to the registrant's account. using both ensures that the registrant
-    // really knows the requested account name. in other words, the registrant's own account
-    // name acts like a salt: an attacker would have to find a match that produced both the
-    // nameHash *and* the nameSecret (derived from their own account name). thus, nameHash
-    // is shared, but nameSecret is unique to every account applying for the name.
-    
-    // the nameHash is used to create a decollider table, which records all accounts applying
-    // for the name. the nameSecret is stored inside the account, along with a timestamp.
-    
-    // when a plaintext name is revealed, the decollider table is checked. each colliding
-    // account may then be checked to see if its nameSecret is correct. whichever account
-    // has the correct namesecret and the earliest timestamp is the rightful claimant
-    // of the name.
-    
-    // once a claimant is found, the decollider table may be updated to reflect the change
-    // in status and indicate the winner (although the winner must also submit a rename
-    // transaction to claim the name).
-    
-    // make sure the revealed name is valid
-    if ( Ledger::isChildName ( revealedName )) return false; // new names must not begin with a '~'
-    if ( !Ledger::isAccountName ( revealedName )) return false; // make sure it's a valid account name
-    
-    shared_ptr < Account > account = this->getAccount ( accountName );
-    if ( !account ) return false;
-    
-    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( revealedName );
-    
-    // check to see if the alias already exists
-    if ( this->hasValue ( KEY_FOR_ACCOUNT_ALIAS )) {
-        // if it does, then it should also belong to this account
-        Account::Index aliasIndex = this->getValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS );
-        if ( aliasIndex != account->mIndex ) return false;
-    }
-    else {
-        this->setValue < Account::Index >(KEY_FOR_ACCOUNT_ALIAS, account->mIndex );
-    }
-    this->setValue < string >( FormatLedgerKey::forAccount_name ( account->mIndex ), revealedName );
- 
-    account->mName = revealedName;
-    this->setObject < Account >( FormatLedgerKey::forAccount_body ( account->mIndex ), *account );
-
-    return true;
-}
-
-//----------------------------------------------------------------//
-bool Ledger::sendAssets ( string accountName, string recipientName, const string* assetIdentifiers, size_t totalAssets ) {
-
-    AccountODBM senderODBM ( *this, this->getAccountIndex ( accountName ));
-    AccountODBM receiverODBM ( *this, this->getAccountIndex ( recipientName ));
-
-    if ( senderODBM.mIndex == Account::NULL_INDEX ) return false;
-    if ( receiverODBM.mIndex == Account::NULL_INDEX ) return false;
-
-    size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
-    size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
-
-    for ( size_t i = 0; i < totalAssets; ++i, --senderAssetCount, ++receiverAssetCount ) {
-        
-        AssetODBM assetODBM ( *this, AssetID::decode ( assetIdentifiers [ i ]));
-        if ( assetODBM.mIndex == Asset::NULL_INDEX ) return false;
-        if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return false;
-        
-        // fill the asset's original position by swapping in the tail
-        size_t position = assetODBM.mPosition.get ();
-        if ( position < senderAssetCount ) {
-            LedgerFieldODBM < Asset::Index > senderInventoryField = senderODBM.getInventoryField ( position );
-            LedgerFieldODBM < Asset::Index > senderInventoryTailField = senderODBM.getInventoryField ( senderAssetCount - 1 );
-            
-            AssetODBM tailAssetODBM ( *this, senderInventoryTailField.get ());
-            tailAssetODBM.mPosition.set ( position );
-            senderInventoryField.set ( tailAssetODBM.mIndex );
-        }
-        
-        // transfer asset ownership to the receiver
-        assetODBM.mOwner.set ( receiverODBM.mIndex );
-        assetODBM.mPosition.set ( receiverAssetCount );
-        receiverODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
-    }
-    
-    senderODBM.mAssetCount.set ( senderAssetCount );
-    receiverODBM.mAssetCount.set ( receiverAssetCount );
-
-    return true;
 }
 
 //----------------------------------------------------------------//

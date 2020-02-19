@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_ACCOUNTDETAILSHANDLER_H
-#define VOLITION_WEBMINERAPI_ACCOUNTDETAILSHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_KEYACCOUNTDETAILSHANDLER_H
+#define VOLITION_WEBMINERAPI_KEYACCOUNTDETAILSHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
@@ -22,6 +22,20 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
+    static void formatJSON ( const Ledger& ledger, const Account& account, Poco::JSON::Object& jsonOut ) {
+    
+        u64 nonce = ledger.getAccountNonce ( account.mIndex );
+        
+        Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( account ).extract < Poco::JSON::Object::Ptr >();
+        accountJSON->set ( "nonce", nonce );
+        jsonOut.set ( "account", accountJSON );
+        
+        ToJSONSerializer entitlements;
+        ledger.serializeEntitlements ( account, entitlements );
+        jsonOut.set ( "entitlements", entitlements );
+    }
+
+    //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
@@ -33,12 +47,7 @@ public:
 
         shared_ptr < Account > account = ledger.getAccount ( accountName );
         if ( account ) {
-            jsonOut.set ( "account", ToJSONSerializer::toJSON ( *account ));
-            
-            ToJSONSerializer entitlements;
-            ledger.serializeEntitlements ( *account, entitlements );
-            jsonOut.set ( "entitlements", entitlements );
-            
+            AccountDetailsHandler::formatJSON ( ledger, *account, jsonOut );
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;

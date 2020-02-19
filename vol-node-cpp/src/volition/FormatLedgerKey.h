@@ -81,6 +81,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey forAccount_nonce ( Account::Index index ) {
+        return Format::write ( "account.%d.nonce", index );
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey forAccount_transactionNoteField ( Account::Index index, u64 nonce ) {
         return Format::write ( "account.%d.transaction.%d", index, nonce );
     }

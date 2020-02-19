@@ -180,16 +180,18 @@ public:
     LedgerFieldODBM < string >      mBody;
     LedgerFieldODBM < size_t >      mAssetCount;
     LedgerFieldODBM < string >      mMinerInfo;
+    LedgerFieldODBM < u64 >         mNonce;
     LedgerFieldODBM < string >      mName;
 
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) :
         mLedger ( ledger ),
         mIndex ( index ),
-        mBody ( ledger,          FormatLedgerKey::forAccount_body ( this->mIndex )),
-        mAssetCount ( ledger,    FormatLedgerKey::forAccount_assetCount ( this->mIndex )),
-        mMinerInfo ( ledger,     FormatLedgerKey::forAccount_minerInfo ( this->mIndex )),
-        mName ( ledger,          FormatLedgerKey::forAccount_name ( this->mIndex )) {
+        mBody ( ledger,         FormatLedgerKey::forAccount_body ( this->mIndex )),
+        mAssetCount ( ledger,   FormatLedgerKey::forAccount_assetCount ( this->mIndex )),
+        mMinerInfo ( ledger,    FormatLedgerKey::forAccount_minerInfo ( this->mIndex )),
+        mNonce ( ledger,        FormatLedgerKey::forAccount_nonce ( this->mIndex )),
+        mName ( ledger,         FormatLedgerKey::forAccount_name ( this->mIndex )) {
     }
     
     //----------------------------------------------------------------//
