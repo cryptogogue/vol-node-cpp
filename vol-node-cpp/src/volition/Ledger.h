@@ -100,7 +100,8 @@ class Ledger :
     public VersionedStore {
 public:
 
-    static constexpr const char* MASTER_KEY_NAME = "master";
+    static constexpr const char* MASTER_KEY_NAME    = "master";
+    static constexpr const u64 DEFAULT_BLOCK_SIZE   = 100;
 
     typedef SerializableMap < string, string > MinerURLMap;
 
@@ -118,6 +119,7 @@ public:
     shared_ptr < Asset >                getAsset                    ( const Schema& schema, Asset::Index index ) const;
     shared_ptr < Block >                getBlock                    () const;
     shared_ptr < Block >                getBlock                    ( size_t height ) const;
+    u64                                 getBlockSize                () const;
     Entropy                             getEntropy                  () const;
     string                              getIdentity                 () const;
     SerializableList < Asset >          getInventory                ( const Schema& schema, string accountName ) const;

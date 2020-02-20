@@ -97,6 +97,11 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
 
     SchemaHandle schemaHandle ( ledger );
 
+    shared_ptr < const Account > miner = ledger.getAccount ( this->mMinerID );
+    assert ( miner || ledger.isGenesis ());
+
+    size_t gratuity = 0;
+
     if ( ledger.getVersion () >= this->mHeight ) {
         
         // apply block transactions.
@@ -106,12 +111,19 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
                 transaction.apply ( ledger, schemaHandle );
+                gratuity += transaction.getGratuity ();
             }
             
             if ( nextMaturity < transactionMaturity ) {
                 nextMaturity = transactionMaturity;
             }
         }
+    }
+    
+    if ( miner && ( gratuity > 0 )) {
+        Account minerUpdated = *miner;
+        minerUpdated.mBalance += gratuity;
+        ledger.setAccount ( minerUpdated );
     }
     return nextMaturity;
 }

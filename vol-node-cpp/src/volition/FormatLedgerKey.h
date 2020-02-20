@@ -131,6 +131,11 @@ public:
     static LedgerKey forBlock () {
         return "block";
     }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey forBlockSize () {
+        return "blockSize";
+    }
 
     //----------------------------------------------------------------//
     static LedgerKey forEntitlements ( string name ) {

@@ -57,7 +57,6 @@ public:
         Ledger& ledger = context.mLedger;
         const Account& account = context.mAccount;
         
-        if ( account.mBalance < this->mGrant ) return "Insufficient funds.";
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return "Permission denied.";
         
         string sponsorName = account.mName;
@@ -82,13 +81,13 @@ public:
 
         if ( !ledger.newAccount ( childName, this->mGrant, Ledger::MASTER_KEY_NAME, this->mKey, *keyBequest, *accountBequest )) return "Failed to create account.";;
 
-        if ( !ledger.isGenesis ()) {
-            Account accountUpdated = account;
-            accountUpdated.mBalance -= this->mGrant;
-            ledger.setAccount ( accountUpdated );
-        }
-
         return true;
+    }
+    
+    //----------------------------------------------------------------//
+    u64 AbstractTransactionBody_cost () const override {
+    
+        return this->mGrant;
     }
 };
 

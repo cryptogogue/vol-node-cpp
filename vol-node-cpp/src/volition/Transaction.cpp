@@ -47,11 +47,22 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
     if ( result ) {
         
         TransactionContext context ( ledger, schemaHandle, *account, *keyAndPolicy );
+        
+        u64 cost = this->mBody->cost ();
+        if ( account->mBalance < cost ) return "Insufficient funds.";
+        
         result = this->mBody->apply ( context );
         
         if ( result ) {
             if ( !ledger.isGenesis ()) {
+                
                 ledger.incrementNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
+                
+                if ( cost > 0 ) {
+                    Account accountUpdated = *account;
+                    accountUpdated.mBalance -= cost;
+                    ledger.setAccount ( accountUpdated );
+                }
             }
         }
     }
@@ -83,6 +94,12 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
         return key.verify ( *signature, this->mBodyString );
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+u64 Transaction::getGratuity () const {
+
+    return this->mBody ? this->mBody->gratuity () : 0;
 }
 
 //----------------------------------------------------------------//

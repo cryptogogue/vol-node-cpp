@@ -218,6 +218,12 @@ shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
 }
 
 //----------------------------------------------------------------//
+u64 Ledger::getBlockSize () const {
+
+    return this->getValue < u64 >( FormatLedgerKey::forBlockSize ());
+}
+
+//----------------------------------------------------------------//
 Entropy Ledger::getEntropy () const {
 
     string entropy = this->getValueOrFallback < string >( FormatLedgerKey::forEntropy (), "" );
@@ -341,6 +347,7 @@ void Ledger::init () {
     this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAccountCount (), 0 );
     this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAssetCount (), 0 );
     this->setValue < string >( FormatLedgerKey::forSchema (), "" );
+    this->setValue < u64 >( FormatLedgerKey::forBlockSize (), DEFAULT_BLOCK_SIZE );
 }
 
 //----------------------------------------------------------------//

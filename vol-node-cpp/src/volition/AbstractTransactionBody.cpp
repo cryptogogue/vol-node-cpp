@@ -61,6 +61,16 @@ TransactionResult AbstractTransactionBody::apply ( TransactionContext& context )
 }
 
 //----------------------------------------------------------------//
+u64 AbstractTransactionBody::cost () const {
+    return this->gratuity () + this->AbstractTransactionBody_cost ();
+}
+
+//----------------------------------------------------------------//
+u64 AbstractTransactionBody::gratuity () const {
+    return this->mMaker ? this->mMaker->getGratuity () : 0;
+}
+
+//----------------------------------------------------------------//
 u64 AbstractTransactionBody::maturity () const {
     return this->AbstractTransactionBody_maturity ();
 }
@@ -102,6 +112,12 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
     serializer.serialize ( "type",      this->typeString ());
     serializer.serialize ( "maker",     this->mMaker );
     serializer.serialize ( "note",      this->mNote );
+}
+
+//----------------------------------------------------------------//
+u64 AbstractTransactionBody::AbstractTransactionBody_cost () const {
+
+    return 0;
 }
 
 } // namespace Volition

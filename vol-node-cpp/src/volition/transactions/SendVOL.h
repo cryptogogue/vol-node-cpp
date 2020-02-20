@@ -48,7 +48,6 @@ public:
         const Account& account = context.mAccount;
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return "Permission denied.";
-        if ( account.mBalance < this->mAmount ) return "Insufficient funds.";
         
         shared_ptr < Account > recipient = ledger.getAccount ( this->mAccountName );
         if ( !recipient ) return "Could not find recipient account.";
@@ -58,12 +57,13 @@ public:
         recipientUpdated.mBalance += this->mAmount;
         ledger.setAccount ( recipientUpdated );
         
-        if ( !ledger.isGenesis ()) {
-            Account accountUpdated = account;
-            accountUpdated.mBalance -= this->mAmount;
-            ledger.setAccount ( accountUpdated );
-        }
         return true;
+    }
+    
+    //----------------------------------------------------------------//
+    u64 AbstractTransactionBody_cost () const override {
+    
+        return this->mAmount;
     }
 };
 

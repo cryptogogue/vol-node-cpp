@@ -42,6 +42,7 @@ public:
     TransactionResult           apply                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
     bool                        checkMaker              ( string accountName, u64 nonce ) const;
     TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const;
+    u64                         getGratuity             () const;
     const TransactionMaker*     getMaker                () const;
     string                      getNote                 () const;
     u64                         maturity                () const;

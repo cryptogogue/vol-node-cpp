@@ -105,6 +105,9 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
     ledger.takeSnapshot ( chain );
     SchemaHandle schemaHandle ( ledger );
 
+    const u64 maxBlockSize = ledger.getBlockSize ();
+    u64 blockSize = 0;
+
     map < string, MakerQueueInfo > infoCache;
 
     bool more = true;
@@ -140,6 +143,9 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
             shared_ptr < const Transaction > transaction = makerQueue.getTransaction ( info.mNonce );
             if ( !transaction ) continue; // skip if no transaction
             
+            u64 transactionSize = transaction->weight ();
+            if (( blockSize + transactionSize ) > maxBlockSize ) continue;
+            
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
@@ -150,6 +156,7 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
                 info.mNonce++;
                 infoCache [ accountName ] = info;
                 
+                blockSize += transactionSize;
                 more = ( more || makerQueue.hasTransaction ( info.mNonce ));
             }
             else {
