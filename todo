@@ -73,6 +73,7 @@ DONE: layout tool - finish docs + coding style guide
 DONE: wallet - (simple) tagging sets of cards
 DONE: upgrade assets
 DONE: asset updates
+DONE: wallet - fix asset display glitch (doesn't match cardmotron)
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
@@ -85,6 +86,9 @@ node - properly check account name changes to exclude illegal characters
 wallet - validate name change requests
 
 node/schema - replace schema name with version (schema is a composite; one per ledger)
+
+node - enforce block size limits (in points)
+node - apply gratuity
 
 ----------------------------------------------------------------
 MVP

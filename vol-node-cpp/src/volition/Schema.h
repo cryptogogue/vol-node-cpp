@@ -21,6 +21,7 @@ public:
 
     typedef SerializableMap < string, AssetDefinition >     Definitions;
     typedef SerializableMap < string, SerializableOpaque >  Fonts;
+    typedef SerializableMap < string, SerializableOpaque >  Icons;
     typedef SerializableMap < string, SerializableOpaque >  Layouts;
     typedef SerializableMap < string, AssetMethod >         Methods;
     typedef SerializableMap < string, string >              Upgrades;
@@ -32,6 +33,7 @@ private:
 
     Definitions             mDefinitions;
     Fonts                   mFonts;
+    Icons                   mIcons;
     Layouts                 mLayouts;
     Methods                 mMethods;
     Upgrades                mUpgrades;
@@ -62,6 +64,7 @@ private:
 
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "fonts",             this->mFonts );
+        serializer.serialize ( "icons",             this->mIcons );
         serializer.serialize ( "layouts",           this->mLayouts );
         serializer.serialize ( "methods",           this->mMethods );
         serializer.serialize ( "upgrades",          this->mUpgrades );
@@ -72,6 +75,7 @@ private:
 
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "fonts",             this->mFonts );
+        serializer.serialize ( "icons",             this->mIcons );
         serializer.serialize ( "layouts",           this->mLayouts );
         serializer.serialize ( "methods",           this->mMethods );
         serializer.serialize ( "upgrades",          this->mUpgrades );
@@ -94,12 +98,14 @@ public:
     
         if ( Schema::hasCollisions ( this->mDefinitions, other.mDefinitions )) return false;
         if ( Schema::hasCollisions ( this->mFonts, other.mFonts )) return false;
+        if ( Schema::hasCollisions ( this->mIcons, other.mIcons )) return false;
         if ( Schema::hasCollisions ( this->mLayouts, other.mLayouts )) return false;
         if ( Schema::hasCollisions ( this->mMethods, other.mMethods )) return false;
         if ( Schema::hasCollisions ( this->mUpgrades, other.mUpgrades )) return false;
     
         Schema::merge ( this->mDefinitions, other.mDefinitions );
         Schema::merge ( this->mFonts, other.mFonts );
+        Schema::merge ( this->mIcons, other.mIcons );
         Schema::merge ( this->mLayouts, other.mLayouts );
         Schema::merge ( this->mMethods, other.mMethods );
         Schema::merge ( this->mUpgrades, other.mUpgrades );
