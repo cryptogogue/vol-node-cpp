@@ -122,7 +122,7 @@ public:
     u64                                 getBlockSize                () const;
     Entropy                             getEntropy                  () const;
     string                              getIdentity                 () const;
-    SerializableList < Asset >          getInventory                ( const Schema& schema, string accountName ) const;
+    SerializableList < Asset >          getInventory                ( const Schema& schema, string accountName, size_t max = 0 ) const;
     shared_ptr < MinerInfo >            getMinerInfo                ( string accountName ) const;
     map < string, MinerInfo >           getMiners                   () const;
     shared_ptr < MinerURLMap >          getMinerURLs                () const;

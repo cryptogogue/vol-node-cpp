@@ -237,7 +237,7 @@ string Ledger::getIdentity () const {
 }
 
 //----------------------------------------------------------------//
-SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string accountName ) const {
+SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string accountName, size_t max ) const {
 
     SerializableList < Asset > assets;
 
@@ -245,6 +245,10 @@ SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string a
     if ( accountODBM.mIndex == Account::NULL_INDEX ) return assets;
 
     size_t assetCount = accountODBM.mAssetCount.get ();
+    
+    if (( max > 0 ) && ( max < assetCount )) {
+        assetCount = max;
+    }
     
     for ( size_t i = 0; i < assetCount; ++i ) {
     
