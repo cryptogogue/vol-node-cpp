@@ -350,7 +350,7 @@ void Ledger::init () {
     this->setObject < SerializableMap < string, string >>( FormatLedgerKey::forMinerURLs (), SerializableMap < string, string > ());
     this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAccountCount (), 0 );
     this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAssetCount (), 0 );
-    this->setValue < string >( FormatLedgerKey::forSchema (), "" );
+    this->setValue < string >( FormatLedgerKey::forSchema (), "{}" );
     this->setValue < u64 >( FormatLedgerKey::forBlockSize (), DEFAULT_BLOCK_SIZE );
 }
 
