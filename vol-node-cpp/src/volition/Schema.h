@@ -19,6 +19,8 @@ class Schema :
     public AbstractSerializable {
 public:
 
+    typedef SerializableMap < string, size_t >              Deck;
+    typedef SerializableMap < string, Deck >                Decks;
     typedef SerializableMap < string, AssetDefinition >     Definitions;
     typedef SerializableMap < string, SerializableOpaque >  Fonts;
     typedef SerializableMap < string, SerializableOpaque >  Icons;
@@ -31,6 +33,7 @@ private:
     friend class Ledger;
     friend class LuaContext;
 
+    Decks                   mDecks;
     Definitions             mDefinitions;
     Fonts                   mFonts;
     Icons                   mIcons;
@@ -40,7 +43,7 @@ private:
 
     //----------------------------------------------------------------//
     template < typename TYPE >
-    static bool hasCollisions ( const TYPE& container0, const TYPE& container1 ) {
+    static bool hasKeyCollisions ( const TYPE& container0, const TYPE& container1 ) {
         
         typename TYPE::const_iterator itr = container1.cbegin ();
         for ( ; itr != container1.cend (); ++itr ) {
@@ -62,6 +65,7 @@ private:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
+        serializer.serialize ( "decks",             this->mDecks );
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "fonts",             this->mFonts );
         serializer.serialize ( "icons",             this->mIcons );
@@ -73,6 +77,7 @@ private:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
+        serializer.serialize ( "decks",             this->mDecks );
         serializer.serialize ( "definitions",       this->mDefinitions );
         serializer.serialize ( "fonts",             this->mFonts );
         serializer.serialize ( "icons",             this->mIcons );
@@ -95,14 +100,8 @@ public:
 
     //----------------------------------------------------------------//
     bool compose ( const Schema& other ) {
-    
-        if ( Schema::hasCollisions ( this->mDefinitions, other.mDefinitions )) return false;
-        if ( Schema::hasCollisions ( this->mFonts, other.mFonts )) return false;
-        if ( Schema::hasCollisions ( this->mIcons, other.mIcons )) return false;
-        if ( Schema::hasCollisions ( this->mLayouts, other.mLayouts )) return false;
-        if ( Schema::hasCollisions ( this->mMethods, other.mMethods )) return false;
-        if ( Schema::hasCollisions ( this->mUpgrades, other.mUpgrades )) return false;
-    
+        
+        Schema::merge ( this->mDecks, other.mDecks );
         Schema::merge ( this->mDefinitions, other.mDefinitions );
         Schema::merge ( this->mFonts, other.mFonts );
         Schema::merge ( this->mIcons, other.mIcons );
@@ -111,6 +110,12 @@ public:
         Schema::merge ( this->mUpgrades, other.mUpgrades );
     
         return true;
+    }
+
+    //----------------------------------------------------------------//
+    const Deck* getDeck ( string deckName ) const {
+       Decks::const_iterator deckIt = this->mDecks.find ( deckName );
+       return deckIt != this->mDecks.cend () ? &deckIt->second : NULL;
     }
 
     //----------------------------------------------------------------//
@@ -138,6 +143,20 @@ public:
     //----------------------------------------------------------------//
     const Upgrades& getUpgrades () const {
         return this->mUpgrades;
+    }
+
+    //----------------------------------------------------------------//
+    bool hasCollisions ( const Schema& other ) {
+    
+        if ( Schema::hasKeyCollisions ( this->mDecks, other.mDecks )) return true;
+        if ( Schema::hasKeyCollisions ( this->mDefinitions, other.mDefinitions )) return true;
+        if ( Schema::hasKeyCollisions ( this->mFonts, other.mFonts )) return true;
+        if ( Schema::hasKeyCollisions ( this->mIcons, other.mIcons )) return true;
+        if ( Schema::hasKeyCollisions ( this->mLayouts, other.mLayouts )) return true;
+        if ( Schema::hasKeyCollisions ( this->mMethods, other.mMethods )) return true;
+        if ( Schema::hasKeyCollisions ( this->mUpgrades, other.mUpgrades )) return true;
+
+        return false;
     }
 };
 

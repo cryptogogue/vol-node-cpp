@@ -57,8 +57,18 @@ public:
         if ( receiverODBM.mIndex == Account::NULL_INDEX ) return "Could not find recipient account.";
         if ( senderODBM.mIndex == receiverODBM.mIndex ) return "Cannot send assets to self.";
 
+        size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
+        size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
+
         const string* assetIdentifiers = this->mAssetIdentifiers.data ();
         size_t totalAssets = this->mAssetIdentifiers.size ();
+
+        shared_ptr < Account > receiverAccount = ledger.getAccount ( receiverODBM.mIndex );
+        Entitlements receiverEntitlements = ledger.getEntitlements < AccountEntitlements >( *receiverAccount );
+        if ( !receiverEntitlements.check ( AccountEntitlements::MAX_ASSETS, receiverAssetCount + totalAssets )) {
+            double max = receiverEntitlements.resolvePathAs < NumericEntitlement >( AccountEntitlements::MAX_ASSETS )->getUpperLimit ().mLimit;
+            return Format::write ( "Transaction would overflow receiving account's inventory limit of %d assets.", ( int )max );
+        }
 
         // check all the assets
         for ( size_t i = 0; i < totalAssets; ++i ) {
@@ -67,9 +77,6 @@ public:
             if ( assetODBM.mIndex == Asset::NULL_INDEX ) return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
             if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderAccountName.c_str ());
         }
-
-        size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
-        size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
 
         for ( size_t i = 0; i < totalAssets; ++i, --senderAssetCount, ++receiverAssetCount ) {
             

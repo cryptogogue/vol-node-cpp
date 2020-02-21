@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_BETA_GET_ASSETS_H
-#define VOLITION_TRANSACTIONS_BETA_GET_ASSETS_H
+#ifndef VOLITION_TRANSACTIONS_BETA_GET_DECK_H
+#define VOLITION_TRANSACTIONS_BETA_GET_DECK_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -12,30 +12,30 @@ namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// BetaGetAssets
+// BetaGetDeck
 //================================================================//
-class BetaGetAssets :
+class BetaGetDeck :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "BETA_GET_ASSETS" )
+    TRANSACTION_TYPE ( "BETA_GET_DECK" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    u64         mNumAssets;
+    string      mDeckName;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "numAssets",     this->mNumAssets );
+        serializer.serialize ( "deckName",      this->mDeckName );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "numAssets",     this->mNumAssets );
+        serializer.serialize ( "deckName",      this->mDeckName );
     }
 
     //----------------------------------------------------------------//
@@ -44,10 +44,16 @@ public:
         Ledger& ledger = context.mLedger;
         const Account& account = context.mAccount;
         
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_ASSETS )) return "Permission denied.";
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_DECK )) return "Permission denied.";
         
-        const Schema::Definitions& definitions = context.mSchemaHandle->getDefinitions ();
-        size_t addedAssetCount = definitions.size () * ( size_t )this->mNumAssets;
+        const Schema::Deck* deck = context.mSchemaHandle->getDeck ( this->mDeckName );
+        if ( !deck ) return "Deck not found.";
+        
+        size_t addedAssetCount = 0;
+        Schema::Deck::const_iterator deckIt = deck->cbegin ();
+        for ( ; deckIt != deck->cend (); ++deckIt ) {
+            addedAssetCount += deckIt->second;
+        }
         
         AccountODBM accountODBM ( ledger, account.mIndex );
         size_t assetCount = accountODBM.mAssetCount.get ( 0 );
@@ -57,9 +63,9 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
-        for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
-            context.mLedger.awardAsset ( *context.mSchemaHandle, account.mName, definitionIt->first, ( size_t )this->mNumAssets );
+        deckIt = deck->cbegin ();
+        for ( ; deckIt != deck->cend (); ++deckIt ) {
+            context.mLedger.awardAsset ( *context.mSchemaHandle, account.mName, deckIt->first, deckIt->second );
         }
         return true;
     }

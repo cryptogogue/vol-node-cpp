@@ -63,6 +63,17 @@ public:
 
     //----------------------------------------------------------------//
     template < typename TYPE >
+    const TYPE* resolvePathAs ( string path ) const {
+
+        const AbstractEntitlement* leaf = this->resolvePath ( path );
+        if ( leaf ) {
+            return dynamic_cast < const TYPE* >( leaf );
+        }
+        return NULL;
+    }
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
     void setPath ( string path, const TYPE& leaf ) {
     
         this->affirmPath ( path, make_shared < TYPE >( leaf ));

@@ -26,13 +26,18 @@ public:
     
     //----------------------------------------------------------------//
     const Schema* operator -> () const {
-        return this->mSchema.get ();
+        return this->getSchema ();
     }
     
     //----------------------------------------------------------------//
     const Schema& operator * () const {
         assert ( this->mSchema );
         return *this->mSchema;
+    }
+
+    //----------------------------------------------------------------//
+    const Schema* getSchema () const {
+        return this->mSchema.get ();
     }
 
     //----------------------------------------------------------------//

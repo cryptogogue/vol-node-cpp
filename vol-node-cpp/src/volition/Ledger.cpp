@@ -465,26 +465,6 @@ bool Ledger::newAccount ( string accountName, u64 balance, string keyName, const
 }
 
 //----------------------------------------------------------------//
-bool Ledger::publishSchema ( const Schema& schema ) {
-
-    // TODO: check account permissions
-
-    Schema currentSchema;
-
-    LedgerKey KEY_FOR_SCHEMA = FormatLedgerKey::forSchema ();
-
-    string schemaString = this->getValue < string >( FormatLedgerKey::forSchema ());
-    if ( schemaString.size () > 0 ) {
-        FromJSONSerializer::fromJSONString ( currentSchema, schemaString );
-    }
-    currentSchema.compose ( schema );
-    
-    this->setObject < Schema >( KEY_FOR_SCHEMA, schema );
-    
-    return true;
-}
-
-//----------------------------------------------------------------//
 bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );

@@ -179,6 +179,7 @@
 		CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */; };
 		CDA1574023FAA92300DFACCF /* Munge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA1573E23FAA92300DFACCF /* Munge.cpp */; };
 		CDA1574123FAA92300DFACCF /* Munge.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573F23FAA92300DFACCF /* Munge.h */; };
+		CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA7208223FF6B7400E1401D /* BetaGetDeck.h */; };
 		CDB8B3C721AC7DB8004EE816 /* Asset.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Asset.h */; };
 		CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C921AC7EBF004EE816 /* SerializableList.h */; };
 		CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */; };
@@ -758,6 +759,7 @@
 		CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetEntitlements.h; path = src/volition/transactions/SetEntitlements.h; sourceTree = "<group>"; };
 		CDA1573E23FAA92300DFACCF /* Munge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Munge.cpp; path = src/volition/Munge.cpp; sourceTree = "<group>"; };
 		CDA1573F23FAA92300DFACCF /* Munge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Munge.h; path = src/volition/Munge.h; sourceTree = "<group>"; };
+		CDA7208223FF6B7400E1401D /* BetaGetDeck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BetaGetDeck.h; path = src/volition/transactions/BetaGetDeck.h; sourceTree = "<group>"; };
 		CDB8B3C521AC7DB8004EE816 /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asset.h; path = src/volition/Asset.h; sourceTree = "<group>"; };
 		CDB8B3C921AC7EBF004EE816 /* SerializableList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableList.h; path = src/volition/serialization/SerializableList.h; sourceTree = "<group>"; };
 		CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestWebMiner.cpp; path = src/volition/gtest/TestWebMiner.cpp; sourceTree = "<group>"; };
@@ -1390,6 +1392,7 @@
 			children = (
 				CDBFD53B218B8999002AB0C3 /* AffirmKey.h */,
 				CDF4B7682325A94A0004392C /* BetaGetAssets.h */,
+				CDA7208223FF6B7400E1401D /* BetaGetDeck.h */,
 				CD2AB81D230F3D5700805F70 /* Genesis.h */,
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
 				CDBFD540218B8999002AB0C3 /* PublishSchema.h */,
@@ -1551,6 +1554,7 @@
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
+				CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
 				CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */,

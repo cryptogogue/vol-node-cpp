@@ -110,7 +110,8 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
             
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
-                transaction.apply ( ledger, schemaHandle );
+                TransactionResult result = transaction.apply ( ledger, schemaHandle );
+                assert ( result );
                 gratuity += transaction.getGratuity ();
             }
             

@@ -7,6 +7,7 @@
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/transactions/AffirmKey.h>
 #include <volition/transactions/BetaGetAssets.h>
+#include <volition/transactions/BetaGetDeck.h>
 #include <volition/transactions/Genesis.h>
 #include <volition/transactions/OpenAccount.h>
 #include <volition/transactions/PublishSchema.h>

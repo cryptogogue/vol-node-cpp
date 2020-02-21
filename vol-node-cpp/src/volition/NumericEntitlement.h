@@ -174,6 +174,8 @@ protected:
         serializer.serialize ( "upper",     this->mUpper );
     }
 
+public:
+
     //----------------------------------------------------------------//
     LimitType getLimitType () const {
     
@@ -183,8 +185,15 @@ protected:
         return NUMERIC_ANY;
     }
 
-public:
-
+    //----------------------------------------------------------------//
+    NumericEntitlementLimit getLowerLimit () const {
+        return this->mLower;
+    }
+    
+    //----------------------------------------------------------------//
+    NumericEntitlementLimit getUpperLimit () const {
+        return this->mUpper;
+    }
 
     //----------------------------------------------------------------//
     NumericEntitlement () {

@@ -76,6 +76,10 @@ DONE: asset updates
 DONE: wallet - fix asset display glitch (doesn't match cardmotron)
 DONE: node - enforce block size limits (in points)
 DONE: node - apply gratuity
+DONE: create dump account
+DONE: fix schema publishing (collisions)
+DONE: add deck declarations to schema
+DONE: add 'get deck' transaction type
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
@@ -88,6 +92,7 @@ node - properly check account name changes to exclude illegal characters
 wallet - validate name change requests
 
 node/schema - replace schema name with version (schema is a composite; one per ledger)
+github repo for bug filing
 
 ----------------------------------------------------------------
 MVP

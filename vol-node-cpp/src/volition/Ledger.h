@@ -141,7 +141,6 @@ public:
                                         Ledger                      ( Ledger& other );
                                         ~Ledger                     ();
     bool                                newAccount                  ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
-    bool                                publishSchema               ( const Schema& schema );
     bool                                registerMiner               ( string accountName, string keyName, string url );
     void                                setAccount                  ( const Account& account );
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );

@@ -23,6 +23,14 @@
                             "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAES93M5rogLEBC6EfMTiKmiyUEQNU\/GYRL\nmnRQDI9jPnGKzTNjk3IHmvo9KKofd2\/5v+jVFWbRBPqhqaPG5qU3aA==\n-----END PUBLIC KEY-----\n",
                             "type" : "EC_PEM"
                         }
+                    },
+                    {
+                        "name" :            "dump",
+                        "grant" :           0,
+                        "key" : {
+                            "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEXa6yyvbFz0fasg47zvlj8r\/GqdDDEbkQ\nMuRhYDxMtYR6ZGDh9svJ045e3YdgmnNC9qprXh0vcwzCEDydKEIKPw==\n-----END PUBLIC KEY-----\n",
+                            "type" : "EC_PEM"
+                        }
                     }
                 ]
             }
@@ -37,7 +45,29 @@
                 "entitlements" : {
                     "type" : "path",
                     "children" : {
-                        "BETA_GET_ASSETS": {
+                        "MAX_ASSETS": {
+                            "type": "numeric",
+                            "upper": {
+                                "enabled": true,
+                                "exclude": false,
+                                "limit": 1024
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "beta"
+                },
+                "type" :            "SET_ENTITLEMENTS",
+                "name" :            "beta-key",
+                "entitlements" : {
+                    "type" : "path",
+                    "children" : {
+                        "BETA_GET_DECK": {
                             "type": "boolean",
                             "value": true
                         },
@@ -66,9 +96,20 @@
                 "maker" : {
                     "accountName" : "beta"
                 },
-                "type" :            "RESTRICT_KEY",
+                "type" :            "RESTRICT_ACCOUNT",
                 "bequest" : {
                     "base" : "beta-account"
+                }
+            }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "beta"
+                },
+                "type" :            "RESTRICT_KEY",
+                "bequest" : {
+                    "base" : "beta-key"
                 }
             }
         }

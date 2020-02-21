@@ -43,11 +43,15 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA )) return "Permission denied.";
         
-        bool result = context.mLedger.publishSchema ( this->mSchema );
-        if ( result ) {
-            context.mSchemaHandle.reset ( context.mLedger );
-        }
-        return result;
+        Schema updateSchema = *context.mSchemaHandle.getSchema ();
+
+        if ( updateSchema.hasCollisions ( this->mSchema )) return "Error publishing schema - found collisions.";
+        if ( !updateSchema.compose ( this->mSchema )) return "Error publishing schema.";
+        
+        context.mLedger.setObject < Schema >( FormatLedgerKey::forSchema (), updateSchema );
+        context.mSchemaHandle.reset ( context.mLedger );
+
+        return true;
     }
 };
 
