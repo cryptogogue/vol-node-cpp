@@ -17,8 +17,9 @@ class AssetFieldDefinition :
     public AssetFieldValue {
 public:
 
-    bool    mMutable;
-    bool    mScriptable;
+    bool                    mMutable;
+    bool                    mScriptable;
+    SerializableOpaque      mAlternates;
 
     //----------------------------------------------------------------//
     AssetFieldDefinition () :
@@ -32,6 +33,7 @@ public:
         
         serializer.serialize ( "mutable",       this->mMutable );
         serializer.serialize ( "scriptable",    this->mScriptable );
+        serializer.serialize ( "alternates",    this->mAlternates );
     }
     
     //----------------------------------------------------------------//
@@ -40,6 +42,7 @@ public:
         
         serializer.serialize ( "mutable",       this->mMutable );
         serializer.serialize ( "scriptable",    this->mScriptable );
+        serializer.serialize ( "alternates",    this->mAlternates );
     }
 };
 

@@ -101,7 +101,8 @@ public:
     //----------------------------------------------------------------//
     bool compose ( const Schema& other ) {
         
-        Schema::merge ( this->mDecks, other.mDecks );
+        this->mDecks = other.mDecks;
+        
         Schema::merge ( this->mDefinitions, other.mDefinitions );
         Schema::merge ( this->mFonts, other.mFonts );
         Schema::merge ( this->mIcons, other.mIcons );
@@ -147,8 +148,7 @@ public:
 
     //----------------------------------------------------------------//
     bool hasCollisions ( const Schema& other ) {
-    
-        if ( Schema::hasKeyCollisions ( this->mDecks, other.mDecks )) return true;
+        
         if ( Schema::hasKeyCollisions ( this->mDefinitions, other.mDefinitions )) return true;
         if ( Schema::hasKeyCollisions ( this->mFonts, other.mFonts )) return true;
         if ( Schema::hasKeyCollisions ( this->mIcons, other.mIcons )) return true;
