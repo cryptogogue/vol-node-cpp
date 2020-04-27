@@ -26,7 +26,7 @@ public:
         const Asset* asset = context.getAsset ();
         if ( !asset ) return AssetFieldValue ();
         
-        return asset->getField ( this->mIndexer ); // TODO: handle symbols
+        return asset->getField ( this->mIndexer );
     }
     
     //----------------------------------------------------------------//

@@ -41,6 +41,10 @@ public:
     //----------------------------------------------------------------//
     AssetFieldValue getField ( string name ) const {
     
+        if ( name == "@" ) {
+            return AssetFieldValue ( this->mType );
+        }
+    
         Fields::const_iterator fieldIt = this->mFields.find ( name );
         if ( fieldIt != this->mFields.cend ()) {
             return fieldIt->second;

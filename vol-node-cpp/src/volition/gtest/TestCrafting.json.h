@@ -10,54 +10,33 @@ static const char* schema_json = JSON_STR (
         "icons": {},
         "lua": "",
         "definitions": {
-            "asset-type-0": {
+            "common": {
                 "fields": {
                     "name": {
                         "type": "STRING",
-                        "value": "Asset Type 0",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
-                    },
-                    "type": {
-                        "type": "STRING",
-                        "value": "common",
+                        "value": "Common",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
                     }
                 }
             },
-            "asset-type-1": {
+            "rare": {
                 "fields": {
                     "name": {
                         "type": "STRING",
-                        "value": "Asset Type 1",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
-                    },
-                    "type": {
-                        "type": "STRING",
-                        "value": "rare",
+                        "value": "Rare",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
                     }
                 }
             },
-            "asset-type-2": {
+            "ultrarare": {
                 "fields": {
                     "name": {
                         "type": "STRING",
-                        "value": "Asset Type 2",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
-                    },
-                    "type": {
-                        "type": "STRING",
-                        "value": "ultra-rare",
+                        "value": "UltraRare",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -69,13 +48,6 @@ static const char* schema_json = JSON_STR (
                     "name": {
                         "type": "STRING",
                         "value": "Pack",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
-                    },
-                    "type": {
-                        "type": "STRING",
-                        "value": "pack",
                         "mutable": false,
                         "scriptable": true,
                         "alternates": {}
@@ -95,7 +67,7 @@ static const char* schema_json = JSON_STR (
                         "op": "EQUAL",
                         "left": {
                             "op": "INDEX",
-                            "value": "type"
+                            "value": "@"
                         },
                         "right": {
                             "op": "CONST",
@@ -109,7 +81,7 @@ static const char* schema_json = JSON_STR (
                         "op": "EQUAL",
                         "left": {
                             "op": "INDEX",
-                            "value": "type"
+                            "value": "@"
                         },
                         "right": {
                             "op": "CONST",
@@ -133,7 +105,7 @@ static const char* schema_json = JSON_STR (
                         "op": "EQUAL",
                         "left": {
                             "op": "INDEX",
-                            "value": "type"
+                            "value": "@"
                         },
                         "right": {
                             "op": "CONST",
@@ -147,7 +119,7 @@ static const char* schema_json = JSON_STR (
                         "op": "EQUAL",
                         "left": {
                             "op": "INDEX",
-                            "value": "type"
+                            "value": "@"
                         },
                         "right": {
                             "op": "CONST",
@@ -171,7 +143,7 @@ static const char* schema_json = JSON_STR (
                         "op": "EQUAL",
                         "left": {
                             "op": "INDEX",
-                            "value": "type"
+                            "value": "@"
                         },
                         "right": {
                             "op": "CONST",
@@ -189,19 +161,19 @@ static const char* schema_json = JSON_STR (
         },
         "sets": {
             "commons": {
-                "asset-type-0": 1
+                "common": 1
             },
             "rares": {
-                "asset-type-1": 1
+                "rare": 1
             },
             "ultraRares": {
-                "asset-type-2": 1
+                "ultrarare": 1
             }
         },
         "upgrades": {
-            "asset-type-0": "asset-type-1",
-            "asset-type-1": "asset-type-2",
-            "asset-type-2": "asset-type-3"
+            "common": "rare",
+            "rare": "ultraRare",
+            "ultraRare": "pack"
         }
     }
 );

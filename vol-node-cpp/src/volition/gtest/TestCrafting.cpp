@@ -56,8 +56,8 @@ TEST ( Crafting, crafting ) {
         histogram [ asset.mType ] = histogram [ asset.mType ] + 1;
     }
     
-    ASSERT_TRUE ( histogram [ "asset-type-0" ] == 3 );
-    ASSERT_TRUE ( histogram [ "asset-type-1" ] == 2 );
-    ASSERT_TRUE ( histogram [ "asset-type-2" ] == 1 );
+    ASSERT_TRUE ( histogram [ "common" ] == 3 );
+    ASSERT_TRUE ( histogram [ "rare" ] == 2 );
+    ASSERT_TRUE ( histogram [ "ultrarare" ] == 1 );
     ASSERT_TRUE ( histogram.find ( "pack" ) == histogram.cend ());
 }
