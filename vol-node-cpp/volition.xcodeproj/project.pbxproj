@@ -145,7 +145,6 @@
 		CD762AD6232826D7005AC85D /* NumericEntitlement.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD3232826D7005AC85D /* NumericEntitlement.h */; };
 		CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762AD7232827B3005AC85D /* EntitlementFactory.cpp */; };
 		CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD8232827B3005AC85D /* EntitlementFactory.h */; };
-		CD762ADC23284438005AC85D /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
 		CD762AE12328D109005AC85D /* Entitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AE02328D109005AC85D /* Entitlements.h */; };
 		CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747823B052BF00FBE468 /* SerializableOpaque.h */; };
 		CD7C747B23B6EC6700FBE468 /* UpgradeAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */; };
@@ -331,6 +330,8 @@
 		CDF8AD5D21F52B34000E285F /* LuaContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5B21F52B34000E285F /* LuaContext.h */; };
 		CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */; };
 		CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA235521C24AF300987232 /* TestKeyIDHandler.h */; };
+		CDFA2383245188DF00B4CECF /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
+		CDFA23872453B25B00B4CECF /* Schema.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA23862453B25B00B4CECF /* Schema.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -903,6 +904,9 @@
 		CDF8AD5B21F52B34000E285F /* LuaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaContext.h; path = src/volition/LuaContext.h; sourceTree = "<group>"; };
 		CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyDetailsHandler.h; path = "src/volition/web-miner-api/KeyDetailsHandler.h"; sourceTree = "<group>"; };
 		CDFA235521C24AF300987232 /* TestKeyIDHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestKeyIDHandler.h; path = "src/volition/web-miner-api/TestKeyIDHandler.h"; sourceTree = "<group>"; };
+		CDFA2382245188DF00B4CECF /* TestCrafting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestCrafting.cpp; path = src/volition/gtest/TestCrafting.cpp; sourceTree = "<group>"; };
+		CDFA2385245189E700B4CECF /* TestCrafting.json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestCrafting.json.h; path = src/volition/gtest/TestCrafting.json.h; sourceTree = "<group>"; };
+		CDFA23862453B25B00B4CECF /* Schema.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Schema.cpp; path = src/volition/Schema.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1100,6 +1104,7 @@
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
+				CDFA23862453B25B00B4CECF /* Schema.cpp */,
 				CDBFD558218BA145002AB0C3 /* Schema.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
 				CDC2B34120D1182400300A96 /* TheContext.h */,
@@ -1142,6 +1147,8 @@
 			children = (
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
 				CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */,
+				CDFA2382245188DF00B4CECF /* TestCrafting.cpp */,
+				CDFA2385245189E700B4CECF /* TestCrafting.json.h */,
 				CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
 				CD762ADB23284438005AC85D /* TestEntitlements.cpp */,
@@ -2021,7 +2028,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CD762ADC23284438005AC85D /* TestEntitlements.cpp in Sources */,
+				CDFA2383245188DF00B4CECF /* TestCrafting.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2037,6 +2044,7 @@
 				CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
 				CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */,
+				CDFA23872453B25B00B4CECF /* Schema.cpp in Sources */,
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
 				CD762ACF232825BE005AC85D /* AbstractEntitlement.cpp in Sources */,
 				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,

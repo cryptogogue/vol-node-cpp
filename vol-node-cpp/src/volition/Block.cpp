@@ -27,7 +27,7 @@ bool Block::apply ( Ledger& ledger ) const {
     if ( !this->verify ( ledger )) return false;
 
     // some transactions need to be applied later.
-    // we need to avaluate if they are legal now.
+    // we need to evaluate if they are legal now.
     // then process them once we have the entropy.
     
     // before applying the block, we need to apply the entropy.

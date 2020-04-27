@@ -5,6 +5,7 @@
 #define VOLITION_ASSETMETHODINVOCATION_H
 
 #include <volition/common.h>
+#include <volition/Asset.h>
 #include <volition/AssetFieldValue.h>
 
 namespace Volition {
@@ -46,6 +47,24 @@ public:
         
         serializer.serialize ( "weight",        this->mWeight );
         serializer.serialize ( "maturity",      this->mMaturity );
+    }
+    
+    //----------------------------------------------------------------//
+    AssetMethodInvocation () :
+        mWeight ( 1 ),
+        mMaturity ( 0 ) {
+    }
+
+    //----------------------------------------------------------------//
+    void setAssetParam ( string paramName, Asset::Index assetIndex ) {
+    
+        this->mAssetParams [ paramName ] = assetIndex;
+    }
+
+    //----------------------------------------------------------------//
+    void setMethod ( string methodName ) {
+    
+        this->mMethodName = methodName;
     }
 };
 

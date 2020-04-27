@@ -226,8 +226,13 @@ u64 Ledger::getBlockSize () const {
 //----------------------------------------------------------------//
 Entropy Ledger::getEntropy () const {
 
-    string entropy = this->getValueOrFallback < string >( FormatLedgerKey::forEntropy (), "" );
-    return entropy.size () > 0 ? Entropy ( entropy ) : Entropy ();
+    return Entropy ( this->getEntropyString ());
+}
+
+//----------------------------------------------------------------//
+string Ledger::getEntropyString () const {
+
+    return this->getValueOrFallback < string >( FormatLedgerKey::forEntropy (), "" );
 }
 
 //----------------------------------------------------------------//

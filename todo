@@ -80,6 +80,14 @@ DONE: create dump account
 DONE: fix schema publishing (collisions)
 DONE: add deck declarations to schema
 DONE: add 'get deck' transaction type
+DONE: wallet - add password option to transaction modal (to submit immediately)
+
+----------------------------------------------------------------
+BETA
+
+crafting - booster packs
+crafting - data tables (booster pack awards)
+crafting - queries? (generate and cache data tables)
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
@@ -94,8 +102,8 @@ wallet - validate name change requests
 node/schema - replace schema name with version (schema is a composite; one per ledger)
 github repo for bug filing
 
-----------------------------------------------------------------
-MVP
+wallet - detect stale keys (account name matches, but wrong/old key)
+wallet - show mining node version in network view
 
 wallet - deck building - decks are sets of filters and quantities
 wallet - discard all (by set)
@@ -127,3 +135,6 @@ LAUNCH
 VOL:ETH
 VOL:ETH - onboarding
 VOL:ETH - bearer bond vs oracles
+
+----------------------------------------------------------------
+

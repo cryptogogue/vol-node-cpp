@@ -13,25 +13,28 @@ namespace Volition {
 // ConstSquap
 //================================================================//
 class ConstSquap :
-     public AbstractSquap,
-     public AssetFieldValue {
+     public AbstractSquap {
 public:
+    
+    AssetFieldValue mConst;
     
     //----------------------------------------------------------------//
     AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         UNUSED ( context );
-        return *this;
+        return this->mConst;
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AssetFieldValue::AbstractSerializable_serializeFrom ( serializer );
+
+        serializer.serialize ( "const",     this->mConst );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractSquap::AbstractSerializable_serializeTo ( serializer );
-        AssetFieldValue::AbstractSerializable_serializeTo ( serializer );
+        
+        serializer.serialize ( "const",     this->mConst );
     }
 };
 

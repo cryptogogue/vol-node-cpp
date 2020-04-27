@@ -25,6 +25,7 @@ public:
     typedef u64 Index;
     enum {
         NULL_INDEX      = ( u64 )-1,
+        NULL_POSITION   = ( u64 )-1,
     };
     
     Index       mIndex;

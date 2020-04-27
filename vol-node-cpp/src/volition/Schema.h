@@ -19,6 +19,8 @@ class Schema :
     public AbstractSerializable {
 public:
 
+    typedef SerializableSharedPtr < AbstractSquap, SquapFactory > Query;
+
     typedef SerializableMap < string, size_t >              Deck;
     typedef SerializableMap < string, Deck >                Decks;
     typedef SerializableMap < string, AssetDefinition >     Definitions;
@@ -39,6 +41,7 @@ private:
     Icons                   mIcons;
     Layouts                 mLayouts;
     Methods                 mMethods;
+    Decks                   mSets;
     Upgrades                mUpgrades;
 
     //----------------------------------------------------------------//
@@ -63,101 +66,22 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
-
-        serializer.serialize ( "decks",             this->mDecks );
-        serializer.serialize ( "definitions",       this->mDefinitions );
-        serializer.serialize ( "fonts",             this->mFonts );
-        serializer.serialize ( "icons",             this->mIcons );
-        serializer.serialize ( "layouts",           this->mLayouts );
-        serializer.serialize ( "methods",           this->mMethods );
-        serializer.serialize ( "upgrades",          this->mUpgrades );
-    }
-
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
-
-        serializer.serialize ( "decks",             this->mDecks );
-        serializer.serialize ( "definitions",       this->mDefinitions );
-        serializer.serialize ( "fonts",             this->mFonts );
-        serializer.serialize ( "icons",             this->mIcons );
-        serializer.serialize ( "layouts",           this->mLayouts );
-        serializer.serialize ( "methods",           this->mMethods );
-        serializer.serialize ( "upgrades",          this->mUpgrades );
-    }
+    void            AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer );
+    void            AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const;
 
 public:
 
     //----------------------------------------------------------------//
-    bool canUpgrade ( string type, string upgrade ) const {
-    
-        Upgrades::const_iterator typeIt = this->mUpgrades.find ( type );
-        for ( ; typeIt != this->mUpgrades.cend (); typeIt = this->mUpgrades.find ( typeIt->second )) {
-            if ( typeIt->second == upgrade ) return true;
-        }
-        return false;
-    }
-
-    //----------------------------------------------------------------//
-    bool compose ( const Schema& other ) {
-        
-        this->mDecks = other.mDecks;
-        
-        Schema::merge ( this->mDefinitions, other.mDefinitions );
-        Schema::merge ( this->mFonts, other.mFonts );
-        Schema::merge ( this->mIcons, other.mIcons );
-        Schema::merge ( this->mLayouts, other.mLayouts );
-        Schema::merge ( this->mMethods, other.mMethods );
-        Schema::merge ( this->mUpgrades, other.mUpgrades );
-    
-        return true;
-    }
-
-    //----------------------------------------------------------------//
-    const Deck* getDeck ( string deckName ) const {
-       Decks::const_iterator deckIt = this->mDecks.find ( deckName );
-       return deckIt != this->mDecks.cend () ? &deckIt->second : NULL;
-    }
-
-    //----------------------------------------------------------------//
-    const Definitions& getDefinitions () const {
-        return this->mDefinitions;
-    }
-
-    //----------------------------------------------------------------//
-    const AssetDefinition* getDefinitionOrNull ( string name ) const {
-        Definitions::const_iterator definitionIt = this->mDefinitions.find ( name );
-        return ( definitionIt != this->mDefinitions.cend ()) ? &definitionIt->second : NULL;
-    }
-
-    //----------------------------------------------------------------//
-    const Methods& getMethods () const {
-        return this->mMethods;
-    }
-    
-    //----------------------------------------------------------------//
-    const AssetMethod* getMethodOrNull ( string name ) const {
-        Methods::const_iterator methodIt = this->mMethods.find ( name );
-        return ( methodIt != this->mMethods.cend ()) ? &methodIt->second : NULL;
-    }
-    
-    //----------------------------------------------------------------//
-    const Upgrades& getUpgrades () const {
-        return this->mUpgrades;
-    }
-
-    //----------------------------------------------------------------//
-    bool hasCollisions ( const Schema& other ) {
-        
-        if ( Schema::hasKeyCollisions ( this->mDefinitions, other.mDefinitions )) return true;
-        if ( Schema::hasKeyCollisions ( this->mFonts, other.mFonts )) return true;
-        if ( Schema::hasKeyCollisions ( this->mIcons, other.mIcons )) return true;
-        if ( Schema::hasKeyCollisions ( this->mLayouts, other.mLayouts )) return true;
-        if ( Schema::hasKeyCollisions ( this->mMethods, other.mMethods )) return true;
-        if ( Schema::hasKeyCollisions ( this->mUpgrades, other.mUpgrades )) return true;
-
-        return false;
-    }
+    bool                        canUpgrade                  ( string type, string upgrade ) const;
+    bool                        compose                     ( const Schema& other );
+    const Deck*                 getDeck                     ( string deckName ) const;
+    const Definitions&          getDefinitions              () const;
+    const AssetDefinition*      getDefinitionOrNull         ( string name ) const;
+    const Methods&              getMethods                  () const;
+    const AssetMethod*          getMethodOrNull             ( string name ) const;
+    const Deck*                 getSetOrDeck                ( string deckOrSetName ) const;
+    const Upgrades&             getUpgrades                 () const;
+    bool                        hasCollisions               ( const Schema& other );
 };
 
 } // namespace Volition

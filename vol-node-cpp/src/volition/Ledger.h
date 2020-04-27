@@ -121,6 +121,7 @@ public:
     shared_ptr < Block >                getBlock                    ( size_t height ) const;
     u64                                 getBlockSize                () const;
     Entropy                             getEntropy                  () const;
+    string                              getEntropyString            () const;
     string                              getIdentity                 () const;
     SerializableList < Asset >          getInventory                ( const Schema& schema, string accountName, size_t max = 0 ) const;
     shared_ptr < MinerInfo >            getMinerInfo                ( string accountName ) const;

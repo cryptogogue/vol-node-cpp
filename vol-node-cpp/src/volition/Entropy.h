@@ -47,6 +47,9 @@ public:
         // start with a clear buffer.
         this->clear ();
         
+        // bail if empty string.
+        if ( hex.size () == 0 ) return;
+        
         // inputs that don't have an even number of bytes are invalid.
         assert (( hex.size () & 0x01 ) == 0 );
         
@@ -142,6 +145,18 @@ public:
             }
         }
         return result;
+    }
+    
+    //----------------------------------------------------------------//
+    const u8* getBuffer () const {
+    
+        return this->mBytes;
+    }
+    
+    //----------------------------------------------------------------//
+    size_t getSize () const {
+    
+        return ( BUFFERSIZE * sizeof ( u8 ));
     }
 };
 
