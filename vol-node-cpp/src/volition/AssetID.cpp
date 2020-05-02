@@ -127,10 +127,9 @@ void _encode16 ( char* buffer, u16 number ) {
 //================================================================//
 // AssetID
 //================================================================//
-namespace AssetID {
 
 //----------------------------------------------------------------//
-u64 decode ( string assetID, bool* isValid ) {
+u64 AssetID::decode ( string assetID, bool* isValid ) {
 
     // TODO: handle errors
 
@@ -142,15 +141,18 @@ u64 decode ( string assetID, bool* isValid ) {
     index |= (( u64 )_decode16 ( &buffer [ 6 ])) << 16;
     index |= (( u64 )_decode16 ( &buffer [ 12 ])) << 32;
 
-    if ( isValid ) {
+    int check = 0;
+    check += ( buffer [ 18 ] - '0' ) * 100;
+    check += ( buffer [ 19 ] - '0' ) * 10;
+    check += buffer [ 20 ] - '0';
     
-        int check = 0;
-        check += ( buffer [ 18 ] - '0' ) * 100;
-        check += ( buffer [ 19 ] - '0' ) * 10;
-        check += buffer [ 20 ] - '0';
-
-        *isValid = ( check == _check ( index ));
+    bool valid = ( check == _check ( index ));
+    
+    if ( isValid ) {
+        *isValid = valid;
     }
+    
+    if ( !valid ) return NULL_INDEX;
     
     index = Munge::unspin ( index );
     index = Munge::unmunge ( index );
@@ -159,7 +161,7 @@ u64 decode ( string assetID, bool* isValid ) {
 }
 
 //----------------------------------------------------------------//
-string encode ( u64 index ) {
+string AssetID::encode ( u64 index ) {
 
     assert (( index & ~FORTY_EIGHT_BITS ) == 0 );
 
@@ -190,5 +192,4 @@ string encode ( u64 index ) {
     return buffer;
 }
 
-} // namespace AssetID
 } // namespace Volition

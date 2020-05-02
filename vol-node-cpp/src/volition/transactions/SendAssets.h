@@ -74,7 +74,7 @@ public:
         for ( size_t i = 0; i < totalAssets; ++i ) {
             string assetIdentifier ( assetIdentifiers [ i ]);
             AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
-            if ( assetODBM.mIndex == Asset::NULL_INDEX ) return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
+            if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
             if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderAccountName.c_str ());
         }
 
@@ -85,8 +85,8 @@ public:
             // fill the asset's original position by swapping in the tail
             size_t position = assetODBM.mPosition.get ();
             if ( position < senderAssetCount ) {
-                LedgerFieldODBM < Asset::Index > senderInventoryField = senderODBM.getInventoryField ( position );
-                LedgerFieldODBM < Asset::Index > senderInventoryTailField = senderODBM.getInventoryField ( senderAssetCount - 1 );
+                LedgerFieldODBM < AssetID::Index > senderInventoryField = senderODBM.getInventoryField ( position );
+                LedgerFieldODBM < AssetID::Index > senderInventoryTailField = senderODBM.getInventoryField ( senderAssetCount - 1 );
                 
                 AssetODBM tailAssetODBM ( ledger, senderInventoryTailField.get ());
                 tailAssetODBM.mPosition.set ( position );

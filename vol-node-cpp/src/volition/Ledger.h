@@ -116,7 +116,7 @@ public:
     shared_ptr < AccountKeyLookup >     getAccountKeyLookup         ( string keyID ) const;
     string                              getAccountName              ( Account::Index accountIndex ) const;
     u64                                 getAccountNonce             ( Account::Index accountIndex ) const;
-    shared_ptr < Asset >                getAsset                    ( const Schema& schema, Asset::Index index ) const;
+    shared_ptr < Asset >                getAsset                    ( const Schema& schema, AssetID::Index index ) const;
     shared_ptr < Block >                getBlock                    () const;
     shared_ptr < Block >                getBlock                    ( size_t height ) const;
     u64                                 getBlockSize                () const;
@@ -145,7 +145,7 @@ public:
     bool                                registerMiner               ( string accountName, string keyName, string url );
     void                                setAccount                  ( const Account& account );
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
-    bool                                setAssetFieldValue          ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field );
+    bool                                setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field );
     void                                setBlock                    ( const Block& block );
     void                                setEntitlements             ( string name, const Entitlements& entitlements );
     void                                setEntropyString            ( string entropy );

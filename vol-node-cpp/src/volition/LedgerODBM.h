@@ -195,9 +195,9 @@ public:
     }
     
     //----------------------------------------------------------------//
-    LedgerFieldODBM < Asset::Index > getInventoryField ( size_t position ) {
+    LedgerFieldODBM < AssetID::Index > getInventoryField ( size_t position ) {
     
-        return LedgerFieldODBM < Asset::Index >( this->mLedger, FormatLedgerKey::forAccount_inventoryField ( this->mIndex, position ));
+        return LedgerFieldODBM < AssetID::Index >( this->mLedger, FormatLedgerKey::forAccount_inventoryField ( this->mIndex, position ));
     }
     
     //----------------------------------------------------------------//
@@ -214,14 +214,14 @@ class AssetODBM {
 public:
 
     ConstOpt < Ledger >     mLedger;
-    Asset::Index            mIndex;
+    AssetID::Index            mIndex;
 
-    LedgerFieldODBM < Asset::Index >    mOwner;
+    LedgerFieldODBM < AssetID::Index >    mOwner;
     LedgerFieldODBM < size_t >          mPosition;
     LedgerFieldODBM < string >          mType;
 
     //----------------------------------------------------------------//
-    AssetODBM ( ConstOpt < Ledger > ledger, Asset::Index index ) :
+    AssetODBM ( ConstOpt < Ledger > ledger, AssetID::Index index ) :
         mLedger ( ledger ),
         mIndex ( index ),
         mOwner ( ledger,        FormatLedgerKey::forAsset_owner ( this->mIndex )),

@@ -160,7 +160,7 @@ u64 Ledger::getAccountNonce ( Account::Index accountIndex ) const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, Asset::Index index ) const {
+shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, AssetID::Index index ) const {
 
     AssetODBM assetODBM ( *this, index );
     if ( !assetODBM.mOwner.exists ()) return NULL;
@@ -170,7 +170,7 @@ shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, Asset::Index index
     
     shared_ptr < Asset > asset = make_shared < Asset >();
     asset->mType    = assetODBM.mType.get ();
-    asset->mIndex   = assetODBM.mIndex;
+    asset->mAssetID = assetODBM.mIndex;
     asset->mOwner   = this->getAccountName ( assetODBM.mOwner.get ());
     
     // copy the fields and apply any overrides
@@ -257,7 +257,7 @@ SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string a
     
     for ( size_t i = 0; i < assetCount; ++i ) {
     
-        Asset::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
+        AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
         shared_ptr < Asset > asset = this->getAsset ( schema, assetIndex );
         assert ( asset );
         assets.push_back ( *asset );
@@ -353,8 +353,8 @@ void Ledger::init () {
     this->clear ();
     this->setObject < SerializableSet < string >>( FormatLedgerKey::forMiners (), SerializableSet < string > ());
     this->setObject < SerializableMap < string, string >>( FormatLedgerKey::forMinerURLs (), SerializableMap < string, string > ());
-    this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAccountCount (), 0 );
-    this->setValue < Asset::Index >( FormatLedgerKey::forGlobalAssetCount (), 0 );
+    this->setValue < AssetID::Index >( FormatLedgerKey::forGlobalAccountCount (), 0 );
+    this->setValue < AssetID::Index >( FormatLedgerKey::forGlobalAssetCount (), 0 );
     this->setValue < string >( FormatLedgerKey::forSchema (), "{}" );
     this->setValue < u64 >( FormatLedgerKey::forBlockSize (), DEFAULT_BLOCK_SIZE );
 }
@@ -510,7 +510,7 @@ void Ledger::setAccount ( const Account& account ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::setAssetFieldValue ( const Schema& schema, Asset::Index index, string fieldName, const AssetFieldValue& field ) {
+bool Ledger::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field ) {
 
     // make sure the asset exists
     LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAsset_type ( index );

@@ -22,13 +22,11 @@ public:
 
     typedef SerializableMap < string, AssetFieldValue > Fields;
 
-    typedef u64 Index;
     enum {
-        NULL_INDEX      = ( u64 )-1,
         NULL_POSITION   = ( u64 )-1,
     };
     
-    Index       mIndex;
+    AssetID     mAssetID;
     
     string      mType;
     string      mOwner;
@@ -55,10 +53,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         
-        string assetID;
-        serializer.serialize ( "assetID", assetID );
-        this->mIndex = AssetID::decode ( assetID );
-        
+        serializer.serialize ( "assetID",   this->mAssetID );
         serializer.serialize ( "type",      this->mType );
         serializer.serialize ( "owner",     this->mOwner );
         serializer.serialize ( "fields",    this->mFields );
@@ -83,10 +78,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
-        //string assetID = Format::write ( "%d", this->mIndex );
-        string assetID = AssetID::encode ( this->mIndex );
-        
-        serializer.serialize ( "assetID",   assetID );
+        serializer.serialize ( "assetID",   this->mAssetID );
         serializer.serialize ( "type",      this->mType );
         serializer.serialize ( "owner",     this->mOwner );
         serializer.serialize ( "fields",    this->mFields );

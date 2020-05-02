@@ -94,17 +94,17 @@ public:
     // Asset
 
     //----------------------------------------------------------------//
-    static LedgerKey forAsset_owner ( Asset::Index index ) {
+    static LedgerKey forAsset_owner ( AssetID::Index index ) {
         return Format::write ( "asset.%d.owner", index );
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forAsset_position ( Asset::Index index ) {
+    static LedgerKey forAsset_position ( AssetID::Index index ) {
         return Format::write ( "asset.%d.position", index );
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forAsset_type ( Asset::Index index ) {
+    static LedgerKey forAsset_type ( AssetID::Index index ) {
         return Format::write ( "asset.%d.type", index );
     }
 
@@ -123,7 +123,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey forAssetModifiedField ( Asset::Index index, string fieldName ) {
+    static LedgerKey forAssetModifiedField ( AssetID::Index index, string fieldName ) {
         return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
     }
 

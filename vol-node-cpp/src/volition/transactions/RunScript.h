@@ -65,13 +65,13 @@ public:
     //----------------------------------------------------------------//
     u64 AbstractTransactionBody_maturity () const override {
         
-        return this->mWeight;
+        return this->mMaturity;
     }
     
     //----------------------------------------------------------------//
     u64 AbstractTransactionBody_weight () const override {
     
-        return this->mMaturity;
+        return this->mWeight;
     }
     
     //----------------------------------------------------------------//
@@ -90,8 +90,8 @@ public:
             }
         }
         
-        if ( this->mWeight < totalWeight ) return false;
-        if ( this->mMaturity < maxMaturity ) return false;
+        if ( this->mWeight != totalWeight ) return false;
+        if ( this->mMaturity != maxMaturity ) return false;
         
         return true;
     }

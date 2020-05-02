@@ -20,7 +20,7 @@ namespace Volition {
 class SquapEvaluationContext {
 private:
 
-    typedef SerializableMap < string, Asset::Index > AssetParams;
+    typedef SerializableMap < string, AssetID::Index > AssetParams;
     typedef SerializableMap < string, AssetFieldValue > ConstParams;
 
     const Asset*        mAsset;

@@ -17,7 +17,7 @@ class AssetMethodInvocation :
     public AbstractSerializable {
 public:
 
-    typedef SerializableMap < string, Asset::Index > AssetParams;
+    typedef SerializableMap < string, AssetID > AssetParams;
     typedef SerializableMap < string, AssetFieldValue > ConstParams;
 
     string          mMethodName;
@@ -56,7 +56,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void setAssetParam ( string paramName, Asset::Index assetIndex ) {
+    void setAssetParam ( string paramName, AssetID::Index assetIndex ) {
     
         this->mAssetParams [ paramName ] = assetIndex;
     }

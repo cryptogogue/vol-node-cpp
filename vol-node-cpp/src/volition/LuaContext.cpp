@@ -258,7 +258,7 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
 
     // make sure the asset exists
     AssetODBM assetODBM ( ledger, AssetID::decode ( assetID ) );
-    if ( assetODBM.mIndex == Asset::NULL_INDEX ) return 0;
+    if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return 0;
 
     // make sure the account owns the asset
     if ( assetODBM.mOwner.get () != accountODBM.mIndex ) return 0;
@@ -270,8 +270,8 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     // fill the asset's original position by swapping in the tail
     size_t position = assetODBM.mPosition.get ();
     if ( position < accountAssetCount ) {
-        LedgerFieldODBM < Asset::Index > accountInventoryField = accountODBM.getInventoryField ( position );
-        LedgerFieldODBM < Asset::Index > accountInventoryTailField = accountODBM.getInventoryField ( accountAssetCount - 1 );
+        LedgerFieldODBM < AssetID::Index > accountInventoryField = accountODBM.getInventoryField ( position );
+        LedgerFieldODBM < AssetID::Index > accountInventoryTailField = accountODBM.getInventoryField ( accountAssetCount - 1 );
         
         AssetODBM tailAssetODBM ( ledger, accountInventoryTailField.get ());
         tailAssetODBM.mPosition.set ( position );
@@ -279,7 +279,7 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     }
     
     // asset has no owner or position
-    assetODBM.mOwner.set ( Asset::NULL_INDEX );
+    assetODBM.mOwner.set ( AssetID::NULL_INDEX );
     assetODBM.mPosition.set ( Asset::NULL_POSITION );
     
     // shrink account inventory by one
@@ -325,7 +325,7 @@ bool LuaContext::invoke ( string accountName, const AssetMethod& method, const A
     for ( ; assetParamIt != invocation.mAssetParams.cend (); ++assetParamIt ) {
     
         string paramName = assetParamIt->first;
-        Asset::Index assetID = assetParamIt->second;
+        AssetID::Index assetID = assetParamIt->second;
     
         shared_ptr < Asset > asset = this->mLedger.getAsset ( this->mSchema, assetID );
         if ( !( asset && method.qualifyAssetArg ( paramName, *asset ))) return false;
@@ -424,7 +424,7 @@ void LuaContext::push ( const Asset& asset ) {
     lua_settable ( this->mLuaState, -3 );
     
     lua_pushstring ( this->mLuaState, "assetID" );
-    lua_pushstring ( this->mLuaState, AssetID::encode ( asset.mIndex ).c_str ());
+    lua_pushstring ( this->mLuaState, (( string )asset.mAssetID ).c_str ());
     lua_settable ( this->mLuaState, -3 );
     
     lua_pushstring ( this->mLuaState, "owner" );
