@@ -56,7 +56,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         if ( result ) {
             if ( !ledger.isGenesis ()) {
                 
-                ledger.incrementTransactionNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
+                ledger.incAccountTransactionNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
                 
                 if ( cost > 0 ) {
                     Account accountUpdated = *account;

@@ -20,117 +20,6 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger::affirmKey ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy ) {
-
-    string keyID = key.getKeyID ();
-    if ( keyID.size ()) return false;
-
-    shared_ptr < Account > account = this->getAccount ( accountName );
-    if ( account ) {
-
-        const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = keyFor_accountKeyLookup ( keyID );
-        shared_ptr < AccountKeyLookup > accountKeyLookup = this->getObjectOrNull < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP );
-
-        // keys must be unique to accounts; no sharing keys across multiple accounts!
-        if ( accountKeyLookup && ( accountKeyLookup->mAccountIndex != account->mIndex )) return false;
-
-        if ( key ) {
-            
-            const KeyAndPolicy* makerKeyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
-            if ( !makerKeyAndPolicy ) return false;
-            
-            const Policy* selectedPolicy = policy;
-            if ( selectedPolicy ) {
-                if ( !this->isValidPolicy < KeyEntitlements >( *selectedPolicy, makerKeyAndPolicy->mPolicy )) return false;
-            }
-            else {
-                const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
-                selectedPolicy = keyAndPolicy ? &keyAndPolicy->mPolicy : &makerKeyAndPolicy->mPolicy;
-            }
-            
-            account->mKeys [ keyName ] = KeyAndPolicy ( key, *selectedPolicy );
-            this->setAccount ( *account );
-            
-            this->setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( account->mIndex, keyName ));
-            
-            return true;
-        }
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
-bool Ledger::deleteKey ( string accountName, string keyName ) {
-
-    AccountKey accountKey = this->getAccountKey ( accountName, keyName );
-    if ( accountKey ) {
-        Account updatedAccount = *accountKey.mAccount;
-        updatedAccount.mKeys.erase ( keyName );
-        this->setAccount ( updatedAccount );
-        return true;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < Account > Ledger::getAccount ( Account::Index index ) const {
-
-    return this->getObjectOrNull < Account >( AccountODBM::keyFor_body ( index ));
-}
-
-//----------------------------------------------------------------//
-shared_ptr < Account > Ledger::getAccount ( string accountName ) const {
-
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return NULL;
-    return this->getAccount ( accountIndex );
-}
-
-//----------------------------------------------------------------//
-Account::Index Ledger::getAccountIndex ( string accountName ) const {
-
-    if ( accountName.size () == 0 ) return Account::NULL_INDEX;
-
-    string lowerName = Format::tolower ( accountName );
-    LedgerKey KEY_FOR_ACCOUNT_ALIAS = keyFor_accountAlias ( lowerName );
-    return this->getValueOrFallback < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, Account::NULL_INDEX );
-}
-
-//----------------------------------------------------------------//
-AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
-
-    AccountKey accountKey;
-    accountKey.mKeyAndPolicy = NULL;
-
-    accountKey.mAccount = this->getAccount ( accountName );
-    if ( accountKey.mAccount ) {
-        map < string, KeyAndPolicy >::const_iterator keyAndPolicyIt = accountKey.mAccount->mKeys.find ( keyName );
-        if ( keyAndPolicyIt != accountKey.mAccount->mKeys.cend ()) {
-            accountKey.mKeyAndPolicy = &keyAndPolicyIt->second;
-        }
-    }
-    return accountKey;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < AccountKeyLookup > Ledger::getAccountKeyLookup ( string keyID ) const {
-
-    return this->getObjectOrNull < AccountKeyLookup >( keyFor_accountKeyLookup ( keyID ));
-}
-
-//----------------------------------------------------------------//
-string Ledger::getAccountName ( Account::Index accountIndex ) const {
-
-    return this->getValueOrFallback < string >( AccountODBM::keyFor_name ( accountIndex ), "" );
-}
-
-//----------------------------------------------------------------//
-u64 Ledger::getAccountTransactionNonce ( Account::Index accountIndex ) const {
-
-    return this->getValueOrFallback < u64 >( AccountODBM::keyFor_transactionNonce ( accountIndex ), 0 );
-}
-
-//----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock () const {
 
     return this->getObjectOrNull < Block >( keyFor_block ());
@@ -171,41 +60,6 @@ string Ledger::getIdentity () const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < MinerInfo > Ledger::getMinerInfo ( string accountName ) const {
-
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return NULL;
-
-    return this->getObjectOrNull < MinerInfo >( AccountODBM::keyFor_minerInfo ( accountIndex ));
-}
-
-//----------------------------------------------------------------//
-map < string, MinerInfo > Ledger::getMiners () const {
-
-    map < string, MinerInfo > minerInfoMap;
-
-    shared_ptr < SerializableSet < string >> miners = this->getObjectOrNull < SerializableSet < string >>( keyFor_miners ());
-    assert ( miners );
-    
-    set < string >::const_iterator minerIt = miners->cbegin ();
-    for ( ; minerIt != miners->cend (); ++minerIt ) {
-    
-        const string& minerID = *minerIt;
-        
-        shared_ptr < MinerInfo > minerInfo = this->getMinerInfo ( minerID );
-        assert ( minerInfo );
-        minerInfoMap [ minerID ] = *minerInfo;
-    }
-    return minerInfoMap;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < Ledger::MinerURLMap > Ledger::getMinerURLs () const {
-
-    return this->getObjectOrNull < MinerURLMap >( keyFor_minerURLs ());
-}
-
-//----------------------------------------------------------------//
 void Ledger::getSchema ( Schema& schema ) const {
 
     string schemaString = this->getSchemaString ();
@@ -240,19 +94,6 @@ UnfinishedBlockList Ledger::getUnfinished () {
 }
 
 //----------------------------------------------------------------//
-void Ledger::incrementTransactionNonce ( Account::Index index, u64 nonce, string note ) {
-
-    AccountODBM accountODBM ( *this, index );
-    if ( !accountODBM.mBody.exists ()) return;
-    if ( accountODBM.mTransactionNonce.get ( 0 ) != nonce ) return;
-    
-    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( index, nonce );
-    this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
-
-    accountODBM.mTransactionNonce.set ( nonce + 1 );
-}
-
-//----------------------------------------------------------------//
 void Ledger::init () {
 
     this->clear ();
@@ -280,45 +121,6 @@ bool Ledger::invoke ( const Schema& schema, string accountName, const AssetMetho
 }
 
 //----------------------------------------------------------------//
-bool Ledger::isAccountName ( string accountName ) {
-
-    size_t size = accountName.size ();
-    for ( size_t i = 0; i < size; ++i ) {
-        const char c = accountName [ i ];
-        if ( !isgraph ( c )) return false;
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
-bool Ledger::isChildName ( string accountName ) {
-
-    return ( accountName [ 0 ] == '~' );
-}
-
-//----------------------------------------------------------------//
-bool Ledger::isSuffix ( string suffix ) {
-
-    // child names must follow the format "<hex3>.<hex3>.<hex3>", where each hex3 is a *lowecase* 3-digit hexadecimal number.
-    
-    if ( suffix.size () != 11 ) return false;
-    if (( suffix [ 3 ] != '.' ) || ( suffix [ 7 ] != '.' )) return false;
-    
-    for ( size_t i = 0; i < 11; ++i ) {
-    
-        if (( i == 3 ) || ( i == 7 )) continue;
-    
-        char c = suffix [ i ];
-    
-        if (( '0' <= c ) || ( c <= '9' )) continue;
-        if (( 'a' <= c ) || ( c <= 'f' )) continue;
-        
-        return false;
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
 bool Ledger::isGenesis () const {
 
     return ( this->getVersion () == 0 );
@@ -339,80 +141,7 @@ Ledger::Ledger ( Ledger& other ) :
 Ledger::~Ledger () {
 }
 
-//----------------------------------------------------------------//
-bool Ledger::newAccount ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
 
-    // check to see if there is already an alias for this account name
-    string lowerName = Format::tolower ( accountName );
-    LedgerKey KEY_FOR_ACCOUNT_ALIAS = keyFor_accountAlias ( lowerName );
-    if ( this->hasKey ( KEY_FOR_ACCOUNT_ALIAS )) return false; // alias already exists
-
-    // provision the account ID
-    LedgerKey KEY_FOR_GLOBAL_ACCOUNT_COUNT = keyFor_globalAccountCount ();
-    Account::Index accountIndex = this->getValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT );
-    this->setValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, accountIndex + 1 ); // increment counter
-
-    // store the account
-    Account account;
-    account.mPolicy = accountPolicy;
-    account.mIndex = accountIndex;
-    account.mName = accountName;
-    account.mBalance = balance;
-    account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
-    
-    this->setObject < Account >( AccountODBM::keyFor_body ( accountIndex ), account );
-
-    // store the key (for reverse lookup):
-    string keyID = key.getKeyID ();
-    assert ( keyID.size ());
-    this->setObject < AccountKeyLookup >( keyFor_accountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, keyName ));
-
-    // store the alias
-    this->setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
-    this->setValue < string >( AccountODBM::keyFor_name ( accountIndex ), accountName );
-
-    return true;
-}
-
-//----------------------------------------------------------------//
-bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
-
-    AccountKey accountKey = this->getAccountKey ( accountName, keyName );
-    if ( accountKey ) {
-
-        shared_ptr < Account > account = accountKey.mAccount;
-        Account::Index accountIndex = account->mIndex;
-
-        this->setObject < MinerInfo >(
-            AccountODBM::keyFor_minerInfo ( accountIndex ),
-            MinerInfo ( accountIndex, url, accountKey.mKeyAndPolicy->mKey )
-        );
-        
-        // TODO: find an efficient way to do all this
-        
-        LedgerKey KEY_FOR_MINERS = keyFor_miners ();
-        shared_ptr < SerializableSet < string >> miners = this->getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );
-        assert ( miners );
-        miners->insert ( accountName );
-        this->setObject < SerializableSet < string >>( KEY_FOR_MINERS, *miners );
-        
-        LedgerKey KEY_FOR_MINER_URLS = keyFor_minerURLs ();
-        shared_ptr < SerializableMap < string, string >> minerURLs = this->getObjectOrNull < SerializableMap < string, string >>( KEY_FOR_MINER_URLS );
-        assert ( minerURLs );
-        ( *minerURLs )[ accountName ] = url;
-        this->setObject < SerializableMap < string, string >>( KEY_FOR_MINER_URLS, *minerURLs );
-
-        return true;
-    }
-    return false;
-}
-
-//----------------------------------------------------------------//
-void Ledger::setAccount ( const Account& account ) {
-
-    assert ( account.mIndex != Account::NULL_INDEX );
-    this->setObject < Account >( AccountODBM::keyFor_body ( account.mIndex ), account );
-}
 
 //----------------------------------------------------------------//
 void Ledger::setBlock ( const Block& block ) {
