@@ -25,8 +25,8 @@ public:
     AssetID::Index          mIndex;
 
     LedgerFieldODBM < AssetID::Index >  mOwner;
-    LedgerFieldODBM < size_t >          mInventoryNonce;
-    LedgerFieldODBM < size_t >          mPosition;
+    LedgerFieldODBM < u64 >             mInventoryNonce;
+    LedgerFieldODBM < u64 >             mPosition;
     LedgerFieldODBM < string >          mType;
 
     //----------------------------------------------------------------//

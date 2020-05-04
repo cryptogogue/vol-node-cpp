@@ -335,6 +335,12 @@
 		CDFA238B2460071700B4CECF /* AssetODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA23892460071700B4CECF /* AssetODBM.h */; };
 		CDFA238D246007C300B4CECF /* ConstOpt.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA238C246007C300B4CECF /* ConstOpt.h */; };
 		CDFA238F24600A9300B4CECF /* LedgerKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA238E24600A9300B4CECF /* LedgerKey.h */; };
+		CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA2392246015FA00B4CECF /* AbstractLedgerComponent.h */; };
+		CDFA2396246016E700B4CECF /* Ledger_Inventory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2394246016E700B4CECF /* Ledger_Inventory.cpp */; };
+		CDFA2397246016E700B4CECF /* Ledger_Inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA2395246016E700B4CECF /* Ledger_Inventory.h */; };
+		CDFA239924601D6F00B4CECF /* TransactionResult.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA239824601D6F00B4CECF /* TransactionResult.h */; };
+		CDFA239B24601DA100B4CECF /* TransactionResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA239A24601DA100B4CECF /* TransactionResult.cpp */; };
+		CDFA239D24601E0A00B4CECF /* LedgerResult.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA239C24601E0A00B4CECF /* LedgerResult.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -913,6 +919,12 @@
 		CDFA23892460071700B4CECF /* AssetODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetODBM.h; path = src/volition/AssetODBM.h; sourceTree = "<group>"; };
 		CDFA238C246007C300B4CECF /* ConstOpt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConstOpt.h; path = src/volition/ConstOpt.h; sourceTree = "<group>"; };
 		CDFA238E24600A9300B4CECF /* LedgerKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerKey.h; path = src/volition/LedgerKey.h; sourceTree = "<group>"; };
+		CDFA2392246015FA00B4CECF /* AbstractLedgerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractLedgerComponent.h; path = src/volition/AbstractLedgerComponent.h; sourceTree = "<group>"; };
+		CDFA2394246016E700B4CECF /* Ledger_Inventory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Inventory.cpp; path = src/volition/Ledger_Inventory.cpp; sourceTree = "<group>"; };
+		CDFA2395246016E700B4CECF /* Ledger_Inventory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger_Inventory.h; path = src/volition/Ledger_Inventory.h; sourceTree = "<group>"; };
+		CDFA239824601D6F00B4CECF /* TransactionResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionResult.h; path = src/volition/TransactionResult.h; sourceTree = "<group>"; };
+		CDFA239A24601DA100B4CECF /* TransactionResult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionResult.cpp; path = src/volition/TransactionResult.cpp; sourceTree = "<group>"; };
+		CDFA239C24601E0A00B4CECF /* LedgerResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerResult.h; path = src/volition/LedgerResult.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1084,6 +1096,7 @@
 		CD4665AA20BFE49000A02D55 /* ledger */ = {
 			isa = PBXGroup;
 			children = (
+				CDFA2392246015FA00B4CECF /* AbstractLedgerComponent.h */,
 				CD63A1DA22B2244600D5C801 /* Account.h */,
 				CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */,
 				CDA1573323FA59EC00DFACCF /* AccountKeyLookup.h */,
@@ -1105,8 +1118,11 @@
 				CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */,
 				CDC2B31420CCAD2400300A96 /* Ledger.cpp */,
 				CDC2B31520CCAD2400300A96 /* Ledger.h */,
+				CDFA2394246016E700B4CECF /* Ledger_Inventory.cpp */,
+				CDFA2395246016E700B4CECF /* Ledger_Inventory.h */,
 				CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */,
 				CDFA238E24600A9300B4CECF /* LedgerKey.h */,
+				CDFA239C24601E0A00B4CECF /* LedgerResult.h */,
 				CDF8AD5A21F52B34000E285F /* LuaContext.cpp */,
 				CDF8AD5B21F52B34000E285F /* LuaContext.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
@@ -1229,6 +1245,8 @@
 				CDA1573823FA7B8800DFACCF /* TransactionContext.h */,
 				CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */,
 				CD964FA223C48EAB009010C3 /* TransactionQueue.h */,
+				CDFA239A24601DA100B4CECF /* TransactionResult.cpp */,
+				CDFA239824601D6F00B4CECF /* TransactionResult.h */,
 				CDF8AD5521F2D106000E285F /* Transactions.h */,
 			);
 			name = transaction;
@@ -1556,6 +1574,7 @@
 				CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */,
 				CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
+				CDFA239D24601E0A00B4CECF /* LedgerResult.h in Headers */,
 				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
@@ -1565,6 +1584,7 @@
 				CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */,
 				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
+				CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */,
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
 				CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */,
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
@@ -1623,6 +1643,8 @@
 				CD4E81A0210593BD007DA585 /* TheContext.h in Headers */,
 				CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */,
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,
+				CDFA239924601D6F00B4CECF /* TransactionResult.h in Headers */,
+				CDFA2397246016E700B4CECF /* Ledger_Inventory.h in Headers */,
 				CD4E81BB210593E5007DA585 /* SerializableSet.h in Headers */,
 				CDBFD54C218B8999002AB0C3 /* PublishSchema.h in Headers */,
 				CD4E81AD210593CA007DA585 /* WebMiner.h in Headers */,
@@ -2054,6 +2076,8 @@
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
 				CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */,
+				CDFA2396246016E700B4CECF /* Ledger_Inventory.cpp in Sources */,
+				CDFA239B24601DA100B4CECF /* TransactionResult.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
 				CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */,
 				CDFA23872453B25B00B4CECF /* Schema.cpp in Sources */,

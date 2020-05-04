@@ -56,7 +56,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         if ( result ) {
             if ( !ledger.isGenesis ()) {
                 
-                ledger.incrementNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
+                ledger.incrementTransactionNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
                 
                 if ( cost > 0 ) {
                     Account accountUpdated = *account;
@@ -88,7 +88,7 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
     Signature* signature = this->mSignature.get ();
 
     if ( maker && signature ) {
-        u64 nonce = ledger.getAccountNonce ( account.mIndex );
+        u64 nonce = ledger.getAccountTransactionNonce ( account.mIndex );
         if ( nonce != maker->getNonce ()) return false;
         const CryptoKey& key = keyAndPolicy.mKey;
         return key.verify ( *signature, this->mBodyString );

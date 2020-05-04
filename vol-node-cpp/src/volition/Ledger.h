@@ -5,12 +5,14 @@
 #define VOLITION_LEDGER_H
 
 #include <volition/common.h>
+#include <volition/AbstractLedgerComponent.h>
 #include <volition/Account.h>
 #include <volition/AccountEntitlements.h>
 #include <volition/AccountKeyLookup.h>
 #include <volition/Asset.h>
 #include <volition/Entropy.h>
 #include <volition/KeyEntitlements.h>
+#include <volition/Ledger_Inventory.h>
 #include <volition/LedgerKey.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
@@ -97,7 +99,15 @@ public:
 // Ledger
 //================================================================//
 class Ledger :
-    public VersionedStore {
+    public VersionedStore,
+    virtual public AbstractLedgerComponent,
+    public Ledger_Inventory {
+private:
+
+    //----------------------------------------------------------------//
+    Ledger&             AbstractLedgerComponent_getLedger       ();
+    const Ledger&       AbstractLedgerComponent_getLedger       () const;
+
 public:
 
     static constexpr const char* MASTER_KEY_NAME    = "master";
@@ -180,7 +190,6 @@ public:
 
     //----------------------------------------------------------------//
     bool                                affirmKey                   ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
-    bool                                awardAsset                  ( const Schema& schema, string accountName, string assetType, size_t quantity );
     bool                                deleteKey                   ( string accountName, string keyName );
     shared_ptr < Account >              getAccount                  ( Account::Index index ) const;
     shared_ptr < Account >              getAccount                  ( string accountName ) const;
@@ -188,15 +197,13 @@ public:
     AccountKey                          getAccountKey               ( string accountName, string keyName ) const;
     shared_ptr < AccountKeyLookup >     getAccountKeyLookup         ( string keyID ) const;
     string                              getAccountName              ( Account::Index accountIndex ) const;
-    u64                                 getAccountNonce             ( Account::Index accountIndex ) const;
-    shared_ptr < Asset >                getAsset                    ( const Schema& schema, AssetID::Index index ) const;
+    u64                                 getAccountTransactionNonce  ( Account::Index accountIndex ) const;
     shared_ptr < Block >                getBlock                    () const;
     shared_ptr < Block >                getBlock                    ( size_t height ) const;
     u64                                 getBlockSize                () const;
     Entropy                             getEntropy                  () const;
     string                              getEntropyString            () const;
     string                              getIdentity                 () const;
-    SerializableList < Asset >          getInventory                ( const Schema& schema, string accountName, size_t max = 0 ) const;
     shared_ptr < MinerInfo >            getMinerInfo                ( string accountName ) const;
     map < string, MinerInfo >           getMiners                   () const;
     shared_ptr < MinerURLMap >          getMinerURLs                () const;
@@ -204,7 +211,7 @@ public:
     string                              getSchemaString             () const;
     string                              getTransactionNote          ( string accountName, u64 nonce ) const;
     UnfinishedBlockList                 getUnfinished               ();
-    void                                incrementNonce              ( Account::Index index, u64 nonce, string note );
+    void                                incrementTransactionNonce   ( Account::Index index, u64 nonce, string note );
     void                                init                        ();
     bool                                invoke                      ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation );
     static bool                         isAccountName               ( string accountName );
@@ -218,7 +225,6 @@ public:
     bool                                registerMiner               ( string accountName, string keyName, string url );
     void                                setAccount                  ( const Account& account );
     void                                setAccountEntitlements      ( string name, const Entitlements& entitlements );
-    bool                                setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field );
     void                                setBlock                    ( const Block& block );
     void                                setEntitlements             ( string name, const Entitlements& entitlements );
     void                                setEntropyString            ( string entropy );

@@ -60,37 +60,6 @@ bool Ledger::affirmKey ( string accountName, string makerKeyName, string keyName
 }
 
 //----------------------------------------------------------------//
-bool Ledger::awardAsset ( const Schema& schema, string accountName, string assetType, size_t quantity ) {
-
-    if ( quantity == 0 ) return true;
-
-    if ( !schema.getDefinitionOrNull ( assetType )) return false;
-
-    AccountODBM accountODBM ( *this, this->getAccountIndex ( accountName ));
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
-
-    LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = keyFor_globalAssetCount ();
-    size_t globalAssetCount = this->getValueOrFallback < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
-    size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
-    
-    for ( size_t i = 0; i < quantity; ++i ) {
-        
-        AssetODBM assetODBM ( *this, globalAssetCount + i );
-                
-        assetODBM.mOwner.set ( accountODBM.mIndex );
-        assetODBM.mPosition.set ( accountAssetCount + i );
-        assetODBM.mType.set ( assetType );
-        
-        accountODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
-    }
-    
-    this->setValue < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, globalAssetCount + quantity );
-    accountODBM.mAssetCount.set ( accountAssetCount + quantity );
-
-    return true;
-}
-
-//----------------------------------------------------------------//
 bool Ledger::deleteKey ( string accountName, string keyName ) {
 
     AccountKey accountKey = this->getAccountKey ( accountName, keyName );
@@ -156,51 +125,9 @@ string Ledger::getAccountName ( Account::Index accountIndex ) const {
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getAccountNonce ( Account::Index accountIndex ) const {
+u64 Ledger::getAccountTransactionNonce ( Account::Index accountIndex ) const {
 
-    return this->getValueOrFallback < u64 >( AccountODBM::keyFor_nonce ( accountIndex ), 0 );
-}
-
-//----------------------------------------------------------------//
-shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, AssetID::Index index ) const {
-
-    AssetODBM assetODBM ( *this, index );
-    if ( !assetODBM.mOwner.exists ()) return NULL;
-
-    const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetODBM.mType.get ());
-    if ( !assetDefinition ) return NULL;
-    
-    shared_ptr < Asset > asset = make_shared < Asset >();
-    asset->mType    = assetODBM.mType.get ();
-    asset->mAssetID = assetODBM.mIndex;
-    asset->mOwner   = this->getAccountName ( assetODBM.mOwner.get ());
-    
-    // copy the fields and apply any overrides
-    AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
-    for ( ; fieldIt != assetDefinition->mFields.cend (); ++fieldIt ) {
-        
-        string fieldName = fieldIt->first;
-        
-        const AssetFieldDefinition& field = fieldIt->second;
-        AssetFieldValue value = field;
-        
-//        if ( field.mMutable ) {
-//
-//            string keyforAssetModifiedField = this->formatKeyforAssetModifiedField ( identifier, fieldName );
-//
-//            switch ( field.mType ) {
-//                case AssetTemplateField::Type::NUMERIC:
-//                    value = this->getValueOrFallback < double >( keyforAssetModifiedField, value.mNumeric );
-//                    break;
-//                case AssetTemplateField::Type::STRING:
-//                    value = this->getValueOrFallback < string >( keyforAssetModifiedField, value.mString );
-//                    break;
-//            }
-//            asset->mFields [ fieldName ] = value;
-//        }
-        asset->mFields [ fieldName ] = value;
-    }
-    return asset;
+    return this->getValueOrFallback < u64 >( AccountODBM::keyFor_transactionNonce ( accountIndex ), 0 );
 }
 
 //----------------------------------------------------------------//
@@ -241,30 +168,6 @@ string Ledger::getEntropyString () const {
 string Ledger::getIdentity () const {
 
     return this->getValueOrFallback < string >( keyFor_identity (), "" );
-}
-
-//----------------------------------------------------------------//
-SerializableList < Asset > Ledger::getInventory ( const Schema& schema, string accountName, size_t max ) const {
-
-    SerializableList < Asset > assets;
-
-    AccountODBM accountODBM ( *this, this->getAccountIndex ( accountName ));
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return assets;
-
-    size_t assetCount = accountODBM.mAssetCount.get ();
-    
-    if (( max > 0 ) && ( max < assetCount )) {
-        assetCount = max;
-    }
-    
-    for ( size_t i = 0; i < assetCount; ++i ) {
-    
-        AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
-        shared_ptr < Asset > asset = this->getAsset ( schema, assetIndex );
-        assert ( asset );
-        assets.push_back ( *asset );
-    }
-    return assets;
 }
 
 //----------------------------------------------------------------//
@@ -337,16 +240,16 @@ UnfinishedBlockList Ledger::getUnfinished () {
 }
 
 //----------------------------------------------------------------//
-void Ledger::incrementNonce ( Account::Index index, u64 nonce, string note ) {
+void Ledger::incrementTransactionNonce ( Account::Index index, u64 nonce, string note ) {
 
     AccountODBM accountODBM ( *this, index );
     if ( !accountODBM.mBody.exists ()) return;
-    if ( accountODBM.mNonce.get ( 0 ) != nonce ) return;
+    if ( accountODBM.mTransactionNonce.get ( 0 ) != nonce ) return;
     
     LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( index, nonce );
     this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
 
-    accountODBM.mNonce.set ( nonce + 1 );
+    accountODBM.mTransactionNonce.set ( nonce + 1 );
 }
 
 //----------------------------------------------------------------//
@@ -512,34 +415,6 @@ void Ledger::setAccount ( const Account& account ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field ) {
-
-    // make sure the asset exists
-    LedgerKey KEY_FOR_ASSET_TYPE = AssetODBM::keyFor_type ( index );
-    if ( !this->hasValue ( KEY_FOR_ASSET_TYPE )) return false;
-    string assetType = this->getValue < string >( KEY_FOR_ASSET_TYPE );
-
-    // make sure the field exists
-    const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
-    if ( !assetDefinition ) return false;
-    if ( !assetDefinition->hasMutableField ( fieldName, field.getType ())) return false;
-
-//    // set the field
-//    string keyforAssetModifiedField = Ledger::formatKeyforAssetModifiedField ( identifier, fieldName );
-//
-//    switch ( field.mType ) {
-//        case AssetTemplateField::Type::NUMERIC:
-//            this->setValue < double >( keyforAssetModifiedField, field.mValue.mNumeric );
-//            break;
-//        case AssetTemplateField::Type::STRING:
-//            this->setValue < string >( keyforAssetModifiedField, field.mValue.mString );
-//            break;
-//    }
-
-    return true;
-}
-
-//----------------------------------------------------------------//
 void Ledger::setBlock ( const Block& block ) {
     assert ( block.mHeight == this->getVersion ());
     this->setObject < Block >( keyFor_block (), block );
@@ -617,5 +492,15 @@ bool Ledger::verify ( const Schema& schema, const AssetMethodInvocation& invocat
 //================================================================//
 
 //----------------------------------------------------------------//
+Ledger& Ledger::AbstractLedgerComponent_getLedger () {
+
+    return *this;
+}
+
+//----------------------------------------------------------------//
+const Ledger& Ledger::AbstractLedgerComponent_getLedger () const {
+
+    return *this;
+}
 
 } // namespace Volition

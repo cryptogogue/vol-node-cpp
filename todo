@@ -135,6 +135,7 @@ node - record asset exchange metadata (inventory nonce, sender, note)
 node - per asset modification metadata
 node - sparse asset
 node - separate entropy from allure (allure computed simply - hash of block height; entropy is block height plus previous entropy signed by miner)
+node - finalize multi-part transaction implementation
 wallet - popup when new assets received (hide assets until reviewed)
 wallet - filter inventory by asset exchange metadata
 wallet - media url prefix

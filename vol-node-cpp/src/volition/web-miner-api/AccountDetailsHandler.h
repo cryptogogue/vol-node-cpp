@@ -24,7 +24,7 @@ public:
     //----------------------------------------------------------------//
     static void formatJSON ( const Ledger& ledger, const Account& account, Poco::JSON::Object& jsonOut ) {
     
-        u64 nonce = ledger.getAccountNonce ( account.mIndex );
+        u64 nonce = ledger.getAccountTransactionNonce ( account.mIndex );
         
         Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( account ).extract < Poco::JSON::Object::Ptr >();
         accountJSON->set ( "nonce", nonce );

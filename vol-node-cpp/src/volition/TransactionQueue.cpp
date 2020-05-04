@@ -136,7 +136,7 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
                     continue;
                 }
                 // get the nonce
-                info.mNonce = ledger.getAccountNonce ( info.mAccountIndex );
+                info.mNonce = ledger.getAccountTransactionNonce ( info.mAccountIndex );
             }
             
             // get the next transaction
@@ -227,7 +227,7 @@ void TransactionQueue::pruneTransactions ( const Chain& chain ) {
         Account::Index accountIndex = ledger.getAccountIndex ( accountName );
         if ( accountIndex == Account::NULL_INDEX ) {
     
-            u64 nonce = ledger.getAccountNonce ( accountIndex );
+            u64 nonce = ledger.getAccountTransactionNonce ( accountIndex );
             makerQueue.prune ( nonce );
         
             if ( makerQueue.hasError ()) continue;

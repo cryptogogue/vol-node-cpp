@@ -26,8 +26,9 @@ public:
 
     LedgerFieldODBM < string >      mBody;
     LedgerFieldODBM < size_t >      mAssetCount;
+    LedgerFieldODBM < u64 >         mInventoryNonce;
     LedgerFieldODBM < string >      mMinerInfo;
-    LedgerFieldODBM < u64 >         mNonce;
+    LedgerFieldODBM < u64 >         mTransactionNonce;
     LedgerFieldODBM < string >      mName;
 
     //----------------------------------------------------------------//
@@ -46,6 +47,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_inventoryNonce ( Account::Index index ) {
+        return Format::write ( "account.%d.inventoryNonce", index );
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_minerInfo ( Account::Index index ) {
         return Format::write ( "account.%d.miner", index );
     }
@@ -56,8 +62,8 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_nonce ( Account::Index index ) {
-        return Format::write ( "account.%d.nonce", index );
+    static LedgerKey keyFor_transactionNonce ( Account::Index index ) {
+        return Format::write ( "account.%d.transactionNonce", index );
     }
 
     //----------------------------------------------------------------//
@@ -69,11 +75,12 @@ public:
     AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) :
         mLedger ( ledger ),
         mIndex ( index ),
-        mBody ( ledger,         keyFor_body ( this->mIndex )),
-        mAssetCount ( ledger,   keyFor_assetCount ( this->mIndex )),
-        mMinerInfo ( ledger,    keyFor_minerInfo ( this->mIndex )),
-        mNonce ( ledger,        keyFor_nonce ( this->mIndex )),
-        mName ( ledger,         keyFor_name ( this->mIndex )) {
+        mBody ( ledger,                 keyFor_body ( this->mIndex )),
+        mAssetCount ( ledger,           keyFor_assetCount ( this->mIndex )),
+        mInventoryNonce ( ledger,       keyFor_inventoryNonce ( this->mIndex )),
+        mMinerInfo ( ledger,            keyFor_minerInfo ( this->mIndex )),
+        mTransactionNonce ( ledger,     keyFor_transactionNonce ( this->mIndex )),
+        mName ( ledger,                 keyFor_name ( this->mIndex )) {
     }
     
     //----------------------------------------------------------------//

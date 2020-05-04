@@ -9,6 +9,7 @@
 #include <volition/serialization/Serialization.h>
 #include <volition/TransactionContext.h>
 #include <volition/TransactionMaker.h>
+#include <volition/TransactionResult.h>
 
 namespace Volition {
 
@@ -31,32 +32,6 @@ namespace Volition {
     }
 
 class Transaction;
-
-//================================================================//
-// TransactionResult
-//================================================================//
-class TransactionResult {
-private:
-
-    bool        mStatus;
-    string      mMessage;
-    string      mNote;
-
-public:
-
-    //----------------------------------------------------------------//
-    operator bool () const {
-        return ( this->mStatus );
-    }
-
-    //----------------------------------------------------------------//
-    string      getMessage                  () const;
-    string      getNote                     () const;
-    void        setTransactionDetails       ( const Transaction& transaction );
-                TransactionResult           ( bool status );
-                TransactionResult           ( const char* message );
-                TransactionResult           ( string message );
-};
 
 //================================================================//
 // AbstractTransactionBody
