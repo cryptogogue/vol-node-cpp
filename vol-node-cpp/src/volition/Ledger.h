@@ -10,8 +10,8 @@
 #include <volition/AccountKeyLookup.h>
 #include <volition/Asset.h>
 #include <volition/Entropy.h>
-#include <volition/FormatLedgerKey.h>
 #include <volition/KeyEntitlements.h>
+#include <volition/LedgerKey.h>
 #include <volition/MinerInfo.h>
 #include <volition/serialization/Serialization.h>
 
@@ -106,6 +106,79 @@ public:
     typedef SerializableMap < string, string > MinerURLMap;
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_accountAlias ( string accountName ) {
+        assert ( accountName.size () > 0 );
+        return Format::write ( "accountAlias.%s", accountName.c_str ());
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_accountKeyLookup ( string keyID ) {
+        return Format::write ( "key.%s", keyID.c_str ());
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_assetModifiedField ( AssetID::Index index, string fieldName ) {
+        return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_block () {
+        return "block";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_blockSize () {
+        return "blockSize";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_entitlements ( string name ) {
+
+        assert ( name.size () > 0 );
+        return Format::write ( "entitlements.%s", name.c_str ());
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_entropy () {
+        return "entropy";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_globalAccountCount () {
+        return "account.count";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_globalAssetCount () {
+        return Format::write ( "asset.count" );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_identity () {
+        return "identity";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_miners () {
+        return "miners";
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_minerURLs () {
+        return "minerURLs";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_schema () {
+        return "schema";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_unfinished () {
+        return "unfinished";
+    }
+
+    //----------------------------------------------------------------//
     bool                                affirmKey                   ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
     bool                                awardAsset                  ( const Schema& schema, string accountName, string assetType, size_t quantity );
     bool                                deleteKey                   ( string accountName, string keyName );
@@ -161,7 +234,7 @@ public:
         if ( name.size () == 0 ) {
             return *ENTITLEMENTS_FAMILY::getMasterEntitlements ();
         }
-        LedgerKey KEY_FOR_ENTITLEMENTS = FormatLedgerKey::forEntitlements ( name );
+        LedgerKey KEY_FOR_ENTITLEMENTS = keyFor_entitlements ( name );
         shared_ptr < Entitlements > entitlements = this->getObjectOrNull < Entitlements >( KEY_FOR_ENTITLEMENTS );
         return entitlements ? *entitlements : Entitlements ();
     }

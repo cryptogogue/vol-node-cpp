@@ -1,13 +1,15 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/AccountODBM.h>
 #include <volition/Asset.h>
 #include <volition/AssetMethod.h>
 #include <volition/AssetMethodInvocation.h>
+#include <volition/AssetODBM.h>
 #include <volition/Block.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
-#include <volition/LedgerODBM.h>
+#include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
 #include <volition/TransactionMaker.h>
 
@@ -26,7 +28,7 @@ bool Ledger::affirmKey ( string accountName, string makerKeyName, string keyName
     shared_ptr < Account > account = this->getAccount ( accountName );
     if ( account ) {
 
-        const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = FormatLedgerKey::forAccountKeyLookup ( keyID );
+        const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = keyFor_accountKeyLookup ( keyID );
         shared_ptr < AccountKeyLookup > accountKeyLookup = this->getObjectOrNull < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP );
 
         // keys must be unique to accounts; no sharing keys across multiple accounts!
@@ -67,7 +69,7 @@ bool Ledger::awardAsset ( const Schema& schema, string accountName, string asset
     AccountODBM accountODBM ( *this, this->getAccountIndex ( accountName ));
     if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
 
-    LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = FormatLedgerKey::forGlobalAssetCount ();
+    LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = keyFor_globalAssetCount ();
     size_t globalAssetCount = this->getValueOrFallback < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
     size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
     
@@ -104,7 +106,7 @@ bool Ledger::deleteKey ( string accountName, string keyName ) {
 //----------------------------------------------------------------//
 shared_ptr < Account > Ledger::getAccount ( Account::Index index ) const {
 
-    return this->getObjectOrNull < Account >( FormatLedgerKey::forAccount_body ( index ));
+    return this->getObjectOrNull < Account >( AccountODBM::keyFor_body ( index ));
 }
 
 //----------------------------------------------------------------//
@@ -121,7 +123,7 @@ Account::Index Ledger::getAccountIndex ( string accountName ) const {
     if ( accountName.size () == 0 ) return Account::NULL_INDEX;
 
     string lowerName = Format::tolower ( accountName );
-    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( lowerName );
+    LedgerKey KEY_FOR_ACCOUNT_ALIAS = keyFor_accountAlias ( lowerName );
     return this->getValueOrFallback < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, Account::NULL_INDEX );
 }
 
@@ -144,19 +146,19 @@ AccountKey Ledger::getAccountKey ( string accountName, string keyName ) const {
 //----------------------------------------------------------------//
 shared_ptr < AccountKeyLookup > Ledger::getAccountKeyLookup ( string keyID ) const {
 
-    return this->getObjectOrNull < AccountKeyLookup >( FormatLedgerKey::forAccountKeyLookup ( keyID ));
+    return this->getObjectOrNull < AccountKeyLookup >( keyFor_accountKeyLookup ( keyID ));
 }
 
 //----------------------------------------------------------------//
 string Ledger::getAccountName ( Account::Index accountIndex ) const {
 
-    return this->getValueOrFallback < string >( FormatLedgerKey::forAccount_name ( accountIndex ), "" );
+    return this->getValueOrFallback < string >( AccountODBM::keyFor_name ( accountIndex ), "" );
 }
 
 //----------------------------------------------------------------//
 u64 Ledger::getAccountNonce ( Account::Index accountIndex ) const {
 
-    return this->getValueOrFallback < u64 >( FormatLedgerKey::forAccount_nonce ( accountIndex ), 0 );
+    return this->getValueOrFallback < u64 >( AccountODBM::keyFor_nonce ( accountIndex ), 0 );
 }
 
 //----------------------------------------------------------------//
@@ -204,7 +206,7 @@ shared_ptr < Asset > Ledger::getAsset ( const Schema& schema, AssetID::Index ind
 //----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock () const {
 
-    return this->getObjectOrNull < Block >( FormatLedgerKey::forBlock ());
+    return this->getObjectOrNull < Block >( keyFor_block ());
 }
 
 //----------------------------------------------------------------//
@@ -214,13 +216,13 @@ shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
     if ( height < snapshot.getVersion ()) {
         snapshot.revert ( height );
     }
-    return Ledger::getObjectOrNull < Block >( snapshot, FormatLedgerKey::forBlock ());
+    return Ledger::getObjectOrNull < Block >( snapshot, keyFor_block ());
 }
 
 //----------------------------------------------------------------//
 u64 Ledger::getBlockSize () const {
 
-    return this->getValue < u64 >( FormatLedgerKey::forBlockSize ());
+    return this->getValue < u64 >( keyFor_blockSize ());
 }
 
 //----------------------------------------------------------------//
@@ -232,13 +234,13 @@ Entropy Ledger::getEntropy () const {
 //----------------------------------------------------------------//
 string Ledger::getEntropyString () const {
 
-    return this->getValueOrFallback < string >( FormatLedgerKey::forEntropy (), "" );
+    return this->getValueOrFallback < string >( keyFor_entropy (), "" );
 }
 
 //----------------------------------------------------------------//
 string Ledger::getIdentity () const {
 
-    return this->getValueOrFallback < string >( FormatLedgerKey::forIdentity (), "" );
+    return this->getValueOrFallback < string >( keyFor_identity (), "" );
 }
 
 //----------------------------------------------------------------//
@@ -271,7 +273,7 @@ shared_ptr < MinerInfo > Ledger::getMinerInfo ( string accountName ) const {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex == Account::NULL_INDEX ) return NULL;
 
-    return this->getObjectOrNull < MinerInfo >( FormatLedgerKey::forAccount_minerInfo ( accountIndex ));
+    return this->getObjectOrNull < MinerInfo >( AccountODBM::keyFor_minerInfo ( accountIndex ));
 }
 
 //----------------------------------------------------------------//
@@ -279,7 +281,7 @@ map < string, MinerInfo > Ledger::getMiners () const {
 
     map < string, MinerInfo > minerInfoMap;
 
-    shared_ptr < SerializableSet < string >> miners = this->getObjectOrNull < SerializableSet < string >>( FormatLedgerKey::forMiners ());
+    shared_ptr < SerializableSet < string >> miners = this->getObjectOrNull < SerializableSet < string >>( keyFor_miners ());
     assert ( miners );
     
     set < string >::const_iterator minerIt = miners->cbegin ();
@@ -297,7 +299,7 @@ map < string, MinerInfo > Ledger::getMiners () const {
 //----------------------------------------------------------------//
 shared_ptr < Ledger::MinerURLMap > Ledger::getMinerURLs () const {
 
-    return this->getObjectOrNull < MinerURLMap >( FormatLedgerKey::forMinerURLs ());
+    return this->getObjectOrNull < MinerURLMap >( keyFor_minerURLs ());
 }
 
 //----------------------------------------------------------------//
@@ -312,7 +314,7 @@ void Ledger::getSchema ( Schema& schema ) const {
 //----------------------------------------------------------------//
 string Ledger::getSchemaString () const {
 
-    return this->getValue < string >( FormatLedgerKey::forSchema ());
+    return this->getValue < string >( keyFor_schema ());
 }
 
 //----------------------------------------------------------------//
@@ -321,7 +323,7 @@ string Ledger::getTransactionNote ( string accountName, u64 nonce ) const {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex != Account::NULL_INDEX ) {
 
-        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccount_transactionNoteField ( accountIndex, nonce );
+        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( accountIndex, nonce );
         return this->getValueOrFallback < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, "" );
     }
     return "";
@@ -330,7 +332,7 @@ string Ledger::getTransactionNote ( string accountName, u64 nonce ) const {
 //----------------------------------------------------------------//
 UnfinishedBlockList Ledger::getUnfinished () {
 
-    shared_ptr < UnfinishedBlockList > unfinished = this->getObjectOrNull < UnfinishedBlockList >( FormatLedgerKey::forUnfinished ());
+    shared_ptr < UnfinishedBlockList > unfinished = this->getObjectOrNull < UnfinishedBlockList >( keyFor_unfinished ());
     return unfinished ? *unfinished : UnfinishedBlockList ();
 }
 
@@ -341,7 +343,7 @@ void Ledger::incrementNonce ( Account::Index index, u64 nonce, string note ) {
     if ( !accountODBM.mBody.exists ()) return;
     if ( accountODBM.mNonce.get ( 0 ) != nonce ) return;
     
-    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = FormatLedgerKey::forAccount_transactionNoteField ( index, nonce );
+    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( index, nonce );
     this->setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
 
     accountODBM.mNonce.set ( nonce + 1 );
@@ -351,12 +353,12 @@ void Ledger::incrementNonce ( Account::Index index, u64 nonce, string note ) {
 void Ledger::init () {
 
     this->clear ();
-    this->setObject < SerializableSet < string >>( FormatLedgerKey::forMiners (), SerializableSet < string > ());
-    this->setObject < SerializableMap < string, string >>( FormatLedgerKey::forMinerURLs (), SerializableMap < string, string > ());
-    this->setValue < AssetID::Index >( FormatLedgerKey::forGlobalAccountCount (), 0 );
-    this->setValue < AssetID::Index >( FormatLedgerKey::forGlobalAssetCount (), 0 );
-    this->setValue < string >( FormatLedgerKey::forSchema (), "{}" );
-    this->setValue < u64 >( FormatLedgerKey::forBlockSize (), DEFAULT_BLOCK_SIZE );
+    this->setObject < SerializableSet < string >>( keyFor_miners (), SerializableSet < string > ());
+    this->setObject < SerializableMap < string, string >>( keyFor_minerURLs (), SerializableMap < string, string > ());
+    this->setValue < AssetID::Index >( keyFor_globalAccountCount (), 0 );
+    this->setValue < AssetID::Index >( keyFor_globalAssetCount (), 0 );
+    this->setValue < string >( keyFor_schema (), "{}" );
+    this->setValue < u64 >( keyFor_blockSize (), DEFAULT_BLOCK_SIZE );
 }
 
 //----------------------------------------------------------------//
@@ -439,11 +441,11 @@ bool Ledger::newAccount ( string accountName, u64 balance, string keyName, const
 
     // check to see if there is already an alias for this account name
     string lowerName = Format::tolower ( accountName );
-    LedgerKey KEY_FOR_ACCOUNT_ALIAS = FormatLedgerKey::forAccountAlias ( lowerName );
+    LedgerKey KEY_FOR_ACCOUNT_ALIAS = keyFor_accountAlias ( lowerName );
     if ( this->hasKey ( KEY_FOR_ACCOUNT_ALIAS )) return false; // alias already exists
 
     // provision the account ID
-    LedgerKey KEY_FOR_GLOBAL_ACCOUNT_COUNT = FormatLedgerKey::forGlobalAccountCount ();
+    LedgerKey KEY_FOR_GLOBAL_ACCOUNT_COUNT = keyFor_globalAccountCount ();
     Account::Index accountIndex = this->getValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT );
     this->setValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, accountIndex + 1 ); // increment counter
 
@@ -455,16 +457,16 @@ bool Ledger::newAccount ( string accountName, u64 balance, string keyName, const
     account.mBalance = balance;
     account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
     
-    this->setObject < Account >( FormatLedgerKey::forAccount_body ( accountIndex ), account );
+    this->setObject < Account >( AccountODBM::keyFor_body ( accountIndex ), account );
 
     // store the key (for reverse lookup):
     string keyID = key.getKeyID ();
     assert ( keyID.size ());
-    this->setObject < AccountKeyLookup >( FormatLedgerKey::forAccountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, keyName ));
+    this->setObject < AccountKeyLookup >( keyFor_accountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, keyName ));
 
     // store the alias
     this->setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
-    this->setValue < string >( FormatLedgerKey::forAccount_name ( accountIndex ), accountName );
+    this->setValue < string >( AccountODBM::keyFor_name ( accountIndex ), accountName );
 
     return true;
 }
@@ -479,19 +481,19 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
         Account::Index accountIndex = account->mIndex;
 
         this->setObject < MinerInfo >(
-            FormatLedgerKey::forAccount_minerInfo ( accountIndex ),
+            AccountODBM::keyFor_minerInfo ( accountIndex ),
             MinerInfo ( accountIndex, url, accountKey.mKeyAndPolicy->mKey )
         );
         
         // TODO: find an efficient way to do all this
         
-        LedgerKey KEY_FOR_MINERS = FormatLedgerKey::forMiners ();
+        LedgerKey KEY_FOR_MINERS = keyFor_miners ();
         shared_ptr < SerializableSet < string >> miners = this->getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );
         assert ( miners );
         miners->insert ( accountName );
         this->setObject < SerializableSet < string >>( KEY_FOR_MINERS, *miners );
         
-        LedgerKey KEY_FOR_MINER_URLS = FormatLedgerKey::forMinerURLs ();
+        LedgerKey KEY_FOR_MINER_URLS = keyFor_minerURLs ();
         shared_ptr < SerializableMap < string, string >> minerURLs = this->getObjectOrNull < SerializableMap < string, string >>( KEY_FOR_MINER_URLS );
         assert ( minerURLs );
         ( *minerURLs )[ accountName ] = url;
@@ -506,14 +508,14 @@ bool Ledger::registerMiner ( string accountName, string keyName, string url ) {
 void Ledger::setAccount ( const Account& account ) {
 
     assert ( account.mIndex != Account::NULL_INDEX );
-    this->setObject < Account >( FormatLedgerKey::forAccount_body ( account.mIndex ), account );
+    this->setObject < Account >( AccountODBM::keyFor_body ( account.mIndex ), account );
 }
 
 //----------------------------------------------------------------//
 bool Ledger::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field ) {
 
     // make sure the asset exists
-    LedgerKey KEY_FOR_ASSET_TYPE = FormatLedgerKey::forAsset_type ( index );
+    LedgerKey KEY_FOR_ASSET_TYPE = AssetODBM::keyFor_type ( index );
     if ( !this->hasValue ( KEY_FOR_ASSET_TYPE )) return false;
     string assetType = this->getValue < string >( KEY_FOR_ASSET_TYPE );
 
@@ -540,26 +542,26 @@ bool Ledger::setAssetFieldValue ( const Schema& schema, AssetID::Index index, st
 //----------------------------------------------------------------//
 void Ledger::setBlock ( const Block& block ) {
     assert ( block.mHeight == this->getVersion ());
-    this->setObject < Block >( FormatLedgerKey::forBlock (), block );
+    this->setObject < Block >( keyFor_block (), block );
 }
 
 //----------------------------------------------------------------//
 void Ledger::setEntitlements ( string name, const Entitlements& entitlements ) {
 
-    LedgerKey KEY_FOR_ENTITLEMENTS = FormatLedgerKey::forEntitlements ( name );
+    LedgerKey KEY_FOR_ENTITLEMENTS = keyFor_entitlements ( name );
     this->setObject < Entitlements >( KEY_FOR_ENTITLEMENTS, entitlements );
 }
 
 //----------------------------------------------------------------//
 void Ledger::setEntropyString ( string entropy ) {
 
-    this->setValue < string >( FormatLedgerKey::forEntropy (), entropy );
+    this->setValue < string >( keyFor_entropy (), entropy );
 }
 
 //----------------------------------------------------------------//
 bool Ledger::setIdentity ( string identity ) {
 
-    LedgerKey KEY_FOR_IDENTITY = FormatLedgerKey::forIdentity ();
+    LedgerKey KEY_FOR_IDENTITY = keyFor_identity ();
     if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
     this->setValue < string >( KEY_FOR_IDENTITY, identity );
     return true;
@@ -600,7 +602,7 @@ void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerT
 //----------------------------------------------------------------//
 void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
-    this->setObject < UnfinishedBlockList >( FormatLedgerKey::forUnfinished (), unfinished );
+    this->setObject < UnfinishedBlockList >( keyFor_unfinished (), unfinished );
 }
 
 //----------------------------------------------------------------//

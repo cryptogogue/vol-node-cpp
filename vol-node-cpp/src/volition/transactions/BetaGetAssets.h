@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/AccountODBM.h>
 #include <volition/Schema.h>
 
 namespace Volition {

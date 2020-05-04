@@ -48,7 +48,7 @@ public:
         if ( updateSchema.hasCollisions ( this->mSchema )) return "Error publishing schema - found collisions.";
         if ( !updateSchema.compose ( this->mSchema )) return "Error publishing schema.";
         
-        context.mLedger.setObject < Schema >( FormatLedgerKey::forSchema (), updateSchema );
+        context.mLedger.setObject < Schema >( Ledger::keyFor_schema (), updateSchema );
         context.mSchemaHandle.reset ( context.mLedger );
 
         return true;

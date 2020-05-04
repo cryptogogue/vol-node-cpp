@@ -202,7 +202,7 @@ void Chain::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer 
     size_t top = this->getVersion ();
     VersionedStoreIterator chainIt ( *this, 0 );
     for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
-        shared_ptr < Block > block = Ledger::getObjectOrNull < Block >( chainIt, FormatLedgerKey::forBlock ());
+        shared_ptr < Block > block = Ledger::getObjectOrNull < Block >( chainIt, keyFor_block ());
         assert ( block );
         blocks.push_back ( *block );
     }

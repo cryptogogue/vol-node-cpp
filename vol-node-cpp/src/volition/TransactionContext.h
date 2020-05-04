@@ -6,7 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/Ledger.h>
-#include <volition/LedgerODBM.h>
+#include <volition/LedgerFieldODBM.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/SchemaHandle.h>
 #include <volition/TransactionMaker.h>

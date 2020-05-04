@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/AccountODBM.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -87,7 +88,7 @@ public:
         if ( !Ledger::isAccountName ( revealedName )) return "Proposed account name contains invalid characters."; // make sure it's a valid account name
 
         string lowerRevealedName = Format::tolower ( revealedName );
-        LedgerFieldODBM < Account::Index > alias = LedgerFieldODBM < Account::Index > ( ledger, FormatLedgerKey::forAccountAlias ( lowerRevealedName ));
+        LedgerFieldODBM < Account::Index > alias = LedgerFieldODBM < Account::Index > ( ledger, Ledger::keyFor_accountAlias ( lowerRevealedName ));
               
         // check to see if the alias already exists
         if ( alias.exists ()) {
@@ -98,8 +99,8 @@ public:
 
         Account accountUpdated = account;
         accountUpdated.mName = revealedName;
-        ledger.setObject < Account >( FormatLedgerKey::forAccount_body ( account.mIndex ), accountUpdated );
-        ledger.setValue < string >( FormatLedgerKey::forAccount_name ( account.mIndex ), revealedName );
+        ledger.setObject < Account >( AccountODBM::keyFor_body ( account.mIndex ), accountUpdated );
+        ledger.setValue < string >( AccountODBM::keyFor_name ( account.mIndex ), revealedName );
         
         return true;
     }

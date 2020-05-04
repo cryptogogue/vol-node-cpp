@@ -31,7 +31,7 @@ void Tree::addChain ( const Chain& chain ) {
     
     size_t top = chain.getVersion ();
     for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
-        shared_ptr < Block > block = Ledger::getObjectOrNull < Block >( chainIt, FormatLedgerKey::forBlock ());
+        shared_ptr < Block > block = Ledger::getObjectOrNull < Block >( chainIt, Ledger::keyFor_block ());
         assert ( block );
         
         string minerID      = block->getMinerID ();

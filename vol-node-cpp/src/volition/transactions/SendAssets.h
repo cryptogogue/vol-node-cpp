@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/AssetODBM.h>
 #include <volition/Format.h>
 #include <volition/Policy.h>
 

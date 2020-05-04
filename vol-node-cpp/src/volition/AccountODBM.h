@@ -1,0 +1,93 @@
+// Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
+// http://cryptogogue.com
+
+#ifndef VOLITION_ACCOUNTODBM_H
+#define VOLITION_ACCOUNTODBM_H
+
+#include <volition/common.h>
+#include <volition/Account.h>
+#include <volition/Asset.h>
+#include <volition/Ledger.h>
+#include <volition/LedgerFieldODBM.h>
+#include <volition/LedgerKey.h>
+#include <volition/Policy.h>
+#include <volition/Schema.h>
+
+namespace Volition {
+
+//================================================================//
+// AccountODBM
+//================================================================//
+class AccountODBM {
+public:
+
+    ConstOpt < Ledger >     mLedger;
+    Account::Index          mIndex;
+
+    LedgerFieldODBM < string >      mBody;
+    LedgerFieldODBM < size_t >      mAssetCount;
+    LedgerFieldODBM < string >      mMinerInfo;
+    LedgerFieldODBM < u64 >         mNonce;
+    LedgerFieldODBM < string >      mName;
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_assetCount ( Account::Index index ) {
+        return Format::write ( "account.%d.assetCount", index );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_body ( Account::Index index ) {
+        return Format::write ( "account.%d", index );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_inventoryField ( Account::Index index, size_t position ) {
+        return Format::write ( "account.%d.assets.%d", index, position );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_minerInfo ( Account::Index index ) {
+        return Format::write ( "account.%d.miner", index );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_name ( Account::Index index ) {
+        return Format::write ( "account.%d.name", index );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_nonce ( Account::Index index ) {
+        return Format::write ( "account.%d.nonce", index );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_transactionNoteField ( Account::Index index, u64 nonce ) {
+        return Format::write ( "account.%d.transaction.%d", index, nonce );
+    }
+
+    //----------------------------------------------------------------//
+    AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) :
+        mLedger ( ledger ),
+        mIndex ( index ),
+        mBody ( ledger,         keyFor_body ( this->mIndex )),
+        mAssetCount ( ledger,   keyFor_assetCount ( this->mIndex )),
+        mMinerInfo ( ledger,    keyFor_minerInfo ( this->mIndex )),
+        mNonce ( ledger,        keyFor_nonce ( this->mIndex )),
+        mName ( ledger,         keyFor_name ( this->mIndex )) {
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerFieldODBM < AssetID::Index > getInventoryField ( size_t position ) {
+    
+        return LedgerFieldODBM < AssetID::Index >( this->mLedger, keyFor_inventoryField ( this->mIndex, position ));
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerFieldODBM < string > getTransactionNoteField ( u64 nonce ) {
+    
+        return LedgerFieldODBM < string >( this->mLedger, keyFor_transactionNoteField ( this->mIndex, nonce ));
+    }
+};
+
+} // namespace Volition
+#endif

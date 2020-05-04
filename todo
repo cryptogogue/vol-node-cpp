@@ -85,9 +85,9 @@ DONE: wallet - add password option to transaction modal (to submit immediately)
 ----------------------------------------------------------------
 BETA
 
-crafting - booster packs
-crafting - data tables (booster pack awards)
-crafting - queries? (generate and cache data tables)
+DONE: crafting - booster packs
+DONE: crafting - data tables (booster pack awards)
+DONE: batch transfer assets to other accounts
 
 node - batch transactions in solo mode
 node - implement way to expire transactions
@@ -117,7 +117,6 @@ layout tool - paragraph styles (leading indent)
 layout tool - justify text
 layout tool - layouts-as-icons (and/or "layered" icons)
 
-batch transfer assets to other accounts
 rework node control endpoints into "control" transactions
 
 version versioned store (store metadata)
@@ -128,6 +127,17 @@ display all (historic) transactions of selected account
 customize asset fields - images, text
 
 validator app - scan the QR code and return raw card data including the owner
+
+schema - default tags?
+schema - reserved asset fields?
+schema - asset visualization descriptor
+node - record asset exchange metadata (inventory nonce, sender, note)
+node - per asset modification metadata
+node - sparse asset
+node - separate entropy from allure (allure computed simply - hash of block height; entropy is block height plus previous entropy signed by miner)
+wallet - popup when new assets received (hide assets until reviewed)
+wallet - filter inventory by asset exchange metadata
+wallet - media url prefix
 
 ----------------------------------------------------------------
 LAUNCH
