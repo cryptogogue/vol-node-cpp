@@ -11,6 +11,7 @@
 #include <volition/web-miner-api/ExtendChainHandler.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 #include <volition/web-miner-api/InventoryHandler.h>
+#include <volition/web-miner-api/InventoryLogHandler.h>
 #include <volition/web-miner-api/KeyAccountDetailsHandler.h>
 #include <volition/web-miner-api/KeyDetailsHandler.h>
 #include <volition/web-miner-api/MinerListHandler.h>
@@ -32,6 +33,7 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
 
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountDetailsHandler >        ( HTTP::GET,        "/accounts/:accountName/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryHandler >             ( HTTP::GET,        "/accounts/:accountName/inventory/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::InventoryLogHandler >          ( HTTP::GET,        "/accounts/:accountName/inventory/log/:nonce/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >        ( HTTP::GET,        "/accounts/:accountName/keys/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionHandler >    ( HTTP::GET_PUT,    "/accounts/:accountName/transactions/:nonce/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >          ( HTTP::GET,        "/assets/:assetIndexOrID/?" );

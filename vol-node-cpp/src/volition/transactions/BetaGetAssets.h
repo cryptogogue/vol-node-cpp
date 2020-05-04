@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
 #include <volition/AccountODBM.h>
+#include <volition/InventoryLogEntry.h>
 #include <volition/Schema.h>
 
 namespace Volition {
@@ -58,10 +59,17 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
+        InventoryLogEntry logEntry;
+        u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+        
         Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
         for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
-            context.mLedger.awardAsset ( *context.mSchemaHandle, account.mName, definitionIt->first, ( size_t )this->mNumAssets );
+            ledger.awardAssets ( *context.mSchemaHandle, accountODBM, inventoryNonce, definitionIt->first, ( size_t )this->mNumAssets, logEntry );
         }
+        
+        ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
+        accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+        
         return true;
     }
 };

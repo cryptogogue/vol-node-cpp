@@ -164,7 +164,7 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     string assetType        = lua_tostring ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
 
-    self.mLedger.awardAsset ( self.mSchema, accountName, assetType, quantity );
+    self.mLedger.awardAssets ( self.mSchema, accountName, assetType, quantity );
 
     return 0;
 }
@@ -185,7 +185,7 @@ int LuaContext::_randomAward ( lua_State* L ) {
     string seed             = lua_tostring ( L, 3 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
-    self.mLedger.awardAssetRandom ( self.mSchema, accountName, setOrDeckName, seed, quantity );
+    self.mLedger.awardAssetsRandom ( self.mSchema, accountName, setOrDeckName, seed, quantity );
     return 0;
 }
 

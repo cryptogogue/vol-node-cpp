@@ -65,7 +65,7 @@ public:
         
         deckIt = deck->cbegin ();
         for ( ; deckIt != deck->cend (); ++deckIt ) {
-            context.mLedger.awardAsset ( *context.mSchemaHandle, account.mName, deckIt->first, deckIt->second );
+            context.mLedger.awardAssets ( *context.mSchemaHandle, account.mName, deckIt->first, deckIt->second );
         }
         return true;
     }

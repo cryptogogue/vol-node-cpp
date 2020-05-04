@@ -8,6 +8,7 @@
 #include <volition/AssetODBM.h>
 #include <volition/Block.h>
 #include <volition/Format.h>
+#include <volition/InventoryLogEntry.h>
 #include <volition/Ledger.h>
 #include <volition/Ledger_Inventory.h>
 #include <volition/LedgerFieldODBM.h>
@@ -21,7 +22,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::awardAsset ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity ) {
+bool Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -42,6 +43,7 @@ bool Ledger_Inventory::awardAsset ( const Schema& schema, AccountODBM& accountOD
         assetODBM.mType.set ( assetType );
         
         accountODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
+        logEntry.insertAddition ( assetODBM.mIndex );
     }
     
     ledger.setValue < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, globalAssetCount + quantity );
@@ -51,7 +53,7 @@ bool Ledger_Inventory::awardAsset ( const Schema& schema, AccountODBM& accountOD
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::awardAsset ( const Schema& schema, string accountName, string assetType, size_t quantity ) {
+bool Ledger_Inventory::awardAssets ( const Schema& schema, string accountName, string assetType, size_t quantity ) {
 
     Ledger& ledger = this->getLedger ();
     
@@ -59,15 +61,17 @@ bool Ledger_Inventory::awardAsset ( const Schema& schema, string accountName, st
     if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
 
-    this->awardAsset ( schema, accountODBM, inventoryNonce, assetType, quantity );
+    InventoryLogEntry logEntry;
+    this->awardAssets ( schema, accountODBM, inventoryNonce, assetType, quantity, logEntry );
    
+    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
     accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
 
     return true;
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::awardAssetRandom ( const Schema& schema, string accountName, string setOrDeckName, string seed, size_t quantity ) {
+bool Ledger_Inventory::awardAssetsRandom ( const Schema& schema, string accountName, string setOrDeckName, string seed, size_t quantity ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -128,12 +132,14 @@ bool Ledger_Inventory::awardAssetRandom ( const Schema& schema, string accountNa
         awards [ awardType ] = awards [ awardType ] + 1;
     }
     
+    InventoryLogEntry logEntry;
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
     
     map < string, size_t >::const_iterator awardIt = awards.cbegin ();
     for ( ; awardIt != awards.cend (); ++awardIt ) {
-        ledger.awardAsset ( schema, accountODBM, inventoryNonce, awardIt->first, awardIt->second );
+        ledger.awardAssets ( schema, accountODBM, inventoryNonce, awardIt->first, awardIt->second, logEntry );
     }
+    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
     accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
     
     return true;
@@ -185,14 +191,14 @@ shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID:
 }
 
 //----------------------------------------------------------------//
-SerializableList < Asset > Ledger_Inventory::getInventory ( const Schema& schema, string accountName, size_t max ) const {
+void Ledger_Inventory::getInventory ( const Schema& schema, string accountName, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max ) const {
 
     const Ledger& ledger = this->getLedger ();
 
     SerializableList < Asset > assets;
 
     AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( accountName ));
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return assets;
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return;
 
     size_t assetCount = accountODBM.mAssetCount.get ();
     
@@ -205,9 +211,16 @@ SerializableList < Asset > Ledger_Inventory::getInventory ( const Schema& schema
         AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
         shared_ptr < Asset > asset = ledger.getAsset ( schema, assetIndex );
         assert ( asset );
-        assets.push_back ( *asset );
+        assetList.push_back ( asset );
     }
-    return assets;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < InventoryLogEntry > Ledger_Inventory::getInventoryLogEntry ( string accountName, u64 inventoryNonce ) const {
+
+    const Ledger& ledger = this->getLedger ();
+    Account::Index accountIndex = ledger.getAccountIndex ( accountName );
+    return ledger.getObjectOrNull < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ));
 }
 
 //----------------------------------------------------------------//
@@ -248,6 +261,13 @@ bool Ledger_Inventory::revokeAsset ( string accountName, AssetID::Index index ) 
     
     // shrink account inventory by one
     accountODBM.mAssetCount.set ( accountAssetCount - 1 );
+    
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+    InventoryLogEntry logEntry;
+    logEntry.insertDeletion ( assetODBM.mIndex );
+    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
+    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+    
     return true;
 }
 
@@ -282,6 +302,12 @@ bool Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index
 }
 
 //----------------------------------------------------------------//
+void Ledger_Inventory::setInventoryLogEntry ( Account::Index accountIndex, u64 inventoryNonce, const InventoryLogEntry& entry ) {
+
+    this->getLedger ().setObject < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ), entry );
+}
+
+//----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::transferAssets ( string senderAccountName, string receiverAccountName, const string* assetIdentifiers, size_t totalAssets ) {
     
     Ledger& ledger = this->getLedger ();
@@ -311,7 +337,11 @@ LedgerResult Ledger_Inventory::transferAssets ( string senderAccountName, string
         if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderAccountName.c_str ());
     }
     
-    u64 inventoryNonce = receiverODBM.mInventoryNonce.get ( 0 );
+    u64 senderInventoryNonce = senderODBM.mInventoryNonce.get ( 0 );
+    InventoryLogEntry senderLogEntry;
+    
+    u64 receiverInventoryNonce = receiverODBM.mInventoryNonce.get ( 0 );
+    InventoryLogEntry receiverLogEntry;
 
     for ( size_t i = 0; i < totalAssets; ++i, --senderAssetCount, ++receiverAssetCount ) {
         
@@ -330,14 +360,22 @@ LedgerResult Ledger_Inventory::transferAssets ( string senderAccountName, string
         
         // transfer asset ownership to the receiver
         assetODBM.mOwner.set ( receiverODBM.mIndex );
-        assetODBM.mInventoryNonce.set ( inventoryNonce );
+        assetODBM.mInventoryNonce.set ( receiverInventoryNonce );
         assetODBM.mPosition.set ( receiverAssetCount );
         receiverODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
+        
+        // add it to the log entries
+        senderLogEntry.insertDeletion ( assetODBM.mIndex );
+        receiverLogEntry.insertAddition ( assetODBM.mIndex );
     }
     
+    ledger.setInventoryLogEntry ( senderODBM.mIndex, senderInventoryNonce, senderLogEntry );
     senderODBM.mAssetCount.set ( senderAssetCount );
+    senderODBM.mInventoryNonce.set ( senderInventoryNonce + 1 );
+    
+    ledger.setInventoryLogEntry ( receiverODBM.mIndex, receiverInventoryNonce, receiverLogEntry );
     receiverODBM.mAssetCount.set ( receiverAssetCount );
-    receiverODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+    receiverODBM.mInventoryNonce.set ( receiverInventoryNonce + 1 );
     
     return true;
 }

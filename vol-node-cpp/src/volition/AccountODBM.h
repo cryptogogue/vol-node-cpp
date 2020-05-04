@@ -47,6 +47,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_inventoryLogEntry ( Account::Index index, u64 inventoryNonce ) {
+        return Format::write ( "account.%d.inventoryLog.%d", index, inventoryNonce );
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_inventoryNonce ( Account::Index index ) {
         return Format::write ( "account.%d.inventoryNonce", index );
     }

@@ -12,6 +12,7 @@
 namespace Volition {
 
 class AccountODBM;
+class InventoryLogEntry;
 class Schema;
 
 //================================================================//
@@ -19,21 +20,19 @@ class Schema;
 //================================================================//
 class Ledger_Inventory :
     virtual public AbstractLedgerComponent {
-private:
-
-    //----------------------------------------------------------------//
-    bool                            awardAsset                  ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity );
-
 public:
 
     //----------------------------------------------------------------//
-    bool                            awardAsset                  ( const Schema& schema, string accountName, string assetType, size_t quantity );
-    bool                            awardAssetRandom            ( const Schema& schema, string accountName, string setOrDeckName, string seed, size_t quantity );
-    shared_ptr < Asset >            getAsset                    ( const Schema& schema, AssetID::Index index ) const;
-    SerializableList < Asset >      getInventory                ( const Schema& schema, string accountName, size_t max = 0 ) const;
-    bool                            revokeAsset                 ( string accountName, AssetID::Index index );
-    bool                            setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field );
-    LedgerResult                    transferAssets              ( string senderAccountName, string receiverAccountName, const string* assetIdentifiers, size_t totalAssets );
+    bool                                awardAssets                 ( const Schema& schema, string accountName, string assetType, size_t quantity );
+    bool                                awardAssets                 ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
+    bool                                awardAssetsRandom           ( const Schema& schema, string accountName, string setOrDeckName, string seed, size_t quantity );
+    shared_ptr < Asset >                getAsset                    ( const Schema& schema, AssetID::Index index ) const;
+    void                                getInventory                ( const Schema& schema, string accountName, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max = 0 ) const;
+    shared_ptr < InventoryLogEntry >    getInventoryLogEntry        ( string accountName, u64 inventoryNonce ) const;
+    bool                                revokeAsset                 ( string accountName, AssetID::Index index );
+    bool                                setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field );
+    void                                setInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce, const InventoryLogEntry& entry );
+    LedgerResult                        transferAssets              ( string senderAccountName, string receiverAccountName, const string* assetIdentifiers, size_t totalAssets );
 };
 
 } // namespace Volition

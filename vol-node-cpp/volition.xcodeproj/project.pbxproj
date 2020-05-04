@@ -345,6 +345,8 @@
 		CDFA23A124604CC700B4CECF /* Ledger_Account.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA239F24604CC700B4CECF /* Ledger_Account.h */; };
 		CDFA23A4246051CD00B4CECF /* Ledger_Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA23A2246051CD00B4CECF /* Ledger_Miner.cpp */; };
 		CDFA23A5246051CD00B4CECF /* Ledger_Miner.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA23A3246051CD00B4CECF /* Ledger_Miner.h */; };
+		CDFA23A7246065AF00B4CECF /* InventoryLogEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */; };
+		CDFA23A92460808A00B4CECF /* InventoryLogHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA23A82460808A00B4CECF /* InventoryLogHandler.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -933,6 +935,8 @@
 		CDFA239F24604CC700B4CECF /* Ledger_Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger_Account.h; path = src/volition/Ledger_Account.h; sourceTree = "<group>"; };
 		CDFA23A2246051CD00B4CECF /* Ledger_Miner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Miner.cpp; path = src/volition/Ledger_Miner.cpp; sourceTree = "<group>"; };
 		CDFA23A3246051CD00B4CECF /* Ledger_Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger_Miner.h; path = src/volition/Ledger_Miner.h; sourceTree = "<group>"; };
+		CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryLogEntry.h; path = src/volition/InventoryLogEntry.h; sourceTree = "<group>"; };
+		CDFA23A82460808A00B4CECF /* InventoryLogHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryLogHandler.h; path = "src/volition/web-miner-api/InventoryLogHandler.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1122,6 +1126,7 @@
 				CDC2B33520CE112F00300A96 /* Chain.cpp */,
 				CDC2B33620CE112F00300A96 /* Chain.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
+				CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */,
 				CDA1573623FA59FE00DFACCF /* KeyAndPolicy.h */,
 				CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */,
 				CDC2B31420CCAD2400300A96 /* Ledger.cpp */,
@@ -1355,6 +1360,7 @@
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
 				CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */,
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
+				CDFA23A82460808A00B4CECF /* InventoryLogHandler.h */,
 				CD4B5F0123FD6274005EB2CC /* KeyAccountDetailsHandler.h */,
 				CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */,
 				CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */,
@@ -1587,6 +1593,7 @@
 				CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CDFA239D24601E0A00B4CECF /* LedgerResult.h in Headers */,
+				CDFA23A92460808A00B4CECF /* InventoryLogHandler.h in Headers */,
 				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
@@ -1598,6 +1605,7 @@
 				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
 				CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */,
+				CDFA23A7246065AF00B4CECF /* InventoryLogEntry.h in Headers */,
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
 				CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */,
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
