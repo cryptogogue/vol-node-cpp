@@ -11,6 +11,7 @@
 
 namespace Volition {
 
+class AccountODBM;
 class Schema;
 
 //================================================================//
@@ -18,6 +19,11 @@ class Schema;
 //================================================================//
 class Ledger_Inventory :
     virtual public AbstractLedgerComponent {
+private:
+
+    //----------------------------------------------------------------//
+    bool                            awardAsset                  ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity );
+
 public:
 
     //----------------------------------------------------------------//

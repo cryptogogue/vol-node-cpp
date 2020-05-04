@@ -21,16 +21,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::awardAsset ( const Schema& schema, string accountName, string assetType, size_t quantity ) {
+bool Ledger_Inventory::awardAsset ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity ) {
 
     Ledger& ledger = this->getLedger ();
 
     if ( quantity == 0 ) return true;
-
     if ( !schema.getDefinitionOrNull ( assetType )) return false;
-
-    AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( accountName ));
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
 
     LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = Ledger::keyFor_globalAssetCount ();
     size_t globalAssetCount = ledger.getValueOrFallback < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
@@ -41,6 +37,7 @@ bool Ledger_Inventory::awardAsset ( const Schema& schema, string accountName, st
         AssetODBM assetODBM ( ledger, globalAssetCount + i );
                 
         assetODBM.mOwner.set ( accountODBM.mIndex );
+        assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mPosition.set ( accountAssetCount + i );
         assetODBM.mType.set ( assetType );
         
@@ -54,6 +51,22 @@ bool Ledger_Inventory::awardAsset ( const Schema& schema, string accountName, st
 }
 
 //----------------------------------------------------------------//
+bool Ledger_Inventory::awardAsset ( const Schema& schema, string accountName, string assetType, size_t quantity ) {
+
+    Ledger& ledger = this->getLedger ();
+    
+    AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( accountName ));
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+
+    this->awardAsset ( schema, accountODBM, inventoryNonce, assetType, quantity );
+   
+    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+
+    return true;
+}
+
+//----------------------------------------------------------------//
 bool Ledger_Inventory::awardAssetRandom ( const Schema& schema, string accountName, string setOrDeckName, string seed, size_t quantity ) {
 
     Ledger& ledger = this->getLedger ();
@@ -62,6 +75,9 @@ bool Ledger_Inventory::awardAssetRandom ( const Schema& schema, string accountNa
 
     const Schema::Deck* setOrDeck = schema.getSetOrDeck ( setOrDeckName );
     if ( !setOrDeck ) return 0;
+
+    AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( accountName ));
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
 
     // TODO: yes, this is inefficient. optimize (and/or cache) later.
     vector < string > expandedSetOrDeck;
@@ -112,10 +128,13 @@ bool Ledger_Inventory::awardAssetRandom ( const Schema& schema, string accountNa
         awards [ awardType ] = awards [ awardType ] + 1;
     }
     
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+    
     map < string, size_t >::const_iterator awardIt = awards.cbegin ();
     for ( ; awardIt != awards.cend (); ++awardIt ) {
-        ledger.awardAsset ( schema, accountName, awardIt->first, awardIt->second );
+        ledger.awardAsset ( schema, accountODBM, inventoryNonce, awardIt->first, awardIt->second );
     }
+    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
     
     return true;
 }
@@ -132,9 +151,10 @@ shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID:
     if ( !assetDefinition ) return NULL;
     
     shared_ptr < Asset > asset = make_shared < Asset >();
-    asset->mType    = assetODBM.mType.get ();
-    asset->mAssetID = assetODBM.mIndex;
-    asset->mOwner   = ledger.getAccountName ( assetODBM.mOwner.get ());
+    asset->mType            = assetODBM.mType.get ();
+    asset->mAssetID         = assetODBM.mIndex;
+    asset->mOwner           = ledger.getAccountName ( assetODBM.mOwner.get ());
+    asset->mInventoryNonce  = assetODBM.mInventoryNonce.get ( 0 );
     
     // copy the fields and apply any overrides
     AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
@@ -223,6 +243,7 @@ bool Ledger_Inventory::revokeAsset ( string accountName, AssetID::Index index ) 
     
     // asset has no owner or position
     assetODBM.mOwner.set ( AssetID::NULL_INDEX );
+    assetODBM.mInventoryNonce.set (( u64 )-1 );
     assetODBM.mPosition.set ( Asset::NULL_POSITION );
     
     // shrink account inventory by one
@@ -289,6 +310,8 @@ LedgerResult Ledger_Inventory::transferAssets ( string senderAccountName, string
         if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
         if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderAccountName.c_str ());
     }
+    
+    u64 inventoryNonce = receiverODBM.mInventoryNonce.get ( 0 );
 
     for ( size_t i = 0; i < totalAssets; ++i, --senderAssetCount, ++receiverAssetCount ) {
         
@@ -307,12 +330,14 @@ LedgerResult Ledger_Inventory::transferAssets ( string senderAccountName, string
         
         // transfer asset ownership to the receiver
         assetODBM.mOwner.set ( receiverODBM.mIndex );
+        assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mPosition.set ( receiverAssetCount );
         receiverODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
     }
     
     senderODBM.mAssetCount.set ( senderAssetCount );
     receiverODBM.mAssetCount.set ( receiverAssetCount );
+    receiverODBM.mInventoryNonce.set ( inventoryNonce + 1 );
     
     return true;
 }

@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_KEYACCOUNTDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_KEYACCOUNTDETAILSHANDLER_H
 
+#include <volition/AccountODBM.h>
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -24,10 +25,12 @@ public:
     //----------------------------------------------------------------//
     static void formatJSON ( const Ledger& ledger, const Account& account, Poco::JSON::Object& jsonOut ) {
     
-        u64 nonce = ledger.getAccountTransactionNonce ( account.mIndex );
-        
+        AccountODBM accountODBM ( ledger, account.mIndex );
+            
         Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( account ).extract < Poco::JSON::Object::Ptr >();
-        accountJSON->set ( "nonce", nonce );
+        accountJSON->set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
+        accountJSON->set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
+        accountJSON->set ( "nonce", accountODBM.mTransactionNonce.get ( 0 ));
         jsonOut.set ( "account", accountJSON );
         
         ToJSONSerializer entitlements;

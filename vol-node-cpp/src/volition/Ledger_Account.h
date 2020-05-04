@@ -47,7 +47,9 @@ public:
     AccountKey                          getAccountKey               ( string accountName, string keyName ) const;
     shared_ptr < AccountKeyLookup >     getAccountKeyLookup         ( string keyID ) const;
     string                              getAccountName              ( Account::Index accountIndex ) const;
+    u64                                 getAccountInventoryNonce    ( Account::Index accountIndex ) const;
     u64                                 getAccountTransactionNonce  ( Account::Index accountIndex ) const;
+    void                                incAccountInventoryNonce    ( Account::Index index, u64 nonce );
     void                                incAccountTransactionNonce  ( Account::Index index, u64 nonce, string note );
     static bool                         isAccountName               ( string accountName );
     static bool                         isChildName                 ( string accountName );

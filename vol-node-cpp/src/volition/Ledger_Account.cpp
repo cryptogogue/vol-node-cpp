@@ -138,10 +138,44 @@ string Ledger_Account::getAccountName ( Account::Index accountIndex ) const {
 }
 
 //----------------------------------------------------------------//
+u64 Ledger_Account::getAccountInventoryNonce ( Account::Index accountIndex ) const {
+
+    const Ledger& ledger = this->getLedger ();
+    return ledger.getValueOrFallback < u64 >( AccountODBM::keyFor_inventoryNonce ( accountIndex ), 0 );
+}
+
+//----------------------------------------------------------------//
 u64 Ledger_Account::getAccountTransactionNonce ( Account::Index accountIndex ) const {
 
     const Ledger& ledger = this->getLedger ();
     return ledger.getValueOrFallback < u64 >( AccountODBM::keyFor_transactionNonce ( accountIndex ), 0 );
+}
+
+//----------------------------------------------------------------//
+void Ledger_Account::incAccountInventoryNonce ( Account::Index index, u64 nonce ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    AccountODBM accountODBM ( ledger, index );
+    if ( !accountODBM.mBody.exists ()) return;
+    if ( accountODBM.mInventoryNonce.get ( 0 ) != nonce ) return;
+    
+    accountODBM.mInventoryNonce.set ( nonce + 1 );
+}
+
+//----------------------------------------------------------------//
+void Ledger_Account::incAccountTransactionNonce ( Account::Index index, u64 nonce, string note ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    AccountODBM accountODBM ( ledger, index );
+    if ( !accountODBM.mBody.exists ()) return;
+    if ( accountODBM.mTransactionNonce.get ( 0 ) != nonce ) return;
+    
+    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( index, nonce );
+    ledger.setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
+
+    accountODBM.mTransactionNonce.set ( nonce + 1 );
 }
 
 //----------------------------------------------------------------//
@@ -181,21 +215,6 @@ bool Ledger_Account::isSuffix ( string suffix ) {
         return false;
     }
     return true;
-}
-
-//----------------------------------------------------------------//
-void Ledger_Account::incAccountTransactionNonce ( Account::Index index, u64 nonce, string note ) {
-
-    Ledger& ledger = this->getLedger ();
-
-    AccountODBM accountODBM ( ledger, index );
-    if ( !accountODBM.mBody.exists ()) return;
-    if ( accountODBM.mTransactionNonce.get ( 0 ) != nonce ) return;
-    
-    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( index, nonce );
-    ledger.setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
-
-    accountODBM.mTransactionNonce.set ( nonce + 1 );
 }
 
 //----------------------------------------------------------------//
