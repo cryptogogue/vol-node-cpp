@@ -77,6 +77,9 @@ void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const
             Miner::SubmissionResponse response = miner.submitBlock ( block );
             assert ( response == Miner::SubmissionResponse::ACCEPTED );
         }
+        
+        string indexFileBackup = Format::write ( "%s.bak", this->mIndexFilePath.c_str ());
+        rename ( this->mIndexFilePath.c_str (), indexFileBackup.c_str ());
     }
     else {
         
