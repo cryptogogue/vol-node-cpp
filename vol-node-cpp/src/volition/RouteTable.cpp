@@ -22,7 +22,15 @@ AbstractRequestHandler* RouteTable::match ( const Poco::Net::HTTPServerRequest& 
         
         handler = this->mFactories [ request.getMethod ()].create ( pattern );
         if ( handler ) {
+            
             handler->setMatch ( match );
+            
+            Poco::URI::QueryParameters queryParams = Poco::URI ( uri ).getQueryParameters ();
+            Poco::URI::QueryParameters::const_iterator queryIt = queryParams.cbegin ();
+            for ( ; queryIt != queryParams.cend (); ++queryIt ) {
+                handler->setQueryParam ( queryIt->first, queryIt->second );
+            }
+            
             return handler.release ();
         }
     }

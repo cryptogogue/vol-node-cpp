@@ -31,28 +31,36 @@ public:
         
             string accountName  = this->getMatchString ( "accountName" );
             u64 nonce           = this->getMatchU64 ( "nonce" );
-        
+            u64 count           = this->optQuery ( "count", 1 );
+            
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         
-            shared_ptr < InventoryLogEntry > logEntry = ledger.getInventoryLogEntry ( accountName, nonce );
-            if ( logEntry ) {
+            Schema schema;
+            ledger.getSchema ( schema );
             
-                Schema schema;
-                ledger.getSchema ( schema );
+            SerializableSet < AssetID::Index > additions;
+            SerializableSet < AssetID::Index > deletions;
+            
+            for ( u64 i = 0; i < count; ++i ) {
                 
-                SerializableList < SerializableSharedPtr < Asset >> assets;
-                logEntry->expandAdditions ( ledger, schema, accountName, assets );
-                jsonOut.set ( "assets", ToJSONSerializer::toJSON ( assets ));
+                shared_ptr < InventoryLogEntry > logEntry = ledger.getInventoryLogEntry ( accountName, nonce + i );
+                assert ( logEntry );
                 
-                SerializableList < string > additions;
-                logEntry->decodeAdditions ( additions );
-                jsonOut.set ( "additions", ToJSONSerializer::toJSON ( additions ));
-                
-                SerializableList < string > deletions;
-                logEntry->decodeDeletions ( deletions );
-                jsonOut.set ( "deletions", ToJSONSerializer::toJSON ( deletions ));
+                logEntry->apply ( additions, deletions );
             }
+            
+            SerializableList < SerializableSharedPtr < Asset >> assets;
+            InventoryLogEntry::expand ( ledger, schema, accountName, additions, assets );
+            jsonOut.set ( "assets", ToJSONSerializer::toJSON ( assets ));
+            
+            SerializableList < string > additionDecoded;
+            InventoryLogEntry::decode ( additions, additionDecoded );
+            jsonOut.set ( "additions", ToJSONSerializer::toJSON ( additionDecoded ));
+            
+            SerializableList < string > deletionsDecoded;
+            InventoryLogEntry::decode ( deletions, deletionsDecoded );
+            jsonOut.set ( "deletions", ToJSONSerializer::toJSON ( deletionsDecoded ));
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

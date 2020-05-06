@@ -38,32 +38,47 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void decodeAdditions ( SerializableList < string >& assetIDs ) const {
+    void apply ( SerializableSet < AssetID::Index >& additions, SerializableSet < AssetID::Index >& deletions ) {
         
-        SerializableSet < AssetID::Index >::const_iterator additionIt = this->mAdditions.cbegin ();
-        for ( ; additionIt != this->mAdditions.cend (); ++additionIt ) {
-            assetIDs.push_back ( AssetID::encode ( *additionIt ));
+        SerializableSet < AssetID::Index >::const_iterator assetIt;
+        
+        InventoryLogEntry::apply ( this->mAdditions, additions, deletions );
+        InventoryLogEntry::apply ( this->mDeletions, deletions, additions );
+    }
+    
+    //----------------------------------------------------------------//
+    static void apply ( SerializableSet < AssetID::Index > assets, SerializableSet < AssetID::Index >& positive, SerializableSet < AssetID::Index >& negative ) {
+                
+        SerializableSet < AssetID::Index >::const_iterator assetIt = assets.cbegin ();
+        for ( ; assetIt != assets.cend (); ++assetIt ) {
+            AssetID::Index assetID = *assetIt;
+            if ( negative.find ( assetID ) != negative.cend ()) {
+                negative.erase ( assetID );
+            }
+            else {
+                positive.insert ( assetID );
+            }
         }
     }
     
     //----------------------------------------------------------------//
-    void decodeDeletions ( SerializableList < string >& assetIDs ) const {
+    static void decode ( const SerializableSet < AssetID::Index >& indexSet, SerializableList < string >& assetIDs ) {
         
-        SerializableSet < AssetID::Index >::const_iterator deletionIt = this->mDeletions.cbegin ();
-        for ( ; deletionIt != this->mDeletions.cend (); ++deletionIt ) {
-            assetIDs.push_back ( AssetID::encode ( *deletionIt ));
+        SerializableSet < AssetID::Index >::const_iterator indexIt = indexSet.cbegin ();
+        for ( ; indexIt != indexSet.cend (); ++indexIt ) {
+            assetIDs.push_back ( AssetID::encode ( *indexIt ));
         }
     }
     
     //----------------------------------------------------------------//
-    void expandAdditions ( const Ledger& ledger, const Schema& schema, string accountName, SerializableList < SerializableSharedPtr < Asset >>& assetList ) const {
+    static void expand ( const Ledger& ledger, const Schema& schema, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedPtr < Asset >>& assetList ) {
         
         Account::Index accountID = ledger.getAccountIndex ( accountName );
         
-        SerializableSet < AssetID::Index >::const_iterator additionIt = this->mAdditions.cbegin ();
-        for ( ; additionIt != this->mAdditions.cend (); ++additionIt ) {
+        SerializableSet < AssetID::Index >::const_iterator indexIt = indexSet.cbegin ();
+        for ( ; indexIt != indexSet.cend (); ++indexIt ) {
         
-            AssetID::Index assetID = *additionIt;
+            AssetID::Index assetID = *indexIt;
             Account::Index ownerID = LedgerFieldODBM < AssetID::Index >( ledger, AssetODBM::keyFor_owner ( assetID )).get ( Account::NULL_INDEX );
         
             if ( ownerID == accountID ) {
