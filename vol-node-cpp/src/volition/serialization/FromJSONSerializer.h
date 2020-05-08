@@ -86,20 +86,25 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractSerializerFrom_serialize ( SerializerPropertyName name, u64& value ) const override {
-        value = this->optValue < u64 >( name, value );
 
-        // TODO:
-//        string strValue = object.optValue < string >( key, "" );
-//        if ( strValue.size () > 0 ) {
-//
-//            assert ( sizeof ( unsigned long long int ) == sizeof ( u64 ));
-//
-//            errno = 0;
-//            u64 value = strtoull ( strValue.c_str (), NULL, 16 );
-//            if ( errno == 0 ) {
-//                result = value;
-//            }
-//        }
+        Poco::Dynamic::Var var = this->get ( name );
+        
+        if ( !var.isEmpty ()) {
+            if ( var.type () == typeid ( string )) {
+            
+                string strValue = var.convert < string >();
+                if ( strValue.size () > 2 ) {
+                    errno = 0;
+                    u64 result = strtoull ( &strValue.c_str ()[ 2 ], NULL, 16 );
+                    if ( errno == 0 ) {
+                        value = result;
+                    }
+                }
+            }
+            else {
+                value = var.convert < u64 >();
+            }
+        }
     }
     
     //----------------------------------------------------------------//
@@ -213,15 +218,7 @@ protected:
     
         assert ( this->mObject || this->mArray );
     
-        Poco::Dynamic::Var value;
-    
-        if ( this->mArray ) {
-            value = this->mArray->get ( ( unsigned int )name.getIndex ());
-        }
-        else {
-            assert ( this->mObject );
-            value = this->mObject->get ( name.getName ());
-        }
+        Poco::Dynamic::Var value = this->get ( name );
         
         if ( !value.isEmpty ()) {
             try {

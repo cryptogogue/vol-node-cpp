@@ -17,7 +17,7 @@ class AbstractSortedDigestSerializerValue {
 protected:
 
     //----------------------------------------------------------------//
-    virtual void    AbstractSortedDigestSerializerValue_digest  ( Poco::DigestOutputStream& stream ) const = 0;
+    virtual void    AbstractSortedDigestSerializerValue_digest  ( std::ostream& stream ) const = 0;
 
 public:
 
@@ -30,7 +30,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void digest ( Poco::DigestOutputStream& stream ) const {
+    void digest ( std::ostream& stream ) const {
         this->AbstractSortedDigestSerializerValue_digest ( stream );
     }
 };
@@ -46,7 +46,7 @@ private:
     TYPE mValue;
 
     //----------------------------------------------------------------//
-    void AbstractSortedDigestSerializerValue_digest ( Poco::DigestOutputStream& stream ) const override {
+    void AbstractSortedDigestSerializerValue_digest ( std::ostream& stream ) const override {
         stream << this->mValue;
     }
 
@@ -86,14 +86,19 @@ private:
     vector < unique_ptr < AbstractSortedDigestSerializerValue >> mValues;
 
     //----------------------------------------------------------------//
-    void AbstractSortedDigestSerializerValue_digest ( Poco::DigestOutputStream& stream ) const override {
+    void AbstractSortedDigestSerializerValue_digest ( std::ostream& stream ) const override {
         
+        stream << "[";
         size_t size = this->mValues.size ();
         for ( size_t i = 0; i < size; ++i ) {
             if ( this->mValues [ i ]) {
+                if ( i > 0 ) {
+                    stream << ",";
+                }
                 this->mValues [ i ]->digest ( stream );
             }
         }
+        stream << "]";
     }
     
     //----------------------------------------------------------------//
@@ -117,12 +122,18 @@ private:
     map < string, unique_ptr < AbstractSortedDigestSerializerValue >> mValues;
 
     //----------------------------------------------------------------//
-    void AbstractSortedDigestSerializerValue_digest ( Poco::DigestOutputStream& stream ) const override {
+    void AbstractSortedDigestSerializerValue_digest ( std::ostream& stream ) const override {
         
+        stream << "{";
         map < string, unique_ptr < AbstractSortedDigestSerializerValue >>::const_iterator valueIt = this->mValues.cbegin ();
         for ( ; valueIt != this->mValues.cend (); ++valueIt ) {
+            if ( valueIt != this->mValues.cbegin ()) {
+                stream << ",";
+            }
+            stream << "\"" << valueIt->first << "\":";
             valueIt->second->digest ( stream );
         }
+        stream << "}";
     }
     
     //----------------------------------------------------------------//
@@ -188,7 +199,7 @@ protected:
     
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const string& value ) override {
-    
+        
         this->setValue ( name, make_unique < SortedDigestSerializerValue < string >>( value ));
     }
     
@@ -240,11 +251,19 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    static void hash ( const AbstractSerializable& serializable, Poco::DigestOutputStream& digestStream ) {
+    static void hash ( const AbstractSerializable& serializable, std::ostream& digestStream ) {
 
         SortedDigestSerializer serializer;
         serializable.serializeTo ( serializer );
         serializer.mContainer->digest ( digestStream );
+    }
+    
+    //----------------------------------------------------------------//
+    static string toJSONString ( const AbstractSerializable& serializable ) {
+
+        stringstream strStream;
+        SortedDigestSerializer::hash ( serializable, strStream );
+        return strStream.str ();
     }
 };
 

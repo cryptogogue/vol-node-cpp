@@ -24,21 +24,14 @@ private:
     
     //----------------------------------------------------------------//
     string AbstractStringifiable_toString () const {
-        return Poco::DigestEngine::digestToHex ( *this );
+        return this->toHex ();
     }
 
 public:
     
+    static constexpr const char* DEFAULT_HASH_ALGORITHM = "SHA256";
+    
     using AbstractStringifiable::operator =;
-    
-    //----------------------------------------------------------------//
-    Digest () {
-    }
-    
-    //----------------------------------------------------------------//
-    Digest ( const Poco::DigestEngine::Digest& digest ) :
-        Poco::DigestEngine::Digest ( digest ) {
-    }
     
     //----------------------------------------------------------------//
     operator bool () const {
@@ -59,6 +52,31 @@ public:
     //----------------------------------------------------------------//
     bool operator != ( const Poco::DigestEngine::Digest& other ) const {
         return !( *this == other );
+    }
+    
+    //----------------------------------------------------------------//
+    Digest () {
+    }
+    
+    //----------------------------------------------------------------//
+    Digest ( const AbstractSerializable& serializable, string hashAlgorithm = DEFAULT_HASH_ALGORITHM ) {
+    
+        Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
+        Poco::DigestOutputStream digestStream ( digestEngine );
+        ToJSONSerializer::toDigest ( serializable, digestStream );
+        digestStream.close ();
+        
+        *this = digestEngine.digest ();
+    }
+    
+    //----------------------------------------------------------------//
+    Digest ( const Poco::DigestEngine::Digest& digest ) :
+        Poco::DigestEngine::Digest ( digest ) {
+    }
+    
+    //----------------------------------------------------------------//
+    string toHex () const {
+        return Poco::DigestEngine::digestToHex ( *this );
     }
 };
 

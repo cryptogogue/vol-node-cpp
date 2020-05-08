@@ -26,22 +26,23 @@ namespace Format {
 //----------------------------------------------------------------//
 time_t fromISO8601 ( string iso8601 ) {
 
-    time_t t = 0;
     if ( iso8601.size ()) {
-        struct tm time;
-        memset ( &time, 0, sizeof ( struct tm ));
-        strptime ( iso8601.c_str (), "%FT%T%Z", &time );
-        t = mktime ( &time ) - timezone;
+    
+        int tzd;
+        Poco::DateTime dt;
+        Poco::DateTimeParser ().parse ( Poco::DateTimeFormat::ISO8601_FORMAT, iso8601, dt, tzd );
+        dt.makeUTC ( tzd );
+    
+        return dt.timestamp ().epochTime ();
     }
-    return t;
+    return 0;
 }
 
 //----------------------------------------------------------------//
-string toISO8601 ( time_t iso8601 ) {
+string toISO8601 ( time_t t ) {
 
-    char timestamp [ 32 ];
-    strftime ( timestamp, sizeof ( timestamp ), "%FT%T%Z", gmtime ( &iso8601 ));
-    return timestamp;
+    string iso8601 = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), Poco::DateTimeFormat::ISO8601_FORMAT );
+    return iso8601;
 }
 
 //----------------------------------------------------------------//

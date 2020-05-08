@@ -25,7 +25,7 @@ public:
     Account::Index          mIndex;
 
     LedgerFieldODBM < string >      mBody;
-    LedgerFieldODBM < size_t >      mAssetCount;
+    LedgerFieldODBM < u64 >         mAssetCount;
     LedgerFieldODBM < u64 >         mInventoryNonce;
     LedgerFieldODBM < string >      mMinerInfo;
     LedgerFieldODBM < u64 >         mTransactionNonce;

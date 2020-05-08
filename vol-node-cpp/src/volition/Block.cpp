@@ -375,10 +375,16 @@ void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer 
     
     serializer.serialize ( "height",        this->mHeight );
     
-    string iso8601 = Format::toISO8601 ( this->mTime );
-    serializer.serialize ( "time", iso8601 );
+    if ( serializer.isDigest ()) {
+        u64 t = ( u64 )this->mTime;
+        serializer.serialize ( "time", t );
+    }
+    else {
+        string iso8601 = Format::toISO8601 ( this->mTime );
+        serializer.serialize ( "time", iso8601 );
+    }
     
-     if ( !this->isGenesis ()) {
+    if ( !this->isGenesis ()) {
         
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );

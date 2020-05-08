@@ -6,13 +6,19 @@ WORKDIR /app
 RUN    apt-get update       \
     && apt-get -y --no-install-recommends install \
         ca-certificates     \
-        gcc                 \
-        g++                 \
+        gcc-7               \
+        g++-7               \
         git                 \
         make                \
-        openssl             \
-                            \
-    && git clone -b v3.14.4 https://gitlab.kitware.com/cmake/cmake.git \
+        openssl
+
+RUN     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7 \
+    &&  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 7 \
+    &&  update-alternatives --auto gcc \
+    &&  update-alternatives --auto g++ \
+    &&  gcc -v
+
+RUN git clone -b v3.14.4 https://gitlab.kitware.com/cmake/cmake.git \
     && cd cmake             \
     && ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release \
     && make -j4             \

@@ -133,7 +133,7 @@ Signature CryptoKey::sign ( const AbstractSerializable& serializable, string has
 
     return this->sign (
         [ & ]( Poco::DigestOutputStream& stream ) {
-            SortedDigestSerializer::hash ( serializable, stream );
+            ToJSONSerializer::toDigest ( serializable, stream );
         },
         hashAlgorithm
     );
@@ -170,7 +170,7 @@ bool CryptoKey::verify ( const Signature& signature, const DigestFunc& digestFun
                 Poco::DigestOutputStream signatureStream ( digestEngine );
                 digestFunc ( signatureStream );
                 signatureStream.close ();
-                    
+                
                 Digest digest = digestEngine.digest ();
                 Digest sig = signature.getSignature ();
             
@@ -195,7 +195,7 @@ bool CryptoKey::verify ( const Signature& signature, const DigestFunc& digestFun
 bool CryptoKey::verify ( const Signature& signature, const AbstractSerializable& serializable ) const {
 
     return this->verify ( signature, [ & ]( Poco::DigestOutputStream& stream ) {
-        SortedDigestSerializer::hash ( serializable, stream );
+        ToJSONSerializer::toDigest ( serializable, stream );
     });
 }
 

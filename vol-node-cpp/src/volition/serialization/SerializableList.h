@@ -21,6 +21,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
         
+        this->clear ();
         if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_INDEX ) return;
         
         size_t size = serializer.getSize ();
@@ -34,17 +35,11 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
         
-        if ( serializer.isDigest ()) {
-            // TODO: sort set elements and hash
-        }
-        else {
-        
-            serializer.affirmArray ();
-        
-            typename list < TYPE >::const_iterator it = this->begin ();
-            for ( size_t i = 0; it != this->end (); ++it, ++i ) {
-                serializer.serialize ( i, *it );
-            }
+        serializer.affirmArray ();
+    
+        typename list < TYPE >::const_iterator it = this->begin ();
+        for ( size_t i = 0; it != this->end (); ++it, ++i ) {
+            serializer.serialize ( i, *it );
         }
     }
 };

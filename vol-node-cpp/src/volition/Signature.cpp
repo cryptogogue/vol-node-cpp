@@ -29,7 +29,7 @@ string Signature::getHashAlgorithm () const {
 
 //----------------------------------------------------------------//
 Signature::Signature () :
-    mHashAlgorithm ( DEFAULT_HASH_ALGORITHM) {
+    mHashAlgorithm ( Digest::DEFAULT_HASH_ALGORITHM) {
 }
 
 //----------------------------------------------------------------//

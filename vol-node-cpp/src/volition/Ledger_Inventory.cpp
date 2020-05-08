@@ -30,7 +30,7 @@ bool Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& accountO
     if ( !schema.getDefinitionOrNull ( assetType )) return false;
 
     LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = Ledger::keyFor_globalAssetCount ();
-    size_t globalAssetCount = ledger.getValueOrFallback < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
+    size_t globalAssetCount = ledger.getValueOrFallback < u64 >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
     size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
     
     for ( size_t i = 0; i < quantity; ++i ) {
@@ -46,7 +46,7 @@ bool Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& accountO
         logEntry.insertAddition ( assetODBM.mIndex );
     }
     
-    ledger.setValue < size_t >( KEY_FOR_GLOBAL_ASSET_COUNT, globalAssetCount + quantity );
+    ledger.setValue < u64 >( KEY_FOR_GLOBAL_ASSET_COUNT, globalAssetCount + quantity );
     accountODBM.mAssetCount.set ( accountAssetCount + quantity );
 
     return true;

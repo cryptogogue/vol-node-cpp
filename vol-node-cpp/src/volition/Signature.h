@@ -29,8 +29,6 @@ protected:
 
 public:
 
-    static constexpr const char* DEFAULT_HASH_ALGORITHM = "SHA256";
-
     //----------------------------------------------------------------//
     operator bool () const {
         return ( this->mSignature.size () > 0 );

@@ -41,6 +41,7 @@ protected:
     set < shared_ptr < Chain >>                     mBranches;
     
     //----------------------------------------------------------------//
+    static void             checkEnvironment        ();
     void                    saveChain               ();
     void                    submitChainRecurse      ( const Chain& chain, size_t blockID );
 

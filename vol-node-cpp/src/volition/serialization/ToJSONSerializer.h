@@ -20,6 +20,7 @@ protected:
     Poco::JSON::Array::Ptr      mArray;
     Poco::JSON::Object::Ptr     mObject;
     ToJSONSerializer*           mParent;
+    bool                        mIsDigest;
     
     SerializerPropertyName      mName;
 
@@ -50,7 +51,7 @@ protected:
 
     //----------------------------------------------------------------//
     bool AbstractSerializerTo_isDigest () const override {
-        return false;
+        return this->mIsDigest;
     }
 
     //----------------------------------------------------------------//
@@ -65,12 +66,15 @@ protected:
 
     //----------------------------------------------------------------//
     void AbstractSerializerTo_serialize ( SerializerPropertyName name, const u64& value ) override {
-        this->set ( name, ( int )value );
     
-    // TODO:
-//        char buffer [ 32 ];
-//        snprintf ( buffer, 32, "%" PRIx64 "", value );
-//        this->set ( name, string ( buffer ).c_str ());
+        if ( value < (( u64 )0xffffffff + 1 )) {
+            this->set ( name, ( u32 )value );
+        }
+        else {
+            char buffer [ 32 ];
+            snprintf ( buffer, 32, "0x%" PRIx64 "", value );
+            this->set ( name, string ( buffer ).c_str ());
+        }
     }
     
     //----------------------------------------------------------------//
@@ -83,6 +87,7 @@ protected:
     
         ToJSONSerializer serializer;
         serializer.mParent = this;
+        serializer.mIsDigest = this->mIsDigest;
         serializer.mName = name;
         value.serializeTo ( serializer );
 
@@ -94,6 +99,7 @@ protected:
     
         ToJSONSerializer serializer;
         serializer.mParent = this;
+        serializer.mIsDigest = this->mIsDigest;
         serializer.mName = name;
         serializeFunc ( serializer );
         
@@ -165,7 +171,26 @@ public:
 
     //----------------------------------------------------------------//
     ToJSONSerializer () :
-        mParent ( NULL ) {
+        mParent ( NULL ),
+        mIsDigest ( false ) {
+    }
+
+    //----------------------------------------------------------------//
+    static void toDigest ( const AbstractSerializable& serializable, std::ostream& outStream ) {
+
+        ToJSONSerializer serializer;
+        serializer.mIsDigest = true;
+        serializable.serializeTo ( serializer );
+        Poco::Dynamic::Var json = serializer;
+        Poco::JSON::Stringifier ().stringify ( json, outStream, 0, -1 );
+    }
+    
+    //----------------------------------------------------------------//
+    static string toDigestString ( const AbstractSerializable& serializable ) {
+
+        stringstream strStream;
+        ToJSONSerializer::toDigest ( serializable, strStream );
+        return strStream.str ();
     }
 
     //----------------------------------------------------------------//
@@ -180,15 +205,16 @@ public:
     static void toJSON ( const AbstractSerializable& serializable, ostream& outStream, unsigned int indent = 4, int step = -1 ) {
 
         Poco::Dynamic::Var json = toJSON ( serializable );
+        Poco::JSON::Stringifier ().stringify ( json, outStream, indent, step );
         
-        if ( json.type () == typeid ( Poco::JSON::Object::Ptr )) {
-            Poco::JSON::Object::Ptr object = json.extract < Poco::JSON::Object::Ptr >();
-            object->stringify ( outStream, indent, step );
-        }
-        else if ( json.type () == typeid ( Poco::JSON::Array::Ptr )) {
-            Poco::JSON::Array::Ptr array = json.extract < Poco::JSON::Array::Ptr >();
-            array->stringify ( outStream, indent, step );
-        }
+//        if ( json.type () == typeid ( Poco::JSON::Object::Ptr )) {
+//            Poco::JSON::Object::Ptr object = json.extract < Poco::JSON::Object::Ptr >();
+//            object->stringify ( outStream, indent, step );
+//        }
+//        else if ( json.type () == typeid ( Poco::JSON::Array::Ptr )) {
+//            Poco::JSON::Array::Ptr array = json.extract < Poco::JSON::Array::Ptr >();
+//            array->stringify ( outStream, indent, step );
+//        }
     }
     
     //----------------------------------------------------------------//

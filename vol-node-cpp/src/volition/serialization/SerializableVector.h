@@ -33,6 +33,8 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
+        this->clear ();
+    
         if ( serializer.getKeyType () == AbstractSerializerFrom::KEY_TYPE_INDEX ) {
         
             size_t size = serializer.getSize ();

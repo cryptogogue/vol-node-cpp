@@ -21,7 +21,7 @@ public:
 
     typedef SerializableSharedPtr < AbstractSquap, SquapFactory > Query;
 
-    typedef SerializableMap < string, size_t >              Deck;
+    typedef SerializableMap < string, u64 >                 Deck;
     typedef SerializableMap < string, Deck >                Decks;
     typedef SerializableMap < string, AssetDefinition >     Definitions;
     typedef SerializableMap < string, SerializableOpaque >  Fonts;

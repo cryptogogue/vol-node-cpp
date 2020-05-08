@@ -42,9 +42,9 @@ public:
     static int          getNIDFromGroupName     ( string groupName );
     static bool         hasCurve                ( int nid );
     static bool         hasCurve                ( string groupName );
-    Signature           sign                    ( const DigestFunc& digestFunc, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM ) const;
-    Signature           sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM ) const;
-    Signature           sign                    ( string message, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM ) const;
+    Signature           sign                    ( const DigestFunc& digestFunc, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    Signature           sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    Signature           sign                    ( string message, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     bool                verify                  ( const Signature& signature, const DigestFunc& digestFunc ) const;
     bool                verify                  ( const Signature& signature, const AbstractSerializable& serializable ) const;
     bool                verify                  ( const Signature& signature, string message ) const;

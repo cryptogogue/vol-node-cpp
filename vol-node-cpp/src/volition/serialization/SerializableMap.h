@@ -33,6 +33,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
         
+        this->clear ();
         if ( serializer.getKeyType () != AbstractSerializerFrom::KEY_TYPE_STRING ) return;
         
         SerializerKeys keys = serializer.getKeys ();
@@ -51,17 +52,11 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
         
-        if ( serializer.isDigest ()) {
-            // TODO: sort set elements and hash
-        }
-        else {
-        
-            serializer.affirmObject ();
-        
-            typename map < KEY_TYPE, VAL_TYPE >::const_iterator it = this->begin ();
-            for ( ; it != this->end (); ++it ) {
-                serializer.serialize ( it->first, it->second );
-            }
+        serializer.affirmObject ();
+    
+        typename map < KEY_TYPE, VAL_TYPE >::const_iterator it = this->begin ();
+        for ( ; it != this->end (); ++it ) {
+            serializer.serialize < VAL_TYPE >(( string )it->first, it->second );
         }
     }
     

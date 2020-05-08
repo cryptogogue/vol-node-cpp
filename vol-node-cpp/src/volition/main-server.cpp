@@ -208,7 +208,7 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    const char* name () {
+    const char* name () const override {
     
         return "volition";
     }

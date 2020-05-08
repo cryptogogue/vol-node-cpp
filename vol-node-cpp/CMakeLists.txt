@@ -46,12 +46,16 @@ target_sources ( volition-lib
         src/volition/FileSys.cpp
         src/volition/Format.cpp
         src/volition/Ledger.cpp
+        src/volition/Ledger_Account.cpp
+        src/volition/Ledger_Inventory.cpp
+        src/volition/Ledger_Miner.cpp
         src/volition/LuaContext.cpp
         src/volition/Miner.cpp
         src/volition/MinerInfo.cpp
         src/volition/Munge.cpp
         src/volition/PathEntitlement.cpp
         src/volition/RouteTable.cpp
+        src/volition/Schema.cpp
         src/volition/Signature.cpp
         src/volition/SimpleChainRecorder.cpp
         src/volition/SquapFactory.cpp
@@ -62,6 +66,7 @@ target_sources ( volition-lib
         src/volition/Transaction.cpp
         src/volition/TransactionMaker.cpp
         src/volition/TransactionQueue.cpp
+        src/volition/TransactionResult.cpp
         src/volition/WebMiner.cpp
         src/volition/simulation/Analysis.cpp
         src/volition/simulation/Cohort.cpp

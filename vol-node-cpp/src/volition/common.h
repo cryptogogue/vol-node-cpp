@@ -22,9 +22,7 @@
 #include <cmath>
 #include <cstring>
 #include <dirent.h>
-#include <filesystem>
 #include <fstream>
-#include <functional>
 #include <inttypes.h>
 #include <iostream>
 #include <limits>
@@ -100,15 +98,15 @@ using namespace Padamose;
 //----------------------------------------------------------------//
 typedef unsigned int            uint;
 
-typedef Poco::UInt8             u8;
-typedef Poco::UInt16            u16;
-typedef Poco::UInt32            u32;
-typedef Poco::UInt64            u64;
+typedef uint8_t                 u8;
+typedef uint16_t                u16;
+typedef uint32_t                u32;
+typedef uint64_t                u64;
 
-typedef Poco::Int8              s8;
-typedef Poco::Int16             s16;
-typedef Poco::Int32             s32;
-typedef Poco::Int64             s64;
+typedef int8_t                  s8;
+typedef int16_t                 s16;
+typedef int32_t                 s32;
+typedef int64_t                 s64;
 
 #define VOL_FILTER_ROOT "volition"
 

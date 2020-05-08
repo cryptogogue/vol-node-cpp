@@ -103,7 +103,7 @@ void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner )
     if ( !chain ) return;
 
     size_t length = chain->countBlocks ();
-    for ( size_t i = 1; i < length; ++i ) {
+    for ( size_t i = 0; i < length; ++i ) {
     
         shared_ptr < Block > block = chain->getBlock ( i );
         assert ( block );

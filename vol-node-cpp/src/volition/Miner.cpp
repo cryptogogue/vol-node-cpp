@@ -3,7 +3,9 @@
 
 #include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
+#include <volition/Digest.h>
 #include <volition/Miner.h>
+#include <volition/Miner.json.h>
 #include <volition/TheContext.h>
 #include <volition/SyncChainTask.h>
 
@@ -18,6 +20,69 @@ bool Miner::checkBestBranch ( string miners ) const {
 
     assert ( this->mBestBranch );
     return this->mBestBranch->checkMiners ( miners );
+}
+
+//----------------------------------------------------------------//
+void Miner::checkEnvironment () {
+
+    assert ( sizeof ( s8 ) == 1 );
+    assert ( sizeof ( s16 ) == 2 );
+    assert ( sizeof ( s32 ) == 4 );
+    assert ( sizeof ( s64 ) == 8 );
+    
+    assert ( sizeof ( u8 ) == 1 );
+    assert ( sizeof ( u16 ) == 2 );
+    assert ( sizeof ( u32 ) == 4 );
+    assert ( sizeof ( u64 ) == 8 );
+    
+    assert ( sizeof ( time_t ) == 8 );
+    assert ( sizeof ( size_t ) == 8 );
+            
+    SerializableSet < string > hashSet;
+    
+    hashSet.insert ( "abc" );
+    assert ( ToJSONSerializer::toDigestString ( hashSet ) == JSON_STR (["abc"]));
+    assert ( Digest ( hashSet ).toHex () == "02f393ea9358560882c1fe797bf99d600aa4643a68276d8e3d714d1c4f19aecc" );
+    
+    hashSet.clear ();
+    hashSet.insert ( "c" );
+    hashSet.insert ( "b" );
+    hashSet.insert ( "a" );
+    assert ( ToJSONSerializer::toDigestString ( hashSet ) == JSON_STR (["a","b","c"]));
+    assert ( Digest ( hashSet ).toHex () == "fa1844c2988ad15ab7b49e0ece09684500fad94df916859fb9a43ff85f5bb477" );
+
+    SerializableMap < string, string > hashMap;
+
+    hashMap [ "x" ] = "abc";
+    assert ( ToJSONSerializer::toDigestString ( hashMap ) == JSON_STR ({"x":"abc"}));
+    assert ( Digest ( hashMap ).toHex () == "270012bdffcdc54c226ac7d3bcc965b48e8c688c39b78313e40c82d96cda2dd4" );
+
+    hashMap.clear ();
+    hashMap [ "z" ] = "c";
+    hashMap [ "y" ] = "b";
+    hashMap [ "x" ] = "a";
+    assert ( ToJSONSerializer::toDigestString ( hashMap ) == JSON_STR ({"x":"a","y":"b","z":"c"}));
+    assert ( Digest ( hashMap ).toHex () == "a37e1584a03d065fcd5320ded38b0e0091e037cbadcdaf10df8f55e0d60c823d" );
+
+    SerializableMap < string, u64 > hashMap64;
+    hashMap64 [ "u32" ] = 0xffffffff;
+    hashMap64 [ "u64" ] = ( u64 )0xffffffff + 1;
+    hashMap64 [ "max" ] = ( u64 )0xffffffffffffffff;
+
+    string hashMap64JSON = ToJSONSerializer::toDigestString ( hashMap64 );
+    assert ( hashMap64JSON == JSON_STR ({"max":"0xffffffffffffffff","u32":4294967295,"u64":"0x100000000"}));
+    assert ( Digest ( hashMap64 ).toHex () == "66c456477effe884fcbededc2422e37dd6d77215f0a3f3702104ab1b0cee484f" );
+
+    hashMap64.clear ();
+    FromJSONSerializer::fromJSONString ( hashMap64, hashMap64JSON );
+    assert ( hashMap64 [ "u32" ] == 0xffffffff );
+    assert ( hashMap64 [ "u64" ] == ( u64 )0xffffffff + 1 );
+    assert ( hashMap64 [ "max" ] == ( u64 )0xffffffffffffffff );
+
+    Block hashBlock;
+    FromJSONSerializer::fromJSONString ( hashBlock, test_block_json );
+    assert ( ToJSONSerializer::toDigestString ( hashBlock ) == JSON_STR ({"height":0,"time":0,"transactions":[]}));
+    assert ( Digest ( hashBlock ).toHex () == "8f7383032c626071fde10fad55814c2107e4ed87f36e8370b36d10ad1f2870bc" );
 }
 
 //----------------------------------------------------------------//
@@ -52,7 +117,7 @@ void Miner::extend ( bool force ) {
         
         // prepare test block
         shared_ptr < Block > prevBlock = chain.getBlock ( i - 2 );
-        Block testBlock ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+        Block testBlock ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
         
         if ( Block::compare ( testBlock, *rivalBlock ) <= 0 ) {
             top = i - 1;
@@ -68,12 +133,12 @@ void Miner::extend ( bool force ) {
     shared_ptr < Block > prevBlock = fork.getBlock ();
     assert ( prevBlock );
     
-    Block block ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+    Block block ( this->mMinerID, now, prevBlock.get (), this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
     this->fillBlock ( fork, block );
     
     if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
     
-        block.sign ( this->mKeyPair, Signature::DEFAULT_HASH_ALGORITHM );
+        block.sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
         bool result = fork.pushBlock ( block );
         assert ( result );
         
@@ -179,6 +244,8 @@ void Miner::loadKey ( string keyfile, string password ) {
 //----------------------------------------------------------------//
 Miner::Miner () :
     mLazy ( false ) {
+    
+    Miner::checkEnvironment ();
 }
 
 //----------------------------------------------------------------//

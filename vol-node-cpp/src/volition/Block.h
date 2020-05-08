@@ -64,7 +64,7 @@ public:
     bool                apply                               ( Ledger& ledger ) const;
     static int          compare                             ( const Block& block0, const Block& block1 );
                         Block                               ();
-                        Block                               ( string minerID, time_t now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+                        Block                               ( string minerID, time_t now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
                         ~Block                              ();
     size_t              countTransactions                   () const;
     string              getHash                             () const;
@@ -79,7 +79,7 @@ public:
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
     void                setAllure                           ( const Digest& allure );
     void                setMinerID                          ( string minerID );
-    const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Signature::DEFAULT_HASH_ALGORITHM );
+    const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
 };
 
 } // namespace Volition
