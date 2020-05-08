@@ -18,13 +18,8 @@ class SimpleChainRecorder :
     public AbstractChainRecorder {
 protected:
 
-    static constexpr const char* BLOCK_FOLDERNAME       = "blocks";
-    static constexpr const char* INDEX_FILENAME         = "index.json";
-
     string                  mBasePath;
-    string                  mBlocksFolderPath;
     string                  mChainFolderPath;
-    string                  mIndexFilePath;
     
     string                  mGenesisHash;
 

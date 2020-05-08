@@ -32,11 +32,6 @@ SimpleChainRecorder::SimpleChainRecorder ( const Miner& miner, string path ) {
     
     this->mChainFolderPath = Format::write ( "%s/%s/", this->mBasePath.c_str (), this->mGenesisHash.c_str ());
     mkdir ( this->mChainFolderPath.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
-    
-    this->mBlocksFolderPath = Format::write ( "%s%s/", this->mChainFolderPath.c_str (), BLOCK_FOLDERNAME );
-    mkdir ( this->mBlocksFolderPath.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
-    
-    this->mIndexFilePath = Format::write ( "%s%s", this->mChainFolderPath.c_str (), INDEX_FILENAME );
 }
 
 //----------------------------------------------------------------//
@@ -54,45 +49,15 @@ void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const
     if ( !chain ) return;
     assert ( chain->countBlocks () == 1 );
     
-    // legacy
-    if ( FileSys::exists ( this->mIndexFilePath )) {
+    for ( size_t i = 1; true; ++i ) {
     
-        SerializableVector < string > hashes;
-        FromJSONSerializer::fromJSONFile ( hashes, this->mIndexFilePath );
+        string blockPath = Format::write ( "%sblock_%d.json", this->mChainFolderPath.c_str (), i );
+        if ( !FileSys::exists ( blockPath )) break;
         
-        size_t length = hashes.size ();
-        for ( size_t i = 0; i < length; ++i ) {
-        
-            string hash = hashes [ i ];
-            
-            if ( i == 0 ) {
-                assert ( hash == this->mGenesisHash );
-                continue;
-            }
-            
-            string blockPath = Format::write ( "%s%s.json", this->mBlocksFolderPath.c_str (), hash.c_str ());
-            
-            Block block;
-            FromJSONSerializer::fromJSONFile ( block, blockPath );
-            Miner::SubmissionResponse response = miner.submitBlock ( block );
-            assert ( response == Miner::SubmissionResponse::ACCEPTED );
-        }
-        
-        string indexFileBackup = Format::write ( "%s.bak", this->mIndexFilePath.c_str ());
-        rename ( this->mIndexFilePath.c_str (), indexFileBackup.c_str ());
-    }
-    else {
-        
-        for ( size_t i = 1; true; ++i ) {
-        
-            string blockPath = Format::write ( "%sblock_%d.json", this->mChainFolderPath.c_str (), i );
-            if ( !FileSys::exists ( blockPath )) break;
-            
-            Block block;
-            FromJSONSerializer::fromJSONFile ( block, blockPath );
-            Miner::SubmissionResponse response = miner.submitBlock ( block );
-            assert ( response == Miner::SubmissionResponse::ACCEPTED );
-        }
+        Block block;
+        FromJSONSerializer::fromJSONFile ( block, blockPath );
+        Miner::SubmissionResponse response = miner.submitBlock ( block );
+        assert ( response == Miner::SubmissionResponse::ACCEPTED );
     }
 }
 
