@@ -93,6 +93,7 @@ DONE: node - batch transactions in solo mode
 DONE: wallet - show asset IDs in upgrades interface
 DONE: wallet - roll crafting interface into inventory view
 DONE: wallet - roll upgrades interface into inventory view
+DONE: wallet - collapse identical cards in inventory view
 
 node - handle unrecognized account - reject transactions
 node - properly check account name changes to exclude illegal characters
@@ -112,8 +113,6 @@ node - sparse asset API (return sparse assets)
 node/schema - replace schema name with version (schema is a composite; one per ledger)
 node/schema - asset definition inheritance (sparse updrages)
 node/schema - customizable asset fields
-
-wallet - collapse identical cards in inventory view
 
 wallet - validate name change requests
 wallet - add way to tag new assets (from inbox; supply default tag)
