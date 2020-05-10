@@ -33,6 +33,7 @@ public:
     bool                                setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field );
     void                                setInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce, const InventoryLogEntry& entry );
     LedgerResult                        transferAssets              ( string senderAccountName, string receiverAccountName, const string* assetIdentifiers, size_t totalAssets );
+    LedgerResult                        upgradeAssets               ( const Schema& schema, string accountName, const map < string, string >& upgrades );
 };
 
 } // namespace Volition

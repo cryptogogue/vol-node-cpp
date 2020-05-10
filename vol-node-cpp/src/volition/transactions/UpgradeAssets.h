@@ -43,46 +43,12 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
 
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::UPGRADE_ASSETS )) return "Permission denied.";
-
-        Ledger& ledger = context.mLedger;
-        const Account& account = context.mAccount;
-        const Schema& schema = *context.mSchemaHandle;
-
-        Account::Index accountIndex = account.mIndex;
-
-        // check the upgrades
-        SerializableMap < string, string >::const_iterator upgradeIt = this->mUpgrades.cbegin ();
-        for ( ; upgradeIt != this->mUpgrades.end (); ++upgradeIt ) {
-            
-            string assetID = upgradeIt->first;
-            string upgradeType = upgradeIt->second;
-            
-            AssetODBM assetODBM ( ledger, AssetID::decode ( assetID ));
-
-            if ( !assetODBM.mOwner.exists ()) return Format::write ( "Asset %s does not exist.", assetID.c_str ());
-            if ( assetODBM.mOwner.get () != accountIndex ) return Format::write ( "Asset %s does not belong to account %s.", assetID.c_str (), account.mName.c_str ());
-            if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return Format::write (  "Cannot upgrade asset %s to %s.",  assetID.c_str (),  upgradeType.c_str ());
-        }
         
-        AccountODBM accountODBM ( ledger, accountIndex );
-        u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
-        
-        InventoryLogEntry logEntry;
-        
-        // perform the upgrades
-        upgradeIt = this->mUpgrades.cbegin ();
-        for ( ; upgradeIt != this->mUpgrades.end (); ++upgradeIt ) {
-            
-            AssetODBM assetODBM ( ledger, AssetID::decode ( upgradeIt->first ) );
-            assetODBM.mType.set ( upgradeIt->second );
-            assetODBM.mInventoryNonce.set ( inventoryNonce );
-            
-            logEntry.insertDeletion ( assetODBM.mIndex );
-            logEntry.insertAddition ( assetODBM.mIndex );
-        }
-        ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
-        accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
-        return true;
+        return context.mLedger.upgradeAssets (
+            *context.mSchemaHandle,
+            context.mAccount.mName,
+            this->mUpgrades
+        );
     }
 };
 

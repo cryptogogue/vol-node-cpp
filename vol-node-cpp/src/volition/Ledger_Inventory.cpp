@@ -380,4 +380,45 @@ LedgerResult Ledger_Inventory::transferAssets ( string senderAccountName, string
     return true;
 }
 
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, string accountName, const map < string, string >& upgrades ) {
+
+    Ledger& ledger = this->getLedger ();
+    
+    AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( accountName ));
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return "No such account.";
+
+    // check the upgrades
+    SerializableMap < string, string >::const_iterator upgradeIt = upgrades.cbegin ();
+    for ( ; upgradeIt != upgrades.end (); ++upgradeIt ) {
+        
+        string assetID = upgradeIt->first;
+        string upgradeType = upgradeIt->second;
+        
+        AssetODBM assetODBM ( ledger, AssetID::decode ( assetID ));
+
+        if ( !assetODBM.mOwner.exists ()) return Format::write ( "Asset %s does not exist.", assetID.c_str ());
+        if ( assetODBM.mOwner.get () != accountODBM.mIndex ) return Format::write ( "Asset %s does not belong to account %s.", assetID.c_str (), accountName.c_str ());
+        if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return Format::write (  "Cannot upgrade asset %s to %s.",  assetID.c_str (),  upgradeType.c_str ());
+    }
+    
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+    InventoryLogEntry logEntry;
+    
+    // perform the upgrades
+    upgradeIt = upgrades.cbegin ();
+    for ( ; upgradeIt != upgrades.end (); ++upgradeIt ) {
+        
+        AssetODBM assetODBM ( ledger, AssetID::decode ( upgradeIt->first ) );
+        assetODBM.mType.set ( upgradeIt->second );
+        assetODBM.mInventoryNonce.set ( inventoryNonce );
+        
+        logEntry.insertDeletion ( assetODBM.mIndex );
+        logEntry.insertAddition ( assetODBM.mIndex );
+    }
+    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
+    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+    return true;
+}
+
 } // namespace Volition
