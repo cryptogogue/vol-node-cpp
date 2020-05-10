@@ -94,6 +94,7 @@ DONE: wallet - show asset IDs in upgrades interface
 DONE: wallet - roll crafting interface into inventory view
 DONE: wallet - roll upgrades interface into inventory view
 DONE: wallet - collapse identical cards in inventory view
+DONE: wallet - add way to tag new assets (from inbox; supply default tag)
 
 node - handle unrecognized account - reject transactions
 node - properly check account name changes to exclude illegal characters
@@ -115,7 +116,6 @@ node/schema - asset definition inheritance (sparse updrages)
 node/schema - customizable asset fields
 
 wallet - validate name change requests
-wallet - add way to tag new assets (from inbox; supply default tag)
 wallet - show transaction weight on transaction
 wallet - show mining node version in network view
 wallet - show schema version
