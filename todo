@@ -88,27 +88,60 @@ BETA
 DONE: crafting - booster packs
 DONE: crafting - data tables (booster pack awards)
 DONE: batch transfer assets to other accounts
+DONE: wallet - popup when new assets received (hide assets until reviewed)
+DONE: node - batch transactions in solo mode
+DONE: wallet - show asset IDs in upgrades interface
+DONE: wallet - roll crafting interface into inventory view
+DONE: wallet - roll upgrades interface into inventory view
 
-node - batch transactions in solo mode
-node - implement way to expire transactions
-node - param lists for crafting
-node - param lists for transfers
-node - provision any asset
 node - handle unrecognized account - reject transactions
-
 node - properly check account name changes to exclude illegal characters
-wallet - validate name change requests
+
+node - version mining node (with git hash)
+node - publish default media url prefix
+
+node - implement way to expire transactions
+node - finalize multi-part transaction implementation
+node - reimplement 'run script' as multi-part transaction
+
+node - record asset exchange metadata (inventory nonce, sender, note)
+node - per asset modification metadata
+node - customize field transaction
+node - sparse asset API (return sparse assets)
 
 node/schema - replace schema name with version (schema is a composite; one per ledger)
-github repo for bug filing
+node/schema - asset definition inheritance (sparse updrages)
+node/schema - customizable asset fields
+
+wallet - collapse identical cards in inventory view
+
+wallet - validate name change requests
+wallet - add way to tag new assets (from inbox; supply default tag)
+wallet - show transaction weight on transaction
+wallet - show mining node version in network view
+wallet - show schema version
+
+wallet - configuration screen (transaction expiration, etc.)
+wallet - add configurable media url prefix
 
 wallet - detect stale keys (account name matches, but wrong/old key)
-wallet - show mining node version in network view
+wallet - customize asset fields - images, text
+wallet - schema explorer
 
+----------------------------------------------------------------
+LAUNCH
+
+schema - default tags?
+schema - reserved asset fields?
+schema - asset visualization descriptor
+
+wallet - display all (historic) transactions of selected account
+wallet - filter inventory by asset exchange metadata
 wallet - deck building - decks are sets of filters and quantities
 wallet - discard all (by set)
-wallet - schema explorer
 wallet - provision local cards
+
+validator app - scan the QR code and return raw card data including the owner
 
 layout tool - better error reporting from card layouts (missing fonts, icons)
 layout tool - line spacing
@@ -117,31 +150,8 @@ layout tool - paragraph styles (leading indent)
 layout tool - justify text
 layout tool - layouts-as-icons (and/or "layered" icons)
 
-rework node control endpoints into "control" transactions
-
-version versioned store (store metadata)
-
-logic for attachments (i.e. equip one asset with another)
-
-display all (historic) transactions of selected account
-customize asset fields - images, text
-
-validator app - scan the QR code and return raw card data including the owner
-
-schema - default tags?
-schema - reserved asset fields?
-schema - asset visualization descriptor
-node - record asset exchange metadata (inventory nonce, sender, note)
-node - per asset modification metadata
-node - sparse asset
 node - separate entropy from allure (allure computed simply - hash of block height; entropy is block height plus previous entropy signed by miner)
-node - finalize multi-part transaction implementation
-wallet - popup when new assets received (hide assets until reviewed)
-wallet - filter inventory by asset exchange metadata
-wallet - media url prefix
-
-----------------------------------------------------------------
-LAUNCH
+node - rework node control endpoints into "control" transactions
 
 VOL:ETH
 VOL:ETH - onboarding

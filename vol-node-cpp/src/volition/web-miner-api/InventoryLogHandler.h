@@ -45,7 +45,7 @@ public:
             for ( u64 i = 0; i < count; ++i ) {
                 
                 shared_ptr < InventoryLogEntry > logEntry = ledger.getInventoryLogEntry ( accountName, nonce + i );
-                assert ( logEntry );
+                if ( !logEntry ) continue;
                 
                 logEntry->apply ( additions, deletions );
             }

@@ -42,24 +42,33 @@ public:
         
         SerializableSet < AssetID::Index >::const_iterator assetIt;
         
-        InventoryLogEntry::apply ( this->mAdditions, additions, deletions );
-        InventoryLogEntry::apply ( this->mDeletions, deletions, additions );
+        InventoryLogEntry::applyToSet ( this->mAdditions, additions );
+        InventoryLogEntry::applyToSet ( this->mDeletions, deletions );
     }
     
     //----------------------------------------------------------------//
-    static void apply ( SerializableSet < AssetID::Index > assets, SerializableSet < AssetID::Index >& positive, SerializableSet < AssetID::Index >& negative ) {
+    static void applyToSet ( SerializableSet < AssetID::Index > assets, SerializableSet < AssetID::Index >& set ) {
                 
         SerializableSet < AssetID::Index >::const_iterator assetIt = assets.cbegin ();
         for ( ; assetIt != assets.cend (); ++assetIt ) {
-            AssetID::Index assetID = *assetIt;
-            if ( negative.find ( assetID ) != negative.cend ()) {
-                negative.erase ( assetID );
-            }
-            else {
-                positive.insert ( assetID );
-            }
+            set.insert ( *assetIt );
         }
     }
+    
+//    //----------------------------------------------------------------//
+//    static void apply ( SerializableSet < AssetID::Index > assets, SerializableSet < AssetID::Index >& positive, SerializableSet < AssetID::Index >& negative ) {
+//
+//        SerializableSet < AssetID::Index >::const_iterator assetIt = assets.cbegin ();
+//        for ( ; assetIt != assets.cend (); ++assetIt ) {
+//            AssetID::Index assetID = *assetIt;
+//            if ( negative.find ( assetID ) != negative.cend ()) {
+//                negative.erase ( assetID );
+//            }
+//            else {
+//                positive.insert ( assetID );
+//            }
+//        }
+//    }
     
     //----------------------------------------------------------------//
     static void decode ( const SerializableSet < AssetID::Index >& indexSet, SerializableList < string >& assetIDs ) {

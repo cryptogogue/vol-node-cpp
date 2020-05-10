@@ -64,13 +64,24 @@ public:
             if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return Format::write (  "Cannot upgrade asset %s to %s.",  assetID.c_str (),  upgradeType.c_str ());
         }
         
+        AccountODBM accountODBM ( ledger, accountIndex );
+        u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+        
+        InventoryLogEntry logEntry;
+        
         // perform the upgrades
         upgradeIt = this->mUpgrades.cbegin ();
         for ( ; upgradeIt != this->mUpgrades.end (); ++upgradeIt ) {
             
             AssetODBM assetODBM ( ledger, AssetID::decode ( upgradeIt->first ) );
             assetODBM.mType.set ( upgradeIt->second );
+            assetODBM.mInventoryNonce.set ( inventoryNonce );
+            
+            logEntry.insertDeletion ( assetODBM.mIndex );
+            logEntry.insertAddition ( assetODBM.mIndex );
         }
+        ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
+        accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
         return true;
     }
 };
