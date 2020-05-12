@@ -116,6 +116,8 @@
 		CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
 		CD5ECADA2464CB26009146FB /* Miner.json.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAD92464CB26009146FB /* Miner.json.h */; };
+		CD5ECAEE246B2938009146FB /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAED246B2938009146FB /* version.h */; };
+		CD5ECAF0246B2945009146FB /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAEF246B2945009146FB /* version.h */; };
 		CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */; };
 		CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */; };
 		CD63A1C422AC6B4100D5C801 /* AssetDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */; };
@@ -719,6 +721,8 @@
 		CD5C632320B524A30038EE98 /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/volition/main-simulator.cpp"; sourceTree = "<group>"; };
 		CD5C632420B524A30038EE98 /* main-server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-server.cpp"; path = "src/volition/main-server.cpp"; sourceTree = "<group>"; };
 		CD5ECAD92464CB26009146FB /* Miner.json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.json.h; path = src/volition/Miner.json.h; sourceTree = "<group>"; };
+		CD5ECAED246B2938009146FB /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = src/volition/version.h; sourceTree = "<group>"; };
+		CD5ECAEF246B2945009146FB /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = src/.config/volition/version.h; sourceTree = "<group>"; };
 		CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVectorOrSingle.h; path = src/volition/serialization/SerializableVectorOrSingle.h; sourceTree = "<group>"; };
 		CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDetailsHandler.h; path = "src/volition/web-miner-api/AssetDetailsHandler.h"; sourceTree = "<group>"; };
 		CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDefinition.h; path = src/volition/AssetDefinition.h; sourceTree = "<group>"; };
@@ -1225,6 +1229,7 @@
 			isa = PBXGroup;
 			children = (
 				CDB8B3CD21ACC33A004EE816 /* api */,
+				CD5ECAE3246B26A1009146FB /* config */,
 				CD4E80E021031D24007DA585 /* crypto */,
 				CD762ACC2328256D005AC85D /* entitlements */,
 				CD4665AA20BFE49000A02D55 /* ledger */,
@@ -1237,8 +1242,17 @@
 				CD6D7CCF21006C9F0005446F /* transaction */,
 				CD4665AF20BFF62600A02D55 /* util */,
 				CD5C62FA20B4F7B10038EE98 /* common.h */,
+				CD5ECAED246B2938009146FB /* version.h */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		CD5ECAE3246B26A1009146FB /* config */ = {
+			isa = PBXGroup;
+			children = (
+				CD5ECAEF246B2945009146FB /* version.h */,
+			);
+			name = config;
 			sourceTree = "<group>";
 		};
 		CD6C9AD121C48725009A3801 /* Products */ = {
@@ -1614,6 +1628,8 @@
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
+				CD5ECAF0246B2945009146FB /* version.h in Headers */,
+				CD5ECAEE246B2938009146FB /* version.h in Headers */,
 				CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
@@ -1816,6 +1832,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD4E818C21059316007DA585 /* Build configuration list for PBXNativeTarget "lib-volition" */;
 			buildPhases = (
+				CD5ECAF1246B2B21009146FB /* ShellScript */,
 				CD4E817621059316007DA585 /* Sources */,
 				CD4E817F21059316007DA585 /* Frameworks */,
 				CD4E818021059316007DA585 /* Headers */,
@@ -2057,6 +2074,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "OSX_BIN=bin\nmkdir -p $OSX_BIN\ncp -a \"${TARGET_BUILD_DIR}/${TARGET_NAME}\" $OSX_BIN";
+		};
+		CD5ECAF1246B2B21009146FB /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./ops/make-version-header.sh\n";
 		};
 		CDC2B34020D0A23B00300A96 /* Copy Binaries */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2536,6 +2570,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					src/.config,
 					src,
 					poco/include,
 					"3rd-party/lua-5.3.5/src",
@@ -2620,6 +2655,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					src/.config,
 					src,
 					poco/include,
 					"3rd-party/lua-5.3.5/src",

@@ -98,17 +98,14 @@ DONE: wallet - add way to tag new assets (from inbox; supply default tag)
 DONE: node - properly check account name changes to exclude illegal characters
 DONE: wallet - validate name change requests
 
-node - handle unrecognized account - reject transactions
-
-node - complete account renaming process
-
 node - version mining node (with git hash)
 node - publish default media url prefix
 
+node - handle unrecognized account - reject transactions
+node - complete account renaming process
 node - implement way to expire transactions
 node - finalize multi-part transaction implementation
 node - reimplement 'run script' as multi-part transaction
-
 node - record asset exchange metadata (inventory nonce, sender, note)
 node - per asset modification metadata
 node - customize field transaction
@@ -118,13 +115,13 @@ node/schema - replace schema name with version (schema is a composite; one per l
 node/schema - asset definition inheritance (sparse updrages)
 node/schema - customizable asset fields
 
+wallet - show mining node version in network view
+wallet - show schema version
+
 wallet - show transaction weight on transaction
 wallet - network configuration screen (transaction expiration, etc.)
 wallet - add configurable media url prefix
 wallet - detect stale keys (account name matches, but wrong/old key)
-
-wallet - show mining node version in network view
-wallet - show schema version
 wallet - customize asset fields - images, text
 wallet - schema explorer
 

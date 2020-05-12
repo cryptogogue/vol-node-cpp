@@ -10,6 +10,7 @@
 #include <volition/TheContext.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/TheWebMiner.h>
+#include <volition/version.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 
 //================================================================//
@@ -292,7 +293,9 @@ int main ( int argc, char** argv ) {
 
     Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
     Lognosis::init ( argc, argv );
-    LOG_F ( INFO, "\nHello from VOLITION main.cpp!\n" );
+    LOG_F ( INFO, "\nHello from VOLITION main.cpp!" );
+    LOG_F ( INFO, "commit: %s", VOLITION_GIT_COMMIT_STR );
+    LOG_F ( INFO, "build: %s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR );
 
     ServerApp app;
     return app.run ( argc, argv );
