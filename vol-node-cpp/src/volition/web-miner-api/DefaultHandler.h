@@ -6,8 +6,10 @@
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
+#include <volition/Format.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/TheWebMiner.h>
+#include <volition/version.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -29,9 +31,11 @@ public:
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         
         jsonOut.set ( "type", "VOL_MINING_NODE" );
-        jsonOut.set ( "minerID", scopedLock.getWebMiner ().getMinerID ().c_str ());
-        jsonOut.set ( "identity", scopedLock.getWebMiner ().getLedger ().getIdentity ());
-        jsonOut.set ( "version", "beta-0.0.1" );
+        jsonOut.set ( "minerID",    scopedLock.getWebMiner ().getMinerID ().c_str ());
+        jsonOut.set ( "genesis",    scopedLock.getWebMiner ().getLedger ().getGenesisHash ());
+        jsonOut.set ( "identity",   scopedLock.getWebMiner ().getLedger ().getIdentity ());
+        jsonOut.set ( "build",      Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
+        jsonOut.set ( "commit",     Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

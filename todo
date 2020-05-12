@@ -97,8 +97,9 @@ DONE: wallet - collapse identical cards in inventory view
 DONE: wallet - add way to tag new assets (from inbox; supply default tag)
 DONE: node - properly check account name changes to exclude illegal characters
 DONE: wallet - validate name change requests
+DONE: node - version mining node (with git hash)
+DONE: wallet - show mining node version in dashboard view
 
-node - version mining node (with git hash)
 node - publish default media url prefix
 
 node - handle unrecognized account - reject transactions
@@ -115,7 +116,6 @@ node/schema - replace schema name with version (schema is a composite; one per l
 node/schema - asset definition inheritance (sparse updrages)
 node/schema - customizable asset fields
 
-wallet - show mining node version in network view
 wallet - show schema version
 
 wallet - show transaction weight on transaction

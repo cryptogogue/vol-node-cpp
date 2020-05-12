@@ -54,6 +54,12 @@ string Ledger::getEntropyString () const {
 }
 
 //----------------------------------------------------------------//
+string Ledger::getGenesisHash () const {
+
+    return this->getValueOrFallback < string >( keyFor_genesisHash (), "" );
+}
+
+//----------------------------------------------------------------//
 string Ledger::getIdentity () const {
 
     return this->getValueOrFallback < string >( keyFor_identity (), "" );
@@ -147,6 +153,9 @@ Ledger::~Ledger () {
 void Ledger::setBlock ( const Block& block ) {
     assert ( block.mHeight == this->getVersion ());
     this->setObject < Block >( keyFor_block (), block );
+    if ( block.mHeight == 0 ) {
+        this->setValue < string >( keyFor_genesisHash (), block.getHash ());
+    }
 }
 
 //----------------------------------------------------------------//

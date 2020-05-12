@@ -85,7 +85,7 @@ bool Block::apply ( Ledger& ledger ) const {
     }
     
     ledger.setBlock ( *this );
-    
+        
     return true;
 }
 

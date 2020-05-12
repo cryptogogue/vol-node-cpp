@@ -138,6 +138,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_genesisHash () {
+        return "genesis";
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_globalAccountCount () {
         return "account.count";
     }
@@ -178,6 +183,7 @@ public:
     u64                                 getBlockSize                    () const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
+    string                              getGenesisHash                  () const;
     string                              getIdentity                     () const;
     void                                getSchema                       ( Schema& schema ) const;
     string                              getSchemaString                 () const;
