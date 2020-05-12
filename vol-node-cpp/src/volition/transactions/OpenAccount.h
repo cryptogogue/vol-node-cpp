@@ -66,11 +66,11 @@ public:
         if ( Ledger::isChildName ( sponsorName )) return "Cannot sponsor from child account.";
         if ( !Ledger::isSuffix ( suffix )) return "Account name suffix error.";
         
-        // the child name will be prepended with the sponsor name following a tilde: "~<sponsorName>.<childSuffix>"
-        // i.e. "~maker.000.000.000"
+        // the child name will be prepended with the sponsor name following a dot: ".<sponsorName>.<childSuffix>"
+        // i.e. ".maker.000.000.000"
         // this prevents it from sponsoring any new accounts until it is renamed.
 
-        string childName = Format::write ( "~%s.%s", sponsorName.c_str (), suffix.c_str ());
+        string childName = Format::write ( ".%s.%s", sponsorName.c_str (), suffix.c_str ());
         assert ( Ledger::isChildName ( childName ));
 
         const Policy* keyBequest = ledger.resolveBequest < KeyEntitlements >( sponsorKeyAndPolicy.mPolicy, sponsorKeyAndPolicy.getBequest (), this->mKeyPolicy.get ());

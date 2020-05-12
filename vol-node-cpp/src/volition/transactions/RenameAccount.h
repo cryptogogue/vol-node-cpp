@@ -84,12 +84,12 @@ public:
         string revealedName      = this->mRevealedName;
 
         // make sure the revealed name is valid
-        if ( Ledger::isChildName ( revealedName )) return "Renamed accounts must not begin with '~'"; // new names must not begin with a '~'
+        if ( Ledger::isChildName ( revealedName )) return "Renamed accounts must not begin with '.'"; // new names must not begin with a '~'
         if ( !Ledger::isAccountName ( revealedName )) return "Proposed account name contains invalid characters."; // make sure it's a valid account name
 
         string lowerRevealedName = Format::tolower ( revealedName );
         LedgerFieldODBM < Account::Index > alias = LedgerFieldODBM < Account::Index > ( ledger, Ledger::keyFor_accountAlias ( lowerRevealedName ));
-              
+        
         // check to see if the alias already exists
         if ( alias.exists ()) {
             if ( alias.get () != account.mIndex ) return "Alias already exists (and belongs to another account.)";

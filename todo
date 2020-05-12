@@ -98,6 +98,7 @@ DONE: wallet - add way to tag new assets (from inbox; supply default tag)
 
 node - handle unrecognized account - reject transactions
 node - properly check account name changes to exclude illegal characters
+node - complete account renaming process
 
 node - version mining node (with git hash)
 node - publish default media url prefix
@@ -116,14 +117,14 @@ node/schema - asset definition inheritance (sparse updrages)
 node/schema - customizable asset fields
 
 wallet - validate name change requests
+
 wallet - show transaction weight on transaction
+wallet - network configuration screen (transaction expiration, etc.)
+wallet - add configurable media url prefix
+wallet - detect stale keys (account name matches, but wrong/old key)
+
 wallet - show mining node version in network view
 wallet - show schema version
-
-wallet - configuration screen (transaction expiration, etc.)
-wallet - add configurable media url prefix
-
-wallet - detect stale keys (account name matches, but wrong/old key)
 wallet - customize asset fields - images, text
 wallet - schema explorer
 

@@ -184,15 +184,24 @@ bool Ledger_Account::isAccountName ( string accountName ) {
     size_t size = accountName.size ();
     for ( size_t i = 0; i < size; ++i ) {
         const char c = accountName [ i ];
-        if ( !isgraph ( c )) return false;
+        if ( !Ledger_Account::isAccountNameChar ( c )) return false;
     }
     return true;
 }
 
 //----------------------------------------------------------------//
+bool Ledger_Account::isAccountNameChar ( char c ) {
+
+    return  (( c >= '0' ) && ( c <= '9' )) ||
+            (( c >= 'a' ) && ( c <= 'z' )) ||
+            (( c >= 'A' ) && ( c <= 'Z' )) ||
+            ( c == '.' ) || ( c == '-' );
+}
+
+//----------------------------------------------------------------//
 bool Ledger_Account::isChildName ( string accountName ) {
 
-    return ( accountName [ 0 ] == '~' );
+    return ( accountName [ 0 ] == '.' );
 }
 
 //----------------------------------------------------------------//

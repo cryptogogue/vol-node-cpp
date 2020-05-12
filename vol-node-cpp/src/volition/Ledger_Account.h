@@ -34,6 +34,11 @@ public:
 //================================================================//
 class Ledger_Account :
     virtual public AbstractLedgerComponent {
+private:
+
+    //----------------------------------------------------------------//
+    static bool                         isAccountNameChar               ( char c );
+
 public:
 
     static constexpr const char* MASTER_KEY_NAME = "master";
