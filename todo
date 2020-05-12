@@ -95,9 +95,11 @@ DONE: wallet - roll crafting interface into inventory view
 DONE: wallet - roll upgrades interface into inventory view
 DONE: wallet - collapse identical cards in inventory view
 DONE: wallet - add way to tag new assets (from inbox; supply default tag)
+DONE: node - properly check account name changes to exclude illegal characters
+DONE: wallet - validate name change requests
 
 node - handle unrecognized account - reject transactions
-node - properly check account name changes to exclude illegal characters
+
 node - complete account renaming process
 
 node - version mining node (with git hash)
@@ -115,8 +117,6 @@ node - sparse asset API (return sparse assets)
 node/schema - replace schema name with version (schema is a composite; one per ledger)
 node/schema - asset definition inheritance (sparse updrages)
 node/schema - customizable asset fields
-
-wallet - validate name change requests
 
 wallet - show transaction weight on transaction
 wallet - network configuration screen (transaction expiration, etc.)
