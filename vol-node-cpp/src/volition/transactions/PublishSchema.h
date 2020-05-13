@@ -54,6 +54,7 @@ public:
         if ( !updateSchema.compose ( this->mSchema )) return "Error publishing schema.";
         
         context.mLedger.setObject < Schema >( Ledger::keyFor_schema (), updateSchema );
+        context.mLedger.setObject < SchemaVersion >( Ledger::keyFor_schemaVersion (), version1 );
         context.mSchemaHandle.reset ( context.mLedger );
 
         return true;

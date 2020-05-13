@@ -16,6 +16,7 @@
 #include <volition/Ledger_Inventory.h>
 #include <volition/Ledger_Miner.h>
 #include <volition/LedgerKey.h>
+#include <volition/SchemaVersion.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -173,6 +174,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_schemaVersion () {
+        return "schemaVersion";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_unfinished () {
         return "unfinished";
     }
@@ -186,6 +192,7 @@ public:
     string                              getGenesisHash                  () const;
     string                              getIdentity                     () const;
     void                                getSchema                       ( Schema& schema ) const;
+    SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaString                 () const;
     string                              getTransactionNote              ( string accountName, u64 nonce ) const;
     UnfinishedBlockList                 getUnfinished                   ();
@@ -195,11 +202,11 @@ public:
                                         Ledger                          ();
                                         Ledger                          ( Ledger& other );
                                         ~Ledger                         ();
+    void                                serializeEntitlements           ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setBlock                        ( const Block& block );
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
     bool                                setIdentity                     ( string identity );
-    void                                serializeEntitlements           ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
     bool                                verify                          ( const Schema& schema, const AssetMethodInvocation& invocation ) const;
 

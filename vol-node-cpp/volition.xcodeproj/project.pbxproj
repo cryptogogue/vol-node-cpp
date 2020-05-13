@@ -118,6 +118,7 @@
 		CD5ECADA2464CB26009146FB /* Miner.json.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAD92464CB26009146FB /* Miner.json.h */; };
 		CD5ECAEE246B2938009146FB /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAED246B2938009146FB /* version.h */; };
 		CD5ECAF0246B2945009146FB /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAEF246B2945009146FB /* version.h */; };
+		CD5ECAF3246C7257009146FB /* SchemaVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAF2246C7257009146FB /* SchemaVersion.h */; };
 		CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */; };
 		CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */; };
 		CD63A1C422AC6B4100D5C801 /* AssetDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */; };
@@ -723,6 +724,7 @@
 		CD5ECAD92464CB26009146FB /* Miner.json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.json.h; path = src/volition/Miner.json.h; sourceTree = "<group>"; };
 		CD5ECAED246B2938009146FB /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = src/volition/version.h; sourceTree = "<group>"; };
 		CD5ECAEF246B2945009146FB /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = src/.config/volition/version.h; sourceTree = "<group>"; };
+		CD5ECAF2246C7257009146FB /* SchemaVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaVersion.h; path = src/volition/SchemaVersion.h; sourceTree = "<group>"; };
 		CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVectorOrSingle.h; path = src/volition/serialization/SerializableVectorOrSingle.h; sourceTree = "<group>"; };
 		CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDetailsHandler.h; path = "src/volition/web-miner-api/AssetDetailsHandler.h"; sourceTree = "<group>"; };
 		CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDefinition.h; path = src/volition/AssetDefinition.h; sourceTree = "<group>"; };
@@ -1154,6 +1156,8 @@
 				CD59F3BC20E8950100705AEB /* Policy.h */,
 				CDFA23862453B25B00B4CECF /* Schema.cpp */,
 				CDBFD558218BA145002AB0C3 /* Schema.h */,
+				CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */,
+				CD5ECAF2246C7257009146FB /* SchemaVersion.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
 				CDC2B34120D1182400300A96 /* TheContext.h */,
 			);
@@ -1269,7 +1273,6 @@
 				CDBFD539218B898D002AB0C3 /* transactions */,
 				CD4665AB20BFF3DD00A02D55 /* AbstractTransactionBody.cpp */,
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransactionBody.h */,
-				CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */,
 				CD0C3E1420C14E8A006E3B1C /* TheTransactionBodyFactory.cpp */,
 				CD0C3E1520C14E8A006E3B1C /* TheTransactionBodyFactory.h */,
 				CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */,
@@ -1715,6 +1718,7 @@
 				CD762AD4232826D7005AC85D /* BooleanEntitlement.h in Headers */,
 				CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */,
 				CD762AD5232826D7005AC85D /* PathEntitlement.h in Headers */,
+				CD5ECAF3246C7257009146FB /* SchemaVersion.h in Headers */,
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,
 				CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */,
 				CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */,

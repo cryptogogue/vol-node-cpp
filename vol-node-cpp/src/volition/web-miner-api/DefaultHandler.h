@@ -30,12 +30,16 @@ public:
         
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         
+        const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+        SchemaVersion schemaVersion = ledger.getSchemaVersion ();
+        
         jsonOut.set ( "type", "VOL_MINING_NODE" );
-        jsonOut.set ( "minerID",    scopedLock.getWebMiner ().getMinerID ().c_str ());
-        jsonOut.set ( "genesis",    scopedLock.getWebMiner ().getLedger ().getGenesisHash ());
-        jsonOut.set ( "identity",   scopedLock.getWebMiner ().getLedger ().getIdentity ());
-        jsonOut.set ( "build",      Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
-        jsonOut.set ( "commit",     Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
+        jsonOut.set ( "minerID",        scopedLock.getWebMiner ().getMinerID ().c_str ());
+        jsonOut.set ( "genesis",        ledger.getGenesisHash ());
+        jsonOut.set ( "identity",       ledger.getIdentity ());
+        jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schemaVersion ));
+        jsonOut.set ( "build",          Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
+        jsonOut.set ( "commit",         Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

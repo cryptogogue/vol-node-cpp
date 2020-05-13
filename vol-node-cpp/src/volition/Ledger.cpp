@@ -81,6 +81,17 @@ string Ledger::getSchemaString () const {
 }
 
 //----------------------------------------------------------------//
+SchemaVersion Ledger::getSchemaVersion () const {
+
+    SchemaVersion schemaVersion;
+    const string schemaVersionString = this->getValueOrFallback < string >( keyFor_schemaVersion (), "" );
+    if ( schemaVersionString.size () > 0 ) {
+        FromJSONSerializer::fromJSONString ( schemaVersion, schemaVersionString );
+    }
+    return schemaVersion;
+}
+
+//----------------------------------------------------------------//
 string Ledger::getTransactionNote ( string accountName, u64 nonce ) const {
 
     Account::Index accountIndex = this->getAccountIndex ( accountName );
@@ -148,37 +159,6 @@ Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
-void Ledger::setBlock ( const Block& block ) {
-    assert ( block.mHeight == this->getVersion ());
-    this->setObject < Block >( keyFor_block (), block );
-    if ( block.mHeight == 0 ) {
-        this->setValue < string >( keyFor_genesisHash (), block.getHash ());
-    }
-}
-
-//----------------------------------------------------------------//
-void Ledger::setEntitlements ( string name, const Entitlements& entitlements ) {
-
-    LedgerKey KEY_FOR_ENTITLEMENTS = keyFor_entitlements ( name );
-    this->setObject < Entitlements >( KEY_FOR_ENTITLEMENTS, entitlements );
-}
-
-//----------------------------------------------------------------//
-void Ledger::setEntropyString ( string entropy ) {
-
-    this->setValue < string >( keyFor_entropy (), entropy );
-}
-
-//----------------------------------------------------------------//
-bool Ledger::setIdentity ( string identity ) {
-
-    LedgerKey KEY_FOR_IDENTITY = keyFor_identity ();
-    if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
-    this->setValue < string >( KEY_FOR_IDENTITY, identity );
-    return true;
-}
-
-//----------------------------------------------------------------//
 void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerTo& serializer ) const {
 
     serializer.context ( "account", [ & ]( AbstractSerializerTo& serializer ) {
@@ -208,6 +188,37 @@ void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerT
             });
         }
     });
+}
+
+//----------------------------------------------------------------//
+void Ledger::setBlock ( const Block& block ) {
+    assert ( block.mHeight == this->getVersion ());
+    this->setObject < Block >( keyFor_block (), block );
+    if ( block.mHeight == 0 ) {
+        this->setValue < string >( keyFor_genesisHash (), block.getHash ());
+    }
+}
+
+//----------------------------------------------------------------//
+void Ledger::setEntitlements ( string name, const Entitlements& entitlements ) {
+
+    LedgerKey KEY_FOR_ENTITLEMENTS = keyFor_entitlements ( name );
+    this->setObject < Entitlements >( KEY_FOR_ENTITLEMENTS, entitlements );
+}
+
+//----------------------------------------------------------------//
+void Ledger::setEntropyString ( string entropy ) {
+
+    this->setValue < string >( keyFor_entropy (), entropy );
+}
+
+//----------------------------------------------------------------//
+bool Ledger::setIdentity ( string identity ) {
+
+    LedgerKey KEY_FOR_IDENTITY = keyFor_identity ();
+    if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
+    this->setValue < string >( KEY_FOR_IDENTITY, identity );
+    return true;
 }
 
 //----------------------------------------------------------------//
