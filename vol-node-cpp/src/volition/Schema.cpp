@@ -32,6 +32,8 @@ bool Schema::compose ( const Schema& other ) {
     Schema::merge ( this->mSets, other.mSets );
     Schema::merge ( this->mUpgrades, other.mUpgrades );
 
+    this->mVersion.compose ( other.mVersion );
+
     return true;
 }
 
@@ -81,6 +83,12 @@ const Schema::Upgrades& Schema::getUpgrades () const {
 }
 
 //----------------------------------------------------------------//
+const SchemaVersion& Schema::getVersion () const {
+
+    return this->mVersion;
+}
+
+//----------------------------------------------------------------//
 bool Schema::hasCollisions ( const Schema& other ) {
     
     if ( Schema::hasKeyCollisions ( this->mDefinitions, other.mDefinitions )) return true;
@@ -109,6 +117,7 @@ void Schema::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& 
     serializer.serialize ( "methods",           this->mMethods );
     serializer.serialize ( "sets",              this->mSets );
     serializer.serialize ( "upgrades",          this->mUpgrades );
+    serializer.serialize ( "version",           this->mVersion );
 }
 
 //----------------------------------------------------------------//
@@ -122,6 +131,7 @@ void Schema::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer
     serializer.serialize ( "methods",           this->mMethods );
     serializer.serialize ( "sets",              this->mSets );
     serializer.serialize ( "upgrades",          this->mUpgrades );
+    serializer.serialize ( "version",           this->mVersion );
 }
 
 } // namespace Volition

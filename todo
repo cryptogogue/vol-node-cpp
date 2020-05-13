@@ -99,6 +99,7 @@ DONE: node - properly check account name changes to exclude illegal characters
 DONE: wallet - validate name change requests
 DONE: node - version mining node (with git hash)
 DONE: wallet - show mining node version in dashboard view
+DONE: node/schema - replace schema name with version (schema is a composite; one per ledger)
 
 node - publish default media url prefix
 
@@ -112,7 +113,6 @@ node - per asset modification metadata
 node - customize field transaction
 node - sparse asset API (return sparse assets)
 
-node/schema - replace schema name with version (schema is a composite; one per ledger)
 node/schema - asset definition inheritance (sparse updrages)
 node/schema - customizable asset fields
 

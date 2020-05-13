@@ -45,6 +45,11 @@ public:
         
         Schema updateSchema = *context.mSchemaHandle.getSchema ();
 
+        const SchemaVersion& version0 = updateSchema.getVersion ();
+        const SchemaVersion& version1 = this->mSchema.getVersion ();
+
+        if ( !(( version0.mRelease.size () || version1.mRelease.size ()))) return "Error publishing schema - missing release name.";
+        if ( !version0.checkNext ( version1 )) return "Error publishing schema - version must increase.";
         if ( updateSchema.hasCollisions ( this->mSchema )) return "Error publishing schema - found collisions.";
         if ( !updateSchema.compose ( this->mSchema )) return "Error publishing schema.";
         

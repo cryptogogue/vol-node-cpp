@@ -31,12 +31,10 @@ public:
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
             
-            string schemaString = ledger.getSchemaString ();
-            
-            Poco::JSON::Parser parser;
-            Poco::JSON::Object::Ptr object = parser.parse ( schemaString ).extract < Poco::JSON::Object::Ptr >();
+            Schema schema;
+            ledger.getSchema ( schema );
 
-            jsonOut.set ( "schema", object );
+            jsonOut.set ( "schema", ToJSONSerializer::toJSON ( schema ));
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

@@ -147,8 +147,6 @@ Ledger::Ledger ( Ledger& other ) :
 Ledger::~Ledger () {
 }
 
-
-
 //----------------------------------------------------------------//
 void Ledger::setBlock ( const Block& block ) {
     assert ( block.mHeight == this->getVersion ());
