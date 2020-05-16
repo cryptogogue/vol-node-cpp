@@ -190,6 +190,7 @@ public:
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
     string                              getGenesisHash                  () const;
+    u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
     void                                getSchema                       ( Schema& schema ) const;
     SchemaVersion                       getSchemaVersion                () const;

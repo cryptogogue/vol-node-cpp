@@ -26,11 +26,12 @@ public:
     static void formatJSON ( const Ledger& ledger, const Account& account, Poco::JSON::Object& jsonOut ) {
     
         AccountODBM accountODBM ( ledger, account.mIndex );
-            
+        
         Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( account ).extract < Poco::JSON::Object::Ptr >();
         accountJSON->set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
         accountJSON->set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
         accountJSON->set ( "nonce", accountODBM.mTransactionNonce.get ( 0 ));
+        accountJSON->set ( "height", ledger.getHeight ());
         jsonOut.set ( "account", accountJSON );
         
         ToJSONSerializer entitlements;

@@ -16,7 +16,10 @@ namespace Volition {
 //----------------------------------------------------------------//
 TransactionResult Transaction::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
 
-    TransactionResult result = this->applyInner ( ledger, schemaHandle );
+    TransactionResult result = this->checkBody ( ledger );
+    if ( result ) {
+        result = this->applyInner ( ledger, schemaHandle );
+    }
     result.setTransactionDetails ( *this );
     return result;
 }
@@ -67,6 +70,17 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         }
     }
     return result;
+}
+
+//----------------------------------------------------------------//
+TransactionResult Transaction::checkBody ( Ledger& ledger ) const {
+
+    if ( this->mBody->mNote.size () > MAX_NOTE_LENGTH ) return Format::write ( "Transaction note exceeds %d-character limit", MAX_NOTE_LENGTH );
+    
+    u64 height = ledger.getHeight ();
+    if ( height > this->mBody->mMaxHeight ) return Format::write ( "Transaction expired at chain height of %d.", this->mBody->mMaxHeight );
+    
+    return true;
 }
 
 //----------------------------------------------------------------//

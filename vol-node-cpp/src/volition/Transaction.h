@@ -22,6 +22,8 @@ class Transaction :
     public AbstractSerializable {
 protected:
 
+    static const size_t MAX_NOTE_LENGTH = 64;
+
     typedef SerializableSharedPtr < AbstractTransactionBody, TransactionBodyFactory > TransactionBodyPtr;
     typedef SerializableSharedPtr < Signature > SignaturePtr;
 
@@ -31,6 +33,7 @@ protected:
     
     //----------------------------------------------------------------//
     TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
+    TransactionResult           checkBody               ( Ledger& ledger ) const;
     
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;

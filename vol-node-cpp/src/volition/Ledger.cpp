@@ -60,6 +60,12 @@ string Ledger::getGenesisHash () const {
 }
 
 //----------------------------------------------------------------//
+u64 Ledger::getHeight () const {
+
+    return ( u64 )this->getVersion ();
+}
+
+//----------------------------------------------------------------//
 string Ledger::getIdentity () const {
 
     return this->getValueOrFallback < string >( keyFor_identity (), "" );
@@ -140,7 +146,7 @@ bool Ledger::invoke ( const Schema& schema, string accountName, const AssetMetho
 //----------------------------------------------------------------//
 bool Ledger::isGenesis () const {
 
-    return ( this->getVersion () == 0 );
+    return ( this->getHeight () == 0 );
 }
 
 //----------------------------------------------------------------//
