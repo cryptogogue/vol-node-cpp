@@ -103,12 +103,11 @@ DONE: node/schema - replace schema name with version (schema is a composite; one
 DONE: wallet - show schema version
 DONE: node - handle unrecognized account - reject transactions
 DONE: node - implement way to expire transactions
+DONE: wallet - show transaction weight on transaction form
 
 node - complete account renaming process
 
-wallet - show transaction weight on transaction form
 wallet - detect stale keys (account name matches, but wrong/old key)
-wallet - add transaction expiration to transaction form; handle expiration
 
 ----------------------------------------------------------------
 LAUNCH

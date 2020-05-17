@@ -149,7 +149,7 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
-            TransactionResult result = transaction->apply ( ledger, schemaHandle );
+            TransactionResult result = transaction->apply ( ledger, block.getTime (), schemaHandle );
             if ( result ) {
                 // transaction succeeded!
                 block.pushTransaction ( transaction );

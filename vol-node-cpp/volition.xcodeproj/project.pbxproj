@@ -182,6 +182,7 @@
 		CDA1574023FAA92300DFACCF /* Munge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA1573E23FAA92300DFACCF /* Munge.cpp */; };
 		CDA1574123FAA92300DFACCF /* Munge.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573F23FAA92300DFACCF /* Munge.h */; };
 		CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA7208223FF6B7400E1401D /* BetaGetDeck.h */; };
+		CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD94332470A8A0003FD2CC /* SerializableTime.h */; };
 		CDB8B3C721AC7DB8004EE816 /* Asset.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Asset.h */; };
 		CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C921AC7EBF004EE816 /* SerializableList.h */; };
 		CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */; };
@@ -193,7 +194,6 @@
 		CDB8B40721ACC874004EE816 /* HTTPRequestHandlerFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */; };
 		CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */; };
 		CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */; };
-		CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B40021ACC874004EE816 /* TransactionHandler.h */; };
 		CDBFD4EE218B78C4002AB0C3 /* lapi.c in Sources */ = {isa = PBXBuildFile; fileRef = CDBFD474218B7860002AB0C3 /* lapi.c */; };
 		CDBFD4EF218B78C4002AB0C3 /* lapi.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBFD475218B7860002AB0C3 /* lapi.h */; };
 		CDBFD4F0218B78C4002AB0C3 /* lauxlib.c in Sources */ = {isa = PBXBuildFile; fileRef = CDBFD476218B7860002AB0C3 /* lauxlib.c */; };
@@ -783,6 +783,7 @@
 		CDA1573E23FAA92300DFACCF /* Munge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Munge.cpp; path = src/volition/Munge.cpp; sourceTree = "<group>"; };
 		CDA1573F23FAA92300DFACCF /* Munge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Munge.h; path = src/volition/Munge.h; sourceTree = "<group>"; };
 		CDA7208223FF6B7400E1401D /* BetaGetDeck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BetaGetDeck.h; path = src/volition/transactions/BetaGetDeck.h; sourceTree = "<group>"; };
+		CDAD94332470A8A0003FD2CC /* SerializableTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableTime.h; path = src/volition/serialization/SerializableTime.h; sourceTree = "<group>"; };
 		CDB8B3C521AC7DB8004EE816 /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asset.h; path = src/volition/Asset.h; sourceTree = "<group>"; };
 		CDB8B3C921AC7EBF004EE816 /* SerializableList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableList.h; path = src/volition/serialization/SerializableList.h; sourceTree = "<group>"; };
 		CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestWebMiner.cpp; path = src/volition/gtest/TestWebMiner.cpp; sourceTree = "<group>"; };
@@ -795,7 +796,6 @@
 		CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPRequestHandlerFactory.h; path = "src/volition/web-miner-api/HTTPRequestHandlerFactory.h"; sourceTree = "<group>"; };
 		CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryHandler.h; path = "src/volition/web-miner-api/InventoryHandler.h"; sourceTree = "<group>"; };
 		CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerListHandler.h; path = "src/volition/web-miner-api/MinerListHandler.h"; sourceTree = "<group>"; };
-		CDB8B40021ACC874004EE816 /* TransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHandler.h; path = "src/volition/web-miner-api/TransactionHandler.h"; sourceTree = "<group>"; };
 		CDBFD470218B77E5002AB0C3 /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDBFD474218B7860002AB0C3 /* lapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lapi.c; path = "3rd-party/lua-5.3.5/src/lapi.c"; sourceTree = "<group>"; };
 		CDBFD475218B7860002AB0C3 /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = "3rd-party/lua-5.3.5/src/lapi.h"; sourceTree = "<group>"; };
@@ -1103,6 +1103,7 @@
 				CD8BAE4821EBEB4100B5040E /* SerializableMap.h */,
 				CD7C747823B052BF00FBE468 /* SerializableOpaque.h */,
 				CD7791FC20F93B1E0058EBAC /* SerializableSet.h */,
+				CDAD94332470A8A0003FD2CC /* SerializableTime.h */,
 				CD7791FD20F93B1E0058EBAC /* SerializableVector.h */,
 				CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */,
 				CD36664D20F73261000E0B43 /* Serialization.h */,
@@ -1388,7 +1389,6 @@
 				CD09ED742207D82500B09249 /* SchemaHandler.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
-				CDB8B40021ACC874004EE816 /* TransactionHandler.h */,
 			);
 			name = handlers;
 			sourceTree = "<group>";
@@ -1627,7 +1627,6 @@
 				CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */,
 				CDFA23A7246065AF00B4CECF /* InventoryLogEntry.h in Headers */,
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
-				CDB8B40A21ACC874004EE816 /* TransactionHandler.h in Headers */,
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
@@ -1717,6 +1716,7 @@
 				CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */,
 				CD762AD4232826D7005AC85D /* BooleanEntitlement.h in Headers */,
 				CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */,
+				CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */,
 				CD762AD5232826D7005AC85D /* PathEntitlement.h in Headers */,
 				CD5ECAF3246C7257009146FB /* SchemaVersion.h in Headers */,
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,

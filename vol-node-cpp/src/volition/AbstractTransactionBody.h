@@ -44,6 +44,7 @@ protected:
 
     SerializableUniquePtr < TransactionMaker >      mMaker;
     u64                                             mMaxHeight; // expiration block
+    SerializableTime                                mRecordBy; // expiration date/time
     string                                          mNote;
 
     //----------------------------------------------------------------//

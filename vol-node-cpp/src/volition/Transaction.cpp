@@ -14,9 +14,9 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
+TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle ) const {
 
-    TransactionResult result = this->checkBody ( ledger );
+    TransactionResult result = this->checkBody ( ledger, time );
     if ( result ) {
         result = this->applyInner ( ledger, schemaHandle );
     }
@@ -73,13 +73,18 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkBody ( Ledger& ledger ) const {
+TransactionResult Transaction::checkBody ( Ledger& ledger, time_t time ) const {
 
     if ( this->mBody->mNote.size () > MAX_NOTE_LENGTH ) return Format::write ( "Transaction note exceeds %d-character limit", MAX_NOTE_LENGTH );
     
-    u64 height = ledger.getHeight ();
-    if ( height > this->mBody->mMaxHeight ) return Format::write ( "Transaction expired at chain height of %d.", this->mBody->mMaxHeight );
+    if ( this->mBody->mMaxHeight > 0 ) {
+        u64 height = ledger.getHeight ();
+        if ( height > this->mBody->mMaxHeight ) return Format::write ( "Transaction expired at chain height of %d.", this->mBody->mMaxHeight );
+    }
     
+    if ( this->mBody->mRecordBy > 0 ) {
+        if ( time > this->mBody->mRecordBy ) return Format::write ( "Transaction expired at %s.", (( string )this->mBody->mRecordBy ).c_str ());
+    }
     return true;
 }
 

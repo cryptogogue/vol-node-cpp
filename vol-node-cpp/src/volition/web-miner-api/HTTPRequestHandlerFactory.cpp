@@ -19,7 +19,6 @@
 #include <volition/web-miner-api/SchemaHandler.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
-#include <volition/web-miner-api/TransactionHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {

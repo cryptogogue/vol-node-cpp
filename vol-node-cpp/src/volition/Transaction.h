@@ -33,7 +33,7 @@ protected:
     
     //----------------------------------------------------------------//
     TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
-    TransactionResult           checkBody               ( Ledger& ledger ) const;
+    TransactionResult           checkBody               ( Ledger& ledger, time_t time ) const;
     
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -42,7 +42,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    TransactionResult           apply                   ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
+    TransactionResult           apply                   ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle ) const;
     bool                        checkMaker              ( string accountName, u64 nonce ) const;
     TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const;
     u64                         getGratuity             () const;

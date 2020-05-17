@@ -65,6 +65,7 @@ void AbstractTransactionBody::AbstractSerializable_serializeFrom ( const Abstrac
     serializer.serialize ( "type",      type );
     serializer.serialize ( "maker",     this->mMaker );
     serializer.serialize ( "maxHeight", this->mMaxHeight );
+    serializer.serialize ( "recordBy",  this->mRecordBy );
     serializer.serialize ( "note",      this->mNote );
     
     assert ( type == this->typeString ());
@@ -76,6 +77,7 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
     serializer.serialize ( "type",      this->typeString ());
     serializer.serialize ( "maker",     this->mMaker );
     serializer.serialize ( "maxHeight", this->mMaxHeight );
+    serializer.serialize ( "recordBy",  this->mRecordBy );
     serializer.serialize ( "note",      this->mNote );
 }
 

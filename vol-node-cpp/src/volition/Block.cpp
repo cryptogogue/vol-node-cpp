@@ -110,7 +110,7 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
             
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
-                TransactionResult result = transaction.apply ( ledger, schemaHandle );
+                TransactionResult result = transaction.apply ( ledger, this->mTime, schemaHandle );
                 assert ( result );
                 gratuity += transaction.getGratuity ();
             }
@@ -352,10 +352,7 @@ bool Block::verify ( const CryptoKey& key ) const {
 void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     
     serializer.serialize ( "height",        this->mHeight );
-    
-    string iso8601;
-    serializer.serialize ( "time", iso8601 );
-    this->mTime = Format::fromISO8601 ( iso8601 );
+    serializer.serialize ( "time",          this->mTime );
     
     if ( !this->isGenesis ()) {
     
@@ -374,15 +371,7 @@ void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
 void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
     
     serializer.serialize ( "height",        this->mHeight );
-    
-    if ( serializer.isDigest ()) {
-        u64 t = ( u64 )this->mTime;
-        serializer.serialize ( "time", t );
-    }
-    else {
-        string iso8601 = Format::toISO8601 ( this->mTime );
-        serializer.serialize ( "time", iso8601 );
-    }
+    serializer.serialize ( "time",          this->mTime );
     
     if ( !this->isGenesis ()) {
         

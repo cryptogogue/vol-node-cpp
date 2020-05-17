@@ -25,12 +25,12 @@ private:
     friend class Chain;
     friend class Ledger;
 
-    string          mMinerID;
-    u64             mHeight;
-    time_t          mTime;
-    Digest          mPrevDigest;
-    Digest          mAllure; // digital signature of the hash of mCycleID
-    Signature       mSignature;
+    string              mMinerID;
+    u64                 mHeight;
+    SerializableTime    mTime;
+    Digest              mPrevDigest;
+    Digest              mAllure; // digital signature of the hash of mCycleID
+    Signature           mSignature;
 
     // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
     SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;

@@ -15,6 +15,7 @@
 #include <volition/serialization/SerializablePtrFactory.h>
 #include <volition/serialization/SerializableSet.h>
 #include <volition/serialization/SerializableSharedPtr.h>
+#include <volition/serialization/SerializableTime.h>
 #include <volition/serialization/SerializableUniquePtr.h>
 #include <volition/serialization/SerializableVector.h>
 #include <volition/serialization/SerializableVectorOrSingle.h>
