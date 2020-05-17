@@ -37,7 +37,7 @@ public:
             ledger.getSchema ( schema );
         
             SerializableList < SerializableSharedPtr < Asset >> inventory;
-            ledger.getInventory ( schema, accountName, inventory, 1024 ); // TODO: fix hardcoded page size
+            ledger.getInventory ( schema, ledger.getAccountIndex ( accountName ), inventory, 1024 ); // TODO: fix hardcoded page size
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         

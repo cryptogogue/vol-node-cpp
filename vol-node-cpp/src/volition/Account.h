@@ -23,7 +23,6 @@ public:
     };
     
     Index                               mIndex;
-    string                              mName;
     u64                                 mBalance;
     Policy                              mPolicy;
     SerializableSharedPtr < Policy >    mBequest;
@@ -39,7 +38,6 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
         serializer.serialize ( "index",             this->mIndex );
-        serializer.serialize ( "name",              this->mName );
         serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
@@ -50,7 +48,6 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
         serializer.serialize ( "index",             this->mIndex );
-        serializer.serialize ( "name",              this->mName );
         serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );

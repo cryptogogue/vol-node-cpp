@@ -59,6 +59,17 @@ public:
     }
     
     //----------------------------------------------------------------//
+    Digest ( string input, string hashAlgorithm = DEFAULT_HASH_ALGORITHM ) {
+    
+        Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
+        Poco::DigestOutputStream digestStream ( digestEngine );
+        digestStream << input;
+        digestStream.close ();
+        
+        *this = digestEngine.digest ();
+    }
+    
+    //----------------------------------------------------------------//
     Digest ( const AbstractSerializable& serializable, string hashAlgorithm = DEFAULT_HASH_ALGORITHM ) {
     
         Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );

@@ -59,7 +59,7 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return "Permission denied.";
         
-        string sponsorName = account.mName;
+        string sponsorName = ledger.getAccountName ( account.mIndex );
         string suffix = this->mSuffix;
         const KeyAndPolicy& sponsorKeyAndPolicy = context.mKeyAndPolicy;
         

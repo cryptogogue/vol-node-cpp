@@ -35,7 +35,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
     TransactionMaker* maker = this->mBody->mMaker.get ();
     if ( maker ) {
         
-        account = ledger.getAccount ( maker->getAccountName ());
+        account = ledger.getAccount ( ledger.getAccountIndex ( maker->getAccountName ()));
         if ( !account ) return "Transaction maker account not found.";
         
         keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());

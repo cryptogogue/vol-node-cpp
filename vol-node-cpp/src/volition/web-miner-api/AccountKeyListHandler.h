@@ -31,7 +31,7 @@ public:
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         const Chain& chain = *scopedLock.getWebMiner ().getBestBranch ();
 
-        shared_ptr < Account > account = chain.getAccount ( accountName );
+        shared_ptr < Account > account = chain.getAccount ( chain.getAccountIndex ( accountName ));
         if ( account ) {
 
             SerializableMap < string, KeyAndPolicy > keys;

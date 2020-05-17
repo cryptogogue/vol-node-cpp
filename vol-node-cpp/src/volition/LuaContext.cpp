@@ -164,7 +164,7 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     string assetType        = lua_tostring ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
 
-    self.mLedger.awardAssets ( self.mSchema, accountName, assetType, quantity );
+    self.mLedger.awardAssets ( self.mSchema, self.mLedger.getAccountIndex ( accountName ), assetType, quantity );
 
     return 0;
 }
@@ -185,7 +185,7 @@ int LuaContext::_randomAward ( lua_State* L ) {
     string seed             = lua_tostring ( L, 3 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
-    self.mLedger.awardAssetsRandom ( self.mSchema, accountName, setOrDeckName, seed, quantity );
+    self.mLedger.awardAssetsRandom ( self.mSchema, self.mLedger.getAccountIndex ( accountName ), setOrDeckName, seed, quantity );
     return 0;
 }
 
@@ -197,7 +197,7 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     string accountName      = lua_tostring ( L, 1 );
     string assetID          = lua_tostring ( L, 2 );
 
-    ledger.revokeAsset ( accountName, AssetID::decode ( assetID ));
+    ledger.revokeAsset ( self.mLedger.getAccountIndex ( accountName ), AssetID::decode ( assetID ));
     return 0;
 }
 

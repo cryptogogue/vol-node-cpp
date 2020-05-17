@@ -21,14 +21,9 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-shared_ptr < MinerInfo > Ledger_Miner::getMinerInfo ( string accountName ) const {
+shared_ptr < MinerInfo > Ledger_Miner::getMinerInfo ( Account::Index accountIndex ) const {
 
-    const Ledger& ledger = this->getLedger ();
-
-    Account::Index accountIndex = ledger.getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return NULL;
-
-    return ledger.getObjectOrNull < MinerInfo >( AccountODBM::keyFor_minerInfo ( accountIndex ));
+    return this->getLedger ().getObjectOrNull < MinerInfo >( AccountODBM::keyFor_minerInfo ( accountIndex ));
 }
 
 //----------------------------------------------------------------//
@@ -46,7 +41,7 @@ map < string, MinerInfo > Ledger_Miner::getMiners () const {
     
         const string& minerID = *minerIt;
         
-        shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( minerID );
+        shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( minerID ));
         assert ( minerInfo );
         minerInfoMap [ minerID ] = *minerInfo;
     }
@@ -62,15 +57,14 @@ shared_ptr < Ledger::MinerURLMap > Ledger_Miner::getMinerURLs () const {
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Miner::registerMiner ( string accountName, string keyName, string url ) {
+bool Ledger_Miner::registerMiner ( Account::Index accountIndex, string keyName, string url ) {
 
     Ledger& ledger = this->getLedger ();
 
-    AccountKey accountKey = ledger.getAccountKey ( accountName, keyName );
+    AccountKey accountKey = ledger.getAccountKey ( accountIndex, keyName );
     if ( accountKey ) {
 
         shared_ptr < Account > account = accountKey.mAccount;
-        Account::Index accountIndex = account->mIndex;
 
         ledger.setObject < MinerInfo >(
             AccountODBM::keyFor_minerInfo ( accountIndex ),
@@ -78,6 +72,7 @@ bool Ledger_Miner::registerMiner ( string accountName, string keyName, string ur
         );
         
         // TODO: find an efficient way to do all this
+        string accountName = ledger.getAccountName ( accountIndex );
         
         LedgerKey KEY_FOR_MINERS = Ledger::keyFor_miners ();
         shared_ptr < SerializableSet < string >> miners = ledger.getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );

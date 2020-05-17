@@ -23,17 +23,17 @@ class Ledger_Inventory :
 public:
 
     //----------------------------------------------------------------//
-    bool                                awardAssets                 ( const Schema& schema, string accountName, string assetType, size_t quantity );
+    bool                                awardAssets                 ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity );
     bool                                awardAssets                 ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
-    bool                                awardAssetsRandom           ( const Schema& schema, string accountName, string setOrDeckName, string seed, size_t quantity );
+    bool                                awardAssetsRandom           ( const Schema& schema, Account::Index accountIndex, string setOrDeckName, string seed, size_t quantity );
     shared_ptr < Asset >                getAsset                    ( const Schema& schema, AssetID::Index index ) const;
-    void                                getInventory                ( const Schema& schema, string accountName, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max = 0 ) const;
-    shared_ptr < InventoryLogEntry >    getInventoryLogEntry        ( string accountName, u64 inventoryNonce ) const;
-    bool                                revokeAsset                 ( string accountName, AssetID::Index index );
+    void                                getInventory                ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max = 0 ) const;
+    shared_ptr < InventoryLogEntry >    getInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce ) const;
+    bool                                revokeAsset                 ( Account::Index accountIndex, AssetID::Index index );
     bool                                setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field );
     void                                setInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce, const InventoryLogEntry& entry );
-    LedgerResult                        transferAssets              ( string senderAccountName, string receiverAccountName, const string* assetIdentifiers, size_t totalAssets );
-    LedgerResult                        upgradeAssets               ( const Schema& schema, string accountName, const map < string, string >& upgrades );
+    LedgerResult                        transferAssets              ( Account::Index senderAccountIndex, Account::Index receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets );
+    LedgerResult                        upgradeAssets               ( const Schema& schema, Account::Index accountIndex, const map < string, string >& upgrades );
 };
 
 } // namespace Volition

@@ -49,7 +49,7 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return "Permission denied.";
         
-        shared_ptr < Account > recipient = ledger.getAccount ( this->mAccountName );
+        shared_ptr < Account > recipient = ledger.getAccount ( ledger.getAccountIndex ( this->mAccountName ));
         if ( !recipient ) return "Could not find recipient account.";
         if ( account.mIndex == recipient->mIndex ) return "Cannot send VOL to self.";
         

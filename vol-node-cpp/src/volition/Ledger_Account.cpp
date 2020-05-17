@@ -21,14 +21,14 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger_Account::affirmKey ( string accountName, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy ) {
+bool Ledger_Account::affirmKey ( Account::Index accountIndex, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy ) {
 
     Ledger& ledger = this->getLedger ();
 
     string keyID = key.getKeyID ();
     if ( keyID.size ()) return false;
 
-    shared_ptr < Account > account = ledger.getAccount ( accountName );
+    shared_ptr < Account > account = ledger.getAccount ( accountIndex );
     if ( account ) {
 
         const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = Ledger::keyFor_accountKeyLookup ( keyID );
@@ -63,11 +63,11 @@ bool Ledger_Account::affirmKey ( string accountName, string makerKeyName, string
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Account::deleteKey ( string accountName, string keyName ) {
+bool Ledger_Account::deleteKey ( Account::Index accountIndex, string keyName ) {
 
     Ledger& ledger = this->getLedger ();
 
-    AccountKey accountKey = ledger.getAccountKey ( accountName, keyName );
+    AccountKey accountKey = ledger.getAccountKey ( accountIndex, keyName );
     if ( accountKey ) {
         Account updatedAccount = *accountKey.mAccount;
         updatedAccount.mKeys.erase ( keyName );
@@ -85,16 +85,6 @@ shared_ptr < Account > Ledger_Account::getAccount ( Account::Index index ) const
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Account > Ledger_Account::getAccount ( string accountName ) const {
-
-    const Ledger& ledger = this->getLedger ();
-
-    Account::Index accountIndex = ledger.getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return NULL;
-    return ledger.getAccount ( accountIndex );
-}
-
-//----------------------------------------------------------------//
 Account::Index Ledger_Account::getAccountIndex ( string accountName ) const {
 
     const Ledger& ledger = this->getLedger ();
@@ -106,14 +96,14 @@ Account::Index Ledger_Account::getAccountIndex ( string accountName ) const {
 }
 
 //----------------------------------------------------------------//
-AccountKey Ledger_Account::getAccountKey ( string accountName, string keyName ) const {
+AccountKey Ledger_Account::getAccountKey ( Account::Index accountIndex, string keyName ) const {
 
     const Ledger& ledger = this->getLedger ();
 
     AccountKey accountKey;
     accountKey.mKeyAndPolicy = NULL;
 
-    accountKey.mAccount = ledger.getAccount ( accountName );
+    accountKey.mAccount = ledger.getAccount ( accountIndex );
     if ( accountKey.mAccount ) {
         map < string, KeyAndPolicy >::const_iterator keyAndPolicyIt = accountKey.mAccount->mKeys.find ( keyName );
         if ( keyAndPolicyIt != accountKey.mAccount->mKeys.cend ()) {
@@ -152,11 +142,11 @@ u64 Ledger_Account::getAccountTransactionNonce ( Account::Index accountIndex ) c
 }
 
 //----------------------------------------------------------------//
-void Ledger_Account::incAccountInventoryNonce ( Account::Index index, u64 nonce ) {
+void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex, u64 nonce ) {
 
     Ledger& ledger = this->getLedger ();
 
-    AccountODBM accountODBM ( ledger, index );
+    AccountODBM accountODBM ( ledger, accountIndex );
     if ( !accountODBM.mBody.exists ()) return;
     if ( accountODBM.mInventoryNonce.get ( 0 ) != nonce ) return;
     
@@ -164,15 +154,15 @@ void Ledger_Account::incAccountInventoryNonce ( Account::Index index, u64 nonce 
 }
 
 //----------------------------------------------------------------//
-void Ledger_Account::incAccountTransactionNonce ( Account::Index index, u64 nonce, string note ) {
+void Ledger_Account::incAccountTransactionNonce ( Account::Index accountIndex, u64 nonce, string note ) {
 
     Ledger& ledger = this->getLedger ();
 
-    AccountODBM accountODBM ( ledger, index );
+    AccountODBM accountODBM ( ledger, accountIndex );
     if ( !accountODBM.mBody.exists ()) return;
     if ( accountODBM.mTransactionNonce.get ( 0 ) != nonce ) return;
     
-    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( index, nonce );
+    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( accountIndex, nonce );
     ledger.setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
 
     accountODBM.mTransactionNonce.set ( nonce + 1 );
@@ -245,7 +235,7 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
     Account account;
     account.mPolicy     = accountPolicy;
     account.mIndex      = accountIndex;
-    account.mName       = accountName;
+//    account.mName       = accountName;
     account.mBalance    = balance;
     account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
     
@@ -260,6 +250,70 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
     ledger.setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
     ledger.setValue < string >( AccountODBM::keyFor_name ( accountIndex ), accountName );
 
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Account::renameAccount ( Account::Index accountIndex, string revealedName ) {
+
+    Ledger& ledger = this->getLedger ();
+    
+    LedgerFieldODBM < string > accountNameField = LedgerFieldODBM < string > ( ledger, AccountODBM::keyFor_name ( accountIndex ));
+    if ( !accountNameField.exists ()) return "Account not found.";
+    string accountName = accountNameField.get ();
+
+    // make sure the revealed name is valid
+    if ( Ledger::isChildName ( revealedName )) return "Renamed accounts must not begin with '.'"; // new names must not begin with a '~'
+    if ( !Ledger::isAccountName ( revealedName )) return "Proposed account name contains invalid characters."; // make sure it's a valid account name
+
+    string lowerRevealedName = Format::tolower ( revealedName );
+    
+    // check to see if the alias already exists
+    LedgerFieldODBM < Account::Index > alias = LedgerFieldODBM < Account::Index > ( ledger, Ledger::keyFor_accountAlias ( lowerRevealedName ));
+    if ( alias.exists ()) {
+    
+        // error if alias isn't owned by this account
+        if ( alias.get () != accountIndex ) return "Alias exists and belongs to another account.";
+    }
+    else {
+    
+        // creating a new alias, so make sure name hasn't been reserved
+        string nameHash = Digest ( lowerRevealedName ).toHex ();
+        LedgerFieldODBM < string > reservedNameField = LedgerFieldODBM < string > ( ledger, keyFor_reservedName ( nameHash ));
+        
+        if ( reservedNameField.exists ()) {
+        
+            string lowerAccountName = Format::tolower ( accountName );
+            string nameSecret = Digest ( Format::write ( "%s:%s", lowerAccountName.c_str (), lowerRevealedName.c_str ())).toHex ();
+            
+            if ( reservedNameField.get () != nameSecret ) return Format::write ( "Account name \"%s\" has already been claimed.", revealedName.c_str ());
+        }
+        
+        // claim the alias
+        alias.set ( accountIndex );
+    }
+
+    // update the account name
+//    Account accountUpdated = *account;
+//    accountUpdated.mName = revealedName;
+//    ledger.setObject < Account >( AccountODBM::keyFor_body ( account->mIndex ), accountUpdated );
+//    ledger.setValue < string >( AccountODBM::keyFor_name ( account->mIndex ), revealedName );
+    
+    accountNameField.set ( revealedName );
+    
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Account::reserveAccountname ( string nameHash, string nameSecret ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    LedgerFieldODBM < string > reservedNameField = LedgerFieldODBM < string > ( ledger, keyFor_reservedName ( nameHash ));
+    if ( reservedNameField.exists ()) return Format::write ( "Account name has already been reserved." );
+    
+    reservedNameField.set ( nameSecret );
+    
     return true;
 }
 

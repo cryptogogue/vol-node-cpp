@@ -25,10 +25,10 @@ public:
     typedef SerializableMap < string, string > MinerURLMap;
 
     //----------------------------------------------------------------//
-    shared_ptr < MinerInfo >            getMinerInfo                    ( string accountName ) const;
+    shared_ptr < MinerInfo >            getMinerInfo                    ( Account::Index accountIndex ) const;
     map < string, MinerInfo >           getMiners                       () const;
     shared_ptr < MinerURLMap >          getMinerURLs                    () const;
-    bool                                registerMiner                   ( string accountName, string keyName, string url );
+    bool                                registerMiner                   ( Account::Index accountIndex, string keyName, string url );
 };
 
 } // namespace Volition

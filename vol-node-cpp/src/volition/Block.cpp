@@ -97,7 +97,7 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
 
     SchemaHandle schemaHandle ( ledger );
 
-    shared_ptr < const Account > miner = ledger.getAccount ( this->mMinerID );
+    shared_ptr < const Account > miner = ledger.getAccount ( ledger.getAccountIndex ( this->mMinerID ));
     assert ( miner || ledger.isGenesis ());
 
     size_t gratuity = 0;
@@ -314,7 +314,7 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 //----------------------------------------------------------------//
 bool Block::verify ( const Ledger& ledger ) const {
 
-    shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( this->mMinerID );
+    shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( this->mMinerID ));
 
     if ( minerInfo ) {
         return this->verify ( minerInfo->getPublicKey ());

@@ -13,6 +13,7 @@
 #include <volition/transactions/PublishSchema.h>
 #include <volition/transactions/RegisterMiner.h>
 #include <volition/transactions/RenameAccount.h>
+#include <volition/transactions/ReserveAccountName.h>
 #include <volition/transactions/RestrictAccount.h>
 #include <volition/transactions/RestrictKey.h>
 #include <volition/transactions/RunScript.h>

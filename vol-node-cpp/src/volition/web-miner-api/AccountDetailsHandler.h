@@ -27,11 +27,19 @@ public:
     
         AccountODBM accountODBM ( ledger, account.mIndex );
         
+        // account's "primary" name
+        string accountName = ledger.getAccountName ( account.mIndex );
+        
+        // get the account JSON
         Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( account ).extract < Poco::JSON::Object::Ptr >();
+        
+        // decorate with virtual fields
+        accountJSON->set ( "name", accountName );
         accountJSON->set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
         accountJSON->set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
         accountJSON->set ( "nonce", accountODBM.mTransactionNonce.get ( 0 ));
         accountJSON->set ( "height", ledger.getHeight ());
+        
         jsonOut.set ( "account", accountJSON );
         
         ToJSONSerializer entitlements;
@@ -49,7 +57,7 @@ public:
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
 
-        shared_ptr < Account > account = ledger.getAccount ( accountName );
+        shared_ptr < Account > account = ledger.getAccount ( ledger.getAccountIndex ( accountName ));
         if ( account ) {
             AccountDetailsHandler::formatJSON ( ledger, *account, jsonOut );
             return Poco::Net::HTTPResponse::HTTP_OK;

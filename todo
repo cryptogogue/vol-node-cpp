@@ -104,8 +104,7 @@ DONE: wallet - show schema version
 DONE: node - handle unrecognized account - reject transactions
 DONE: node - implement way to expire transactions
 DONE: wallet - show transaction weight on transaction form
-
-node - complete account renaming process
+DONE: node - complete account renaming process
 
 wallet - detect stale keys (account name matches, but wrong/old key)
 

@@ -29,7 +29,7 @@ private:
     u64                 mHeight;
     SerializableTime    mTime;
     Digest              mPrevDigest;
-    Digest              mAllure; // digital signature of the hash of mCycleID
+    Digest              mAllure; // digital signature of the hash of block height
     Signature           mSignature;
 
     // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)

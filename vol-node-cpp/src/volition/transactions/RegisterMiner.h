@@ -43,7 +43,7 @@ public:
     
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
     
-        return context.mLedger.registerMiner ( this->mMaker->getAccountName (), this->mMaker->getKeyName (), this->mURL );
+        return context.mLedger.registerMiner ( context.mAccount.mIndex, this->mMaker->getKeyName (), this->mURL );
     }
 };
 

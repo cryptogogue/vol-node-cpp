@@ -20,9 +20,9 @@ class TheTransactionBodyFactory :
 public:
 
     //----------------------------------------------------------------//
-    unique_ptr < AbstractTransactionBody >      create                      ( string typeString ) const;
-                                            TheTransactionBodyFactory       ();
-                                            ~TheTransactionBodyFactory      ();
+    unique_ptr < AbstractTransactionBody >      create                          ( string typeString ) const;
+                                                TheTransactionBodyFactory       ();
+                                                ~TheTransactionBodyFactory      ();
     
     //----------------------------------------------------------------//
     template < typename TYPE >
