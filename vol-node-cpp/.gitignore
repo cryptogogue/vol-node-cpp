@@ -12,7 +12,9 @@ CMakeCache.txt
 CMakeFiles
 install_manifest.txt
 Makefile
+*.a
 *.pbxuser
 *.perspectivev3
 valgrind.out
 genesis
+volition

@@ -8,13 +8,19 @@ set ( CMAKE_CXX_STANDARD 17 )
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -Wall -Wextra" )
 set ( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic" )
 
+add_custom_target (
+    make-version-header
+    COMMAND ops/make-version-header.sh
+)
+
 get_filename_component ( VOLITION_ROOT "./" ABSOLUTE )
 
 add_subdirectory ( 3rd-party/padamose EXCLUDE_FROM_ALL )
 add_subdirectory ( cmake/lua EXCLUDE_FROM_ALL )
 add_subdirectory ( cmake/simple-cpp-router EXCLUDE_FROM_ALL )
 
-set ( VOLITION_INCLUDES 
+set ( VOLITION_INCLUDES
+    src/.config/
     src/
     3rd-party/lua-5.3.5/src/
     3rd-party/padamose/src/
@@ -27,6 +33,8 @@ set ( VOLITION_INCLUDES
 )
 
 add_library ( volition-lib "" )
+
+add_dependencies ( volition-lib make-version-header )
 
 target_include_directories ( volition-lib PRIVATE ${VOLITION_INCLUDES} )
 
