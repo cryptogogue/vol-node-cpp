@@ -159,9 +159,7 @@ void WebMiner::runSolo () {
         if ( elapsedMillis < updateMillis ) {
             Poco::Thread::sleep ( updateMillis - elapsedMillis );
         }
-        else {
-            Poco::Thread::sleep ( 1 );
-        }
+        Poco::Thread::sleep ( 5000 );
     }
 }
 
