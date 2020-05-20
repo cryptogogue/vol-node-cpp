@@ -106,8 +106,6 @@ DONE: node - implement way to expire transactions
 DONE: wallet - show transaction weight on transaction form
 DONE: node - complete account renaming process
 
-wallet - detect stale keys (account name matches, but wrong/old key)
-
 ----------------------------------------------------------------
 LAUNCH
 
@@ -121,6 +119,7 @@ schema - customizable asset fields
 schema - default tags?
 schema - reserved asset fields?
 
+wallet - detect stale keys (account name matches, but wrong/old key)
 wallet - asset visualization selector
 wallet - customize asset fields - images, text
 wallet - add configurable media url prefix
