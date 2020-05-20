@@ -8,10 +8,11 @@ set ( CMAKE_CXX_STANDARD 17 )
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -Wall -Wextra" )
 set ( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic" )
 
-add_custom_target (
-    make-version-header
-    COMMAND ops/make-version-header.sh
-)
+# TODO: doesn't work in docker container
+#add_custom_target (
+#    make-version-header
+#    COMMAND ops/make-version-header.sh
+#)
 
 get_filename_component ( VOLITION_ROOT "./" ABSOLUTE )
 
@@ -34,7 +35,7 @@ set ( VOLITION_INCLUDES
 
 add_library ( volition-lib "" )
 
-add_dependencies ( volition-lib make-version-header )
+#add_dependencies ( volition-lib make-version-header )
 
 target_include_directories ( volition-lib PRIVATE ${VOLITION_INCLUDES} )
 
