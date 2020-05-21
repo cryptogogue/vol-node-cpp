@@ -105,6 +105,8 @@ DONE: node - handle unrecognized account - reject transactions
 DONE: node - implement way to expire transactions
 DONE: wallet - show transaction weight on transaction form
 DONE: node - complete account renaming process
+DONE: wallet - add '.png' extension to download
+DONE: wallet - some transactions not working (sponsor account)
 
 ----------------------------------------------------------------
 LAUNCH
