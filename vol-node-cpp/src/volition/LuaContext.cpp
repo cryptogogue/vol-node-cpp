@@ -234,18 +234,16 @@ bool LuaContext::invoke ( string accountName ) {
 bool LuaContext::invoke ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation ) {
 
     // get all the assets for the asset params
-    map < string, shared_ptr < Asset >> assets;
+    map < string, shared_ptr < const Asset >> assets;
     AssetMethodInvocation::AssetParams::const_iterator assetParamIt = invocation.mAssetParams.cbegin ();
     for ( ; assetParamIt != invocation.mAssetParams.cend (); ++assetParamIt ) {
     
         string paramName = assetParamIt->first;
         AssetID::Index assetID = assetParamIt->second;
     
-        shared_ptr < Asset > asset = this->mLedger.getAsset ( this->mSchema, assetID );
-        if ( !( asset && method.qualifyAssetArg ( paramName, *asset ))) return false;
-        
-        assets [ paramName ] = asset;
+        assets [ paramName ] = this->mLedger.getAsset ( this->mSchema, assetID );
     }
+    if ( !method.checkInvocation ( assets )) return false;
 
     // get the main
     int type = lua_getglobal ( this->mLuaState, MAIN_FUNC_NAME );
@@ -257,7 +255,7 @@ bool LuaContext::invoke ( string accountName, const AssetMethod& method, const A
     // push the asset params table
     lua_newtable ( this->mLuaState );
     
-    map < string, shared_ptr < Asset >>::const_iterator assetIt = assets.cbegin ();
+    map < string, shared_ptr < const Asset >>::const_iterator assetIt = assets.cbegin ();
     for ( ; assetIt != assets.cend (); ++assetIt ) {
         lua_pushstring ( this->mLuaState, assetIt->first.c_str ());
         this->push ( *assetIt->second );

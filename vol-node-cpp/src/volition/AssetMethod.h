@@ -11,31 +11,6 @@
 namespace Volition {
 
 //================================================================//
-// AssetMethodConstraint
-//================================================================//
-class AssetMethodConstraint :
-     public AbstractSerializable {
-public:
-
-    string                                                      mDescription;
-    SerializableSharedPtr < AbstractSquap, SquapFactory >       mConstraint;
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "description",       this->mDescription );
-        serializer.serialize ( "constraint",        this->mConstraint );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        
-        serializer.serialize ( "description",       this->mDescription );
-        serializer.serialize ( "constraint",        this->mConstraint );
-    }
-};
-
-//================================================================//
 // AssetMethod
 //================================================================//
 class AssetMethod :
@@ -43,8 +18,9 @@ class AssetMethod :
 public:
 
     typedef SerializableMap < string, SerializableSharedPtr < AbstractSquap, SquapFactory >> Qualifiers;
-    typedef SerializableMap < string, SerializableSharedPtr < AssetMethodConstraint >> Constraints;
+    typedef SerializableVector < SerializableSharedPtr < AbstractSquap, SquapFactory >> Constraints;
 
+    string          mFriendlyName;
     string          mDescription;       // friendly description for the method.
     u64             mWeight;
     u64             mMaturity;
@@ -53,35 +29,21 @@ public:
     // must determine what methods are valid given arbitrary user inventories. without supporting a single-asset broad phase,
     // every permutation of the entire inventory would need to be evaluated.
     Qualifiers      mAssetArgs;         // qualifiers for *single* assets.
-    Qualifiers      mConstArgs;         // user provided consts. may reference assets as constraints.
+    Qualifiers      mConstArgs;         // qualifiers for user provided consts.
     Constraints     mConstraints;       // constraints on groups of assets.
     
     // the standalone Lua script to run.
     string          mLua;
     
     //----------------------------------------------------------------//
-    bool qualifyAssetArg ( string argName, const Asset& asset ) const {
-    
-        Qualifiers::const_iterator qualifierIt = this->mAssetArgs.find ( argName );
-        if ( qualifierIt != this->mAssetArgs.cend ()) {
-            shared_ptr < const AbstractSquap > qualifier = qualifierIt->second;
-            assert ( qualifier );
-            return qualifier->evaluate ( SquapEvaluationContext ( asset ));
-        }
-        return false;
-    }
-    
-    //----------------------------------------------------------------//
-    bool qualifyConstArg ( string argName, const AssetFieldValue& value ) const {
-        UNUSED ( argName );
-        UNUSED ( value );
-    
-        return true;
-    }
-    
+    bool            checkInvocation             ( const map < string, shared_ptr < const Asset >>& params ) const;
+    bool            qualifyAssetArg             ( string argName, const Asset& asset ) const;
+    bool            qualifyConstArg             ( string argName, const AssetFieldValue& value ) const;
+
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
+        serializer.serialize ( "friendlyName",      this->mFriendlyName );
         serializer.serialize ( "description",       this->mDescription );
         serializer.serialize ( "weight",            this->mWeight );
         serializer.serialize ( "maturity",          this->mMaturity );
@@ -94,6 +56,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
+        serializer.serialize ( "friendlyName",      this->mFriendlyName );
         serializer.serialize ( "description",       this->mDescription );
         serializer.serialize ( "weight",            this->mWeight );
         serializer.serialize ( "maturity",          this->mMaturity );

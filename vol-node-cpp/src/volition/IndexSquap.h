@@ -22,9 +22,8 @@ public:
     //----------------------------------------------------------------//
     AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
-        // TODO: right now, only supporting single assets
-        const Asset* asset = context.getAsset ();
-        if ( !asset ) return AssetFieldValue ();
+        const Asset* asset = context.getAsset ( this->mArgName );
+        if ( !asset ) return AssetFieldValue ( false );
         
         return asset->getField ( this->mIndexer );
     }

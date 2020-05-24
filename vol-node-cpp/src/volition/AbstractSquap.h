@@ -23,8 +23,8 @@ private:
     typedef SerializableMap < string, AssetID::Index > AssetParams;
     typedef SerializableMap < string, AssetFieldValue > ConstParams;
 
-    const Asset*        mAsset;
-    AssetFieldValue     mConst;
+    const Asset*                                        mAsset;
+    const map < string, shared_ptr < const Asset >>     mParams;
 
 public:
 
@@ -37,8 +37,28 @@ public:
     };
 
     //----------------------------------------------------------------//
+    const Asset* getAsset ( string paramName ) const {
+    
+        if ( paramName.size () == 0 ) {
+            return this->getAsset ();
+        }
+    
+        map < string, shared_ptr < const Asset >>::const_iterator paramIt = this->mParams.find ( paramName );
+        if ( paramIt != this->mParams.cend ()) {
+            return paramIt->second.get ();
+        }
+        return NULL;
+    };
+
+    //----------------------------------------------------------------//
     SquapEvaluationContext ( const Asset& asset ) :
         mAsset ( &asset ) {
+    }
+    
+    //----------------------------------------------------------------//
+    SquapEvaluationContext ( const map < string, shared_ptr < const Asset >>& params ) :
+        mAsset ( NULL ),
+        mParams ( params ) {
     }
 };
 
