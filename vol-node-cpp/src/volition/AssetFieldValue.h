@@ -94,6 +94,12 @@ public:
     }
     
     //----------------------------------------------------------------//
+    AssetFieldValue ( const char* value ) :
+        mType ( TYPE_STRING ),
+        mString ( value ) {
+    }
+    
+    //----------------------------------------------------------------//
     AssetFieldValue ( string value ) :
         mType ( TYPE_STRING ),
         mString ( value ) {
@@ -246,6 +252,11 @@ public:
     //----------------------------------------------------------------//
     bool isString () const {
         return ( this->mType == Type::TYPE_STRING );
+    }
+    
+    //----------------------------------------------------------------//
+    bool isValid () const {
+        return ( this->mType != Type::TYPE_UNDEFINED );
     }
     
     //----------------------------------------------------------------//

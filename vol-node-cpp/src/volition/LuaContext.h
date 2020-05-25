@@ -29,8 +29,11 @@ private:
     //----------------------------------------------------------------//
     static int              _awardAsset             ( lua_State* L );
     static int              _getEntropy             ( lua_State* L );
+    static int              _getDefinitionField     ( lua_State* L );
     static int              _randomAward            ( lua_State* L );
+    static int              _resetAssetField        ( lua_State* L );
     static int              _revokeAsset            ( lua_State* L );
+    static int              _setAssetField          ( lua_State* L );
 
     //----------------------------------------------------------------//
     static LuaContext&      getSelf                 ( lua_State* L );

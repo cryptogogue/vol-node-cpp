@@ -112,11 +112,6 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_assetModifiedField ( AssetID::Index index, string fieldName ) {
-        return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
-    }
-
-    //----------------------------------------------------------------//
     static LedgerKey keyFor_block () {
         return "block";
     }

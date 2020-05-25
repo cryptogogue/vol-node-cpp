@@ -170,6 +170,45 @@ int LuaContext::_awardAsset ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+int LuaContext::_getDefinitionField ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+
+    string definitionName   = lua_tostring ( L, 1 );
+    string fieldName        = lua_tostring ( L, 2 );
+
+    const AssetDefinition* definition = self.mSchema.getDefinitionOrNull ( definitionName );
+
+    if ( definition ) {
+        AssetFieldDefinition field = definition->getField ( fieldName );
+        
+        if ( field.isValid ()) {
+        
+            switch ( field.getType ()) {
+            
+                case AssetFieldValue::Type::TYPE_BOOL:
+                    lua_pushboolean ( L, field.strictBoolean ());
+                    break;
+                    
+                case AssetFieldValue::Type::TYPE_NUMBER:
+                    lua_pushnumber ( L, field.strictNumber ());
+                    break;
+                    
+                case AssetFieldValue::Type::TYPE_STRING:
+                    lua_pushstring ( L, field.strictString ().c_str ());
+                    break;
+                    
+                default:
+                    assert ( false );
+                    break;
+            }
+            lua_pushboolean ( L, field.mMutable );
+            return 2;
+        }
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------//
 int LuaContext::_getEntropy ( lua_State* L ) {
     UNUSED ( L );
 
@@ -190,6 +229,19 @@ int LuaContext::_randomAward ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+int LuaContext::_resetAssetField ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+    Ledger& ledger = self.mLedger;
+
+    string assetID          = lua_tostring ( L, 1 );
+    string fieldName        = lua_tostring ( L, 2 );
+
+    ledger.resetAssetFieldValue ( self.mSchema, AssetID::decode ( assetID ), fieldName );
+
+    return 0;
+}
+
+//----------------------------------------------------------------//
 int LuaContext::_revokeAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     Ledger& ledger = self.mLedger;
@@ -198,6 +250,39 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     string assetID          = lua_tostring ( L, 2 );
 
     ledger.revokeAsset ( self.mLedger.getAccountIndex ( accountName ), AssetID::decode ( assetID ));
+    return 0;
+}
+
+//----------------------------------------------------------------//
+int LuaContext::_setAssetField ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+    Ledger& ledger = self.mLedger;
+
+    string assetID          = lua_tostring ( L, 1 );
+    string fieldName        = lua_tostring ( L, 2 );
+
+    AssetID::Index assetindex = AssetID::decode ( assetID );
+    
+    AssetFieldValue value;
+    
+    switch ( lua_type ( L, 3 )) {
+    
+        case LUA_TBOOLEAN:
+            value = lua_toboolean ( L, 3 ) ? true : false;
+            break;
+
+        case LUA_TNUMBER:
+            value = lua_tonumber ( L, 3 );
+            break;
+
+        case LUA_TSTRING:
+            value = lua_tostring ( L, 3 );
+            break;
+    }
+    
+    if ( value.isValid ()) {
+        ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value );
+    }
     return 0;
 }
 
@@ -287,24 +372,14 @@ LuaContext::LuaContext ( Ledger& ledger, const Schema& schema, string lua ) :
     // TODO: sandbox or omit this in release builds
     luaL_openlibs ( this->mLuaState );
     
-    this->registerFunc ( "awardAsset",      _awardAsset );
-    this->registerFunc ( "getEntropy",      _getEntropy );
-    this->registerFunc ( "print",           _print );
-    this->registerFunc ( "randomAward",     _randomAward );
-    this->registerFunc ( "revokeAsset",     _revokeAsset );
-    
-//    const luaL_Reg funcs [] = {
-//        { "awardAsset",     _awardAsset },
-//        { "getEntropy",     _getEntropy },
-//        { "revokeAsset",    _revokeAsset },
-//        { NULL, NULL }
-//    };
-//
-//    luaL_newlib ( this->mLuaState, funcs );
-//    lua_setglobal ( this->mLuaState, "schema" );
-    
-//    lua_pushlightuserdata ( this->mLuaState, this );
-//    lua_setglobal ( this->mLuaState, LUA_GLOBAL_SCHEMA );
+    this->registerFunc ( "awardAsset",              _awardAsset );
+    this->registerFunc ( "getEntropy",              _getEntropy );
+    this->registerFunc ( "getDefinitionField",      _getDefinitionField );
+    this->registerFunc ( "print",                   _print );
+    this->registerFunc ( "randomAward",             _randomAward );
+    this->registerFunc ( "resetAssetField",         _resetAssetField );
+    this->registerFunc ( "revokeAsset",             _revokeAsset );
+    this->registerFunc ( "setAssetField",           _setAssetField );
     
     // set the ledger
     lua_pushlightuserdata ( this->mLuaState, this );

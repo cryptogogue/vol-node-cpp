@@ -171,20 +171,28 @@ shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID:
         const AssetFieldDefinition& field = fieldIt->second;
         AssetFieldValue value = field;
         
-//        if ( field.mMutable ) {
-//
-//            string keyforAssetModifiedField = ledger.formatKeyforAssetModifiedField ( identifier, fieldName );
-//
-//            switch ( field.mType ) {
-//                case AssetTemplateField::Type::NUMERIC:
-//                    value = ledger.getValueOrFallback < double >( keyforAssetModifiedField, value.mNumeric );
-//                    break;
-//                case AssetTemplateField::Type::STRING:
-//                    value = ledger.getValueOrFallback < string >( keyforAssetModifiedField, value.mString );
-//                    break;
-//            }
-//            asset->mFields [ fieldName ] = value;
-//        }
+        if ( field.mMutable ) {
+
+            LedgerKey KEY_FOR_ASSET_FIELD = AssetODBM::keyFor_field ( index, fieldName );
+
+            switch ( field.getType ()) {
+            
+                case AssetFieldValue::Type::TYPE_BOOL:
+                    value = ledger.getValueOrFallback < bool >( KEY_FOR_ASSET_FIELD, value.strictBoolean ());
+                    break;
+                    
+                case AssetFieldValue::Type::TYPE_NUMBER:
+                    value = ledger.getValueOrFallback < double >( KEY_FOR_ASSET_FIELD, value.strictNumber ());
+                    break;
+                    
+                case AssetFieldValue::Type::TYPE_STRING:
+                    value = ledger.getValueOrFallback < string >( KEY_FOR_ASSET_FIELD, value.strictString ());
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
         asset->mFields [ fieldName ] = value;
     }
     return asset;
@@ -219,6 +227,47 @@ void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accou
 shared_ptr < InventoryLogEntry > Ledger_Inventory::getInventoryLogEntry ( Account::Index accountIndex, u64 inventoryNonce ) const {
 
     return this->getLedger ().getObjectOrNull < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ));
+}
+
+//----------------------------------------------------------------//
+bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    AssetODBM assetODBM ( ledger, index );
+    if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return false;
+    
+    string assetType = assetODBM.mType.get ();
+    const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
+    if ( !assetDefinition ) return false;
+
+    AssetFieldDefinition fieldDefinition = assetDefinition->getField ( fieldName );
+    if ( !fieldDefinition.mMutable ) return false;
+
+    LedgerKey KEY_FOR_ASSET_FIELD = AssetODBM::keyFor_field ( index, fieldName );
+
+    if ( ledger.hasKey ( KEY_FOR_ASSET_FIELD )) {
+
+        switch ( fieldDefinition.getType ()) {
+        
+            case AssetFieldValue::Type::TYPE_BOOL:
+                ledger.setValue < bool >( KEY_FOR_ASSET_FIELD, fieldDefinition.strictBoolean ());
+                break;
+                
+            case AssetFieldValue::Type::TYPE_NUMBER:
+                ledger.setValue < double >( KEY_FOR_ASSET_FIELD, fieldDefinition.strictNumber ());
+                break;
+                
+            case AssetFieldValue::Type::TYPE_STRING:
+                ledger.setValue < string >( KEY_FOR_ASSET_FIELD, fieldDefinition.strictString ());
+                break;
+                
+            default:
+                return false;
+        }
+    }
+    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get ());
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -274,28 +323,36 @@ bool Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index
 
     Ledger& ledger = this->getLedger ();
 
-    // make sure the asset exists
-    LedgerKey KEY_FOR_ASSET_TYPE = AssetODBM::keyFor_type ( index );
-    if ( !ledger.hasValue ( KEY_FOR_ASSET_TYPE )) return false;
-    string assetType = ledger.getValue < string >( KEY_FOR_ASSET_TYPE );
-
-    // make sure the field exists
+    AssetODBM assetODBM ( ledger, index );
+    if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return false;
+    
+    string assetType = assetODBM.mType.get ();
     const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
     if ( !assetDefinition ) return false;
-    if ( !assetDefinition->hasMutableField ( fieldName, field.getType ())) return false;
 
-//    // set the field
-//    string keyforAssetModifiedField = Ledger::formatKeyforAssetModifiedField ( identifier, fieldName );
-//
-//    switch ( field.mType ) {
-//        case AssetTemplateField::Type::NUMERIC:
-//            ledger.setValue < double >( keyforAssetModifiedField, field.mValue.mNumeric );
-//            break;
-//        case AssetTemplateField::Type::STRING:
-//            ledger.setValue < string >( keyforAssetModifiedField, field.mValue.mString );
-//            break;
-//    }
+    AssetFieldDefinition fieldDefinition = assetDefinition->getField ( fieldName );
+    if ( !fieldDefinition.mMutable ) return false;
 
+    LedgerKey KEY_FOR_ASSET_FIELD = AssetODBM::keyFor_field ( index, fieldName );
+
+    switch ( field.getType ()) {
+    
+        case AssetFieldValue::Type::TYPE_BOOL:
+            ledger.setValue < bool >( KEY_FOR_ASSET_FIELD, field.strictBoolean ());
+            break;
+            
+        case AssetFieldValue::Type::TYPE_NUMBER:
+            ledger.setValue < double >( KEY_FOR_ASSET_FIELD, field.strictNumber ());
+            break;
+            
+        case AssetFieldValue::Type::TYPE_STRING:
+            ledger.setValue < string >( KEY_FOR_ASSET_FIELD, field.strictString ());
+            break;
+            
+        default:
+            return false;
+    }
+    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get ());
     return true;
 }
 

@@ -18,13 +18,10 @@ class AssetFieldDefinition :
 public:
 
     bool                    mMutable;
-    bool                    mScriptable;
-    SerializableOpaque      mAlternates;
 
     //----------------------------------------------------------------//
     AssetFieldDefinition () :
-        mMutable ( false ),
-        mScriptable ( true ) {
+        mMutable ( false ) {
     }
 
     //----------------------------------------------------------------//
@@ -32,8 +29,6 @@ public:
         AssetFieldValue::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "mutable",       this->mMutable );
-        serializer.serialize ( "scriptable",    this->mScriptable );
-        serializer.serialize ( "alternates",    this->mAlternates );
     }
     
     //----------------------------------------------------------------//
@@ -41,8 +36,6 @@ public:
         AssetFieldValue::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "mutable",       this->mMutable );
-        serializer.serialize ( "scriptable",    this->mScriptable );
-        serializer.serialize ( "alternates",    this->mAlternates );
     }
 };
 
@@ -65,17 +58,6 @@ public:
             return fieldsIt->second;
         }
         return AssetFieldDefinition ();
-    }
-    
-    //----------------------------------------------------------------//
-    bool hasMutableField ( string name, AssetFieldValue::Type type ) const {
-    
-        Fields::const_iterator fieldIt = this->mFields.find ( name );
-        if ( fieldIt != this->mFields.cend ()) {
-            const AssetFieldDefinition& field = fieldIt->second;
-            return ( field.mMutable && ( field.getType () == type ));
-        }
-        return false;
     }
     
     //----------------------------------------------------------------//

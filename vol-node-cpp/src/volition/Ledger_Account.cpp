@@ -142,6 +142,15 @@ u64 Ledger_Account::getAccountTransactionNonce ( Account::Index accountIndex ) c
 }
 
 //----------------------------------------------------------------//
+void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    AccountODBM accountODBM ( ledger, accountIndex );
+    accountODBM.mInventoryNonce.set ( accountODBM.mInventoryNonce.get ( 0 ) + 1 );
+}
+
+//----------------------------------------------------------------//
 void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex, u64 nonce ) {
 
     Ledger& ledger = this->getLedger ();

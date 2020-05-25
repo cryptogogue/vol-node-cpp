@@ -35,6 +35,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_field ( AssetID::Index index, string fieldName ) {
+        return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_owner ( AssetID::Index index ) {
         return Format::write ( "asset.%d.owner", index );
     }
