@@ -146,7 +146,7 @@ bool Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index 
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID::Index index ) const {
+shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID::Index index, bool sparse ) const {
 
     const Ledger& ledger = this->getLedger ();
 
@@ -171,7 +171,7 @@ shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID:
         const AssetFieldDefinition& field = fieldIt->second;
         AssetFieldValue value = field;
         
-        if ( field.mMutable ) {
+        if ( field.mMutable  ) {
 
             LedgerKey KEY_FOR_ASSET_FIELD = AssetODBM::keyFor_field ( index, fieldName );
 
@@ -193,13 +193,16 @@ shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID:
                     break;
             }
         }
-        asset->mFields [ fieldName ] = value;
+        
+        if (( sparse == false ) || ( value != field )) {
+            asset->mFields [ fieldName ] = value;
+        }
     }
     return asset;
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max ) const {
+void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max, bool sparse ) const {
 
     const Ledger& ledger = this->getLedger ();
 
@@ -217,7 +220,7 @@ void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accou
     for ( size_t i = 0; i < assetCount; ++i ) {
     
         AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
-        shared_ptr < Asset > asset = ledger.getAsset ( schema, assetIndex );
+        shared_ptr < Asset > asset = ledger.getAsset ( schema, assetIndex, sparse );
         assert ( asset );
         assetList.push_back ( asset );
     }

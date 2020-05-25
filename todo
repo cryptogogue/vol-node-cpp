@@ -107,17 +107,17 @@ DONE: wallet - show transaction weight on transaction form
 DONE: node - complete account renaming process
 DONE: wallet - add '.png' extension to download
 DONE: wallet - some transactions not working (sponsor account)
+DONE: node - sparse asset API (return sparse assets)
+DONE: schema - customizable asset fields
 
 ----------------------------------------------------------------
 LAUNCH
 
-node - sparse asset API (return sparse assets)
 node - separate entropy from allure (allure computed simply - hash of block height; entropy is block height plus previous entropy signed by miner)
 node - publish default media url prefix (from schema, with miner override)
 
 schema - asset visualization descriptor (i.e. 2D/3D, front/back, language, etc.)
 schema - asset definition inheritance (sparse updrages)
-schema - customizable asset fields
 schema - default tags?
 schema - reserved asset fields?
 
@@ -144,7 +144,6 @@ layout tool - layouts-as-icons (and/or "layered" icons)
 
 node - finalize multi-part transaction implementation
 node - reimplement 'run script' as multi-part transaction
-node - implement field customization transaction
 node - per asset modification metadata
 node - record asset exchange metadata (inventory nonce, sender, note)
 node - rework node control endpoints into "control" transactions

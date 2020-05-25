@@ -50,13 +50,24 @@ public:
     }
     
     //----------------------------------------------------------------//
-    AssetFieldValue& operator = (const AssetFieldValue& other ) {
+    AssetFieldValue& operator = ( const AssetFieldValue& other ) {
         
         this->mType     = other.mType;
         this->mNumeric  = other.mNumeric;
         this->mString   = other.mString;
         
         return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    bool operator == ( const AssetFieldValue& other ) const {
+        
+        return AssetFieldValue::equal ( *this, other );
+    }
+    
+    //----------------------------------------------------------------//
+    bool operator != ( const AssetFieldValue& other ) const {
+        return !( *this == other );
     }
     
     //----------------------------------------------------------------//
@@ -96,12 +107,14 @@ public:
     //----------------------------------------------------------------//
     AssetFieldValue ( const char* value ) :
         mType ( TYPE_STRING ),
+        mNumeric ( 0 ),
         mString ( value ) {
     }
     
     //----------------------------------------------------------------//
     AssetFieldValue ( string value ) :
         mType ( TYPE_STRING ),
+        mNumeric ( 0 ),
         mString ( value ) {
     }
     
