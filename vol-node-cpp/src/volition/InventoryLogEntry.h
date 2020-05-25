@@ -91,7 +91,7 @@ public:
             Account::Index ownerID = LedgerFieldODBM < AssetID::Index >( ledger, AssetODBM::keyFor_owner ( assetID )).get ( Account::NULL_INDEX );
         
             if ( ownerID == accountID ) {
-                shared_ptr < Asset > asset = ledger.getAsset ( schema, assetID );
+                shared_ptr < Asset > asset = ledger.getAsset ( schema, assetID, true );
                 assert ( asset );
                 assetList.push_back ( asset );
             }
