@@ -269,25 +269,26 @@ bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Ind
                 return false;
         }
     }
-    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get ());
+    
+    InventoryLogEntry logEntry;
+    logEntry.insertUpdate ( assetODBM.mIndex );
+    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get (), logEntry );
     return true;
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::revokeAsset ( Account::Index accountIndex, AssetID::Index index ) {
+bool Ledger_Inventory::revokeAsset ( AssetID::Index index ) {
 
     Ledger& ledger = this->getLedger ();
-
-    // make sure the account exists
-    AccountODBM accountODBM ( ledger, accountIndex );
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
 
     // make sure the asset exists
     AssetODBM assetODBM ( ledger, index );
     if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return false;
 
-    // make sure the account owns the asset
-    if ( assetODBM.mOwner.get () != accountODBM.mIndex ) return false;
+    // get the owner
+    Account::Index accountIndex = assetODBM.mOwner.get ();
+    if ( accountIndex == Account::NULL_INDEX ) return true; // already revoked!
+    AccountODBM accountODBM ( ledger, accountIndex );
 
     // count the assets in the account
     size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
@@ -355,7 +356,10 @@ bool Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index
         default:
             return false;
     }
-    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get ());
+    
+    InventoryLogEntry logEntry;
+    logEntry.insertUpdate ( assetODBM.mIndex );
+    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get (), logEntry );
     return true;
 }
 

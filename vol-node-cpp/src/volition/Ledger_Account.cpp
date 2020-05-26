@@ -142,16 +142,19 @@ u64 Ledger_Account::getAccountTransactionNonce ( Account::Index accountIndex ) c
 }
 
 //----------------------------------------------------------------//
-void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex ) {
+void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex, const InventoryLogEntry& logEntry ) {
 
     Ledger& ledger = this->getLedger ();
 
     AccountODBM accountODBM ( ledger, accountIndex );
-    accountODBM.mInventoryNonce.set ( accountODBM.mInventoryNonce.get ( 0 ) + 1 );
+    
+    u64 nonce = accountODBM.mInventoryNonce.get ( 0 );
+    ledger.setInventoryLogEntry ( accountIndex, nonce, logEntry );
+    accountODBM.mInventoryNonce.set ( nonce + 1 );
 }
 
 //----------------------------------------------------------------//
-void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex, u64 nonce ) {
+void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex, const InventoryLogEntry& logEntry, u64 nonce ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -159,6 +162,7 @@ void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex, u64
     if ( !accountODBM.mBody.exists ()) return;
     if ( accountODBM.mInventoryNonce.get ( 0 ) != nonce ) return;
     
+    ledger.setInventoryLogEntry ( accountIndex, nonce, logEntry );
     accountODBM.mInventoryNonce.set ( nonce + 1 );
 }
 

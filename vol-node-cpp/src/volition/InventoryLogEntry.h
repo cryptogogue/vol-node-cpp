@@ -107,6 +107,12 @@ public:
     void insertDeletion ( AssetID::Index deletion ) {
         this->mDeletions.insert ( deletion );
     }
+    
+    //----------------------------------------------------------------//
+    void insertUpdate ( AssetID::Index update ) {
+        this->insertDeletion ( update );
+        this->insertAddition ( update );
+    }
 };
 
 } // namespace Volition

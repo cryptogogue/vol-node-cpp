@@ -15,6 +15,8 @@
 
 namespace Volition {
 
+class InventoryLogEntry;
+
 //================================================================//
 // AccountKey
 //================================================================//
@@ -60,8 +62,8 @@ public:
     string                              getAccountName                  ( Account::Index accountIndex ) const;
     u64                                 getAccountInventoryNonce        ( Account::Index accountIndex ) const;
     u64                                 getAccountTransactionNonce      ( Account::Index accountIndex ) const;
-    void                                incAccountInventoryNonce        ( Account::Index accountIndex );
-    void                                incAccountInventoryNonce        ( Account::Index accountIndex, u64 nonce );
+    void                                incAccountInventoryNonce        ( Account::Index accountIndex, const InventoryLogEntry& logEntry );
+    void                                incAccountInventoryNonce        ( Account::Index accountIndex, const InventoryLogEntry& logEntry, u64 nonce );
     void                                incAccountTransactionNonce      ( Account::Index accountIndex, u64 nonce, string note );
     static bool                         isAccountName                   ( string accountName );
     static bool                         isChildName                     ( string accountName );

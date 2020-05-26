@@ -30,7 +30,7 @@ public:
     void                                getInventory                ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
     shared_ptr < InventoryLogEntry >    getInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce ) const;
     bool                                resetAssetFieldValue        ( const Schema& schema, AssetID::Index index, string fieldName );
-    bool                                revokeAsset                 ( Account::Index accountIndex, AssetID::Index index );
+    bool                                revokeAsset                 ( AssetID::Index index );
     bool                                setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field );
     void                                setInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce, const InventoryLogEntry& entry );
     LedgerResult                        transferAssets              ( Account::Index senderAccountIndex, Account::Index receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets );

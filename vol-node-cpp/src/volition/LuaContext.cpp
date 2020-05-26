@@ -246,10 +246,9 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     Ledger& ledger = self.mLedger;
 
-    string accountName      = lua_tostring ( L, 1 );
-    string assetID          = lua_tostring ( L, 2 );
+    string assetID          = lua_tostring ( L, 1 );
 
-    ledger.revokeAsset ( self.mLedger.getAccountIndex ( accountName ), AssetID::decode ( assetID ));
+    ledger.revokeAsset ( AssetID::decode ( assetID ));
     return 0;
 }
 
