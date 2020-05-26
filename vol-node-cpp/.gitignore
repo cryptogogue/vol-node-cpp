@@ -17,4 +17,4 @@ Makefile
 *.perspectivev3
 valgrind.out
 genesis
-volition
+/volition
