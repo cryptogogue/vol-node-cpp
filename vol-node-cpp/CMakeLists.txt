@@ -46,6 +46,7 @@ target_sources ( volition-lib
         src/volition/AbstractRequestHandler.cpp
         src/volition/AbstractTransactionBody.cpp
         src/volition/AssetID.cpp
+        src/volition/AssetMethod.cpp
         src/volition/Block.cpp
         src/volition/Chain.cpp
         src/volition/ChainMetadata.cpp
