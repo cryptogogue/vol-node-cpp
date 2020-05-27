@@ -111,10 +111,12 @@ DONE: node - sparse asset API (return sparse assets)
 DONE: schema - customizable asset fields
 DONE: node - make schema unique key (from hash)
 DONE: wallet - use schema unique key as cache key
+DONE: node - publish schema and reset chain
+DONE: node - disabled reset chain with CLI flag
+DONE: node - rework node control endpoints into "control" transactions
 
-node - publish schema and reset chain
-node - disabled reset chain with CLI flag
 node - return lua stack trace/error messages
+wallet - update cardmotron
 
 ----------------------------------------------------------------
 LAUNCH
@@ -152,7 +154,6 @@ node - finalize multi-part transaction implementation
 node - reimplement 'run script' as multi-part transaction
 node - per asset modification metadata
 node - record asset exchange metadata (inventory nonce, sender, note)
-node - rework node control endpoints into "control" transactions
 
 VOL:ETH
 VOL:ETH - onboarding

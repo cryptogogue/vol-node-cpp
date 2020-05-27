@@ -209,6 +209,7 @@ public:
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
     bool                                setIdentity                     ( string identity );
+    void                                setSchema                       ( const Schema& schema );
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
     bool                                verify                          ( const Schema& schema, const AssetMethodInvocation& invocation ) const;
 

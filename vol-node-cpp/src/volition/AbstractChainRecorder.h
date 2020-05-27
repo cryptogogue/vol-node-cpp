@@ -25,6 +25,7 @@ protected:
 
     //----------------------------------------------------------------//
     virtual void            AbstractChainRecorder_loadChain         ( Miner& miner ) const = 0;
+    virtual void            AbstractChainRecorder_reset             () = 0;
     virtual void            AbstractChainRecorder_saveChain         ( const Miner& miner ) = 0;
 
 public:
@@ -45,6 +46,11 @@ public:
     //----------------------------------------------------------------//
     void loadChain ( Miner& miner ) const {
         this->AbstractChainRecorder_loadChain ( miner );
+    }
+    
+    //----------------------------------------------------------------//
+    void reset () {
+        this->AbstractChainRecorder_reset ();
     }
     
     //----------------------------------------------------------------//

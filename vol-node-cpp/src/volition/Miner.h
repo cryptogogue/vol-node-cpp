@@ -34,6 +34,7 @@ protected:
 
     CryptoKey                                       mKeyPair;
     bool                                            mLazy;
+    bool                                            mControlPermitted;
 
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
@@ -49,6 +50,7 @@ protected:
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
     virtual time_t          Miner_getTime                           () const;
+    virtual void            Miner_reset                             ();
 
 public:
 
@@ -59,6 +61,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                    checkBestBranch         ( string miners ) const;
+    bool                    controlPerimitted       () const;
     size_t                  countBranches           () const;
     void                    extend                  ( bool force = false );
     const Chain*            getBestBranch           () const;
@@ -72,6 +75,8 @@ public:
     void                    loadKey                 ( string keyfile, string password = "" );
                             Miner                   ();
     virtual                 ~Miner                  ();
+    void                    permitControl           ( bool permit );
+    bool                    pushTransaction         ( shared_ptr < const Transaction > transaction );
     void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );

@@ -146,6 +146,21 @@ bool Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index 
 }
 
 //----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index accountIndex, string deckName ) {
+
+    Ledger& ledger = this->getLedger ();
+        
+    const Schema::Deck* deck = schema.getDeck ( deckName );
+    if ( !deck ) return "Deck not found.";
+    
+    Schema::Deck::const_iterator deckIt = deck->cbegin ();
+    for ( ; deckIt != deck->cend (); ++deckIt ) {
+        ledger.awardAssets ( schema, accountIndex, deckIt->first, deckIt->second );
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID::Index index, bool sparse ) const {
 
     const Ledger& ledger = this->getLedger ();

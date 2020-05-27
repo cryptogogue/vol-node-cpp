@@ -24,6 +24,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::Genesis >();
     this->registerTransaction < Volition::Transactions::OpenAccount >();
     this->registerTransaction < Volition::Transactions::PublishSchema >();
+    this->registerTransaction < Volition::Transactions::PublishSchemaAndReset >();
     this->registerTransaction < Volition::Transactions::RegisterMiner >();
     this->registerTransaction < Volition::Transactions::RenameAccount >();
     this->registerTransaction < Volition::Transactions::ReserveAccountName >();

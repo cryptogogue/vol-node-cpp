@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/AbstractTransactionBody.h>
+#include <volition/Miner.h>
 #include <volition/Transaction.h>
 #include <volition/TransactionContext.h>
 #include <volition/TransactionMaker.h>
@@ -59,7 +60,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         if ( result ) {
             if ( !ledger.isGenesis ()) {
                 
-                ledger.incAccountTransactionNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
+                ledger.incAccountTransactionNonce ( account->mIndex, this->mBody->note ());
                 
                 if ( cost > 0 ) {
                     Account accountUpdated = *account;
@@ -113,6 +114,26 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
         return key.verify ( *signature, this->mBodyString );
     }
     return false;
+}
+
+//----------------------------------------------------------------//
+TransactionResult Transaction::control ( Miner& miner, Ledger& ledger ) const {
+
+    if ( !this->mBody->needsControl ()) return true;
+    if ( !this->mBody ) return "CONTROL: Missing body.";
+    if ( !miner.controlPerimitted ()) return "CONTROL: Control not permitted by this mining node.";
+    
+    TransactionMaker* maker = this->mBody->mMaker.get ();
+    shared_ptr < const Account > account = ledger.getAccount ( ledger.getAccountIndex ( maker->getAccountName ()));
+    const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
+
+    TransactionResult result = this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy );
+    if ( !result ) return "CONTROL: Invalid account or signature.";
+        
+    Entitlements entitlements = ledger.getEntitlements < KeyEntitlements >( *keyAndPolicy );
+    if ( !entitlements.check ( KeyEntitlements::NODE_CONTROL )) return "Permission denied.";
+    
+    return this->mBody->control ( miner, ledger );
 }
 
 //----------------------------------------------------------------//

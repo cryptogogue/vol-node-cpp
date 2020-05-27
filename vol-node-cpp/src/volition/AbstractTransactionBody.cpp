@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/AbstractTransactionBody.h>
+#include <volition/Miner.h>
 #include <volition/Transaction.h>
 
 namespace Volition {
@@ -24,6 +25,12 @@ TransactionResult AbstractTransactionBody::apply ( TransactionContext& context )
 }
 
 //----------------------------------------------------------------//
+TransactionResult AbstractTransactionBody::control ( Miner& miner, Ledger& ledger  ) const {
+
+    return this->AbstractTransactionBody_control ( miner, ledger );
+}
+
+//----------------------------------------------------------------//
 u64 AbstractTransactionBody::cost () const {
     return this->gratuity () + this->AbstractTransactionBody_cost ();
 }
@@ -36,6 +43,11 @@ u64 AbstractTransactionBody::gratuity () const {
 //----------------------------------------------------------------//
 u64 AbstractTransactionBody::maturity () const {
     return this->AbstractTransactionBody_maturity ();
+}
+
+//----------------------------------------------------------------//
+bool AbstractTransactionBody::needsControl () const {
+    return this->AbstractTransactionBody_needsControl ();
 }
 
 //----------------------------------------------------------------//
@@ -82,9 +94,23 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
 }
 
 //----------------------------------------------------------------//
+TransactionResult AbstractTransactionBody::AbstractTransactionBody_control ( Miner& miner, Ledger& ledger  ) const {
+    UNUSED ( miner );
+    UNUSED ( ledger );
+    
+    return true;
+}
+
+//----------------------------------------------------------------//
 u64 AbstractTransactionBody::AbstractTransactionBody_cost () const {
 
     return 0;
+}
+
+//----------------------------------------------------------------//
+bool AbstractTransactionBody::AbstractTransactionBody_needsControl () const {
+
+    return false;
 }
 
 } // namespace Volition

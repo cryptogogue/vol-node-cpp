@@ -11,6 +11,7 @@
 #include <volition/transactions/Genesis.h>
 #include <volition/transactions/OpenAccount.h>
 #include <volition/transactions/PublishSchema.h>
+#include <volition/transactions/PublishSchemaAndReset.h>
 #include <volition/transactions/RegisterMiner.h>
 #include <volition/transactions/RenameAccount.h>
 #include <volition/transactions/ReserveAccountName.h>

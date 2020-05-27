@@ -31,6 +31,7 @@ namespace Volition {
         return MATURITY;                                            \
     }
 
+class Miner;
 class Transaction;
 
 //================================================================//
@@ -53,8 +54,10 @@ protected:
 
     //----------------------------------------------------------------//
     virtual TransactionResult   AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
+    virtual TransactionResult   AbstractTransactionBody_control         ( Miner& miner, Ledger& ledger  ) const;
     virtual u64                 AbstractTransactionBody_cost            () const;
     virtual u64                 AbstractTransactionBody_maturity        () const = 0;
+    virtual bool                AbstractTransactionBody_needsControl    () const;
     virtual string              AbstractTransactionBody_typeString      () const = 0;
     virtual u64                 AbstractTransactionBody_weight          () const = 0;
 
@@ -64,9 +67,11 @@ public:
                             AbstractTransactionBody                 ();
                             ~AbstractTransactionBody                ();
     TransactionResult       apply                                   ( TransactionContext& context ) const;
+    TransactionResult       control                                 ( Miner& miner, Ledger& ledger  ) const;
     u64                     cost                                    () const;
     u64                     gratuity                                () const;
     u64                     maturity                                () const;
+    bool                    needsControl                            () const;
     string                  note                                    () const;
     string                  typeString                              () const;
     u64                     weight                                  () const;

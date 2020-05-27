@@ -42,7 +42,7 @@ public:
     bool                                hasTransaction          ( u64 nonce ) const;
     bool                                hasTransactions         () const;
                                         MakerQueue              ();
-    bool                                pushTransaction         ( shared_ptr < const Transaction > transaction );
+    bool                                pushTransaction         ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult );
     void                                prune                   ( u64 nonce );
     void                                setError                ( TransactionResult error );
 };
@@ -69,7 +69,7 @@ public:
     string                  getTransactionNote      ( string accountName, u64 nonce ) const;
     bool                    hasError                ( string accountName );
     void                    pruneTransactions       ( const Chain& chain );
-    bool                    pushTransaction         ( shared_ptr < const Transaction > transaction );
+    bool                    pushTransaction         ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult = true );
                             TransactionQueue        ();
     virtual                 ~TransactionQueue       ();
 };

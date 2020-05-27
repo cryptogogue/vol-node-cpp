@@ -62,6 +62,19 @@ void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const
 }
 
 //----------------------------------------------------------------//
+void SimpleChainRecorder::AbstractChainRecorder_reset () {
+
+    size_t dirSize = FileSys::getDirSize ( this->mChainFolderPath );
+    for ( size_t i = 1; i < dirSize; ++i ) {
+    
+        string blockPath = Format::write ( "%sblock_%d.json", this->mChainFolderPath.c_str (), i );
+        if ( FileSys::exists ( blockPath )) {
+            remove ( blockPath.c_str ());
+        }
+    }
+}
+
+//----------------------------------------------------------------//
 void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner ) {
 
     const Chain* chain = miner.getBestBranch ();

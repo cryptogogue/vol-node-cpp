@@ -96,7 +96,7 @@ void WebMiner::runActivity () {
 //----------------------------------------------------------------//
 void WebMiner::runMulti () {
 
-    size_t height = 0;
+    this->mHeight = 0;
     while ( !this->isStopped ()) {
         {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
@@ -111,10 +111,10 @@ void WebMiner::runMulti () {
             // report chain
             const Chain& chain = *this->getBestBranch ();
             size_t nextHeight = chain.countBlocks ();
-            if ( nextHeight != height ) {
+            if ( nextHeight != this->mHeight ) {
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
-                height = nextHeight;
+                this->mHeight = nextHeight;
                 this->saveChain ();
             }
 
@@ -131,7 +131,7 @@ void WebMiner::runMulti () {
 //----------------------------------------------------------------//
 void WebMiner::runSolo () {
 
-    size_t height = 0;
+    this->mHeight = 0;
     while ( !this->isStopped ()) {
     
         Poco::Timestamp timestamp;
@@ -143,11 +143,11 @@ void WebMiner::runSolo () {
 
             const Chain& chain = *this->getBestBranch ();
             size_t nextHeight = chain.countBlocks ();
-            if ( nextHeight != height ) {
+            if ( nextHeight != this->mHeight ) {
                 LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
-                height = nextHeight;
+                this->mHeight = nextHeight;
                 this->saveChain ();
                 this->pruneTransactions ( chain );
             }
@@ -226,7 +226,8 @@ WebMiner::WebMiner () :
     Poco::Activity < WebMiner >( this, &WebMiner::runActivity ),
     mTaskManager ( this->mTaskManagerThreadPool ),
     mSolo ( false ),
-    mUpdateIntervalInSeconds ( DEFAULT_UPDATE_INTERVAL ) {
+    mUpdateIntervalInSeconds ( DEFAULT_UPDATE_INTERVAL ),
+    mHeight ( 0 ) {
     
     this->mTaskManager.addObserver (
         Poco::Observer < WebMiner, Poco::TaskFinishedNotification > ( *this, &WebMiner::onSyncChainNotification )
@@ -235,6 +236,16 @@ WebMiner::WebMiner () :
 
 //----------------------------------------------------------------//
 WebMiner::~WebMiner () {
+}
+
+//================================================================//
+// overrides
+//================================================================//
+
+//----------------------------------------------------------------//
+void WebMiner::Miner_reset () {
+
+    this->mHeight = 0;
 }
 
 } // namespace Volition

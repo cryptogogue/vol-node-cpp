@@ -25,6 +25,7 @@ protected:
 
     //----------------------------------------------------------------//
     void                    AbstractChainRecorder_loadChain         ( Miner& miner ) const;
+    void                    AbstractChainRecorder_reset             ();
     void                    AbstractChainRecorder_saveChain         ( const Miner& miner );
 
 public:

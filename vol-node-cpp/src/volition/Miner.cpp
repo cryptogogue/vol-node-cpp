@@ -86,6 +86,12 @@ void Miner::checkEnvironment () {
 }
 
 //----------------------------------------------------------------//
+bool Miner::controlPerimitted () const {
+
+    return this->mControlPermitted;
+}
+
+//----------------------------------------------------------------//
 size_t Miner::countBranches () const {
 
     return this->mBranches.size ();
@@ -243,13 +249,26 @@ void Miner::loadKey ( string keyfile, string password ) {
 
 //----------------------------------------------------------------//
 Miner::Miner () :
-    mLazy ( false ) {
+    mLazy ( false ),
+    mControlPermitted ( false ) {
     
     Miner::checkEnvironment ();
 }
 
 //----------------------------------------------------------------//
 Miner::~Miner () {
+}
+
+//----------------------------------------------------------------//
+void Miner::permitControl ( bool permit ) {
+
+    this->mControlPermitted = permit;
+}
+
+//----------------------------------------------------------------//
+bool Miner::pushTransaction ( shared_ptr < const Transaction > transaction ) {
+
+    return this->TransactionQueue::pushTransaction ( transaction, transaction->control ( *this, *this->mBestBranch ));
 }
 
 //----------------------------------------------------------------//
@@ -271,6 +290,10 @@ void Miner::reset () {
     this->mBestBranch->reset ( 1 );
     this->mBranches.clear ();
     this->mBranches.insert ( this->mBestBranch );
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->reset ();
+    }
+    this->Miner_reset ();
 }
 
 //----------------------------------------------------------------//
@@ -420,6 +443,10 @@ time_t Miner::Miner_getTime () const {
     time_t now;
     time ( &now );
     return now;
+}
+
+//----------------------------------------------------------------//
+void Miner::Miner_reset () {
 }
 
 } // namespace Volition

@@ -61,13 +61,14 @@ MakerQueue::MakerQueue () :
 }
 
 //----------------------------------------------------------------//
-bool MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
+bool MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult ) {
 
     const TransactionMaker* maker = transaction->getMaker ();
     if ( !maker ) return false;
 
     this->mQueue [ maker->getNonce ()] = transaction;
-    this->mLastResult = TransactionResult ( true );
+    this->setError ( overrideResult );
+
     return true;
 }
 
@@ -238,12 +239,12 @@ void TransactionQueue::pruneTransactions ( const Chain& chain ) {
 }
 
 //----------------------------------------------------------------//
-bool TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
+bool TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult ) {
 
     const TransactionMaker* maker = transaction->getMaker ();
     if ( !maker ) return false;
     
-    return this->mDatabase [ maker->getAccountName ()].pushTransaction ( transaction );
+    return this->mDatabase [ maker->getAccountName ()].pushTransaction ( transaction, overrideResult );
 }
 
 //----------------------------------------------------------------//

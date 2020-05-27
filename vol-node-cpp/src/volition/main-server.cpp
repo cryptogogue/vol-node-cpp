@@ -67,6 +67,13 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "permit-control", "", "permit miner control transactions" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "permit-control" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "port", "p", "set port to serve from" )
                 .required ( false )
                 .argument ( "value", true )
@@ -138,6 +145,7 @@ protected:
         string keyfile                  = configuration.getString   ( "keyfile" );
         string minerID                  = configuration.getString   ( "miner", "" );
         string nodelist                 = configuration.getString   ( "nodelist", "" );
+        bool permitControl              = configuration.getBool     ( "permit-control", false );
         int port                        = configuration.getInt      ( "port", 9090 );
         string redisConf                = configuration.getString   ( "redis-conf", "./redis.conf" );
         string redisHost                = configuration.getString   ( "redis-conf", "127.0.0.1" );
@@ -167,6 +175,11 @@ protected:
             Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
         
             webMiner.setMinerID ( minerID );
+        
+            if ( permitControl ) {
+                LOG_F ( INFO, "CONTROL IS PERMITTED" );
+                webMiner.permitControl ( permitControl );
+            }
         
             if ( solo ) {
                 LOG_F ( INFO, "LAZY and SOLO" );

@@ -67,6 +67,7 @@ private:
     bool                                        mSolo;
     u32                                         mUpdateIntervalInSeconds;
     list < unique_ptr < BlockQueueEntry >>      mBlockQueue;
+    size_t                                      mHeight;
 
     //----------------------------------------------------------------//
     void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
@@ -76,6 +77,9 @@ private:
     void            runSolo                     ();
     void            startTasks                  ();
     void            updateMiners                ();
+
+    //----------------------------------------------------------------//
+    void            Miner_reset                 () override;
 
 public:
 

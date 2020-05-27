@@ -119,6 +119,7 @@
 		CD5ECAEE246B2938009146FB /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAED246B2938009146FB /* version.h */; };
 		CD5ECAF0246B2945009146FB /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAEF246B2945009146FB /* version.h */; };
 		CD5ECAF3246C7257009146FB /* SchemaVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5ECAF2246C7257009146FB /* SchemaVersion.h */; };
+		CD5EE7FC247E121400060B24 /* PublishSchemaAndReset.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5EE7FB247E121400060B24 /* PublishSchemaAndReset.h */; };
 		CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */; };
 		CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */; };
 		CD63A1C422AC6B4100D5C801 /* AssetDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */; };
@@ -727,6 +728,7 @@
 		CD5ECAED246B2938009146FB /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = src/volition/version.h; sourceTree = "<group>"; };
 		CD5ECAEF246B2945009146FB /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = src/.config/volition/version.h; sourceTree = "<group>"; };
 		CD5ECAF2246C7257009146FB /* SchemaVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaVersion.h; path = src/volition/SchemaVersion.h; sourceTree = "<group>"; };
+		CD5EE7FB247E121400060B24 /* PublishSchemaAndReset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PublishSchemaAndReset.h; path = src/volition/transactions/PublishSchemaAndReset.h; sourceTree = "<group>"; };
 		CD63A1BA22AB27FD00D5C801 /* SerializableVectorOrSingle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVectorOrSingle.h; path = src/volition/serialization/SerializableVectorOrSingle.h; sourceTree = "<group>"; };
 		CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDetailsHandler.h; path = "src/volition/web-miner-api/AssetDetailsHandler.h"; sourceTree = "<group>"; };
 		CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetDefinition.h; path = src/volition/AssetDefinition.h; sourceTree = "<group>"; };
@@ -1473,6 +1475,7 @@
 				CD2AB81D230F3D5700805F70 /* Genesis.h */,
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
 				CDBFD540218B8999002AB0C3 /* PublishSchema.h */,
+				CD5EE7FB247E121400060B24 /* PublishSchemaAndReset.h */,
 				CDBFD541218B8999002AB0C3 /* RegisterMiner.h */,
 				CD2AB82F2314E35500805F70 /* RenameAccount.h */,
 				CDAD9436247138B0003FD2CC /* ReserveAccountName.h */,
@@ -1685,6 +1688,7 @@
 				CD73D82D2166D68700F43CC7 /* SimMiner.h in Headers */,
 				CD8BAE3F21EBCF5300B5040E /* SquapFactory.h in Headers */,
 				CDFA238D246007C300B4CECF /* ConstOpt.h in Headers */,
+				CD5EE7FC247E121400060B24 /* PublishSchemaAndReset.h in Headers */,
 				CDFA238A2460071700B4CECF /* AccountODBM.h in Headers */,
 				CD4E8198210593BD007DA585 /* Chain.h in Headers */,
 				CDF8AD5821F39969000E285F /* Entropy.h in Headers */,

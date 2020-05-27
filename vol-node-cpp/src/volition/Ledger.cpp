@@ -234,6 +234,16 @@ bool Ledger::setIdentity ( string identity ) {
 }
 
 //----------------------------------------------------------------//
+void Ledger::setSchema ( const Schema& schema ) {
+
+    string schemaHash = Digest ( schema, Digest::HASH_ALGORITHM_MD5 ).toHex ();
+
+    this->setObject < Schema >( Ledger::keyFor_schema (), schema );
+    this->setObject < SchemaVersion >( Ledger::keyFor_schemaVersion (), schema.mVersion );
+    this->setValue < string >( Ledger::keyFor_schemaHash (), schemaHash );
+}
+
+//----------------------------------------------------------------//
 void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
     this->setObject < UnfinishedBlockList >( keyFor_unfinished (), unfinished );
