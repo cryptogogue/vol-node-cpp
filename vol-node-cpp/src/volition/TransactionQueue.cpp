@@ -226,7 +226,7 @@ void TransactionQueue::pruneTransactions ( const Chain& chain ) {
         MakerQueue& makerQueue = makerQueueIt->second;
     
         Account::Index accountIndex = ledger.getAccountIndex ( accountName );
-        if ( accountIndex == Account::NULL_INDEX ) {
+        if ( accountIndex != Account::NULL_INDEX ) {
     
             u64 nonce = ledger.getAccountTransactionNonce ( accountIndex );
             makerQueue.prune ( nonce );

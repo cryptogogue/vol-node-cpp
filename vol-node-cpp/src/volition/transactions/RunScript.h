@@ -57,7 +57,8 @@ public:
         
         Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
         for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
-            if ( !context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt )) return "Script error.";
+            TransactionResult result = context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt );
+            if ( !result ) return result;
         }
         return true;
     }

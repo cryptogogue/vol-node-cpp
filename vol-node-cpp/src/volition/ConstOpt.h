@@ -24,6 +24,46 @@ public:
     }
 
     //----------------------------------------------------------------//
+    operator TYPE* () {
+        return this->mMutable;
+    }
+
+    //----------------------------------------------------------------//
+    operator TYPE* () const {
+        return this->mMutable;
+    }
+
+    //----------------------------------------------------------------//
+    operator TYPE& () {
+        return this->get ();
+    }
+
+    //----------------------------------------------------------------//
+    operator TYPE& () const {
+        return this->get ();
+    }
+
+    //----------------------------------------------------------------//
+    TYPE& operator * () {
+        return this->get ();
+    }
+
+    //----------------------------------------------------------------//
+    const TYPE& operator * () const {
+        return this->get ();
+    }
+
+    //----------------------------------------------------------------//
+    TYPE* operator -> () {
+        return this->mMutable;
+    }
+
+    //----------------------------------------------------------------//
+    const TYPE* operator -> () const {
+        return this->mConst;
+    }
+
+    //----------------------------------------------------------------//
     ConstOpt () :
         mConst ( NULL ),
         mMutable ( NULL ) {
@@ -64,6 +104,16 @@ public:
     }
     
     //----------------------------------------------------------------//
+    bool isConst () {
+        return ( this->mMutable == NULL );
+    }
+
+    //----------------------------------------------------------------//
+    bool isMutable () {
+        return ( this->mMutable != NULL );
+    }
+    
+    //----------------------------------------------------------------//
     void set ( const TYPE& value ) {
         this->mConst = &value;
         this->mMutable = NULL;
@@ -73,16 +123,6 @@ public:
     void set ( TYPE& value ) {
         this->mConst = &value;
         this->mMutable = &value;
-    }
-    
-    //----------------------------------------------------------------//
-    bool isConst () {
-        return ( this->mMutable == NULL );
-    }
-
-    //----------------------------------------------------------------//
-    bool isMutable () {
-        return ( this->mMutable != NULL );
     }
 };
 

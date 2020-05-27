@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/AbstractTransactionBody.h>
+#include <volition/AccountODBM.h>
 #include <volition/Miner.h>
 #include <volition/Transaction.h>
 #include <volition/TransactionContext.h>
@@ -60,7 +61,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         if ( result ) {
             if ( !ledger.isGenesis ()) {
                 
-                ledger.incAccountTransactionNonce ( account->mIndex, this->mBody->note ());
+                ledger.incAccountTransactionNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
                 
                 if ( cost > 0 ) {
                     Account accountUpdated = *account;
@@ -108,8 +109,10 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
     Signature* signature = this->mSignature.get ();
 
     if ( maker && signature ) {
-        u64 nonce = ledger.getAccountTransactionNonce ( account.mIndex );
-        if ( nonce != maker->getNonce ()) return false;
+        if ( !this->mBody->needsControl ()) {
+            u64 nonce = ledger.getAccountTransactionNonce ( account.mIndex );
+            if ( nonce != maker->getNonce ()) return false;
+        }
         const CryptoKey& key = keyAndPolicy.mKey;
         return key.verify ( *signature, this->mBodyString );
     }
@@ -133,7 +136,14 @@ TransactionResult Transaction::control ( Miner& miner, Ledger& ledger ) const {
     Entitlements entitlements = ledger.getEntitlements < KeyEntitlements >( *keyAndPolicy );
     if ( !entitlements.check ( KeyEntitlements::NODE_CONTROL )) return "Permission denied.";
     
-    return this->mBody->control ( miner, ledger );
+    result = this->mBody->control ( miner, ledger );
+    
+    if ( result ) {
+        AccountODBM accountODBM ( ledger, account->mIndex );
+        accountODBM.mTransactionNonce.set ( maker->getNonce ()); // updated the nonce so the *next* transaction will go through
+        // TODO: recover account if destroyed by control
+    }
+    return result;
 }
 
 //----------------------------------------------------------------//

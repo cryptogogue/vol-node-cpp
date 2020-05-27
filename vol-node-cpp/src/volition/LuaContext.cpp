@@ -19,7 +19,7 @@ static const char* MAIN_FUNC_NAME       = "main";
 
 //----------------------------------------------------------------//
 //LuaContext*      _get_schema         ( lua_State* L );
-int             _lua_call           ( lua_State* L, int nargs, int nresults );
+LedgerResult    _lua_call           ( lua_State* L, int nargs, int nresults );
 int             _print              ( lua_State *L );
 int             _traceback          ( lua_State* L );
 
@@ -34,7 +34,7 @@ int             _traceback          ( lua_State* L );
 //}
 
 //----------------------------------------------------------------//
-int _lua_call ( lua_State* L, int nargs, int nresults ) {
+LedgerResult _lua_call ( lua_State* L, int nargs, int nresults ) {
 
     int errIdx = lua_gettop ( L ) - nargs;
 
@@ -46,7 +46,12 @@ int _lua_call ( lua_State* L, int nargs, int nresults ) {
     if ( !status ) {
         lua_remove ( L, errIdx );
     }
-    return status;
+    else {
+        string error = lua_tostring ( L, -1 );
+        lua_pop ( L, 1 );
+        return error;
+    }
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -89,16 +94,18 @@ int _print ( lua_State *L ) {
 //----------------------------------------------------------------//
 int _traceback ( lua_State* L ) {
     
+    string out;
+    
     if ( lua_isstring ( L, 1 )) {  // 'message' a string?
         const char* msg = lua_tostring ( L, 1 );
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA.ERROR: %s", msg );
+        Format::write ( out, "%s\n", msg );
     }
     
     int firstpart = 1;  /* still before eventual `...' */
     lua_Debug ar;
 
     int level = 1;
-    string out;
+    
 
     while ( lua_getstack ( L, level++, &ar )) {
 
@@ -147,9 +154,10 @@ int _traceback ( lua_State* L ) {
 
     out.append ( "\n" );
     
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA.ERROR.STACKTRACE: %s", out.c_str ());
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA ERROR: %s", out.c_str ());
+    lua_pushstring ( L, out.c_str ());
 
-    return 0;
+    return 1;
 }
 
 //================================================================//
@@ -164,7 +172,7 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     string assetType        = lua_tostring ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
 
-    self.mLedger.awardAssets ( self.mSchema, self.mLedger.getAccountIndex ( accountName ), assetType, quantity );
+    self.mLedger->awardAssets ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), assetType, quantity );
 
     return 0;
 }
@@ -224,7 +232,7 @@ int LuaContext::_randomAward ( lua_State* L ) {
     string seed             = lua_tostring ( L, 3 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
-    self.mLedger.awardAssetsRandom ( self.mSchema, self.mLedger.getAccountIndex ( accountName ), setOrDeckName, seed, quantity );
+    self.mLedger->awardAssetsRandom ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), setOrDeckName, seed, quantity );
     return 0;
 }
 
@@ -290,6 +298,13 @@ int LuaContext::_setAssetField ( lua_State* L ) {
 //================================================================//
 
 //----------------------------------------------------------------//
+LedgerResult LuaContext::compile ( const AssetMethod& method ) {
+
+    luaL_loadbuffer ( this->mLuaState, method.mLua.c_str (), method.mLua.size (), "main" );
+    return _lua_call ( this->mLuaState, 0, 0 );
+}
+
+//----------------------------------------------------------------//
 LuaContext& LuaContext::getSelf ( lua_State* L ) {
 
     lua_getfield ( L, LUA_REGISTRYINDEX, CONTEXT_KEY );
@@ -301,21 +316,12 @@ LuaContext& LuaContext::getSelf ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
-bool LuaContext::invoke ( string accountName ) {
+LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation ) {
 
-    int type = lua_getglobal ( this->mLuaState, MAIN_FUNC_NAME );
-    assert ( type == LUA_TFUNCTION );
-
-    // push the account name
-    lua_pushstring ( this->mLuaState, accountName.c_str ());
-    
-    // call the method
-    _lua_call ( this->mLuaState, 1, 0 );
-    return true; // TODO: handle error
-}
-
-//----------------------------------------------------------------//
-bool LuaContext::invoke ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation ) {
+    LedgerResult result = this->compile ( method );
+    if ( !result ) {
+        return result;
+    }
 
     // get all the assets for the asset params
     map < string, shared_ptr < const Asset >> assets;
@@ -325,7 +331,7 @@ bool LuaContext::invoke ( string accountName, const AssetMethod& method, const A
         string paramName = assetParamIt->first;
         AssetID::Index assetID = assetParamIt->second;
     
-        assets [ paramName ] = this->mLedger.getAsset ( this->mSchema, assetID );
+        assets [ paramName ] = this->mLedger->getAsset ( this->mSchema, assetID );
     }
     if ( !method.checkInvocation ( assets )) return false;
 
@@ -357,12 +363,11 @@ bool LuaContext::invoke ( string accountName, const AssetMethod& method, const A
     }
 
     // call the method
-    _lua_call ( this->mLuaState, 3, 0 );
-    return true; // TODO: handle error
+    return _lua_call ( this->mLuaState, 3, 0 );
 }
 
 //----------------------------------------------------------------//
-LuaContext::LuaContext ( Ledger& ledger, const Schema& schema, string lua ) :
+LuaContext::LuaContext ( ConstOpt < Ledger > ledger, const Schema& schema ) :
     mLedger ( ledger ),
     mSchema ( schema ) {
     
@@ -383,9 +388,6 @@ LuaContext::LuaContext ( Ledger& ledger, const Schema& schema, string lua ) :
     // set the ledger
     lua_pushlightuserdata ( this->mLuaState, this );
     lua_setfield ( this->mLuaState, LUA_REGISTRYINDEX, CONTEXT_KEY );
-    
-    luaL_loadbuffer ( this->mLuaState, lua.c_str (), lua.size (), "main" );
-    _lua_call ( this->mLuaState, 0, 0 );
 }
 
 //----------------------------------------------------------------//

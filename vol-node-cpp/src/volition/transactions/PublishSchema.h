@@ -54,11 +54,10 @@ public:
         if ( updateSchema.hasCollisions ( this->mSchema )) return "Error publishing schema - found collisions.";
         if ( !updateSchema.compose ( this->mSchema )) return "Error publishing schema.";
         
-        string schemaHash = Digest ( updateSchema, Digest::HASH_ALGORITHM_MD5 ).toHex ();
+        LedgerResult result = context.mLedger.checkSchemaMethods ( this->mSchema );
+        if ( !result ) return result;
         
-        context.mLedger.setObject < Schema >( Ledger::keyFor_schema (), updateSchema );
-        context.mLedger.setObject < SchemaVersion >( Ledger::keyFor_schemaVersion (), version1 );
-        context.mLedger.setValue < string >( Ledger::keyFor_schemaHash (), schemaHash );
+        context.mLedger.setSchema ( this->mSchema );
         context.mSchemaHandle.reset ( context.mLedger );
 
         return true;

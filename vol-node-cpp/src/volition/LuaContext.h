@@ -22,7 +22,7 @@ private:
     
     static constexpr const char* CONTEXT_KEY    = "vol.context";
 
-    Ledger&                 mLedger;
+    ConstOpt < Ledger >     mLedger;
     const Schema&           mSchema;
     lua_State*              mLuaState;
 
@@ -44,9 +44,9 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    bool                    invoke                  ( string accountName );
-    bool                    invoke                  ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation );
-                            LuaContext              ( Ledger& ledger, const Schema& schema, string lua );
+    LedgerResult            compile                 ( const AssetMethod& method );
+    LedgerResult            invoke                  ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation );
+                            LuaContext              ( ConstOpt < Ledger > ledger, const Schema& schema );
                             ~LuaContext             ();
     void                    miningReward            ( Ledger& ledger, string rewardName );
     void                    publish                 ( Ledger& ledger );

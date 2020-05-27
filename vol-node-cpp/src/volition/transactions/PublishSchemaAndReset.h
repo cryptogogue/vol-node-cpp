@@ -47,7 +47,10 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA_AND_RESET )) return "Permission denied.";
-        
+
+        LedgerResult result = context.mLedger.checkSchemaMethods ( this->mSchema );
+        if ( !result ) return result;
+
         context.mLedger.setSchema ( this->mSchema );
         context.mSchemaHandle.reset ( context.mLedger );
 
@@ -66,8 +69,6 @@ public:
         
         AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( maker->getAccountName ()));
         if ( accountODBM.mIndex == Account::NULL_INDEX ) return "Transaction cannot be completed. Resetting node destroyed account.";
-        
-        accountODBM.mTransactionNonce.set ( maker->getNonce ()); // updated the nonce so this transaction will go through
         
         return true;
     }

@@ -63,6 +63,7 @@ protected:
     void                    reset                   ();
     
 public:
+
     //----------------------------------------------------------------//
     void                    fillBlock               ( Chain& chain, Block& block );
     TransactionResult       getLastResult           ( string accountName ) const;

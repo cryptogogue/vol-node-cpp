@@ -184,6 +184,7 @@ public:
     }
 
     //----------------------------------------------------------------//
+    LedgerResult                        checkSchemaMethods              ( const Schema& schema ) const;
     shared_ptr < Block >                getBlock                        () const;
     shared_ptr < Block >                getBlock                        ( size_t height ) const;
     u64                                 getBlockSize                    () const;
@@ -199,7 +200,7 @@ public:
     string                              getTransactionNote              ( string accountName, u64 nonce ) const;
     UnfinishedBlockList                 getUnfinished                   ();
     void                                init                            ();
-    bool                                invoke                          ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation );
+    LedgerResult                        invoke                          ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation );
     bool                                isGenesis                       () const;
                                         Ledger                          ();
                                         Ledger                          ( Ledger& other );

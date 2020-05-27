@@ -20,6 +20,28 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+LedgerResult Ledger::checkSchemaMethods ( const Schema& schema ) const {
+
+    string out;
+
+    LuaContext lua ( *this, schema );
+
+    Schema::Methods::const_iterator methodIt = schema.mMethods.cbegin ();
+    for ( ; methodIt != schema.mMethods.cend (); ++methodIt ) {
+        const AssetMethod& method = methodIt->second;
+        LedgerResult result = lua.compile ( method );
+        if ( !result ) {
+        
+            Format::write ( out, "LUA COMPILATION ERROR IN %s:\n", methodIt->first.c_str ());
+            out.append ( result.getMessage ());
+            out.append ( "\n" );
+        }
+    }
+    
+    return out;
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock () const {
 
     return this->getObjectOrNull < Block >( keyFor_block ());
@@ -135,7 +157,7 @@ void Ledger::init () {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::invoke ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation ) {
+LedgerResult Ledger::invoke ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation ) {
 
     const AssetMethod* method = schema.getMethodOrNull ( invocation.mMethodName );
     if ( !( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ))) return false;
@@ -145,7 +167,7 @@ bool Ledger::invoke ( const Schema& schema, string accountName, const AssetMetho
     if ( accountIndex == Account::NULL_INDEX ) return false;
 
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
-    LuaContext lua ( *this, schema, method->mLua );
+    LuaContext lua ( *this, schema );
     return lua.invoke ( accountName, *method, invocation );
 }
 
