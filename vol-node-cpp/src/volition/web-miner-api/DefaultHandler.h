@@ -37,7 +37,8 @@ public:
         jsonOut.set ( "minerID",        scopedLock.getWebMiner ().getMinerID ().c_str ());
         jsonOut.set ( "genesis",        ledger.getGenesisHash ());
         jsonOut.set ( "identity",       ledger.getIdentity ());
-        jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schemaVersion ));
+        jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schemaVersion ));
+        jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
         jsonOut.set ( "build",          Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
         jsonOut.set ( "commit",         Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
 

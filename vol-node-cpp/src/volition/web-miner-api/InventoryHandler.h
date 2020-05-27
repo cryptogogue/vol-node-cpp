@@ -41,8 +41,9 @@ public:
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         
-            jsonOut.set ( "inventory",  inventoryJSON.extract < Poco::JSON::Array::Ptr >());
-            jsonOut.set ( "version",    ToJSONSerializer::toJSON ( schema.getVersion ()));
+            jsonOut.set ( "inventory",      inventoryJSON.extract < Poco::JSON::Array::Ptr >());
+            jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schema.getVersion ()));
+            jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

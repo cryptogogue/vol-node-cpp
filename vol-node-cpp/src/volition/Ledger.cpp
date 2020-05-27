@@ -81,6 +81,12 @@ void Ledger::getSchema ( Schema& schema ) const {
 }
 
 //----------------------------------------------------------------//
+string Ledger::getSchemaHash () const {
+
+    return this->getValue < string >( keyFor_schemaHash ());
+}
+
+//----------------------------------------------------------------//
 string Ledger::getSchemaString () const {
 
     return this->getValue < string >( keyFor_schema ());

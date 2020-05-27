@@ -34,7 +34,8 @@ public:
             Schema schema;
             ledger.getSchema ( schema );
 
-            jsonOut.set ( "schema", ToJSONSerializer::toJSON ( schema ));
+            jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schema ));
+            jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

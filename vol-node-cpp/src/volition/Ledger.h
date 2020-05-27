@@ -174,6 +174,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_schemaHash () {
+        return "schemaHash";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_unfinished () {
         return "unfinished";
     }
@@ -189,6 +194,7 @@ public:
     string                              getIdentity                     () const;
     void                                getSchema                       ( Schema& schema ) const;
     SchemaVersion                       getSchemaVersion                () const;
+    string                              getSchemaHash                   () const;
     string                              getSchemaString                 () const;
     string                              getTransactionNote              ( string accountName, u64 nonce ) const;
     UnfinishedBlockList                 getUnfinished                   ();

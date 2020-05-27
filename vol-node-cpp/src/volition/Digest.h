@@ -29,7 +29,9 @@ private:
 
 public:
     
-    static constexpr const char* DEFAULT_HASH_ALGORITHM = "SHA256";
+    static constexpr const char* HASH_ALGORITHM_MD5         = "MD5";
+    static constexpr const char* HASH_ALGORITHM_SHA256      = "SHA256";
+    static constexpr const char* DEFAULT_HASH_ALGORITHM     = HASH_ALGORITHM_SHA256;
     
     using AbstractStringifiable::operator =;
     
