@@ -22,9 +22,7 @@ AbstractRequestHandler* RouteTable::match ( const Poco::Net::HTTPServerRequest& 
         
         handler = this->mFactories [ request.getMethod ()].create ( pattern );
         if ( handler ) {
-            
-            printf ( "FOUND HANDLER\n" );
-            
+                        
             handler->setMatch ( match );
             
             Poco::URI::QueryParameters queryParams = Poco::URI ( uri ).getQueryParameters ();
@@ -35,27 +33,17 @@ AbstractRequestHandler* RouteTable::match ( const Poco::Net::HTTPServerRequest& 
             return handler.release ();
         }
     }
-    catch ( Routing::PathNotFoundException ) {
-    
-        printf ( "Routing::PathNotFoundException\n" );
-    }
-    
-    printf ( "NO HANDLER FOUND\n" );
-    
+    catch ( Routing::PathNotFoundException ) {}
+        
     try {
         Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
         handler = this->mDefaultAllocator->create ();
         assert ( handler );
-        
-        printf ( "FOUND DEFAULT HANDLER\n" );
-        
+                
         handler->setMatch ( match );
         return handler.release ();
     }
-    catch ( Routing::PathNotFoundException ) {
-    
-        printf ( "Routing::PathNotFoundException (DEFAULT HANDLER )\n" );
-    }
+    catch ( Routing::PathNotFoundException ) {}
     
     return NULL;
 }

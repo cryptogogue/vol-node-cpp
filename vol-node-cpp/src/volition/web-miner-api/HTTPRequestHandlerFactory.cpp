@@ -60,7 +60,6 @@ HTTPRequestHandlerFactory::~HTTPRequestHandlerFactory () {
 //----------------------------------------------------------------//
 Poco::Net::HTTPRequestHandler* HTTPRequestHandlerFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
     
-    printf ( "REQUEST: %s %s\n", request.getMethod ().c_str (), request.getURI ().c_str ());
     return this->mRouteTable.match ( request );
 }
 

@@ -27,9 +27,7 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-        
-        printf ( "DEFAULT HANDLER\n" );
-        
+                
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         
         const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
