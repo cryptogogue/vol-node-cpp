@@ -105,7 +105,7 @@ void Ledger::getSchema ( Schema& schema ) const {
 //----------------------------------------------------------------//
 string Ledger::getSchemaHash () const {
 
-    return this->getValue < string >( keyFor_schemaHash ());
+    return this->getValueOrFallback < string >( keyFor_schemaHash (), "" );
 }
 
 //----------------------------------------------------------------//
