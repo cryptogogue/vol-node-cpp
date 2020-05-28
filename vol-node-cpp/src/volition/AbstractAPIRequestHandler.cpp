@@ -87,7 +87,7 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     HTTP::Method method = HTTP::getMethodForString ( request.getMethod ());
     
     if ( method == HTTP::OPTIONS ) {
-        response.setStatus (  Poco::Net::HTTPResponse::HTTP_OK );
+        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
         response.send ();
         return;
     }

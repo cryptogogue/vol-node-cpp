@@ -28,6 +28,8 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
         
+        printf ( "DEFAULT HANDLER\n" );
+        
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         
         const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
