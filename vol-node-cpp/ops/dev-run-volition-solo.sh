@@ -2,6 +2,9 @@
 
 PROJECT_HOME=$(cd $(dirname "${0}")/../ && pwd)
 
+docker stop volition-node-dev
+docker rm volition-node-dev
+
 docker run -d --name volition-node-dev      \
     --restart unless-stopped                \
     --network="fallguy"                     \

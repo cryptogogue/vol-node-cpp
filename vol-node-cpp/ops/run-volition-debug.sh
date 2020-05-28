@@ -2,6 +2,9 @@
 
 PROJECT_HOME=$(cd $(dirname "${0}")/../ && pwd)
 
+docker stop volition-node
+docker rm volition-node
+
 docker run -d --rm --name volition-node     \
     -p "9090:9090"                          \
     -v ${PROJECT_HOME}:/var/lib/volition    \

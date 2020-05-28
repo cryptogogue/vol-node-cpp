@@ -2,12 +2,12 @@
 
 PROJECT_HOME=$(cd $(dirname "${0}")/../ && pwd)
 
-docker stop volition-node
-docker rm volition-node
+docker stop volition-node-dev
+docker rm volition-node-dev
 
-docker run -it --rm --name volition-node-bash \
+docker run -it --rm --name volition-node-bash-dev \
     --network="fallguy"                     \
-    -p "9090:9090"                          \
+    -p "9091:9091"                          \
     -v ${PROJECT_HOME}:/var/lib/volition \
     --entrypoint "bash" \
-    volition/node
+    volition/node-dev
