@@ -173,7 +173,17 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
 
     self.mLedger->awardAssets ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), assetType, quantity );
+    return 0;
+}
 
+//----------------------------------------------------------------//
+int LuaContext::_awardDeck ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+    
+    string accountName      = lua_tostring ( L, 1 );
+    string deckName         = lua_tostring ( L, 2 );
+
+    self.mResult = self.mLedger->awardDeck ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), deckName );
     return 0;
 }
 
@@ -232,7 +242,7 @@ int LuaContext::_randomAward ( lua_State* L ) {
     string seed             = lua_tostring ( L, 3 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
-    self.mLedger->awardAssetsRandom ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), setOrDeckName, seed, quantity );
+    self.mResult = self.mLedger->awardAssetsRandom ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), setOrDeckName, seed, quantity );
     return 0;
 }
 
@@ -244,8 +254,7 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
     string assetID          = lua_tostring ( L, 1 );
     string fieldName        = lua_tostring ( L, 2 );
 
-    ledger.resetAssetFieldValue ( self.mSchema, AssetID::decode ( assetID ), fieldName );
-
+    self.mResult = ledger.resetAssetFieldValue ( self.mSchema, AssetID::decode ( assetID ), fieldName );
     return 0;
 }
 
@@ -363,13 +372,16 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
     }
 
     // call the method
-    return _lua_call ( this->mLuaState, 3, 0 );
+    this->mResult = true;
+    result = _lua_call ( this->mLuaState, 3, 0 );
+    return result ? this->mResult : result;
 }
 
 //----------------------------------------------------------------//
 LuaContext::LuaContext ( ConstOpt < Ledger > ledger, const Schema& schema ) :
     mLedger ( ledger ),
-    mSchema ( schema ) {
+    mSchema ( schema ),
+    mResult ( true ) {
     
     this->mLuaState = luaL_newstate ();
     
@@ -377,6 +389,7 @@ LuaContext::LuaContext ( ConstOpt < Ledger > ledger, const Schema& schema ) :
     luaL_openlibs ( this->mLuaState );
     
     this->registerFunc ( "awardAsset",              _awardAsset );
+    this->registerFunc ( "awardDeck",               _awardDeck );
     this->registerFunc ( "getEntropy",              _getEntropy );
     this->registerFunc ( "getDefinitionField",      _getDefinitionField );
     this->registerFunc ( "print",                   _print );

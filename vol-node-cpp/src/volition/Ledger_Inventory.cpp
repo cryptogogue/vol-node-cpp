@@ -71,14 +71,14 @@ bool Ledger_Inventory::awardAssets ( const Schema& schema, Account::Index accoun
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index accountIndex, string setOrDeckName, string seed, size_t quantity ) {
+LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index accountIndex, string setOrDeckName, string seed, size_t quantity ) {
 
     Ledger& ledger = this->getLedger ();
 
-    if ( quantity == 0 ) return 0;
+    if ( quantity == 0 ) return true;
 
     const Schema::Deck* setOrDeck = schema.getSetOrDeck ( setOrDeckName );
-    if ( !setOrDeck ) return 0;
+    if ( !setOrDeck ) return Format::write ( "Deck '%s' not found.", setOrDeckName.c_str ());
 
     AccountODBM accountODBM ( ledger, accountIndex );
     if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
@@ -150,8 +150,8 @@ LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index 
 
     Ledger& ledger = this->getLedger ();
         
-    const Schema::Deck* deck = schema.getDeck ( deckName );
-    if ( !deck ) return "Deck not found.";
+    const Schema::Deck* deck = schema.getSetOrDeck ( deckName );
+    if ( !deck ) return Format::write ( "Deck '%s' not found.", deckName.c_str ());
     
     Schema::Deck::const_iterator deckIt = deck->cbegin ();
     for ( ; deckIt != deck->cend (); ++deckIt ) {
@@ -338,19 +338,19 @@ bool Ledger_Inventory::revokeAsset ( AssetID::Index index ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field ) {
+LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field ) {
 
     Ledger& ledger = this->getLedger ();
 
     AssetODBM assetODBM ( ledger, index );
-    if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return false;
+    if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return "No such account.";
     
     string assetType = assetODBM.mType.get ();
     const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
     if ( !assetDefinition ) return false;
 
     AssetFieldDefinition fieldDefinition = assetDefinition->getField ( fieldName );
-    if ( !fieldDefinition.mMutable ) return false;
+    if ( !fieldDefinition.mMutable ) return Format::write ( "Field '%s' is not mutable.",fieldName.c_str ());
 
     LedgerKey KEY_FOR_ASSET_FIELD = AssetODBM::keyFor_field ( index, fieldName );
 
@@ -369,7 +369,7 @@ bool Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index
             break;
             
         default:
-            return false;
+            return "Unknown or invalid param type.";;
     }
     
     InventoryLogEntry logEntry;
