@@ -42,6 +42,7 @@ private:
     void                    push                    ( const Asset& asset );
     void                    push                    ( const AssetFieldValue& value );
     void                    registerFunc            ( string name, lua_CFunction func );
+    void                    setResult               ( LedgerResult result );
 
 public:
 

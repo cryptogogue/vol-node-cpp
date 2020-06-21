@@ -18,20 +18,10 @@ static const int LEVELS2 = 10;    // size of the second part of the stack
 static const char* MAIN_FUNC_NAME       = "main";
 
 //----------------------------------------------------------------//
-//LuaContext*      _get_schema         ( lua_State* L );
 LedgerResult    _lua_call           ( lua_State* L, int nargs, int nresults );
 int             _print              ( lua_State *L );
 int             _traceback          ( lua_State* L );
-
-////----------------------------------------------------------------//
-//LuaContext* _get_schema ( lua_State* L ) {
-//
-//    lua_getglobal ( L, LUA_GLOBAL_SCHEMA );
-//    LuaContext* schemaLua = ( LuaContext* )lua_touserdata ( L, -1 );
-//    lua_pop ( L, 1 );
-//
-//    return schemaLua;
-//}
+string          _to_string          ( lua_State* L, int idx );
 
 //----------------------------------------------------------------//
 LedgerResult _lua_call ( lua_State* L, int nargs, int nresults ) {
@@ -160,6 +150,13 @@ int _traceback ( lua_State* L ) {
     return 1;
 }
 
+//----------------------------------------------------------------//
+string _to_string ( lua_State* L, int idx ) {
+
+    cc8* str = lua_tostring ( L, idx );
+    return str ? str : "";
+}
+
 //================================================================//
 // lua
 //================================================================//
@@ -168,11 +165,11 @@ int _traceback ( lua_State* L ) {
 int LuaContext::_awardAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     
-    string accountName      = lua_tostring ( L, 1 );
-    string assetType        = lua_tostring ( L, 2 );
+    string accountName      = _to_string ( L, 1 );
+    string assetType        = _to_string ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
 
-    self.mLedger->awardAssets ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), assetType, quantity );
+    self.setResult ( self.mLedger->awardAssets ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), assetType, quantity ));
     return 0;
 }
 
@@ -180,10 +177,10 @@ int LuaContext::_awardAsset ( lua_State* L ) {
 int LuaContext::_awardDeck ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     
-    string accountName      = lua_tostring ( L, 1 );
-    string deckName         = lua_tostring ( L, 2 );
+    string accountName      = _to_string ( L, 1 );
+    string deckName         = _to_string ( L, 2 );
 
-    self.mResult = self.mLedger->awardDeck ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), deckName );
+    self.setResult ( self.mLedger->awardDeck ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), deckName ));
     return 0;
 }
 
@@ -191,8 +188,8 @@ int LuaContext::_awardDeck ( lua_State* L ) {
 int LuaContext::_getDefinitionField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
 
-    string definitionName   = lua_tostring ( L, 1 );
-    string fieldName        = lua_tostring ( L, 2 );
+    string definitionName   = _to_string ( L, 1 );
+    string fieldName        = _to_string ( L, 2 );
 
     const AssetDefinition* definition = self.mSchema.getDefinitionOrNull ( definitionName );
 
@@ -237,12 +234,12 @@ int LuaContext::_getEntropy ( lua_State* L ) {
 int LuaContext::_randomAward ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
 
-    string accountName      = lua_tostring ( L, 1 );
-    string setOrDeckName    = lua_tostring ( L, 2 );
-    string seed             = lua_tostring ( L, 3 );
+    string accountName      = _to_string ( L, 1 );
+    string setOrDeckName    = _to_string ( L, 2 );
+    string seed             = _to_string ( L, 3 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
-    self.mResult = self.mLedger->awardAssetsRandom ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), setOrDeckName, seed, quantity );
+    self.setResult ( self.mLedger->awardAssetsRandom ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), setOrDeckName, seed, quantity ));
     return 0;
 }
 
@@ -251,10 +248,10 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     Ledger& ledger = self.mLedger;
 
-    string assetID          = lua_tostring ( L, 1 );
-    string fieldName        = lua_tostring ( L, 2 );
+    string assetID          = _to_string ( L, 1 );
+    string fieldName        = _to_string ( L, 2 );
 
-    self.mResult = ledger.resetAssetFieldValue ( self.mSchema, AssetID::decode ( assetID ), fieldName );
+    self.setResult ( ledger.resetAssetFieldValue ( self.mSchema, AssetID::decode ( assetID ), fieldName ));
     return 0;
 }
 
@@ -265,7 +262,7 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
 
     string assetID          = lua_tostring ( L, 1 );
 
-    ledger.revokeAsset ( AssetID::decode ( assetID ));
+    self.setResult ( ledger.revokeAsset ( AssetID::decode ( assetID )));
     return 0;
 }
 
@@ -274,8 +271,8 @@ int LuaContext::_setAssetField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     Ledger& ledger = self.mLedger;
 
-    string assetID          = lua_tostring ( L, 1 );
-    string fieldName        = lua_tostring ( L, 2 );
+    string assetID          = _to_string ( L, 1 );
+    string fieldName        = _to_string ( L, 2 );
 
     AssetID::Index assetindex = AssetID::decode ( assetID );
     
@@ -297,7 +294,7 @@ int LuaContext::_setAssetField ( lua_State* L ) {
     }
     
     if ( value.isValid ()) {
-        ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value );
+         self.setResult ( ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value ));
     }
     return 0;
 }
@@ -467,6 +464,15 @@ void LuaContext::registerFunc ( string name, lua_CFunction func ) {
 
     lua_pushcfunction ( this->mLuaState, func );
     lua_setglobal ( this->mLuaState, name.c_str ());
+}
+
+//----------------------------------------------------------------//
+void LuaContext::setResult ( LedgerResult result ) {
+
+    // only overwrite if no previous error
+    if ( this->mResult ) {
+        this->mResult = result;
+    }
 }
 
 } // namespace Volition
