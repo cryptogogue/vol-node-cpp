@@ -46,7 +46,7 @@ protected:
     SerializableUniquePtr < TransactionMaker >      mMaker;
     u64                                             mMaxHeight; // expiration block
     SerializableTime                                mRecordBy; // expiration date/time
-    string                                          mNote;
+    string                                          mUUID;
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -58,6 +58,7 @@ protected:
     virtual u64                 AbstractTransactionBody_cost            () const;
     virtual u64                 AbstractTransactionBody_maturity        () const = 0;
     virtual bool                AbstractTransactionBody_needsControl    () const;
+    virtual u64                 AbstractTransactionBody_nonce           () const;
     virtual string              AbstractTransactionBody_typeString      () const = 0;
     virtual u64                 AbstractTransactionBody_weight          () const = 0;
 
@@ -72,8 +73,9 @@ public:
     u64                     gratuity                                () const;
     u64                     maturity                                () const;
     bool                    needsControl                            () const;
-    string                  note                                    () const;
+    u64                     nonce                                   () const;
     string                  typeString                              () const;
+    string                  uuid                                    () const;
     u64                     weight                                  () const;
 };
 

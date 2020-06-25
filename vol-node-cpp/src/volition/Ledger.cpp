@@ -126,22 +126,21 @@ SchemaVersion Ledger::getSchemaVersion () const {
 }
 
 //----------------------------------------------------------------//
-string Ledger::getTransactionNote ( string accountName, u64 nonce ) const {
-
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex != Account::NULL_INDEX ) {
-
-        LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( accountIndex, nonce );
-        return this->getValueOrFallback < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, "" );
-    }
-    return "";
-}
-
-//----------------------------------------------------------------//
 UnfinishedBlockList Ledger::getUnfinished () {
 
     shared_ptr < UnfinishedBlockList > unfinished = this->getObjectOrNull < UnfinishedBlockList >( keyFor_unfinished ());
     return unfinished ? *unfinished : UnfinishedBlockList ();
+}
+
+//----------------------------------------------------------------//
+bool Ledger::hasTransaction ( string accountName, string uuid ) const {
+
+    Account::Index accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex != Account::NULL_INDEX ) {
+    
+        return LedgerFieldODBM < u64 >( *this, AccountODBM::keyFor_transactionLookup ( accountIndex, uuid )).exists ();
+    }
+    return false;
 }
 
 //----------------------------------------------------------------//

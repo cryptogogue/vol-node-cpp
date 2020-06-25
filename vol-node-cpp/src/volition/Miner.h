@@ -76,7 +76,7 @@ public:
                             Miner                   ();
     virtual                 ~Miner                  ();
     void                    permitControl           ( bool permit );
-    bool                    pushTransaction         ( shared_ptr < const Transaction > transaction );
+    void                    pushTransaction         ( shared_ptr < const Transaction > transaction );
     void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );

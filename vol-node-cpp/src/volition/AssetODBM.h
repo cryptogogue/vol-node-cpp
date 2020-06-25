@@ -24,7 +24,7 @@ public:
     ConstOpt < Ledger >     mLedger;
     AssetID::Index          mIndex;
 
-    LedgerFieldODBM < AssetID::Index >  mOwner;
+    LedgerFieldODBM < Account::Index >  mOwner;
     LedgerFieldODBM < u64 >             mInventoryNonce;
     LedgerFieldODBM < u64 >             mPosition;
     LedgerFieldODBM < string >          mType;

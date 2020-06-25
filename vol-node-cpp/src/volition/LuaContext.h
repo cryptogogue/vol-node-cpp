@@ -38,6 +38,12 @@ private:
     static int              _setAssetField          ( lua_State* L );
 
     //----------------------------------------------------------------//
+    Account::Index          checkAccountName        ( string accountName );
+    AssetID::Index          checkAssetID            ( string assetID );
+    bool                    checkAssetType          ( string assetType );
+    bool                    checkDeckOrSet          ( string deckName );
+    const AssetDefinition*  checkDefinition         ( string definitionName );
+    AssetFieldDefinition    checkDefinitionField    ( const AssetDefinition& definition, string fieldName );
     static LuaContext&      getSelf                 ( lua_State* L );
     void                    push                    ( const Asset& asset );
     void                    push                    ( const AssetFieldValue& value );

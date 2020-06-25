@@ -51,13 +51,19 @@ bool AbstractTransactionBody::needsControl () const {
 }
 
 //----------------------------------------------------------------//
-string AbstractTransactionBody::note () const {
-    return this->mNote;
+u64 AbstractTransactionBody::nonce () const {
+
+    return this->AbstractTransactionBody_nonce ();
 }
 
 //----------------------------------------------------------------//
 string AbstractTransactionBody::typeString () const {
     return this->AbstractTransactionBody_typeString ();
+}
+
+//----------------------------------------------------------------//
+string AbstractTransactionBody::uuid () const {
+    return this->mUUID;
 }
 
 //----------------------------------------------------------------//
@@ -78,7 +84,7 @@ void AbstractTransactionBody::AbstractSerializable_serializeFrom ( const Abstrac
     serializer.serialize ( "maker",     this->mMaker );
     serializer.serialize ( "maxHeight", this->mMaxHeight );
     serializer.serialize ( "recordBy",  this->mRecordBy );
-    serializer.serialize ( "note",      this->mNote );
+    serializer.serialize ( "uuid",      this->mUUID );
     
     assert ( type == this->typeString ());
 }
@@ -90,7 +96,7 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
     serializer.serialize ( "maker",     this->mMaker );
     serializer.serialize ( "maxHeight", this->mMaxHeight );
     serializer.serialize ( "recordBy",  this->mRecordBy );
-    serializer.serialize ( "note",      this->mNote );
+    serializer.serialize ( "uuid",      this->mUUID );
 }
 
 //----------------------------------------------------------------//
@@ -111,6 +117,12 @@ u64 AbstractTransactionBody::AbstractTransactionBody_cost () const {
 bool AbstractTransactionBody::AbstractTransactionBody_needsControl () const {
 
     return false;
+}
+
+//----------------------------------------------------------------//
+u64 AbstractTransactionBody::AbstractTransactionBody_nonce () const {
+
+    return this->mMaker ? this->mMaker->getNonce () : 0;
 }
 
 } // namespace Volition

@@ -29,11 +29,21 @@ public:
 // MakerQueue
 //================================================================//
 
-//----------------------------------------------------------------//
-shared_ptr < const Transaction > MakerQueue::getTransaction ( u64 nonce ) const {
+////----------------------------------------------------------------//
+//shared_ptr < const Transaction > MakerQueue::getTransaction ( u64 nonce ) const {
+//
+//    TransactionQueueConstIt transactionIt = this->mQueue.find ( nonce );
+//    return transactionIt != this->mQueue.cend () ? transactionIt->second : NULL;
+//}
 
-    TransactionConstIt transactionIt = this->mQueue.find ( nonce );
-    return transactionIt != this->mQueue.cend () ? transactionIt->second : NULL;
+//----------------------------------------------------------------//
+shared_ptr < const Transaction > MakerQueue::getTransaction ( string uuid ) const {
+
+    if ( this->mControl && ( this->mControl->getUUID () == uuid )) {
+        return this->mControl;
+    }
+    TransactionLookupConstIt transactionIt = this->mLookup.find ( uuid );
+    return transactionIt != this->mLookup.cend () ? transactionIt->second : NULL;
 }
 
 //----------------------------------------------------------------//
@@ -52,7 +62,7 @@ bool MakerQueue::hasTransaction ( u64 nonce ) const {
 //----------------------------------------------------------------//
 bool MakerQueue::hasTransactions () const {
 
-    return ( this->mQueue.size () > 0 );
+    return ( this->mControl || ( this->mQueue.size () > 0 ));
 }
 
 //----------------------------------------------------------------//
@@ -61,26 +71,47 @@ MakerQueue::MakerQueue () :
 }
 
 //----------------------------------------------------------------//
-bool MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult ) {
+shared_ptr < const Transaction > MakerQueue::nextTransaction ( u64 nonce ) const {
 
-    const TransactionMaker* maker = transaction->getMaker ();
-    if ( !maker ) return false;
+    if ( this->mControl && ( nonce <= this->mControl->getNonce ())) {
+        return this->mControl;
+    }
+    TransactionQueueConstIt transactionIt = this->mQueue.find ( nonce );
+    return transactionIt != this->mQueue.cend () ? transactionIt->second : NULL;
+}
 
-    this->mQueue [ maker->getNonce ()] = transaction;
-    this->setError ( overrideResult );
+//----------------------------------------------------------------//
+void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
-    return true;
+    if ( this->mControl ) return;
+
+    if ( transaction->needsControl ()) {
+    
+        this->mQueue.clear ();
+        this->mLookup.clear ();
+    
+        this->mControl = transaction;
+    }
+    else {
+        this->mQueue [ transaction->getNonce ()] = transaction;
+        this->mLookup [ transaction->getUUID ()] = transaction;
+    }
 }
 
 //----------------------------------------------------------------//
 void MakerQueue::prune ( u64 nonce ) {
+    
+    if ( this->mControl && ( this->mControl->getNonce () < nonce )) {
+        this->mControl = NULL;
+    }
 
-    TransactionIt transactionItCursor = this->mQueue.begin ();
+    TransactionQueueIt transactionItCursor = this->mQueue.begin ();
     while ( transactionItCursor != this->mQueue.end ()) {
 
-        TransactionIt transactionIt = transactionItCursor++;
+        TransactionQueueIt transactionIt = transactionItCursor++;
 
         if ( transactionIt->first < nonce ) {
+            this->mLookup.erase ( transactionIt->second->getUUID ());
             this->mQueue.erase ( transactionIt );
         }
     }
@@ -136,12 +167,12 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
                     this->mDatabase.erase ( makerQueueIt );
                     continue;
                 }
-                // get the nonce
                 info.mNonce = ledger.getAccountTransactionNonce ( info.mAccountIndex );
+                infoCache [ accountName ] = info;
             }
             
             // get the next transaction
-            shared_ptr < const Transaction > transaction = makerQueue.getTransaction ( info.mNonce );
+            shared_ptr < const Transaction > transaction = makerQueue.nextTransaction ( info.mNonce );
             if ( !transaction ) continue; // skip if no transaction
             
             u64 transactionSize = transaction->weight ();
@@ -154,10 +185,13 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
             if ( result ) {
                 // transaction succeeded!
                 block.pushTransaction ( transaction );
-                info.mNonce++;
+                
+                if ( !transaction->needsControl ()) {
+                    blockSize += transactionSize;
+                }
+                info.mNonce = transaction->getNonce () + 1;
                 infoCache [ accountName ] = info;
                 
-                blockSize += transactionSize;
                 more = ( more || makerQueue.hasTransaction ( info.mNonce ));
             }
             else {
@@ -190,24 +224,22 @@ TransactionResult TransactionQueue::getLastResult ( string accountName ) const {
 }
 
 //----------------------------------------------------------------//
-string TransactionQueue::getTransactionNote ( string accountName, u64 nonce ) const {
-
-    const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
-    if ( makerQueue ) {
-        shared_ptr < const Transaction > transaction = makerQueue->getTransaction ( nonce );
-        if ( transaction ) {
-            return transaction->getNote ();
-        }
-    }
-    return "";
-}
-
-//----------------------------------------------------------------//
 bool TransactionQueue::hasError ( string accountName ) {
 
     const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
     if ( makerQueue ) {
         return makerQueue->hasError ();
+    }
+    return false;
+}
+
+//----------------------------------------------------------------//
+bool TransactionQueue::hasTransaction ( string accountName, string uuid ) const {
+
+    const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
+    if ( makerQueue ) {
+        shared_ptr < const Transaction > transaction = makerQueue->getTransaction ( uuid );
+        if ( transaction ) return true;
     }
     return false;
 }
@@ -227,7 +259,7 @@ void TransactionQueue::pruneTransactions ( const Chain& chain ) {
     
         Account::Index accountIndex = ledger.getAccountIndex ( accountName );
         if ( accountIndex != Account::NULL_INDEX ) {
-    
+            
             u64 nonce = ledger.getAccountTransactionNonce ( accountIndex );
             makerQueue.prune ( nonce );
         
@@ -239,18 +271,27 @@ void TransactionQueue::pruneTransactions ( const Chain& chain ) {
 }
 
 //----------------------------------------------------------------//
-bool TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult ) {
+void TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
     const TransactionMaker* maker = transaction->getMaker ();
-    if ( !maker ) return false;
+    assert ( maker );
     
-    return this->mDatabase [ maker->getAccountName ()].pushTransaction ( transaction, overrideResult );
+    this->mDatabase [ maker->getAccountName ()].pushTransaction ( transaction );
 }
 
 //----------------------------------------------------------------//
 void TransactionQueue::reset () {
 
     this->mDatabase.clear ();
+}
+
+//----------------------------------------------------------------//
+void TransactionQueue::setError ( shared_ptr < const Transaction > transaction, TransactionResult error ) {
+
+    const TransactionMaker* maker = transaction->getMaker ();
+    if ( !maker ) return;
+
+    return this->mDatabase [ maker->getAccountName ()].setError ( error );
 }
 
 //----------------------------------------------------------------//

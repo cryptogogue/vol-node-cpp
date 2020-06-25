@@ -64,7 +64,7 @@ public:
     u64                                 getAccountTransactionNonce      ( Account::Index accountIndex ) const;
     void                                incAccountInventoryNonce        ( Account::Index accountIndex, const InventoryLogEntry& logEntry );
     void                                incAccountInventoryNonce        ( Account::Index accountIndex, const InventoryLogEntry& logEntry, u64 nonce );
-    void                                incAccountTransactionNonce      ( Account::Index accountIndex, u64 nonce, string note );
+    void                                incAccountTransactionNonce      ( Account::Index accountIndex, u64 nonce, string uuid );
     static bool                         isAccountName                   ( string accountName );
     static bool                         isChildName                     ( string accountName );
     static bool                         isSuffix                        ( string suffix );

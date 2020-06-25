@@ -34,7 +34,7 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryHandler >             ( HTTP::GET,        "/accounts/:accountName/inventory/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryLogHandler >          ( HTTP::GET,        "/accounts/:accountName/inventory/log/:nonce/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >        ( HTTP::GET,        "/accounts/:accountName/keys/?" );
-    this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionHandler >    ( HTTP::GET_PUT,    "/accounts/:accountName/transactions/:nonce/?" );
+    this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionHandler >    ( HTTP::GET_PUT,    "/accounts/:accountName/transactions/:uuid/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >          ( HTTP::GET,        "/assets/:assetIndexOrID/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >          ( HTTP::GET,        "/blocks/:blockID/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >             ( HTTP::GET,        "/blocks/?" );

@@ -65,15 +65,15 @@ public:
     static LedgerKey keyFor_name ( Account::Index index ) {
         return Format::write ( "account.%d.name", index );
     }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_transactionLookup ( Account::Index index, string uuid ) {
+       return Format::write ( "account.%d.transactionLookup.%s", index, uuid.c_str ());
+    }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_transactionNonce ( Account::Index index ) {
         return Format::write ( "account.%d.transactionNonce", index );
-    }
-
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionNoteField ( Account::Index index, u64 nonce ) {
-        return Format::write ( "account.%d.transaction.%d", index, nonce );
     }
 
     //----------------------------------------------------------------//
@@ -95,9 +95,9 @@ public:
     }
     
     //----------------------------------------------------------------//
-    LedgerFieldODBM < string > getTransactionNoteField ( u64 nonce ) {
+    LedgerFieldODBM < u64 > getTransactionLookupField ( string uuid ) {
     
-        return LedgerFieldODBM < string >( this->mLedger, keyFor_transactionNoteField ( this->mIndex, nonce ));
+        return LedgerFieldODBM < u64 >( this->mLedger, keyFor_transactionLookup ( this->mIndex, uuid ));
     }
 };
 

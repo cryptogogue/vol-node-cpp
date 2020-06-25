@@ -167,15 +167,15 @@ void Ledger_Account::incAccountInventoryNonce ( Account::Index accountIndex, con
 }
 
 //----------------------------------------------------------------//
-void Ledger_Account::incAccountTransactionNonce ( Account::Index accountIndex, u64 nonce, string note ) {
+void Ledger_Account::incAccountTransactionNonce ( Account::Index accountIndex, u64 nonce, string uuid ) {
 
     Ledger& ledger = this->getLedger ();
 
     AccountODBM accountODBM ( ledger, accountIndex );
     if ( !accountODBM.mBody.exists ()) return;
-        
-    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_NOTE = AccountODBM::keyFor_transactionNoteField ( accountIndex, nonce );
-    ledger.setValue < string >( KEY_FOR_ACCOUNT_TRANSACTION_NOTE, note );
+    
+    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_LOOKUP = AccountODBM::keyFor_transactionLookup ( accountIndex, uuid );
+    ledger.setValue < u64 >( KEY_FOR_ACCOUNT_TRANSACTION_LOOKUP, nonce );
 
     accountODBM.mTransactionNonce.set ( nonce + 1 );
 }

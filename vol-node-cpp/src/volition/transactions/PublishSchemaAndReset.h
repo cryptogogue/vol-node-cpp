@@ -21,7 +21,7 @@ class PublishSchemaAndReset :
 public:
 
     TRANSACTION_TYPE ( "PUBLISH_SCHEMA_AND_RESET" )
-    TRANSACTION_WEIGHT ( 1 )
+    TRANSACTION_WEIGHT ( 0 )
     TRANSACTION_MATURITY ( 0 )
 
     Schema      mSchema;
@@ -66,7 +66,6 @@ public:
         miner.reset ();
         
         TransactionMaker* maker = this->mMaker.get ();
-        
         AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( maker->getAccountName ()));
         if ( accountODBM.mIndex == Account::NULL_INDEX ) return "Transaction cannot be completed. Resetting node destroyed account.";
         
@@ -77,6 +76,12 @@ public:
     bool AbstractTransactionBody_needsControl () const override {
         
         return true;
+    }
+
+    //----------------------------------------------------------------//
+    u64 AbstractTransactionBody_nonce () const override {
+    
+        return 0;
     }
 };
 

@@ -197,8 +197,8 @@ public:
     SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaHash                   () const;
     string                              getSchemaString                 () const;
-    string                              getTransactionNote              ( string accountName, u64 nonce ) const;
     UnfinishedBlockList                 getUnfinished                   ();
+    bool                                hasTransaction                  ( string accountName, string uuid ) const;
     void                                init                            ();
     LedgerResult                        invoke                          ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation );
     bool                                isGenesis                       () const;

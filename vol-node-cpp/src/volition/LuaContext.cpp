@@ -169,7 +169,11 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     string assetType        = _to_string ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
 
-    self.setResult ( self.mLedger->awardAssets ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), assetType, quantity ));
+    Account::Index accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return 0;
+    if ( !self.checkAssetType ( assetType )) return 0;
+
+    self.setResult ( self.mLedger->awardAssets ( self.mSchema, accountIndex, assetType, quantity ));
     return 0;
 }
 
@@ -178,9 +182,13 @@ int LuaContext::_awardDeck ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     
     string accountName      = _to_string ( L, 1 );
-    string deckName         = _to_string ( L, 2 );
+    string setOrDeckName    = _to_string ( L, 2 );
 
-    self.setResult ( self.mLedger->awardDeck ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), deckName ));
+    Account::Index accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return 0;
+    if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
+
+    self.setResult ( self.mLedger->awardDeck ( self.mSchema, accountIndex, setOrDeckName ));
     return 0;
 }
 
@@ -191,36 +199,32 @@ int LuaContext::_getDefinitionField ( lua_State* L ) {
     string definitionName   = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
 
-    const AssetDefinition* definition = self.mSchema.getDefinitionOrNull ( definitionName );
+    const AssetDefinition* definition = self.checkDefinition ( definitionName );
+    if ( !definition ) return 0;
 
-    if ( definition ) {
-        AssetFieldDefinition field = definition->getField ( fieldName );
-        
-        if ( field.isValid ()) {
-        
-            switch ( field.getType ()) {
+    AssetFieldDefinition field = self.checkDefinitionField ( *definition, fieldName );
+    if ( !field.isValid ()) return 0;
+    
+    switch ( field.getType ()) {
+    
+        case AssetFieldValue::Type::TYPE_BOOL:
+            lua_pushboolean ( L, field.strictBoolean ());
+            break;
             
-                case AssetFieldValue::Type::TYPE_BOOL:
-                    lua_pushboolean ( L, field.strictBoolean ());
-                    break;
-                    
-                case AssetFieldValue::Type::TYPE_NUMBER:
-                    lua_pushnumber ( L, field.strictNumber ());
-                    break;
-                    
-                case AssetFieldValue::Type::TYPE_STRING:
-                    lua_pushstring ( L, field.strictString ().c_str ());
-                    break;
-                    
-                default:
-                    assert ( false );
-                    break;
-            }
-            lua_pushboolean ( L, field.mMutable );
-            return 2;
-        }
+        case AssetFieldValue::Type::TYPE_NUMBER:
+            lua_pushnumber ( L, field.strictNumber ());
+            break;
+            
+        case AssetFieldValue::Type::TYPE_STRING:
+            lua_pushstring ( L, field.strictString ().c_str ());
+            break;
+            
+        default:
+            assert ( false );
+            break;
     }
-    return 0;
+    lua_pushboolean ( L, field.mMutable );
+    return 2;
 }
 
 //----------------------------------------------------------------//
@@ -239,7 +243,11 @@ int LuaContext::_randomAward ( lua_State* L ) {
     string seed             = _to_string ( L, 3 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
-    self.setResult ( self.mLedger->awardAssetsRandom ( self.mSchema, self.mLedger->getAccountIndex ( accountName ), setOrDeckName, seed, quantity ));
+    Account::Index accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return 0;
+    if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
+
+    self.setResult ( self.mLedger->awardAssetsRandom ( self.mSchema, accountIndex, setOrDeckName, seed, quantity ));
     return 0;
 }
 
@@ -251,7 +259,10 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
     string assetID          = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
 
-    self.setResult ( ledger.resetAssetFieldValue ( self.mSchema, AssetID::decode ( assetID ), fieldName ));
+    AssetID::Index assetindex = self.checkAssetID ( assetID );
+    if ( assetindex == AssetID::NULL_INDEX ) return 0;
+
+    self.setResult ( ledger.resetAssetFieldValue ( self.mSchema, assetindex, fieldName ));
     return 0;
 }
 
@@ -262,7 +273,10 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
 
     string assetID          = lua_tostring ( L, 1 );
 
-    self.setResult ( ledger.revokeAsset ( AssetID::decode ( assetID )));
+    AssetID::Index assetindex = self.checkAssetID ( assetID );
+    if ( assetindex == AssetID::NULL_INDEX ) return 0;
+
+    self.setResult ( ledger.revokeAsset ( assetindex ));
     return 0;
 }
 
@@ -274,7 +288,8 @@ int LuaContext::_setAssetField ( lua_State* L ) {
     string assetID          = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
 
-    AssetID::Index assetindex = AssetID::decode ( assetID );
+    AssetID::Index assetindex = self.checkAssetID ( assetID );
+    if ( assetindex == AssetID::NULL_INDEX ) return 0;
     
     AssetFieldValue value;
     
@@ -293,8 +308,11 @@ int LuaContext::_setAssetField ( lua_State* L ) {
             break;
     }
     
-    if ( value.isValid ()) {
-         self.setResult ( ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value ));
+    if ( !value.isValid ()) {
+        self.setResult ( "Invalid field value." );
+    }
+    else {
+        self.setResult ( ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value ));
     }
     return 0;
 }
@@ -302,6 +320,94 @@ int LuaContext::_setAssetField ( lua_State* L ) {
 //================================================================//
 // Schema
 //================================================================//
+
+//----------------------------------------------------------------//
+Account::Index LuaContext::checkAccountName ( string accountName ) {
+
+    if ( accountName.size () == 0 ) {
+        this->setResult ( "Missing account name." );
+        return Account::NULL_INDEX;
+    }
+
+    Account::Index accountIndex = this->mLedger->getAccountIndex ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) {
+        this->setResult ( Format::write ( "Account name '%s' not found.", accountName.c_str ()));
+    }
+    return accountIndex;
+}
+
+//----------------------------------------------------------------//
+AssetID::Index LuaContext::checkAssetID ( string assetID ) {
+
+    if ( assetID.size () == 0 ) {
+        this->setResult ( "Missing asset ID." );
+        return AssetID::NULL_INDEX;
+    }
+
+    AssetID::Index assetIndex = this->mLedger->getAssetID ( assetID );
+    if ( assetIndex == AssetID::NULL_INDEX ) {
+        this->setResult ( Format::write ( "Asset not found for '%s'.", assetID.c_str ()));
+    }
+    return assetIndex;
+}
+
+//----------------------------------------------------------------//
+bool LuaContext::checkAssetType ( string assetType ) {
+
+    if ( assetType.size () == 0 ) {
+        this->setResult ( "Missing asset type." );
+        return false;
+    }
+    
+    if ( !this->mSchema.hasAssetType ( assetType )) {
+        this->setResult ( Format::write ( "Asset type '%s' not found.", assetType.c_str ()));
+        return false;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
+bool LuaContext::checkDeckOrSet ( string deckName ) {
+
+    if ( !this->mSchema.getDeck ( deckName )) {
+        this->setResult ( Format::write ( "Deck '%s' not found.", deckName.c_str ()));
+        return false;
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
+const AssetDefinition* LuaContext::checkDefinition ( string definitionName ) {
+
+    if ( definitionName.size () == 0 ) {
+        this->setResult ( "Missing definition name." );
+        return NULL;
+    }
+
+    const AssetDefinition* definition = this->mSchema.getDefinitionOrNull ( definitionName );
+    if ( !definition ) {
+        this->setResult ( Format::write ( "Definition '%s' not found.", definitionName.c_str ()));
+    }
+    return definition;
+}
+
+//----------------------------------------------------------------//
+AssetFieldDefinition LuaContext::checkDefinitionField ( const AssetDefinition& definition, string fieldName ) {
+
+    AssetFieldDefinition field;
+
+    if ( fieldName.size () == 0 ) {
+        this->setResult ( "Missing field name." );
+        return field;
+    }
+    
+    field = definition.getField ( fieldName );
+    
+    if ( !field.isValid ()) {
+        this->setResult ( Format::write ( "Missing or invalid field '%s'.", fieldName.c_str ()));
+    }
+    return field;
+}
 
 //----------------------------------------------------------------//
 LedgerResult LuaContext::compile ( const AssetMethod& method ) {

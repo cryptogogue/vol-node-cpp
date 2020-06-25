@@ -61,7 +61,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         if ( result ) {
             if ( !ledger.isGenesis ()) {
                 
-                ledger.incAccountTransactionNonce ( account->mIndex, maker->getNonce (), this->mBody->note ());
+                ledger.incAccountTransactionNonce ( account->mIndex, this->getNonce (), this->getUUID ());
                 
                 if ( cost > 0 ) {
                     Account accountUpdated = *account;
@@ -77,7 +77,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
 //----------------------------------------------------------------//
 TransactionResult Transaction::checkBody ( Ledger& ledger, time_t time ) const {
 
-    if ( this->mBody->mNote.size () > MAX_NOTE_LENGTH ) return Format::write ( "Transaction note exceeds %d-character limit", MAX_NOTE_LENGTH );
+    if ( this->mBody->mUUID.size () > MAX_UUID_LENGTH ) return Format::write ( "Transaction UUID exceeds %d-character limit", MAX_UUID_LENGTH );
     
     if ( this->mBody->mMaxHeight > 0 ) {
         u64 height = ledger.getHeight ();
@@ -91,27 +91,27 @@ TransactionResult Transaction::checkBody ( Ledger& ledger, time_t time ) const {
 }
 
 //----------------------------------------------------------------//
-bool Transaction::checkMaker ( string accountName, u64 nonce ) const {
+bool Transaction::checkMaker ( string accountName, string uuid ) const {
 
     if ( !this->mBody ) return false;
-    if ( this->mBody->note ().size () == 0 ) return false;
+    if ( this->getUUID ().size () == 0 ) return false;
     TransactionMaker* maker = this->mBody->mMaker.get ();
-    return ( maker && ( maker->getAccountName () == accountName ) && ( maker->getNonce () == nonce ));
+    return ( maker && ( maker->getAccountName () == accountName ) && ( this->getUUID () == uuid ));
 }
 
 //----------------------------------------------------------------//
 TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const {
 
     if ( ledger.isGenesis ()) return true;
-    if ( this->mBody->note ().size () == 0 ) return false;
+    if ( this->getUUID ().size () == 0 ) return false;
 
     TransactionMaker* maker = this->mBody->mMaker.get ();
     Signature* signature = this->mSignature.get ();
 
     if ( maker && signature ) {
-        if ( !this->mBody->needsControl ()) {
+        if ( !this->needsControl ()) {
             u64 nonce = ledger.getAccountTransactionNonce ( account.mIndex );
-            if ( nonce != maker->getNonce ()) return false;
+            if ( nonce != this->getNonce ()) return false;
         }
         const CryptoKey& key = keyAndPolicy.mKey;
         return key.verify ( *signature, this->mBodyString );
@@ -122,8 +122,7 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
 //----------------------------------------------------------------//
 TransactionResult Transaction::control ( Miner& miner, Ledger& ledger ) const {
 
-    if ( !this->mBody->needsControl ()) return true;
-    if ( !this->mBody ) return "CONTROL: Missing body.";
+    if ( !this->needsControl ()) return true;
     if ( !miner.controlPerimitted ()) return "CONTROL: Control not permitted by this mining node.";
     
     TransactionMaker* maker = this->mBody->mMaker.get ();
@@ -136,14 +135,7 @@ TransactionResult Transaction::control ( Miner& miner, Ledger& ledger ) const {
     Entitlements entitlements = ledger.getEntitlements < KeyEntitlements >( *keyAndPolicy );
     if ( !entitlements.check ( KeyEntitlements::NODE_CONTROL )) return "Permission denied.";
     
-    result = this->mBody->control ( miner, ledger );
-    
-    if ( result ) {
-        AccountODBM accountODBM ( ledger, account->mIndex );
-        accountODBM.mTransactionNonce.set ( maker->getNonce ()); // updated the nonce so the *next* transaction will go through
-        // TODO: recover account if destroyed by control
-    }
-    return result;
+    return this->mBody->control ( miner, ledger );
 }
 
 //----------------------------------------------------------------//
@@ -159,15 +151,26 @@ const TransactionMaker* Transaction::getMaker () const {
 }
 
 //----------------------------------------------------------------//
-string Transaction::getNote () const {
+u64 Transaction::getNonce () const {
 
-    return this->mBody ? this->mBody->note () : "";
+    return this->mBody ? this->mBody->nonce () : 0;
 }
 
+//----------------------------------------------------------------//
+string Transaction::getUUID () const {
+
+    return this->mBody ? this->mBody->uuid () : "";
+}
 
 //----------------------------------------------------------------//
 u64 Transaction::maturity () const {
     return this->mBody->maturity ();
+}
+
+//----------------------------------------------------------------//
+bool Transaction::needsControl () const {
+
+    return ( this->mBody && this->mBody->needsControl ());
 }
 
 //----------------------------------------------------------------//

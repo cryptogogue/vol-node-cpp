@@ -22,12 +22,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry ) {
+LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry ) {
 
     Ledger& ledger = this->getLedger ();
 
     if ( quantity == 0 ) return true;
-    if ( !schema.getDefinitionOrNull ( assetType )) return false;
+    if ( !schema.getDefinitionOrNull ( assetType )) return Format::write ( "Asset type '%s' not found.", assetType.c_str ());
 
     LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = Ledger::keyFor_globalAssetCount ();
     size_t globalAssetCount = ledger.getValueOrFallback < u64 >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
@@ -53,12 +53,12 @@ bool Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& accountO
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::awardAssets ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity ) {
+LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity ) {
 
     Ledger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountIndex );
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return "Account not found.";
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
 
     InventoryLogEntry logEntry;
@@ -71,24 +71,24 @@ bool Ledger_Inventory::awardAssets ( const Schema& schema, Account::Index accoun
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index accountIndex, string setOrDeckName, string seed, size_t quantity ) {
+LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index accountIndex, string deckName, string seed, size_t quantity ) {
 
     Ledger& ledger = this->getLedger ();
 
     if ( quantity == 0 ) return true;
 
-    const Schema::Deck* setOrDeck = schema.getSetOrDeck ( setOrDeckName );
-    if ( !setOrDeck ) return Format::write ( "Deck '%s' not found.", setOrDeckName.c_str ());
+    const Schema::Deck* deck = schema.getDeck ( deckName );
+    if ( !deck ) return Format::write ( "Deck '%s' not found.", deckName.c_str ());
 
     AccountODBM accountODBM ( ledger, accountIndex );
     if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
 
     // TODO: yes, this is inefficient. optimize (and/or cache) later.
     vector < string > expandedSetOrDeck;
-    Schema::Deck::const_iterator setOrDeckIt = setOrDeck->cbegin ();
-    for ( ; setOrDeckIt != setOrDeck->cend (); ++setOrDeckIt ) {
-        string assetType = setOrDeckIt->first;
-        size_t count = setOrDeckIt->second;
+    Schema::Deck::const_iterator deckIt = deck->cbegin ();
+    for ( ; deckIt != deck->cend (); ++deckIt ) {
+        string assetType = deckIt->first;
+        size_t count = deckIt->second;
         for ( size_t i = 0; i < count; ++i ) {
             expandedSetOrDeck.push_back ( assetType );
         }
@@ -100,7 +100,7 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account
     
     Poco::DigestOutputStream digestStream ( digestEngine );
     digestStream << entropy;
-    digestStream << setOrDeckName;
+    digestStream << deckName;
     digestStream << seed;
     digestStream.close ();
 
@@ -150,7 +150,7 @@ LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index 
 
     Ledger& ledger = this->getLedger ();
         
-    const Schema::Deck* deck = schema.getSetOrDeck ( deckName );
+    const Schema::Deck* deck = schema.getDeck ( deckName );
     if ( !deck ) return Format::write ( "Deck '%s' not found.", deckName.c_str ());
     
     Schema::Deck::const_iterator deckIt = deck->cbegin ();
@@ -214,6 +214,19 @@ shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID:
         }
     }
     return asset;
+}
+
+//----------------------------------------------------------------//
+AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
+
+    const Ledger& ledger = this->getLedger ();
+
+    AssetID::Index assetIndex = AssetID::decode ( assetID );
+    
+    Account::Index accountIndex = ledger.getValueOrFallback < Account::Index >( AssetODBM::keyFor_owner ( assetIndex ), Account::NULL_INDEX );
+    if ( accountIndex == Account::NULL_INDEX ) return AssetID::NULL_INDEX; // if an asset doesn't have an owner, it doesn't exist.
+    
+    return assetIndex;
 }
 
 //----------------------------------------------------------------//

@@ -23,11 +23,12 @@ class Ledger_Inventory :
 public:
 
     //----------------------------------------------------------------//
-    bool                                awardAssets                 ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity );
-    bool                                awardAssets                 ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
-    LedgerResult                        awardAssetsRandom           ( const Schema& schema, Account::Index accountIndex, string setOrDeckName, string seed, size_t quantity );
+    LedgerResult                        awardAssets                 ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity );
+    LedgerResult                        awardAssets                 ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
+    LedgerResult                        awardAssetsRandom           ( const Schema& schema, Account::Index accountIndex, string deckName, string seed, size_t quantity );
     LedgerResult                        awardDeck                   ( const Schema& schema, Account::Index accountIndex, string deckName );
     shared_ptr < Asset >                getAsset                    ( const Schema& schema, AssetID::Index index, bool sparse = false ) const;
+    AssetID::Index                      getAssetID                  ( string assetID ) const;
     void                                getInventory                ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
     shared_ptr < InventoryLogEntry >    getInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce ) const;
     bool                                resetAssetFieldValue        ( const Schema& schema, AssetID::Index index, string fieldName );

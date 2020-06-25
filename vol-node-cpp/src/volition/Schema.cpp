@@ -38,9 +38,13 @@ bool Schema::compose ( const Schema& other ) {
 }
 
 //----------------------------------------------------------------//
-const Schema::Deck* Schema::getDeck ( string deckName ) const {
+const Schema::Deck* Schema::getDeck ( string deckOrSetName ) const {
 
-   Decks::const_iterator deckIt = this->mDecks.find ( deckName );
+   Decks::const_iterator deckIt = this->mSets.find ( deckOrSetName );
+   if ( deckIt != this->mSets.end ()) {
+        return &deckIt->second;
+   }
+   deckIt = this->mDecks.find ( deckOrSetName );
    return deckIt != this->mDecks.cend () ? &deckIt->second : NULL;
 }
 
@@ -67,17 +71,6 @@ const AssetMethod* Schema::getMethodOrNull ( string name ) const {
 }
 
 //----------------------------------------------------------------//
-const Schema::Deck* Schema::getSetOrDeck ( string deckOrSetName ) const {
-
-   Decks::const_iterator deckIt = this->mSets.find ( deckOrSetName );
-   if ( deckIt != this->mSets.end ()) {
-        return &deckIt->second;
-   }
-   deckIt = this->mDecks.find ( deckOrSetName );
-   return deckIt != this->mDecks.cend () ? &deckIt->second : NULL;
-}
-
-//----------------------------------------------------------------//
 const Schema::Upgrades& Schema::getUpgrades () const {
     return this->mUpgrades;
 }
@@ -89,7 +82,13 @@ const SchemaVersion& Schema::getVersion () const {
 }
 
 //----------------------------------------------------------------//
-bool Schema::hasCollisions ( const Schema& other ) {
+bool Schema::hasAssetType ( string assetType ) const {
+
+    return ( this->mDefinitions.find ( assetType ) != this->mDefinitions.cend ());
+}
+
+//----------------------------------------------------------------//
+bool Schema::hasCollisions ( const Schema& other ) const {
     
     if ( Schema::hasKeyCollisions ( this->mDefinitions, other.mDefinitions )) return true;
     if ( Schema::hasKeyCollisions ( this->mFonts, other.mFonts )) return true;

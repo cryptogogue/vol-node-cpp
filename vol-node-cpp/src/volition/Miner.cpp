@@ -266,9 +266,16 @@ void Miner::permitControl ( bool permit ) {
 }
 
 //----------------------------------------------------------------//
-bool Miner::pushTransaction ( shared_ptr < const Transaction > transaction ) {
+void Miner::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
-    return this->TransactionQueue::pushTransaction ( transaction, transaction->control ( *this, *this->mBestBranch ));
+    if ( transaction->needsControl ()) {
+        TransactionResult result = transaction->control ( *this, *this->mBestBranch );
+        if ( !result ) {
+            this->setError ( transaction, result );
+            return;
+        }
+    }
+    return this->TransactionQueue::pushTransaction ( transaction );
 }
 
 //----------------------------------------------------------------//

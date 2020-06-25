@@ -19,12 +19,12 @@ class TransactionResult :
     public LedgerResult {
 private:
 
-    string      mNote;
+    string      mUUID;
 
 public:
 
     //----------------------------------------------------------------//
-    string      getNote                     () const;
+    string      getUUID                     () const;
     void        setTransactionDetails       ( const Transaction& transaction );
                 TransactionResult           ( bool status );
                 TransactionResult           ( const char* message );

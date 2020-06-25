@@ -25,7 +25,7 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
         string accountName  = this->getMatchString ( "accountName" );
-        u64 nonce           = this->getMatchU64 ( "nonce" );
+        string uuid         = this->getMatchString ( "uuid" );
     
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         WebMiner& miner = scopedLock.getWebMiner ();
@@ -38,23 +38,21 @@ public:
                     TransactionResult lastResult = miner.getLastResult ( accountName );
                     jsonOut.set ( "status", "REJECTED" );
                     jsonOut.set ( "message", lastResult.getMessage ());
-                    jsonOut.set ( "note", lastResult.getNote ());
+                    jsonOut.set ( "uuid", lastResult.getUUID ());
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
 
                 const Chain& chain = *miner.getBestBranch ();
-                string note = chain.getTransactionNote ( accountName, nonce );
 
-                if ( note.size () > 0 ) {
+                if ( chain.hasTransaction ( accountName, uuid )) {
                     jsonOut.set ( "status", "ACCEPTED" );
-                    jsonOut.set ( "note", note );
+                    jsonOut.set ( "uuid", uuid );
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
 
-                note = miner.getTransactionNote ( accountName, nonce );
-                if ( note.size () > 0 ) {
+                if ( miner.hasTransaction ( accountName, uuid )) {
                     jsonOut.set ( "status", "PENDING" );
-                    jsonOut.set ( "note", note );
+                    jsonOut.set ( "uuid", uuid );
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
                 
@@ -67,7 +65,7 @@ public:
                 SerializableUniquePtr < Transaction > transaction;
                 FromJSONSerializer::fromJSON ( transaction, jsonIn );
 
-                if ( transaction && transaction->checkMaker ( accountName, nonce )) {
+                if ( transaction && transaction->checkMaker ( accountName, uuid )) {
                     scopedLock.getWebMiner ().pushTransaction ( move ( transaction ));
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }

@@ -12,13 +12,13 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-string TransactionResult::getNote () const {
-    return this->mNote;
+string TransactionResult::getUUID () const {
+    return this->mUUID;
 }
 
 //----------------------------------------------------------------//
 void TransactionResult::setTransactionDetails ( const Transaction& transaction ) {
-    this->mNote = transaction.getNote ();
+    this->mUUID = transaction.getUUID ();
 }
 
 //----------------------------------------------------------------//

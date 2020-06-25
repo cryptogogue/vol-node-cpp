@@ -27,22 +27,30 @@ protected:
 
     friend class TransactionQueue;
 
-    typedef map < u64, shared_ptr < const Transaction >>::iterator TransactionIt;
-    typedef map < u64, shared_ptr < const Transaction >>::const_iterator TransactionConstIt;
-    typedef map < u64, shared_ptr < const Transaction >>  Queue;
+    typedef map < u64, shared_ptr < const Transaction >>::iterator              TransactionQueueIt;
+    typedef map < u64, shared_ptr < const Transaction >>::const_iterator        TransactionQueueConstIt;
+    typedef map < u64, shared_ptr < const Transaction >>                        Queue;
     
-    Queue                   mQueue;
-    TransactionResult       mLastResult;
+    typedef map < string, shared_ptr < const Transaction >>::const_iterator     TransactionLookupConstIt;
+    typedef map < string, shared_ptr < const Transaction >>                     Lookup;
+    
+    Queue                               mQueue;
+    Lookup                              mLookup;
+    TransactionResult                   mLastResult;
+
+    shared_ptr < const Transaction >    mControl;
 
 public:
 
     //----------------------------------------------------------------//
-    shared_ptr < const Transaction >    getTransaction          ( u64 nonce ) const;
+    shared_ptr < const Transaction >    getControl              () const;
+    shared_ptr < const Transaction >    getTransaction          ( string uuid ) const;
     bool                                hasError                () const;
     bool                                hasTransaction          ( u64 nonce ) const;
     bool                                hasTransactions         () const;
                                         MakerQueue              ();
-    bool                                pushTransaction         ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult );
+    shared_ptr < const Transaction >    nextTransaction         ( u64 nonce ) const;
+    void                                pushTransaction         ( shared_ptr < const Transaction > transaction );
     void                                prune                   ( u64 nonce );
     void                                setError                ( TransactionResult error );
 };
@@ -67,10 +75,11 @@ public:
     //----------------------------------------------------------------//
     void                    fillBlock               ( Chain& chain, Block& block );
     TransactionResult       getLastResult           ( string accountName ) const;
-    string                  getTransactionNote      ( string accountName, u64 nonce ) const;
     bool                    hasError                ( string accountName );
+    bool                    hasTransaction          ( string accountName, string uuid ) const;
     void                    pruneTransactions       ( const Chain& chain );
-    bool                    pushTransaction         ( shared_ptr < const Transaction > transaction, TransactionResult overrideResult = true );
+    void                    pushTransaction         ( shared_ptr < const Transaction > transaction );
+    void                    setError                ( shared_ptr < const Transaction > transaction, TransactionResult error );
                             TransactionQueue        ();
     virtual                 ~TransactionQueue       ();
 };

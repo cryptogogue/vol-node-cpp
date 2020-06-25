@@ -75,15 +75,15 @@ public:
     //----------------------------------------------------------------//
     bool                        canUpgrade                  ( string type, string upgrade ) const;
     bool                        compose                     ( const Schema& other );
-    const Deck*                 getDeck                     ( string deckName ) const;
+    const Deck*                 getDeck                     ( string deckOrSetName ) const;
     const Definitions&          getDefinitions              () const;
     const AssetDefinition*      getDefinitionOrNull         ( string name ) const;
     const Methods&              getMethods                  () const;
     const AssetMethod*          getMethodOrNull             ( string name ) const;
-    const Deck*                 getSetOrDeck                ( string deckOrSetName ) const;
     const Upgrades&             getUpgrades                 () const;
     const SchemaVersion&        getVersion                  () const;
-    bool                        hasCollisions               ( const Schema& other );
+    bool                        hasAssetType                ( string assetType ) const;
+    bool                        hasCollisions               ( const Schema& other ) const;
 };
 
 } // namespace Volition
