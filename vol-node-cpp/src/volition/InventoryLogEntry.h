@@ -22,12 +22,14 @@ public:
 
     SerializableSet < AssetID::Index >      mAdditions;
     SerializableSet < AssetID::Index >      mDeletions;
+    SerializableTime                        mTime;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
         serializer.serialize ( "additions",         this->mAdditions );
         serializer.serialize ( "deletions",         this->mDeletions );
+        serializer.serialize ( "time",              this->mTime );
     }
     
     //----------------------------------------------------------------//
@@ -35,6 +37,7 @@ public:
     
         serializer.serialize ( "additions",         this->mAdditions );
         serializer.serialize ( "deletions",         this->mDeletions );
+        serializer.serialize ( "time",              this->mTime );
     }
     
     //----------------------------------------------------------------//
@@ -112,6 +115,16 @@ public:
     void insertUpdate ( AssetID::Index update ) {
         this->insertDeletion ( update );
         this->insertAddition ( update );
+    }
+    
+    //----------------------------------------------------------------//
+    InventoryLogEntry () :
+        mTime ( 0 ) {
+    }
+    
+    //----------------------------------------------------------------//
+    InventoryLogEntry ( time_t time ) :
+        mTime ( time ) {
     }
 };
 

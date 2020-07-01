@@ -59,18 +59,7 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        InventoryLogEntry logEntry;
-        u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
-        
-        Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
-        for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
-            ledger.awardAssets ( *context.mSchemaHandle, accountODBM, inventoryNonce, definitionIt->first, ( size_t )this->mNumAssets, logEntry );
-        }
-        
-        ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
-        accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
-        
-        return true;
+        return ledger.awardAssetsAll ( *context.mSchemaHandle, accountODBM.mIndex, ( size_t )this->mNumAssets, context.mTime );
     }
 };
 

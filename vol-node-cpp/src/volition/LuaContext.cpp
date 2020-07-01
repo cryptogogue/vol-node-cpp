@@ -173,7 +173,7 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     if ( accountIndex == Account::NULL_INDEX ) return 0;
     if ( !self.checkAssetType ( assetType )) return 0;
 
-    self.setResult ( self.mLedger->awardAssets ( self.mSchema, accountIndex, assetType, quantity ));
+    self.setResult ( self.mLedger->awardAssets ( self.mSchema, accountIndex, assetType, quantity, self.mTime ));
     return 0;
 }
 
@@ -188,7 +188,7 @@ int LuaContext::_awardDeck ( lua_State* L ) {
     if ( accountIndex == Account::NULL_INDEX ) return 0;
     if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
 
-    self.setResult ( self.mLedger->awardDeck ( self.mSchema, accountIndex, setOrDeckName ));
+    self.setResult ( self.mLedger->awardDeck ( self.mSchema, accountIndex, setOrDeckName, self.mTime ));
     return 0;
 }
 
@@ -247,7 +247,7 @@ int LuaContext::_randomAward ( lua_State* L ) {
     if ( accountIndex == Account::NULL_INDEX ) return 0;
     if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
 
-    self.setResult ( self.mLedger->awardAssetsRandom ( self.mSchema, accountIndex, setOrDeckName, seed, quantity ));
+    self.setResult ( self.mLedger->awardAssetsRandom ( self.mSchema, accountIndex, setOrDeckName, seed, quantity, self.mTime ));
     return 0;
 }
 
@@ -262,7 +262,7 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
     AssetID::Index assetindex = self.checkAssetID ( assetID );
     if ( assetindex == AssetID::NULL_INDEX ) return 0;
 
-    self.setResult ( ledger.resetAssetFieldValue ( self.mSchema, assetindex, fieldName ));
+    self.setResult ( ledger.resetAssetFieldValue ( self.mSchema, assetindex, fieldName, self.mTime ));
     return 0;
 }
 
@@ -276,7 +276,7 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     AssetID::Index assetindex = self.checkAssetID ( assetID );
     if ( assetindex == AssetID::NULL_INDEX ) return 0;
 
-    self.setResult ( ledger.revokeAsset ( assetindex ));
+    self.setResult ( ledger.revokeAsset ( assetindex, self.mTime ));
     return 0;
 }
 
@@ -312,7 +312,7 @@ int LuaContext::_setAssetField ( lua_State* L ) {
         self.setResult ( "Invalid field value." );
     }
     else {
-        self.setResult ( ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value ));
+        self.setResult ( ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value, self.mTime ));
     }
     return 0;
 }
@@ -481,9 +481,10 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
 }
 
 //----------------------------------------------------------------//
-LuaContext::LuaContext ( ConstOpt < Ledger > ledger, const Schema& schema ) :
+LuaContext::LuaContext ( ConstOpt < Ledger > ledger, const Schema& schema, time_t time ) :
     mLedger ( ledger ),
     mSchema ( schema ),
+    mTime ( time ),
     mResult ( true ) {
     
     this->mLuaState = luaL_newstate ();

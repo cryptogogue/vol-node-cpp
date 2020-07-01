@@ -18,6 +18,7 @@ class AbstractSerializable {
 protected:
 
     //----------------------------------------------------------------//
+    virtual void        AbstractSerializable_serializeFrom      () {};
     virtual void        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) = 0;
     virtual void        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const = 0;
 
@@ -29,6 +30,11 @@ public:
     
     //----------------------------------------------------------------//
     virtual ~AbstractSerializable () {
+    }
+
+    //----------------------------------------------------------------//
+    void serializeFrom () {
+        this->AbstractSerializable_serializeFrom ();
     }
 
     //----------------------------------------------------------------//

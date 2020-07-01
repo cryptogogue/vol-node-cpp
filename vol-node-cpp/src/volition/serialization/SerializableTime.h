@@ -32,7 +32,13 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+    void AbstractSerializable_serializeFrom () override {
+    
+        this->mTime = 0;
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         
         const AbstractSerializerFrom* parent = serializer.getParent ();
         if ( parent ) {
@@ -43,7 +49,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
         AbstractSerializerTo* parent = serializer.getParent ();
         if ( parent ) {
@@ -60,6 +66,7 @@ public:
     
     //----------------------------------------------------------------//
     SerializableTime () {
+        time ( &this->mTime );
     }
     
     //----------------------------------------------------------------//

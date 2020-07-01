@@ -52,7 +52,8 @@ public:
             context.mAccount.mIndex,
             context.mLedger.getAccountIndex ( this->mAccountName ),
             this->mAssetIdentifiers.data (),
-            this->mAssetIdentifiers.size ()
+            this->mAssetIdentifiers.size (),
+            context.mTime
         );
     }
 };

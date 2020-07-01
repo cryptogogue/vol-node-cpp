@@ -57,7 +57,7 @@ public:
         
         Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
         for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
-            TransactionResult result = context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt );
+            TransactionResult result = context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt, context.mTime );
             if ( !result ) return result;
         }
         return true;

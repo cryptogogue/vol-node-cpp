@@ -63,7 +63,7 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        return ledger.awardDeck ( *context.mSchemaHandle, account.mIndex, this->mDeckName );
+        return ledger.awardDeck ( *context.mSchemaHandle, account.mIndex, this->mDeckName, context.mTime );
     }
 };
 

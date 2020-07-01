@@ -23,15 +23,17 @@ public:
     SchemaHandle&           mSchemaHandle;
     const Account&          mAccount;
     const KeyAndPolicy&     mKeyAndPolicy;
+    time_t                  mTime;
     Entitlements            mAccountEntitlements;
     Entitlements            mKeyEntitlements;
 
     //----------------------------------------------------------------//
-    TransactionContext ( Ledger& ledger, SchemaHandle& schemaHandle, const Account& account, const KeyAndPolicy& keyAndPolicy ) :
+    TransactionContext ( Ledger& ledger, SchemaHandle& schemaHandle, const Account& account, const KeyAndPolicy& keyAndPolicy, time_t time ) :
         mLedger ( ledger ),
         mSchemaHandle ( schemaHandle ),
         mAccount ( account ),
-        mKeyAndPolicy ( keyAndPolicy ) {
+        mKeyAndPolicy ( keyAndPolicy ),
+        mTime ( time ) {
         
         if ( ledger.isGenesis ()) {
             this->mAccountEntitlements = *AccountEntitlements::getMasterEntitlements ();

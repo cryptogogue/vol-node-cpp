@@ -1,12 +1,11 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_INVENTORYHANDLER_H
-#define VOLITION_WEBMINERAPI_INVENTORYHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_INVENTORYASSETSHANDLER_H
+#define VOLITION_WEBMINERAPI_INVENTORYASSETSHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
-#include <volition/InventoryLogEntry.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/TheWebMiner.h>
 
@@ -14,9 +13,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// InventoryHandler
+// InventoryAssetsHandler
 //================================================================//
-class InventoryHandler :
+class InventoryAssetsHandler :
     public AbstractAPIRequestHandler {
 public:
 
@@ -34,21 +33,15 @@ public:
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         
-            Account::Index accountIndex = ledger.getAccountIndex ( accountName );
-            
-            AccountODBM accountODBM ( ledger, accountIndex );
-            jsonOut.set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
-            jsonOut.set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
-        
-            shared_ptr < InventoryLogEntry > baseEntry = ledger.getInventoryLogEntry ( accountIndex, 0 );
-            if ( baseEntry ) {
-                jsonOut.set ( "inventoryTimestamp", ( string )baseEntry->mTime );
-            }
-            
             Schema schema;
             ledger.getSchema ( schema );
-            jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schema.getVersion ()));
-            jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
+        
+            SerializableList < SerializableSharedPtr < Asset >> inventory;
+            ledger.getInventory ( schema, ledger.getAccountIndex ( accountName ), inventory, 0, true );
+        
+            Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
+        
+            jsonOut.set ( "inventory",      inventoryJSON.extract < Poco::JSON::Array::Ptr >());
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

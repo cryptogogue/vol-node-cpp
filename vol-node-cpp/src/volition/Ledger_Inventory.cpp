@@ -53,7 +53,7 @@ LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& 
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity ) {
+LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
     
@@ -61,17 +61,37 @@ LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, Account::Inde
     if ( accountODBM.mIndex == Account::NULL_INDEX ) return "Account not found.";
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
 
-    InventoryLogEntry logEntry;
+    InventoryLogEntry logEntry ( time );
     this->awardAssets ( schema, accountODBM, inventoryNonce, assetType, quantity, logEntry );
    
-    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
-    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+    ledger.updateInventory ( accountODBM.mIndex, logEntry );
 
     return true;
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index accountIndex, string deckName, string seed, size_t quantity ) {
+LedgerResult Ledger_Inventory::awardAssetsAll ( const Schema& schema, Account::Index accountIndex, size_t quantity, time_t time ) {
+
+    Ledger& ledger = this->getLedger ();
+    
+    AccountODBM accountODBM ( ledger, accountIndex );
+    if ( accountODBM.mIndex == Account::NULL_INDEX ) return "Account not found.";
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+    
+    InventoryLogEntry logEntry ( time );
+    
+    const Schema::Definitions& definitions = schema.getDefinitions ();
+    Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
+    for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
+        ledger.awardAssets ( schema, accountODBM, inventoryNonce, definitionIt->first, quantity, logEntry );
+    }
+    
+    ledger.updateInventory ( accountODBM.mIndex, logEntry );
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index accountIndex, string deckName, string seed, size_t quantity, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -132,21 +152,20 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account
         awards [ awardType ] = awards [ awardType ] + 1;
     }
     
-    InventoryLogEntry logEntry;
+    InventoryLogEntry logEntry ( time );
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
     
     map < string, size_t >::const_iterator awardIt = awards.cbegin ();
     for ( ; awardIt != awards.cend (); ++awardIt ) {
         ledger.awardAssets ( schema, accountODBM, inventoryNonce, awardIt->first, awardIt->second, logEntry );
     }
-    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
-    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+    ledger.updateInventory ( accountODBM.mIndex, logEntry );
     
     return true;
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index accountIndex, string deckName ) {
+LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index accountIndex, string deckName, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
         
@@ -155,7 +174,7 @@ LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index 
     
     Schema::Deck::const_iterator deckIt = deck->cbegin ();
     for ( ; deckIt != deck->cend (); ++deckIt ) {
-        ledger.awardAssets ( schema, accountIndex, deckIt->first, deckIt->second );
+        ledger.awardAssets ( schema, accountIndex, deckIt->first, deckIt->second, time );
     }
     return true;
 }
@@ -261,7 +280,7 @@ shared_ptr < InventoryLogEntry > Ledger_Inventory::getInventoryLogEntry ( Accoun
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName ) {
+bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -298,14 +317,14 @@ bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Ind
         }
     }
     
-    InventoryLogEntry logEntry;
+    InventoryLogEntry logEntry ( time );
     logEntry.insertUpdate ( assetODBM.mIndex );
-    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get (), logEntry );
+    ledger.updateInventory ( assetODBM.mIndex, logEntry );
     return true;
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::revokeAsset ( AssetID::Index index ) {
+bool Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -341,17 +360,15 @@ bool Ledger_Inventory::revokeAsset ( AssetID::Index index ) {
     // shrink account inventory by one
     accountODBM.mAssetCount.set ( accountAssetCount - 1 );
     
-    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
-    InventoryLogEntry logEntry;
+    InventoryLogEntry logEntry ( time );
     logEntry.insertDeletion ( assetODBM.mIndex );
-    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
-    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+    ledger.updateInventory ( accountODBM.mIndex, logEntry );
     
     return true;
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field ) {
+LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -385,20 +402,14 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetI
             return "Unknown or invalid param type.";;
     }
     
-    InventoryLogEntry logEntry;
+    InventoryLogEntry logEntry ( time );
     logEntry.insertUpdate ( assetODBM.mIndex );
-    ledger.incAccountInventoryNonce ( assetODBM.mOwner.get (), logEntry );
+    ledger.updateInventory ( assetODBM.mIndex, logEntry );
     return true;
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::setInventoryLogEntry ( Account::Index accountIndex, u64 inventoryNonce, const InventoryLogEntry& entry ) {
-
-    this->getLedger ().setObject < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ), entry );
-}
-
-//----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountIndex, Account::Index receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets ) {
+LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountIndex, Account::Index receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
     
     Ledger& ledger = this->getLedger ();
     
@@ -427,11 +438,8 @@ LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountInde
         if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), ledger.getAccountName ( senderAccountIndex ).c_str ());
     }
     
-    u64 senderInventoryNonce = senderODBM.mInventoryNonce.get ( 0 );
-    InventoryLogEntry senderLogEntry;
-    
-    u64 receiverInventoryNonce = receiverODBM.mInventoryNonce.get ( 0 );
-    InventoryLogEntry receiverLogEntry;
+    InventoryLogEntry senderLogEntry ( time );
+    InventoryLogEntry receiverLogEntry ( time );
 
     for ( size_t i = 0; i < totalAssets; ++i, --senderAssetCount, ++receiverAssetCount ) {
         
@@ -450,7 +458,7 @@ LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountInde
         
         // transfer asset ownership to the receiver
         assetODBM.mOwner.set ( receiverODBM.mIndex );
-        assetODBM.mInventoryNonce.set ( receiverInventoryNonce );
+        assetODBM.mInventoryNonce.set ( receiverODBM.mInventoryNonce.get ());
         assetODBM.mPosition.set ( receiverAssetCount );
         receiverODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
         
@@ -459,19 +467,28 @@ LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountInde
         receiverLogEntry.insertAddition ( assetODBM.mIndex );
     }
     
-    ledger.setInventoryLogEntry ( senderODBM.mIndex, senderInventoryNonce, senderLogEntry );
+    ledger.updateInventory ( senderODBM.mIndex, senderLogEntry );
     senderODBM.mAssetCount.set ( senderAssetCount );
-    senderODBM.mInventoryNonce.set ( senderInventoryNonce + 1 );
     
-    ledger.setInventoryLogEntry ( receiverODBM.mIndex, receiverInventoryNonce, receiverLogEntry );
+    ledger.updateInventory ( receiverODBM.mIndex, receiverLogEntry );
     receiverODBM.mAssetCount.set ( receiverAssetCount );
-    receiverODBM.mInventoryNonce.set ( receiverInventoryNonce + 1 );
     
     return true;
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, Account::Index accountIndex, const map < string, string >& upgrades ) {
+void Ledger_Inventory::updateInventory ( Account::Index accountIndex, const InventoryLogEntry& entry ) {
+
+    Ledger& ledger = this->getLedger ();
+    AccountODBM accountODBM ( ledger, accountIndex );
+
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+    this->getLedger ().setObject < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ), entry );
+    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, Account::Index accountIndex, const map < string, string >& upgrades, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
     
@@ -493,7 +510,7 @@ LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, Account::In
     }
     
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
-    InventoryLogEntry logEntry;
+    InventoryLogEntry logEntry ( time );
     
     // perform the upgrades
     upgradeIt = upgrades.cbegin ();
@@ -506,8 +523,7 @@ LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, Account::In
         logEntry.insertDeletion ( assetODBM.mIndex );
         logEntry.insertAddition ( assetODBM.mIndex );
     }
-    ledger.setInventoryLogEntry ( accountODBM.mIndex, inventoryNonce, logEntry );
-    accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+    ledger.updateInventory ( accountODBM.mIndex, logEntry );
     return true;
 }
 

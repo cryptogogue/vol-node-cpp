@@ -20,14 +20,14 @@ TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle
 
     TransactionResult result = this->checkBody ( ledger, time );
     if ( result ) {
-        result = this->applyInner ( ledger, schemaHandle );
+        result = this->applyInner ( ledger, schemaHandle, time );
     }
     result.setTransactionDetails ( *this );
     return result;
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schemaHandle ) const {
+TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time ) const {
     
     if ( !this->mBody ) return "Missing body.";
     
@@ -51,7 +51,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
     TransactionResult result = this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy );
     if ( result ) {
         
-        TransactionContext context ( ledger, schemaHandle, *account, *keyAndPolicy );
+        TransactionContext context ( ledger, schemaHandle, *account, *keyAndPolicy, time );
         
         u64 cost = this->mBody->cost ();
         if ( account->mBalance < cost ) return "Insufficient funds.";

@@ -32,7 +32,7 @@ protected:
     SignaturePtr            mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
-    TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle ) const;
+    TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time ) const;
     TransactionResult           checkBody               ( Ledger& ledger, time_t time ) const;
     
     //----------------------------------------------------------------//

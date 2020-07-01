@@ -200,7 +200,7 @@ public:
     UnfinishedBlockList                 getUnfinished                   ();
     bool                                hasTransaction                  ( string accountName, string uuid ) const;
     void                                init                            ();
-    LedgerResult                        invoke                          ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation );
+    LedgerResult                        invoke                          ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation, time_t time );
     bool                                isGenesis                       () const;
                                         Ledger                          ();
                                         Ledger                          ( Ledger& other );

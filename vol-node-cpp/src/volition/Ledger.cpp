@@ -24,7 +24,7 @@ LedgerResult Ledger::checkSchemaMethods ( const Schema& schema ) const {
 
     string out;
 
-    LuaContext lua ( *this, schema );
+    LuaContext lua ( *this, schema, 0 );
 
     Schema::Methods::const_iterator methodIt = schema.mMethods.cbegin ();
     for ( ; methodIt != schema.mMethods.cend (); ++methodIt ) {
@@ -156,7 +156,7 @@ void Ledger::init () {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::invoke ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation ) {
+LedgerResult Ledger::invoke ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation, time_t time ) {
 
     const AssetMethod* method = schema.getMethodOrNull ( invocation.mMethodName );
     if ( !( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ))) return false;
@@ -166,7 +166,7 @@ LedgerResult Ledger::invoke ( const Schema& schema, string accountName, const As
     if ( accountIndex == Account::NULL_INDEX ) return false;
 
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
-    LuaContext lua ( *this, schema );
+    LuaContext lua ( *this, schema, time );
     return lua.invoke ( accountName, *method, invocation );
 }
 

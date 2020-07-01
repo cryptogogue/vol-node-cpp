@@ -138,6 +138,10 @@ protected:
             }
             value.serializeFrom ( serializer );
         }
+        else {
+        
+            value.serializeFrom ();
+        }
     }
 
     //----------------------------------------------------------------//

@@ -47,7 +47,8 @@ public:
         return context.mLedger.upgradeAssets (
             *context.mSchemaHandle,
             context.mAccount.mIndex,
-            this->mUpgrades
+            this->mUpgrades,
+            context.mTime
         );
     }
 };

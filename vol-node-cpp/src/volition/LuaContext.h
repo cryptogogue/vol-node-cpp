@@ -24,6 +24,7 @@ private:
 
     ConstOpt < Ledger >     mLedger;
     const Schema&           mSchema;
+    time_t                  mTime;
     lua_State*              mLuaState;
     LedgerResult            mResult;
 
@@ -55,7 +56,7 @@ public:
     //----------------------------------------------------------------//
     LedgerResult            compile                 ( const AssetMethod& method );
     LedgerResult            invoke                  ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation );
-                            LuaContext              ( ConstOpt < Ledger > ledger, const Schema& schema );
+                            LuaContext              ( ConstOpt < Ledger > ledger, const Schema& schema, time_t time );
                             ~LuaContext             ();
     void                    miningReward            ( Ledger& ledger, string rewardName );
     void                    publish                 ( Ledger& ledger );
