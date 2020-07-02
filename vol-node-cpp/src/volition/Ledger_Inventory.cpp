@@ -458,7 +458,7 @@ LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountInde
         
         // transfer asset ownership to the receiver
         assetODBM.mOwner.set ( receiverODBM.mIndex );
-        assetODBM.mInventoryNonce.set ( receiverODBM.mInventoryNonce.get ());
+        assetODBM.mInventoryNonce.set ( receiverODBM.mInventoryNonce.get ( 0 ));
         assetODBM.mPosition.set ( receiverAssetCount );
         receiverODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mIndex );
         

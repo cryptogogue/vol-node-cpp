@@ -18,12 +18,17 @@ namespace Volition {
 //----------------------------------------------------------------//
 TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle ) const {
 
-    TransactionResult result = this->checkBody ( ledger, time );
-    if ( result ) {
-        result = this->applyInner ( ledger, schemaHandle, time );
+    try {
+        TransactionResult result = this->checkBody ( ledger, time );
+        if ( result ) {
+            result = this->applyInner ( ledger, schemaHandle, time );
+        }
+        result.setTransactionDetails ( *this );
+        return result;
     }
-    result.setTransactionDetails ( *this );
-    return result;
+    catch ( ... ) {
+        return "Exception occured while applying transaction.";
+    }
 }
 
 //----------------------------------------------------------------//
