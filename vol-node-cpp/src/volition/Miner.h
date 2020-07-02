@@ -67,6 +67,7 @@ public:
     const Chain*            getBestBranch           () const;
     size_t                  getLongestBranchSize    () const;
     bool                    getLazy                 () const;
+    Ledger&                 getLedger               ();
     const Ledger&           getLedger               () const;
     string                  getMinerID              () const;
     time_t                  getTime                 () const;

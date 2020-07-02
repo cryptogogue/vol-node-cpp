@@ -35,10 +35,8 @@ public:
             u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoull ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
             
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-        
-            Schema schema;
-            ledger.getSchema ( schema );
+            Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+            const Schema& schema = ledger.getSchema ();
         
             shared_ptr < Asset > asset = ledger.getAsset ( schema, index );
             

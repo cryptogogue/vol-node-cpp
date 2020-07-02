@@ -41,28 +41,6 @@
                     "accountName" : "beta"
                 },
                 "type" :            "SET_ENTITLEMENTS",
-                "name" :            "beta-account",
-                "entitlements" : {
-                    "type" : "path",
-                    "children" : {
-                        "MAX_ASSETS": {
-                            "type": "numeric",
-                            "upper": {
-                                "enabled": true,
-                                "exclude": false,
-                                "limit": 1024
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "bodyIn" : {
-                "maker" : {
-                    "accountName" : "beta"
-                },
-                "type" :            "SET_ENTITLEMENTS",
                 "name" :            "beta-key",
                 "entitlements" : {
                     "type" : "path",
@@ -72,6 +50,10 @@
                             "value": true
                         },
                         "RENAME_ACCOUNT": {
+                            "type": "boolean",
+                            "value": true
+                        },
+                        "RUN_SCRIPT": {
                             "type": "boolean",
                             "value": true
                         },
@@ -88,17 +70,6 @@
                             "value": true
                         }
                     }
-                }
-            }
-        },
-        {
-            "bodyIn" : {
-                "maker" : {
-                    "accountName" : "beta"
-                },
-                "type" :            "RESTRICT_ACCOUNT",
-                "bequest" : {
-                    "base" : "beta-account"
                 }
             }
         },

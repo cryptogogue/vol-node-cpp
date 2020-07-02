@@ -15,7 +15,7 @@ namespace Volition {
 class SchemaHandle {
 private:
 
-    shared_ptr < Schema >   mSchema;
+    const Schema*   mSchema;
 
 public:
 
@@ -37,17 +37,16 @@ public:
 
     //----------------------------------------------------------------//
     const Schema* getSchema () const {
-        return this->mSchema.get ();
+        return this->mSchema;
     }
 
     //----------------------------------------------------------------//
-    void reset ( const Ledger& ledger ) {
-        this->mSchema = make_shared < Schema >();
-        ledger.getSchema ( *this->mSchema );
+    void reset ( Ledger& ledger ) {
+        this->mSchema = &ledger.getSchema ();
     }
 
     //----------------------------------------------------------------//
-    SchemaHandle ( const Ledger& ledger ) {
+    SchemaHandle ( Ledger& ledger ) {
         this->reset ( ledger );
     }
 };

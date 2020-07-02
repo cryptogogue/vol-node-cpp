@@ -29,10 +29,8 @@ public:
     
         try {
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-            
-            Schema schema;
-            ledger.getSchema ( schema );
+            Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+            const Schema& schema = ledger.getSchema ();
 
             jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schema ));
             jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());

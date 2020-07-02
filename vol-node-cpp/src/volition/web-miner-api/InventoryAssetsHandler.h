@@ -31,11 +31,9 @@ public:
             string accountName = this->getMatchString ( "accountName" );
         
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-        
-            Schema schema;
-            ledger.getSchema ( schema );
-        
+            Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+            const Schema& schema = ledger.getSchema ();
+            
             SerializableList < SerializableSharedPtr < Asset >> inventory;
             ledger.getInventory ( schema, ledger.getAccountIndex ( accountName ), inventory, 0, true );
         

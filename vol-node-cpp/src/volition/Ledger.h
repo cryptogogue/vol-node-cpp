@@ -92,6 +92,8 @@ class Ledger :
     public Ledger_Miner {
 private:
 
+    map < string, Schema >  mSchemaCache;
+
     //----------------------------------------------------------------//
     Ledger&             AbstractLedgerComponent_getLedger       ();
     const Ledger&       AbstractLedgerComponent_getLedger       () const;
@@ -185,6 +187,7 @@ public:
 
     //----------------------------------------------------------------//
     LedgerResult                        checkSchemaMethods              ( const Schema& schema ) const;
+    void                                clearSchemaCache                ();
     shared_ptr < Block >                getBlock                        () const;
     shared_ptr < Block >                getBlock                        ( size_t height ) const;
     u64                                 getBlockSize                    () const;
@@ -193,6 +196,7 @@ public:
     string                              getGenesisHash                  () const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
+    const Schema&                       getSchema                       ();
     void                                getSchema                       ( Schema& schema ) const;
     SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaHash                   () const;

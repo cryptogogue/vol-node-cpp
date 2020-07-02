@@ -182,6 +182,13 @@ bool Miner::getLazy () const {
 }
 
 //----------------------------------------------------------------//
+Ledger& Miner::getLedger () {
+
+    assert ( this->mBestBranch );
+    return *this->mBestBranch;
+}
+
+//----------------------------------------------------------------//
 const Ledger& Miner::getLedger () const {
 
     assert ( this->mBestBranch );
@@ -295,6 +302,7 @@ void Miner::reset () {
 
     this->TransactionQueue::reset ();
     this->mBestBranch->reset ( 1 );
+    this->mBestBranch->clearSchemaCache ();
     this->mBranches.clear ();
     this->mBranches.insert ( this->mBestBranch );
     if ( this->mChainRecorder ) {

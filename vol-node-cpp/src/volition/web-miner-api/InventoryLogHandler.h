@@ -34,10 +34,8 @@ public:
             u64 count           = this->optQuery ( "count", 1 );
             
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
-        
-            Schema schema;
-            ledger.getSchema ( schema );
+            Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+            const Schema& schema = ledger.getSchema ();
             
             SerializableSet < AssetID::Index > additions;
             SerializableSet < AssetID::Index > deletions;

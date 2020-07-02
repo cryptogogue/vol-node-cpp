@@ -32,7 +32,7 @@ public:
             string accountName = this->getMatchString ( "accountName" );
         
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+            Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         
             Account::Index accountIndex = ledger.getAccountIndex ( accountName );
             
@@ -45,8 +45,7 @@ public:
                 jsonOut.set ( "inventoryTimestamp", ( string )baseEntry->mTime );
             }
             
-            Schema schema;
-            ledger.getSchema ( schema );
+            const Schema& schema = ledger.getSchema ();
             jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schema.getVersion ()));
             jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
         }

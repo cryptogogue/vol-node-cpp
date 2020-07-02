@@ -42,6 +42,12 @@ LedgerResult Ledger::checkSchemaMethods ( const Schema& schema ) const {
 }
 
 //----------------------------------------------------------------//
+void Ledger::clearSchemaCache () {
+
+    this->mSchemaCache.clear ();
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock () const {
 
     return this->getObjectOrNull < Block >( keyFor_block ());
@@ -91,6 +97,21 @@ u64 Ledger::getHeight () const {
 string Ledger::getIdentity () const {
 
     return this->getValueOrFallback < string >( keyFor_identity (), "" );
+}
+
+//----------------------------------------------------------------//
+const Schema& Ledger::getSchema () {
+
+    string schemaHash = this->getSchemaHash ();
+    
+    map < string, Schema >::const_iterator schemaIt = this->mSchemaCache.find ( schemaHash );
+    if ( schemaIt != this->mSchemaCache.cend ()) {
+        return schemaIt->second;
+    }
+    
+    Schema& schema = this->mSchemaCache [ schemaHash ];
+    this->getSchema ( schema );
+    return schema;
 }
 
 //----------------------------------------------------------------//
