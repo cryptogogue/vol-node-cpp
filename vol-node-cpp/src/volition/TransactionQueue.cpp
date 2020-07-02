@@ -29,13 +29,6 @@ public:
 // MakerQueue
 //================================================================//
 
-////----------------------------------------------------------------//
-//shared_ptr < const Transaction > MakerQueue::getTransaction ( u64 nonce ) const {
-//
-//    TransactionQueueConstIt transactionIt = this->mQueue.find ( nonce );
-//    return transactionIt != this->mQueue.cend () ? transactionIt->second : NULL;
-//}
-
 //----------------------------------------------------------------//
 shared_ptr < const Transaction > MakerQueue::getTransaction ( string uuid ) const {
 
@@ -89,13 +82,13 @@ void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction 
     
         this->mQueue.clear ();
         this->mLookup.clear ();
-    
         this->mControl = transaction;
     }
     else {
         this->mQueue [ transaction->getNonce ()] = transaction;
         this->mLookup [ transaction->getUUID ()] = transaction;
     }
+    this->mLastResult = true;
 }
 
 //----------------------------------------------------------------//
