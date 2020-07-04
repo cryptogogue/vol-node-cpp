@@ -51,6 +51,7 @@ protected:
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
     virtual time_t          Miner_getTime                           () const;
     virtual void            Miner_reset                             ();
+    virtual void            Miner_shutdown                          ( bool kill );
 
 public:
 
@@ -61,7 +62,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                    checkBestBranch         ( string miners ) const;
-    bool                    controlPerimitted       () const;
+    bool                    controlPermitted        () const;
     size_t                  countBranches           () const;
     void                    extend                  ( bool force = false );
     const Chain*            getBestBranch           () const;
@@ -77,13 +78,13 @@ public:
                             Miner                   ();
     virtual                 ~Miner                  ();
     void                    permitControl           ( bool permit );
-    void                    pushTransaction         ( shared_ptr < const Transaction > transaction );
     void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                    setGenesis              ( const Block& block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );
     void                    reset                   ();
     void                    selectBranch            ();
+    void                    shutdown                ( bool kill = true );
     SubmissionResponse      submitBlock             ( const Block& block );
     void                    submitChain             ( const Chain& chain );
 };

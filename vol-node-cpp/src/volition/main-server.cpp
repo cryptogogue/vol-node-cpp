@@ -216,7 +216,7 @@ protected:
 
         {
             Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
-            scopedLock.getWebMiner ().shutdown ();
+            scopedLock.getWebMiner ().shutdown ( false );
         }
         return Application::EXIT_OK;
     }
@@ -256,9 +256,11 @@ protected:
     //----------------------------------------------------------------//
     void serve ( int port, bool ssl ) {
 
+        Poco::ThreadPool threadPool;
 
         Poco::Net::HTTPServer server (
             new Volition::WebMinerAPI::HTTPRequestHandlerFactory (),
+            threadPool,
             ssl ? Poco::Net::SecureServerSocket (( Poco::UInt16 )port ) : Poco::Net::ServerSocket (( Poco::UInt16 )port ),
             new Poco::Net::HTTPServerParams ()
         );
@@ -269,13 +271,13 @@ protected:
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
         // need to find out how to stop POCO from doing this. in the meantime, this hack.
         #ifdef _DEBUG
-            Poco::Event dummy;
-            dummy.wait ();
+            Volition::TheWebMiner::get ().waitForShutdown ();
         #else
             this->waitForTerminationRequest ();  // wait for CTRL-C or kill
         #endif
 
         server.stop ();
+        threadPool.stopAll ();
     }
 
 public:

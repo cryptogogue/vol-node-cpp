@@ -86,7 +86,7 @@ void Miner::checkEnvironment () {
 }
 
 //----------------------------------------------------------------//
-bool Miner::controlPerimitted () const {
+bool Miner::controlPermitted () const {
 
     return this->mControlPermitted;
 }
@@ -273,19 +273,6 @@ void Miner::permitControl ( bool permit ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::pushTransaction ( shared_ptr < const Transaction > transaction ) {
-
-    if ( transaction->needsControl ()) {
-        TransactionResult result = transaction->control ( *this, *this->mBestBranch );
-        if ( !result ) {
-            this->setError ( transaction, result );
-            return;
-        }
-    }
-    return this->TransactionQueue::pushTransaction ( transaction );
-}
-
-//----------------------------------------------------------------//
 void Miner::setLazy ( bool lazy ) {
 
     this->mLazy = lazy;
@@ -365,6 +352,12 @@ void Miner::selectBranch () {
     }
     this->mBestBranch = bestBranch;
     assert ( this->mBestBranch );
+}
+
+//----------------------------------------------------------------//
+void Miner::shutdown ( bool kill ) {
+
+    this->Miner_shutdown ( kill );
 }
 
 //----------------------------------------------------------------//
@@ -462,6 +455,11 @@ time_t Miner::Miner_getTime () const {
 
 //----------------------------------------------------------------//
 void Miner::Miner_reset () {
+}
+
+//----------------------------------------------------------------//
+void Miner::Miner_shutdown ( bool kill ) {
+    UNUSED ( kill );
 }
 
 } // namespace Volition

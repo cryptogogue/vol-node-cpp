@@ -66,6 +66,13 @@ public:
                 FromJSONSerializer::fromJSON ( transaction, jsonIn );
 
                 if ( transaction && transaction->checkMaker ( accountName, uuid )) {
+                    if ( transaction->needsControl () && miner.controlPermitted ()) {
+                        printf ( "***CONTROL TRANSACTION***\n" );
+                        printf ( "%s\n", transaction->typeString ().c_str ());
+                    }
+                    else {
+                        jsonOut.set ( "status", "RETRY" );
+                    }
                     scopedLock.getWebMiner ().pushTransaction ( move ( transaction ));
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }

@@ -23,6 +23,12 @@ TheWebMiner::TheWebMiner () {
 TheWebMiner::~TheWebMiner () {
 }
 
+//----------------------------------------------------------------//
+void TheWebMiner::waitForShutdown () {
+
+    this->mWebMiner.waitForShutdown ();
+}
+
 //================================================================//
 // ScopedWebMinerLock
 //================================================================//

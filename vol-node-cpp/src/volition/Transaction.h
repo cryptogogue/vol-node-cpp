@@ -45,7 +45,7 @@ public:
     TransactionResult           apply                   ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle ) const;
     bool                        checkMaker              ( string accountName, string uuid ) const;
     TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const;
-    TransactionResult           control                 ( Miner& miner, Ledger& ledger ) const;
+    TransactionResult           control                 ( Miner& miner ) const;
     u64                         getGratuity             () const;
     const TransactionMaker*     getMaker                () const;
     u64                         getNonce                () const;
@@ -55,6 +55,7 @@ public:
     void                        setBody                 ( shared_ptr < AbstractTransactionBody > body );
                                 Transaction             ();
                                 ~Transaction            ();
+    string                      typeString              () const;
     u64                         weight                  () const;
 };
 

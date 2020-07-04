@@ -27,14 +27,16 @@ public:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-                
+        
         ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
         
+        WebMiner& miner = scopedLock.getWebMiner ();
         const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
         SchemaVersion schemaVersion = ledger.getSchemaVersion ();
         
         jsonOut.set ( "type", "VOL_MINING_NODE" );
-        jsonOut.set ( "minerID",        scopedLock.getWebMiner ().getMinerID ().c_str ());
+        jsonOut.set ( "minerID",        miner.getMinerID ().c_str ());
+        jsonOut.set ( "started",        ( string )miner.getStartTime ());
         jsonOut.set ( "genesis",        ledger.getGenesisHash ());
         jsonOut.set ( "identity",       ledger.getIdentity ());
         jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schemaVersion ));

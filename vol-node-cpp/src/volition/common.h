@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <cmath>
+#include <csignal>
 #include <cstring>
 #include <dirent.h>
 #include <fstream>
@@ -60,6 +61,7 @@
 #include <Poco/Net/SecureServerSocket.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Observer.h>
+#include <Poco/Process.h>
 #include <Poco/ScopedLock.h>
 #include <Poco/SingletonHolder.h>
 #include <Poco/Task.h>

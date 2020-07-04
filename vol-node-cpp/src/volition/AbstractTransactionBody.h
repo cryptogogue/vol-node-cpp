@@ -54,7 +54,7 @@ protected:
 
     //----------------------------------------------------------------//
     virtual TransactionResult   AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
-    virtual TransactionResult   AbstractTransactionBody_control         ( Miner& miner, Ledger& ledger  ) const;
+    virtual TransactionResult   AbstractTransactionBody_control         ( Miner& miner ) const;
     virtual u64                 AbstractTransactionBody_cost            () const;
     virtual u64                 AbstractTransactionBody_maturity        () const = 0;
     virtual bool                AbstractTransactionBody_needsControl    () const;
@@ -68,7 +68,7 @@ public:
                             AbstractTransactionBody                 ();
                             ~AbstractTransactionBody                ();
     TransactionResult       apply                                   ( TransactionContext& context ) const;
-    TransactionResult       control                                 ( Miner& miner, Ledger& ledger  ) const;
+    TransactionResult       control                                 ( Miner& miner ) const;
     u64                     cost                                    () const;
     u64                     gratuity                                () const;
     u64                     maturity                                () const;

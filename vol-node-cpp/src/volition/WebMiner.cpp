@@ -34,6 +34,12 @@ Poco::Mutex& WebMiner::getMutex () {
 }
 
 //----------------------------------------------------------------//
+SerializableTime WebMiner::getStartTime () {
+
+    return this->mStartTime;
+}
+
+//----------------------------------------------------------------//
 void WebMiner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
 
     SyncChainTask* task = dynamic_cast < SyncChainTask* >( pNf->task ());
@@ -160,6 +166,8 @@ void WebMiner::runSolo () {
             Poco::Thread::sleep ( updateMillis - elapsedMillis );
         }
         Poco::Thread::sleep ( 5000 );
+        
+        this->processIncoming ( *this );
     }
 }
 
@@ -173,15 +181,6 @@ void WebMiner::setSolo ( bool solo ) {
 void WebMiner::setUpdateInterval ( u32 updateIntervalInSeconds ) {
 
     this->mUpdateIntervalInSeconds = updateIntervalInSeconds;
-}
-
-//----------------------------------------------------------------//
-void WebMiner::shutdown () {
-
-    this->mTaskManager.cancelAll ();
-    this->mTaskManager.joinAll ();
-    this->stop ();
-    this->wait ();
 }
 
 //----------------------------------------------------------------//
@@ -222,6 +221,12 @@ void WebMiner::updateMiners () {
 }
 
 //----------------------------------------------------------------//
+void WebMiner::waitForShutdown () {
+
+    this->mShutdownEvent.wait ();
+}
+
+//----------------------------------------------------------------//
 WebMiner::WebMiner () :
     Poco::Activity < WebMiner >( this, &WebMiner::runActivity ),
     mTaskManager ( this->mTaskManagerThreadPool ),
@@ -246,6 +251,26 @@ WebMiner::~WebMiner () {
 void WebMiner::Miner_reset () {
 
     this->mHeight = 0;
+}
+
+//----------------------------------------------------------------//
+void WebMiner::Miner_shutdown ( bool kill ) {
+
+    if ( !this->isStopped ()) {
+        this->mTaskManager.cancelAll ();
+        this->mTaskManager.joinAll ();
+        this->stop ();
+        
+        if ( kill ) {
+            printf ( "REQUESTED WEB MINER SHUTDOWN\n" );
+            this->mShutdownEvent.set ();
+            Poco::Util::ServerApplication::terminate ();
+        }
+    }
+    
+    if ( !kill ) {
+        this->wait ();
+    }
 }
 
 } // namespace Volition

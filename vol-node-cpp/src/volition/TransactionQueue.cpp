@@ -124,6 +124,15 @@ void MakerQueue::setError ( TransactionResult error ) {
 //================================================================//
 
 //----------------------------------------------------------------//
+void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > transaction ) {
+
+    const TransactionMaker* maker = transaction->getMaker ();
+    assert ( maker );
+    
+    this->mDatabase [ maker->getAccountName ()].pushTransaction ( transaction );
+}
+
+//----------------------------------------------------------------//
 void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
 
     Ledger ledger;
@@ -238,6 +247,25 @@ bool TransactionQueue::hasTransaction ( string accountName, string uuid ) const 
 }
 
 //----------------------------------------------------------------//
+void TransactionQueue::processIncoming ( Miner& miner ) {
+
+    while ( this->mIncoming.size ()) {
+    
+        shared_ptr < const Transaction > transaction = this->mIncoming.front ();
+        this->mIncoming.pop_front ();
+        
+        if ( transaction->needsControl ()) {
+            TransactionResult result = transaction->control ( miner );
+            if ( !result ) {
+                this->setError ( transaction, result );
+                continue;
+            }
+        }
+        this->acceptTransaction ( transaction );
+    }
+}
+
+//----------------------------------------------------------------//
 void TransactionQueue::pruneTransactions ( const Chain& chain ) {
 
     const Ledger& ledger = chain;
@@ -266,16 +294,14 @@ void TransactionQueue::pruneTransactions ( const Chain& chain ) {
 //----------------------------------------------------------------//
 void TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
-    const TransactionMaker* maker = transaction->getMaker ();
-    assert ( maker );
-    
-    this->mDatabase [ maker->getAccountName ()].pushTransaction ( transaction );
+    this->mIncoming.push_back ( transaction );
 }
 
 //----------------------------------------------------------------//
 void TransactionQueue::reset () {
 
     this->mDatabase.clear ();
+    this->mIncoming.clear ();
 }
 
 //----------------------------------------------------------------//

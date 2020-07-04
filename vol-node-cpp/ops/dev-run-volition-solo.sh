@@ -10,5 +10,6 @@ docker run -d --name volition-node-dev      \
     --network="fallguy"                     \
     -p "9091:9091"                          \
     -v ${PROJECT_HOME}:/var/lib/volition    \
+    --entrypoint "immortal"                 \
     volition/node-dev                       \
-    --permit-control true -p 9091 -i 1 -s true -k /var/lib/volition/.keys/root.priv.json -g /var/lib/volition/genesis --simple-recorder-folder /var/lib/volition/persist-chain
+    volition --permit-control true -p 9091 -i 1 -s true -k /var/lib/volition/.keys/root.priv.json -g /var/lib/volition/genesis --simple-recorder-folder /var/lib/volition/persist-chain

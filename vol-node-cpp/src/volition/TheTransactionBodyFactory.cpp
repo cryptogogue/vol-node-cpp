@@ -22,6 +22,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::BetaGetAssets >();
     this->registerTransaction < Volition::Transactions::BetaGetDeck >();
     this->registerTransaction < Volition::Transactions::Genesis >();
+    this->registerTransaction < Volition::Transactions::HardReset >();
     this->registerTransaction < Volition::Transactions::OpenAccount >();
     this->registerTransaction < Volition::Transactions::PublishSchema >();
     this->registerTransaction < Volition::Transactions::PublishSchemaAndReset >();

@@ -3,16 +3,18 @@ FROM ubuntu:bionic
 
 WORKDIR /app
 
-RUN    apt-get update       \
+RUN apt-get update          \
     && apt-get -y --no-install-recommends install \
         ca-certificates     \
+        curl                \
         gcc-7               \
         g++-7               \
         git                 \
         make                \
-        openssl
+        openssl             \
+        valgrind
 
-RUN     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7 \
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7 \
     &&  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 7 \
     &&  update-alternatives --auto gcc \
     &&  update-alternatives --auto g++ \
@@ -53,9 +55,8 @@ RUN git clone -b poco-1.9.1 https://github.com/pocoproject/poco \
     && cd ..                \
     && rm -r poco
 
-RUN    apt-get update       \
-    && apt-get -y --no-install-recommends install \
-        valgrind
+RUN curl -s https://packagecloud.io/install/repositories/immortal/immortal/script.deb.sh | bash \
+    && apt install immortal
 
 COPY . /app
 
@@ -64,7 +65,6 @@ RUN cmake .                 \
     && make install         \
     && /sbin/ldconfig -v    \
     && cd ..
-#    && rm -r app
 
 ENTRYPOINT [ "volition" ]
 CMD [ "-p", "9090", "-s", "true", "-k", "/var/lib/volition/keys/pkey0.priv.json", "-g", "/var/lib/volition/genesis.signed" ]

@@ -18,7 +18,7 @@ private:
 
     friend class ScopedWebMinerLock;
 
-    WebMiner    mWebMiner;
+    WebMiner        mWebMiner;
 
 public:
 
@@ -26,6 +26,7 @@ public:
     void            shutdown                ();
                     TheWebMiner             ();
                     ~TheWebMiner            ();
+    void            waitForShutdown         ();
 };
 
 //================================================================//

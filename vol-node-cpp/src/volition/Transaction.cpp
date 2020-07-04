@@ -125,11 +125,13 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::control ( Miner& miner, Ledger& ledger ) const {
+TransactionResult Transaction::control ( Miner& miner ) const {
 
     if ( !this->needsControl ()) return true;
-    if ( !miner.controlPerimitted ()) return "CONTROL: Control not permitted by this mining node.";
-    
+    if ( !miner.controlPermitted ()) return "CONTROL: Control not permitted by this mining node.";
+
+    Ledger& ledger = miner.getLedger ();
+
     TransactionMaker* maker = this->mBody->mMaker.get ();
     shared_ptr < const Account > account = ledger.getAccount ( ledger.getAccountIndex ( maker->getAccountName ()));
     const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
@@ -140,7 +142,7 @@ TransactionResult Transaction::control ( Miner& miner, Ledger& ledger ) const {
     Entitlements entitlements = ledger.getEntitlements < KeyEntitlements >( *keyAndPolicy );
     if ( !entitlements.check ( KeyEntitlements::NODE_CONTROL )) return "Permission denied.";
     
-    return this->mBody->control ( miner, ledger );
+    return this->mBody->control ( miner );
 }
 
 //----------------------------------------------------------------//
@@ -179,6 +181,13 @@ bool Transaction::needsControl () const {
 }
 
 //----------------------------------------------------------------//
+void Transaction::setBody ( shared_ptr < AbstractTransactionBody > body ) {
+
+    this->mBody = body;
+    this->mBodyString = body ? ToJSONSerializer::toJSONString ( *body ) : "";
+}
+
+//----------------------------------------------------------------//
 Transaction::Transaction () {
 }
 
@@ -187,10 +196,9 @@ Transaction::~Transaction () {
 }
 
 //----------------------------------------------------------------//
-void Transaction::setBody ( shared_ptr < AbstractTransactionBody > body ) {
+string Transaction::typeString () const {
 
-    this->mBody = body;
-    this->mBodyString = body ? ToJSONSerializer::toJSONString ( *body ) : "";
+    return this->mBody ? this->mBody->typeString () : "";
 }
 
 //----------------------------------------------------------------//

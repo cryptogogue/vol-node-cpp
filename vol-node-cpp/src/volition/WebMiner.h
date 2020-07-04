@@ -57,6 +57,7 @@ class WebMiner :
     public Poco::Activity < WebMiner > {
 private:
 
+    SerializableTime                    mStartTime;
     Poco::Mutex                         mMutex;
 
     Poco::ThreadPool                    mTaskManagerThreadPool;
@@ -68,6 +69,8 @@ private:
     u32                                         mUpdateIntervalInSeconds;
     list < unique_ptr < BlockQueueEntry >>      mBlockQueue;
     size_t                                      mHeight;
+    
+    Poco::Event                         mShutdownEvent;
 
     //----------------------------------------------------------------//
     void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
@@ -80,18 +83,20 @@ private:
 
     //----------------------------------------------------------------//
     void            Miner_reset                 () override;
+    void            Miner_shutdown              ( bool kill ) override;
 
 public:
 
     static const u32                    DEFAULT_UPDATE_INTERVAL = 60;
 
     //----------------------------------------------------------------//
-    Poco::Mutex&    getMutex                ();
-    void            setSolo                 ( bool solo );
-    void            setUpdateInterval       ( u32 updateIntervalInSeconds );
-    void            shutdown                ();
-                    WebMiner                ();
-                    ~WebMiner               ();
+    Poco::Mutex&        getMutex                ();
+    SerializableTime    getStartTime            ();
+    void                setSolo                 ( bool solo );
+    void                setUpdateInterval       ( u32 updateIntervalInSeconds );
+    void                waitForShutdown         ();
+                        WebMiner                ();
+                        ~WebMiner               ();
 };
 
 } // namespace Volition

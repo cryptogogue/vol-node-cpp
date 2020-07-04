@@ -25,9 +25,9 @@ TransactionResult AbstractTransactionBody::apply ( TransactionContext& context )
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::control ( Miner& miner, Ledger& ledger  ) const {
+TransactionResult AbstractTransactionBody::control ( Miner& miner ) const {
 
-    return this->AbstractTransactionBody_control ( miner, ledger );
+    return this->AbstractTransactionBody_control ( miner );
 }
 
 //----------------------------------------------------------------//
@@ -100,9 +100,8 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::AbstractTransactionBody_control ( Miner& miner, Ledger& ledger  ) const {
+TransactionResult AbstractTransactionBody::AbstractTransactionBody_control ( Miner& miner  ) const {
     UNUSED ( miner );
-    UNUSED ( ledger );
     
     return true;
 }
