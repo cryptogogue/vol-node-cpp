@@ -115,8 +115,7 @@ DONE: node - publish schema and reset chain
 DONE: node - disabled reset chain with CLI flag
 DONE: node - rework node control endpoints into "control" transactions
 DONE: node - return lua stack trace/error messages
-
-wallet - update cardmotron
+DONE: wallet - update cardmotron
 
 ----------------------------------------------------------------
 LAUNCH
