@@ -402,9 +402,16 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetI
             return "Unknown or invalid param type.";;
     }
     
-    InventoryLogEntry logEntry ( time );
-    logEntry.insertUpdate ( assetODBM.mIndex );
-    ledger.updateInventory ( assetODBM.mIndex, logEntry );
+    Account::Index ownerIndex = assetODBM.mOwner.get ( Account::NULL_INDEX );
+    if ( ownerIndex != Account::NULL_INDEX  ) {
+    
+        AccountODBM accountODBM ( ledger, ownerIndex );
+        assetODBM.mInventoryNonce.set ( accountODBM.mInventoryNonce.get ( 0 ));
+        
+        InventoryLogEntry logEntry ( time );
+        logEntry.insertUpdate ( assetODBM.mIndex );
+        ledger.updateInventory ( ownerIndex, logEntry );
+    }
     return true;
 }
 
