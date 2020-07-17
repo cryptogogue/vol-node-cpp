@@ -57,7 +57,7 @@ public:
         LedgerResult result = context.mLedger.checkSchemaMethods ( this->mSchema );
         if ( !result ) return result;
         
-        context.mLedger.setSchema ( this->mSchema );
+        context.mLedger.setSchema ( updateSchema );
         context.mSchemaHandle.reset ( context.mLedger );
 
         return true;
