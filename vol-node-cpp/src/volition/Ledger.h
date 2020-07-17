@@ -186,8 +186,15 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_VOL () {
+        return "VOL";
+    }
+
+    //----------------------------------------------------------------//
     LedgerResult                        checkSchemaMethods              ( const Schema& schema ) const;
     void                                clearSchemaCache                ();
+    u64                                 countVOL                        () const;
+    u64                                 createVOL                       ( u64 amount );
     shared_ptr < Block >                getBlock                        () const;
     shared_ptr < Block >                getBlock                        ( size_t height ) const;
     u64                                 getBlockSize                    () const;

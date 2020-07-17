@@ -43,6 +43,7 @@ public:
         jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
         jsonOut.set ( "build",          Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
         jsonOut.set ( "commit",         Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
+        jsonOut.set ( "vol",            ledger.countVOL ());
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

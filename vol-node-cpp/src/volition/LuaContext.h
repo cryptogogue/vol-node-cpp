@@ -31,6 +31,7 @@ private:
     //----------------------------------------------------------------//
     static int              _awardAsset             ( lua_State* L );
     static int              _awardDeck              ( lua_State* L );
+    static int              _awardVOL               ( lua_State* L );
     static int              _getEntropy             ( lua_State* L );
     static int              _getDefinitionField     ( lua_State* L );
     static int              _randomAward            ( lua_State* L );

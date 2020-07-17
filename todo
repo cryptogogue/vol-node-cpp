@@ -17,27 +17,6 @@ DONE: implement queue of transactions in wallet - rebuild state dynamically (fro
 DONE: rethink state handling in wallet
 DONE: svg barcode
 DONE: revise layout schema - address SVG shortcomings
-
-----------------------------------------------------------------
-NAMING
-
-*Screen
-*Form
-*Picker
-*Selector
-*View
-*Menu
-*Button
-
-*Controller
-*Service
-
-group in folders by functionality
-don't mix controllers and displays
-
-----------------------------------------------------------------
-PLAYTEST
-
 DONE: tool to generate set schema from XLS spreadsheet
 DONE: add schema to genesis block
 DONE: sign transaction

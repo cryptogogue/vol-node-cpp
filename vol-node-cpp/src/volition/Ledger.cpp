@@ -48,6 +48,20 @@ void Ledger::clearSchemaCache () {
 }
 
 //----------------------------------------------------------------//
+u64 Ledger::countVOL () const {
+
+    return LedgerFieldODBM < u64 >( *this, Ledger::keyFor_VOL ()).get ( 0 );
+}
+
+//----------------------------------------------------------------//
+u64 Ledger::createVOL ( u64 amount ) {
+
+    LedgerFieldODBM < u64 > totalVOLField ( *this, Ledger::keyFor_VOL ());
+    totalVOLField.set ( totalVOLField.get ( 0 ) + amount );
+    return amount;
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Block > Ledger::getBlock () const {
 
     return this->getObjectOrNull < Block >( keyFor_block ());

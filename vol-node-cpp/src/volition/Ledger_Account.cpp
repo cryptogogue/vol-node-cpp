@@ -63,6 +63,24 @@ bool Ledger_Account::affirmKey ( Account::Index accountIndex, string makerKeyNam
 }
 
 //----------------------------------------------------------------//
+LedgerResult Ledger_Account::awardVOL ( Account::Index accountIndex, u64 amount ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    shared_ptr < Account > account = ledger.getAccount ( accountIndex );
+    if ( account ) {
+        
+        u64 created = ledger.createVOL ( amount );
+        if ( created < amount ) return "New VOL request exceeds ledger maximum.";
+    
+        account->mBalance += created;
+        ledger.setAccount ( *account );
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------//
 bool Ledger_Account::deleteKey ( Account::Index accountIndex, string keyName ) {
 
     Ledger& ledger = this->getLedger ();

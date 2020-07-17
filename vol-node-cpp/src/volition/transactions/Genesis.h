@@ -64,7 +64,9 @@ public:
         for ( size_t i = 0; i < this->mAccounts.size (); ++i ) {
             const GenesisAccount& account = this->mAccounts [ i ];
             
-            if ( !ledger.newAccount ( account.mName, account.mGrant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
+            u64 grant = ledger.createVOL ( account.mGrant );
+            
+            if ( !ledger.newAccount ( account.mName, grant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
             if ( account.mURL.size () > 0 ) {
                 if ( !ledger.registerMiner ( ledger.getAccountIndex ( account.mName ), Ledger::MASTER_KEY_NAME, account.mURL )) return false;
             }

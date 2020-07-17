@@ -193,6 +193,20 @@ int LuaContext::_awardDeck ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+int LuaContext::_awardVOL ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+    
+    string accountName      = _to_string ( L, 1 );
+    size_t amount           = ( size_t )lua_tointeger ( L, 2 );
+
+    Account::Index accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == Account::NULL_INDEX ) return 0;
+
+    self.setResult ( self.mLedger->awardVOL ( accountIndex, amount ));
+    return 0;
+}
+
+//----------------------------------------------------------------//
 int LuaContext::_getDefinitionField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
 
@@ -494,6 +508,7 @@ LuaContext::LuaContext ( ConstOpt < Ledger > ledger, const Schema& schema, time_
     
     this->registerFunc ( "awardAsset",              _awardAsset );
     this->registerFunc ( "awardDeck",               _awardDeck );
+    this->registerFunc ( "awardVOL",                _awardVOL );
     this->registerFunc ( "getEntropy",              _getEntropy );
     this->registerFunc ( "getDefinitionField",      _getDefinitionField );
     this->registerFunc ( "print",                   _print );

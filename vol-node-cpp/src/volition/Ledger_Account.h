@@ -54,6 +54,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                                affirmKey                       ( Account::Index accountIndex, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
+    LedgerResult                        awardVOL                        ( Account::Index accountIndex, u64 amount );
     bool                                deleteKey                       ( Account::Index accountIndex, string keyName );
     shared_ptr < Account >              getAccount                      ( Account::Index index ) const;
     Account::Index                      getAccountIndex                 ( string accountName ) const;
