@@ -178,6 +178,11 @@ void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
             if ( !transaction ) continue; // skip if no transaction
             
             u64 transactionSize = transaction->weight ();
+            if ( maxBlockSize < transactionSize ) {
+                makerQueue.setError ( Format::write ( "Transaction weight of %d exceeds maximum block size of %d.", transactionSize, maxBlockSize ));
+                continue;
+            }
+            
             if (( blockSize + transactionSize ) > maxBlockSize ) continue;
             
             // push a version in case the transaction fails

@@ -82,7 +82,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
 //----------------------------------------------------------------//
 TransactionResult Transaction::checkBody ( Ledger& ledger, time_t time ) const {
 
-    if ( this->mBody->mUUID.size () > MAX_UUID_LENGTH ) return Format::write ( "Transaction UUID exceeds %d-character limit", MAX_UUID_LENGTH );
+    if ( this->mBody->mUUID.size () > MAX_UUID_LENGTH ) return Format::write ( "Transaction UUID exceeds %d-character limit.", MAX_UUID_LENGTH );
     
     if ( this->mBody->mMaxHeight > 0 ) {
         u64 height = ledger.getHeight ();

@@ -27,9 +27,9 @@ protected:
     typedef SerializableSharedPtr < AbstractTransactionBody, TransactionBodyFactory > TransactionBodyPtr;
     typedef SerializableSharedPtr < Signature > SignaturePtr;
 
-    TransactionBodyPtr      mBody;          // serialized from/to *body*
-    string                  mBodyString;    // store this verbatim
-    SignaturePtr            mSignature;     // signatures for *body*
+    TransactionBodyPtr          mBody;          // serialized from/to *body*
+    string                      mBodyString;    // store this verbatim
+    SignaturePtr                mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
     TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time ) const;

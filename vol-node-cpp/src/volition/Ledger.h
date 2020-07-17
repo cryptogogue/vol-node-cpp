@@ -100,7 +100,7 @@ private:
 
 public:
 
-    static constexpr const u64 DEFAULT_BLOCK_SIZE   = 100;
+    static constexpr const u64 DEFAULT_BLOCK_SIZE   = 1024;
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_accountAlias ( string accountName ) {
