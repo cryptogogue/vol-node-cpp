@@ -111,6 +111,9 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
                 TransactionResult result = transaction.apply ( ledger, this->mTime, schemaHandle );
+                if ( !result) {
+                    printf ( "What happened?\n" );
+                }
                 assert ( result );
                 gratuity += transaction.getGratuity ();
             }

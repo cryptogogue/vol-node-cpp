@@ -1083,6 +1083,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CD059BDD24C797720049C97E /* schema */ = {
+			isa = PBXGroup;
+			children = (
+				CDAB334E2479293500901558 /* AssetMethod.cpp */,
+				CD63A1C722AC6BEA00D5C801 /* AssetMethod.h */,
+				CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */,
+				CDF8AD5A21F52B34000E285F /* LuaContext.cpp */,
+				CDF8AD5B21F52B34000E285F /* LuaContext.h */,
+				CDFA23862453B25B00B4CECF /* Schema.cpp */,
+				CDBFD558218BA145002AB0C3 /* Schema.h */,
+			);
+			name = schema;
+			sourceTree = "<group>";
+		};
 		CD0C3E0F20C14410006E3B1C /* miner */ = {
 			isa = PBXGroup;
 			children = (
@@ -1138,9 +1152,6 @@
 				CDEDC20722BD57BC00C5643C /* AssetID.h */,
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CDD11D8922ED6E070051F04E /* AssetFieldValue.h */,
-				CDAB334E2479293500901558 /* AssetMethod.cpp */,
-				CD63A1C722AC6BEA00D5C801 /* AssetMethod.h */,
-				CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */,
 				CDFA23892460071700B4CECF /* AssetODBM.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
 				CD46659D20BE908300A02D55 /* Block.h */,
@@ -1161,13 +1172,9 @@
 				CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */,
 				CDFA238E24600A9300B4CECF /* LedgerKey.h */,
 				CDFA239C24601E0A00B4CECF /* LedgerResult.h */,
-				CDF8AD5A21F52B34000E285F /* LuaContext.cpp */,
-				CDF8AD5B21F52B34000E285F /* LuaContext.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
-				CDFA23862453B25B00B4CECF /* Schema.cpp */,
-				CDBFD558218BA145002AB0C3 /* Schema.h */,
 				CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */,
 				CD5ECAF2246C7257009146FB /* SchemaVersion.h */,
 				CDC2B34220D1196900300A96 /* TheContext.cpp */,
@@ -1252,9 +1259,10 @@
 				CD0C3E0F20C14410006E3B1C /* miner */,
 				CDE9F771237537E600DB62EF /* recorder */,
 				CDED587020BCDBD7003A2969 /* router */,
+				CD059BDD24C797720049C97E /* schema */,
 				CD36664720F72F94000E0B43 /* serialization */,
-				CD8BAE2C21EBAEBE00B5040E /* squap */,
 				CDC2B31A20CE0F8400300A96 /* simulation */,
+				CD8BAE2C21EBAEBE00B5040E /* squap */,
 				CD6D7CCF21006C9F0005446F /* transaction */,
 				CD4665AF20BFF62600A02D55 /* util */,
 				CD5C62FA20B4F7B10038EE98 /* common.h */,

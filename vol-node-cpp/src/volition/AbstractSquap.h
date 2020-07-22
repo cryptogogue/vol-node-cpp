@@ -24,7 +24,9 @@ private:
     typedef SerializableMap < string, AssetFieldValue > ConstParams;
 
     const Asset*                                        mAsset;
-    const map < string, shared_ptr < const Asset >>     mParams;
+    AssetFieldValue                                     mValue;
+    const map < string, shared_ptr < const Asset >>     mAssetParams;
+    const map < string, AssetFieldValue >               mValueParams;
 
 public:
 
@@ -42,12 +44,32 @@ public:
         if ( paramName.size () == 0 ) {
             return this->getAsset ();
         }
-    
-        map < string, shared_ptr < const Asset >>::const_iterator paramIt = this->mParams.find ( paramName );
-        if ( paramIt != this->mParams.cend ()) {
+        
+        map < string, shared_ptr < const Asset >>::const_iterator paramIt = this->mAssetParams.find ( paramName );
+        if ( paramIt != this->mAssetParams.cend ()) {
             return paramIt->second.get ();
         }
         return NULL;
+    };
+
+    //----------------------------------------------------------------//
+    AssetFieldValue getValue () const {
+
+        return this->mValue;
+    };
+
+    //----------------------------------------------------------------//
+    AssetFieldValue getValue ( string paramName ) const {
+    
+        if ( paramName.size () == 0 ) {
+            return this->getValue ();
+        }
+        
+        map < string, AssetFieldValue >::const_iterator paramIt = this->mValueParams.find ( paramName );
+        if ( paramIt != this->mValueParams.cend ()) {
+            return paramIt->second;
+        }
+        return AssetFieldValue ();
     };
 
     //----------------------------------------------------------------//
@@ -56,9 +78,15 @@ public:
     }
     
     //----------------------------------------------------------------//
-    SquapEvaluationContext ( const map < string, shared_ptr < const Asset >>& params ) :
+    SquapEvaluationContext ( const AssetFieldValue& value ) :
+        mValue ( value ) {
+    }
+    
+    //----------------------------------------------------------------//
+    SquapEvaluationContext ( const map < string, shared_ptr < const Asset >>& assetParams, const map < string, AssetFieldValue >& valueParams ) :
         mAsset ( NULL ),
-        mParams ( params ) {
+        mAssetParams ( assetParams ),
+        mValueParams ( valueParams ) {
     }
 };
 

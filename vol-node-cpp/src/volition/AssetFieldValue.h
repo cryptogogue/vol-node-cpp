@@ -17,6 +17,12 @@ class AssetFieldValue :
     public virtual AbstractSerializable {
 public:
     
+    // PCM: I am punting on validate media URL fields for now. we'll eventually
+    // want to attach a hash to URL fields somehow that can be used to validate
+    // the assets. I'm hesitant to put that here, as doing so would effectively
+    // turn each field into a tuple. seems like squaps/method constraints could
+    // be leveraged, but the media hash still needs to be stored somewhere.
+    
     enum Type : u64 {
         TYPE_BOOL       = FNV1a::const_hash_64 ( "BOOLEAN" ),
         TYPE_NUMBER     = FNV1a::const_hash_64 ( "NUMERIC" ),

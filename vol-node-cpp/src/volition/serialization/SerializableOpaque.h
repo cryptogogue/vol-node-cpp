@@ -16,7 +16,6 @@ class SerializableOpaque :
     public AbstractSerializable {
 public:
     
-    // TODO: need to handle all serializer types
     string      mString;
     
     //----------------------------------------------------------------//

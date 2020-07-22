@@ -109,11 +109,12 @@ protected:
     //----------------------------------------------------------------//
     void AbstractSerializerFrom_stringToTree ( SerializerPropertyName name, string value ) override {
     
-        istringstream inStream ( value );
-        Poco::JSON::Parser parser;
-        Poco::Dynamic::Var result = parser.parse ( inStream );
-        
-        this->set ( name, result );
+        if ( value.size () > 0 ) {
+            istringstream inStream ( value );
+            Poco::JSON::Parser parser;
+            Poco::Dynamic::Var result = parser.parse ( inStream );
+            this->set ( name, result );
+        }
     }
 
     //----------------------------------------------------------------//

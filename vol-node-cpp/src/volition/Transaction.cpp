@@ -26,6 +26,9 @@ TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle
         result.setTransactionDetails ( *this );
         return result;
     }
+    catch ( const std::exception &e ) {
+        return Format::write ( "Exception occured while applying transaction: %s", e.what ());
+    }
     catch ( ... ) {
         return "Exception occured while applying transaction.";
     }

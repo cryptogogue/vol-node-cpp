@@ -459,7 +459,7 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
     
         assets [ paramName ] = this->mLedger->getAsset ( this->mSchema, assetID );
     }
-    if ( !method.checkInvocation ( assets )) return false;
+    if ( !method.checkInvocation ( assets, invocation.mConstParams )) return false;
 
     // get the main
     int type = lua_getglobal ( this->mLuaState, MAIN_FUNC_NAME );

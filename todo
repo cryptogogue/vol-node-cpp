@@ -95,8 +95,8 @@ DONE: node - disabled reset chain with CLI flag
 DONE: node - rework node control endpoints into "control" transactions
 DONE: node - return lua stack trace/error messages
 DONE: wallet - update cardmotron
+DONE: node - award vol scripting command
 
-node - award vol scripting command
 wallet - customize art URL via crafting
 wallet - strictly order state service polling
 wallet - add event listenever for IndexedDB (to handle multi-tab updates)
