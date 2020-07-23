@@ -13,11 +13,11 @@ namespace Volition {
 //----------------------------------------------------------------//
 bool AssetMethod::checkInvocation ( const map < string, shared_ptr < const Asset >>& assetParams, const map < string, AssetFieldValue >& constParams ) const {
 
-    Arguments::const_iterator argIt = this->mAssetArgs.cbegin ();
-    for ( ; argIt != this->mAssetArgs.cend (); ++argIt ) {
+    AssetArgs::const_iterator assetArgIt = this->mAssetArgs.cbegin ();
+    for ( ; assetArgIt != this->mAssetArgs.cend (); ++assetArgIt ) {
     
-        string paramName = argIt->first;
-        const AssetMethodParamDesc& arg = argIt->second;
+        string paramName = assetArgIt->first;
+        const AssetMethodParamDesc& arg = assetArgIt->second;
         shared_ptr < const AbstractSquap > qualifier = arg.mQualifier;
         
         map < string, shared_ptr < const Asset >>::const_iterator assetParamIt = assetParams.find ( paramName );
@@ -26,11 +26,11 @@ bool AssetMethod::checkInvocation ( const map < string, shared_ptr < const Asset
         if ( qualifier && !qualifier->evaluate ( SquapEvaluationContext ( *assetParamIt->second ))) return false;
     }
 
-    argIt = this->mConstArgs.cbegin ();
-    for ( ; argIt != this->mConstArgs.cend (); ++argIt ) {
+    ConstArgs::const_iterator constArgIt = this->mConstArgs.cbegin ();
+    for ( ; constArgIt != this->mConstArgs.cend (); ++constArgIt ) {
     
-        string paramName = argIt->first;
-        const AssetMethodParamDesc& arg = argIt->second;
+        string paramName = constArgIt->first;
+        const ConstMethodParamDesc& arg = constArgIt->second;
         shared_ptr < const AbstractSquap > qualifier = arg.mQualifier;
             
         map < string, AssetFieldValue >::const_iterator constParamIt = constParams.find ( paramName );

@@ -468,9 +468,10 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
     // push the account name
     lua_pushstring ( this->mLuaState, accountName.c_str ());
 
-    // push the asset params table
+    // create the params table
     lua_newtable ( this->mLuaState );
-    
+
+    // push the asset params
     map < string, shared_ptr < const Asset >>::const_iterator assetIt = assets.cbegin ();
     for ( ; assetIt != assets.cend (); ++assetIt ) {
         lua_pushstring ( this->mLuaState, assetIt->first.c_str ());
@@ -478,9 +479,7 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
         lua_settable ( this->mLuaState, -3 );
     }
     
-    // push the const params table
-    lua_newtable ( this->mLuaState );
-    
+    // push the const params
     AssetMethodInvocation::ConstParams::const_iterator constParamIt = invocation.mConstParams.cbegin ();
     for ( ; constParamIt != invocation.mConstParams.cend (); ++constParamIt ) {
         lua_pushstring ( this->mLuaState, constParamIt->first.c_str ());
@@ -490,7 +489,7 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
 
     // call the method
     this->mResult = true;
-    result = _lua_call ( this->mLuaState, 3, 0 );
+    result = _lua_call ( this->mLuaState, 2, 0 );
     return result ? this->mResult : result;
 }
 
