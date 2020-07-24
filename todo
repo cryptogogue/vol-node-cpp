@@ -101,8 +101,7 @@ DONE: wallet - (bug) user-provided URLs should be case sensitive
 DONE: wallet - (bug) duplicates are collapsed in crafting asset picker
 DONE: wallet - strictly order state service polling
 DONE: node - (bug) reset asset field not updating inventory nonces
-
-wallet - add event listenever for IndexedDB (to handle multi-tab updates)
+DONE: wallet - add event listener for IndexedDB (to handle multi-tab updates) - just used account version stamp
 
 ----------------------------------------------------------------
 LAUNCH
