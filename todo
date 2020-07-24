@@ -96,9 +96,12 @@ DONE: node - rework node control endpoints into "control" transactions
 DONE: node - return lua stack trace/error messages
 DONE: wallet - update cardmotron
 DONE: node - award vol scripting command
+DONE: wallet - customize art URL via crafting
+DONE: wallet - (bug) user-provided URLs should be case sensitive
+DONE: wallet - (bug) duplicates are collapsed in crafting asset picker
+DONE: wallet - strictly order state service polling
+DONE: node - (bug) reset asset field not updating inventory nonces
 
-wallet - customize art URL via crafting
-wallet - strictly order state service polling
 wallet - add event listenever for IndexedDB (to handle multi-tab updates)
 
 ----------------------------------------------------------------

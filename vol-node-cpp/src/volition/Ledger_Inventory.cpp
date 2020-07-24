@@ -317,9 +317,7 @@ bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Ind
         }
     }
     
-    InventoryLogEntry logEntry ( time );
-    logEntry.insertUpdate ( assetODBM.mIndex );
-    ledger.updateInventory ( assetODBM.mIndex, logEntry );
+    this->updateInventory ( assetODBM, time, InventoryLogEntry::EntryOp::UPDATE_ASSET );
     return true;
 }
 
@@ -402,16 +400,7 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetI
             return "Unknown or invalid param type.";;
     }
     
-    Account::Index ownerIndex = assetODBM.mOwner.get ( Account::NULL_INDEX );
-    if ( ownerIndex != Account::NULL_INDEX  ) {
-    
-        AccountODBM accountODBM ( ledger, ownerIndex );
-        assetODBM.mInventoryNonce.set ( accountODBM.mInventoryNonce.get ( 0 ));
-        
-        InventoryLogEntry logEntry ( time );
-        logEntry.insertUpdate ( assetODBM.mIndex );
-        ledger.updateInventory ( ownerIndex, logEntry );
-    }
+    this->updateInventory ( assetODBM, time, InventoryLogEntry::EntryOp::UPDATE_ASSET );
     return true;
 }
 
@@ -492,6 +481,23 @@ void Ledger_Inventory::updateInventory ( Account::Index accountIndex, const Inve
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
     this->getLedger ().setObject < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ), entry );
     accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
+}
+
+//----------------------------------------------------------------//
+void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    Account::Index ownerIndex = assetODBM.mOwner.get ( Account::NULL_INDEX );
+    if ( ownerIndex != Account::NULL_INDEX  ) {
+    
+        AccountODBM accountODBM ( ledger, ownerIndex );
+        assetODBM.mInventoryNonce.set ( accountODBM.mInventoryNonce.get ( 0 ));
+        
+        InventoryLogEntry logEntry ( time );
+        logEntry.insert ( assetODBM.mIndex, op );
+        ledger.updateInventory ( ownerIndex, logEntry );
+    }
 }
 
 //----------------------------------------------------------------//

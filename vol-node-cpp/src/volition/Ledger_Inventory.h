@@ -7,12 +7,13 @@
 #include <volition/common.h>
 #include <volition/AbstractLedgerComponent.h>
 #include <volition/Asset.h>
+#include <volition/InventoryLogEntry.h>
 #include <volition/LedgerResult.h>
 
 namespace Volition {
 
 class AccountODBM;
-class InventoryLogEntry;
+class AssetODBM;
 class Schema;
 
 //================================================================//
@@ -25,6 +26,7 @@ private:
     //----------------------------------------------------------------//
     LedgerResult                        awardAssets                 ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
     void                                updateInventory             ( Account::Index accountIndex, const InventoryLogEntry& entry );
+    void                                updateInventory             ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op );
 
 public:
 

@@ -55,6 +55,7 @@ target_sources ( volition-lib
         src/volition/EntitlementFactory.cpp
         src/volition/FileSys.cpp
         src/volition/Format.cpp
+        src/volition/InventoryLogEntry.cpp
         src/volition/Ledger.cpp
         src/volition/Ledger_Account.cpp
         src/volition/Ledger_Inventory.cpp
