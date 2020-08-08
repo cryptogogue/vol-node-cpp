@@ -42,9 +42,9 @@ static const u64 FORTY_EIGHT_BITS   = 0x0000ffffffffffff;
 
 //----------------------------------------------------------------//
 u8          _check              ( u64 number );
-u16         _decode16           ( const char* buffer );
-u8          _decodeConsonant    ( char vowel );
-u8          _decodeVowel        ( char vowel );
+u16         _decode16           ( const char* buffer, bool& decodeError );
+u8          _decodeConsonant    ( char consonant, bool& decodeError );
+u8          _decodeVowel        ( char vowel, bool& decodeError );
 void        _encode16           ( char* buffer, u16 number );
 
 //----------------------------------------------------------------//
@@ -63,23 +63,25 @@ u8 _check ( u64 number ) {
 }
 
 //----------------------------------------------------------------//
-u16 _decode16 ( const char* buffer ) {
+u16 _decode16 ( const char* buffer, bool& decodeError ) {
 
     u16 number = 0;
     
-    number |= _decodeConsonant  ( buffer [ 0 ]);
-    number |= _decodeVowel      ( buffer [ 1 ]) << 4;
-    number |= _decodeConsonant  ( buffer [ 2 ]) << 6;
-    number |= _decodeVowel      ( buffer [ 3 ]) << 10;
-    number |= _decodeConsonant  ( buffer [ 4 ]) << 12;
+    number |= _decodeConsonant  ( buffer [ 0 ], decodeError );
+    number |= _decodeVowel      ( buffer [ 1 ], decodeError ) << 4;
+    number |= _decodeConsonant  ( buffer [ 2 ], decodeError ) << 6;
+    number |= _decodeVowel      ( buffer [ 3 ], decodeError ) << 10;
+    number |= _decodeConsonant  ( buffer [ 4 ], decodeError ) << 12;
 
     return number;
 }
 
 //----------------------------------------------------------------//
-u8 _decodeConsonant ( char vowel ) {
+u8 _decodeConsonant ( char consonant, bool& decodeError ) {
 
-    switch ( vowel ) {
+    consonant = ( char )tolower ( consonant );
+
+    switch ( consonant ) {
         case 'b':       return 0;
         case 'd':       return 1;
         case 'f':       return 2;
@@ -97,12 +99,14 @@ u8 _decodeConsonant ( char vowel ) {
         case 'v':       return 14;
         case 'z':       return 15;
     }
-    assert ( false );
+    decodeError = true;
     return 0;
 }
 
 //----------------------------------------------------------------//
-u8 _decodeVowel ( char vowel ) {
+u8 _decodeVowel ( char vowel, bool& decodeError ) {
+
+    vowel = ( char )tolower ( vowel );
 
     switch ( vowel ) {
         case 'a':       return 0;
@@ -110,7 +114,7 @@ u8 _decodeVowel ( char vowel ) {
         case 'o':       return 2;
         case 'u':       return 3;
     }
-    assert ( false );
+    decodeError = true;
     return 0;
 }
 
@@ -133,20 +137,22 @@ u64 AssetID::decode ( string assetID, bool* isValid ) {
 
     // TODO: handle errors
 
-    const char* buffer = assetID.c_str ();
+    char buffer [ 32 ];
+    strncpy ( buffer, assetID.c_str (), sizeof ( buffer ));
 
     u64 index = 0;
+    bool decodeError = false;
     
-    index |= ( u64 )_decode16 ( &buffer [ 0 ]);
-    index |= (( u64 )_decode16 ( &buffer [ 6 ])) << 16;
-    index |= (( u64 )_decode16 ( &buffer [ 12 ])) << 32;
+    index |= ( u64 )_decode16 ( &buffer [ 0 ], decodeError );
+    index |= (( u64 )_decode16 ( &buffer [ 6 ], decodeError )) << 16;
+    index |= (( u64 )_decode16 ( &buffer [ 12 ], decodeError )) << 32;
 
     int check = 0;
     check += ( buffer [ 18 ] - '0' ) * 100;
     check += ( buffer [ 19 ] - '0' ) * 10;
     check += buffer [ 20 ] - '0';
     
-    bool valid = ( check == _check ( index ));
+    bool valid = ( !decodeError && ( check == _check ( index )));
     
     if ( isValid ) {
         *isValid = valid;

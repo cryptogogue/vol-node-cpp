@@ -30,9 +30,11 @@ public:
         try {
         
             string assetIndexOrID = this->getMatchString ( "assetIndexOrID" );
-            assert ( assetIndexOrID.size () > 0 );
+            if ( assetIndexOrID.size () == 0 ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
             
             u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoull ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
+            
+            if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
             
             ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
             Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
@@ -43,6 +45,9 @@ public:
             if ( asset ) {
                 Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );
                 jsonOut.set ( "asset", assetJSON.extract < Poco::JSON::Object::Ptr >());
+            }
+            else {
+                return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
             }
         }
         catch ( ... ) {
