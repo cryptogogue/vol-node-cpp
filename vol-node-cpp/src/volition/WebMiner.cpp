@@ -109,7 +109,6 @@ void WebMiner::runMulti () {
 
             LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runMulti () - step" );
 
-            // process queue
             this->processQueue ();
             this->selectBranch ();
             this->extend ( this->mMinerSet.size () == 0 ); // force push if we processed all others
@@ -122,6 +121,7 @@ void WebMiner::runMulti () {
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
                 this->mHeight = nextHeight;
                 this->saveChain ();
+                this->pruneTransactions ( chain );
             }
 
             // update remote miners
@@ -131,6 +131,8 @@ void WebMiner::runMulti () {
             this->startTasks ();
         }
         Poco::Thread::sleep ( 200 );
+        
+        this->processIncoming ( *this );
     }
 }
 

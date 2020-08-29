@@ -365,7 +365,8 @@ Miner::SubmissionResponse Miner::submitBlock ( const Block& block ) {
 
     size_t blockHeight = block.getHeight ();
     
-    assert ( blockHeight > 0 ); // TODO: handle this
+//    assert ( blockHeight > 0 ); // TODO: handle this
+    if ( blockHeight == 0 ) return SubmissionResponse::ACCEPTED; // TODO: handle this
 
     set < shared_ptr < Chain >>::iterator branchIt = this->mBranches.begin ();
     for ( ; branchIt != this->mBranches.end (); ++branchIt ) {

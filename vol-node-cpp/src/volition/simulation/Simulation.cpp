@@ -220,6 +220,7 @@ Simulation::~Simulation () {
 
 //----------------------------------------------------------------//
 void Simulation::step ( size_t step ) {
+    UNUSED ( step );
 
     size_t nMiners = this->countMiners ();
     size_t cycles = this->mCyclesPerStep ? this->mCyclesPerStep : 1;

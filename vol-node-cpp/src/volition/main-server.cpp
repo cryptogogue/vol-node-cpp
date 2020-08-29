@@ -155,7 +155,7 @@ protected:
         bool solo                       = configuration.getBool     ( "solo", false );
         string sslCertFile              = configuration.getString   ( "openSSL.server.certificateFile", "" );
             
-        Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
+//        Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
         
         Padamose::RedisServerProc redisServerProc;
         shared_ptr < StringStorePersistenceProvider > persistenceProvider;

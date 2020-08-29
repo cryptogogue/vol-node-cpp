@@ -31,7 +31,7 @@ double TheContext::getWindow () const {
 //----------------------------------------------------------------//
 TheContext::TheContext () :
     mScoringMode ( ScoringMode::ALLURE ),
-    mScoringModulo ( 0 ),
+    mScoringModulo ( 1 ),
     mRewriteWindowInSeconds ( 0 ) {
 }
 

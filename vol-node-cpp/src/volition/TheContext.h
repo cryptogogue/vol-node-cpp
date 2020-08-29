@@ -43,7 +43,7 @@ public:
                         TheContext                  ();
     void                setGenesisBlockDigest       ( const Digest& digest );
     void                setGenesisBlockKey          ( const CryptoKey& key );
-    void                setScoringMode              ( ScoringMode scoringMode, size_t modulo = 0 );
+    void                setScoringMode              ( ScoringMode scoringMode, size_t modulo = 1 );
     void                setWindow                   ( double window );
 };
 

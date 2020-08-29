@@ -1,6 +1,9 @@
 const spawn			= require ( 'child_process' ).spawn;
 const util			= require ( 'util' );
 
+const FILTER = 'WEB.CHAIN:';
+
+//----------------------------------------------------------------//
 function log ( prefix, data ) {
 
     let lines = data.toString ().split ( '\n' );
@@ -8,7 +11,7 @@ function log ( prefix, data ) {
     for ( let i = 0; i < len; ++i ) {
 
         let line = lines [ i ];
-        if ( line.indexOf ( 'WEB.CHAIN:' ) > -1 ) {
+        if ( !FILTER || ( line.indexOf ( FILTER ) > -1 )) {
             console.log ( prefix + line );
         }
     }
@@ -17,19 +20,21 @@ function log ( prefix, data ) {
 //----------------------------------------------------------------//
 function spawnWithArgs ( prefix, command, args ) {
 
+    console.log ( 'spawn with args' );
+
 	let child = spawn ( command, args.split ( ' ' ));
 
-	//child.stdout.on ( 'data', function ( data ) {
-	//	log ( prefix, data );
-	//});
+	child.stdout.on ( 'data', function ( data ) {
+		log ( prefix, data );
+	});
 
     child.stderr.on ( 'data', function ( data ) {
         log ( prefix, data );
     });
 }
 
-//spawnWithArgs ( '9090: ', 'bin/server', '-p 9090 -k keys/pkey0.priv.json -g genesis.signed' );
-spawnWithArgs ( '9091: ', 'bin/server', '-p 9091 -k keys/pkey1.priv.json -g genesis.signed' );
-spawnWithArgs ( '9092: ', 'bin/server', '-p 9092 -k keys/pkey2.priv.json -g genesis.signed' );
-spawnWithArgs ( '9093: ', 'bin/server', '-p 9093 -k keys/pkey3.priv.json -g genesis.signed' );
-spawnWithArgs ( '9094: ', 'bin/server', '-p 9094 -k keys/pkey4.priv.json -g genesis.signed' );
+spawnWithArgs ( '9090: ', 'bin/server', '-p 9090 -k keys/key9090.priv.json -g genesis.in' );
+spawnWithArgs ( '9091: ', 'bin/server', '-p 9091 -k keys/key9091.priv.json -g genesis.in' );
+spawnWithArgs ( '9092: ', 'bin/server', '-p 9092 -k keys/key9092.priv.json -g genesis.in' );
+spawnWithArgs ( '9093: ', 'bin/server', '-p 9093 -k keys/key9093.priv.json -g genesis.in' );
+spawnWithArgs ( '9094: ', 'bin/server', '-p 9094 -k keys/key9094.priv.json -g genesis.in' );
