@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/Miner.h>
+#include <volition/transactions/Genesis.h>
 
 namespace Volition {
 namespace Simulation {
@@ -34,7 +35,7 @@ private:
     vector < size_t >       mMinerQueue; // miner ID's to check
 
     //----------------------------------------------------------------//
-    void                pushGenesisTransaction      ( Block& block ) const;
+    void                pushGenesisAccount          ( Transactions::Genesis& genesisMinerTransactionBody ) const;
     const SimMiner*     nextMiner                   ();
     void                resetMinerQueue             ();
     void                setTime                     ( time_t time );
@@ -49,7 +50,8 @@ public:
     void                log                         ( string prefix ) const;
                         SimMiner                    ( Simulation& simulation );
                         ~SimMiner                   ();
-    void                update                      ();
+    void                update_extend               ();
+    void                update_select               ();
 };
 
 } // namespace Simulator

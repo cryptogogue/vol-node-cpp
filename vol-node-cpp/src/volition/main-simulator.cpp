@@ -12,8 +12,9 @@ public:
 
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) override {
+        UNUSED ( args );
     
-        Volition::Simulation::SimpleSimulation simulation ( 16 );
+        Volition::Simulation::SleepySimulation simulation;
         simulation.run ();
         return EXIT_OK;
     }

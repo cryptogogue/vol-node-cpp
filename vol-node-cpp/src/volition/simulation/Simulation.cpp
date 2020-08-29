@@ -7,6 +7,7 @@
 #include <volition/simulation/Cohort.h>
 #include <volition/simulation/SimMiner.h>
 #include <volition/simulation/Simulation.h>
+#include <volition/transactions/Genesis.h>
 
 namespace Volition {
 namespace Simulation {
@@ -26,7 +27,7 @@ bool Simulation::Simulation_control ( size_t step ) {
 void Simulation::Simulation_report ( size_t step ) const {
 
     LGN_LOG ( VOL_FILTER_ROOT, INFO, "SIM: ROUND: %d - ", ( int )step );
-    this->logTree ( "SIM: ", false, 1 );
+    this->logTree ( "SIM: ", true, 1 );
     this->logMiners ( "SIM: " );
     LGN_LOG ( VOL_FILTER_ROOT, INFO, "SIM:" );
 }
@@ -79,7 +80,6 @@ void Simulation::initMiners ( size_t nMiners, TheContext::ScoringMode scoringMod
 
     if ( !this->mGenesisKey ) {
         this->mGenesisKey.elliptic ( CryptoKey::DEFAULT_EC_GROUP_NAME );
-        TheContext::get ().setGenesisBlockKey ( this->mGenesisKey );
     }
 
     Block genesisBlock;
@@ -90,6 +90,9 @@ void Simulation::initMiners ( size_t nMiners, TheContext::ScoringMode scoringMod
     time_t now;
     time ( &now );
 
+    unique_ptr < Transactions::Genesis > genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
+    genesisMinerTransactionBody->setIdentity ( "SIMULATION" );
+
     for ( size_t i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ] = make_unique < SimMiner >( *this );
         SimMiner& miner = *this->mMiners [ i ];
@@ -99,11 +102,12 @@ void Simulation::initMiners ( size_t nMiners, TheContext::ScoringMode scoringMod
         miner.setMinerID ( minerIDStream.str ());
         miner.setTime ( now );
         
-        miner.pushGenesisTransaction ( genesisBlock );
+        miner.pushGenesisAccount ( *genesisMinerTransactionBody );
     }
     
-    genesisBlock.sign ( this->mGenesisKey );
-    TheContext::get ().setGenesisBlockDigest ( genesisBlock.getSignature ().getDigest ());
+    shared_ptr < Transaction > transaction = make_shared < Transaction >();
+    transaction->setBody ( move ( genesisMinerTransactionBody ));
+    genesisBlock.pushTransaction ( transaction );
     
     for ( size_t i = 0; i < nMiners; ++i ) {
         this->mMiners [ i ]->setGenesis ( genesisBlock );
@@ -182,7 +186,7 @@ void Simulation::setCyclesPerStep ( size_t cycles ) {
 }
 
 //----------------------------------------------------------------//
-void Simulation::setDropRate ( float percentage ) {
+void Simulation::setDropRate ( double percentage ) {
 
     this->mDropRate = percentage;
 }
@@ -218,7 +222,7 @@ Simulation::~Simulation () {
 void Simulation::step ( size_t step ) {
 
     size_t nMiners = this->countMiners ();
-    size_t cycles = this->mCyclesPerStep ? this->mCyclesPerStep : nMiners;
+    size_t cycles = this->mCyclesPerStep ? this->mCyclesPerStep : 1;
 
     for ( size_t i = 0; i < cycles; ++i ) {
 
@@ -227,6 +231,7 @@ void Simulation::step ( size_t step ) {
         for ( size_t j = 0; j < nMiners; ++j ) {
             SimMiner& miner = *this->mMiners [ j ];
             schedule [ &miner ] = miner.mFrequency;
+            miner.update_extend ();
         }
 
         while ( schedule.size ()) {
@@ -235,7 +240,7 @@ void Simulation::step ( size_t step ) {
 
             SimMiner* miner = scheduleIt->first;
             if ( !this->drop ()) {
-                miner->update ();
+                miner->update_select ();
             }
             miner->step ( this->mStepSize ); // advance time
 
@@ -251,7 +256,7 @@ void Simulation::step ( size_t step ) {
         tree.addChain ( *this->mMiners [ i ]->getBestBranch ());
     }
     this->mAnalysis.update ( tree );
-    this->Simulation_report ( step );
+//    this->Simulation_report ( step );
 }
 
 } // namespace Simulator

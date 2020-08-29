@@ -36,19 +36,16 @@ void SimMiner::log ( string prefix ) const {
 }
 
 //----------------------------------------------------------------//
-void SimMiner::pushGenesisTransaction ( Block& block ) const {
-
-    unique_ptr < Transactions::Genesis> genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
+void SimMiner::pushGenesisAccount ( Transactions::Genesis& genesisMinerTransactionBody ) const {
     
-//    genesisMinerTransactionBody->mAccountName = this->mMinerID;
-//    genesisMinerTransactionBody->mKey = this->mKeyPair;
-//    genesisMinerTransactionBody->mAmount = 0;
-//    genesisMinerTransactionBody->mURL = "";
+    Transactions::GenesisAccount genesisAccount;
+    
+    genesisAccount.mName    = this->mMinerID;
+    genesisAccount.mKey     = this->mKeyPair;
+    genesisAccount.mGrant   = 0;
+    genesisAccount.mURL     = "localhost";
 
-    shared_ptr < Transaction > transaction = make_shared < Transaction >();
-    transaction->setBody ( move ( genesisMinerTransactionBody ));
-
-    block.pushTransaction ( transaction );
+    genesisMinerTransactionBody.pushAccount ( genesisAccount );
 }
 
 //----------------------------------------------------------------//
@@ -89,47 +86,72 @@ void SimMiner::step ( double stepInSeconds ) {
 }
 
 //----------------------------------------------------------------//
-void SimMiner::update () {
-
-    LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "SimMiner::step ()" );
-
-    int tag = ( int )( this->mSimulation.rand () & 0xffffffff );
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "0x%08x", tag );
+void SimMiner::update_extend () {
 
     if ( this->mCohort && this->mCohort->mIsPaused ) return;
 
-    if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
-        this->resetMinerQueue ();
-        this->extend ( true );
-    }
-    
-    // grab the next miner to query
-    const SimMiner* miner = this->nextMiner ();
-    if ( !miner ) return;
-
-    if ( this->mVerbose ) {
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, " player: %s\n", this->mMinerID.c_str ());
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->getBestBranch ()->print ( "   CHAIN0: " ).c_str ());
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", miner->getBestBranch ()->print ( "   CHAIN1: " ).c_str ());
-    }
-
-    // update current chain using next miner's chain as reference
-    this->submitChain ( *miner->getBestBranch ());
-    this->selectBranch ();
-    this->extend ();
-
-    if ( this->mVerbose ) {
-    
-//        set < shared_ptr < Chain >>::const_iterator branchIt = this->mBranches.cbegin ();
-//        for ( ; branchIt != this->mBranches.cend (); ++branchIt ) {
-//            shared_ptr < const Chain > branch = *branchIt;
-//            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", branch->print ( "      OPT: " ).c_str ());
-//        }
-    
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->getBestBranch ()->print ( "     BEST: " ).c_str ());
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "\n" );
-    }
+    this->extend ( true );
 }
+
+//----------------------------------------------------------------//
+void SimMiner::update_select () {
+
+    if ( this->mCohort && this->mCohort->mIsPaused ) return;
+
+    this->resetMinerQueue ();
+
+    while ( this->mMinerCursor < this->mMinerQueue.size ()) {
+        const SimMiner* miner = this->nextMiner ();
+        if ( !miner ) continue;
+        this->submitChain ( *miner->getBestBranch ());
+    }
+    this->selectBranch ();
+    
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->getBestBranch ()->print ( "BEST: " ).c_str ());
+}
+
+////----------------------------------------------------------------//
+//void SimMiner::update () {
+//
+//    LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "SimMiner::step ()" );
+//
+//    int tag = ( int )( this->mSimulation.rand () & 0xffffffff );
+//    LGN_LOG ( VOL_FILTER_ROOT, INFO, "0x%08x", tag );
+//
+//    if ( this->mCohort && this->mCohort->mIsPaused ) return;
+//
+//    if ( this->mMinerCursor >= this->mMinerQueue.size ()) {
+//        this->resetMinerQueue ();
+//        this->extend ( true );
+//    }
+//
+//    // grab the next miner to query
+//    const SimMiner* miner = this->nextMiner ();
+//    if ( !miner ) return;
+//
+//    if ( this->mVerbose ) {
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, " player: %s\n", this->mMinerID.c_str ());
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->getBestBranch ()->print ( "   CHAIN0: " ).c_str ());
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", miner->getBestBranch ()->print ( "   CHAIN1: " ).c_str ());
+//    }
+//
+//    // update current chain using next miner's chain as reference
+//    this->submitChain ( *miner->getBestBranch ());
+//    this->selectBranch ();
+//    this->extend ();
+//
+//    if ( this->mVerbose ) {
+//
+////        set < shared_ptr < Chain >>::const_iterator branchIt = this->mBranches.cbegin ();
+////        for ( ; branchIt != this->mBranches.cend (); ++branchIt ) {
+////            shared_ptr < const Chain > branch = *branchIt;
+////            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", branch->print ( "      OPT: " ).c_str ());
+////        }
+//
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", this->getBestBranch ()->print ( "     BEST: " ).c_str ());
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "\n" );
+//    }
+//}
 
 //================================================================//
 // overrides

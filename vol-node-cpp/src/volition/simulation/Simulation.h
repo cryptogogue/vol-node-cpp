@@ -30,7 +30,7 @@ private:
     
     Analysis                                mAnalysis;
     vector < unique_ptr < SimMiner >>       mMiners;
-    float                                   mDropRate;
+    double                                  mDropRate;
     size_t                                  mCyclesPerStep;
     bool                                    mRandomizeScore;
     default_random_engine                   mRand;
@@ -62,7 +62,7 @@ public:
     void                run                     ();
     void                run                     ( size_t iterations, bool force = false );
     void                setCyclesPerStep        ( size_t cycles );
-    void                setDropRate             ( float percentage );
+    void                setDropRate             ( double percentage );
     void                setPlayerVerbose        ( size_t minerID, bool verbose );
     void                setScoreRandomizer      ( bool randomize );
     void                setStepSize             ( u64 stepSize );

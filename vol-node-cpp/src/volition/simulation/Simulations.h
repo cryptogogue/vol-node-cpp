@@ -202,12 +202,12 @@ class SimpleSimulation :
 public:
 
     //----------------------------------------------------------------//
-    SimpleSimulation ( int miners = 16 ) {
+    SimpleSimulation ( size_t miners = 4 ) {
     
         this->initMiners ( miners, TheContext::ScoringMode::ALLURE );
         this->applyCohort ( this->mNormal, "NORM", 0, miners );
         
-        this->mNormal.setVerbose ( true );
+//        this->mNormal.setVerbose ( true );
     }
 
     //================================================================//
@@ -306,6 +306,7 @@ public:
 
     //----------------------------------------------------------------//
     bool Simulation_control ( size_t step ) {
+        UNUSED ( step );
         
         return true;
     }

@@ -75,6 +75,18 @@ public:
     }
 
     //----------------------------------------------------------------//
+    void pushAccount ( const GenesisAccount& genesisAccount ) {
+    
+        this->mAccounts.push_back ( genesisAccount );
+    }
+    
+    //----------------------------------------------------------------//
+    void setIdentity ( string identity ) {
+    
+        this->mIdentity = identity;
+    }
+
+    //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
