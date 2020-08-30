@@ -53,8 +53,15 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "miner", "m", "miner name" )
+            Poco::Util::Option ( "logpath", "l", "path to log folder" )
                 .required ( false )
+                .argument ( "value", true )
+                .binding ( "logpath" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "miner", "m", "miner name" )
+                .required ( true )
                 .argument ( "value", true )
                 .binding ( "miner" )
         );
@@ -142,7 +149,8 @@ protected:
         
         string genesis                  = configuration.getString   ( "genesis" );
         int interval                    = configuration.getInt      ( "interval", Volition::WebMiner::DEFAULT_UPDATE_INTERVAL );
-        string keyfile                  = configuration.getString   ( "keyfile" );
+        string keyfile                  = configuration.getString   ( "keyfile", "" );
+        string logpath                  = configuration.getString   ( "logpath", "" );
         string minerID                  = configuration.getString   ( "miner", "" );
         string nodelist                 = configuration.getString   ( "nodelist", "" );
         bool permitControl              = configuration.getBool     ( "permit-control", false );
@@ -154,8 +162,11 @@ protected:
         string simpleRecorderFolder     = configuration.getString   ( "simple-recorder-folder", "" );
         bool solo                       = configuration.getBool     ( "solo", false );
         string sslCertFile              = configuration.getString   ( "openSSL.server.certificateFile", "" );
-            
-//        Volition::TheContext::get ().setScoringMode ( Volition::TheContext::ScoringMode::INTEGER );
+        
+        if ( logpath.size () > 0 ) {
+            freopen ( Volition::Format::write ( "%s/%s.log", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stdout );
+            freopen ( Volition::Format::write ( "%s/%s.err", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stderr );
+        }
         
         Padamose::RedisServerProc redisServerProc;
         shared_ptr < StringStorePersistenceProvider > persistenceProvider;
@@ -201,12 +212,15 @@ protected:
                 webMiner.setChainRecorder ( chainRecorder );
             }
             
-            LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
-            if ( !Volition::FileSys::exists ( keyfile )) {
-                LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
-                return Application::EXIT_CONFIG;
+            if ( keyfile.size () > 0 ) {
+                LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
+                if ( !Volition::FileSys::exists ( keyfile )) {
+                    LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+                    return Application::EXIT_CONFIG;
+                }
+                webMiner.loadKey ( keyfile );
             }
-            webMiner.loadKey ( keyfile );
+            webMiner.affirmKey ();
             
             LOG_F ( INFO, "MINER ID: %s", webMiner.getMinerID ().c_str ());
             webMiner.start ();

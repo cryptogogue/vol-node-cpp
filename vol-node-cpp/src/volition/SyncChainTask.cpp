@@ -42,7 +42,7 @@ void SyncChainTask::runTask () {
         session.setTimeout ( Poco::Timespan ( 1, 0 ));
         session.sendRequest ( request );
         
-        if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) { // wat?
+        if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
         
             std::istream& jsonStream = session.receiveResponse ( response );
         
@@ -62,7 +62,10 @@ void SyncChainTask::runTask () {
         }
     }
     catch ( Poco::Exception& exc ) {
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", exc.message ().c_str ());
+        string msg = exc.message ();
+        if ( msg.size () > 0 ) {
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", exc.message ().c_str ());
+        }
     }
 }
 

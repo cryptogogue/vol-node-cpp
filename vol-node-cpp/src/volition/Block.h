@@ -40,14 +40,20 @@ private:
     size_t              applyTransactions                   ( Ledger& ledger ) const;
     void                computeAllure                       ( Poco::Crypto::ECDSADigestEngine& signature ) const;
     void                setPreviousBlock                    ( const Block& prevBlock );
-    bool                verify                              ( const Ledger& ledger ) const;
-    bool                verify                              ( const CryptoKey& key ) const;
+    
 
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
     void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
+
+    enum VerificationPolicy {
+        ALL                 = -1,
+        VERIFY_ALLURE       = 1 << 0,
+        VERIFY_SIG          = 1 << 1,
+        NONE                = 0,
+    };
 
     //----------------------------------------------------------------//
     bool operator == ( const Block& rhs ) const {
@@ -61,7 +67,7 @@ public:
 
     //----------------------------------------------------------------//
     void                affirmHash                          ();
-    bool                apply                               ( Ledger& ledger ) const;
+    bool                apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
     static int          compare                             ( const Block& block0, const Block& block1 );
                         Block                               ();
                         Block                               ( string minerID, time_t now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
@@ -80,6 +86,8 @@ public:
     void                setAllure                           ( const Digest& allure );
     void                setMinerID                          ( string minerID );
     const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
+    bool                verify                              ( const Ledger& ledger, VerificationPolicy policy ) const;
+    bool                verify                              ( const CryptoKey& key, VerificationPolicy policy ) const;
 };
 
 } // namespace Volition

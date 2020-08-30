@@ -155,11 +155,11 @@ string Chain::print ( const char* pre, const char* post ) const {
 }
 
 //----------------------------------------------------------------//
-bool Chain::pushBlock ( const Block& block ) {
+bool Chain::pushBlock ( const Block& block, Block::VerificationPolicy policy ) {
 
     Chain fork ( *this );
 
-    bool result = block.apply ( fork );
+    bool result = block.apply ( fork, policy );
 
     if ( result ) {
         fork.pushVersion ();
@@ -190,7 +190,7 @@ void Chain::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
     for ( size_t i = 0; i < size; ++i ) {
     
         Block block = blocks [ i ];
-        this->pushBlock ( block );
+        this->pushBlock ( block, Block::VerificationPolicy::NONE );
     }
 }
 

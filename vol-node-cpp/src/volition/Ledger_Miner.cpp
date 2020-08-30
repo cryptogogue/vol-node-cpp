@@ -62,13 +62,18 @@ bool Ledger_Miner::registerMiner ( Account::Index accountIndex, string keyName, 
     Ledger& ledger = this->getLedger ();
 
     AccountKey accountKey = ledger.getAccountKey ( accountIndex, keyName );
-    if ( accountKey ) {
+    if ( accountKey.mAccount ) {
 
         shared_ptr < Account > account = accountKey.mAccount;
 
+        CryptoKey key;
+        if ( accountKey.mKeyAndPolicy ) {
+            key = accountKey.mKeyAndPolicy->mKey;
+        }
+
         ledger.setObject < MinerInfo >(
             AccountODBM::keyFor_minerInfo ( accountIndex ),
-            MinerInfo ( accountIndex, url, accountKey.mKeyAndPolicy->mKey )
+            MinerInfo ( accountIndex, url, key )
         );
         
         // TODO: find an efficient way to do all this

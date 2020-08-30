@@ -5,6 +5,7 @@
 #define VOLITION_CHAIN_H
 
 #include <volition/common.h>
+#include <volition/Block.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Ledger.h>
 
@@ -46,7 +47,7 @@ public:
     size_t              countBlocks         ( size_t cycleIdx ) const;
     void                init                ();
     string              print               ( const char* pre = NULL, const char* post = NULL ) const;
-    bool                pushBlock           ( const Block& block );
+    bool                pushBlock           ( const Block& block, Block::VerificationPolicy policy );
     size_t              size                () const;
 };
 

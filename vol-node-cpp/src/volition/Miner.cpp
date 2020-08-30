@@ -16,6 +16,15 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+void Miner::affirmKey () {
+
+    if ( !this->mKeyPair ) {
+        this->mKeyPair.elliptic ();
+    }
+    assert ( this->mKeyPair );
+}
+
+//----------------------------------------------------------------//
 bool Miner::checkBestBranch ( string miners ) const {
 
     assert ( this->mBestBranch );
@@ -145,7 +154,7 @@ void Miner::extend ( bool force ) {
     if ( !( this->mLazy && ( block.countTransactions () == 0 ))) {
     
         block.sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
-        bool result = fork.pushBlock ( block );
+        bool result = fork.pushBlock ( block, this->mBlockVerificationPolicy );
         assert ( result );
         
         chain.takeSnapshot ( fork );
@@ -242,22 +251,13 @@ void Miner::loadKey ( string keyfile, string password ) {
     
     Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
     assert ( this->mKeyPair );
-    
-    if ( this->mMinerID.size () == 0 ) {
-        string keyID = this->mKeyPair.getKeyID ();
-        const Ledger& ledger = this->getLedger ();
-        shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );
-        if ( accountKeyLookup ) {
-            this->mMinerID = ledger.getAccountName ( accountKeyLookup->mAccountIndex );
-        }
-    }
-    assert ( this->mMinerID.size () > 0 );
 }
 
 //----------------------------------------------------------------//
 Miner::Miner () :
     mLazy ( false ),
-    mControlPermitted ( false ) {
+    mControlPermitted ( false ),
+    mBlockVerificationPolicy ( Block::VerificationPolicy::NONE ) {
     
     Miner::checkEnvironment ();
 }
@@ -320,7 +320,7 @@ void Miner::setGenesis ( const Block& block ) {
     
     this->mBranches.clear ();
     shared_ptr < Chain > chain = make_shared < Chain >();
-    bool result = chain->pushBlock ( block );
+    bool result = chain->pushBlock ( block, this->mBlockVerificationPolicy );
     assert ( result );
     
     string identity = chain->getIdentity ();
@@ -380,15 +380,15 @@ Miner::SubmissionResponse Miner::submitBlock ( const Block& block ) {
             if ( prevBlock->isParent ( block )) {
                 
                 if ( blockHeight == chainHeight ) {
-                    chain->pushBlock ( block );
+                    chain->pushBlock ( block, this->mBlockVerificationPolicy );
                 }
                 else {
                     shared_ptr < Block > rival = chain->getBlock ( blockHeight );
                     if ( block != *rival ) {
                         shared_ptr < Chain > fork = make_shared < Chain >( *chain );
-                        fork->revert ( blockHeight - 1);
+                        fork->revert ( blockHeight - 1 );
                         fork->pushVersion ();
-                        fork->pushBlock ( block );
+                        fork->pushBlock ( block, this->mBlockVerificationPolicy );
                         this->mBranches.insert ( fork );
                     }
                 }

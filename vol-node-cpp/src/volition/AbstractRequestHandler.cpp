@@ -115,4 +115,3 @@ void AbstractRequestHandler::handleRequest ( Poco::Net::HTTPServerRequest& reque
 }
 
 } // namespace Volition
-

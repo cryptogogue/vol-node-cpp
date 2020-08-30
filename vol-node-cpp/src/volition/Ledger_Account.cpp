@@ -240,16 +240,20 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
     Account account;
     account.mPolicy     = accountPolicy;
     account.mIndex      = accountIndex;
-//    account.mName       = accountName;
     account.mBalance    = balance;
-    account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
+    
+    if ( key ) {
+        account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
+    }
     
     ledger.setObject < Account >( AccountODBM::keyFor_body ( accountIndex ), account );
 
-    // store the key (for reverse lookup):
-    string keyID = key.getKeyID ();
-    assert ( keyID.size ());
-    ledger.setObject < AccountKeyLookup >( Ledger::keyFor_accountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, keyName ));
+    if ( key ) {
+        // store the key (for reverse lookup):
+        string keyID = key.getKeyID ();
+        assert ( keyID.size ());
+        ledger.setObject < AccountKeyLookup >( Ledger::keyFor_accountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, keyName ));
+    }
 
     // store the alias
     ledger.setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );

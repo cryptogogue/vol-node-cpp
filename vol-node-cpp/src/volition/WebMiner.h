@@ -73,30 +73,30 @@ private:
     Poco::Event                         mShutdownEvent;
 
     //----------------------------------------------------------------//
-    void            onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
-    void            processQueue                ();
-    void            runActivity                 ();
-    void            runMulti                    ();
-    void            runSolo                     ();
-    void            startTasks                  ();
-    void            updateMiners                ();
+    void                onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
+    void                processQueue                ();
+    void                runActivity                 ();
+    void                runMulti                    ();
+    void                runSolo                     ();
+    void                startTasks                  ();
+    void                updateMiners                ();
 
     //----------------------------------------------------------------//
-    void            Miner_reset                 () override;
-    void            Miner_shutdown              ( bool kill ) override;
+    void                Miner_reset                 () override;
+    void                Miner_shutdown              ( bool kill ) override;
 
 public:
 
     static const u32                    DEFAULT_UPDATE_INTERVAL = 60;
 
     //----------------------------------------------------------------//
-    Poco::Mutex&        getMutex                ();
-    SerializableTime    getStartTime            ();
-    void                setSolo                 ( bool solo );
-    void                setUpdateInterval       ( u32 updateIntervalInSeconds );
-    void                waitForShutdown         ();
-                        WebMiner                ();
-                        ~WebMiner               ();
+    Poco::Mutex&        getMutex                    ();
+    SerializableTime    getStartTime                ();
+    void                setSolo                     ( bool solo );
+    void                setUpdateInterval           ( u32 updateIntervalInSeconds );
+    void                waitForShutdown             ();
+                        WebMiner                    ();
+                        ~WebMiner                   ();
 };
 
 } // namespace Volition

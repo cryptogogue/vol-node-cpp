@@ -21,10 +21,10 @@ void Block::affirmHash () {
 }
 
 //----------------------------------------------------------------//
-bool Block::apply ( Ledger& ledger ) const {
+bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
 
     if ( ledger.getVersion () != this->mHeight ) return false;
-    if ( !this->verify ( ledger )) return false;
+    if ( !this->verify ( ledger, policy )) return false;
 
     // some transactions need to be applied later.
     // we need to evaluate if they are legal now.
@@ -149,13 +149,13 @@ Block::Block ( string minerID, time_t now, const Block* prevBlock, const CryptoK
     mMinerID ( minerID ),
     mHeight ( 0 ),
     mTime ( now ) {
-    
+        
     if ( prevBlock ) {
         
         this->mHeight = prevBlock->mHeight + 1;
         this->mPrevDigest = prevBlock->mSignature.getDigest ();
         
-        // TODO: allure should be generated using an RFC6979 deterministic signature.
+        // TODO: allure should be generated using a deterministic signature.
         // use a sample hash for now.
         Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
         this->computeAllure ( signature );
@@ -180,12 +180,11 @@ int Block::compare ( const Block& block0, const Block& block1 ) {
             string allure0 = Poco::DigestEngine::digestToHex ( block0.mAllure );
             string allure1 = Poco::DigestEngine::digestToHex ( block1.mAllure );
             
-//            printf ( "allure0: %s\n", allure0.c_str ());
-//            printf ( "allure1: %s\n", allure1.c_str ());
+//            printf ( "allure0 (%s): %s\n", block0.getMinerID ().c_str (), allure0.c_str ());
+//            printf ( "allure1 (%s): %s\n", block1.getMinerID ().c_str (), allure1.c_str ());
             
-            assert ( allure0 != allure1 );
-            
-            return allure0.compare ( allure1 ) < 0 ? -1 : 1;
+            int result = allure0.compare ( allure1 );
+            return result < 0 ? -1 : result > 0 ? 1 : 0;
         }
         else {
         
@@ -315,13 +314,14 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const Ledger& ledger ) const {
+bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 
     shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( this->mMinerID ));
 
     if ( minerInfo ) {
-        return this->verify ( minerInfo->getPublicKey ());
+        return ( policy & VerificationPolicy::VERIFY_SIG ) ? this->verify ( minerInfo->getPublicKey (), policy ) : true;
     }
+    printf ( "MISSING MINER INFO: %d\n", ( int )this->mHeight );
 
     // no miner info; must be the genesis block
     if ( this->mHeight > 0 ) return false; // genesis block must be height 0
@@ -330,20 +330,20 @@ bool Block::verify ( const Ledger& ledger ) const {
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const CryptoKey& key ) const {
+bool Block::verify ( const CryptoKey& key, VerificationPolicy policy ) const {
 
-//    if ( this->mHeight > 0 ) {
-//
-//        // verify allure
-//        string hashAlgorithm = this->mSignature.getHashAlgorithm ();
-//
-//        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-//        this->computeAllure ( signature );
-//
-//        if ( !signature.verify ( this->mAllure )) {
-//            return false;
-//        }
-//    }
+    if (( this->mHeight > 0 ) && ( policy & VerificationPolicy::VERIFY_ALLURE )) {
+
+        // verify allure
+        string hashAlgorithm = this->mSignature.getHashAlgorithm ();
+
+        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
+        this->computeAllure ( signature );
+
+        if ( !signature.verify ( this->mAllure )) {
+            return false;
+        }
+    }
     return key.verify ( this->mSignature, *this );
 }
 

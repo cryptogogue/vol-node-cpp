@@ -36,6 +36,8 @@ protected:
     bool                                            mLazy;
     bool                                            mControlPermitted;
 
+    Block::VerificationPolicy                       mBlockVerificationPolicy;
+
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
     shared_ptr < Chain >                            mBestBranch;
@@ -61,6 +63,7 @@ public:
     };
 
     //----------------------------------------------------------------//
+    void                    affirmKey               ();
     bool                    checkBestBranch         ( string miners ) const;
     bool                    controlPermitted        () const;
     size_t                  countBranches           () const;

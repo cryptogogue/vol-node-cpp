@@ -98,6 +98,14 @@ public:
     void        update              ( const Tree& tree );
 };
 
+// USAGE:
+// Tree tree;
+// for ( size_t i = 0; i < nMiners; ++i ) {
+//     tree.addChain ( *miners [ i ]->getBestBranch ());
+// }
+// this->mAnalysis.update ( tree );
+// this->mAnalysis.log ( prefix, verbose, maxDepth );
+
 } // namespace Simulator
 } // namespace Volition
 #endif

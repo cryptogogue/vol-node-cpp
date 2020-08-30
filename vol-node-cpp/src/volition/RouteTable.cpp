@@ -34,7 +34,7 @@ AbstractRequestHandler* RouteTable::match ( const Poco::Net::HTTPServerRequest& 
         }
     }
     catch ( Routing::PathNotFoundException ) {}
-        
+    
     try {
         Routing::PathMatch match = this->mDefaultRouter.matchPath ( "" );
         handler = this->mDefaultAllocator->create ();
