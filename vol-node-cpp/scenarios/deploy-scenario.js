@@ -5,10 +5,18 @@ const util			= require ( 'util' );
 //const FILTER = 'WEB.CHAIN:';
 const FILTER = '';
 
+let loggingEnabled = false;
 const queue = [];
 
 //----------------------------------------------------------------//
 function log ( prefix, data, filePath ) {
+
+    if ( filePath ) {
+        loggingEnabled = true;
+        logToFile ( filePath, data.toString ());
+        return;
+    }
+    return;
 
     let lines = data.toString ().split ( '\n' );
     let len = lines.length - 1;
@@ -16,17 +24,24 @@ function log ( prefix, data, filePath ) {
 
         let line = lines [ i ];
         if ( !FILTER || ( line.indexOf ( FILTER ) > -1 )) {
-            if ( filePath ) {
-                queue.push ({
-                    path: filePath,
-                    line: prefix + line,
-                });
-            }
-            // else {
-            //     console.log ( 'OOPS' );
-            //     console.log ( prefix + line );
-            // }
+            console.log ( prefix + line );
         }
+    }
+}
+
+//----------------------------------------------------------------//
+async function loggingLoop () {
+
+    function sleep ( ms ) {
+        return new Promise ( resolve => setTimeout ( resolve, ms ));
+    }
+
+    while ( true ) {
+        while ( queue.length ) {
+            const entry = queue.shift ();
+            fs.appendFileSync ( entry.path, entry.line );
+        }
+        await sleep ( 1 );
     }
 }
 
@@ -49,34 +64,31 @@ function spawnWithArgs ( prefix, command, args, logFileName ) {
 	let child = spawn ( command, args.split ( ' ' ));
 
 	child.stdout.on ( 'data', function ( data ) {
-	   logToFile ( logFileName, data.toString ());
+	   log ( prefix, data, logFileName );
 	});
 
     child.stderr.on ( 'data', function ( data ) {
-        logToFile ( logFileName, data.toString ());
+        log ( prefix, data, logFileName );
     });
 }
 
-spawnWithArgs ( '9090: ', '../bin/server', '-m 9090 -p 9090 -g genesis-nokeys.in', './volume-logio/log/9090.log' );
-spawnWithArgs ( '9091: ', '../bin/server', '-m 9091 -p 9091 -g genesis-nokeys.in', './volume-logio/log/9091.log' );
-spawnWithArgs ( '9092: ', '../bin/server', '-m 9092 -p 9092 -g genesis-nokeys.in', './volume-logio/log/9092.log' );
-spawnWithArgs ( '9093: ', '../bin/server', '-m 9093 -p 9093 -g genesis-nokeys.in', './volume-logio/log/9093.log' );
-spawnWithArgs ( '9094: ', '../bin/server', '-m 9094 -p 9094 -g genesis-nokeys.in', './volume-logio/log/9094.log' );
+//================================================================//
+// main
+//================================================================//
 
-//----------------------------------------------------------------//
-async function mainLoop () {
+const scenario = JSON.parse ( fs.readFileSync ( 'scenario.json' ));
+for ( let miner of scenario.miners ) {
 
-    function sleep ( ms ) {
-        return new Promise ( resolve => setTimeout ( resolve, ms ));
-    }
+    const port = miner.port;
 
-    while ( true ) {
-        while ( queue.length ) {
-            const entry = queue.shift ();
-            fs.appendFileSync ( entry.path, entry.line );
-        }
-        await sleep ( 1 );
-    }
+    spawnWithArgs (
+        `${ port }: `,
+        '../bin/server',
+        `-m ${ port } -p ${ port } -g genesis`,
+        miner.log ? `./volume-logio/log/${ port }.log` : false
+    );
 }
 
-mainLoop ();
+if ( loggingEnabled ) {
+    loggingLoop ();
+}

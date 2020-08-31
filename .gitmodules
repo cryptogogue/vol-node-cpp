@@ -8,3 +8,6 @@ url=git@github.com:cryptogogue/simple-cpp-router.git
 [submodule "3rd-party/padamose"]
 	path = vol-node-cpp/3rd-party/padamose
 	url = git@github.com:cryptogogue/padamose.git
+[submodule "vol-netmon-js"]
+	path = vol-netmon-js
+	url = git@github.com:cryptogogue/vol-netmon-js.git

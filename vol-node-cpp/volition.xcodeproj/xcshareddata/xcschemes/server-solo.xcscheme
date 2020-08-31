@@ -64,6 +64,10 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
+            argument = "-m 9090"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-p 9090"
             isEnabled = "YES">
          </CommandLineArgument>
