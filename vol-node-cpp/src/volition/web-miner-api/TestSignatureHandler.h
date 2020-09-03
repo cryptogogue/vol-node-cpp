@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // TestSignatureHandler
 //================================================================//
 class TestSignatureHandler :
-    public AbstractAPIRequestHandler {
+    public WebMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::POST )

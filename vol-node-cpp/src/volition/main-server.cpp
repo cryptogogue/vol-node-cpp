@@ -9,9 +9,9 @@
 #include <volition/Singleton.h>
 #include <volition/TheContext.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
 #include <volition/version.h>
-#include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
+#include <volition/WebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 //================================================================//
 // ServerApp
@@ -181,57 +181,49 @@ protected:
             persistenceProvider = make_shared < StringStorePersistenceProvider >( stringStore );
         }
         
-        {
-            Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
-            Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
+        shared_ptr < Volition::WebMiner > webMiner = make_shared < Volition::WebMiner >();
         
-            webMiner.setMinerID ( minerID );
+        webMiner->setMinerID ( minerID );
+    
+        if ( permitControl ) {
+            LOG_F ( INFO, "CONTROL IS PERMITTED" );
+            webMiner->permitControl ( permitControl );
+        }
+    
+        if ( solo ) {
+            LOG_F ( INFO, "LAZY and SOLO" );
+            webMiner->setLazy ( true );
+            webMiner->setSolo ( true );
+        }
         
-            if ( permitControl ) {
-                LOG_F ( INFO, "CONTROL IS PERMITTED" );
-                webMiner.permitControl ( permitControl );
-            }
+        webMiner->setUpdateInterval (( u32 )interval );
         
-            if ( solo ) {
-                LOG_F ( INFO, "LAZY and SOLO" );
-                webMiner.setLazy ( true );
-                webMiner.setSolo ( true );
-            }
-            
-            webMiner.setUpdateInterval (( u32 )interval );
-            
-            LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
-            if ( !Volition::FileSys::exists ( genesis )) {
+        LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
+        if ( !Volition::FileSys::exists ( genesis )) {
+            LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+            return Application::EXIT_CONFIG;
+        }
+        webMiner->loadGenesis ( genesis );
+        
+        if ( simpleRecorderFolder.size () > 0 ) {
+            shared_ptr < Volition::AbstractChainRecorder > chainRecorder = make_shared < Volition::SimpleChainRecorder >( *webMiner, simpleRecorderFolder );
+            webMiner->setChainRecorder ( chainRecorder );
+        }
+        
+        if ( keyfile.size () > 0 ) {
+            LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
+            if ( !Volition::FileSys::exists ( keyfile )) {
                 LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
                 return Application::EXIT_CONFIG;
             }
-            webMiner.loadGenesis ( genesis );
-            
-            if ( simpleRecorderFolder.size () > 0 ) {
-                shared_ptr < Volition::AbstractChainRecorder > chainRecorder = make_shared < Volition::SimpleChainRecorder >( webMiner, simpleRecorderFolder );
-                webMiner.setChainRecorder ( chainRecorder );
-            }
-            
-            if ( keyfile.size () > 0 ) {
-                LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
-                if ( !Volition::FileSys::exists ( keyfile )) {
-                    LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
-                    return Application::EXIT_CONFIG;
-                }
-                webMiner.loadKey ( keyfile );
-            }
-            webMiner.affirmKey ();
-            
-            LOG_F ( INFO, "MINER ID: %s", webMiner.getMinerID ().c_str ());
-            webMiner.start ();
+            webMiner->loadKey ( keyfile );
         }
+        webMiner->affirmKey ();
+        
+        LOG_F ( INFO, "MINER ID: %s", webMiner->getMinerID ().c_str ());
 
-        this->serve ( port, sslCertFile.length () > 0 );
-
-        {
-            Volition::ScopedWebMinerLock scopedLock ( Volition::TheWebMiner::get ());
-            scopedLock.getWebMiner ().shutdown ( false );
-        }
+        this->serve ( webMiner, port, sslCertFile.length () > 0 );
+        
         return Application::EXIT_OK;
     }
     
@@ -268,30 +260,37 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void serve ( int port, bool ssl ) {
+    void serve ( shared_ptr < Volition::WebMiner > webMiner, int port, bool ssl ) {
 
         Poco::ThreadPool threadPool;
 
         Poco::Net::HTTPServer server (
-            new Volition::WebMinerAPI::HTTPRequestHandlerFactory (),
+            new Volition::WebMinerAPIFactory ( webMiner ),
             threadPool,
             ssl ? Poco::Net::SecureServerSocket (( Poco::UInt16 )port ) : Poco::Net::ServerSocket (( Poco::UInt16 )port ),
             new Poco::Net::HTTPServerParams ()
         );
+        
         server.start ();
+        webMiner->start ();
 
         LOG_F ( INFO, "\nSERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
         // need to find out how to stop POCO from doing this. in the meantime, this hack.
         #ifdef _DEBUG
-            Volition::TheWebMiner::get ().waitForShutdown ();
+            webMiner->waitForShutdown ();
         #else
             this->waitForTerminationRequest ();  // wait for CTRL-C or kill
         #endif
 
         server.stop ();
         threadPool.stopAll ();
+        
+        {
+            Volition::ScopedWebMinerLock scopedLock ( webMiner );
+            webMiner->shutdown ( false );
+        }
     }
 
 public:

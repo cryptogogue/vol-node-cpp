@@ -5,8 +5,8 @@
 #include <volition/serialization/Serialization.h>
 #include <volition/simulation/Simulations.h>
 #include <volition/TheContext.h>
-#include <volition/TheWebMiner.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
+#include <volition/WebMiner.h>
 
 using namespace Volition;
 
@@ -71,14 +71,13 @@ string loadFileAsString ( string filename ) {
 }
 
 //----------------------------------------------------------------//
-void waitChainSize ( size_t size, long sleep = 100 ) {
+void waitChainSize ( shared_ptr < WebMiner > webMiner, size_t size, long sleep = 100 ) {
 
     bool pass = false;
     do {
         Poco::Thread::sleep ( sleep );
-        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        WebMiner& webMiner = scopedLock.getWebMiner ();
-        pass = ( size <= webMiner.getChainSize ());
+        ScopedWebMinerLock scopedLock ( webMiner );
+        pass = ( size <= webMiner->getChainSize ());
     } while ( !pass );
 }
 
@@ -98,20 +97,17 @@ TEST ( WebMiner, asset_transformations ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
-    {
-        Volition::ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
-
-        webMiner.setLazy ( true );
-        webMiner.setSolo ( true );
+    shared_ptr < WebMiner > webMiner = make_shared < WebMiner >();
         
-        webMiner.loadKey ( "keys/pkey0.priv.json" );
-        webMiner.loadGenesis ( "genesis.signed" );
-        webMiner.setMinerID ( "9090" );
-        webMiner.start ();
-    }
+    webMiner->setLazy ( true );
+    webMiner->setSolo ( true );
+        
+    webMiner->loadKey ( "keys/pkey0.priv.json" );
+    webMiner->loadGenesis ( "genesis.signed" );
+    webMiner->setMinerID ( "9090" );
+    webMiner->start ();
     
-    Poco::Net::HTTPServer server ( new WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
+    Poco::Net::HTTPServer server ( new Volition::WebMinerAPIFactory ( webMiner ), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
     server.start ();
 
     Poco::JSON::Object::Ptr json = httpGetJSON ( "http://127.0.0.1:9090/" );
@@ -122,7 +118,7 @@ TEST ( WebMiner, asset_transformations ) {
 
     json = httpPostJSON ( "http://127.0.0.1:9090/transactions", loadFileAsString ( "test/publish-test-schema.json" ));
     ASSERT_FALSE ( json.isNull ());
-    waitChainSize ( 2 );
+    waitChainSize ( webMiner, 2 );
 
     json = httpGetJSON ( "http://127.0.0.1:9090/accounts/9090/inventory" );
     ASSERT_FALSE ( json.isNull ());
@@ -143,16 +139,16 @@ TEST ( WebMiner, asset_transformations ) {
     json = httpPostJSON ( "http://127.0.0.1:9090/test/extendChain", "{}" );
     ASSERT_FALSE ( json.isNull ());
     
-    waitChainSize ( 3 );
+    waitChainSize ( webMiner, 3 );
     
     json = httpPostJSON ( "http://127.0.0.1:9090/test/extendChain", "{}" );
     ASSERT_FALSE ( json.isNull ());
     
-    waitChainSize ( 4 );
+    waitChainSize ( webMiner, 4 );
 
     server.stop ();
-
-    TheWebMiner::get ().shutdown ();
+    
+    webMiner->shutdown ();
 }
 
 //----------------------------------------------------------------//
@@ -160,18 +156,15 @@ TEST ( WebMiner, small_simulation ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
-    {
-        Volition::ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        Volition::WebMiner& webMiner = scopedLock.getWebMiner ();
+    shared_ptr < WebMiner > webMiner = make_shared < WebMiner >();
 
-        webMiner.setLazy ( true );
-        webMiner.setSolo ( true );
+    webMiner->setLazy ( true );
+    webMiner->setSolo ( true );
         
-        webMiner.loadKey ( "keys/pkey0.priv.json" );
-        webMiner.loadGenesis ( "genesis.signed" );
-        webMiner.setMinerID ( "9090" );
-        webMiner.start ();
-    }
+    webMiner->loadKey ( "keys/pkey0.priv.json" );
+    webMiner->loadGenesis ( "genesis.signed" );
+    webMiner->setMinerID ( "9090" );
+    webMiner->start ();
     
     Poco::Net::HTTPServer server ( new WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
     server.start ();
@@ -208,5 +201,5 @@ TEST ( WebMiner, small_simulation ) {
 
     server.stop ();
 
-    TheWebMiner::get ().shutdown ();
+    webMiner->shutdown ();
 }

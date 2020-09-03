@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // ExtendChainHandler
 //================================================================//
 class ExtendChainHandler :
-    public AbstractAPIRequestHandler {
+    public WebMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::POST )
@@ -28,13 +28,12 @@ public:
         UNUSED ( jsonOut );
     
         try {
-            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            WebMiner& webMiner = scopedLock.getWebMiner ();
+            ScopedWebMinerLock scopedLock ( this->mWebMiner );
             
-            bool lazy = webMiner.getLazy ();
-            webMiner.setLazy ( false );
-            webMiner.extend ();
-            webMiner.setLazy ( lazy );
+            bool lazy = this->mWebMiner->getLazy ();
+            this->mWebMiner->setLazy ( false );
+            this->mWebMiner->extend ();
+            this->mWebMiner->setLazy ( lazy );
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

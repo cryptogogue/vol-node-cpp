@@ -8,7 +8,7 @@
 #include <volition/Block.h>
 #include <volition/CryptoKeyInfo.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -17,7 +17,7 @@ namespace WebMinerAPI {
 // TestKeyIDHandler
 //================================================================//
 class TestKeyIDHandler :
-    public AbstractAPIRequestHandler {
+    public WebMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::POST )

@@ -32,7 +32,7 @@ void SyncChainTask::runTask () {
 
     this->mBlockQueueEntry = make_unique < BlockQueueEntry >();
     this->mBlockQueueEntry->mMinerID = this->mMinerID;
-    this->mBlockQueueEntry->mHasBlock = false;
+    this->mBlockQueueEntry->mBlock = NULL;
 
     try {
         Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
@@ -56,8 +56,9 @@ void SyncChainTask::runTask () {
             json = json ? json->getObject ( "block" ) : NULL;
         
             if ( json ) {
-                FromJSONSerializer::fromJSON ( this->mBlockQueueEntry->mBlock, *json );
-                this->mBlockQueueEntry->mHasBlock = true;
+                shared_ptr < Block > block = make_shared < Block >();
+                FromJSONSerializer::fromJSON ( *block, *json );
+                this->mBlockQueueEntry->mBlock = block;
             }
         }
     }

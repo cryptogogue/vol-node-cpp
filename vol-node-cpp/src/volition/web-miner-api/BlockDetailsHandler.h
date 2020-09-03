@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // BlockDetailsHandler
 //================================================================//
 class BlockDetailsHandler :
-    public AbstractAPIRequestHandler {
+    public WebMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -30,8 +30,8 @@ public:
         
             u64 height = this->getMatchU64 ( "blockID" );
 
-            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            const Chain& chain = *scopedLock.getWebMiner ().getBestBranch ();
+            ScopedWebMinerLock scopedLock ( this->mWebMiner );
+            const Chain& chain = *this->mWebMiner->getBestBranch ();
 
             shared_ptr < Block > block = chain.getBlock ( height );
             if ( block ) {

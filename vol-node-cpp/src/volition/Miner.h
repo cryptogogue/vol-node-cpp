@@ -5,6 +5,7 @@
 #define VOLITION_MINER_H
 
 #include <volition/common.h>
+#include <volition/BlockTree.h>
 #include <volition/CryptoKey.h>
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
@@ -19,6 +20,7 @@ namespace Volition {
 class AbstractChainRecorder;
 class AbstractHashable;
 class Block;
+class BlockTreeNode;
 
 //================================================================//
 // Miner
@@ -40,6 +42,7 @@ protected:
 
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
+    BlockTree                                       mBlockTree;
     shared_ptr < Chain >                            mBestBranch;
     set < shared_ptr < Chain >>                     mBranches;
     
@@ -69,6 +72,7 @@ public:
     size_t                  countBranches           () const;
     void                    extend                  ( bool force = false );
     const Chain*            getBestBranch           () const;
+    const CryptoKey&        getKeyPair              () const;
     size_t                  getLongestBranchSize    () const;
     bool                    getLazy                 () const;
     Ledger&                 getLedger               ();
@@ -82,7 +86,7 @@ public:
     virtual                 ~Miner                  ();
     void                    permitControl           ( bool permit );
     void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
-    void                    setGenesis              ( const Block& block );
+    void                    setGenesis              ( shared_ptr < const Block > block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );
     void                    reset                   ();

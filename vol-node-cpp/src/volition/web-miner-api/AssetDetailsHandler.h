@@ -8,7 +8,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -17,7 +17,7 @@ namespace WebMinerAPI {
 // AssetDetailsHandler
 //================================================================//
 class AssetDetailsHandler :
-    public AbstractAPIRequestHandler {
+    public WebMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -36,8 +36,8 @@ public:
             
             if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
             
-            ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-            Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+            ScopedWebMinerLock scopedLock ( this->mWebMiner );
+            Ledger& ledger = this->mWebMiner->getLedger ();
             const Schema& schema = ledger.getSchema ();
         
             shared_ptr < Asset > asset = ledger.getAsset ( schema, index );

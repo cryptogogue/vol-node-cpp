@@ -168,6 +168,12 @@ const Chain* Miner::getBestBranch () const {
 }
 
 //----------------------------------------------------------------//
+const CryptoKey& Miner::getKeyPair () const {
+
+    return this->mKeyPair;
+}
+
+//----------------------------------------------------------------//
 size_t Miner::getLongestBranchSize () const {
     
     size_t max = 0;
@@ -234,8 +240,8 @@ void Miner::loadGenesis ( string path ) {
     inStream.open ( path, ios_base::in );
     assert ( inStream.is_open ());
 
-    Block block;
-    FromJSONSerializer::fromJSON ( block, inStream );
+    shared_ptr < Block > block = make_shared < Block >();
+    FromJSONSerializer::fromJSON ( *block, inStream );
     this->setGenesis ( block );
 }
 
@@ -273,6 +279,34 @@ void Miner::permitControl ( bool permit ) {
 }
 
 //----------------------------------------------------------------//
+void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorder ) {
+
+    this->mChainRecorder = chainRecorder;
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->loadChain ( *this );
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::setGenesis ( shared_ptr < const Block > block ) {
+    
+    assert ( block );
+    
+    this->mBranches.clear ();
+    shared_ptr < Chain > chain = make_shared < Chain >();
+    bool result = chain->pushBlock ( *block, this->mBlockVerificationPolicy );
+    assert ( result );
+    
+    string identity = chain->getIdentity ();
+    assert ( identity.size ());
+    
+    this->mBranches.insert ( chain );
+    this->mBestBranch = chain;
+    
+    this->mBlockTree.affirmNode ( block );
+}
+
+//----------------------------------------------------------------//
 void Miner::setLazy ( bool lazy ) {
 
     this->mLazy = lazy;
@@ -304,30 +338,6 @@ void Miner::saveChain () {
     if ( this->mChainRecorder ) {
         this->mChainRecorder->saveChain ( *this );
     }
-}
-
-//----------------------------------------------------------------//
-void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorder ) {
-
-    this->mChainRecorder = chainRecorder;
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->loadChain ( *this );
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::setGenesis ( const Block& block ) {
-    
-    this->mBranches.clear ();
-    shared_ptr < Chain > chain = make_shared < Chain >();
-    bool result = chain->pushBlock ( block, this->mBlockVerificationPolicy );
-    assert ( result );
-    
-    string identity = chain->getIdentity ();
-    assert ( identity.size ());
-    
-    this->mBranches.insert ( chain );
-    this->mBestBranch = chain;
 }
 
 //----------------------------------------------------------------//

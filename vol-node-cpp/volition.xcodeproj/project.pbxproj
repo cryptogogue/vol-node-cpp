@@ -89,15 +89,12 @@
 		CD4E81A6210593CA007DA585 /* SyncChainTask.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */; };
 		CD4E81A7210593CA007DA585 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36658920EB3BE0000E0B43 /* Miner.cpp */; };
 		CD4E81A8210593CA007DA585 /* Miner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36658A20EB3BE0000E0B43 /* Miner.h */; };
-		CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */; };
-		CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36662D20F56D9A000E0B43 /* TheWebMiner.h */; };
 		CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1020C14460006E3B1C /* WebMiner.cpp */; };
 		CD4E81AD210593CA007DA585 /* WebMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E1120C14460006E3B1C /* WebMiner.h */; };
 		CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */; };
 		CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */; };
 		CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */; };
 		CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */; };
-		CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED584220BA2131003A2969 /* RouteTable.cpp */; };
 		CD4E81B3210593DD007DA585 /* RouteTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED584320BA2131003A2969 /* RouteTable.h */; };
 		CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664820F73027000E0B43 /* AbstractSerializable.h */; };
 		CD4E81B5210593E5007DA585 /* AbstractSerializerFrom.h in Headers */ = {isa = PBXBuildFile; fileRef = CD36664920F7304C000E0B43 /* AbstractSerializerFrom.h */; };
@@ -163,6 +160,13 @@
 		CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */; };
 		CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */; };
 		CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD964FA223C48EAB009010C3 /* TransactionQueue.h */; };
+		CD9E7BA124FF67C30065C5FC /* BlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7B9F24FF67C30065C5FC /* BlockTree.cpp */; };
+		CD9E7BA224FF67C30065C5FC /* BlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BA024FF67C30065C5FC /* BlockTree.h */; };
+		CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */; };
+		CD9E7BA724FF69D00065C5FC /* BlockHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BA524FF69D00065C5FC /* BlockHeader.h */; };
+		CD9E7BAD250099010065C5FC /* WebMinerAPIFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BAC250099010065C5FC /* WebMinerAPIFactory.h */; };
+		CD9E7BAF2500999C0065C5FC /* WebMinerAPIFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BAE2500999C0065C5FC /* WebMinerAPIFactory.cpp */; };
+		CD9E7BB42500D71E0065C5FC /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */; };
 		CD9FE6AD22699CCF009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
 		CD9FE6AE22699CCF009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CD9FE6B322699D51009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
@@ -189,8 +193,6 @@
 		CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */; };
 		CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */; };
 		CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */; };
-		CDB8B40621ACC874004EE816 /* HTTPRequestHandlerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3FC21ACC874004EE816 /* HTTPRequestHandlerFactory.cpp */; };
-		CDB8B40721ACC874004EE816 /* HTTPRequestHandlerFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */; };
 		CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */; };
 		CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */; };
 		CDBFD4EE218B78C4002AB0C3 /* lapi.c in Sources */ = {isa = PBXBuildFile; fileRef = CDBFD474218B7860002AB0C3 /* lapi.c */; };
@@ -687,8 +689,6 @@
 		CD2AB82F2314E35500805F70 /* RenameAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenameAccount.h; path = src/volition/transactions/RenameAccount.h; sourceTree = "<group>"; };
 		CD36658920EB3BE0000E0B43 /* Miner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Miner.cpp; path = src/volition/Miner.cpp; sourceTree = "<group>"; };
 		CD36658A20EB3BE0000E0B43 /* Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.h; path = src/volition/Miner.h; sourceTree = "<group>"; };
-		CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheWebMiner.cpp; path = src/volition/TheWebMiner.cpp; sourceTree = "<group>"; };
-		CD36662D20F56D9A000E0B43 /* TheWebMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheWebMiner.h; path = src/volition/TheWebMiner.h; sourceTree = "<group>"; };
 		CD36662F20F585D8000E0B43 /* AbstractAPIRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractAPIRequestHandler.cpp; path = src/volition/AbstractAPIRequestHandler.cpp; sourceTree = "<group>"; };
 		CD36663020F585D8000E0B43 /* AbstractAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractAPIRequestHandler.h; path = src/volition/AbstractAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD36663720F595B2000E0B43 /* FNV1a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FNV1a.h; path = src/volition/FNV1a.h; sourceTree = "<group>"; };
@@ -769,6 +769,13 @@
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionQueue.cpp; path = src/volition/TransactionQueue.cpp; sourceTree = "<group>"; };
 		CD964FA223C48EAB009010C3 /* TransactionQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueue.h; path = src/volition/TransactionQueue.h; sourceTree = "<group>"; };
+		CD9E7B9F24FF67C30065C5FC /* BlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockTree.cpp; path = src/volition/BlockTree.cpp; sourceTree = "<group>"; };
+		CD9E7BA024FF67C30065C5FC /* BlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTree.h; path = src/volition/BlockTree.h; sourceTree = "<group>"; };
+		CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockHeader.cpp; path = src/volition/BlockHeader.cpp; sourceTree = "<group>"; };
+		CD9E7BA524FF69D00065C5FC /* BlockHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockHeader.h; path = src/volition/BlockHeader.h; sourceTree = "<group>"; };
+		CD9E7BAC250099010065C5FC /* WebMinerAPIFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebMinerAPIFactory.h; path = src/volition/WebMinerAPIFactory.h; sourceTree = "<group>"; };
+		CD9E7BAE2500999C0065C5FC /* WebMinerAPIFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebMinerAPIFactory.cpp; path = src/volition/WebMinerAPIFactory.cpp; sourceTree = "<group>"; };
+		CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-simulator.cpp"; path = "src/volition/main-simulator.cpp"; sourceTree = "<group>"; };
 		CDA1573323FA59EC00DFACCF /* AccountKeyLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountKeyLookup.h; path = src/volition/AccountKeyLookup.h; sourceTree = "<group>"; };
 		CDA1573623FA59FE00DFACCF /* KeyAndPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyAndPolicy.h; path = src/volition/KeyAndPolicy.h; sourceTree = "<group>"; };
 		CDA1573823FA7B8800DFACCF /* TransactionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionContext.h; path = src/volition/TransactionContext.h; sourceTree = "<group>"; };
@@ -788,8 +795,6 @@
 		CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockDetailsHandler.h; path = "src/volition/web-miner-api/BlockDetailsHandler.h"; sourceTree = "<group>"; };
 		CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockListHandler.h; path = "src/volition/web-miner-api/BlockListHandler.h"; sourceTree = "<group>"; };
 		CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefaultHandler.h; path = "src/volition/web-miner-api/DefaultHandler.h"; sourceTree = "<group>"; };
-		CDB8B3FC21ACC874004EE816 /* HTTPRequestHandlerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HTTPRequestHandlerFactory.cpp; path = "src/volition/web-miner-api/HTTPRequestHandlerFactory.cpp"; sourceTree = "<group>"; };
-		CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPRequestHandlerFactory.h; path = "src/volition/web-miner-api/HTTPRequestHandlerFactory.h"; sourceTree = "<group>"; };
 		CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryHandler.h; path = "src/volition/web-miner-api/InventoryHandler.h"; sourceTree = "<group>"; };
 		CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerListHandler.h; path = "src/volition/web-miner-api/MinerListHandler.h"; sourceTree = "<group>"; };
 		CDBFD470218B77E5002AB0C3 /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -897,7 +902,6 @@
 		CDED582320BA1F4E003A2969 /* StringTokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringTokenizer.cpp; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.cpp"; sourceTree = "<group>"; };
 		CDED582420BA1F4E003A2969 /* StringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringTokenizer.h; path = "3rd-party/simple-cpp-router/src/Routing/Details/StringTokenizer.h"; sourceTree = "<group>"; };
 		CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsimplecpprouter.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		CDED584220BA2131003A2969 /* RouteTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RouteTable.cpp; path = src/volition/RouteTable.cpp; sourceTree = "<group>"; };
 		CDED584320BA2131003A2969 /* RouteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RouteTable.h; path = src/volition/RouteTable.h; sourceTree = "<group>"; };
 		CDED585920BA3981003A2969 /* libPocoCrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoCrypto.a; path = poco/lib/libPocoCrypto.a; sourceTree = "<group>"; };
 		CDED585A20BA3981003A2969 /* libPocoEncodings.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPocoEncodings.a; path = poco/lib/libPocoEncodings.a; sourceTree = "<group>"; };
@@ -1086,15 +1090,16 @@
 		CD0C3E0F20C14410006E3B1C /* miner */ = {
 			isa = PBXGroup;
 			children = (
+				CDB8B3E221ACC657004EE816 /* api */,
 				CD36658920EB3BE0000E0B43 /* Miner.cpp */,
 				CD36658A20EB3BE0000E0B43 /* Miner.h */,
 				CD5ECAD92464CB26009146FB /* Miner.json.h */,
 				CD0C3E3320C65D7C006E3B1C /* SyncChainTask.cpp */,
 				CD0C3E3420C65D7C006E3B1C /* SyncChainTask.h */,
-				CD36662C20F56D9A000E0B43 /* TheWebMiner.cpp */,
-				CD36662D20F56D9A000E0B43 /* TheWebMiner.h */,
 				CD0C3E1020C14460006E3B1C /* WebMiner.cpp */,
 				CD0C3E1120C14460006E3B1C /* WebMiner.h */,
+				CD9E7BAE2500999C0065C5FC /* WebMinerAPIFactory.cpp */,
+				CD9E7BAC250099010065C5FC /* WebMinerAPIFactory.h */,
 			);
 			name = miner;
 			sourceTree = "<group>";
@@ -1141,6 +1146,10 @@
 				CDFA23892460071700B4CECF /* AssetODBM.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
 				CD46659D20BE908300A02D55 /* Block.h */,
+				CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */,
+				CD9E7BA524FF69D00065C5FC /* BlockHeader.h */,
+				CD9E7B9F24FF67C30065C5FC /* BlockTree.cpp */,
+				CD9E7BA024FF67C30065C5FC /* BlockTree.h */,
 				CDC2B33520CE112F00300A96 /* Chain.cpp */,
 				CDC2B33620CE112F00300A96 /* Chain.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
@@ -1239,7 +1248,6 @@
 			isa = PBXGroup;
 			children = (
 				CDC2B31A20CE0F8400300A96 /* analysis */,
-				CDB8B3CD21ACC33A004EE816 /* api */,
 				CD5ECAE3246B26A1009146FB /* config */,
 				CD4E80E021031D24007DA585 /* crypto */,
 				CD762ACC2328256D005AC85D /* entitlements */,
@@ -1365,17 +1373,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CDB8B3CD21ACC33A004EE816 /* api */ = {
-			isa = PBXGroup;
-			children = (
-				CDB8B3E221ACC657004EE816 /* handlers */,
-				CDB8B3FC21ACC874004EE816 /* HTTPRequestHandlerFactory.cpp */,
-				CDB8B3FD21ACC874004EE816 /* HTTPRequestHandlerFactory.h */,
-			);
-			name = api;
-			sourceTree = "<group>";
-		};
-		CDB8B3E221ACC657004EE816 /* handlers */ = {
+		CDB8B3E221ACC657004EE816 /* api */ = {
 			isa = PBXGroup;
 			children = (
 				CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */,
@@ -1397,7 +1395,7 @@
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
 			);
-			name = handlers;
+			name = api;
 			sourceTree = "<group>";
 		};
 		CDBFD473218B7854002AB0C3 /* lua */ = {
@@ -1576,7 +1574,6 @@
 				CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */,
 				CD4665A720BEABE100A02D55 /* AbstractRequestHandler.h */,
 				CDDB4BBB233374B100EEAA60 /* HTTP.h */,
-				CDED584220BA2131003A2969 /* RouteTable.cpp */,
 				CDED584320BA2131003A2969 /* RouteTable.h */,
 			);
 			name = router;
@@ -1586,6 +1583,7 @@
 			isa = PBXGroup;
 			children = (
 				CD5C632420B524A30038EE98 /* main-server.cpp */,
+				CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */,
 				CD0C3E6820C86FBA006E3B1C /* main-util.cpp */,
 			);
 			name = main;
@@ -1646,7 +1644,6 @@
 				CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */,
 				CD2AB817230E79D400805F70 /* Transaction.h in Headers */,
 				CD51E51E24A60A3E00A0033B /* InventoryAssetsHandler.h in Headers */,
-				CD4E81AA210593CA007DA585 /* TheWebMiner.h in Headers */,
 				CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */,
 				CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */,
 				CD8BAE3D21EBC81900B5040E /* SerializableUniquePtr.h in Headers */,
@@ -1661,9 +1658,11 @@
 				CD2AB81C230E7D1E00805F70 /* TransactionMaker.h in Headers */,
 				CDBFD54B218B8999002AB0C3 /* OpenAccount.h in Headers */,
 				CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */,
+				CD9E7BA724FF69D00065C5FC /* BlockHeader.h in Headers */,
 				CDBFD54D218B8999002AB0C3 /* RegisterMiner.h in Headers */,
 				CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */,
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
+				CD9E7BA224FF67C30065C5FC /* BlockTree.h in Headers */,
 				CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */,
 				CDA1573B23FA7BDE00DFACCF /* SchemaHandle.h in Headers */,
 				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,
@@ -1673,9 +1672,9 @@
 				CDBFD551218B8999002AB0C3 /* RunScript.h in Headers */,
 				CDBFD547218B8999002AB0C3 /* AffirmKey.h in Headers */,
 				CDF8AD5021F29045000E285F /* ExtendChainHandler.h in Headers */,
-				CDB8B40721ACC874004EE816 /* HTTPRequestHandlerFactory.h in Headers */,
 				CD8BAE4121EBD3A400B5040E /* AbstractSquap.h in Headers */,
 				CD8BAE3B21EBC81900B5040E /* SerializablePtrFactory.h in Headers */,
+				CD9E7BAD250099010065C5FC /* WebMinerAPIFactory.h in Headers */,
 				CD5ECADA2464CB26009146FB /* Miner.json.h in Headers */,
 				CD8BAE3F21EBCF5300B5040E /* SquapFactory.h in Headers */,
 				CDFA238D246007C300B4CECF /* ConstOpt.h in Headers */,
@@ -2152,22 +2151,22 @@
 				CDFA23872453B25B00B4CECF /* Schema.cpp in Sources */,
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
 				CD762ACF232825BE005AC85D /* AbstractEntitlement.cpp in Sources */,
-				CD4E81B2210593DD007DA585 /* RouteTable.cpp in Sources */,
-				CDB8B40621ACC874004EE816 /* HTTPRequestHandlerFactory.cpp in Sources */,
+				CD9E7BA124FF67C30065C5FC /* BlockTree.cpp in Sources */,
 				CD4E81CB2105941A007DA585 /* AbstractTransactionBody.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
 				CDE9F7792375380600DB62EF /* SimpleChainRecorder.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */,
 				CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */,
-				CD4E81A9210593CA007DA585 /* TheWebMiner.cpp in Sources */,
 				CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */,
 				CD4E81A5210593CA007DA585 /* SyncChainTask.cpp in Sources */,
 				CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */,
 				CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */,
 				CD4E81A3210593BD007DA585 /* Ledger.cpp in Sources */,
+				CD9E7BAF2500999C0065C5FC /* WebMinerAPIFactory.cpp in Sources */,
 				CD4E81CD2105941A007DA585 /* TheTransactionBodyFactory.cpp in Sources */,
 				CD4E81A7210593CA007DA585 /* Miner.cpp in Sources */,
+				CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */,
 				CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */,
 				CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */,
@@ -2182,6 +2181,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD9E7BB42500D71E0065C5FC /* main-simulator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // MinerListHandler
 //================================================================//
 class MinerListHandler :
-    public AbstractAPIRequestHandler {
+    public WebMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -26,8 +26,8 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
     
-        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        const Ledger& ledger = scopedLock.getWebMiner ().getLedger ();
+        ScopedWebMinerLock scopedLock ( this->mWebMiner );
+        const Ledger& ledger = this->mWebMiner->getLedger ();
         const map < string, MinerInfo >& minerInfoMap = ledger.getMiners ();
         
         Poco::JSON::Object::Ptr minersJSON = new Poco::JSON::Object ();

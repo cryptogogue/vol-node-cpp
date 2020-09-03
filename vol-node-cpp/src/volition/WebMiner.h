@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/Block.h>
+#include <volition/BlockTree.h>
 #include <volition/Chain.h>
 #include <volition/Ledger.h>
 #include <volition/Miner.h>
@@ -14,6 +15,7 @@
 namespace Volition {
 
 class SyncChainTask;
+class WebMinerHTTPRequestHandler;
 
 //================================================================//
 // RemoteMiner
@@ -27,6 +29,8 @@ private:
     size_t                  mCurrentBlock;
 
     bool                    mWaitingForTask;
+
+    shared_ptr < BlockTreeNode > mNode;
 
 public:
 
@@ -44,9 +48,8 @@ private:
     friend class WebMiner;
     friend class SyncChainTask;
 
-    string      mMinerID;
-    Block       mBlock;
-    bool        mHasBlock;
+    string                      mMinerID;
+    shared_ptr < const Block >  mBlock;
 };
 
 //================================================================//
@@ -56,6 +59,8 @@ class WebMiner :
     public Miner,
     public Poco::Activity < WebMiner > {
 private:
+
+    friend class WebMinerHTTPRequestHandlerFactory;
 
     SerializableTime                    mStartTime;
     Poco::Mutex                         mMutex;
@@ -97,6 +102,24 @@ public:
     void                waitForShutdown             ();
                         WebMiner                    ();
                         ~WebMiner                   ();
+};
+
+//================================================================//
+// ScopedWebMinerLock
+//================================================================//
+class ScopedWebMinerLock {
+private:
+
+    shared_ptr < WebMiner >             mWebMiner;
+    Poco::ScopedLock < Poco::Mutex >    mScopedLock;
+
+public:
+
+    //----------------------------------------------------------------//
+    ScopedWebMinerLock ( shared_ptr < WebMiner > webMiner ) :
+        mWebMiner ( webMiner ),
+        mScopedLock ( webMiner->getMutex ()) {
+    }
 };
 
 } // namespace Volition

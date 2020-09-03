@@ -1,6 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/http.h>
+
 #include <volition/web-miner-api/AccountDetailsHandler.h>
 #include <volition/web-miner-api/AccountKeyListHandler.h>
 #include <volition/web-miner-api/AccountTransactionHandler.h>
@@ -9,7 +11,6 @@
 #include <volition/web-miner-api/BlockListHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
 #include <volition/web-miner-api/ExtendChainHandler.h>
-#include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 #include <volition/web-miner-api/InventoryAssetsHandler.h>
 #include <volition/web-miner-api/InventoryHandler.h>
 #include <volition/web-miner-api/InventoryLogHandler.h>
@@ -21,16 +22,18 @@
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
 
+#include <volition/WebMinerAPIFactory.h>
+
 namespace Volition {
-namespace WebMinerAPI {
 
 //================================================================//
-// WebMinerAPI
+// WebMinerAPIFactory
 //================================================================//
 
 //----------------------------------------------------------------//
-HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
-
+WebMinerAPIFactory::WebMinerAPIFactory ( shared_ptr < WebMiner > webMiner ) :
+    mWebMiner ( webMiner ) {
+    
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountDetailsHandler >        ( HTTP::GET,        "/accounts/:accountName/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryHandler >             ( HTTP::GET,        "/accounts/:accountName/inventory/?" );
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryAssetsHandler >       ( HTTP::GET,        "/accounts/:accountName/inventory/assets/?" );
@@ -52,7 +55,7 @@ HTTPRequestHandlerFactory::HTTPRequestHandlerFactory () {
 }
 
 //----------------------------------------------------------------//
-HTTPRequestHandlerFactory::~HTTPRequestHandlerFactory () {
+WebMinerAPIFactory::~WebMinerAPIFactory () {
 }
 
 //================================================================//
@@ -60,10 +63,11 @@ HTTPRequestHandlerFactory::~HTTPRequestHandlerFactory () {
 //================================================================//
 
 //----------------------------------------------------------------//
-Poco::Net::HTTPRequestHandler* HTTPRequestHandlerFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
+Poco::Net::HTTPRequestHandler* WebMinerAPIFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
     
-    return this->mRouteTable.match ( request );
+    unique_ptr < WebMinerAPIRequestHandler > handler = this->mRouteTable.match ( request );
+    handler->mWebMiner = this->mWebMiner;
+    return handler.release ();
 }
 
-} // WebMinerAPI
 } // namespace Volition

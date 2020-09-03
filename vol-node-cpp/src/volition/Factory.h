@@ -52,15 +52,15 @@ template < typename FACTORY_TYPE, typename KEY_TYPE = string >
 class Factory {
 private:
 
-    map < KEY_TYPE, unique_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>>    mKeysToAllocators;
-    unique_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>                     mDefaultAllocator;
+    map < KEY_TYPE, shared_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>>    mKeysToAllocators;
+    shared_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>                     mDefaultAllocator;
 
 public:
 
     //----------------------------------------------------------------//
     template < typename PRODUCT_TYPE >
-    void addFactoryAllocator ( KEY_TYPE key ) {
-        this->mKeysToAllocators [ key ] = make_unique < FactoryAllocator < FACTORY_TYPE, PRODUCT_TYPE >> ();
+    void addFactoryAllocator ( KEY_TYPE key, shared_ptr < FactoryAllocator < FACTORY_TYPE, PRODUCT_TYPE >> allocator = NULL ) {
+        this->mKeysToAllocators [ key ] = allocator ? allocator : make_shared < FactoryAllocator < FACTORY_TYPE, PRODUCT_TYPE >> ();
     }
 
     //----------------------------------------------------------------//
@@ -72,7 +72,7 @@ public:
     //----------------------------------------------------------------//
     virtual unique_ptr < FACTORY_TYPE > create ( KEY_TYPE key ) const {
         
-        typename map < KEY_TYPE, unique_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>>::const_iterator allocatorIt = this->mKeysToAllocators.find ( key );
+        typename map < KEY_TYPE, shared_ptr < AbstractFactoryAllocator < FACTORY_TYPE >>>::const_iterator allocatorIt = this->mKeysToAllocators.find ( key );
 
         if ( allocatorIt != this->mKeysToAllocators.cend ()) {
             return allocatorIt->second->create ();

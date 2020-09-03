@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/TheWebMiner.h>
+#include <volition/WebMinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // AccountTransactionHandler
 //================================================================//
 class AccountTransactionHandler :
-    public AbstractAPIRequestHandler {
+    public WebMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET_PUT )
@@ -27,22 +27,21 @@ public:
         string accountName  = this->getMatchString ( "accountName" );
         string uuid         = this->getMatchString ( "uuid" );
     
-        ScopedWebMinerLock scopedLock ( TheWebMiner::get ());
-        WebMiner& miner = scopedLock.getWebMiner ();
+        ScopedWebMinerLock scopedLock ( this->mWebMiner );
     
         switch ( method ) {
     
             case HTTP::GET: {
 
-                if ( miner.hasError ( accountName )) {
-                    TransactionResult lastResult = miner.getLastResult ( accountName );
+                if ( this->mWebMiner->hasError ( accountName )) {
+                    TransactionResult lastResult = this->mWebMiner->getLastResult ( accountName );
                     jsonOut.set ( "status", "REJECTED" );
                     jsonOut.set ( "message", lastResult.getMessage ());
                     jsonOut.set ( "uuid", lastResult.getUUID ());
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
 
-                const Chain& chain = *miner.getBestBranch ();
+                const Chain& chain = *this->mWebMiner->getBestBranch ();
 
                 if ( chain.hasTransaction ( accountName, uuid )) {
                     jsonOut.set ( "status", "ACCEPTED" );
@@ -50,7 +49,7 @@ public:
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
 
-                if ( miner.hasTransaction ( accountName, uuid )) {
+                if ( this->mWebMiner->hasTransaction ( accountName, uuid )) {
                     jsonOut.set ( "status", "PENDING" );
                     jsonOut.set ( "uuid", uuid );
                     return Poco::Net::HTTPResponse::HTTP_OK;
@@ -66,14 +65,14 @@ public:
                 FromJSONSerializer::fromJSON ( transaction, jsonIn );
 
                 if ( transaction && transaction->checkMaker ( accountName, uuid )) {
-                    if ( transaction->needsControl () && miner.controlPermitted ()) {
+                    if ( transaction->needsControl () && this->mWebMiner->controlPermitted ()) {
                         printf ( "***CONTROL TRANSACTION***\n" );
                         printf ( "%s\n", transaction->typeString ().c_str ());
                     }
                     else {
                         jsonOut.set ( "status", "RETRY" );
                     }
-                    scopedLock.getWebMiner ().pushTransaction ( move ( transaction ));
+                    this->mWebMiner->pushTransaction ( move ( transaction ));
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
                 return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
