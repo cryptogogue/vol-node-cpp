@@ -47,7 +47,7 @@ public:
         printf ( "CONTROL: doing hard reset.\n" );
         
         miner.reset ();
-        miner.shutdown ();
+        miner.shutdown ( true );
         
         return true;
     }

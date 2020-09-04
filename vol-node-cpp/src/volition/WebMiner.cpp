@@ -191,35 +191,8 @@ void WebMiner::runMulti () {
 
     this->mHeight = 0;
     while ( !this->isStopped ()) {
-        {
-            Poco::ScopedLock < Poco::Mutex > minerLock ( this->mMutex );
-            Poco::ScopedLock < Poco::Mutex > logLock ( TheLogMutex::get ().mMutex );
-
-            this->processQueue ();
-            this->selectBranch ();
-            this->extend ( this->mMinerSet.size () == 0 ); // force push if we processed all others
-
-            // report chain
-            const Chain& chain = *this->getBestBranch ();
-            size_t nextHeight = chain.countBlocks ();
-            if ( nextHeight != this->mHeight ) {
-                LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runMulti () - step" );
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
-                this->mHeight = nextHeight;
-                this->saveChain ();
-                this->pruneTransactions ( chain );
-            }
-
-            // update remote miners
-            this->updateMiners ();
-
-            // kick off next batch of tasks
-            this->startTasks ();
-        }
+        this->step ();
         Poco::Thread::sleep ( 200 );
-        
-        this->processIncoming ( *this );
     }
 }
 
@@ -239,9 +212,9 @@ void WebMiner::runSolo () {
             const Chain& chain = *this->getBestBranch ();
             size_t nextHeight = chain.countBlocks ();
             if ( nextHeight != this->mHeight ) {
-                LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
+//                LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
+//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
+//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
                 this->mHeight = nextHeight;
                 this->saveChain ();
                 this->pruneTransactions ( chain );
@@ -296,10 +269,41 @@ void WebMiner::startTasks () {
 }
 
 //----------------------------------------------------------------//
+void WebMiner::step () {
+
+    this->processIncoming ( *this );
+            
+    Poco::ScopedLock < Poco::Mutex > minerLock ( this->mMutex );
+    Poco::ScopedLock < Poco::Mutex > logLock ( TheLogMutex::get ().mMutex );
+
+    this->processQueue ();
+    this->selectBranch ();
+    this->extend ( this->mMinerSet.size () == 0 ); // force push if we processed all others
+
+    // report chain
+    const Chain& chain = *this->getBestBranch ();
+    size_t nextHeight = chain.countBlocks ();
+    if ( nextHeight != this->mHeight ) {
+//        LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runMulti () - step" );
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
+        this->mHeight = nextHeight;
+        this->saveChain ();
+        this->pruneTransactions ( chain );
+    }
+
+    // update remote miners
+    this->updateMiners ();
+
+    // kick off next batch of tasks
+    this->startTasks ();
+}
+
+//----------------------------------------------------------------//
 void WebMiner::updateMiners () {
 
     map < string, MinerInfo > miners = this->getBestBranch ()->getMiners ();
-    
+        
     map < string, MinerInfo >::iterator minerIt = miners.begin ();
     for ( ; minerIt != miners.end (); ++minerIt ) {
         MinerInfo& minerInfo = minerIt->second;

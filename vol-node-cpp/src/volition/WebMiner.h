@@ -99,6 +99,7 @@ public:
     SerializableTime    getStartTime                ();
     void                setSolo                     ( bool solo );
     void                setUpdateInterval           ( u32 updateIntervalInSeconds );
+    void                step                        ();
     void                waitForShutdown             ();
                         WebMiner                    ();
                         ~WebMiner                   ();

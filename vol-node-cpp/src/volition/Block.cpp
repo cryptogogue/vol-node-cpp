@@ -169,7 +169,6 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
     if ( minerInfo ) {
         return ( policy & VerificationPolicy::VERIFY_SIG ) ? this->verify ( minerInfo->getPublicKey (), policy ) : true;
     }
-    printf ( "MISSING MINER INFO: %d\n", ( int )this->mHeight );
 
     // no miner info; must be the genesis block
     if ( this->mHeight > 0 ) return false; // genesis block must be height 0

@@ -468,9 +468,4 @@ time_t Miner::Miner_getTime () const {
 void Miner::Miner_reset () {
 }
 
-//----------------------------------------------------------------//
-void Miner::Miner_shutdown ( bool kill ) {
-    UNUSED ( kill );
-}
-
 } // namespace Volition

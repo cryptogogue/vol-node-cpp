@@ -56,7 +56,7 @@ protected:
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
     virtual time_t          Miner_getTime                           () const;
     virtual void            Miner_reset                             ();
-    virtual void            Miner_shutdown                          ( bool kill );
+    virtual void            Miner_shutdown                          ( bool kill ) = 0;
 
 public:
 
@@ -91,7 +91,7 @@ public:
     void                    setMinerID              ( string minerID );
     void                    reset                   ();
     void                    selectBranch            ();
-    void                    shutdown                ( bool kill = true );
+    void                    shutdown                ( bool kill = false );
     SubmissionResponse      submitBlock             ( const Block& block );
     void                    submitChain             ( const Chain& chain );
 };

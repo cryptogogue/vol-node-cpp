@@ -34,14 +34,18 @@ private:
 
     RouteTable < WebMinerAPIRequestHandler >    mRouteTable;
     shared_ptr < WebMiner >                     mWebMiner;
+    map < string, shared_ptr < WebMiner >>      mWebMiners;
+    bool                                        mWithPrefix;
 
     //----------------------------------------------------------------//
     Poco::Net::HTTPRequestHandler*      createRequestHandler        ( const Poco::Net::HTTPServerRequest& request ) override;
+    void                                initializeRoutes            ();
 
 public:
 
     //----------------------------------------------------------------//
                     WebMinerAPIFactory          ( shared_ptr < WebMiner > webMiner );
+                    WebMinerAPIFactory          ( vector < shared_ptr < WebMiner >> webMiners );
                     ~WebMinerAPIFactory         ();
 };
 
