@@ -20,8 +20,9 @@ namespace Format {
     string          toupper             ( string str );
     char*           vsnprintf_alloc     ( char* s, size_t n, const char* format, va_list arg );
     string          write               ( const char* format, ... );
-    string          write_var           ( const char* format, va_list args );
     void            write               ( string& str, const char* format, ... );
+    void            write_indent        ( string& str, const char* indent, size_t n );
+    string          write_var           ( const char* format, va_list args );
     void            write_var           ( string& str, const char* format, va_list args );
 };
 

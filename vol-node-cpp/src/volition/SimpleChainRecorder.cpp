@@ -54,10 +54,9 @@ void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const
         string blockPath = Format::write ( "%sblock_%d.json", this->mChainFolderPath.c_str (), i );
         if ( !FileSys::exists ( blockPath )) break;
         
-        Block block;
-        FromJSONSerializer::fromJSONFile ( block, blockPath );
-        Miner::SubmissionResponse response = miner.submitBlock ( block );
-        assert ( response == Miner::SubmissionResponse::ACCEPTED );
+        shared_ptr < Block > block = make_shared < Block >();
+        FromJSONSerializer::fromJSONFile ( *block, blockPath );
+        AbstractChainRecorder::pushBlock ( miner, block );
     }
 }
 

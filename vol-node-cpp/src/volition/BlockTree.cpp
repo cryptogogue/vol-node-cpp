@@ -4,6 +4,17 @@
 #include <volition/Block.h>
 #include <volition/BlockTree.h>
 
+// To compare chains:
+// 1. Find the common root.
+// 2. Get the interval between the timestamp of the end of the longest branch and its first block (excluding the root).
+//      a. From the interval, divide by the lookback window to calculate COMPARE_COUNT.
+// 3. From the common root, up to the COMPARE_COUNT, compare each block and tally the score for each chain.
+//      a. +1 for the winner, -1 to the loser; 0 if tied.
+// 4. Select the winner.
+//      a. The chain with the highest score wins.
+//      b. If chains are tied and the same length, pick the chain with the best ending block.
+//      c. If chains are tied and different length, extend the shorter chain by one as a tie-breaker.
+
 namespace Volition {
 
 //================================================================//
@@ -12,7 +23,8 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 BlockTreeNode::BlockTreeNode () :
-    mTree ( NULL ) {
+    mTree ( NULL ),
+    mTagCount ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -27,18 +39,136 @@ BlockTreeNode::~BlockTreeNode () {
     }
 }
 
+//----------------------------------------------------------------//
+BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 ) {
+
+    BlockTreeRoot root;
+
+    if ( node0->mTree && ( node0->mTree == node1->mTree )) {
+    
+        size_t height0 = node0->mHeader->getHeight ();
+        size_t height1 = node1->mHeader->getHeight ();
+
+        size_t height = height0 < height1 ? height0 : height1;
+        
+        while ( height < node0->mHeader->getHeight ()) {
+            node0 = node0->mParent;
+        }
+        
+        while ( height < node1->mHeader->getHeight ()) {
+            node1 = node1->mParent;
+        }
+        
+        root.mSeg0.mTail = node0;
+        root.mSeg1.mTail = node1;
+
+        while ( node0->mParent != node1->mParent ) {
+            node0 = node0->mParent;
+            node1 = node1->mParent;
+        }
+        
+        root.mSeg0.mHead = node0;
+        root.mSeg1.mHead = node1;
+        
+        root.mRoot = node0->mParent;
+    }
+    return root;
+}
+
+//----------------------------------------------------------------//
+const Block& BlockTreeNode::getBlock () const {
+
+    assert ( this->mBlock );
+    return *this->mBlock;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const BlockTreeNode > BlockTreeNode::getParent () const {
+
+    return this->mParent;
+}
+
+//================================================================//
+// BlockTreeTag
+//================================================================//
+
+//----------------------------------------------------------------//
+BlockTreeTag::BlockTreeTag () {
+}
+
+//----------------------------------------------------------------//
+BlockTreeTag::~BlockTreeTag () {
+
+    this->mark ( NULL );
+}
+
+//----------------------------------------------------------------//
+int BlockTreeTag::compare ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 ) {
+
+    shared_ptr < const BlockTreeNode > node0 = tag0.mNode;
+    shared_ptr < const BlockTreeNode > node1 = tag1.mNode;
+
+    assert ( node0 && node1 );
+
+    BlockTreeRoot root = BlockTreeNode::findRoot ( tag0.mNode, tag1.mNode );
+
+    int score = 0;
+
+    shared_ptr < const BlockTreeNode > cursor0 = root.mSeg0.mTail;
+    shared_ptr < const BlockTreeNode > cursor1 = root.mSeg1.mTail;
+
+    while ( cursor0 != cursor1 ) {
+    
+        score += BlockHeader::compare ( *cursor0->mHeader, *cursor1->mHeader );
+        
+        cursor0 = cursor0->mParent;
+        cursor1 = cursor1->mParent;
+    }
+
+    return score < 0 ? -1 : score > 0 ? 1 : 0;
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeTag::getCount () const {
+
+    return this->mNode ? this->mNode->mTagCount : 0;
+}
+
+//----------------------------------------------------------------//
+void BlockTreeTag::mark ( shared_ptr < BlockTreeNode > node ) {
+
+    shared_ptr < BlockTreeNode > prevNode = this->mNode;
+    BlockTree* prevTree = prevNode ? prevNode->mTree : NULL;
+    BlockTree* nextTree = node ? node->mTree : NULL;
+
+    this->mNode = node;
+
+    if ( nextTree ) {
+        for ( shared_ptr < BlockTreeNode > nodeIt = node; nodeIt; nodeIt = nodeIt->mParent ) {
+            if ( nodeIt == prevNode ) return;
+            nodeIt->mTagCount++;
+        }
+    }
+    
+    if ( prevTree ) {
+        for ( shared_ptr < BlockTreeNode > nodeIt = prevNode; nodeIt; nodeIt = nodeIt->mParent ) {
+            nodeIt->mTagCount--;
+        }
+    }
+}
+
 //================================================================//
 // BlockTree
 //================================================================//
 
 //----------------------------------------------------------------//
-shared_ptr < BlockTreeNode > BlockTree::affirmNode ( shared_ptr < const Block > block ) {
+shared_ptr < BlockTreeNode > BlockTree::affirmBlock ( shared_ptr < const Block > block ) {
 
-    return this->affirmNode ( block, block );
+    return this->affirmBlock ( block, block );
 }
 
 //----------------------------------------------------------------//
-shared_ptr < BlockTreeNode > BlockTree::affirmNode ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
+shared_ptr < BlockTreeNode > BlockTree::affirmBlock ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
 
     if ( !( header && block )) return NULL;
 
@@ -98,6 +228,40 @@ shared_ptr < BlockTreeNode > BlockTree::findNodeForHash ( string hash ) {
     map < string, BlockTreeNode* >::iterator nodeIt = this->mNodes.find ( hash );
     if ( nodeIt != this->mNodes.end ()) return nodeIt->second->shared_from_this ();
     return NULL;
+}
+
+//----------------------------------------------------------------//
+void BlockTree::logTree ( string prefix, size_t maxDepth ) const {
+
+    this->logTreeRecurse ( prefix, maxDepth, this->mRoot.get (), 0 );
+}
+
+//----------------------------------------------------------------//
+void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const {
+
+    if ( !node ) return;
+    if (( maxDepth > 0 ) && ( depth >= maxDepth )) return;
+
+    string str;
+    Format::write_indent ( str, ".   ", depth );
+    
+    int i = 0;
+    do {
+        const BlockHeader& header = *node->mHeader;
+        Format::write ( str, "%s[%s:%d]", ( i > 0 ) ? "," : "", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", ( int )node->mTagCount );
+        node = ( node->mChildren.size () > 0 ) ? *node->mChildren.begin () : NULL;
+        ++i;
+    }
+    while ( node && ( node->mChildren.size () <= 1 ));
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s%s", prefix.c_str (), str.c_str ());
+    
+    if ( node ) {
+        ++depth;
+        set < BlockTreeNode* >::const_iterator childIt = node->mChildren.begin ();
+        for ( ; childIt != node->mChildren.end (); ++ childIt ) {
+            this->logTreeRecurse ( prefix, maxDepth, *childIt, depth );
+        }
+    }
 }
 
 } // namespace Volition

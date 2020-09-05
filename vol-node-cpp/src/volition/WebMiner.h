@@ -30,7 +30,7 @@ private:
 
     bool                    mWaitingForTask;
 
-    shared_ptr < BlockTreeNode > mNode;
+    BlockTreeTag            mTag;
 
 public:
 
@@ -81,10 +81,7 @@ private:
     void                onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
     void                processQueue                ();
     void                runActivity                 ();
-    void                runMulti                    ();
-    void                runSolo                     ();
     void                startTasks                  ();
-    void                updateMiners                ();
 
     //----------------------------------------------------------------//
     void                Miner_reset                 () override;

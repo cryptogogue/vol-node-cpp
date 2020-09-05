@@ -9,6 +9,7 @@
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
 #include <volition/Ledger.h>
+#include <volition/Miner.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
 #include <volition/Transaction.h>
@@ -22,6 +23,12 @@ class Miner;
 //================================================================//
 class AbstractChainRecorder {
 protected:
+
+    //----------------------------------------------------------------//
+    static void pushBlock ( Miner& miner, shared_ptr < Block > block ) {
+    
+        miner.pushBlock ( block );
+    }
 
     //----------------------------------------------------------------//
     virtual void            AbstractChainRecorder_loadChain         ( Miner& miner ) const = 0;

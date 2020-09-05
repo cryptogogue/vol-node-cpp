@@ -18,17 +18,6 @@
 // 5. A chain produced by more active miners will eventually beat a chain produced by fewer.
 //      a. The larger pool of miners has more ALLURE to choose from, and thus is more likely to have the winning ALLUREs.
 
-// To compare chains:
-// 1. Find the common root.
-// 2. Get the interval between the timestamp of the end of the longest branch and its first block (excluding the root).
-//      a. From the interval, divide by the lookback window to calculate COMPARE_COUNT.
-// 3. From the common root, up to the COMPARE_COUNT, compare each block and tally the score for each chain.
-//      a. +1 for the winner, -1 to the loser; 0 if tied.
-// 4. Select the winner.
-//      a. The chain with the highest score wins.
-//      b. If chains are tied and the same length, pick the chain with the best ending block.
-//      c. If chains are tied and different length, extend the shorter chain by one as a tie-breaker.
-
 // When initially building the chain, we only need block headers (with allure).
 // To compare branches, we do not have to apply any transactions.
 // Once we've committed to a branch, we can request the full block.
@@ -67,16 +56,6 @@
 // miners get updated from the service response queue
 
 namespace Volition {
-
-//================================================================//
-// TheLogMutex
-//================================================================//
-class TheLogMutex :
-    public Singleton < TheLogMutex > {
-public:
-
-    Poco::Mutex     mMutex;
-};
 
 //================================================================//
 // RemoteMiner
@@ -129,33 +108,13 @@ void WebMiner::processQueue () {
         if ( entry.mBlock ) {
 
             remoteMiner.mCurrentBlock = entry.mBlock->getHeight ();
+            remoteMiner.mTag = this->mBlockTree.affirmBlock ( entry.mBlock );
 
-            SubmissionResponse result = this->submitBlock ( *entry.mBlock );
-//            shared_ptr < BlockTreeNode > node = this->mBlockTree.affirmNode ( entry.mBlock );
-
-//            if ( node ) {
-//                remoteMiner.mNode = node;
-//                remoteMiner.mCurrentBlock++; // next block
-//            }
-//            else {
-//                remoteMiner.mNode = NULL;
-//                remoteMiner.mCurrentBlock--; // back up
-//            }
-
-            switch ( result ) {
-
-                case SubmissionResponse::ACCEPTED:
-                    remoteMiner.mCurrentBlock++;
-                    break;
-
-                case SubmissionResponse::RESUBMIT_EARLIER:
-                    if ( remoteMiner.mCurrentBlock > 0 ) {
-                        remoteMiner.mCurrentBlock--;
-                    }
-                    break;
-
-                default:
-                    assert ( false );
+            if ( remoteMiner.mTag ) {
+                remoteMiner.mCurrentBlock++; // next block
+            }
+            else {
+                remoteMiner.mCurrentBlock--; // back up
             }
         }
 
@@ -170,44 +129,14 @@ void WebMiner::processQueue () {
 //----------------------------------------------------------------//
 void WebMiner::runActivity () {
 
-    if ( this->mSolo ) {
-        this->runSolo ();
-    }
-    else {
-        this->runMulti ();
-    }
-}
-
-//----------------------------------------------------------------//
-void WebMiner::runMulti () {
-
-    // for the current height, mine a block
-    // now start sampling the mining pool at random (for the current height)
-    // if we get a block header that can be added, evaluate against current
-    //      if it's better than current, cache current and replace with better
-    //      if it's worse than current, discard it
-    //      if it's same as current and more than X of the last N blocks match, advance to next block
-    // if we get a block header that can't be added, store it in the reporting miner and request earlier
-
-    this->mHeight = 0;
-    while ( !this->isStopped ()) {
-        this->step ();
-        Poco::Thread::sleep ( 200 );
-    }
-}
-
-//----------------------------------------------------------------//
-void WebMiner::runSolo () {
-
     this->mHeight = 0;
     while ( !this->isStopped ()) {
     
         Poco::Timestamp timestamp;
-    
         {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
-            this->extend ( true );
+            this->step ();
 
             const Chain& chain = *this->getBestBranch ();
             size_t nextHeight = chain.countBlocks ();
@@ -223,7 +152,7 @@ void WebMiner::runSolo () {
         
         u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
         u32 updateMillis = this->mUpdateIntervalInSeconds * 1000;
-                
+        
         if ( elapsedMillis < updateMillis ) {
             Poco::Thread::sleep ( updateMillis - elapsedMillis );
         }
@@ -247,6 +176,16 @@ void WebMiner::setUpdateInterval ( u32 updateIntervalInSeconds ) {
 
 //----------------------------------------------------------------//
 void WebMiner::startTasks () {
+
+    map < string, MinerInfo > miners = this->getBestBranch ()->getMiners ();
+        
+    map < string, MinerInfo >::iterator minerIt = miners.begin ();
+    for ( ; minerIt != miners.end (); ++minerIt ) {
+        MinerInfo& minerInfo = minerIt->second;
+        if ( minerIt->first != this->mMinerID ) {
+            this->mRemoteMiners [ minerIt->first ].mURL = minerInfo.getURL (); // affirm
+        }
+    }
 
     bool addToSet = ( this->mMinerSet.size () == 0 );
 
@@ -272,44 +211,37 @@ void WebMiner::startTasks () {
 void WebMiner::step () {
 
     this->processIncoming ( *this );
-            
-    Poco::ScopedLock < Poco::Mutex > minerLock ( this->mMutex );
-    Poco::ScopedLock < Poco::Mutex > logLock ( TheLogMutex::get ().mMutex );
-
-    this->processQueue ();
-    this->selectBranch ();
-    this->extend ( this->mMinerSet.size () == 0 ); // force push if we processed all others
-
-    // report chain
-    const Chain& chain = *this->getBestBranch ();
-    size_t nextHeight = chain.countBlocks ();
-    if ( nextHeight != this->mHeight ) {
-//        LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runMulti () - step" );
-//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )nextHeight );
-//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", chain.print ().c_str ());
-        this->mHeight = nextHeight;
-        this->saveChain ();
-        this->pruneTransactions ( chain );
+    
+    if ( this->mSolo ) {
+        this->extend ( true );
     }
-
-    // update remote miners
-    this->updateMiners ();
-
-    // kick off next batch of tasks
-    this->startTasks ();
-}
-
-//----------------------------------------------------------------//
-void WebMiner::updateMiners () {
-
-    map < string, MinerInfo > miners = this->getBestBranch ()->getMiners ();
+    else {
+        this->processQueue ();
         
-    map < string, MinerInfo >::iterator minerIt = miners.begin ();
-    for ( ; minerIt != miners.end (); ++minerIt ) {
-        MinerInfo& minerInfo = minerIt->second;
-        if ( minerIt->first != this->mMinerID ) {
-            this->mRemoteMiners [ minerIt->first ].mURL = minerInfo.getURL (); // affirm
+        bool rebuild = false;
+        
+        // find the best branch
+        map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
+        for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
+           const RemoteMiner& remoteMiner = remoteMinerIt->second;
+           if ( remoteMiner.mTag && ( BlockTreeTag::compare ( remoteMiner.mTag, this->mTag ) < 0 )) {
+               this->mTag = remoteMiner.mTag;
+               rebuild = true;
+           }
         }
+        
+        if ( rebuild ) {
+            this->rebuildChain ();
+        }
+        
+        if ( this->mTag.getCount () > ( this->mRemoteMiners.size () >> 1 )) {
+            shared_ptr < Block > block = this->prepareBlock ();
+            if ( block ) {
+                this->pushBlock ( block );
+            }
+        }
+        
+        this->startTasks ();
     }
 }
 

@@ -44,8 +44,10 @@ private:
                 tree.addChain ( *this->mMiners [ i ]->getBestBranch ());
             }
             
-            analysis.update ( tree );
-            analysis.log ( "", true, 1 );
+            this->mMiners [ 0 ]->getBlockTree ().logTree ( "9090: ", 1 );
+            
+//            analysis.update ( tree );
+//            analysis.log ( "", true, 1 );
             
             Poco::Thread::sleep ( 10 );
         }
@@ -113,6 +115,7 @@ public:
         
         shared_ptr < Block > genesisBlock = make_shared < Block >();
         genesisBlock->pushTransaction ( transaction );
+        genesisBlock->affirmHash ();
 
         for ( size_t i = 0; i < TOTAL_MINERS; ++i ) {
             miners [ i ]->setGenesis ( genesisBlock );

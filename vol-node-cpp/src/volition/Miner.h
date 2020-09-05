@@ -30,6 +30,8 @@ class Miner :
     public TransactionQueue {
 protected:
 
+    friend class AbstractChainRecorder;
+
     static constexpr const char* MASTER_BRANCH      = "master";
 
     string                                          mMinerID;
@@ -43,13 +45,15 @@ protected:
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
     BlockTree                                       mBlockTree;
-    shared_ptr < Chain >                            mBestBranch;
-    set < shared_ptr < Chain >>                     mBranches;
+    shared_ptr < Chain >                            mChain;
+    BlockTreeTag                                    mTag;
     
     //----------------------------------------------------------------//
     static void             checkEnvironment        ();
+    void                    pushBlock               ( shared_ptr < const Block > block );
+    void                    rebuildChain            ();
+    void                    rebuildChainRecurse     ( shared_ptr < const BlockTreeNode > node );
     void                    saveChain               ();
-    void                    submitChainRecurse      ( const Chain& chain, size_t blockID );
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -72,6 +76,7 @@ public:
     size_t                  countBranches           () const;
     void                    extend                  ( bool force = false );
     const Chain*            getBestBranch           () const;
+    const BlockTree&        getBlockTree            () const;
     const CryptoKey&        getKeyPair              () const;
     size_t                  getLongestBranchSize    () const;
     bool                    getLazy                 () const;
@@ -79,21 +84,18 @@ public:
     const Ledger&           getLedger               () const;
     string                  getMinerID              () const;
     time_t                  getTime                 () const;
-    bool                    hasBranch               ( string miners ) const;
     void                    loadGenesis             ( string path );
     void                    loadKey                 ( string keyfile, string password = "" );
                             Miner                   ();
     virtual                 ~Miner                  ();
     void                    permitControl           ( bool permit );
+    shared_ptr < Block >    prepareBlock            ();
     void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                    setGenesis              ( shared_ptr < const Block > block );
     void                    setLazy                 ( bool lazy );
     void                    setMinerID              ( string minerID );
     void                    reset                   ();
-    void                    selectBranch            ();
     void                    shutdown                ( bool kill = false );
-    SubmissionResponse      submitBlock             ( const Block& block );
-    void                    submitChain             ( const Chain& chain );
 };
 
 } // namespace Volition

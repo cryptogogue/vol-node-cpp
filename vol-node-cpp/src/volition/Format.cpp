@@ -123,13 +123,6 @@ string write ( const char* format, ... ) {
     return str;
 }
 
-//----------------------------------------------------------------//
-string write_var ( const char* format, va_list args ) {
-
-    string str;
-    write_var ( str, format, args );
-    return str;
-}
 
 //----------------------------------------------------------------//
 void write ( string& str, const char* format, ... ) {
@@ -139,6 +132,23 @@ void write ( string& str, const char* format, ... ) {
     write_var ( str, format, args );
     va_end ( args );
 }
+
+//----------------------------------------------------------------//
+void write_indent ( string& str, const char* indent, size_t n ) {
+
+    for ( size_t i = 0; i < n; ++i ) {
+        write ( str, "%s", indent );
+    }
+}
+
+//----------------------------------------------------------------//
+string write_var ( const char* format, va_list args ) {
+
+    string str;
+    write_var ( str, format, args );
+    return str;
+}
+
 
 //----------------------------------------------------------------//
 void write_var ( string& str, const char* format, va_list args ) {
