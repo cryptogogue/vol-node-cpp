@@ -3,6 +3,7 @@
 
 #include <volition/Block.h>
 #include <volition/BlockTree.h>
+#include <volition/TheContext.h>
 
 // To compare chains:
 // 1. Find the common root.
@@ -16,6 +17,38 @@
 //      c. If chains are tied and different length, extend the shorter chain by one as a tie-breaker.
 
 namespace Volition {
+
+//================================================================//
+// BlockTreeSegment
+//================================================================//
+    
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getDefeatCount () const {
+
+    return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / TheContext::get ().getWindow ());
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getFullLength () const {
+
+    return ( this->mTop->getHeight () - this->mHead->getHeight ());
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getSegLength () const {
+
+    return ( this->mTail->getHeight () - this->mHead->getHeight ());
+}
+
+//================================================================//
+// BlockTreeRoot
+//================================================================//
+    
+//----------------------------------------------------------------//
+size_t BlockTreeRoot::getSegLength () const {
+
+    return this->mSeg0.getSegLength ();
+}
 
 //================================================================//
 // BlockTreeNode
@@ -46,6 +79,9 @@ BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0
 
     if ( node0->mTree && ( node0->mTree == node1->mTree )) {
     
+        root.mSeg0.mTop = node0;
+        root.mSeg1.mTop = node1;
+    
         size_t height0 = node0->mHeader->getHeight ();
         size_t height1 = node1->mHeader->getHeight ();
 
@@ -71,6 +107,8 @@ BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0
         root.mSeg1.mHead = node1;
         
         root.mRoot = node0->mParent;
+        
+        assert ( root.mSeg0.getSegLength () == root.mSeg1.getSegLength ());
     }
     return root;
 }
@@ -83,9 +121,23 @@ const Block& BlockTreeNode::getBlock () const {
 }
 
 //----------------------------------------------------------------//
+size_t BlockTreeNode::getHeight () const {
+
+    assert ( this->mBlock );
+    return this->mBlock->getHeight ();
+}
+
+//----------------------------------------------------------------//
 shared_ptr < const BlockTreeNode > BlockTreeNode::getParent () const {
 
     return this->mParent;
+}
+
+//----------------------------------------------------------------//
+time_t BlockTreeNode::getTime () const {
+
+    assert ( this->mBlock );
+    return this->mBlock->getTime ();
 }
 
 //================================================================//
@@ -112,6 +164,14 @@ int BlockTreeTag::compare ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 )
 
     BlockTreeRoot root = BlockTreeNode::findRoot ( tag0.mNode, tag1.mNode );
 
+    size_t fullLength0  = root.mSeg0.getFullLength ();
+    size_t fullLength1  = root.mSeg1.getFullLength ();
+    size_t segLength    = root.getSegLength (); // length of the shorter segment (if different lengths)
+
+    // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
+    if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getDefeatCount ())) return 1;
+    if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getDefeatCount ())) return -1;
+
     int score = 0;
 
     shared_ptr < const BlockTreeNode > cursor0 = root.mSeg0.mTail;
@@ -125,6 +185,9 @@ int BlockTreeTag::compare ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 )
         cursor1 = cursor1->mParent;
     }
 
+    if (( score == 0 ) && ( fullLength0 != fullLength1 )) {
+        return ( fullLength0 < fullLength1 ) ? -1 : 1;
+    }
     return score < 0 ? -1 : score > 0 ? 1 : 0;
 }
 

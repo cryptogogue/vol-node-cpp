@@ -20,6 +20,12 @@ public:
 
     shared_ptr < const BlockTreeNode >  mHead;
     shared_ptr < const BlockTreeNode >  mTail;
+    shared_ptr < const BlockTreeNode >  mTop;
+    
+    //----------------------------------------------------------------//
+    size_t          getDefeatCount          () const;
+    size_t          getFullLength           () const;
+    size_t          getSegLength            () const;
 };
 
 //================================================================//
@@ -31,6 +37,9 @@ public:
     shared_ptr < const BlockTreeNode >  mRoot;
     BlockTreeSegment                    mSeg0;
     BlockTreeSegment                    mSeg1;
+    
+    //----------------------------------------------------------------//
+    size_t          getSegLength            () const;
 };
 
 //================================================================//
@@ -60,7 +69,9 @@ public:
                                             BlockTreeNode           ();
                                             ~BlockTreeNode          ();
     const Block&                            getBlock                () const;
+    size_t                                  getHeight               () const;
     shared_ptr < const BlockTreeNode >      getParent               () const;
+    time_t                                  getTime                 () const;
 };
 
 //================================================================//
@@ -70,6 +81,8 @@ class BlockTreeTag {
 private:
 
     shared_ptr < BlockTreeNode >        mNode;
+
+    //----------------------------------------------------------------//
 
 public:
 

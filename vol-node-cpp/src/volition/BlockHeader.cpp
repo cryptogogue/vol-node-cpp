@@ -85,7 +85,7 @@ void BlockHeader::computeAllure ( Poco::Crypto::ECDSADigestEngine& signature ) c
     Poco::DigestOutputStream signatureStream ( signature );
     signatureStream << this->mMinerID;
     signatureStream << this->mHeight;
-    signatureStream << this->mPrevDigest;
+    signatureStream << this->mPrevDigest; // should be prev allure
     signatureStream.close ();
 }
 
@@ -99,12 +99,6 @@ string BlockHeader::getHash () const {
 size_t BlockHeader::getHeight () const {
 
     return this->mHeight;
-}
-
-//----------------------------------------------------------------//
-const Signature& BlockHeader::getSignature () const {
-
-    return this->mSignature;
 }
 
 //----------------------------------------------------------------//
@@ -134,6 +128,12 @@ size_t BlockHeader::getScore () const {
     size_t minerID = ( size_t )strtol ( this->mMinerID.c_str (), 0, 10 );
     
     return height <= minerID ? minerID - height : (( modulo - height ) + minerID );
+}
+
+//----------------------------------------------------------------//
+const Signature& BlockHeader::getSignature () const {
+
+    return this->mSignature;
 }
 
 //----------------------------------------------------------------//
