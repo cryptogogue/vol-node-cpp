@@ -100,8 +100,8 @@ protected:
     void                    processQueue                ();
     void                    onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
     void                    pushBlock                   ( shared_ptr < const Block > block );
-    void                    rebuildChain                ();
-    void                    rebuildChainRecurse         ( shared_ptr < const BlockTreeNode > node );
+    void                    rebuildChain                ( shared_ptr < const BlockTreeNode > original, shared_ptr < const BlockTreeNode > replace );
+    void                    rebuildChainRecurse         ( shared_ptr < const BlockTreeNode > node, shared_ptr < const BlockTreeNode > root );
     void                    saveChain                   ();
     void                    startTasks                  ();
 
@@ -133,6 +133,7 @@ public:
     void                    extend                      ();
     const Chain*            getBestBranch               () const;
     const BlockTree&        getBlockTree                () const;
+    const BlockTreeTag&     getBlockTreeTag             () const;
     const CryptoKey&        getKeyPair                  () const;
     size_t                  getLongestBranchSize        () const;
     bool                    getLazy                     () const;

@@ -78,6 +78,12 @@ shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
 }
 
 //----------------------------------------------------------------//
+string Ledger::getBlockHash () const {
+
+    return this->getValue < string >( keyFor_blockHash ());
+}
+
+//----------------------------------------------------------------//
 u64 Ledger::getBlockSize () const {
 
     return this->getValue < u64 >( keyFor_blockSize ());
@@ -260,8 +266,12 @@ void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerT
 
 //----------------------------------------------------------------//
 void Ledger::setBlock ( const Block& block ) {
+
     assert ( block.mHeight == this->getVersion ());
+
     this->setObject < Block >( keyFor_block (), block );
+    this->setValue < string >( keyFor_blockHash (), block.getHash ());
+
     if ( block.mHeight == 0 ) {
         this->setValue < string >( keyFor_genesisHash (), block.getHash ());
     }

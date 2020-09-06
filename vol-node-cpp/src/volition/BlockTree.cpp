@@ -114,17 +114,16 @@ BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0
 }
 
 //----------------------------------------------------------------//
-const Block& BlockTreeNode::getBlock () const {
+shared_ptr < const Block > BlockTreeNode::getBlock () const {
 
-    assert ( this->mBlock );
-    return *this->mBlock;
+    return this->mBlock;
 }
 
 //----------------------------------------------------------------//
 size_t BlockTreeNode::getHeight () const {
 
-    assert ( this->mBlock );
-    return this->mBlock->getHeight ();
+    assert ( this->mHeader );
+    return this->mHeader->getHeight ();
 }
 
 //----------------------------------------------------------------//
@@ -136,8 +135,26 @@ shared_ptr < const BlockTreeNode > BlockTreeNode::getParent () const {
 //----------------------------------------------------------------//
 time_t BlockTreeNode::getTime () const {
 
-    assert ( this->mBlock );
-    return this->mBlock->getTime ();
+    assert ( this->mHeader );
+    return this->mHeader->getTime ();
+}
+
+//----------------------------------------------------------------//
+void BlockTreeNode::logBranchRecurse ( string& str ) const {
+
+    if ( this->mParent ) {
+        this->mParent->logBranchRecurse ( str );
+    }
+    const BlockHeader& header = *this->mHeader;
+    Format::write ( str, "%s[%s:%d]", header.isGenesis () ? "" : ",", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", ( int )this->mTagCount );
+}
+
+//----------------------------------------------------------------//
+string BlockTreeNode::writeBranch () const {
+
+    string str;
+    this->logBranchRecurse ( str );
+    return str;
 }
 
 //================================================================//
@@ -186,7 +203,7 @@ int BlockTreeTag::compare ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 )
     }
 
     if (( score == 0 ) && ( fullLength0 != fullLength1 )) {
-        return ( fullLength0 < fullLength1 ) ? -1 : 1;
+        return ( fullLength0 < fullLength1 ) ? 1 : -1;
     }
     return score < 0 ? -1 : score > 0 ? 1 : 0;
 }
@@ -195,6 +212,12 @@ int BlockTreeTag::compare ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 )
 size_t BlockTreeTag::getCount () const {
 
     return this->mNode ? this->mNode->mTagCount : 0;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const BlockTreeNode > BlockTreeTag::getNode () const {
+
+    return this->mNode;
 }
 
 //----------------------------------------------------------------//

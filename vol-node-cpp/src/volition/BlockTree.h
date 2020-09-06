@@ -61,17 +61,19 @@ private:
     set < BlockTreeNode* >                  mChildren;
 
     //----------------------------------------------------------------//
-    static BlockTreeRoot                    findRoot                ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
+    void                                    logBranchRecurse        ( string& str ) const;
 
 public:
 
     //----------------------------------------------------------------//
                                             BlockTreeNode           ();
                                             ~BlockTreeNode          ();
-    const Block&                            getBlock                () const;
+    static BlockTreeRoot                    findRoot                ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
+    shared_ptr < const Block >              getBlock                () const;
     size_t                                  getHeight               () const;
     shared_ptr < const BlockTreeNode >      getParent               () const;
     time_t                                  getTime                 () const;
+    string                                  writeBranch             () const;
 };
 
 //================================================================//
@@ -109,11 +111,12 @@ public:
     }
 
     //----------------------------------------------------------------//
-                        BlockTreeTag            ();
-                        ~BlockTreeTag           ();
-    static int          compare                 ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 );
-    size_t              getCount                () const;
-    void                mark                    ( shared_ptr < BlockTreeNode > node );
+                                            BlockTreeTag            ();
+                                            ~BlockTreeTag           ();
+    static int                              compare                 ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 );
+    size_t                                  getCount                () const;
+    shared_ptr < const BlockTreeNode >      getNode                 () const;
+    void                                    mark                    ( shared_ptr < BlockTreeNode > node );
 };
 
 //================================================================//

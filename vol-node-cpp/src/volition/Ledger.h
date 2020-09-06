@@ -119,6 +119,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_blockHash () {
+        return "blockHash";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_blockSize () {
         return "blockSize";
     }
@@ -197,6 +202,7 @@ public:
     u64                                 createVOL                       ( u64 amount );
     shared_ptr < Block >                getBlock                        () const;
     shared_ptr < Block >                getBlock                        ( size_t height ) const;
+    string                              getBlockHash                    () const;
     u64                                 getBlockSize                    () const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;

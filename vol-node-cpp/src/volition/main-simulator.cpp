@@ -44,7 +44,8 @@ private:
                 tree.addChain ( *this->mMiners [ i ]->getBestBranch ());
             }
             
-            this->mMiners [ 0 ]->getBlockTree ().logTree ( "9090: ", 1 );
+            //this->mMiners [ 0 ]->getBlockTree ().logTree ( "9090: ", 1 );
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "9090: %s", this->mMiners [ 0 ]->getBlockTreeTag ().getNode ()->writeBranch ().c_str ());
             
 //            analysis.update ( tree );
 //            analysis.log ( "", true, 1 );

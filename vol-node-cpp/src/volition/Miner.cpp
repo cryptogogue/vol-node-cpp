@@ -158,6 +158,12 @@ const BlockTree& Miner::getBlockTree () const {
 }
 
 //----------------------------------------------------------------//
+const BlockTreeTag& Miner::getBlockTreeTag () const {
+
+    return this->mTag;
+}
+
+//----------------------------------------------------------------//
 const CryptoKey& Miner::getKeyPair () const {
 
     return this->mKeyPair;
@@ -312,20 +318,24 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::rebuildChain () {
+void Miner::rebuildChain ( shared_ptr < const BlockTreeNode > original, shared_ptr < const BlockTreeNode > replace ) {
 
-    this->mChain->reset ( 1 );
-    this->rebuildChainRecurse ( this->mTag );
+    BlockTreeRoot root = BlockTreeNode::findRoot ( original, replace );
+
+    this->mChain->reset (( root.mRoot ? root.mRoot->getHeight () : 0 ) + 1 );
+    this->rebuildChainRecurse ( replace, root.mRoot );
 }
 
 //----------------------------------------------------------------//
-void Miner::rebuildChainRecurse ( shared_ptr < const BlockTreeNode > node ) {
+void Miner::rebuildChainRecurse ( shared_ptr < const BlockTreeNode > node, shared_ptr < const BlockTreeNode > root ) {
 
-    if ( node == NULL ) return;
-    if ( node->getBlock ().isGenesis ()) return;
+    if ( node == root ) return;
+    shared_ptr < const Block > block = node->getBlock ();
+    if ( block->isGenesis ()) return;
     
-    this->rebuildChainRecurse ( node->getParent ());
-    this->mChain->pushBlock ( node->getBlock (), this->mBlockVerificationPolicy );
+    this->rebuildChainRecurse ( node->getParent (), root );
+    bool result = this->mChain->pushBlock ( *node->getBlock (), this->mBlockVerificationPolicy );
+    assert ( result );
 }
 
 //----------------------------------------------------------------//
@@ -435,20 +445,19 @@ void Miner::step ( bool solo ) {
     
         this->processQueue ();
         
-        bool rebuild = false;
+        shared_ptr < const BlockTreeNode > originalBranch = this->mTag;
         
         // find the best branch
         map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
         for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
            const RemoteMiner& remoteMiner = remoteMinerIt->second;
-           if ( remoteMiner.mTag && ( BlockTreeTag::compare ( remoteMiner.mTag, this->mTag ) < 0 )) {
-               this->mTag = remoteMiner.mTag;
-               rebuild = true;
+           if ( remoteMiner.mTag &&  ( BlockTreeTag::compare ( remoteMiner.mTag, this->mTag ) < 0 )) {
+                this->mTag = remoteMiner.mTag;
            }
         }
         
-        if ( rebuild ) {
-            this->rebuildChain ();
+        if ( originalBranch != this->mTag.getNode ()) {
+            this->rebuildChain ( originalBranch, this->mTag );
         }
     
         if ( this->mRemoteMiners.size () && ( this->mTag.getCount () > ( this->mRemoteMiners.size () >> 1 ))) {
