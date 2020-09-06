@@ -23,6 +23,41 @@ class Block;
 class BlockTreeNode;
 
 //================================================================//
+// RemoteMiner
+//================================================================//
+class RemoteMiner {
+private:
+
+    friend class Miner;
+
+    string                  mURL;
+    size_t                  mCurrentBlock;
+
+    bool                    mWaitingForTask;
+
+    BlockTreeTag            mTag;
+
+public:
+
+    //----------------------------------------------------------------//
+                    RemoteMiner             ();
+                    ~RemoteMiner            ();
+};
+
+//================================================================//
+// BlockQueueEntry
+//================================================================//
+class BlockQueueEntry {
+private:
+
+    friend class Miner;
+    friend class SyncChainTask;
+
+    string                      mMinerID;
+    shared_ptr < const Block >  mBlock;
+};
+
+//================================================================//
 // Miner
 //================================================================//
 class Miner :
@@ -38,29 +73,44 @@ protected:
 
     CryptoKey                                       mKeyPair;
     bool                                            mLazy;
+    bool                                            mSolo;
+    bool                                            mVerbose;
     bool                                            mControlPermitted;
 
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
+    map < string, RemoteMiner >                     mRemoteMiners;
     BlockTree                                       mBlockTree;
     shared_ptr < Chain >                            mChain;
     BlockTreeTag                                    mTag;
     
+    Poco::Mutex                                     mMutex;
+
+    Poco::ThreadPool                                mTaskManagerThreadPool;
+    Poco::TaskManager                               mTaskManager;
+    set < string >                                  mMinerSet;
+
+    list < unique_ptr < BlockQueueEntry >>          mBlockQueue;
+    
     //----------------------------------------------------------------//
-    static void             checkEnvironment        ();
-    void                    pushBlock               ( shared_ptr < const Block > block );
-    void                    rebuildChain            ();
-    void                    rebuildChainRecurse     ( shared_ptr < const BlockTreeNode > node );
-    void                    saveChain               ();
+    static void             checkEnvironment            ();
+    void                    discoverMiners              ();
+    void                    processQueue                ();
+    void                    onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
+    void                    pushBlock                   ( shared_ptr < const Block > block );
+    void                    rebuildChain                ();
+    void                    rebuildChainRecurse         ( shared_ptr < const BlockTreeNode > node );
+    void                    saveChain                   ();
+    void                    startTasks                  ();
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
     virtual time_t          Miner_getTime                           () const;
     virtual void            Miner_reset                             ();
-    virtual void            Miner_shutdown                          ( bool kill ) = 0;
+    virtual void            Miner_shutdown                          ( bool kill );
 
 public:
 
@@ -68,34 +118,61 @@ public:
         ACCEPTED = 0,
         RESUBMIT_EARLIER,
     };
+    
+    //----------------------------------------------------------------//
+    operator Poco::Mutex& () {
+    
+        return this->mMutex;
+    }
 
     //----------------------------------------------------------------//
-    void                    affirmKey               ();
-    bool                    checkBestBranch         ( string miners ) const;
-    bool                    controlPermitted        () const;
-    size_t                  countBranches           () const;
-    void                    extend                  ( bool force = false );
-    const Chain*            getBestBranch           () const;
-    const BlockTree&        getBlockTree            () const;
-    const CryptoKey&        getKeyPair              () const;
-    size_t                  getLongestBranchSize    () const;
-    bool                    getLazy                 () const;
-    Ledger&                 getLedger               ();
-    const Ledger&           getLedger               () const;
-    string                  getMinerID              () const;
-    time_t                  getTime                 () const;
-    void                    loadGenesis             ( string path );
-    void                    loadKey                 ( string keyfile, string password = "" );
-                            Miner                   ();
-    virtual                 ~Miner                  ();
-    void                    permitControl           ( bool permit );
-    shared_ptr < Block >    prepareBlock            ();
-    void                    setChainRecorder        ( shared_ptr < AbstractChainRecorder > chainRecorder );
-    void                    setGenesis              ( shared_ptr < const Block > block );
-    void                    setLazy                 ( bool lazy );
-    void                    setMinerID              ( string minerID );
-    void                    reset                   ();
-    void                    shutdown                ( bool kill = false );
+    void                    affirmKey                   ();
+    bool                    checkBestBranch             ( string miners ) const;
+    bool                    controlPermitted            () const;
+    size_t                  countBranches               () const;
+    void                    extend                      ();
+    const Chain*            getBestBranch               () const;
+    const BlockTree&        getBlockTree                () const;
+    const CryptoKey&        getKeyPair                  () const;
+    size_t                  getLongestBranchSize        () const;
+    bool                    getLazy                     () const;
+    Ledger&                 getLedger                   ();
+    const Ledger&           getLedger                   () const;
+    string                  getMinerID                  () const;
+    time_t                  getTime                     () const;
+    void                    loadGenesis                 ( string path );
+    void                    loadKey                     ( string keyfile, string password = "" );
+                            Miner                       ();
+    virtual                 ~Miner                      ();
+    void                    permitControl               ( bool permit );
+    shared_ptr < Block >    prepareBlock                ();
+    void                    setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
+    void                    setGenesis                  ( shared_ptr < const Block > block );
+    void                    setLazy                     ( bool lazy );
+    void                    setMinerID                  ( string minerID );
+    void                    setSolo                     ( bool solo );
+    void                    setVerbose                  ( bool verbose );
+    void                    reset                       ();
+    void                    shutdown                    ( bool kill = false );
+    void                    step                        ( bool solo = false );
+};
+
+//================================================================//
+// ScopedWebMinerLock
+//================================================================//
+class ScopedWebMinerLock {
+private:
+
+    shared_ptr < Miner >                mWebMiner;
+    Poco::ScopedLock < Poco::Mutex >    mScopedLock;
+
+public:
+
+    //----------------------------------------------------------------//
+    ScopedWebMinerLock ( shared_ptr < Miner > webMiner ) :
+        mWebMiner ( webMiner ),
+        mScopedLock ( *webMiner ) {
+    }
 };
 
 } // namespace Volition

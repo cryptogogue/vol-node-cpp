@@ -16,7 +16,7 @@ class SyncChainTask :
     public Poco::Task {
 private:
 
-    friend class WebMiner;
+    friend class Miner;
 
     string                          mMinerID;
     string                          mURL;
