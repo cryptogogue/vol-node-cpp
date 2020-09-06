@@ -18,17 +18,7 @@ class Block;
 //================================================================//
 class TheContext :
     public Singleton < TheContext > {
-public:
-
-    enum class ScoringMode {
-        ALLURE,
-        INTEGER,
-    };
-
 private:
-
-    ScoringMode     mScoringMode;
-    size_t          mScoringModulo;
     
     double          mRewriteWindowInSeconds;
 
@@ -37,13 +27,10 @@ public:
     //----------------------------------------------------------------//
     const Digest&       getGenesisBlockDigest       () const;
     const CryptoKey&    getGenesisBlockKey          () const;
-    ScoringMode         getScoringMode              () const;
-    size_t              getScoringModulo            () const;
     double              getWindow                   () const;
                         TheContext                  ();
     void                setGenesisBlockDigest       ( const Digest& digest );
     void                setGenesisBlockKey          ( const CryptoKey& key );
-    void                setScoringMode              ( ScoringMode scoringMode, size_t modulo = 1 );
     void                setWindow                   ( double window );
 };
 

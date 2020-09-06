@@ -54,29 +54,16 @@ int BlockHeader::compare ( const BlockHeader& block0, const BlockHeader& block1 
 
     assert ( block0.mHeight == block1.mHeight );
 
-    if ( block0 != block1 ) {
+    if ( block0 == block1 ) return 0;
+                
+    string allure0 = Poco::DigestEngine::digestToHex ( block0.mAllure );
+    string allure1 = Poco::DigestEngine::digestToHex ( block1.mAllure );
+
+//    printf ( "allure0 (%s): %s\n", block0.getMinerID ().c_str (), allure0.c_str ());
+//    printf ( "allure1 (%s): %s\n", block1.getMinerID ().c_str (), allure1.c_str ());
         
-        if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
-        
-            string allure0 = Poco::DigestEngine::digestToHex ( block0.mAllure );
-            string allure1 = Poco::DigestEngine::digestToHex ( block1.mAllure );
-            
-//            printf ( "allure0 (%s): %s\n", block0.getMinerID ().c_str (), allure0.c_str ());
-//            printf ( "allure1 (%s): %s\n", block1.getMinerID ().c_str (), allure1.c_str ());
-            
-            int result = allure0.compare ( allure1 );
-            return result < 0 ? -1 : result > 0 ? 1 : 0;
-        }
-        else {
-        
-            size_t score0 = block0.getScore ();
-            size_t score1 = block1.getScore ();
-            
-            if ( score0 < score1 ) return -1;
-            if ( score0 > score1 ) return 1;
-        }
-    }
-    return 0;
+    int result = allure0.compare ( allure1 );
+    return result < 0 ? -1 : result > 0 ? 1 : 0;
 }
 
 //----------------------------------------------------------------//
@@ -111,23 +98,6 @@ string BlockHeader::getMinerID () const {
 string BlockHeader::getPrevHash () const {
 
     return this->mPrevDigest.toString ();
-}
-
-//----------------------------------------------------------------//
-size_t BlockHeader::getScore () const {
-
-//    if ( TheContext::get ().getScoringMode () == TheContext::ScoringMode::ALLURE ) {
-//        string allureString = Poco::DigestEngine::digestToHex ( this->mAllure );
-//        return std::hash < string >{}( allureString );
-//    }
-    
-    if ( this->mHeight == 0 ) return 0;
-    
-    size_t modulo = TheContext::get ().getScoringModulo ();
-    size_t height = ( this->mHeight - 1 ) % modulo;
-    size_t minerID = ( size_t )strtol ( this->mMinerID.c_str (), 0, 10 );
-    
-    return height <= minerID ? minerID - height : (( modulo - height ) + minerID );
 }
 
 //----------------------------------------------------------------//

@@ -92,7 +92,7 @@ Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm )
 
     if ( this->mKeyPair ) {
         switch ( this->mKeyPair->type ()) {
-                
+            
             case Poco::Crypto::KeyPair::KT_EC: {
             
                 const Poco::Crypto::ECKey* pocoECKey = *this;
@@ -101,16 +101,16 @@ Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm )
                 EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
                 assert ( pKey );
             
-                
-            
                 uint sigLen = ( unsigned int )ECDSA_size ( pKey );
-            
                 
                 sig.resize ( sigLen );
             
-                int result = ECDSA_sign ( 0,
-                    &digest [ 0 ], ( int )digest.size (),
-                    &sig [ 0 ], &sigLen,
+                int result = ECDSA_sign (
+                    0,
+                    &digest [ 0 ],
+                    ( int )digest.size (),
+                    &sig [ 0 ],
+                    &sigLen,
                     pKey
                 );
                 assert ( result == 1 );

@@ -11,18 +11,6 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TheContext::ScoringMode TheContext::getScoringMode () const {
-
-    return this->mScoringMode;
-}
-
-//----------------------------------------------------------------//
-size_t TheContext::getScoringModulo () const {
-
-    return this->mScoringModulo;
-}
-
-//----------------------------------------------------------------//
 double TheContext::getWindow () const {
 
     return this->mRewriteWindowInSeconds;
@@ -30,16 +18,7 @@ double TheContext::getWindow () const {
 
 //----------------------------------------------------------------//
 TheContext::TheContext () :
-    mScoringMode ( ScoringMode::ALLURE ),
-    mScoringModulo ( 1 ),
     mRewriteWindowInSeconds ( 0 ) {
-}
-
-//----------------------------------------------------------------//
-void TheContext::setScoringMode ( ScoringMode scoringMode, size_t modulo ) {
-
-    this->mScoringMode = scoringMode;
-    this->mScoringModulo = modulo;
 }
 
 //----------------------------------------------------------------//

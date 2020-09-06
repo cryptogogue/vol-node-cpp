@@ -58,7 +58,6 @@ public:
     size_t              getHeight                           () const;
     string              getMinerID                          () const;
     string              getPrevHash                         () const;
-    size_t              getScore                            () const;
     const Signature&    getSignature                        () const;
     time_t              getTime                             () const;
     bool                isGenesis                           () const;
