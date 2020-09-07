@@ -45,6 +45,7 @@
 #include <Poco/Crypto/ECKey.h>
 #include <Poco/Crypto/ECKeyImpl.h>
 #include <Poco/Crypto/ECDSADigestEngine.h>
+#include <Poco/Crypto/RSADigestEngine.h>
 #include <Poco/DigestEngine.h>
 #include <Poco/DigestStream.h>
 #include <Poco/File.h>

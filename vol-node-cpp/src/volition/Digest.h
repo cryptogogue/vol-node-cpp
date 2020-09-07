@@ -29,6 +29,8 @@ private:
 
 public:
     
+    typedef std::function < void ( Poco::DigestOutputStream& )> DigestFunc;
+    
     static constexpr const char* HASH_ALGORITHM_MD5         = "MD5";
     static constexpr const char* HASH_ALGORITHM_SHA256      = "SHA256";
     static constexpr const char* DEFAULT_HASH_ALGORITHM     = HASH_ALGORITHM_SHA256;
@@ -72,6 +74,17 @@ public:
     }
     
     //----------------------------------------------------------------//
+    Digest ( DigestFunc digestFunc, string hashAlgorithm = DEFAULT_HASH_ALGORITHM ) {
+    
+        Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
+        Poco::DigestOutputStream digestStream ( digestEngine );
+        digestFunc ( digestStream );
+        digestStream.close ();
+        
+        *this = digestEngine.digest ();
+    }
+    
+    //----------------------------------------------------------------//
     Digest ( const AbstractSerializable& serializable, string hashAlgorithm = DEFAULT_HASH_ALGORITHM ) {
     
         Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
@@ -85,6 +98,14 @@ public:
     //----------------------------------------------------------------//
     Digest ( const Poco::DigestEngine::Digest& digest ) :
         Poco::DigestEngine::Digest ( digest ) {
+    }
+    
+    //----------------------------------------------------------------//
+    static int nid ( string hashAlgorithm = DEFAULT_HASH_ALGORITHM ) {
+    
+        if ( hashAlgorithm == HASH_ALGORITHM_MD5 )      return NID_md5;
+        if ( hashAlgorithm == HASH_ALGORITHM_SHA256 )   return NID_sha256;
+        return 0;
     }
     
     //----------------------------------------------------------------//

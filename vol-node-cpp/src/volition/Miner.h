@@ -95,7 +95,6 @@ protected:
     list < unique_ptr < BlockQueueEntry >>          mBlockQueue;
     
     //----------------------------------------------------------------//
-    static void             checkEnvironment            ();
     void                    discoverMiners              ();
     void                    processQueue                ();
     void                    onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );

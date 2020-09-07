@@ -7,6 +7,7 @@
 #include <volition/Format.h>
 
 #include <openssl/ecdsa.h>
+#include <openssl/rsa.h>
 
 // bitaddress.org
 // private: KzvyiCGoxXMaraHf3HmtZsttox2U99VTPq9RTWyJqsTVdEZ9nYDV
@@ -80,33 +81,59 @@ bool CryptoKey::hasCurve ( string groupName ) {
 }
 
 //----------------------------------------------------------------//
-Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm ) const {
-
-    Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
-    Poco::DigestOutputStream signatureStream ( digestEngine );
-    digestFunc ( signatureStream );
-    signatureStream.close ();
+void CryptoKey::rsa ( uint keyLength, unsigned long exp ) {
     
-    Digest digest = digestEngine.digest ();
+    RSA* rsaKey = RSA_new ();
+    int ret = 0;
+    BIGNUM* bn = 0;
+    try {
+        bn = BN_new ();
+        BN_set_word ( bn, exp );
+        ret = RSA_generate_key_ex ( rsaKey, ( int )keyLength, bn, 0 );
+        BN_free ( bn );
+    }
+    catch ( ... ) {
+        BN_free ( bn );
+        throw;
+    }
+    
+    // convert to Poco key
+    EVP_PKEY* pkey = EVP_PKEY_new ();
+    assert ( pkey );
+    
+    EVP_PKEY_set1_RSA ( pkey, rsaKey );
+    RSA_free ( rsaKey );
+
+    this->mKeyPair = make_shared < Poco::Crypto::RSAKey >( Poco::Crypto::EVPPKey { pkey }); // prevent the 'most vexing parse'
+
+    EVP_PKEY_free ( pkey );
+}
+
+//----------------------------------------------------------------//
+Signature CryptoKey::sign ( const Digest& digest, string hashAlgorithm ) const {
+
     Digest sig;
+
+    int nid = Digest::nid ( hashAlgorithm );
+    assert ( nid );
 
     if ( this->mKeyPair ) {
         switch ( this->mKeyPair->type ()) {
-            
+
             case Poco::Crypto::KeyPair::KT_EC: {
-            
+
                 const Poco::Crypto::ECKey* pocoECKey = *this;
                 assert ( pocoECKey );
-                
+
                 EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
                 assert ( pKey );
-            
+
                 uint sigLen = ( unsigned int )ECDSA_size ( pKey );
-                
+
                 sig.resize ( sigLen );
-            
+
                 int result = ECDSA_sign (
-                    0,
+                    nid,
                     &digest [ 0 ],
                     ( int )digest.size (),
                     &sig [ 0 ],
@@ -114,18 +141,47 @@ Signature CryptoKey::sign ( const DigestFunc& digestFunc, string hashAlgorithm )
                     pKey
                 );
                 assert ( result == 1 );
-                
-                if ( sigLen < sig.size ()) sig.resize ( sigLen );
+
+                if ( sigLen < sig.size ()) {
+                    sig.resize ( sigLen ); // EC signature actual length may be shorter than max returned by ECDSA_size ().
+                }
                 break;
             }
-            
+
             case Poco::Crypto::KeyPair::KT_RSA: {
-                // TODO: RSA
+                
+                const Poco::Crypto::RSAKey* pocoRSAKey = *this;
+                assert ( pocoRSAKey );
+
+                RSA* pKey = pocoRSAKey->impl ()->getRSA ();
+                assert ( pKey );
+
+                uint sigLen = ( unsigned int )RSA_size ( pKey );
+
+                sig.resize ( sigLen );
+
+                int result = RSA_sign (
+                    nid,
+                    &digest [ 0 ],
+                    ( unsigned int )digest.size (),
+                    &sig [ 0 ],
+                    &sigLen,
+                    pKey
+                );
+                assert ( result == 1 );
+
                 break;
             }
         }
     }
     return Signature ( digest, sig, hashAlgorithm );
+}
+
+//----------------------------------------------------------------//
+Signature CryptoKey::sign ( const Digest::DigestFunc& digestFunc, string hashAlgorithm ) const {
+    
+    Digest digest ( digestFunc, hashAlgorithm );
+    return this->sign ( digest, hashAlgorithm );
 }
 
 //----------------------------------------------------------------//
@@ -151,44 +207,67 @@ Signature CryptoKey::sign ( string message, string hashAlgorithm ) const {
 }
 
 //----------------------------------------------------------------//
-bool CryptoKey::verify ( const Signature& signature, const DigestFunc& digestFunc ) const {
+bool CryptoKey::verify ( const Signature& signature, const Digest& digest ) const {
 
     bool result = false;
+
+    int nid = Digest::nid ( signature.getHashAlgorithm ());
+    assert ( nid );
 
     if ( this->mKeyPair && signature ) {
         switch ( this->mKeyPair->type ()) {
                 
             case Poco::Crypto::KeyPair::KT_EC: {
-            
+                
                 const Poco::Crypto::ECKey* pocoECKey = *this;
                 assert ( pocoECKey );
-                
+
                 EC_KEY* pKey = pocoECKey->impl ()->getECKey ();
                 assert ( pKey );
-                
-                Poco::Crypto::DigestEngine digestEngine ( signature.getHashAlgorithm ());
-                Poco::DigestOutputStream signatureStream ( digestEngine );
-                digestFunc ( signatureStream );
-                signatureStream.close ();
-                
-                Digest digest = digestEngine.digest ();
+
                 Digest sig = signature.getSignature ();
-            
-                result = 1 == ECDSA_verify ( 0,
-                    &digest [ 0 ], ( int )digest.size (),
-                    &sig [ 0 ], ( int )sig.size (),
+
+                result = 1 == ECDSA_verify (
+                    nid,
+                    &digest [ 0 ],
+                    ( int )digest.size (),
+                    &sig [ 0 ],
+                    ( int )sig.size (),
                     pKey
                 );
                 break;
             }
             
             case Poco::Crypto::KeyPair::KT_RSA: {
-                // TODO: RSA
+            
+                const Poco::Crypto::RSAKey* pocoRSAKey = *this;
+                assert ( pocoRSAKey );
+
+                RSA* pKey = pocoRSAKey->impl ()->getRSA ();
+                assert ( pKey );
+
+                Digest sig = signature.getSignature ();
+
+                result = 1 == RSA_verify (
+                    nid,
+                    &digest [ 0 ],
+                    ( uint )digest.size (),
+                    &sig [ 0 ],
+                    ( uint )sig.size (),
+                    pKey
+                );
                 break;
             }
         }
     }
     return result;
+}
+
+//----------------------------------------------------------------//
+bool CryptoKey::verify ( const Signature& signature, const Digest::DigestFunc& digestFunc ) const {
+
+    Digest digest ( digestFunc, signature.getHashAlgorithm ());
+    return this->verify ( signature, digest );
 }
 
 //----------------------------------------------------------------//

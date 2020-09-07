@@ -19,8 +19,6 @@ class CryptoKey :
     public AbstractSerializable {
 private:
 
-    typedef std::function < void ( Poco::DigestOutputStream& )> DigestFunc;
-
     shared_ptr < Poco::Crypto::KeyPair >      mKeyPair;
     
     //----------------------------------------------------------------//
@@ -28,6 +26,18 @@ private:
     void            AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
+
+    enum : unsigned long {
+        RSA_EXP_3       = 0x3L,
+        RSA_EXP_65537   = 0x10001L,
+    };
+
+    enum : uint {
+        RSA_512         = 512,
+        RSA_1024        = 1024,
+        RSA_2048        = 2048,
+        RSA_4096        = 4096,
+    };
 
     static const char*  DEFAULT_EC_GROUP_NAME;
     static const int    DEFAULT_EC_GROUP_NID = NID_secp256k1;
@@ -42,10 +52,13 @@ public:
     static int          getNIDFromGroupName     ( string groupName );
     static bool         hasCurve                ( int nid );
     static bool         hasCurve                ( string groupName );
-    Signature           sign                    ( const DigestFunc& digestFunc, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    void                rsa                     ( uint keyLength, unsigned long exp = RSA_EXP_65537 );
+    Signature           sign                    ( const Digest& digest, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    Signature           sign                    ( const Digest::DigestFunc& digestFunc, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     Signature           sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     Signature           sign                    ( string message, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
-    bool                verify                  ( const Signature& signature, const DigestFunc& digestFunc ) const;
+    bool                verify                  ( const Signature& signature, const Digest& digest ) const;
+    bool                verify                  ( const Signature& signature, const Digest::DigestFunc& digestFunc ) const;
     bool                verify                  ( const Signature& signature, const AbstractSerializable& serializable ) const;
     bool                verify                  ( const Signature& signature, string message ) const;
     
@@ -65,6 +78,19 @@ public:
         const Poco::Crypto::ECKey* ecKey = *this;
         assert ( ecKey );
         return *ecKey;
+    }
+    
+    //----------------------------------------------------------------//
+    operator const Poco::Crypto::RSAKey* () const {
+        Poco::Crypto::RSAKey* rsaKey = dynamic_cast < Poco::Crypto::RSAKey* >( this->mKeyPair.get ());
+        return rsaKey;
+    }
+    
+    //----------------------------------------------------------------//
+    operator const Poco::Crypto::RSAKey& () const {
+        const Poco::Crypto::RSAKey* rsaKey = *this;
+        assert ( rsaKey );
+        return *rsaKey;
     }
     
     //----------------------------------------------------------------//
