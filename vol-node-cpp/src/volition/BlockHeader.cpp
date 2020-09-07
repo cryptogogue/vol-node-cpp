@@ -34,7 +34,7 @@ BlockHeader::BlockHeader ( string minerID, time_t now, const BlockHeader* prevBl
     if ( prevBlockHeader ) {
         
         this->mHeight = prevBlockHeader->mHeight + 1;
-        this->mPrevDigest = prevBlockHeader->mSignature.getDigest ();
+        this->mPrevDigest = prevBlockHeader->mDigest;
         
         // TODO: allure should be generated using a deterministic signature.
         // use a sample hash for now.
@@ -79,7 +79,7 @@ void BlockHeader::computeAllure ( Poco::Crypto::ECDSADigestEngine& signature ) c
 //----------------------------------------------------------------//
 string BlockHeader::getHash () const {
 
-    return this->mSignature.getDigest ().toString ();
+    return this->mDigest;
 }
 
 //----------------------------------------------------------------//
@@ -129,7 +129,7 @@ bool BlockHeader::isInRewriteWindow ( time_t now ) const {
 //----------------------------------------------------------------//
 bool BlockHeader::isParent ( const BlockHeader& block ) const {
 
-    return ( this->mSignature.getDigest () == block.mPrevDigest );
+    return ( this->mDigest == block.mPrevDigest ); // TODO: does not need to be constant time
 }
 
 //----------------------------------------------------------------//
@@ -148,7 +148,7 @@ void BlockHeader::setMinerID ( string minerID ) {
 void BlockHeader::setPreviousBlock ( const BlockHeader& prevBlockHeader ) {
 
     this->mHeight = prevBlockHeader.mHeight + 1;
-    this->mPrevDigest = prevBlockHeader.mSignature.getDigest ();
+    this->mPrevDigest = prevBlockHeader.mDigest;
 }
 
 //================================================================//
@@ -168,6 +168,7 @@ void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerF
         serializer.serialize ( "allure",        this->mAllure );
     }
     
+    serializer.serialize ( "digest",        this->mDigest );
     serializer.serialize ( "signature",     this->mSignature );
 }
 
@@ -185,6 +186,7 @@ void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& seria
     }
     
     if ( !serializer.isDigest ()) {
+        serializer.serialize ( "digest",        this->mDigest );
         serializer.serialize ( "signature",     this->mSignature );
     }
 }

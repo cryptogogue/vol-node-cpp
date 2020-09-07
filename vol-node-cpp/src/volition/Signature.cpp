@@ -10,15 +10,15 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-const Digest& Signature::getDigest () const {
-
-    return this->mDigest;
-}
+//const Digest& Signature::getDigest () const {
+//
+//    return this->mDigest;
+//}
 
 //----------------------------------------------------------------//
 const Digest& Signature::getSignature () const {
 
-    return this->mSignature;
+    return *this;
 }
 
 //----------------------------------------------------------------//
@@ -33,11 +33,17 @@ Signature::Signature () :
 }
 
 //----------------------------------------------------------------//
-Signature::Signature ( Digest digest, Digest signature, string hashAlgorithm ) :
-    mDigest ( digest ),
-    mSignature ( signature ),
+Signature::Signature ( Digest signature, string hashAlgorithm ) :
+    Digest ( signature ),
     mHashAlgorithm ( hashAlgorithm ) {
 }
+
+////----------------------------------------------------------------//
+//Signature::Signature ( Digest digest, Digest signature, string hashAlgorithm ) :
+//    Digest ( signature ),
+//    mDigest ( digest ),
+//    mHashAlgorithm ( hashAlgorithm ) {
+//}
 
 //----------------------------------------------------------------//
 Signature::~Signature () {
@@ -50,17 +56,21 @@ Signature::~Signature () {
 //----------------------------------------------------------------//
 void Signature::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
+    string hex;
+
     serializer.serialize ( "hashAlgorithm",     this->mHashAlgorithm );
-    serializer.serialize ( "digest",            this->mDigest );
-    serializer.serialize ( "signature",         this->mSignature );
+//    serializer.serialize ( "digest",            this->mDigest );
+    serializer.serialize ( "signature",         hex );
+    
+    this->fromString ( hex );
 }
 
 //----------------------------------------------------------------//
 void Signature::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "hashAlgorithm",     this->mHashAlgorithm );
-    serializer.serialize ( "digest",            this->mDigest );
-    serializer.serialize ( "signature",         this->mSignature );
+//    serializer.serialize ( "digest",            this->mDigest );
+    serializer.serialize ( "signature",         this->toHex ());
 }
 
 } // namespace Volition

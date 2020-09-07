@@ -15,8 +15,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 void Block::affirmHash () {
 
-    if ( !this->mSignature.getDigest ()) {
-        this->sign ( CryptoKey ());
+    if ( !this->mDigest ) {
+        this->mDigest = Digest ( *this );
     }
 }
 
@@ -157,7 +157,8 @@ void Block::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 //----------------------------------------------------------------//
 const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
     
-    this->mSignature = key.sign ( *this, hashAlgorithm );
+    this->mDigest = Digest ( *this );
+    this->mSignature = key.sign ( this->mDigest, hashAlgorithm );
     return this->mSignature.getSignature ();
 }
 

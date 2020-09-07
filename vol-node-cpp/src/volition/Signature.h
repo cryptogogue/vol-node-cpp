@@ -14,11 +14,10 @@ namespace Volition {
 // Signature
 //================================================================//
 class Signature :
-    public AbstractSerializable {
+    public Digest {
 private:
 
-    Digest      mDigest;
-    Digest      mSignature;
+//    Digest      mDigest;
     string      mHashAlgorithm;
 
 protected:
@@ -31,12 +30,12 @@ public:
 
     //----------------------------------------------------------------//
     operator bool () const {
-        return ( this->mSignature.size () > 0 );
+        return ( this->size () > 0 );
     }
 
     //----------------------------------------------------------------//
     bool operator == ( const Signature& rhs ) const {
-        return ( Poco::DigestEngine::constantTimeEquals ( this->mSignature, rhs.mSignature ));
+        return ( Poco::DigestEngine::constantTimeEquals ( *this, rhs ));
     }
     
     //----------------------------------------------------------------//
@@ -45,11 +44,11 @@ public:
     }
 
     //----------------------------------------------------------------//
-    const Digest&       getDigest           () const;
+//    const Digest&       getDigest           () const;
     string              getHashAlgorithm    () const;
     const Digest&       getSignature        () const;
                         Signature           ();
-                        Signature           ( Digest digest, Digest signature, string hashAlgorithm );
+                        Signature           ( Digest signature, string hashAlgorithm );
                         ~Signature          ();
 };
 

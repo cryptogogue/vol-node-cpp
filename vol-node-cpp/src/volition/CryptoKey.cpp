@@ -174,7 +174,7 @@ Signature CryptoKey::sign ( const Digest& digest, string hashAlgorithm ) const {
             }
         }
     }
-    return Signature ( digest, sig, hashAlgorithm );
+    return Signature ( sig, hashAlgorithm );
 }
 
 //----------------------------------------------------------------//

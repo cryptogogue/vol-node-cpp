@@ -24,6 +24,7 @@ protected:
     string              mMinerID;
     u64                 mHeight;
     SerializableTime    mTime;
+    Digest              mDigest;
     Digest              mPrevDigest;
     Digest              mAllure; // digital signature of the hash of block height
     Signature           mSignature;
