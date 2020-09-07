@@ -119,6 +119,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_blockAllure () {
+        return "blockAllure";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_blockHash () {
         return "blockHash";
     }

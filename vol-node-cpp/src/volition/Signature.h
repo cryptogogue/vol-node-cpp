@@ -17,8 +17,7 @@ class Signature :
     public Digest {
 private:
 
-//    Digest      mDigest;
-    string      mHashAlgorithm;
+    string              mHashAlgorithm;
 
 protected:
 
@@ -44,7 +43,6 @@ public:
     }
 
     //----------------------------------------------------------------//
-//    const Digest&       getDigest           () const;
     string              getHashAlgorithm    () const;
     const Digest&       getSignature        () const;
                         Signature           ();

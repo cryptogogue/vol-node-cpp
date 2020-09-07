@@ -51,15 +51,7 @@ string CryptoKey::getGroupNameFromNID ( int nid ) {
 //----------------------------------------------------------------//
 string CryptoKey::getKeyID () const {
 
-    CryptoKeyInfo info ( *this, CryptoKeyInfo::HEX );
-    if ( !info ) return "";
-    
-    Poco::Crypto::DigestEngine digestEngine ( "SHA256" );
-    Poco::DigestOutputStream digestStream ( digestEngine );
-    digestStream << Format::toupper ( info.mPublicKey );
-    digestStream.close ();
-    
-    return Poco::Crypto::DigestEngine::digestToHex ( digestEngine.digest ());
+    return CryptoKeyInfo::getKeyID ( *this );
 }
 
 //----------------------------------------------------------------//

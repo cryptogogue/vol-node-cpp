@@ -52,7 +52,7 @@ public:
     static int          getNIDFromGroupName     ( string groupName );
     static bool         hasCurve                ( int nid );
     static bool         hasCurve                ( string groupName );
-    void                rsa                     ( uint keyLength, unsigned long exp = RSA_EXP_65537 );
+    void                rsa                     ( uint keyLength = RSA_1024, unsigned long exp = RSA_EXP_65537 );
     Signature           sign                    ( const Digest& digest, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     Signature           sign                    ( const Digest::DigestFunc& digestFunc, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     Signature           sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;

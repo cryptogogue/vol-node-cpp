@@ -52,7 +52,6 @@ public:
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
     const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
     bool                verify                              ( const Ledger& ledger, VerificationPolicy policy ) const;
-    bool                verify                              ( const CryptoKey& key, VerificationPolicy policy ) const;
 };
 
 } // namespace Volition

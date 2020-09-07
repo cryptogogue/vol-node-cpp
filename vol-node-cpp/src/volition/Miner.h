@@ -125,7 +125,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void                    affirmKey                   ();
+    void                    affirmKey                   ( uint keyLength = CryptoKey::RSA_1024, unsigned long exp = CryptoKey::RSA_EXP_65537 );
     bool                    checkBestBranch             ( string miners ) const;
     bool                    controlPermitted            () const;
     size_t                  countBranches               () const;

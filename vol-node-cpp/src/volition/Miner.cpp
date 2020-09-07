@@ -30,10 +30,10 @@ RemoteMiner::~RemoteMiner () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Miner::affirmKey () {
+void Miner::affirmKey ( uint keyLength, unsigned long exp ) {
 
     if ( !this->mKeyPair ) {
-        this->mKeyPair.elliptic ();
+        this->mKeyPair.rsa ( keyLength, exp );
     }
     assert ( this->mKeyPair );
 }
@@ -170,7 +170,7 @@ Miner::Miner () :
     mSolo ( true ),
     mVerbose ( false ),
     mControlPermitted ( false ),
-    mBlockVerificationPolicy ( Block::VerificationPolicy::NONE ),
+    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mTaskManager ( this->mTaskManagerThreadPool ) {
     
     MinerLaunchTests::checkEnvironment ();

@@ -10,12 +10,6 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-//const Digest& Signature::getDigest () const {
-//
-//    return this->mDigest;
-//}
-
-//----------------------------------------------------------------//
 const Digest& Signature::getSignature () const {
 
     return *this;
@@ -38,13 +32,6 @@ Signature::Signature ( Digest signature, string hashAlgorithm ) :
     mHashAlgorithm ( hashAlgorithm ) {
 }
 
-////----------------------------------------------------------------//
-//Signature::Signature ( Digest digest, Digest signature, string hashAlgorithm ) :
-//    Digest ( signature ),
-//    mDigest ( digest ),
-//    mHashAlgorithm ( hashAlgorithm ) {
-//}
-
 //----------------------------------------------------------------//
 Signature::~Signature () {
 }
@@ -59,7 +46,6 @@ void Signature::AbstractSerializable_serializeFrom ( const AbstractSerializerFro
     string hex;
 
     serializer.serialize ( "hashAlgorithm",     this->mHashAlgorithm );
-//    serializer.serialize ( "digest",            this->mDigest );
     serializer.serialize ( "signature",         hex );
     
     this->fromString ( hex );
@@ -69,7 +55,6 @@ void Signature::AbstractSerializable_serializeFrom ( const AbstractSerializerFro
 void Signature::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "hashAlgorithm",     this->mHashAlgorithm );
-//    serializer.serialize ( "digest",            this->mDigest );
     serializer.serialize ( "signature",         this->toHex ());
 }
 

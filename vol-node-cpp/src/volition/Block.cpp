@@ -156,7 +156,7 @@ void Block::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
 //----------------------------------------------------------------//
 const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
-    
+        
     this->mDigest = Digest ( *this );
     this->mSignature = key.sign ( this->mDigest, hashAlgorithm );
     return this->mSignature.getSignature ();
@@ -165,34 +165,30 @@ const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
 //----------------------------------------------------------------//
 bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 
-    shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( this->mMinerID ));
-
-    if ( minerInfo ) {
-        return ( policy & VerificationPolicy::VERIFY_SIG ) ? this->verify ( minerInfo->getPublicKey (), policy ) : true;
+    if ( this->mHeight == 0 ) {
+        // TODO: verify using the genesis key
+        return true;
     }
 
-    // no miner info; must be the genesis block
-    if ( this->mHeight > 0 ) return false; // genesis block must be height 0
-    
-    return true;
-}
+    shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( this->mMinerID ));
+    if ( !minerInfo ) return false;
 
-//----------------------------------------------------------------//
-bool Block::verify ( const CryptoKey& key, VerificationPolicy policy ) const {
+    const CryptoKey& key = minerInfo->getPublicKey ();
 
-    if (( this->mHeight > 0 ) && ( policy & VerificationPolicy::VERIFY_ALLURE )) {
+    if ( policy & VerificationPolicy::VERIFY_ALLURE ) {
 
-        // verify allure
-        string hashAlgorithm = this->mSignature.getHashAlgorithm ();
-
-        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-        this->computeAllure ( signature );
-
-        if ( !signature.verify ( this->mAllure )) {
+        string prevAllure = ledger.getValue < string >( Ledger::keyFor_blockAllure (), this->mHeight - 1 );
+        Digest digest ( prevAllure );
+        
+        if ( !key.verify ( this->mAllure, digest )) {
             return false;
         }
     }
-    return key.verify ( this->mSignature, *this );
+
+    if ( policy & VerificationPolicy::VERIFY_SIG ) {
+        return key.verify ( this->mSignature, *this );
+    }
+    return true;
 }
 
 //================================================================//

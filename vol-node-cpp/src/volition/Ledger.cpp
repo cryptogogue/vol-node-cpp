@@ -271,6 +271,7 @@ void Ledger::setBlock ( const Block& block ) {
 
     this->setObject < Block >( keyFor_block (), block );
     this->setValue < string >( keyFor_blockHash (), block.getHash ());
+    this->setValue < string >( keyFor_blockAllure (), block.getAllure ());
 
     if ( block.mHeight == 0 ) {
         this->setValue < string >( keyFor_genesisHash (), block.getHash ());

@@ -65,7 +65,7 @@ public:
             cryptoKey.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
         }
 
-        Volition::CryptoKeyInfo keyInfo ( cryptoKey, Volition::CryptoKeyInfo::PEM );
+        Volition::CryptoKeyInfo keyInfo ( cryptoKey, Volition::CryptoKeyInfo::ENCODING_PEM );
         Poco::Dynamic::Var var = Volition::ToJSONSerializer::toJSON ( keyInfo );
         Poco::JSON::Object::Ptr object = var.extract < Poco::JSON::Object::Ptr >();
 

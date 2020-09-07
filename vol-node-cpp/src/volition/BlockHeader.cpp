@@ -36,12 +36,8 @@ BlockHeader::BlockHeader ( string minerID, time_t now, const BlockHeader* prevBl
         this->mHeight = prevBlockHeader->mHeight + 1;
         this->mPrevDigest = prevBlockHeader->mDigest;
         
-        // TODO: allure should be generated using a deterministic signature.
-        // use a sample hash for now.
-        Poco::Crypto::ECDSADigestEngine signature ( key, hashAlgorithm );
-        this->computeAllure ( signature );
-        //this->mAllure = signature.signature ();
-        this->mAllure = signature.digest ();
+        Digest digest ( prevBlockHeader->mAllure.toHex (), hashAlgorithm );
+        this->mAllure = key.sign ( digest, hashAlgorithm );
     }
 }
 
@@ -67,13 +63,9 @@ int BlockHeader::compare ( const BlockHeader& block0, const BlockHeader& block1 
 }
 
 //----------------------------------------------------------------//
-void BlockHeader::computeAllure ( Poco::Crypto::ECDSADigestEngine& signature ) const {
+string BlockHeader::getAllure () const {
 
-    Poco::DigestOutputStream signatureStream ( signature );
-    signatureStream << this->mMinerID;
-    signatureStream << this->mHeight;
-    signatureStream << this->mPrevDigest; // should be prev allure
-    signatureStream.close ();
+    return this->mAllure;
 }
 
 //----------------------------------------------------------------//
@@ -130,12 +122,6 @@ bool BlockHeader::isInRewriteWindow ( time_t now ) const {
 bool BlockHeader::isParent ( const BlockHeader& block ) const {
 
     return ( this->mDigest == block.mPrevDigest ); // TODO: does not need to be constant time
-}
-
-//----------------------------------------------------------------//
-void BlockHeader::setAllure ( const Digest& allure ) {
-
-    this->mAllure = allure;
 }
 
 //----------------------------------------------------------------//

@@ -26,12 +26,11 @@ protected:
     SerializableTime    mTime;
     Digest              mDigest;
     Digest              mPrevDigest;
-    Digest              mAllure; // digital signature of the hash of block height
+    Signature           mAllure; // digital signature of the hash of block height
     Signature           mSignature;
 
     //----------------------------------------------------------------//
     void                applyEntropy                        ( Ledger& ledger ) const;
-    void                computeAllure                       ( Poco::Crypto::ECDSADigestEngine& signature ) const;
     void                setPreviousBlock                    ( const BlockHeader& prevBlock );
     
     //----------------------------------------------------------------//
@@ -55,6 +54,7 @@ public:
                         BlockHeader                         ();
                         BlockHeader                         ( string minerID, time_t now, const BlockHeader* prevBlock, const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
                         ~BlockHeader                        ();
+    string              getAllure                           () const;
     string              getHash                             () const;
     size_t              getHeight                           () const;
     string              getMinerID                          () const;
@@ -64,7 +64,6 @@ public:
     bool                isGenesis                           () const;
     bool                isInRewriteWindow                   ( time_t now ) const;
     bool                isParent                            ( const BlockHeader& block ) const;
-    void                setAllure                           ( const Digest& allure );
     void                setMinerID                          ( string minerID );
 };
 
