@@ -57,23 +57,21 @@ shared_ptr < Ledger::MinerURLMap > Ledger_Miner::getMinerURLs () const {
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Miner::registerMiner ( Account::Index accountIndex, string keyName, string url ) {
+LedgerResult Ledger_Miner::registerMiner ( Account::Index accountIndex, string keyName, string url, string motto, const Signature& visage ) {
 
     Ledger& ledger = this->getLedger ();
 
     AccountKey accountKey = ledger.getAccountKey ( accountIndex, keyName );
-    if ( accountKey.mAccount ) {
+    if ( accountKey ) {
 
         shared_ptr < Account > account = accountKey.mAccount;
-
-        CryptoKey key;
-        if ( accountKey.mKeyAndPolicy ) {
-            key = accountKey.mKeyAndPolicy->mKey;
-        }
-
+        CryptoKey key = accountKey.mKeyAndPolicy->mKey;
+        
+        if ( !key.verify ( visage, motto )) return "Corrupt visage.";
+        
         ledger.setObject < MinerInfo >(
             AccountODBM::keyFor_minerInfo ( accountIndex ),
-            MinerInfo ( accountIndex, url, key )
+            MinerInfo ( accountIndex, url, key, visage )
         );
         
         // TODO: find an efficient way to do all this

@@ -134,8 +134,8 @@ Block::Block () {
 }
 
 //----------------------------------------------------------------//
-Block::Block ( string minerID, time_t now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm ) :
-    BlockHeader ( minerID, now, prevBlock, key, hashAlgorithm ) {
+Block::Block ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKey& key ) :
+    BlockHeader ( minerID, visage, now, prevBlock, key ) {
 }
 
 //----------------------------------------------------------------//
@@ -178,11 +178,14 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
     if ( policy & VerificationPolicy::VERIFY_ALLURE ) {
 
         string prevAllure = ledger.getValue < string >( Ledger::keyFor_blockAllure (), this->mHeight - 1 );
-        Digest digest ( prevAllure );
-        
-        if ( !key.verify ( this->mAllure, digest )) {
-            return false;
-        }
+        Digest digest = this->hashAllure ( prevAllure );
+        if ( !key.verify ( this->mAllure, digest )) return false;
+    }
+
+    if ( policy & VerificationPolicy::VERIFY_CHARM ) {
+
+        Digest charm = BlockHeader::getCharm ( this->mAllure, minerInfo->getVisage ());
+        if ( this->mCharm != charm ) return false;
     }
 
     if ( policy & VerificationPolicy::VERIFY_SIG ) {

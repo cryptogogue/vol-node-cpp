@@ -21,17 +21,21 @@ class BlockHeader :
     public AbstractSerializable {
 protected:
 
+    static const size_t CHARM_SIZE      = 128;
+
     string              mMinerID;
     u64                 mHeight;
     SerializableTime    mTime;
     Digest              mDigest;
     Digest              mPrevDigest;
-    Signature           mAllure; // digital signature of the hash of block height
+    Signature           mAllure;
+    Digest              mCharm;
     Signature           mSignature;
 
     //----------------------------------------------------------------//
     void                applyEntropy                        ( Ledger& ledger ) const;
-    void                setPreviousBlock                    ( const BlockHeader& prevBlock );
+    string              formatAllureString                  ( string prevAllure ) const;
+    Digest              hashAllure                          ( string prevAllure ) const;
     
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -52,9 +56,11 @@ public:
     //----------------------------------------------------------------//
     static int          compare                             ( const BlockHeader& block0, const BlockHeader& block1 );
                         BlockHeader                         ();
-                        BlockHeader                         ( string minerID, time_t now, const BlockHeader* prevBlock, const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
+                        BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKey& key );
                         ~BlockHeader                        ();
-    string              getAllure                           () const;
+    Digest              getAllure                           () const;
+    Digest              getCharm                            () const;
+    static Digest       getCharm                            ( const Digest& allure, const Digest& visage );
     string              getHash                             () const;
     size_t              getHeight                           () const;
     string              getMinerID                          () const;

@@ -18,10 +18,13 @@ class GenesisAccount :
     public AbstractSerializable {
 public:
 
-    string      mName;
-    CryptoKey   mKey;
-    u64         mGrant;
-    string      mURL;
+    string          mName;
+    CryptoKey       mKey;
+    u64             mGrant;
+    string          mURL;
+    string          mMotto;
+    Signature       mVisage;
+
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -30,6 +33,8 @@ public:
         serializer.serialize ( "grant",     this->mGrant  );
         serializer.serialize ( "key",       this->mKey );
         serializer.serialize ( "url",       this->mURL );
+        serializer.serialize ( "motto",     this->mMotto );
+        serializer.serialize ( "visage",    this->mVisage );
     }
     
     //----------------------------------------------------------------//
@@ -39,6 +44,8 @@ public:
         serializer.serialize ( "grant",     this->mGrant  );
         serializer.serialize ( "key",       this->mKey );
         serializer.serialize ( "url",       this->mURL );
+        serializer.serialize ( "motto",     this->mMotto );
+        serializer.serialize ( "visage",    this->mVisage );
     }
 };
 
@@ -68,7 +75,13 @@ public:
             
             if ( !ledger.newAccount ( account.mName, grant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
             if ( account.mURL.size () > 0 ) {
-                if ( !ledger.registerMiner ( ledger.getAccountIndex ( account.mName ), Ledger::MASTER_KEY_NAME, account.mURL )) return false;
+                if ( !ledger.registerMiner (
+                    ledger.getAccountIndex ( account.mName ),
+                    Ledger::MASTER_KEY_NAME,
+                    account.mURL,
+                    account.mMotto,
+                    account.mVisage
+                )) return false;
             }
         }
         return true;

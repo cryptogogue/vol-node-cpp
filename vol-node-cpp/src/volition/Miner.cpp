@@ -39,6 +39,13 @@ void Miner::affirmKey ( uint keyLength, unsigned long exp ) {
 }
 
 //----------------------------------------------------------------//
+void Miner::affirmVisage () {
+
+    assert ( this->mKeyPair );
+    this->mVisage = this->mKeyPair.sign ( this->mMotto, Digest::HASH_ALGORITHM_SHA256 );
+}
+
+//----------------------------------------------------------------//
 bool Miner::checkBestBranch ( string miners ) const {
 
     assert ( this->mChain );
@@ -133,9 +140,21 @@ string Miner::getMinerID () const {
 }
 
 //----------------------------------------------------------------//
+string Miner::getMotto () const {
+
+    return this->mMotto;
+}
+
+//----------------------------------------------------------------//
 time_t Miner::getTime () const {
 
     return this->Miner_getTime ();
+}
+
+//----------------------------------------------------------------//
+const Signature& Miner::getVisage () const {
+
+    return this->mVisage;
 }
 
 //----------------------------------------------------------------//
@@ -207,7 +226,7 @@ shared_ptr < Block > Miner::prepareBlock () {
     shared_ptr < Block > prevBlock = this->mChain->getBlock ();
     assert ( prevBlock );
     
-    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->getTime (), prevBlock.get (), this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
+    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, this->getTime (), prevBlock.get (), this->mKeyPair );
     this->fillBlock ( *this->mChain, *block );
     
     if ( !( this->mLazy && ( block->countTransactions () == 0 ))) {
@@ -325,6 +344,12 @@ void Miner::setLazy ( bool lazy ) {
 void Miner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
+}
+
+//----------------------------------------------------------------//
+void Miner::setMotto ( string motto ) {
+
+    this->mMotto = motto;
 }
 
 //----------------------------------------------------------------//

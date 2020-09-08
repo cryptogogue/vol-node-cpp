@@ -100,6 +100,7 @@ public:
 
             miner->setMinerID ( Format::write ( "%d", BASE_PORT + ( int )i ));
             miner->affirmKey ();
+            miner->affirmVisage ();
 
             Transactions::GenesisAccount genesisAccount;
             
@@ -107,6 +108,9 @@ public:
             genesisAccount.mKey     = miner->getKeyPair ();
             genesisAccount.mGrant   = 0;
             genesisAccount.mURL     = Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", BASE_PORT ).c_str (), miner->getMinerID ().c_str ());
+
+            genesisAccount.mMotto   = miner->getMotto ();
+            genesisAccount.mVisage  = miner->getVisage ();
 
             genesisMinerTransactionBody->pushAccount ( genesisAccount );
         }

@@ -26,18 +26,18 @@ BlockHeader::BlockHeader () :
 }
 
 //----------------------------------------------------------------//
-BlockHeader::BlockHeader ( string minerID, time_t now, const BlockHeader* prevBlockHeader, const CryptoKey& key, string hashAlgorithm ) :
+BlockHeader::BlockHeader ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKey& key ) :
     mMinerID ( minerID ),
     mHeight ( 0 ),
     mTime ( now ) {
         
     if ( prevBlockHeader ) {
         
-        this->mHeight = prevBlockHeader->mHeight + 1;
-        this->mPrevDigest = prevBlockHeader->mDigest;
+        this->mHeight       = prevBlockHeader->mHeight + 1;
+        this->mPrevDigest   = prevBlockHeader->mDigest;
         
-        Digest digest ( prevBlockHeader->mAllure.toHex (), hashAlgorithm );
-        this->mAllure = key.sign ( digest, hashAlgorithm );
+        this->mAllure       = key.sign ( this->hashAllure ( prevBlockHeader->mAllure.toHex ()), Digest::HASH_ALGORITHM_SHA256 );
+        this->mCharm        = BlockHeader::getCharm ( this->mAllure, visage );
     }
 }
 
@@ -52,20 +52,59 @@ int BlockHeader::compare ( const BlockHeader& block0, const BlockHeader& block1 
 
     if ( block0 == block1 ) return 0;
                 
-    string allure0 = Poco::DigestEngine::digestToHex ( block0.mAllure );
-    string allure1 = Poco::DigestEngine::digestToHex ( block1.mAllure );
+    string charm0 = Poco::DigestEngine::digestToHex ( block0.mCharm );
+    string charm1 = Poco::DigestEngine::digestToHex ( block1.mCharm );
 
-//    printf ( "allure0 (%s): %s\n", block0.getMinerID ().c_str (), allure0.c_str ());
-//    printf ( "allure1 (%s): %s\n", block1.getMinerID ().c_str (), allure1.c_str ());
+//    printf ( "charm0 (%s): %s\n", block0.getMinerID ().c_str (), charm0.c_str ());
+//    printf ( "charm1 (%s): %s\n", block1.getMinerID ().c_str (), charm1.c_str ());
         
-    int result = allure0.compare ( allure1 );
+    int result = charm0.compare ( charm1 );
     return result < 0 ? -1 : result > 0 ? 1 : 0;
 }
 
 //----------------------------------------------------------------//
-string BlockHeader::getAllure () const {
+string BlockHeader::formatAllureString ( string prevAllure ) const {
+
+    return Format::write ( "%s:%zu:%s", this->mMinerID.c_str (), this->mHeight, prevAllure.c_str ());
+}
+
+//----------------------------------------------------------------//
+Digest BlockHeader::getAllure () const {
 
     return this->mAllure;
+}
+
+//----------------------------------------------------------------//
+Digest BlockHeader::getCharm () const {
+
+    return this->mCharm;
+}
+
+//----------------------------------------------------------------//
+Digest BlockHeader::getCharm ( const Digest& allure, const Digest& visage ) {
+
+    // CHARM = ALLURE ^ VISAGE
+
+//    printf ( "ALLURE: %s\n", allure.toHex ().c_str ());
+//    printf ( "VISAGE: %s\n", visage.toHex ().c_str ());
+
+    Digest charm;
+    charm.resize ( CHARM_SIZE );
+    
+    size_t allureSize   = allure.size ();
+    size_t visageSize   = visage.size ();
+    
+    for ( size_t i = 0; i < CHARM_SIZE; ++i ) {
+    
+        u8 a = allureSize ? allure [ i % allureSize ] : 0;
+        u8 v = visageSize ? visage [ i % visageSize ] : 0;
+    
+        charm [ i ] = a ^ v;
+    }
+    
+//    printf ( "CHARM:  %s\n", charm.toHex ().c_str ());
+    
+    return charm;
 }
 
 //----------------------------------------------------------------//
@@ -105,6 +144,12 @@ time_t BlockHeader::getTime () const {
 }
 
 //----------------------------------------------------------------//
+Digest BlockHeader::hashAllure ( string prevAllure ) const {
+
+    return Digest ( this->formatAllureString ( prevAllure ));
+}
+
+//----------------------------------------------------------------//
 bool BlockHeader::isGenesis () const {
 
     return ( this->mHeight == 0 );
@@ -130,13 +175,6 @@ void BlockHeader::setMinerID ( string minerID ) {
     this->mMinerID = minerID;
 }
 
-//----------------------------------------------------------------//
-void BlockHeader::setPreviousBlock ( const BlockHeader& prevBlockHeader ) {
-
-    this->mHeight = prevBlockHeader.mHeight + 1;
-    this->mPrevDigest = prevBlockHeader.mDigest;
-}
-
 //================================================================//
 // overrides
 //================================================================//
@@ -152,6 +190,7 @@ void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerF
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
         serializer.serialize ( "allure",        this->mAllure );
+        serializer.serialize ( "charm",         this->mCharm );
     }
     
     serializer.serialize ( "digest",        this->mDigest );
@@ -169,6 +208,7 @@ void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& seria
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
         serializer.serialize ( "allure",        this->mAllure );
+        serializer.serialize ( "charm",         this->mCharm );
     }
     
     if ( !serializer.isDigest ()) {

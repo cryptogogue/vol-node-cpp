@@ -22,13 +22,17 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string  mURL;
+    string          mURL;
+    string          mMotto;
+    Signature       mVisage;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "url",           this->mURL );
+        serializer.serialize ( "motto",         this->mMotto );
+        serializer.serialize ( "visage",        this->mVisage );
     }
     
     //----------------------------------------------------------------//
@@ -36,6 +40,8 @@ public:
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "url",           this->mURL );
+        serializer.serialize ( "motto",         this->mMotto );
+        serializer.serialize ( "visage",        this->mVisage );
     }
 
     //----------------------------------------------------------------//
@@ -43,7 +49,7 @@ public:
     
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
     
-        return context.mLedger.registerMiner ( context.mAccount.mIndex, this->mMaker->getKeyName (), this->mURL );
+        return context.mLedger.registerMiner ( context.mAccount.mIndex, this->mMaker->getKeyName (), this->mURL, this->mMotto, this->mVisage );
     }
 };
 

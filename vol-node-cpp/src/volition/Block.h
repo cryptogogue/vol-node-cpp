@@ -38,7 +38,8 @@ public:
     enum VerificationPolicy {
         ALL                 = -1,
         VERIFY_ALLURE       = 1 << 0,
-        VERIFY_SIG          = 1 << 1,
+        VERIFY_CHARM        = 1 << 1,
+        VERIFY_SIG          = 1 << 2,
         NONE                = 0,
     };
 
@@ -46,7 +47,7 @@ public:
     void                affirmHash                          ();
     bool                apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
                         Block                               ();
-                        Block                               ( string minerID, time_t now, const Block* prevBlock, const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
+                        Block                               ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKey& key );
                         ~Block                              ();
     size_t              countTransactions                   () const;
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );

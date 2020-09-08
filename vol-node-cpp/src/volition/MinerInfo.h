@@ -20,6 +20,7 @@ private:
     Account::Index          mAccountIndex;
     string                  mURL;
     CryptoKey               mPublicKey;
+    Digest                  mVisage;
 
 public:
 
@@ -27,8 +28,9 @@ public:
     Account::Index          getAccountIndex     () const;
     const CryptoKey&        getPublicKey        () const;
     string                  getURL              () const;
+    const Digest&           getVisage           () const;
                             MinerInfo           ();
-                            MinerInfo           ( Account::Index accountIndex, string url, const CryptoKey& publicKey );
+                            MinerInfo           ( Account::Index accountIndex, string url, const CryptoKey& publicKey, const Digest& visage );
                             MinerInfo           ( const MinerInfo& minerInfo );
                             ~MinerInfo          ();
     
@@ -38,6 +40,7 @@ public:
         serializer.serialize ( "accountIndex",      this->mAccountIndex );
         serializer.serialize ( "url",               this->mURL );
         serializer.serialize ( "publicKey",         this->mPublicKey );
+        serializer.serialize ( "visage",            this->mVisage );
     }
     
     //----------------------------------------------------------------//
@@ -46,6 +49,7 @@ public:
         serializer.serialize ( "accountIndex",      this->mAccountIndex );
         serializer.serialize ( "url",               this->mURL );
         serializer.serialize ( "publicKey",         this->mPublicKey );
+        serializer.serialize ( "visage",            this->mVisage );
     }
 };
 

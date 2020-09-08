@@ -72,6 +72,9 @@ protected:
     string                                          mMinerID;
 
     CryptoKey                                       mKeyPair;
+    string                                          mMotto;
+    Signature                                       mVisage;
+    
     bool                                            mLazy;
     bool                                            mSolo;
     bool                                            mVerbose;
@@ -126,6 +129,7 @@ public:
 
     //----------------------------------------------------------------//
     void                    affirmKey                   ( uint keyLength = CryptoKey::RSA_1024, unsigned long exp = CryptoKey::RSA_EXP_65537 );
+    void                    affirmVisage                ();
     bool                    checkBestBranch             ( string miners ) const;
     bool                    controlPermitted            () const;
     size_t                  countBranches               () const;
@@ -139,7 +143,9 @@ public:
     Ledger&                 getLedger                   ();
     const Ledger&           getLedger                   () const;
     string                  getMinerID                  () const;
+    string                  getMotto                    () const;
     time_t                  getTime                     () const;
+    const Signature&        getVisage                   () const;
     void                    loadGenesis                 ( string path );
     void                    loadKey                     ( string keyfile, string password = "" );
                             Miner                       ();
@@ -150,6 +156,7 @@ public:
     void                    setGenesis                  ( shared_ptr < const Block > block );
     void                    setLazy                     ( bool lazy );
     void                    setMinerID                  ( string minerID );
+    void                    setMotto                    ( string motto );
     void                    setSolo                     ( bool solo );
     void                    setVerbose                  ( bool verbose );
     void                    reset                       ();

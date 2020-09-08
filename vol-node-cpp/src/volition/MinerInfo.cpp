@@ -25,14 +25,20 @@ string MinerInfo::getURL () const {
 }
 
 //----------------------------------------------------------------//
+const Digest& MinerInfo::getVisage () const {
+    return this->mVisage;
+}
+
+//----------------------------------------------------------------//
 MinerInfo::MinerInfo () {
 }
 
 //----------------------------------------------------------------//
-MinerInfo::MinerInfo ( Account::Index accountIndex, string url, const CryptoKey& publicKey ) :
+MinerInfo::MinerInfo ( Account::Index accountIndex, string url, const CryptoKey& publicKey, const Digest& visage ) :
     mAccountIndex ( accountIndex ),
     mURL ( url ),
-    mPublicKey ( publicKey ) {
+    mPublicKey ( publicKey ),
+    mVisage ( visage ) {
 }
 
 //----------------------------------------------------------------//
