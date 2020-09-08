@@ -9,15 +9,15 @@
 
 // Axioms
 // 1. SELF must agree with at least N other miners in the last M samples (where N and M may be adjusted by total active miners).
-// 2. ALLURE for block N is *not* affected by previous blocks. (why not?)
-// 3. there is always one (and only one) IDEAL chain. (chain with the greatest per-block allure.)
+// 2. POSE for block N is *not* affected by previous blocks. (why not?)
+// 3. there is always one (and only one) IDEAL chain. (chain with the greatest per-block CHARM.)
 // 4. Any chain may be compared against any other and scored by their relation to the IDEAL.
 //      a. It is possible for multiple chains to "tie" in scoring.
-//      b. To break a tie, pick the chain with the most recent willing ALLURE.
+//      b. To break a tie, pick the chain with the most recent willing POSE.
 // 5. A chain produced by more active miners will eventually beat a chain produced by fewer.
-//      a. The larger pool of miners has more ALLURE to choose from, and thus is more likely to have the winning ALLUREs.
+//      a. The larger pool of miners has more POSE to choose from, and thus is more likely to have the winning POSEs.
 
-// When initially building the chain, we only need block headers (with allure).
+// When initially building the chain, we only need block headers (with CHARM).
 // To compare branches, we do not have to apply any transactions.
 // Once we've committed to a branch, we can request the full block.
 // If a block delivery times out, discard the chain

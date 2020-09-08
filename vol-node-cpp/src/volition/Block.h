@@ -37,7 +37,7 @@ public:
 
     enum VerificationPolicy {
         ALL                 = -1,
-        VERIFY_ALLURE       = 1 << 0,
+        VERIFY_POSE       = 1 << 0,
         VERIFY_CHARM        = 1 << 1,
         VERIFY_SIG          = 1 << 2,
         NONE                = 0,

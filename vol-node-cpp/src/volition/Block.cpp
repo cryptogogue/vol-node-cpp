@@ -175,16 +175,16 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 
     const CryptoKey& key = minerInfo->getPublicKey ();
 
-    if ( policy & VerificationPolicy::VERIFY_ALLURE ) {
+    if ( policy & VerificationPolicy::VERIFY_POSE ) {
 
-        string prevAllure = ledger.getValue < string >( Ledger::keyFor_blockAllure (), this->mHeight - 1 );
-        Digest digest = this->hashAllure ( prevAllure );
-        if ( !key.verify ( this->mAllure, digest )) return false;
+        string prevPose = ledger.getValue < string >( Ledger::keyFor_blockPose (), this->mHeight - 1 );
+        Digest digest = this->hashPose ( prevPose );
+        if ( !key.verify ( this->mPose, digest )) return false;
     }
 
     if ( policy & VerificationPolicy::VERIFY_CHARM ) {
 
-        Digest charm = BlockHeader::getCharm ( this->mAllure, minerInfo->getVisage ());
+        Digest charm = BlockHeader::getCharm ( this->mPose, minerInfo->getVisage ());
         if ( this->mCharm != charm ) return false;
     }
 

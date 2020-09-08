@@ -28,14 +28,14 @@ protected:
     SerializableTime    mTime;
     Digest              mDigest;
     Digest              mPrevDigest;
-    Signature           mAllure;
+    Signature           mPose;
     Digest              mCharm;
     Signature           mSignature;
 
     //----------------------------------------------------------------//
     void                applyEntropy                        ( Ledger& ledger ) const;
-    string              formatAllureString                  ( string prevAllure ) const;
-    Digest              hashAllure                          ( string prevAllure ) const;
+    string              formatPoseString                  ( string prevPose ) const;
+    Digest              hashPose                          ( string prevPose ) const;
     
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -58,12 +58,12 @@ public:
                         BlockHeader                         ();
                         BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKey& key );
                         ~BlockHeader                        ();
-    Digest              getAllure                           () const;
     Digest              getCharm                            () const;
-    static Digest       getCharm                            ( const Digest& allure, const Digest& visage );
+    static Digest       getCharm                            ( const Digest& pose, const Digest& visage );
     string              getHash                             () const;
     size_t              getHeight                           () const;
     string              getMinerID                          () const;
+    Digest              getPose                             () const;
     string              getPrevHash                         () const;
     const Signature&    getSignature                        () const;
     time_t              getTime                             () const;

@@ -16,7 +16,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 void BlockHeader::applyEntropy ( Ledger& ledger ) const {
 
-    ledger.setEntropyString ( this->mAllure.toString ());
+    ledger.setEntropyString ( this->mPose.toString ());
 }
 
 //----------------------------------------------------------------//
@@ -36,8 +36,8 @@ BlockHeader::BlockHeader ( string minerID, const Digest& visage, time_t now, con
         this->mHeight       = prevBlockHeader->mHeight + 1;
         this->mPrevDigest   = prevBlockHeader->mDigest;
         
-        this->mAllure       = key.sign ( this->hashAllure ( prevBlockHeader->mAllure.toHex ()), Digest::HASH_ALGORITHM_SHA256 );
-        this->mCharm        = BlockHeader::getCharm ( this->mAllure, visage );
+        this->mPose       = key.sign ( this->hashPose ( prevBlockHeader->mPose.toHex ()), Digest::HASH_ALGORITHM_SHA256 );
+        this->mCharm        = BlockHeader::getCharm ( this->mPose, visage );
     }
 }
 
@@ -63,15 +63,9 @@ int BlockHeader::compare ( const BlockHeader& block0, const BlockHeader& block1 
 }
 
 //----------------------------------------------------------------//
-string BlockHeader::formatAllureString ( string prevAllure ) const {
+string BlockHeader::formatPoseString ( string prevPose ) const {
 
-    return Format::write ( "%s:%zu:%s", this->mMinerID.c_str (), this->mHeight, prevAllure.c_str ());
-}
-
-//----------------------------------------------------------------//
-Digest BlockHeader::getAllure () const {
-
-    return this->mAllure;
+    return Format::write ( "%s:%zu:%s", this->mMinerID.c_str (), this->mHeight, prevPose.c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -81,22 +75,22 @@ Digest BlockHeader::getCharm () const {
 }
 
 //----------------------------------------------------------------//
-Digest BlockHeader::getCharm ( const Digest& allure, const Digest& visage ) {
+Digest BlockHeader::getCharm ( const Digest& pose, const Digest& visage ) {
 
-    // CHARM = ALLURE ^ VISAGE
+    // CHARM = POSE ^ VISAGE
 
-//    printf ( "ALLURE: %s\n", allure.toHex ().c_str ());
+//    printf ( "POSE: %s\n", pose.toHex ().c_str ());
 //    printf ( "VISAGE: %s\n", visage.toHex ().c_str ());
 
     Digest charm;
     charm.resize ( CHARM_SIZE );
     
-    size_t allureSize   = allure.size ();
+    size_t poseSize   = pose.size ();
     size_t visageSize   = visage.size ();
     
     for ( size_t i = 0; i < CHARM_SIZE; ++i ) {
     
-        u8 a = allureSize ? allure [ i % allureSize ] : 0;
+        u8 a = poseSize ? pose [ i % poseSize ] : 0;
         u8 v = visageSize ? visage [ i % visageSize ] : 0;
     
         charm [ i ] = a ^ v;
@@ -126,6 +120,12 @@ string BlockHeader::getMinerID () const {
 }
 
 //----------------------------------------------------------------//
+Digest BlockHeader::getPose () const {
+
+    return this->mPose;
+}
+
+//----------------------------------------------------------------//
 string BlockHeader::getPrevHash () const {
 
     return this->mPrevDigest.toString ();
@@ -144,9 +144,9 @@ time_t BlockHeader::getTime () const {
 }
 
 //----------------------------------------------------------------//
-Digest BlockHeader::hashAllure ( string prevAllure ) const {
+Digest BlockHeader::hashPose ( string prevPose ) const {
 
-    return Digest ( this->formatAllureString ( prevAllure ));
+    return Digest ( this->formatPoseString ( prevPose ));
 }
 
 //----------------------------------------------------------------//
@@ -189,7 +189,7 @@ void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerF
     
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
-        serializer.serialize ( "allure",        this->mAllure );
+        serializer.serialize ( "pose",        this->mPose );
         serializer.serialize ( "charm",         this->mCharm );
     }
     
@@ -207,7 +207,7 @@ void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& seria
         
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
-        serializer.serialize ( "allure",        this->mAllure );
+        serializer.serialize ( "pose",        this->mPose );
         serializer.serialize ( "charm",         this->mCharm );
     }
     
