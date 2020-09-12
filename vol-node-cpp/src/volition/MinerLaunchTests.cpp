@@ -8,7 +8,6 @@
 #include <volition/MinerLaunchTests.h>
 #include <volition/MinerLaunchTests.json.h>
 #include <volition/TheContext.h>
-#include <volition/SyncChainTask.h>
 
 namespace Volition {
 

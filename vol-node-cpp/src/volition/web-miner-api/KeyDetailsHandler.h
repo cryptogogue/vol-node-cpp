@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // KeyDetailsHandler
 //================================================================//
 class KeyDetailsHandler :
-    public WebMinerAPIRequestHandler {
+    public MinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -28,7 +28,7 @@ public:
     
         string keyID = this->getMatchString ( "keyHash" );
         
-        ScopedWebMinerLock scopedLock ( this->mWebMiner );
+        ScopedMinerLock scopedLock ( this->mWebMiner );
         const Ledger& ledger = this->mWebMiner->getLedger ();
 
         shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );

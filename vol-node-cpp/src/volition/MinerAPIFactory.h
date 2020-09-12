@@ -1,41 +1,38 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPIFACTORY_H
-#define VOLITION_WEBMINERAPIFACTORY_H
+#ifndef VOLITION_MINERAPIFACTORY_H
+#define VOLITION_MINERAPIFACTORY_H
 
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/RouteTable.h>
-#include <volition/WebMiner.h>
+#include <volition/Miner.h>
 
 namespace Volition {
 
-class WebMiner;
-class WebMinerAPIRequestHandler;
-
 //================================================================//
-// WebMinerAPIRequestHandler
+// MinerAPIRequestHandler
 //================================================================//
-class WebMinerAPIRequestHandler :
+class MinerAPIRequestHandler :
     public AbstractAPIRequestHandler {
 protected:
 
-    friend class WebMinerAPIFactory;
+    friend class MinerAPIFactory;
     
-    shared_ptr < WebMiner >     mWebMiner;
+    shared_ptr < Miner >     mWebMiner;
 };
 
 //================================================================//
-// WebMinerAPIFactory
+// MinerAPIFactory
 //================================================================//
-class WebMinerAPIFactory :
+class MinerAPIFactory :
     public Poco::Net::HTTPRequestHandlerFactory {
 private:
 
-    RouteTable < WebMinerAPIRequestHandler >    mRouteTable;
-    shared_ptr < WebMiner >                     mWebMiner;
-    map < string, shared_ptr < WebMiner >>      mWebMiners;
-    bool                                        mWithPrefix;
+    RouteTable < MinerAPIRequestHandler >   mRouteTable;
+    shared_ptr < Miner >                    mMiner;
+    map < string, shared_ptr < Miner >>     mMiners;
+    bool                                    mWithPrefix;
 
     //----------------------------------------------------------------//
     Poco::Net::HTTPRequestHandler*      createRequestHandler        ( const Poco::Net::HTTPServerRequest& request ) override;
@@ -44,9 +41,9 @@ private:
 public:
 
     //----------------------------------------------------------------//
-                    WebMinerAPIFactory          ( shared_ptr < WebMiner > webMiner );
-                    WebMinerAPIFactory          ( vector < shared_ptr < WebMiner >> webMiners );
-                    ~WebMinerAPIFactory         ();
+                    MinerAPIFactory          ( shared_ptr < Miner > webMiner );
+                    MinerAPIFactory          ( vector < shared_ptr < Miner >> webMiners );
+                    ~MinerAPIFactory         ();
 };
 
 } // namespace Volition

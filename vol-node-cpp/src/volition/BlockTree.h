@@ -61,6 +61,7 @@ private:
     set < BlockTreeNode* >                  mChildren;
 
     //----------------------------------------------------------------//
+    shared_ptr < const BlockTreeNode >      findInsertionRecurse    ( shared_ptr < const BlockTreeNode > tail, string minerID, const Digest& visage ) const;
     void                                    logBranchRecurse        ( string& str ) const;
 
 public:
@@ -68,8 +69,10 @@ public:
     //----------------------------------------------------------------//
                                             BlockTreeNode           ();
                                             ~BlockTreeNode          ();
+    shared_ptr < const BlockTreeNode >      findInsertion           ( string minerID, const Digest& visage ) const;
     static BlockTreeRoot                    findRoot                ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
     shared_ptr < const Block >              getBlock                () const;
+    shared_ptr < const BlockHeader >        getBlockHeader          () const;
     size_t                                  getHeight               () const;
     shared_ptr < const BlockTreeNode >      getParent               () const;
     time_t                                  getTime                 () const;
@@ -94,6 +97,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    operator shared_ptr < BlockTreeNode > () {
+        return this->mNode;
+    }
+    
+    //----------------------------------------------------------------//
     operator shared_ptr < const BlockTreeNode > () const {
         return this->mNode;
     }
@@ -111,12 +119,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-                                            BlockTreeTag            ();
-                                            ~BlockTreeTag           ();
-    static int                              compare                 ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 );
-    size_t                                  getCount                () const;
-    shared_ptr < const BlockTreeNode >      getNode                 () const;
-    void                                    mark                    ( shared_ptr < BlockTreeNode > node );
+                                        BlockTreeTag            ();
+                                        ~BlockTreeTag           ();
+    static int                          compare                 ( const BlockTreeTag& tag0, const BlockTreeTag& tag1 );
+    size_t                              getCount                () const;
+    shared_ptr < BlockTreeNode >        getNode                 ();
+    shared_ptr < const BlockTreeNode >  getNode                 () const;
+    void                                mark                    ( shared_ptr < BlockTreeNode > node );
 };
 
 //================================================================//
@@ -141,6 +150,7 @@ public:
     shared_ptr < BlockTreeNode >        affirmBlock             ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block );
                                         BlockTree               ();
                                         ~BlockTree              ();
+    shared_ptr < BlockTreeNode >        deconst                 ( shared_ptr < const BlockTreeNode > node );
     shared_ptr < BlockTreeNode >        findNodeForHash         ( string hash );
     void                                logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
 };

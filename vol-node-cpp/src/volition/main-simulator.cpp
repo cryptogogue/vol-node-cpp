@@ -3,15 +3,17 @@
 
 #include <padamose/padamose.h>
 #include <volition/Block.h>
+#include <volition/Digest.h>
 #include <volition/FileSys.h>
+#include <volition/Miner.h>
+#include <volition/MinerAPIFactory.h>
 #include <volition/RouteTable.h>
 #include <volition/simulation/Analysis.h>
+#include <volition/SimMiningMessenger.h>
 #include <volition/Singleton.h>
 #include <volition/TheContext.h>
 #include <volition/transactions/Genesis.h>
 #include <volition/version.h>
-#include <volition/WebMiner.h>
-#include <volition/WebMinerAPIFactory.h>
 
 using namespace Volition;
 
@@ -25,8 +27,53 @@ class Monitor :
     public Poco::Activity < Monitor > {
 private:
     
-    vector < shared_ptr < WebMiner >>&  mMiners;
+    friend class SimulatorApp;
+    
+    vector < shared_ptr < Miner >>&     mMiners;
+    shared_ptr < SimMiningMessenger >   mMessenger;
     Poco::Event                         mShutdownEvent;
+    
+    BlockTree                           mOptimal;
+    BlockTreeTag                        mOptimalTag;
+
+    //----------------------------------------------------------------//
+    void extendOptimal ( size_t height ) {
+    
+        shared_ptr < BlockTreeNode > tail = this->mOptimalTag.getNode ();
+        assert ( tail );
+        
+        while ( tail->getHeight () < height ) {
+                    
+            shared_ptr < const Block > parent = tail->getBlock ();
+            
+            shared_ptr < Miner > bestMiner;
+            Digest bestCharm;
+            
+            for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
+                shared_ptr < Miner > miner = this->mMiners [ i ];
+                Digest charm = parent->getNextCharm ( miner->getVisage ());
+                
+//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "CHARM: %s - %s", miner->getMinerID ().c_str (), charm.toHex ().substr ( 0, 6 ).c_str ());
+                
+                if ( !bestMiner || ( BlockHeader::compare ( charm, bestCharm ) < 0 )) {
+                    bestMiner = miner;
+                    bestCharm = charm;
+                }
+            }
+            
+            shared_ptr < Block > child = make_shared < Block >(
+                bestMiner->getMinerID (),
+                bestMiner->getVisage (),
+                0,
+                parent.get (),
+                bestMiner->getKeyPair ()
+            );
+            child->sign ( bestMiner->getKeyPair ());
+
+            tail = this->mOptimal.affirmBlock ( child );
+            this->mOptimalTag = tail;
+        }
+    }
 
     //----------------------------------------------------------------//
     void runActivity () {
@@ -38,14 +85,22 @@ private:
             Simulation::Tree tree;
             
             for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
-                shared_ptr < WebMiner > miner = this->mMiners [ i ];
+                shared_ptr < Miner > miner = this->mMiners [ i ];
                 miner->step ();
-                ScopedWebMinerLock minerLock ( miner );
+                ScopedMinerLock minerLock ( miner );
                 tree.addChain ( *this->mMiners [ i ]->getBestBranch ());
             }
             
+            this->mMessenger->updateAndDispatch ();
+            
             //this->mMiners [ 0 ]->getBlockTree ().logTree ( "9090: ", 1 );
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "9090: %s", this->mMiners [ 0 ]->getBlockTreeTag ().getNode ()->writeBranch ().c_str ());
+            shared_ptr < const BlockTreeNode > tail = this->mMiners [ 0 ]->getBlockTreeTag ().getNode ();
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "9090: %s", tail->writeBranch ().c_str ());
+            
+            this->extendOptimal ( tail->getHeight ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "GOAL: %s", this->mOptimalTag.getNode ()->writeBranch ().c_str ());
+            
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
             
 //            analysis.update ( tree );
 //            analysis.log ( "", true, 1 );
@@ -57,9 +112,10 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    Monitor ( vector < shared_ptr < WebMiner >>& miners ) :
+    Monitor ( vector < shared_ptr < Miner >>& miners, shared_ptr < SimMiningMessenger > messenger ) :
         Poco::Activity < Monitor >( this, &Monitor::runActivity ),
-        mMiners ( miners ) {
+        mMiners ( miners ),
+        mMessenger ( messenger ) {
     }
     
     //----------------------------------------------------------------//
@@ -86,21 +142,26 @@ public:
     //----------------------------------------------------------------//
     int main ( const vector < string > &args ) override {
         UNUSED ( args );
-    
-        vector < shared_ptr < WebMiner >> miners;
+
+        // TODO: factor all this setup into Monitor object (and rename 'Monitor' to 'Sim')
+
+        vector < shared_ptr < Miner >> miners;
         miners.resize ( TOTAL_MINERS );
 
         shared_ptr < Transactions::Genesis > genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
         genesisMinerTransactionBody->setIdentity ( "SIMULATION" );
 
+        shared_ptr < SimMiningMessenger > messenger = make_shared < SimMiningMessenger >();
+
         for ( size_t i = 0; i < TOTAL_MINERS; ++i ) {
         
-            shared_ptr < WebMiner > miner = make_shared < WebMiner >();
+            shared_ptr < Miner > miner = make_shared < Miner >();
             miners [ i ] = miner;
 
             miner->setMinerID ( Format::write ( "%d", BASE_PORT + ( int )i ));
             miner->affirmKey ();
             miner->affirmVisage ();
+            miner->setMessenger ( messenger );
 
             Transactions::GenesisAccount genesisAccount;
             
@@ -114,6 +175,7 @@ public:
 
             genesisMinerTransactionBody->pushAccount ( genesisAccount );
         }
+        messenger->setMiners ( miners );
 
         shared_ptr < Transaction > transaction = make_shared < Transaction >();
         transaction->setBody ( move ( genesisMinerTransactionBody ));
@@ -129,14 +191,15 @@ public:
         Poco::ThreadPool threadPool;
         
         shared_ptr < Poco::Net::HTTPServer > server = make_shared < Poco::Net::HTTPServer >(
-            new Volition::WebMinerAPIFactory ( miners ),
+            new Volition::MinerAPIFactory ( miners ),
             threadPool,
             Poco::Net::ServerSocket (( Poco::UInt16 )BASE_PORT ),
             new Poco::Net::HTTPServerParams ()
         );
         server->start ();
 
-        Monitor monitor ( miners );
+        Monitor monitor ( miners, messenger );
+        monitor.mOptimalTag = monitor.mOptimal.affirmBlock ( genesisBlock );
         monitor.start ();
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.

@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // BlockListHandler
 //================================================================//
 class BlockListHandler :
-    public WebMinerAPIRequestHandler {
+    public MinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -26,7 +26,7 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
 
-        ScopedWebMinerLock scopedLock ( this->mWebMiner );
+        ScopedMinerLock scopedLock ( this->mWebMiner );
         const Chain& chain = *this->mWebMiner->getBestBranch ();
         Poco::Dynamic::Var blocks = ToJSONSerializer::toJSON ( chain );
         

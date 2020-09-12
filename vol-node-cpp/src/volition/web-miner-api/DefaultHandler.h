@@ -8,7 +8,7 @@
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/Format.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 #include <volition/version.h>
 
 namespace Volition {
@@ -18,7 +18,7 @@ namespace WebMinerAPI {
 // DefaultHandler
 //================================================================//
 class DefaultHandler :
-    public WebMinerAPIRequestHandler {
+    public MinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -28,7 +28,7 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
         
-        ScopedWebMinerLock scopedLock ( this->mWebMiner );
+        ScopedMinerLock scopedLock ( this->mWebMiner );
         
         const Ledger& ledger = this->mWebMiner->getLedger ();
         SchemaVersion schemaVersion = ledger.getSchemaVersion ();

@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // AccountTransactionHandler
 //================================================================//
 class AccountTransactionHandler :
-    public WebMinerAPIRequestHandler {
+    public MinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET_PUT )
@@ -27,7 +27,7 @@ public:
         string accountName  = this->getMatchString ( "accountName" );
         string uuid         = this->getMatchString ( "uuid" );
     
-        ScopedWebMinerLock scopedLock ( this->mWebMiner );
+        ScopedMinerLock scopedLock ( this->mWebMiner );
     
         switch ( method ) {
     

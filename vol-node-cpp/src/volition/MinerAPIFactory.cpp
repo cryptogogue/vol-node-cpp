@@ -22,16 +22,16 @@
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
 
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 
 //================================================================//
-// WebMinerAPIFactory
+// MinerAPIFactory
 //================================================================//
 
 //----------------------------------------------------------------//
-void WebMinerAPIFactory::initializeRoutes () {
+void MinerAPIFactory::initializeRoutes () {
 
     cc8* prefix = this->mWithPrefix ? "/:minerID" : "";
 
@@ -56,26 +56,26 @@ void WebMinerAPIFactory::initializeRoutes () {
 }
 
 //----------------------------------------------------------------//
-WebMinerAPIFactory::WebMinerAPIFactory ( shared_ptr < WebMiner > webMiner ) :
+MinerAPIFactory::MinerAPIFactory ( shared_ptr < Miner > webMiner ) :
     mWithPrefix ( false ) {
     
-    this->mWebMiner = webMiner;
+    this->mMiner = webMiner;
     this->initializeRoutes ();
 }
 
 //----------------------------------------------------------------//
-WebMinerAPIFactory::WebMinerAPIFactory ( vector < shared_ptr < WebMiner >> webMiners ) :
+MinerAPIFactory::MinerAPIFactory ( vector < shared_ptr < Miner >> webMiners ) :
     mWithPrefix ( true ) {
     
     for ( size_t i = 0; i < webMiners.size (); ++i ) {
-        shared_ptr < WebMiner > miner = webMiners [ i ];
-        this->mWebMiners [ miner->getMinerID ()] = miner;
+        shared_ptr < Miner > miner = webMiners [ i ];
+        this->mMiners [ miner->getMinerID ()] = miner;
     }
     this->initializeRoutes ();
 }
 
 //----------------------------------------------------------------//
-WebMinerAPIFactory::~WebMinerAPIFactory () {
+MinerAPIFactory::~MinerAPIFactory () {
 }
 
 //================================================================//
@@ -83,19 +83,19 @@ WebMinerAPIFactory::~WebMinerAPIFactory () {
 //================================================================//
 
 //----------------------------------------------------------------//
-Poco::Net::HTTPRequestHandler* WebMinerAPIFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
+Poco::Net::HTTPRequestHandler* MinerAPIFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
     
-    unique_ptr < WebMinerAPIRequestHandler > handler = this->mRouteTable.match ( request );
+    unique_ptr < MinerAPIRequestHandler > handler = this->mRouteTable.match ( request );
     
     if ( this->mWithPrefix ) {
         string minerID = handler->getMatchString ( "minerID" );
-        map < string, shared_ptr < WebMiner >>::iterator webMinerIt = this->mWebMiners.find ( minerID );
-        if ( webMinerIt != this->mWebMiners.end ()) {
+        map < string, shared_ptr < Miner >>::iterator webMinerIt = this->mMiners.find ( minerID );
+        if ( webMinerIt != this->mMiners.end ()) {
             handler->mWebMiner = webMinerIt->second;
         }
     }
     else {
-        handler->mWebMiner = this->mWebMiner;
+        handler->mWebMiner = this->mMiner;
     }
     return handler.release ();
 }

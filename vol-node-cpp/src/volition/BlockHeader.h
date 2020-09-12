@@ -34,8 +34,9 @@ protected:
 
     //----------------------------------------------------------------//
     void                applyEntropy                        ( Ledger& ledger ) const;
-    string              formatPoseString                  ( string prevPose ) const;
-    Digest              hashPose                          ( string prevPose ) const;
+    static Digest       calculateCharm                      ( const Digest& pose, const Digest& visage );
+    string              formatPoseString                    ( string prevPose ) const;
+    Digest              hashPose                            ( string prevPose ) const;
     
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -55,15 +56,16 @@ public:
 
     //----------------------------------------------------------------//
     static int          compare                             ( const BlockHeader& block0, const BlockHeader& block1 );
+    static int          compare                             ( const Digest& charm0, const Digest& charm1 );
                         BlockHeader                         ();
                         BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKey& key );
                         ~BlockHeader                        ();
-    Digest              getCharm                            () const;
-    static Digest       getCharm                            ( const Digest& pose, const Digest& visage );
+    const Digest&       getCharm                            () const;
     string              getHash                             () const;
     size_t              getHeight                           () const;
     string              getMinerID                          () const;
-    Digest              getPose                             () const;
+    Digest              getNextCharm                        ( const Digest& visage ) const;
+    const Digest&       getPose                             () const;
     string              getPrevHash                         () const;
     const Signature&    getSignature                        () const;
     time_t              getTime                             () const;

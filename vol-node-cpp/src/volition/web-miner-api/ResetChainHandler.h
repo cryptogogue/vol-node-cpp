@@ -8,7 +8,7 @@
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/Schema.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -17,14 +17,14 @@ namespace WebMinerAPI {
 // ResetChainHandler
 //================================================================//
 class ResetChainHandler :
-    public WebMinerAPIRequestHandler {
+    public MinerAPIRequestHandler {
 public:
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleDelete () const override {
     
         try {
-            ScopedWebMinerLock scopedLock ( this->mWebMiner );
+            ScopedMinerLock scopedLock ( this->mWebMiner );
             this->mWebMiner->reset ();
         }
         catch ( ... ) {

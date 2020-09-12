@@ -11,7 +11,7 @@
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
 #include <volition/WebMiner.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 //================================================================//
 // ServerApp
@@ -265,7 +265,7 @@ protected:
         Poco::ThreadPool threadPool;
 
         Poco::Net::HTTPServer server (
-            new Volition::WebMinerAPIFactory ( webMiner ),
+            new Volition::MinerAPIFactory ( webMiner ),
             threadPool,
             ssl ? Poco::Net::SecureServerSocket (( Poco::UInt16 )port ) : Poco::Net::ServerSocket (( Poco::UInt16 )port ),
             new Poco::Net::HTTPServerParams ()
@@ -288,7 +288,7 @@ protected:
         threadPool.stopAll ();
         
         {
-            Volition::ScopedWebMinerLock scopedLock ( webMiner );
+            Volition::ScopedMinerLock scopedLock ( webMiner );
             webMiner->shutdown ( false );
         }
     }

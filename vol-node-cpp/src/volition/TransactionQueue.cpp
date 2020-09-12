@@ -5,7 +5,6 @@
 #include <volition/Block.h>
 #include <volition/TransactionQueue.h>
 #include <volition/TheContext.h>
-#include <volition/SyncChainTask.h>
 
 namespace Volition {
 

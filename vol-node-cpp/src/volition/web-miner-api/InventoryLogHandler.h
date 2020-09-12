@@ -8,7 +8,7 @@
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/InventoryLogEntry.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -17,7 +17,7 @@ namespace WebMinerAPI {
 // InventoryLogHandler
 //================================================================//
 class InventoryLogHandler :
-    public WebMinerAPIRequestHandler {
+    public MinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -33,7 +33,7 @@ public:
             u64 nonce           = this->getMatchU64 ( "nonce" );
             u64 count           = this->optQuery ( "count", 1 );
             
-            ScopedWebMinerLock scopedLock ( this->mWebMiner );
+            ScopedMinerLock scopedLock ( this->mWebMiner );
             Ledger& ledger = this->mWebMiner->getLedger ();
             const Schema& schema = ledger.getSchema ();
             

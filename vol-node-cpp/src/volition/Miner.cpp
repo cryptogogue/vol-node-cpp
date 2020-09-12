@@ -4,10 +4,10 @@
 #include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
 #include <volition/Digest.h>
+#include <volition/HTTPMiningMessenger.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/TheContext.h>
-#include <volition/SyncChainTask.h>
 
 namespace Volition {
 
@@ -36,6 +36,14 @@ void Miner::affirmKey ( uint keyLength, unsigned long exp ) {
         this->mKeyPair.rsa ( keyLength, exp );
     }
     assert ( this->mKeyPair );
+}
+
+//----------------------------------------------------------------//
+void Miner::affirmMessenger () {
+
+    if ( !this->mMessenger ) {
+        this->mMessenger = make_shared < HTTPMiningMessenger >();
+    }
 }
 
 //----------------------------------------------------------------//
@@ -77,6 +85,13 @@ void Miner::extend () {
 
     shared_ptr < Block > block = this->prepareBlock ();
     if ( block ) {
+    
+//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "BLOCK: %s,%d - %s",
+//            block->getMinerID ().c_str (),
+//            ( int )block->getHeight (),
+//            block->getCharm ().toHex ().substr ( 0, 6 ).c_str ()
+//        );
+    
         this->pushBlock ( block );
     
         if ( this->mVerbose ) {
@@ -146,6 +161,12 @@ string Miner::getMotto () const {
 }
 
 //----------------------------------------------------------------//
+SerializableTime Miner::getStartTime () const {
+
+    return this->mStartTime;
+}
+
+//----------------------------------------------------------------//
 time_t Miner::getTime () const {
 
     return this->Miner_getTime ();
@@ -189,29 +210,13 @@ Miner::Miner () :
     mSolo ( true ),
     mVerbose ( false ),
     mControlPermitted ( false ),
-    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
-    mTaskManager ( this->mTaskManagerThreadPool ) {
+    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ) {
     
     MinerLaunchTests::checkEnvironment ();
-    
-    this->mTaskManager.addObserver (
-        Poco::Observer < Miner, Poco::TaskFinishedNotification > ( *this, &Miner::onSyncChainNotification )
-    );
 }
 
 //----------------------------------------------------------------//
 Miner::~Miner () {
-}
-
-//----------------------------------------------------------------//
-void Miner::onSyncChainNotification ( Poco::TaskFinishedNotification* pNf ) {
-
-    SyncChainTask* task = dynamic_cast < SyncChainTask* >( pNf->task ());
-    if (( task ) && ( task->mBlockQueueEntry )) {
-        Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
-        this->mBlockQueue.push_back ( move ( task->mBlockQueueEntry ));
-    }
-    pNf->release ();
 }
 
 //----------------------------------------------------------------//
@@ -341,6 +346,12 @@ void Miner::setLazy ( bool lazy ) {
 }
 
 //----------------------------------------------------------------//
+void Miner::setMessenger ( shared_ptr < AbstractMiningMessenger > messenger ) {
+
+    this->mMessenger = messenger;
+}
+
+//----------------------------------------------------------------//
 void Miner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
@@ -373,6 +384,8 @@ void Miner::shutdown ( bool kill ) {
 //----------------------------------------------------------------//
 void Miner::startTasks () {
 
+    this->affirmMessenger ();
+
     bool addToSet = ( this->mMinerSet.size () == 0 );
 
     map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
@@ -382,9 +395,7 @@ void Miner::startTasks () {
         
         if ( !remoteMiner.mWaitingForTask ) {
             remoteMiner.mWaitingForTask = true;
-            string url;
-            Format::write ( url, "%sblocks/%d/", remoteMiner.mURL.c_str (), ( int )remoteMiner.mCurrentBlock );
-            this->mTaskManager.start ( new SyncChainTask ( remoteMinerIt->first, url ));
+            this->mMessenger->requestBlock ( *this, remoteMinerIt->first, remoteMiner.mURL, remoteMiner.mCurrentBlock );
         }
         
         if ( addToSet ) {
@@ -413,15 +424,16 @@ void Miner::step ( bool solo ) {
         map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
         for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
            const RemoteMiner& remoteMiner = remoteMinerIt->second;
+           
            if ( remoteMiner.mTag &&  ( BlockTreeTag::compare ( remoteMiner.mTag, this->mTag ) < 0 )) {
                 this->mTag = remoteMiner.mTag;
            }
         }
-        
+                
         if ( originalBranch != this->mTag.getNode ()) {
             this->rebuildChain ( originalBranch, this->mTag );
         }
-    
+        
         if ( this->mRemoteMiners.size () && ( this->mTag.getCount () > ( this->mRemoteMiners.size () >> 1 ))) {
             this->extend ();
         }
@@ -434,6 +446,18 @@ void Miner::step ( bool solo ) {
 //================================================================//
 // overrides
 //================================================================//
+
+//----------------------------------------------------------------//
+void Miner::AbstractMiningMessengerClient_receiveBlock ( string minerID, shared_ptr < const Block > block ) {
+    
+    
+    unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
+    blockQueueEntry->mMinerID = minerID;
+    blockQueueEntry->mBlock = block;
+
+    Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
+    this->mBlockQueue.push_back ( move ( blockQueueEntry ));
+}
 
 //----------------------------------------------------------------//
 void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
@@ -466,8 +490,8 @@ void Miner::Miner_reset () {
 void Miner::Miner_shutdown ( bool kill ) {
     UNUSED ( kill );
 
-    this->mTaskManager.cancelAll ();
-    this->mTaskManager.joinAll ();
+    // explicitly release messenger and possibly trigger shutdown
+    this->mMessenger = NULL;
 }
 
 } // namespace Volition

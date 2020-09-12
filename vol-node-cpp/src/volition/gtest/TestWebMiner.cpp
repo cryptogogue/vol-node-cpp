@@ -107,7 +107,7 @@ TEST ( WebMiner, asset_transformations ) {
     webMiner->setMinerID ( "9090" );
     webMiner->start ();
     
-    Poco::Net::HTTPServer server ( new Volition::WebMinerAPIFactory ( webMiner ), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
+    Poco::Net::HTTPServer server ( new Volition::MinerAPIFactory ( webMiner ), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
     server.start ();
 
     Poco::JSON::Object::Ptr json = httpGetJSON ( "http://127.0.0.1:9090/" );

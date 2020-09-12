@@ -61,12 +61,6 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-SerializableTime WebMiner::getStartTime () {
-
-    return this->mStartTime;
-}
-
-//----------------------------------------------------------------//
 void WebMiner::runActivity () {
 
     while ( !this->isStopped ()) {

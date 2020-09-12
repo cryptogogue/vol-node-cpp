@@ -7,7 +7,7 @@
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/WebMinerAPIFactory.h>
+#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // AccountKeyListHandler
 //================================================================//
 class AccountKeyListHandler :
-    public WebMinerAPIRequestHandler {
+    public MinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -28,7 +28,7 @@ public:
     
         string accountName = this->getMatchString ( "accountName" );
 
-        ScopedWebMinerLock scopedLock ( this->mWebMiner );
+        ScopedMinerLock scopedLock ( this->mWebMiner );
         const Chain& chain = *this->mWebMiner->getBestBranch ();
 
         shared_ptr < Account > account = chain.getAccount ( chain.getAccountIndex ( accountName ));

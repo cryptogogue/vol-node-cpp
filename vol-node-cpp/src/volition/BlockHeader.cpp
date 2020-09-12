@@ -36,8 +36,8 @@ BlockHeader::BlockHeader ( string minerID, const Digest& visage, time_t now, con
         this->mHeight       = prevBlockHeader->mHeight + 1;
         this->mPrevDigest   = prevBlockHeader->mDigest;
         
-        this->mPose       = key.sign ( this->hashPose ( prevBlockHeader->mPose.toHex ()), Digest::HASH_ALGORITHM_SHA256 );
-        this->mCharm        = BlockHeader::getCharm ( this->mPose, visage );
+        this->mPose         = key.sign ( this->hashPose ( prevBlockHeader->mPose.toHex ()), Digest::HASH_ALGORITHM_SHA256 );
+        this->mCharm        = prevBlockHeader->getNextCharm ( visage );
     }
 }
 
@@ -46,46 +46,17 @@ BlockHeader::~BlockHeader () {
 }
 
 //----------------------------------------------------------------//
-int BlockHeader::compare ( const BlockHeader& block0, const BlockHeader& block1 ) {
-
-    assert ( block0.mHeight == block1.mHeight );
-
-    if ( block0 == block1 ) return 0;
-                
-    string charm0 = Poco::DigestEngine::digestToHex ( block0.mCharm );
-    string charm1 = Poco::DigestEngine::digestToHex ( block1.mCharm );
-
-//    printf ( "charm0 (%s): %s\n", block0.getMinerID ().c_str (), charm0.c_str ());
-//    printf ( "charm1 (%s): %s\n", block1.getMinerID ().c_str (), charm1.c_str ());
-        
-    int result = charm0.compare ( charm1 );
-    return result < 0 ? -1 : result > 0 ? 1 : 0;
-}
-
-//----------------------------------------------------------------//
-string BlockHeader::formatPoseString ( string prevPose ) const {
-
-    return Format::write ( "%s:%zu:%s", this->mMinerID.c_str (), this->mHeight, prevPose.c_str ());
-}
-
-//----------------------------------------------------------------//
-Digest BlockHeader::getCharm () const {
-
-    return this->mCharm;
-}
-
-//----------------------------------------------------------------//
-Digest BlockHeader::getCharm ( const Digest& pose, const Digest& visage ) {
+Digest BlockHeader::calculateCharm ( const Digest& pose, const Digest& visage ) {
 
     // CHARM = POSE ^ VISAGE
 
-//    printf ( "POSE: %s\n", pose.toHex ().c_str ());
-//    printf ( "VISAGE: %s\n", visage.toHex ().c_str ());
+//    printf ( "POSE: %s\n", pose.toHex ().substr ( 0, 6 ).c_str ());
+//    printf ( "VISAGE: %s\n", visage.toHex ().substr ( 0, 6 ).c_str ());
 
     Digest charm;
     charm.resize ( CHARM_SIZE );
     
-    size_t poseSize   = pose.size ();
+    size_t poseSize     = pose.size ();
     size_t visageSize   = visage.size ();
     
     for ( size_t i = 0; i < CHARM_SIZE; ++i ) {
@@ -99,6 +70,41 @@ Digest BlockHeader::getCharm ( const Digest& pose, const Digest& visage ) {
 //    printf ( "CHARM:  %s\n", charm.toHex ().c_str ());
     
     return charm;
+}
+
+//----------------------------------------------------------------//
+int BlockHeader::compare ( const BlockHeader& block0, const BlockHeader& block1 ) {
+
+    assert ( block0.mHeight == block1.mHeight );
+
+    if ( block0 == block1 ) return 0;
+                
+    return BlockHeader::compare ( block0.mCharm, block1.mCharm );
+}
+
+//----------------------------------------------------------------//
+int BlockHeader::compare ( const Digest& charm0, const Digest& charm1 ) {
+
+    string hex0 = charm0.toHex ();
+    string hex1 = charm1.toHex ();
+
+//    printf ( "charm0 (%s): %s\n", block0.getMinerID ().c_str (), hex0.c_str ());
+//    printf ( "charm1 (%s): %s\n", block1.getMinerID ().c_str (), hex1.c_str ());
+        
+    int result = hex0.compare ( hex1 );
+    return result < 0 ? -1 : result > 0 ? 1 : 0;
+}
+
+//----------------------------------------------------------------//
+string BlockHeader::formatPoseString ( string prevPose ) const {
+
+    return Format::write ( "%s:%zu:%s", this->mMinerID.c_str (), this->mHeight, prevPose.c_str ());
+}
+
+//----------------------------------------------------------------//
+const Digest& BlockHeader::getCharm () const {
+
+    return this->mCharm;
 }
 
 //----------------------------------------------------------------//
@@ -120,7 +126,13 @@ string BlockHeader::getMinerID () const {
 }
 
 //----------------------------------------------------------------//
-Digest BlockHeader::getPose () const {
+Digest BlockHeader::getNextCharm ( const Digest& visage ) const {
+
+    return BlockHeader::calculateCharm ( this->mPose, visage );
+}
+
+//----------------------------------------------------------------//
+const Digest& BlockHeader::getPose () const {
 
     return this->mPose;
 }

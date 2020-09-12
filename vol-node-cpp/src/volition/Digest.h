@@ -19,7 +19,7 @@ private:
 
     //----------------------------------------------------------------//
     void AbstractStringifiable_fromString ( string str ) {
-        *this = Poco::DigestEngine::digestFromHex ( str );
+        this->fromHex ( str );
     }
     
     //----------------------------------------------------------------//
@@ -93,6 +93,11 @@ public:
         digestStream.close ();
         
         *this = digestEngine.digest ();
+    }
+    
+    //----------------------------------------------------------------//
+    void fromHex ( string hex ) {
+        *this = Poco::DigestEngine::digestFromHex ( hex );
     }
     
     //----------------------------------------------------------------//

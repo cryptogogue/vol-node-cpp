@@ -5,6 +5,7 @@
 #define VOLITION_MINER_H
 
 #include <volition/common.h>
+#include <volition/AbstractMiningMessenger.h>
 #include <volition/BlockTree.h>
 #include <volition/CryptoKey.h>
 #include <volition/Chain.h>
@@ -51,7 +52,6 @@ class BlockQueueEntry {
 private:
 
     friend class Miner;
-    friend class SyncChainTask;
 
     string                      mMinerID;
     shared_ptr < const Block >  mBlock;
@@ -62,6 +62,7 @@ private:
 //================================================================//
 class Miner :
     public AbstractSerializable,
+    public AbstractMiningMessengerClient,
     public TransactionQueue {
 protected:
 
@@ -70,6 +71,7 @@ protected:
     static constexpr const char* MASTER_BRANCH      = "master";
 
     string                                          mMinerID;
+    SerializableTime                                mStartTime;
 
     CryptoKey                                       mKeyPair;
     string                                          mMotto;
@@ -91,16 +93,15 @@ protected:
     
     Poco::Mutex                                     mMutex;
 
-    Poco::ThreadPool                                mTaskManagerThreadPool;
-    Poco::TaskManager                               mTaskManager;
+    shared_ptr < AbstractMiningMessenger >          mMessenger;
     set < string >                                  mMinerSet;
 
     list < unique_ptr < BlockQueueEntry >>          mBlockQueue;
     
     //----------------------------------------------------------------//
+    void                    affirmMessenger             ();
     void                    discoverMiners              ();
     void                    processQueue                ();
-    void                    onSyncChainNotification     ( Poco::TaskFinishedNotification* pNf );
     void                    pushBlock                   ( shared_ptr < const Block > block );
     void                    rebuildChain                ( shared_ptr < const BlockTreeNode > original, shared_ptr < const BlockTreeNode > replace );
     void                    rebuildChainRecurse         ( shared_ptr < const BlockTreeNode > node, shared_ptr < const BlockTreeNode > root );
@@ -108,11 +109,12 @@ protected:
     void                    startTasks                  ();
 
     //----------------------------------------------------------------//
-    void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
-    virtual time_t          Miner_getTime                           () const;
-    virtual void            Miner_reset                             ();
-    virtual void            Miner_shutdown                          ( bool kill );
+    void                    AbstractMiningMessengerClient_receiveBlock      ( string minerID, shared_ptr < const Block > block ) override;
+    void                    AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
+    void                    AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
+    virtual time_t          Miner_getTime                                   () const;
+    virtual void            Miner_reset                                     ();
+    virtual void            Miner_shutdown                                  ( bool kill );
 
 public:
 
@@ -144,6 +146,7 @@ public:
     const Ledger&           getLedger                   () const;
     string                  getMinerID                  () const;
     string                  getMotto                    () const;
+    SerializableTime        getStartTime                () const;
     time_t                  getTime                     () const;
     const Signature&        getVisage                   () const;
     void                    loadGenesis                 ( string path );
@@ -152,32 +155,33 @@ public:
     virtual                 ~Miner                      ();
     void                    permitControl               ( bool permit );
     shared_ptr < Block >    prepareBlock                ();
+    void                    reset                       ();
     void                    setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                    setGenesis                  ( shared_ptr < const Block > block );
     void                    setLazy                     ( bool lazy );
+    void                    setMessenger                ( shared_ptr < AbstractMiningMessenger > messenger );
     void                    setMinerID                  ( string minerID );
     void                    setMotto                    ( string motto );
     void                    setSolo                     ( bool solo );
     void                    setVerbose                  ( bool verbose );
-    void                    reset                       ();
     void                    shutdown                    ( bool kill = false );
     void                    step                        ( bool solo = false );
 };
 
 //================================================================//
-// ScopedWebMinerLock
+// ScopedMinerLock
 //================================================================//
-class ScopedWebMinerLock {
+class ScopedMinerLock {
 private:
 
-    shared_ptr < Miner >                mWebMiner;
+    shared_ptr < Miner >                mMiner;
     Poco::ScopedLock < Poco::Mutex >    mScopedLock;
 
 public:
 
     //----------------------------------------------------------------//
-    ScopedWebMinerLock ( shared_ptr < Miner > webMiner ) :
-        mWebMiner ( webMiner ),
+    ScopedMinerLock ( shared_ptr < Miner > webMiner ) :
+        mMiner ( webMiner ),
         mScopedLock ( *webMiner ) {
     }
 };

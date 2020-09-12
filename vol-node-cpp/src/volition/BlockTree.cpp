@@ -73,6 +73,30 @@ BlockTreeNode::~BlockTreeNode () {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < const BlockTreeNode > BlockTreeNode::findInsertion ( string minerID, const Digest& visage ) const {
+
+    return this->mParent->findInsertionRecurse ( this->shared_from_this (), minerID, visage );
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const BlockTreeNode > BlockTreeNode::findInsertionRecurse ( shared_ptr < const BlockTreeNode > tail, string minerID, const Digest& visage ) const {
+
+    if ( this->mHeader->getMinerID () == minerID ) return tail;
+
+    shared_ptr < const BlockHeader > parent = this->mParent ? this->mParent->mHeader : NULL;
+    if ( !parent ) return tail;
+
+    Digest charm = parent->getNextCharm ( visage );
+
+    if ( BlockHeader::compare ( charm, this->mHeader->getCharm ()) < 0 ) {
+        printf ( "BACKUP!\n" );
+        return this->mParent;
+    }
+
+    return this->mParent->findInsertionRecurse ( tail, minerID, visage );
+}
+
+//----------------------------------------------------------------//
 BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 ) {
 
     BlockTreeRoot root;
@@ -120,6 +144,12 @@ shared_ptr < const Block > BlockTreeNode::getBlock () const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < const BlockHeader > BlockTreeNode::getBlockHeader () const {
+
+    return this->mHeader;
+}
+
+//----------------------------------------------------------------//
 size_t BlockTreeNode::getHeight () const {
 
     assert ( this->mHeader );
@@ -146,7 +176,9 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
         this->mParent->logBranchRecurse ( str );
     }
     const BlockHeader& header = *this->mHeader;
-    Format::write ( str, "%s[%s:%d]", header.isGenesis () ? "" : ",", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", ( int )this->mTagCount );
+    
+    string charm = header.getCharm ().toHex ().substr ( 0, 6 );
+    Format::write ( str, "%s[%s:%02x - %s]", header.isGenesis () ? "" : ",", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", ( int )this->mTagCount, charm.c_str ());
 }
 
 //----------------------------------------------------------------//
@@ -215,6 +247,12 @@ size_t BlockTreeTag::getCount () const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < BlockTreeNode > BlockTreeTag::getNode () {
+
+    return this->mNode;
+}
+
+//----------------------------------------------------------------//
 shared_ptr < const BlockTreeNode > BlockTreeTag::getNode () const {
 
     return this->mNode;
@@ -256,7 +294,7 @@ shared_ptr < BlockTreeNode > BlockTree::affirmBlock ( shared_ptr < const Block >
 //----------------------------------------------------------------//
 shared_ptr < BlockTreeNode > BlockTree::affirmBlock ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
 
-    if ( !( header && block )) return NULL;
+    if ( !header ) return NULL;
 
     string hash = header->getHash ();
     if ( block ) {
@@ -306,6 +344,14 @@ BlockTree::~BlockTree () {
     for ( ; nodeIt != this->mNodes.end (); ++nodeIt ) {
         nodeIt->second->mTree = NULL;
     }
+}
+
+//----------------------------------------------------------------//
+shared_ptr < BlockTreeNode > BlockTree::deconst ( shared_ptr < const BlockTreeNode > node ) {
+
+    shared_ptr < BlockTreeNode > deconstedNode = this->findNodeForHash ( node->mHeader->getHash ());
+    assert ( deconstedNode );
+    return deconstedNode;
 }
 
 //----------------------------------------------------------------//

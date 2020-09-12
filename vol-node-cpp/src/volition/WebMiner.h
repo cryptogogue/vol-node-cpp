@@ -26,7 +26,6 @@ private:
 
     friend class WebMinerHTTPRequestHandlerFactory;
 
-    SerializableTime    mStartTime;
     u32                 mUpdateIntervalInSeconds;
     Poco::Event         mShutdownEvent;
 
@@ -42,7 +41,6 @@ public:
     static const u32    DEFAULT_UPDATE_INTERVAL = 60;
 
     //----------------------------------------------------------------//
-    SerializableTime    getStartTime                ();
     void                setSolo                     ( bool solo );
     void                setUpdateInterval           ( u32 updateIntervalInSeconds );
     void                waitForShutdown             ();
