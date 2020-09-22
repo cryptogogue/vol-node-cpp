@@ -1,15 +1,15 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_SIMMININGMESSENGER_H
-#define VOLITION_SIMMININGMESSENGER_H
+#ifndef VOLITION_SIMULATION_SIMMININGMESSENGER_H
+#define VOLITION_SIMULATION_SIMMININGMESSENGER_H
 
 #include <volition/common.h>
 #include <volition/AbstractMiningMessenger.h>
+#include <volition/Miner.h>
 
 namespace Volition {
-
-class Miner;
+namespace Simulation {
 
 class SimGetBlockTask;
 
@@ -38,5 +38,6 @@ public:
     void        updateAndDispatch           ();
 };
 
+} // namespace Simulation
 } // namespace Volition
 #endif

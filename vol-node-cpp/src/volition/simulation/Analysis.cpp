@@ -294,5 +294,5 @@ void Analysis::update ( const Tree& tree ) {
     this->mPasses++;
 }
 
-} // namespace Simulator
+} // namespace Simulation
 } // namespace Volition

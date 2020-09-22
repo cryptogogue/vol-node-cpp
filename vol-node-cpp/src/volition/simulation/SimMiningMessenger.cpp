@@ -3,9 +3,10 @@
 
 #include <volition/Block.h>
 #include <volition/Miner.h>
-#include <volition/SimMiningMessenger.h>
+#include <volition/simulation/SimMiningMessenger.h>
 
 namespace Volition {
+namespace Simulation {
 
 //================================================================//
 // SimGetBlockTask
@@ -91,4 +92,5 @@ void SimMiningMessenger::AbstractMiningMessenger_requestBlock ( AbstractMiningMe
     this->mTasks.push_back ( task );
 }
 
+} // namespace Simulation
 } // namespace Volition

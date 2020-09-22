@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_SIMULATOR_ANALYSIS_H
-#define VOLITION_SIMULATOR_ANALYSIS_H
+#ifndef VOLITION_SIMULATION_ANALYSIS_H
+#define VOLITION_SIMULATION_ANALYSIS_H
 
 #include <volition/common.h>
 #include <volition/Chain.h>
@@ -98,6 +98,6 @@ public:
     void        update              ( const Tree& tree );
 };
 
-} // namespace Simulator
+} // namespace Simulation
 } // namespace Volition
 #endif

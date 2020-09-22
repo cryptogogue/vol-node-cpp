@@ -64,7 +64,7 @@ MinerAPIFactory::MinerAPIFactory ( shared_ptr < Miner > webMiner ) :
 }
 
 //----------------------------------------------------------------//
-MinerAPIFactory::MinerAPIFactory ( vector < shared_ptr < Miner >> webMiners ) :
+MinerAPIFactory::MinerAPIFactory ( const vector < shared_ptr < Miner >>& webMiners ) :
     mWithPrefix ( true ) {
     
     for ( size_t i = 0; i < webMiners.size (); ++i ) {
