@@ -46,7 +46,7 @@ public:
     
     //----------------------------------------------------------------//
     bool operator == ( const BlockHeader& rhs ) const {
-        return ( this->mSignature == rhs.mSignature );
+        return (( this->mHeight == rhs.mHeight ) && ( this->mSignature == rhs.mSignature ));
     }
     
     //----------------------------------------------------------------//
@@ -70,6 +70,7 @@ public:
     const Signature&    getSignature                        () const;
     time_t              getTime                             () const;
     bool                isGenesis                           () const;
+    bool                isInRewriteWindow                   () const;
     bool                isInRewriteWindow                   ( time_t now ) const;
     bool                isParent                            ( const BlockHeader& block ) const;
     void                setMinerID                          ( string minerID );

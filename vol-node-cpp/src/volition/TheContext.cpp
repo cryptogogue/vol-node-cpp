@@ -11,6 +11,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+TheContext::RewriteMode TheContext::getRewriteMode () const {
+
+    return this->mRewriteMode;
+}
+
+//----------------------------------------------------------------//
 double TheContext::getWindow () const {
 
     return this->mRewriteWindowInSeconds;
@@ -18,13 +24,21 @@ double TheContext::getWindow () const {
 
 //----------------------------------------------------------------//
 TheContext::TheContext () :
+    mRewriteMode ( REWRITE_NONE ),
     mRewriteWindowInSeconds ( 0 ) {
 }
 
 //----------------------------------------------------------------//
-void TheContext::setWindow ( double window ) {
+void TheContext::setRewriteMode ( RewriteMode mode ) {
+
+    this->mRewriteMode = mode;
+}
+
+//----------------------------------------------------------------//
+void TheContext::setRewriteWindow ( double window ) {
 
     this->mRewriteWindowInSeconds = window;
+    this->setRewriteMode ( REWRITE_WINDOW );
 }
 
 } // namespace Volition

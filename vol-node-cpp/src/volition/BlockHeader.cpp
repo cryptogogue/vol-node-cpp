@@ -168,6 +168,14 @@ bool BlockHeader::isGenesis () const {
 }
 
 //----------------------------------------------------------------//
+bool BlockHeader::isInRewriteWindow () const {
+
+    time_t now;
+    time ( &now );
+    return this->isInRewriteWindow ( now );
+}
+
+//----------------------------------------------------------------//
 bool BlockHeader::isInRewriteWindow ( time_t now ) const {
 
     double window = TheContext::get ().getWindow ();

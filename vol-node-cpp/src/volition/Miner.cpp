@@ -117,7 +117,7 @@ const BlockTree& Miner::getBlockTree () const {
 }
 
 //----------------------------------------------------------------//
-const BlockTreeTag& Miner::getBlockTreeTag () const {
+shared_ptr < const BlockTreeNode > Miner::getBlockTreeTag () const {
 
     return this->mTag;
 }
@@ -176,6 +176,19 @@ time_t Miner::getTime () const {
 const Signature& Miner::getVisage () const {
 
     return this->mVisage;
+}
+
+//----------------------------------------------------------------//
+bool Miner::hasConsensus () const {
+
+    size_t count = 0;
+    
+    map < string, RemoteMiner >::const_iterator minerIt = this->mRemoteMiners.cbegin ();
+    for ( ; minerIt != this->mRemoteMiners.cend (); ++minerIt ) {
+        const RemoteMiner& remoteMiner = minerIt->second;
+        if ( this->mTag->isAncestorOf ( remoteMiner.mTag )) count++;
+    }
+    return ( count > ( this->mRemoteMiners.size () >> 1 ));
 }
 
 //----------------------------------------------------------------//
@@ -275,7 +288,7 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     bool result = this->mChain->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
-    this->mTag.mark ( this->mBlockTree.affirmBlock ( block ));
+    this->mTag = this->mBlockTree.affirmBlock ( block );
 }
 
 //----------------------------------------------------------------//
@@ -283,7 +296,7 @@ void Miner::rebuildChain ( shared_ptr < const BlockTreeNode > original, shared_p
 
     BlockTreeRoot root = BlockTreeNode::findRoot ( original, replace );
 
-    this->mChain->reset (( root.mRoot ? root.mRoot->getHeight () : 0 ) + 1 );
+    this->mChain->reset (( root.mRoot ? ( **root.mRoot ).getHeight () : 0 ) + 1 );
     this->rebuildChainRecurse ( replace, root.mRoot );
 }
 
@@ -418,29 +431,69 @@ void Miner::step ( bool solo ) {
     
         this->processQueue ();
         
-        shared_ptr < const BlockTreeNode > originalBranch = this->mTag;
+        BlockTreeNode::ConstPtr originalBranch = this->mTag;
+        BlockTreeNode::ConstPtr nextBranch = this->mTag;
         
         // find the best branch
         map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
         for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
            const RemoteMiner& remoteMiner = remoteMinerIt->second;
            
-           if ( remoteMiner.mTag &&  ( BlockTreeTag::compare ( remoteMiner.mTag, this->mTag ) < 0 )) {
-                this->mTag = remoteMiner.mTag;
+           BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner.mTag );
+                      
+           if ( truncated && ( BlockTreeNode::compare ( truncated, nextBranch ) < 0 )) {
+                nextBranch = truncated;
            }
         }
-                
-        if ( originalBranch != this->mTag.getNode ()) {
-            this->rebuildChain ( originalBranch, this->mTag );
+
+        if ( originalBranch != nextBranch ) {
+            this->mTag = nextBranch;
+            this->rebuildChain ( originalBranch, nextBranch );
         }
         
-        if ( this->mRemoteMiners.size () && ( this->mTag.getCount () > ( this->mRemoteMiners.size () >> 1 ))) {
+        if ( this->hasConsensus ()) {
             this->extend ();
         }
 
         this->discoverMiners ();
         this->startTasks ();
     }
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail ) {
+
+    if ( TheContext::get ().getRewriteMode () == TheContext::REWRITE_NONE ) return tail;
+
+    // if a block from self would be more charming at any point along the chain,
+    // truncate the chain to the parent of that block. in other words: seek the
+    // earliest insertion point for a local block. if we find a block from
+    // self, abort: to truncate, our local block must *beat* any other block.
+
+    // TODO: this should take into account the lookback window.
+
+    BlockTreeNode::ConstPtr cursor = tail;
+    
+    while ( cursor ) {
+    
+        const BlockHeader& header = **cursor;
+    
+        if (( TheContext::get ().getRewriteMode () == TheContext::REWRITE_WINDOW ) && !header.isInRewriteWindow ()) return tail;
+    
+        BlockTreeNode::ConstPtr parent = cursor->getParent ();
+        if ( !parent ) break;
+        
+        const BlockHeader& parentHeader = **parent;
+        
+        if ( header.getMinerID () == this->mMinerID ) break;
+        
+        Digest charm = parentHeader.getNextCharm ( this->mVisage );
+        if ( BlockHeader::compare ( charm, header.getCharm ()) < 0 ) return parent;
+        
+        cursor = parent;
+    }
+
+    return tail;
 }
 
 //================================================================//

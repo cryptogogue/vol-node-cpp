@@ -31,12 +31,12 @@ private:
 
     friend class Miner;
 
-    string                  mURL;
-    size_t                  mCurrentBlock;
+    string                      mURL;
+    size_t                      mCurrentBlock;
 
-    bool                    mWaitingForTask;
+    bool                        mWaitingForTask;
 
-    BlockTreeTag            mTag;
+    BlockTreeNode::ConstPtr     mTag;
 
 public:
 
@@ -89,7 +89,7 @@ protected:
     map < string, RemoteMiner >                     mRemoteMiners;
     BlockTree                                       mBlockTree;
     shared_ptr < Chain >                            mChain;
-    BlockTreeTag                                    mTag;
+    BlockTreeNode::ConstPtr                         mTag;
     
     Poco::Mutex                                     mMutex;
 
@@ -99,22 +99,24 @@ protected:
     list < unique_ptr < BlockQueueEntry >>          mBlockQueue;
     
     //----------------------------------------------------------------//
-    void                    affirmMessenger             ();
-    void                    discoverMiners              ();
-    void                    processQueue                ();
-    void                    pushBlock                   ( shared_ptr < const Block > block );
-    void                    rebuildChain                ( shared_ptr < const BlockTreeNode > original, shared_ptr < const BlockTreeNode > replace );
-    void                    rebuildChainRecurse         ( shared_ptr < const BlockTreeNode > node, shared_ptr < const BlockTreeNode > root );
-    void                    saveChain                   ();
-    void                    startTasks                  ();
+    void                        affirmMessenger             ();
+    void                        discoverMiners              ();
+    bool                        hasConsensus                () const;
+    void                        processQueue                ();
+    void                        pushBlock                   ( shared_ptr < const Block > block );
+    void                        rebuildChain                ( shared_ptr < const BlockTreeNode > original, shared_ptr < const BlockTreeNode > replace );
+    void                        rebuildChainRecurse         ( shared_ptr < const BlockTreeNode > node, shared_ptr < const BlockTreeNode > root );
+    void                        saveChain                   ();
+    void                        startTasks                  ();
+    BlockTreeNode::ConstPtr     truncate                    ( BlockTreeNode::ConstPtr tail );
 
     //----------------------------------------------------------------//
-    void                    AbstractMiningMessengerClient_receiveBlock      ( string minerID, shared_ptr < const Block > block ) override;
-    void                    AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
-    void                    AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
-    virtual time_t          Miner_getTime                                   () const;
-    virtual void            Miner_reset                                     ();
-    virtual void            Miner_shutdown                                  ( bool kill );
+    void                        AbstractMiningMessengerClient_receiveBlock      ( string minerID, shared_ptr < const Block > block ) override;
+    void                        AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
+    void                        AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
+    virtual time_t              Miner_getTime                                   () const;
+    virtual void                Miner_reset                                     ();
+    virtual void                Miner_shutdown                                  ( bool kill );
 
 public:
 
@@ -130,42 +132,42 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void                    affirmKey                   ( uint keyLength = CryptoKey::RSA_1024, unsigned long exp = CryptoKey::RSA_EXP_65537 );
-    void                    affirmVisage                ();
-    bool                    checkBestBranch             ( string miners ) const;
-    bool                    controlPermitted            () const;
-    size_t                  countBranches               () const;
-    void                    extend                      ();
-    const Chain*            getBestBranch               () const;
-    const BlockTree&        getBlockTree                () const;
-    const BlockTreeTag&     getBlockTreeTag             () const;
-    const CryptoKey&        getKeyPair                  () const;
-    size_t                  getLongestBranchSize        () const;
-    bool                    getLazy                     () const;
-    Ledger&                 getLedger                   ();
-    const Ledger&           getLedger                   () const;
-    string                  getMinerID                  () const;
-    string                  getMotto                    () const;
-    SerializableTime        getStartTime                () const;
-    time_t                  getTime                     () const;
-    const Signature&        getVisage                   () const;
-    void                    loadGenesis                 ( string path );
-    void                    loadKey                     ( string keyfile, string password = "" );
-                            Miner                       ();
-    virtual                 ~Miner                      ();
-    void                    permitControl               ( bool permit );
-    shared_ptr < Block >    prepareBlock                ();
-    void                    reset                       ();
-    void                    setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
-    void                    setGenesis                  ( shared_ptr < const Block > block );
-    void                    setLazy                     ( bool lazy );
-    void                    setMessenger                ( shared_ptr < AbstractMiningMessenger > messenger );
-    void                    setMinerID                  ( string minerID );
-    void                    setMotto                    ( string motto );
-    void                    setSolo                     ( bool solo );
-    void                    setVerbose                  ( bool verbose );
-    void                    shutdown                    ( bool kill = false );
-    void                    step                        ( bool solo = false );
+    void                                    affirmKey                   ( uint keyLength = CryptoKey::RSA_1024, unsigned long exp = CryptoKey::RSA_EXP_65537 );
+    void                                    affirmVisage                ();
+    bool                                    checkBestBranch             ( string miners ) const;
+    bool                                    controlPermitted            () const;
+    size_t                                  countBranches               () const;
+    void                                    extend                      ();
+    const Chain*                            getBestBranch               () const;
+    const BlockTree&                        getBlockTree                () const;
+    shared_ptr < const BlockTreeNode >      getBlockTreeTag             () const;
+    const CryptoKey&                        getKeyPair                  () const;
+    size_t                                  getLongestBranchSize        () const;
+    bool                                    getLazy                     () const;
+    Ledger&                                 getLedger                   ();
+    const Ledger&                           getLedger                   () const;
+    string                                  getMinerID                  () const;
+    string                                  getMotto                    () const;
+    SerializableTime                        getStartTime                () const;
+    time_t                                  getTime                     () const;
+    const Signature&                        getVisage                   () const;
+    void                                    loadGenesis                 ( string path );
+    void                                    loadKey                     ( string keyfile, string password = "" );
+                                            Miner                       ();
+    virtual                                 ~Miner                      ();
+    void                                    permitControl               ( bool permit );
+    shared_ptr < Block >                    prepareBlock                ();
+    void                                    reset                       ();
+    void                                    setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
+    void                                    setGenesis                  ( shared_ptr < const Block > block );
+    void                                    setLazy                     ( bool lazy );
+    void                                    setMessenger                ( shared_ptr < AbstractMiningMessenger > messenger );
+    void                                    setMinerID                  ( string minerID );
+    void                                    setMotto                    ( string motto );
+    void                                    setSolo                     ( bool solo );
+    void                                    setVerbose                  ( bool verbose );
+    void                                    shutdown                    ( bool kill = false );
+    void                                    step                        ( bool solo = false );
 };
 
 //================================================================//

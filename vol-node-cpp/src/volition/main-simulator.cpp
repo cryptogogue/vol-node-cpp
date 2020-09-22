@@ -34,15 +34,15 @@ private:
     Poco::Event                         mShutdownEvent;
     
     BlockTree                           mOptimal;
-    BlockTreeTag                        mOptimalTag;
+    BlockTreeNode::ConstPtr             mOptimalTag;
 
     //----------------------------------------------------------------//
     void extendOptimal ( size_t height ) {
     
-        shared_ptr < BlockTreeNode > tail = this->mOptimalTag.getNode ();
+        BlockTreeNode::ConstPtr tail = this->mOptimalTag;
         assert ( tail );
         
-        while ( tail->getHeight () < height ) {
+        while (( **tail ).getHeight () < height ) {
                     
             shared_ptr < const Block > parent = tail->getBlock ();
             
@@ -52,9 +52,7 @@ private:
             for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
                 shared_ptr < Miner > miner = this->mMiners [ i ];
                 Digest charm = parent->getNextCharm ( miner->getVisage ());
-                
-//                LGN_LOG ( VOL_FILTER_ROOT, INFO, "CHARM: %s - %s", miner->getMinerID ().c_str (), charm.toHex ().substr ( 0, 6 ).c_str ());
-                
+                                
                 if ( !bestMiner || ( BlockHeader::compare ( charm, bestCharm ) < 0 )) {
                     bestMiner = miner;
                     bestCharm = charm;
@@ -93,17 +91,16 @@ private:
             
             this->mMessenger->updateAndDispatch ();
             
-            //this->mMiners [ 0 ]->getBlockTree ().logTree ( "9090: ", 1 );
-            shared_ptr < const BlockTreeNode > tail = this->mMiners [ 0 ]->getBlockTreeTag ().getNode ();
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "9090: %s", tail->writeBranch ().c_str ());
+//            shared_ptr < const BlockTreeNode > tail = this->mMiners [ 0 ]->getBlockTreeTag ();
+//            LGN_LOG ( VOL_FILTER_ROOT, INFO, "9090: %s", tail->writeBranch ().c_str ());
+//            
+//            this->extendOptimal (( **tail ).getHeight ());
+//            LGN_LOG ( VOL_FILTER_ROOT, INFO, "GOAL: %s", this->mOptimalTag->writeBranch ().c_str ());
+//            
+//            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
             
-            this->extendOptimal ( tail->getHeight ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "GOAL: %s", this->mOptimalTag.getNode ()->writeBranch ().c_str ());
-            
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
-            
-//            analysis.update ( tree );
-//            analysis.log ( "", true, 1 );
+            analysis.update ( tree );
+            analysis.log ( "", true, 1 );
             
             Poco::Thread::sleep ( 10 );
         }

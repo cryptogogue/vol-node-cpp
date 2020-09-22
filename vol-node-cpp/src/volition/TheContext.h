@@ -18,20 +18,29 @@ class Block;
 //================================================================//
 class TheContext :
     public Singleton < TheContext > {
+public:
+
+    enum RewriteMode {
+        REWRITE_NONE,
+        REWRITE_WINDOW,
+        REWRITE_ANY,
+    };
+
 private:
     
-    double          mRewriteWindowInSeconds;
+    RewriteMode         mRewriteMode;
+    double              mRewriteWindowInSeconds;
 
 public:
 
     //----------------------------------------------------------------//
-    const Digest&       getGenesisBlockDigest       () const;
-    const CryptoKey&    getGenesisBlockKey          () const;
+    RewriteMode         getRewriteMode              () const;
     double              getWindow                   () const;
                         TheContext                  ();
     void                setGenesisBlockDigest       ( const Digest& digest );
     void                setGenesisBlockKey          ( const CryptoKey& key );
-    void                setWindow                   ( double window );
+    void                setRewriteMode              ( RewriteMode mode );
+    void                setRewriteWindow            ( double window );
 };
 
 } // namespace Volition
