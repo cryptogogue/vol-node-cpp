@@ -131,7 +131,7 @@ void TreeSummary::logTree ( string prefix, bool verbose, size_t maxDepth, size_t
             if ( i > 0 ) {
                 Format::write ( str, "," );
             }
-            Format::write ( str, "%s", this->mMiners [ i ].c_str ());
+            Format::write ( str, "%s", i == 0 ? "*" : this->mMiners [ i ].c_str ());
         }
     }
     LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s%s", prefix.c_str (), str.c_str ());

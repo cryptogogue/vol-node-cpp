@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/simulation/AbstractScenario.h>
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/Simulator.h>
 #include <volition/transactions/Genesis.h>
@@ -56,9 +57,10 @@ const Simulator::Miners& Simulator::getMiners () {
 }
 
 //----------------------------------------------------------------//
-void Simulator::initialize ( size_t totalMiners, int basePort ) {
+void Simulator::initialize ( size_t totalMiners, size_t basePort ) {
 
     this->mMiners.resize ( totalMiners );
+    this->mMinerSettings.resize ( totalMiners );
 
     shared_ptr < Transactions::Genesis > genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
     genesisMinerTransactionBody->setIdentity ( "SIMULATION" );
@@ -70,7 +72,7 @@ void Simulator::initialize ( size_t totalMiners, int basePort ) {
         shared_ptr < Miner > miner = make_shared < Miner >();
         this->mMiners [ i ] = miner;
 
-        miner->setMinerID ( Format::write ( "%d", basePort + ( int )i ));
+        miner->setMinerID ( Format::write ( "%d", ( int )( basePort + i )));
         miner->affirmKey ();
         miner->affirmVisage ();
         miner->setMessenger ( this->mMessenger );
@@ -80,7 +82,7 @@ void Simulator::initialize ( size_t totalMiners, int basePort ) {
         genesisAccount.mName    = miner->getMinerID ();
         genesisAccount.mKey     = miner->getKeyPair ();
         genesisAccount.mGrant   = 0;
-        genesisAccount.mURL     = Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", basePort ).c_str (), miner->getMinerID ().c_str ());
+        genesisAccount.mURL     = Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", ( int )basePort ).c_str (), miner->getMinerID ().c_str ());
 
         genesisAccount.mMotto   = miner->getMotto ();
         genesisAccount.mVisage  = miner->getVisage ();
@@ -105,7 +107,94 @@ void Simulator::initialize ( size_t totalMiners, int basePort ) {
 }
 
 //----------------------------------------------------------------//
-Simulator::Simulator () {
+void Simulator::initialize ( shared_ptr < AbstractScenario > scenario ) {
+
+    assert ( scenario );
+
+    this->mScenario = scenario;
+    this->initialize (
+        scenario->AbstractScenario_getSize (),
+        scenario->AbstractScenario_getBasePort ()
+    );
+    this->setReportMode ( scenario->AbstractScenario_getReportMode ());
+    scenario->AbstractScenario_setup ( *this );
+}
+
+//----------------------------------------------------------------//
+void Simulator::pause ( bool pause ) {
+
+    this->mIsPaused = pause;
+}
+
+//----------------------------------------------------------------//
+void Simulator::report () {
+
+    switch ( this->mReportMode ) {
+    
+        case REPORT_SUMMARY: {
+        
+            this->mAnalysis.log ( "", false, 1 );
+        
+            break;
+        }
+            
+        case REPORT_SINGLE_MINER: {
+        
+            shared_ptr < Miner > miner = this->mMiners [ 0 ];
+            BlockTreeNode::ConstPtr tail = miner->getBlockTreeTag ();
+                
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
+            
+            break;
+        }
+            
+        case REPORT_SINGLE_MINER_VS_OPTIMAL: {
+            
+            shared_ptr < Miner > miner = this->mMiners [ 0 ];
+            BlockTreeNode::ConstPtr tail = miner->getBlockTreeTag ();
+                
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "GOAL: %s", this->mOptimalTag->writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
+        
+            break;
+        }
+            
+        case REPORT_ALL_MINERS: {
+        
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "STEP: %d", ( int )this->mStepCount );
+            for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
+                shared_ptr < Miner > miner = this->mMiners [ i ];
+                BlockTreeNode::ConstPtr tail = miner->getBlockTreeTag ();
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
+            }
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
+        
+            break;
+        }
+    }
+}
+
+//----------------------------------------------------------------//
+void Simulator::setInterval ( size_t base, size_t top, size_t interval ) {
+
+    for ( size_t i = base; i < top; ++i ) {
+        this->mMinerSettings [ i ].mInterval = interval;
+    }
+}
+
+
+//----------------------------------------------------------------//
+void Simulator::setReportMode ( ReportMode reportMode ) {
+
+    this->mReportMode = reportMode;
+}
+
+//----------------------------------------------------------------//
+Simulator::Simulator () :
+    mReportMode ( REPORT_SUMMARY ),
+    mIsPaused ( false ),
+    mStepCount ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -114,28 +203,39 @@ Simulator::~Simulator () {
 
 //----------------------------------------------------------------//
 void Simulator::step () {
+
+    if ( this->mScenario ) {
+        this->mScenario->AbstractScenario_control ( *this, this->mStepCount );
+    }
+
+    if ( this->mIsPaused ) return;
+
         
     Simulation::Tree tree;
     
     for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
+        
         shared_ptr < Miner > miner = this->mMiners [ i ];
-        miner->step ();
+        SimMinerSettings& settings = this->mMinerSettings [ i ];
+        
+        if ( settings.mInterval && (( this->mStepCount % settings.mInterval ) == 0 )) {
+            miner->step ();
+        }
+        
         ScopedMinerLock minerLock ( miner );
         tree.addChain ( *this->mMiners [ i ]->getBestBranch ());
     }
     
     this->mMessenger->updateAndDispatch ();
     
-//    shared_ptr < const BlockTreeNode > tail = this->mMiners [ 0 ]->getBlockTreeTag ();
-//    LGN_LOG ( VOL_FILTER_ROOT, INFO, "9090: %s", tail->writeBranch ().c_str ());
-//
-//    this->extendOptimal (( **tail ).getHeight ());
-//    LGN_LOG ( VOL_FILTER_ROOT, INFO, "GOAL: %s", this->mOptimalTag->writeBranch ().c_str ());
-//
-//    LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
-    
     this->mAnalysis.update ( tree );
-    this->mAnalysis.log ( "", true, 1 );
+    
+    BlockTreeNode::ConstPtr tail = this->mMiners [ 0 ]->getBlockTreeTag ();
+    this->extendOptimal (( **tail ).getHeight ());
+    
+    this->report ();
+    
+    this->mStepCount++;
 }
 
 } // namespace Simulator

@@ -193,6 +193,7 @@
 		CDAA38E7251AA13900FEAFB5 /* SimMiningMessenger.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAA38E5251AA13900FEAFB5 /* SimMiningMessenger.h */; };
 		CDAA38EA251AA72400FEAFB5 /* SimulatorActivity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAA38E8251AA72400FEAFB5 /* SimulatorActivity.cpp */; };
 		CDAA38EB251AA72400FEAFB5 /* SimulatorActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAA38E9251AA72400FEAFB5 /* SimulatorActivity.h */; };
+		CDAA38ED251ACBD300FEAFB5 /* AbstractScenario.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAA38EC251ACBD300FEAFB5 /* AbstractScenario.h */; };
 		CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAB334E2479293500901558 /* AssetMethod.cpp */; };
 		CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD94332470A8A0003FD2CC /* SerializableTime.h */; };
 		CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD9436247138B0003FD2CC /* ReserveAccountName.h */; };
@@ -804,6 +805,7 @@
 		CDAA38E5251AA13900FEAFB5 /* SimMiningMessenger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimMiningMessenger.h; path = src/volition/simulation/SimMiningMessenger.h; sourceTree = "<group>"; };
 		CDAA38E8251AA72400FEAFB5 /* SimulatorActivity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimulatorActivity.cpp; path = src/volition/simulation/SimulatorActivity.cpp; sourceTree = "<group>"; };
 		CDAA38E9251AA72400FEAFB5 /* SimulatorActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimulatorActivity.h; path = src/volition/simulation/SimulatorActivity.h; sourceTree = "<group>"; };
+		CDAA38EC251ACBD300FEAFB5 /* AbstractScenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractScenario.h; path = src/volition/simulation/AbstractScenario.h; sourceTree = "<group>"; };
 		CDAB334E2479293500901558 /* AssetMethod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetMethod.cpp; path = src/volition/AssetMethod.cpp; sourceTree = "<group>"; };
 		CDAD94332470A8A0003FD2CC /* SerializableTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableTime.h; path = src/volition/serialization/SerializableTime.h; sourceTree = "<group>"; };
 		CDAD9436247138B0003FD2CC /* ReserveAccountName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReserveAccountName.h; path = src/volition/transactions/ReserveAccountName.h; sourceTree = "<group>"; };
@@ -1532,6 +1534,7 @@
 		CDC2B31A20CE0F8400300A96 /* simulation */ = {
 			isa = PBXGroup;
 			children = (
+				CDAA38EC251ACBD300FEAFB5 /* AbstractScenario.h */,
 				CD73D81F2166D68700F43CC7 /* Analysis.cpp */,
 				CD73D8202166D68700F43CC7 /* Analysis.h */,
 				CDAA38E4251AA13900FEAFB5 /* SimMiningMessenger.cpp */,
@@ -1676,6 +1679,7 @@
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
+				CDAA38ED251ACBD300FEAFB5 /* AbstractScenario.h in Headers */,
 				CD5ECAF0246B2945009146FB /* version.h in Headers */,
 				CD5ECAEE246B2938009146FB /* version.h in Headers */,
 				CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */,

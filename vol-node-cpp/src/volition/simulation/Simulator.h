@@ -17,6 +17,22 @@
 namespace Volition {
 namespace Simulation {
 
+class AbstractScenario;
+
+//================================================================//
+// SimMinerSettings
+//================================================================//
+class SimMinerSettings {
+public:
+
+    size_t      mInterval;
+
+    //----------------------------------------------------------------//
+    SimMinerSettings () :
+        mInterval ( 1 ) {
+    }
+};
+
 //================================================================//
 // Simulator
 //================================================================//
@@ -25,26 +41,45 @@ public:
 
     typedef vector < shared_ptr < Miner >> Miners;
 
+    enum ReportMode {
+        REPORT_SUMMARY,
+        REPORT_SINGLE_MINER,
+        REPORT_SINGLE_MINER_VS_OPTIMAL,
+        REPORT_ALL_MINERS,
+    };
+
 protected:
+    
+    shared_ptr < AbstractScenario >     mScenario;
+    ReportMode                          mReportMode;
     
     Analysis                            mAnalysis;
     
     Miners                              mMiners;
+    vector < SimMinerSettings >         mMinerSettings;
     shared_ptr < SimMiningMessenger >   mMessenger;
     Poco::Event                         mShutdownEvent;
     
     BlockTree                           mOptimal;
     BlockTreeNode::ConstPtr             mOptimalTag;
 
+    bool                                mIsPaused;
+    size_t                              mStepCount;
+
     //----------------------------------------------------------------//
     void            extendOptimal       ( size_t height );
+    void            report              ();
     void            step                ();
 
 public:
 
     //----------------------------------------------------------------//
     const Miners&   getMiners           ();
-    void            initialize          ( size_t totalMiners, int basePort = 9090 );
+    void            initialize          ( size_t totalMiners, size_t basePort = 9090 );
+    void            initialize          ( shared_ptr < AbstractScenario > scenario );
+    void            pause               ( bool pause = true );
+    void            setInterval         ( size_t base, size_t top, size_t interval );
+    void            setReportMode       ( ReportMode reportMode );
                     Simulator           ();
                     ~Simulator          ();
 };

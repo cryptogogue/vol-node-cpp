@@ -8,6 +8,7 @@
 #include <volition/Miner.h>
 #include <volition/MinerAPIFactory.h>
 #include <volition/RouteTable.h>
+#include <volition/simulation/AbstractScenario.h>
 #include <volition/simulation/SimulatorActivity.h>
 #include <volition/version.h>
 
@@ -16,6 +17,61 @@ using namespace Simulation;
 
 const size_t TOTAL_MINERS   = 16;
 const int BASE_PORT         = 9090;
+
+//================================================================//
+// SimpleScenario
+//================================================================//
+class SimpleScenario :
+    public AbstractScenario {
+protected:
+
+    SCENARIO_BASE_PORT ( 9090 )
+    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
+    SCENARIO_SIZE ( TOTAL_MINERS )
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, size_t step ) const override {
+        UNUSED ( simulator );
+        UNUSED ( step );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) const override {
+        UNUSED ( simulator );
+    }
+};
+
+//================================================================//
+// MixedScenario
+//================================================================//
+class MixedScenario :
+    public AbstractScenario {
+protected:
+
+    SCENARIO_BASE_PORT ( 9090 )
+    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
+    SCENARIO_SIZE ( 16 )
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, size_t step ) const override {
+        
+        switch ( step ) {
+            case 0:
+                simulator.setInterval ( 0, 8,   1 );
+                simulator.setInterval ( 8, 16,  4 );
+                break;
+            
+            case 32:
+                simulator.setInterval ( 0, 8,   4 );
+                simulator.setInterval ( 8, 16,  1 );
+                break;
+            
+            case 64:
+//                simulator.pause ();
+                break;
+        }
+    }
+};
 
 //================================================================//
 // SimulatorApp
@@ -29,7 +85,7 @@ public:
         UNUSED ( args );
         
         SimulatorActivity simulator;
-        simulator.initialize ( TOTAL_MINERS, BASE_PORT );
+        simulator.initialize ( make_shared < MixedScenario >());
         
         Poco::ThreadPool threadPool;
         
