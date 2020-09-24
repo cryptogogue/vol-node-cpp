@@ -11,8 +11,6 @@
 namespace Volition {
 namespace Simulation {
 
-class SimGetBlockTask;
-
 //================================================================//
 // SimMiningMessenger
 //================================================================//
@@ -20,14 +18,14 @@ class SimMiningMessenger :
     public virtual AbstractMiningMessenger {
 protected:
 
-    map < string, shared_ptr < Miner >>     mMiners;
-    list < shared_ptr < SimGetBlockTask >>  mTasks;
+    map < string, shared_ptr < Miner >>                 mMiners;
+    list < shared_ptr < MiningMessengerRequest >>       mTasks;
 
     //----------------------------------------------------------------//
-    void        handleTask                  ( SimGetBlockTask& task );
+    void        handleTask                  ( const MiningMessengerRequest& task );
 
     //----------------------------------------------------------------//
-    void        AbstractMiningMessenger_requestBlock        ( AbstractMiningMessengerClient& client, string minerID, string url, size_t height ) override;
+    void        AbstractMiningMessenger_request         ( const MiningMessengerRequest& request ) override;
 
 public:
 

@@ -108,9 +108,15 @@ const Digest& BlockHeader::getCharm () const {
 }
 
 //----------------------------------------------------------------//
-string BlockHeader::getHash () const {
+const Digest& BlockHeader::getDigest () const {
 
     return this->mDigest;
+}
+
+//----------------------------------------------------------------//
+string BlockHeader::getHash () const {
+
+    return this->mDigest.toHex ();
 }
 
 //----------------------------------------------------------------//

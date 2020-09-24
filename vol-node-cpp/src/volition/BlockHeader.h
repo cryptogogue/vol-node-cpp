@@ -61,6 +61,7 @@ public:
                         BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKey& key );
                         ~BlockHeader                        ();
     const Digest&       getCharm                            () const;
+    const Digest&       getDigest                           () const;
     string              getHash                             () const;
     size_t              getHeight                           () const;
     string              getMinerID                          () const;

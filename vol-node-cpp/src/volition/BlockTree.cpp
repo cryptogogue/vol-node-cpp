@@ -56,7 +56,8 @@ size_t BlockTreeRoot::getSegLength () const {
 
 //----------------------------------------------------------------//
 BlockTreeNode::BlockTreeNode () :
-    mTree ( NULL ) {
+    mTree ( NULL ),
+    mStatus ( STATUS_PENDING ) {
 }
 
 //----------------------------------------------------------------//
@@ -205,6 +206,18 @@ bool BlockTreeNode::isAncestorOf ( ConstPtr tail ) const {
 }
 
 //----------------------------------------------------------------//
+bool BlockTreeNode::isComplete () const {
+
+    return ( this->mStatus == STATUS_COMPLETE );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNode::isExpired () const {
+
+    return ( this->mStatus == STATUS_EXPIRED );
+}
+
+//----------------------------------------------------------------//
 void BlockTreeNode::logBranchRecurse ( string& str ) const {
 
     if ( this->mParent ) {
@@ -214,6 +227,32 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
     
     string charm = header.getCharm ().toHex ().substr ( 0, 6 );
     Format::write ( str, "%s[%s - %s]", header.isGenesis () ? "" : ",", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str ());
+}
+
+//----------------------------------------------------------------//
+void BlockTreeNode::markComplete () {
+
+    if ( !this->mBlock ) return;
+    if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return;
+    
+    this->mStatus = STATUS_COMPLETE;
+    
+    set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
+    for ( ; childIt != this->mChildren.end (); ++childIt ) {
+        ( *childIt )->markComplete ();
+    }
+}
+
+//----------------------------------------------------------------//
+void BlockTreeNode::markExpired () {
+
+    this->mStatus = STATUS_EXPIRED;
+    this->mBlock = NULL;
+    
+    set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
+    for ( ; childIt != this->mChildren.end (); ++childIt ) {
+        ( *childIt )->markExpired ();
+    }
 }
 
 //----------------------------------------------------------------//
@@ -249,30 +288,34 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
     if ( node ) {
         if ( block ) {
             node->mBlock = block;
+            node->markComplete ();
         }
-        return node;
-    }
-
-    string prevHash = header->getPrevHash ();
-    BlockTreeNode::Ptr prevNode = this->findNodeForHash ( prevHash );
-    
-    if ( !prevNode && ( this->mRoot )) return NULL; // already have a root
-
-    node = make_shared < BlockTreeNode >();
-
-    node->mTree     = this;
-    node->mHeader   = header;
-    node->mBlock    = block;
-
-    if ( prevNode ) {
-        node->mParent = prevNode;
-        prevNode->mChildren.insert ( node.get ());
     }
     else {
-        this->mRoot = node;
-    }
 
-    this->mNodes [ hash ] = node.get ();
+        string prevHash = header->getPrevHash ();
+        BlockTreeNode::Ptr prevNode = this->findNodeForHash ( prevHash );
+        
+        if ( !prevNode && ( this->mRoot )) return NULL; // already have a root
+
+        node = make_shared < BlockTreeNode >();
+
+        node->mTree     = this;
+        node->mHeader   = header;
+        node->mBlock    = block;
+
+        if ( prevNode ) {
+            node->mParent = prevNode;
+            prevNode->mChildren.insert ( node.get ());
+        }
+        else {
+            this->mRoot = node;
+        }
+
+        this->mNodes [ hash ] = node.get ();
+    }
+    
+    node->markComplete ();
     return node;
 }
 
@@ -336,6 +379,17 @@ void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTree
         for ( ; childIt != node->mChildren.end (); ++ childIt ) {
             this->logTreeRecurse ( prefix, maxDepth, *childIt, depth );
         }
+    }
+}
+
+//----------------------------------------------------------------//
+void BlockTree::markExpired ( BlockTreeNode::ConstPtr node ) {
+
+    if ( !node ) return;
+    
+    BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getHash ());
+    if ( cursor ) {
+        cursor->markExpired ();
     }
 }
 

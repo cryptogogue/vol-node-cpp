@@ -8,6 +8,7 @@
 #include <volition/web-miner-api/AccountTransactionHandler.h>
 #include <volition/web-miner-api/AssetDetailsHandler.h>
 #include <volition/web-miner-api/BlockDetailsHandler.h>
+#include <volition/web-miner-api/BlockHeaderHandler.h>
 #include <volition/web-miner-api/BlockListHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
 #include <volition/web-miner-api/ExtendChainHandler.h>
@@ -43,6 +44,7 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionHandler >    ( HTTP::GET_PUT,    Format::write ( "%s/accounts/:accountName/transactions/:uuid/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >          ( HTTP::GET,        Format::write ( "%s/assets/:assetIndexOrID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >          ( HTTP::GET,        Format::write ( "%s/blocks/:blockID/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::BlockHeaderHandler >           ( HTTP::GET,        Format::write ( "%s/blocks/:blockID/header/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >             ( HTTP::GET,        Format::write ( "%s/blocks/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyAccountDetailsHandler >     ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/account/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >            ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/?", prefix ));

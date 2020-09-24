@@ -30,6 +30,7 @@
 		CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */; };
 		CD039C7123F7D7A90012CE4F /* LedgerFieldODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */; };
 		CD059BE324CAB1150049C97E /* InventoryLogEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */; };
+		CD08C0E6251D09920094C4FC /* BlockHeaderHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD08C0E5251D09920094C4FC /* BlockHeaderHandler.h */; };
 		CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaHandler.h */; };
 		CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
@@ -677,6 +678,7 @@
 		CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountTransactionHandler.h; path = "src/volition/web-miner-api/AccountTransactionHandler.h"; sourceTree = "<group>"; };
 		CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerFieldODBM.h; path = src/volition/LedgerFieldODBM.h; sourceTree = "<group>"; };
 		CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InventoryLogEntry.cpp; path = src/volition/InventoryLogEntry.cpp; sourceTree = "<group>"; };
+		CD08C0E5251D09920094C4FC /* BlockHeaderHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockHeaderHandler.h; path = "src/volition/web-miner-api/BlockHeaderHandler.h"; sourceTree = "<group>"; };
 		CD09ED742207D82500B09249 /* SchemaHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaHandler.h; path = "src/volition/web-miner-api/SchemaHandler.h"; sourceTree = "<group>"; };
 		CD0C3E1020C14460006E3B1C /* WebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebMiner.cpp; path = src/volition/WebMiner.cpp; sourceTree = "<group>"; };
 		CD0C3E1120C14460006E3B1C /* WebMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebMiner.h; path = src/volition/WebMiner.h; sourceTree = "<group>"; };
@@ -1423,6 +1425,7 @@
 				CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */,
 				CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */,
 				CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */,
+				CD08C0E5251D09920094C4FC /* BlockHeaderHandler.h */,
 				CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */,
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
 				CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */,
@@ -1722,6 +1725,7 @@
 				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,
 				CDBFD550218B8999002AB0C3 /* SendVOL.h in Headers */,
 				CDFA238F24600A9300B4CECF /* LedgerKey.h in Headers */,
+				CD08C0E6251D09920094C4FC /* BlockHeaderHandler.h in Headers */,
 				CD2AB81E230F3D5700805F70 /* Genesis.h in Headers */,
 				CDBFD551218B8999002AB0C3 /* RunScript.h in Headers */,
 				CDBFD547218B8999002AB0C3 /* AffirmKey.h in Headers */,

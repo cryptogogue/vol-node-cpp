@@ -15,10 +15,10 @@ private:
 
     friend class HTTPMiningMessenger;
 
-    AbstractMiningMessengerClient&      mClient;
-    string                              mMinerID;
+    MiningMessengerRequest              mRequest;
     string                              mURL;
-    shared_ptr < Block >                mBlock;
+    shared_ptr < const BlockHeader >    mBlockHeader;
+    shared_ptr < const Block >          mBlock;
 
     //----------------------------------------------------------------//
     void runTask () override {
@@ -47,12 +47,23 @@ private:
                 Poco::Dynamic::Var result = parser.parse ( jsonStream );
                 Poco::JSON::Object::Ptr json = result.extract < Poco::JSON::Object::Ptr >();
             
-                json = json ? json->getObject ( "block" ) : NULL;
-            
-                if ( json ) {
+                Poco::JSON::Object::Ptr blockJSON = json ? json->getObject ( "block" ) : NULL;
+                
+                if ( blockJSON ) {
                     shared_ptr < Block > block = make_shared < Block >();
-                    FromJSONSerializer::fromJSON ( *block, *json );
-                    this->mBlock = block;
+                    FromJSONSerializer::fromJSON ( *block, *blockJSON );
+                    this->mBlock        = block;
+                    this->mBlockHeader  = block;
+                }
+                else {
+            
+                    Poco::JSON::Object::Ptr headerJSON = json ? json->getObject ( "header" ) : NULL;
+                    
+                    if ( headerJSON ) {
+                        shared_ptr < BlockHeader > header = make_shared < BlockHeader >();
+                        FromJSONSerializer::fromJSON ( *header, *headerJSON );
+                        this->mBlockHeader  = header;
+                    }
                 }
             }
         }
@@ -67,11 +78,24 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    HTTPGetBlockTask ( AbstractMiningMessengerClient& client, string minerID, string url ) :
-        mClient ( client ),
-        Task ( "HTTP GET BLOCK" ),
-        mMinerID ( minerID ),
-        mURL ( url ) {
+    HTTPGetBlockTask ( const MiningMessengerRequest& request ) :
+        mRequest ( request ),
+        Task ( "HTTP GET BLOCK" ) {
+        
+        switch ( request.mRequestType ) {
+            
+            case MiningMessengerRequest::REQUEST_BLOCK:
+                Format::write ( this->mURL, "%sblocks/%s", request.mBaseURL.c_str (), request.mBlockDigest.toHex ().c_str ());
+                break;
+        
+            case MiningMessengerRequest::REQUEST_HEADER:
+                Format::write ( this->mURL, "%schain/%d", request.mBaseURL.c_str (), ( int )request.mHeight );
+                break;
+            
+            default:
+                assert ( false );
+                break;
+        }
     }
     
     //----------------------------------------------------------------//
@@ -104,7 +128,8 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
 
     HTTPGetBlockTask* task = dynamic_cast < HTTPGetBlockTask* >( pNf->task ());
     if ( task ) {
-        task->mClient.receiveBlock ( task->mMinerID, task->mBlock );
+        const MiningMessengerRequest& request = task->mRequest;
+        request.mClient->receive ( request, task->mBlockHeader, task->mBlock );
     }
     pNf->release ();
 }
@@ -114,11 +139,9 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
 //================================================================//
 
 //----------------------------------------------------------------//
-void HTTPMiningMessenger::AbstractMiningMessenger_requestBlock ( AbstractMiningMessengerClient& client, string minerID, string url, size_t height ) {
+void HTTPMiningMessenger::AbstractMiningMessenger_request ( const MiningMessengerRequest& request ) {
 
-    string endpointURL;
-    Format::write ( endpointURL, "%sblocks/%d/", url.c_str (), ( int )height );
-    this->mTaskManager.start ( new HTTPGetBlockTask ( client, minerID, endpointURL ));
+    this->mTaskManager.start ( new HTTPGetBlockTask ( request ));
 }
 
 } // namespace Volition

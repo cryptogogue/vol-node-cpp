@@ -8,6 +8,10 @@
 
 namespace Volition {
 
+class Block;
+class BlockHeader;
+class MiningMessengerRequest;
+
 //================================================================//
 // AbstractMiningMessengerClient
 //================================================================//
@@ -15,7 +19,7 @@ class AbstractMiningMessengerClient {
 protected:
 
     //----------------------------------------------------------------//
-    virtual void        AbstractMiningMessengerClient_receiveBlock      ( string minerID, shared_ptr < const Block > block ) = 0;
+    virtual void        AbstractMiningMessengerClient_receive           ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) = 0;
 
 public:
 
@@ -28,9 +32,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void receiveBlock ( string minerID, shared_ptr < const Block > block ) {
+    void receive ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
     
-        this->AbstractMiningMessengerClient_receiveBlock ( minerID, block );
+        this->AbstractMiningMessengerClient_receive ( request, header, block );
     }
 };
 

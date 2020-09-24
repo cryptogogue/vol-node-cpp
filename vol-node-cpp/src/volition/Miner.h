@@ -20,8 +20,6 @@ namespace Volition {
 
 class AbstractChainRecorder;
 class AbstractHashable;
-class Block;
-class BlockTreeNode;
 
 //================================================================//
 // RemoteMiner
@@ -33,9 +31,7 @@ private:
 
     string                      mURL;
     size_t                      mCurrentBlock;
-
-    bool                        mWaitingForTask;
-
+    
     BlockTreeNode::ConstPtr     mTag;
 
 public:
@@ -53,8 +49,9 @@ private:
 
     friend class Miner;
 
-    string                      mMinerID;
-    shared_ptr < const Block >  mBlock;
+    MiningMessengerRequest              mRequest;
+    shared_ptr < const BlockHeader >    mBlockHeader;
+    shared_ptr < const Block >          mBlock;
 };
 
 //================================================================//
@@ -88,8 +85,15 @@ protected:
     
     map < string, RemoteMiner >                     mRemoteMiners;
     BlockTree                                       mBlockTree;
-    shared_ptr < Chain >                            mChain;
-    BlockTreeNode::ConstPtr                         mTag;
+    
+    shared_ptr < Chain >                            mChain;         // may run behind block tree tag
+    BlockTreeNode::ConstPtr                         mChainTag;      // node corresponding to top of chain
+    BlockTreeNode::ConstPtr                         mGoalTag;       // "leaf" of the current chain
+    list < BlockTreeNode::ConstPtr >                mNodeQueue;
+    
+    BlockTreeNode::ConstPtr                         mSearchTarget;
+    size_t                                          mSearchCount;
+    size_t                                          mSearchLimit;
     
     Poco::Mutex                                     mMutex;
 
@@ -111,7 +115,7 @@ protected:
     BlockTreeNode::ConstPtr     truncate                    ( BlockTreeNode::ConstPtr tail );
 
     //----------------------------------------------------------------//
-    void                        AbstractMiningMessengerClient_receiveBlock      ( string minerID, shared_ptr < const Block > block ) override;
+    void                        AbstractMiningMessengerClient_receive           ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) override;
     void                        AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
     void                        AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
     virtual time_t              Miner_getTime                                   () const;

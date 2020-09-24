@@ -23,7 +23,7 @@ protected:
     void        onTaskFinishedNotification                  ( Poco::TaskFinishedNotification* pNf );
 
     //----------------------------------------------------------------//
-    void        AbstractMiningMessenger_requestBlock        ( AbstractMiningMessengerClient& client, string minerID, string url, size_t height ) override;
+    void        AbstractMiningMessenger_request             ( const MiningMessengerRequest& request ) override;
 
 public:
 

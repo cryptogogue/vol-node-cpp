@@ -106,7 +106,14 @@ DONE: wallet - add event listener for IndexedDB (to handle multi-tab updates) - 
 ----------------------------------------------------------------
 LAUNCH
 
-node - separate entropy from allure (allure computed simply - hash of block height; entropy is block height plus previous entropy signed by miner)
+node - add timstamps and lookback to simulator
+node - test lookback scenarios
+node - consensus for missing blocks (header is published but not block)
+
+mining - legal ToS
+mining - chain ToS (copyright/trademark inheritance)
+mining - onboard new miners (check certs)
+
 node - publish default media url prefix (from schema, with miner override)
 
 schema - asset visualization descriptor (i.e. 2D/3D, front/back, language, etc.)
@@ -140,13 +147,9 @@ node - reimplement 'run script' as multi-part transaction
 node - per asset modification metadata
 node - record asset exchange metadata (inventory nonce, sender, note)
 
+----------------------------------------------------------------
+FUTURE (?)
+
 VOL:ETH
 VOL:ETH - onboarding
 VOL:ETH - bearer bond vs oracles
-
-multi-node
-miner auth
-legal
-
-----------------------------------------------------------------
-

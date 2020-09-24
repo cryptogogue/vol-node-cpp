@@ -9,43 +9,40 @@ namespace Volition {
 namespace Simulation {
 
 //================================================================//
-// SimGetBlockTask
-//================================================================//
-class SimGetBlockTask {
-private:
-
-    friend class SimMiningMessenger;
-
-    AbstractMiningMessengerClient&      mClient;
-    string                              mMinerID;
-    size_t                              mHeight;
-
-public:
-
-    //----------------------------------------------------------------//
-    SimGetBlockTask ( AbstractMiningMessengerClient& client ) :
-        mClient ( client ) {
-    }
-};
-
-
-//================================================================//
 // SimMiningMessenger
 //================================================================//
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::handleTask ( SimGetBlockTask& task ) {
+void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
 
-    shared_ptr < Miner > miner = this->mMiners [ task.mMinerID ];
+    shared_ptr < Miner > miner = this->mMiners [ request.mMinerID ];
     assert ( miner );
     
     ScopedMinerLock scopedLock ( miner );
-    const Chain& chain = *miner->getBestBranch ();
-
-    shared_ptr < Block > block = chain.getBlock ( task.mHeight );
-    assert ( block );
     
-    task.mClient.receiveBlock ( task.mMinerID, block );
+    switch ( request.mRequestType ) {
+        
+        case MiningMessengerRequest::REQUEST_BLOCK: {
+            
+            const BlockTree& blockTree = miner->getBlockTree ();
+            BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( request.mBlockDigest.toHex ());
+            shared_ptr < const Block > block = node ? node->getBlock () : NULL;
+            request.mClient->receive ( request, block, block );
+            break;
+        }
+        
+        case MiningMessengerRequest::REQUEST_HEADER: {
+            
+            const Chain& chain = *miner->getBestBranch ();
+            shared_ptr < const Block > block = chain.getBlock ( request.mHeight );
+            request.mClient->receive ( request, block, NULL );
+            break;
+        }
+        
+        default:
+            assert ( false );
+            break;
+    }
 }
 
 //----------------------------------------------------------------//
@@ -68,10 +65,10 @@ void SimMiningMessenger::setMiners ( vector < shared_ptr < Miner >> miners ) {
 //----------------------------------------------------------------//
 void SimMiningMessenger::updateAndDispatch () {
 
-    for ( list < shared_ptr < SimGetBlockTask >>::iterator cursor = this->mTasks.begin (); cursor != this->mTasks.end (); ) {
-        list < shared_ptr < SimGetBlockTask >>::iterator taskIt = cursor++;
+    for ( list < shared_ptr < MiningMessengerRequest >>::iterator cursor = this->mTasks.begin (); cursor != this->mTasks.end (); ) {
+        list < shared_ptr < MiningMessengerRequest >>::iterator taskIt = cursor++;
     
-        shared_ptr < SimGetBlockTask > task = *taskIt;
+        shared_ptr < MiningMessengerRequest > task = *taskIt;
         this->handleTask ( *task );
         this->mTasks.erase ( taskIt );
     }
@@ -82,14 +79,9 @@ void SimMiningMessenger::updateAndDispatch () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::AbstractMiningMessenger_requestBlock ( AbstractMiningMessengerClient& client, string minerID, string url, size_t height ) {
-    UNUSED ( url );
+void SimMiningMessenger::AbstractMiningMessenger_request ( const MiningMessengerRequest& request ) {
 
-    shared_ptr < SimGetBlockTask > task = make_shared < SimGetBlockTask >( client );
-    task->mMinerID  = minerID;
-    task->mHeight   = height;
-    
-    this->mTasks.push_back ( task );
+    this->mTasks.push_back ( make_shared < MiningMessengerRequest >( request ));
 }
 
 } // namespace Simulation

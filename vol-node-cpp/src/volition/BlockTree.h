@@ -64,9 +64,19 @@ private:
     shared_ptr < BlockTreeNode >            mParent;
     set < BlockTreeNode* >                  mChildren;
 
+    enum Status {
+        STATUS_PENDING,
+        STATUS_EXPIRED,
+        STATUS_COMPLETE,
+    };
+
+    Status                                  mStatus;
+
     //----------------------------------------------------------------//
     shared_ptr < const BlockTreeNode >      findInsertionRecurse    ( shared_ptr < const BlockTreeNode > tail, string minerID, const Digest& visage ) const;
     void                                    logBranchRecurse        ( string& str ) const;
+    void                                    markComplete            ();
+    void                                    markExpired             ();
 
 public:
 
@@ -86,6 +96,8 @@ public:
     shared_ptr < const BlockHeader >        getBlockHeader          () const;
     shared_ptr < const BlockTreeNode >      getParent               () const;
     bool                                    isAncestorOf            ( ConstPtr tail ) const;
+    bool                                    isComplete              () const;
+    bool                                    isExpired               () const;
     string                                  writeBranch             () const;
 };
 
@@ -114,6 +126,7 @@ public:
                                         ~BlockTree              ();
     BlockTreeNode::ConstPtr             findNodeForHash         ( string hash ) const;
     void                                logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
+    void                                markExpired             ( BlockTreeNode::ConstPtr node );
 };
 
 } // namespace Volition

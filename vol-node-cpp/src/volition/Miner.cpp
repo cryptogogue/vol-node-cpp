@@ -9,6 +9,52 @@
 #include <volition/MinerLaunchTests.h>
 #include <volition/TheContext.h>
 
+// Axioms
+// 1. SELF must agree with at least N other miners in the last M samples (where N and M may be adjusted by total active miners).
+// 2. there is always one (and only one) IDEAL chain. (chain with the greatest per-block CHARM.)
+// 3. Any chain may be compared against any other and scored by their relation to the IDEAL.
+//      a. It is possible for multiple chains to "tie" in scoring.
+//      b. To break a tie, pick the chain with the most recent willing POSE.
+// 4. A chain produced by more active miners will eventually beat a chain produced by fewer.
+//      a. The larger pool of miners has more POSE to choose from, and thus is more likely to have the winning POSEs.
+
+// When initially building the chain, we only need block headers (with CHARM).
+// To compare branches, we do not have to apply any transactions.
+// Once we've committed to a branch, we can request the full block.
+// If a block delivery times out, discard the chain
+
+// conceptually, always get the full chain from each node sampled
+// broadcast a change as soon as detected (after evaluating batch of samples)
+// only advance when consensus threshold is met and blocks are known
+// roll back as soon as a better branch is proven
+//      branches have to be long enough to compete
+//      check headers first - if branch would lose, don't roll back
+//      use waypoints to efficiently seek back to branch point
+//      after seek back, gather block headers moving forward from fork
+//      maintain rollback branches as competitors until proven
+//      during seek, detect if branch changes and restart if unrecognized header
+
+// always get the whole chain
+// RACE AHEAD when a point of consensus is found (N of last M random samples AND blocks are known)
+// REWIND as soon as a better chain is proven (and blocks are known)
+// AS SOON as a new leaf is found (with an unknown root), seek back to fork then rebuild (and evaluate)
+// ignore shorter branches that CANNOT WIN
+
+// if there is an OUTAGE (more than a certain number of nodes stop responding), network should HALT
+
+// when adding or removing a miner a hard FORK is (effectively) created
+// the name of the FORK must be unique and be adopted by the remaining miners
+
+// REMOTE MINERs cache chain FRAGMENTs
+// ask REMOTE MINER for FRAGMENT starting at HEIGHT
+// FRAGMENT may be incomplete
+// if FRAGMENT doesn't have a KNOWN ROOT, remote chain has to be rewound
+
+// we'll keep a tree of block headers that may or may not have full blocks attached
+// as chain fragments come in, we'll add them to the tree and mark branches for evaluation
+// active miners have to "pin" tree branches; prune branches with no miners
+// miners get updated from the service response queue
+
 namespace Volition {
 
 //================================================================//
@@ -17,8 +63,7 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 RemoteMiner::RemoteMiner () :
-    mCurrentBlock ( 0 ),
-    mWaitingForTask ( false ) {
+    mCurrentBlock ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -86,12 +131,6 @@ void Miner::extend () {
     shared_ptr < Block > block = this->prepareBlock ();
     if ( block ) {
     
-//        LGN_LOG ( VOL_FILTER_ROOT, INFO, "BLOCK: %s,%d - %s",
-//            block->getMinerID ().c_str (),
-//            ( int )block->getHeight (),
-//            block->getCharm ().toHex ().substr ( 0, 6 ).c_str ()
-//        );
-    
         this->pushBlock ( block );
     
         if ( this->mVerbose ) {
@@ -119,7 +158,7 @@ const BlockTree& Miner::getBlockTree () const {
 //----------------------------------------------------------------//
 shared_ptr < const BlockTreeNode > Miner::getBlockTreeTag () const {
 
-    return this->mTag;
+    return this->mGoalTag;
 }
 
 //----------------------------------------------------------------//
@@ -181,12 +220,14 @@ const Signature& Miner::getVisage () const {
 //----------------------------------------------------------------//
 bool Miner::hasConsensus () const {
 
+    if ( !( this->mGoalTag && this->mGoalTag->isComplete ())) return false;
+
     size_t count = 0;
     
     map < string, RemoteMiner >::const_iterator minerIt = this->mRemoteMiners.cbegin ();
     for ( ; minerIt != this->mRemoteMiners.cend (); ++minerIt ) {
         const RemoteMiner& remoteMiner = minerIt->second;
-        if ( this->mTag->isAncestorOf ( remoteMiner.mTag )) count++;
+        if ( this->mGoalTag->isAncestorOf ( remoteMiner.mTag )) count++;
     }
     return ( count > ( this->mRemoteMiners.size () >> 1 ));
 }
@@ -223,7 +264,8 @@ Miner::Miner () :
     mSolo ( true ),
     mVerbose ( false ),
     mControlPermitted ( false ),
-    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ) {
+    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
+    mSearchCount ( 0 ) {
     
     MinerLaunchTests::checkEnvironment ();
 }
@@ -258,13 +300,52 @@ shared_ptr < Block > Miner::prepareBlock () {
 void Miner::processQueue () {
 
     for ( ; this->mBlockQueue.size (); this->mBlockQueue.pop_front ()) {
+    
         const BlockQueueEntry& entry = *this->mBlockQueue.front ().get ();
-        RemoteMiner& remoteMiner = this->mRemoteMiners [ entry.mMinerID ];
+        string minerID = entry.mRequest.mMinerID;
+        
+        RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
+
+        switch ( entry.mRequest.mRequestType ) {
+        
+            case MiningMessengerRequest::REQUEST_HEADER: {
+                
+                remoteMiner.mTag = entry.mBlockHeader ? this->mBlockTree.affirmBlock ( entry.mBlockHeader, NULL ) : NULL;
+                remoteMiner.mCurrentBlock = remoteMiner.mTag ? entry.mRequest.mHeight + 1 : entry.mRequest.mHeight - 1;
+                break;
+            }
+            
+            case MiningMessengerRequest::REQUEST_BLOCK: {
+                
+                if ( entry.mBlock ) {
+                    this->mBlockTree.affirmBlock ( entry.mBlock );
+                }
+                
+                if ( this->mSearchTarget && ( entry.mRequest.mBlockDigest == ( **this->mSearchTarget ).getDigest ())) {
+                
+                    this->mSearchCount++;
+                    if ( this->mSearchCount >= this->mSearchLimit ) {
+                    
+                        if ( !this->mSearchTarget->isComplete ()) {
+                            this->mBlockTree.markExpired ( this->mSearchTarget );
+                        }
+                        this->mSearchTarget     = NULL;
+                        this->mSearchCount      = 0;
+                        this->mSearchLimit      = 0;
+                    }
+                }
+                break;
+            }
+            
+            default:
+                assert ( false );
+                break;
+        }
 
         if ( entry.mBlock ) {
 
             remoteMiner.mCurrentBlock = entry.mBlock->getHeight ();
-            remoteMiner.mTag = this->mBlockTree.affirmBlock ( entry.mBlock );
+            remoteMiner.mTag = this->mBlockTree.affirmBlock ( entry.mBlockHeader, entry.mBlock );
 
             if ( remoteMiner.mTag ) {
                 remoteMiner.mCurrentBlock++; // next block
@@ -274,11 +355,9 @@ void Miner::processQueue () {
             }
         }
 
-        if ( this->mMinerSet.find ( entry.mMinerID ) != this->mMinerSet.end ()) {
-            this->mMinerSet.erase ( entry.mMinerID );
+        if ( this->mMinerSet.find ( minerID ) != this->mMinerSet.end ()) {
+            this->mMinerSet.erase ( minerID );
         }
-
-        remoteMiner.mWaitingForTask = false;
     }
 }
 
@@ -288,7 +367,7 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     bool result = this->mChain->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
-    this->mTag = this->mBlockTree.affirmBlock ( block );
+    this->mChainTag = this->mBlockTree.affirmBlock ( block );
 }
 
 //----------------------------------------------------------------//
@@ -398,22 +477,27 @@ void Miner::shutdown ( bool kill ) {
 void Miner::startTasks () {
 
     this->affirmMessenger ();
-
-    bool addToSet = ( this->mMinerSet.size () == 0 );
+    
+    bool startBlockSearch = ( this->mSearchTarget && ( this->mSearchCount == 0 ));
 
     map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
     
         RemoteMiner& remoteMiner = remoteMinerIt->second;
         
-        if ( !remoteMiner.mWaitingForTask ) {
-            remoteMiner.mWaitingForTask = true;
-            this->mMessenger->requestBlock ( *this, remoteMinerIt->first, remoteMiner.mURL, remoteMiner.mCurrentBlock );
-        }
-        
-        if ( addToSet ) {
+        // constantly refill active set
+        if ( this->mMinerSet.find ( remoteMinerIt->first ) == this->mMinerSet.end ()) {
+            this->mMessenger->requestHeader ( *this, remoteMinerIt->first, remoteMiner.mURL, remoteMiner.mCurrentBlock );
             this->mMinerSet.insert ( remoteMinerIt->first );
         }
+        
+        if ( startBlockSearch ) {
+            this->mMessenger->requestBlock ( *this, remoteMinerIt->first, remoteMiner.mURL, ( **this->mSearchTarget ).getDigest ());
+        }
+    }
+    
+    if ( startBlockSearch ) {
+        this->mSearchLimit = this->mRemoteMiners.size ();
     }
 }
 
@@ -429,33 +513,75 @@ void Miner::step ( bool solo ) {
     }
     else {
     
+        // APPLY incoming blocks
         this->processQueue ();
         
-        BlockTreeNode::ConstPtr originalBranch = this->mTag;
-        BlockTreeNode::ConstPtr nextBranch = this->mTag;
+        // PRUNE expired
+        
+        BlockTreeNode::ConstPtr originalBranch  = this->mGoalTag;
+        BlockTreeNode::ConstPtr nextBranch      = this->mGoalTag;
         
         // find the best branch
         map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
         for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
-           const RemoteMiner& remoteMiner = remoteMinerIt->second;
-           
-           BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner.mTag );
+            const RemoteMiner& remoteMiner = remoteMinerIt->second;
+
+            BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner.mTag ); // also remove expired blocks
                       
-           if ( truncated && ( BlockTreeNode::compare ( truncated, nextBranch ) < 0 )) {
+            if ( truncated && ( BlockTreeNode::compare ( truncated, nextBranch ) < 0 )) {
                 nextBranch = truncated;
-           }
+            }
         }
 
+        // CHOOSE new branch
         if ( originalBranch != nextBranch ) {
-            this->mTag = nextBranch;
-            this->rebuildChain ( originalBranch, nextBranch );
+        
+            this->mGoalTag = nextBranch;
+            
+            // REWIND chain to point of divergence
+            BlockTreeNode::ConstPtr root = BlockTreeNode::findRoot ( this->mChainTag, this->mGoalTag ).mRoot;
+            assert ( root );                // guaranteed -> common genesis
+            assert ( root->isComplete ());  // guaranteed -> was in chain
+            
+            this->mChain->reset (( **root ).getHeight () + 1 );
+            this->mChainTag = root;
+            
+            // TODO: this is a bit gratuitous; can do better than a full rebuld each time
+            this->mNodeQueue.clear ();
+            for ( BlockTreeNode::ConstPtr cursor = this->mGoalTag; cursor != this->mChainTag; cursor = cursor->getParent ()) {
+                this->mNodeQueue.push_front ( cursor );
+            }
         }
         
+        // ADVANCE chain (if blocks available)
+        while ( this->mNodeQueue.size ()) {
+        
+            BlockTreeNode::ConstPtr next = this->mNodeQueue.front ();
+            if ( !next->isComplete ()) break;
+            
+            bool result = this->mChain->pushBlock ( *next->getBlock (), this->mBlockVerificationPolicy );
+            assert ( result );
+            this->mNodeQueue.pop_front ();
+        }
+        
+        // SEARCH for next missing block
+        if ( this->mNodeQueue.size ()) {
+            BlockTreeNode::ConstPtr search = this->mNodeQueue.front ();
+            if ( search != this->mSearchTarget ) {
+                this->mSearchTarget = search;
+                this->mSearchCount = 0;
+            }
+        }
+        
+        // EXTEND once chain is complete and has consensus
         if ( this->hasConsensus ()) {
             this->extend ();
         }
 
+        // SCAN the ledger for miners
         this->discoverMiners ();
+        
+        // QUERY the network for blocks
         this->startTasks ();
     }
 }
@@ -501,12 +627,12 @@ BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Miner::AbstractMiningMessengerClient_receiveBlock ( string minerID, shared_ptr < const Block > block ) {
-    
+void Miner::AbstractMiningMessengerClient_receive ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
     
     unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
-    blockQueueEntry->mMinerID = minerID;
-    blockQueueEntry->mBlock = block;
+    blockQueueEntry->mRequest           = request;
+    blockQueueEntry->mBlockHeader       = header;
+    blockQueueEntry->mBlock             = block;
 
     Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
     this->mBlockQueue.push_back ( move ( blockQueueEntry ));
