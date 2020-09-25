@@ -15,7 +15,6 @@
 using namespace Volition;
 using namespace Simulation;
 
-const size_t TOTAL_MINERS   = 16;
 const int BASE_PORT         = 9090;
 
 //================================================================//
@@ -25,9 +24,9 @@ class SimpleScenario :
     public AbstractScenario {
 protected:
 
-    SCENARIO_BASE_PORT ( 9090 )
+    SCENARIO_BASE_PORT ( BASE_PORT )
     SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
-    SCENARIO_SIZE ( TOTAL_MINERS )
+    SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
     void AbstractScenario_control ( Simulator& simulator, size_t step ) const override {
@@ -48,7 +47,7 @@ class MixedScenario :
     public AbstractScenario {
 protected:
 
-    SCENARIO_BASE_PORT ( 9090 )
+    SCENARIO_BASE_PORT ( BASE_PORT )
     SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
     SCENARIO_SIZE ( 16 )
     
@@ -85,7 +84,7 @@ public:
         UNUSED ( args );
         
         SimulatorActivity simulator;
-        simulator.initialize ( make_shared < MixedScenario >());
+        simulator.initialize ( make_shared < SimpleScenario >());
         
         Poco::ThreadPool threadPool;
         

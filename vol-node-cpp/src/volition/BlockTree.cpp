@@ -218,6 +218,12 @@ bool BlockTreeNode::isExpired () const {
 }
 
 //----------------------------------------------------------------//
+bool BlockTreeNode::isPending () const {
+
+    return ( this->mStatus == STATUS_PENDING );
+}
+
+//----------------------------------------------------------------//
 void BlockTreeNode::logBranchRecurse ( string& str ) const {
 
     if ( this->mParent ) {
@@ -231,7 +237,7 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
 
 //----------------------------------------------------------------//
 void BlockTreeNode::markComplete () {
-
+    
     if ( !this->mBlock ) return;
     if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return;
     
@@ -286,10 +292,7 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
     BlockTreeNode::Ptr node = this->findNodeForHash ( hash );;
 
     if ( node ) {
-        if ( block ) {
-            node->mBlock = block;
-            node->markComplete ();
-        }
+        node->mBlock = block;
     }
     else {
 
@@ -315,7 +318,14 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
         this->mNodes [ hash ] = node.get ();
     }
     
-    node->markComplete ();
+    if ( node->mBlock ) {
+        node->markComplete ();
+    }
+    
+    if ( node->mParent && node->mParent->isExpired ()) {
+        node->markExpired ();
+    }
+    
     return node;
 }
 

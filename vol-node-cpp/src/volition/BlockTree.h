@@ -98,6 +98,7 @@ public:
     bool                                    isAncestorOf            ( ConstPtr tail ) const;
     bool                                    isComplete              () const;
     bool                                    isExpired               () const;
+    bool                                    isPending               () const;
     string                                  writeBranch             () const;
 };
 

@@ -108,10 +108,9 @@ protected:
     bool                        hasConsensus                () const;
     void                        processQueue                ();
     void                        pushBlock                   ( shared_ptr < const Block > block );
-    void                        rebuildChain                ( shared_ptr < const BlockTreeNode > original, shared_ptr < const BlockTreeNode > replace );
-    void                        rebuildChainRecurse         ( shared_ptr < const BlockTreeNode > node, shared_ptr < const BlockTreeNode > root );
     void                        saveChain                   ();
     void                        startTasks                  ();
+    BlockTreeNode::ConstPtr     trimExpired                 ( BlockTreeNode::ConstPtr tail );
     BlockTreeNode::ConstPtr     truncate                    ( BlockTreeNode::ConstPtr tail );
 
     //----------------------------------------------------------------//
