@@ -114,12 +114,6 @@ const Digest& BlockHeader::getDigest () const {
 }
 
 //----------------------------------------------------------------//
-string BlockHeader::getHash () const {
-
-    return this->mDigest.toHex ();
-}
-
-//----------------------------------------------------------------//
 size_t BlockHeader::getHeight () const {
 
     return this->mHeight;

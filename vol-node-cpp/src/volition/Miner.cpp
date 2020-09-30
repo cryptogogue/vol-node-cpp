@@ -12,217 +12,69 @@
 namespace Volition {
 
 //================================================================//
-// RemoteMiner
-//================================================================//
-
-//----------------------------------------------------------------//
-RemoteMiner::RemoteMiner () :
-    mCurrentBlock ( 0 ) {
-}
-
-//----------------------------------------------------------------//
-RemoteMiner::~RemoteMiner () {
-}
-
-//================================================================//
 // Miner
 //================================================================//
 
 //----------------------------------------------------------------//
-void Miner::affirmKey ( uint keyLength, unsigned long exp ) {
+void Miner::affirmSearch ( BlockTreeNode::ConstPtr branch ) {
 
-    if ( !this->mKeyPair ) {
-        this->mKeyPair.rsa ( keyLength, exp );
-    }
-    assert ( this->mKeyPair );
-}
+    if ( branch->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_COMPLETE | BlockTreeNode::STATUS_INVALID ))) return;
 
-//----------------------------------------------------------------//
-void Miner::affirmMessenger () {
-
-    if ( !this->mMessenger ) {
-        this->mMessenger = make_shared < HTTPMiningMessenger >();
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::affirmVisage () {
-
-    assert ( this->mKeyPair );
-    this->mVisage = this->mKeyPair.sign ( this->mMotto, Digest::HASH_ALGORITHM_SHA256 );
-}
-
-//----------------------------------------------------------------//
-bool Miner::checkBestBranch ( string miners ) const {
-
-    assert ( this->mChain );
-    return this->mChain->checkMiners ( miners );
-}
-
-//----------------------------------------------------------------//
-bool Miner::controlPermitted () const {
-
-    return this->mControlPermitted;
-}
-
-//----------------------------------------------------------------//
-void Miner::discoverMiners () {
-
-    map < string, MinerInfo > miners = this->getBestBranch ()->getMiners ();
-        
-    map < string, MinerInfo >::iterator minerIt = miners.begin ();
-    for ( ; minerIt != miners.end (); ++minerIt ) {
-        MinerInfo& minerInfo = minerIt->second;
-        if ( minerIt->first != this->mMinerID ) {
-            this->mRemoteMiners [ minerIt->first ].mURL = minerInfo.getURL (); // affirm
-        }
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::extend () {
-
-    shared_ptr < Block > block = this->prepareBlock ();
-    if ( block ) {
+    string hash = ( **branch ).getDigest ();
     
-        this->pushBlock ( block );
+    if ( this->mSearches.find ( hash ) != this->mSearches.end ()) return; // already searching
+
+    MinerSearchEntry& search = this->mSearches [ hash ];
+    
+    search.mSearchTarget = branch;
+    search.mSearchLimit = 0;
+    
+    map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         
-        if ( this->mVerbose ) {
-            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )this->mChain->countBlocks ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain->print ().c_str ());
-        }
-        this->saveChain ();
-        this->pruneTransactions ( *this->mChain );
+        RemoteMiner& remoteMiner = remoteMinerIt->second;
+        
+        this->mMessenger->requestBlock ( *this, remoteMinerIt->first, remoteMiner.mURL, ( **search.mSearchTarget ).getDigest ());
+        search.mSearchLimit++;
     }
 }
 
 //----------------------------------------------------------------//
-const Chain* Miner::getBestBranch () const {
+bool Miner::canExtend () const {
 
-    return this->mChain.get ();
-}
-
-//----------------------------------------------------------------//
-const BlockTree& Miner::getBlockTree () const {
-
-    return this->mBlockTree;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < const BlockTreeNode > Miner::getBlockTreeTag () const {
-
-    return this->mGoalTag;
-}
-
-//----------------------------------------------------------------//
-const CryptoKey& Miner::getKeyPair () const {
-
-    return this->mKeyPair;
-}
-
-//----------------------------------------------------------------//
-bool Miner::getLazy () const {
-
-    return this->mLazy;
-}
-
-//----------------------------------------------------------------//
-Ledger& Miner::getLedger () {
-
-    assert ( this->mChain );
-    return *this->mChain;
-}
-
-//----------------------------------------------------------------//
-const Ledger& Miner::getLedger () const {
-
-    assert ( this->mChain );
-    return *this->mChain;
-}
-
-//----------------------------------------------------------------//
-string Miner::getMinerID () const {
-
-    return this->mMinerID;
-}
-
-//----------------------------------------------------------------//
-string Miner::getMotto () const {
-
-    return this->mMotto;
-}
-
-//----------------------------------------------------------------//
-SerializableTime Miner::getStartTime () const {
-
-    return this->mStartTime;
-}
-
-//----------------------------------------------------------------//
-time_t Miner::getTime () const {
-
-    return this->Miner_getTime ();
-}
-
-//----------------------------------------------------------------//
-const Signature& Miner::getVisage () const {
-
-    return this->mVisage;
-}
-
-//----------------------------------------------------------------//
-bool Miner::hasConsensus () const {
-
-    if ( !( this->mGoalTag && this->mGoalTag->isComplete ())) return false;
+    if ( !( this->mBestBranch && this->mBestBranch->checkStatus ( BlockTreeNode::STATUS_COMPLETE ))) return false;
 
     size_t count = 0;
     
     map < string, RemoteMiner >::const_iterator minerIt = this->mRemoteMiners.cbegin ();
     for ( ; minerIt != this->mRemoteMiners.cend (); ++minerIt ) {
         const RemoteMiner& remoteMiner = minerIt->second;
-        if ( this->mGoalTag->isAncestorOf ( remoteMiner.mTag )) count++;
+        if ( this->mBestBranch->isAncestorOf ( remoteMiner.mTag )) count++;
     }
     return ( count > ( this->mRemoteMiners.size () >> 1 ));
 }
 
 //----------------------------------------------------------------//
-void Miner::loadGenesis ( string path ) {
+void Miner::composeChain () {
 
-    fstream inStream;
-    inStream.open ( path, ios_base::in );
-    assert ( inStream.is_open ());
-
-    shared_ptr < Block > block = make_shared < Block >();
-    FromJSONSerializer::fromJSON ( *block, inStream );
-    this->setGenesis ( block );
+    // if chain is divergent from best branch, re-root it
+    if ( !this->mChainTag->isAncestorOf ( this->mBestBranch )) {
+                    
+        // REWIND chain to point of divergence
+        BlockTreeNode::ConstPtr root = BlockTreeNode::findRoot ( this->mChainTag, this->mBestBranch ).mRoot;
+        assert ( root ); // guaranteed -> common genesis
+        assert ( root->checkStatus ( BlockTreeNode::STATUS_COMPLETE ));  // guaranteed -> was in chain
+        
+        this->mChain->reset (( **root ).getHeight () + 1 );
+        this->mChainTag = root;
+    }
+    assert ( this->mChainTag->isAncestorOf ( this->mBestBranch ));
+    
+    this->updateChainRecurse ( this->mBestBranch );
 }
 
 //----------------------------------------------------------------//
-void Miner::loadKey ( string keyfile, string password ) {
-    UNUSED ( password );
-
-    // TODO: password
-
-    fstream inStream;
-    inStream.open ( keyfile, ios_base::in );
-    assert ( inStream.is_open ());
-    
-    Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
-    assert ( this->mKeyPair );
-}
-
-//----------------------------------------------------------------//
-Miner::Miner () :
-    mLazy ( false ),
-    mSolo ( true ),
-    mVerbose ( false ),
-    mControlPermitted ( false ),
-    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
-    mSearchCount ( 0 ),
-    mSearchLimit ( 0 ) {
-    
-    MinerLaunchTests::checkEnvironment ();
+Miner::Miner () {
 }
 
 //----------------------------------------------------------------//
@@ -230,29 +82,7 @@ Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
-void Miner::permitControl ( bool permit ) {
-
-    this->mControlPermitted = permit;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < Block > Miner::prepareBlock () {
-        
-    shared_ptr < Block > prevBlock = this->mChain->getBlock ();
-    assert ( prevBlock );
-    
-    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, this->getTime (), prevBlock.get (), this->mKeyPair );
-    this->fillBlock ( *this->mChain, *block );
-    
-    if ( !( this->mLazy && ( block->countTransactions () == 0 ))) {
-        block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
-        return block;
-    }
-    return NULL;
-}
-
-//----------------------------------------------------------------//
-void Miner::processQueue () {
+void Miner::processResponses () {
 
     for ( ; this->mBlockQueue.size (); this->mBlockQueue.pop_front ()) {
     
@@ -278,22 +108,21 @@ void Miner::processQueue () {
             
             case MiningMessengerRequest::REQUEST_BLOCK: {
                 
-                if ( entry.mBlock ) {
-                    this->mBlockTree.affirmBlock ( entry.mBlock );
-                }
+                this->mBlockTree.update ( entry.mBlock ); // update no matter what (will do nothing if node is missing)
                 
-                if ( this->mSearchTarget && ( entry.mRequest.mBlockDigest == ( **this->mSearchTarget ).getDigest ())) {
-                    this->mSearchCount++;
-                    
-                    if (( this->mSearchCount >= this->mSearchLimit ) && this->mSearchTarget->isPending ()) {
-                        this->mBlockTree.markExpired ( this->mSearchTarget );
-                    }
-                }
+                string hash = entry.mRequest.mBlockDigest;
+                map < string, MinerSearchEntry >::iterator searchIt = this->mSearches.find ( hash );
+                if ( searchIt == this->mSearches.end ()) break;
                 
-                if ( this->mSearchTarget && !this->mSearchTarget->isPending ()) {
-                    this->mSearchTarget     = NULL;
-                    this->mSearchCount      = 0;
-                    this->mSearchLimit      = 0;
+                MinerSearchEntry& search = searchIt->second;
+                search.mSearchCount++;
+
+                if (( search.mSearchCount >= search.mSearchLimit ) && search.mSearchTarget->checkStatus ( BlockTreeNode::STATUS_NEW )) {
+                    this->mBlockTree.mark ( search.mSearchTarget, BlockTreeNode::STATUS_MISSING );
+                }
+
+                if ( !search.mSearchTarget->checkStatus ( BlockTreeNode::STATUS_NEW )) {
+                    this->mSearches.erase ( hash );
                 }
                 break;
             }
@@ -306,114 +135,9 @@ void Miner::processQueue () {
 }
 
 //----------------------------------------------------------------//
-void Miner::pushBlock ( shared_ptr < const Block > block ) {
-
-    bool result = this->mChain->pushBlock ( *block, this->mBlockVerificationPolicy );
-    assert ( result );
-    
-    BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( block );
-    assert ( node );
-    
-    if ( this->mChainTag == this->mGoalTag ) {
-        this->mGoalTag = node;
-    }
-    this->mChainTag = node;
-}
-
-//----------------------------------------------------------------//
-void Miner::reset () {
-
-    this->TransactionQueue::reset ();
-    this->mChain->reset ( 1 );
-    this->mChain->clearSchemaCache ();
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->reset ();
-    }
-    this->Miner_reset ();
-}
-
-//----------------------------------------------------------------//
-void Miner::saveChain () {
-
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->saveChain ( *this );
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorder ) {
-
-    this->mChainRecorder = chainRecorder;
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->loadChain ( *this );
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::setGenesis ( shared_ptr < const Block > block ) {
-    
-    this->mChainTag = NULL;
-    this->mGoalTag = NULL;
-    
-    assert ( block );
-    
-    shared_ptr < Chain > chain = make_shared < Chain >();
-    this->mChain = chain;
-    
-    this->pushBlock ( block );
-}
-
-//----------------------------------------------------------------//
-void Miner::setLazy ( bool lazy ) {
-
-    this->mLazy = lazy;
-}
-
-//----------------------------------------------------------------//
-void Miner::setMessenger ( shared_ptr < AbstractMiningMessenger > messenger ) {
-
-    this->mMessenger = messenger;
-}
-
-//----------------------------------------------------------------//
-void Miner::setMinerID ( string minerID ) {
-
-    this->mMinerID = minerID;
-}
-
-//----------------------------------------------------------------//
-void Miner::setMotto ( string motto ) {
-
-    this->mMotto = motto;
-}
-
-//----------------------------------------------------------------//
-void Miner::setSolo ( bool solo ) {
-
-    this->mSolo = solo;
-}
-
-//----------------------------------------------------------------//
-void Miner::setVerbose ( bool verbose ) {
-
-    this->mVerbose = verbose;
-}
-
-//----------------------------------------------------------------//
-void Miner::shutdown ( bool kill ) {
-
-    this->Miner_shutdown ( kill );
-}
-
-//----------------------------------------------------------------//
-void Miner::startTasks () {
+void Miner::requestHeaders () {
 
     this->affirmMessenger ();
-    
-    bool startBlockSearch = ( this->mSearchTarget && ( this->mSearchCount == 0 ));
-    if ( startBlockSearch ) {
-        this->mSearchLimit = 0;
-    }
     
     map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
@@ -425,12 +149,27 @@ void Miner::startTasks () {
             this->mMessenger->requestHeader ( *this, remoteMinerIt->first, remoteMiner.mURL, remoteMiner.mCurrentBlock );
             this->mMinerSet.insert ( remoteMinerIt->first );
         }
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::selectBestBranch () {
+
+    map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
+        const RemoteMiner& remoteMiner = remoteMinerIt->second;
+
+        if ( !remoteMiner.mTag ) continue;
+
+        BlockTreeNode::ConstPtr truncated = this->truncate (
+            remoteMiner.mTag->trim (( BlockTreeNode::Status )( BlockTreeNode::STATUS_MISSING ))
+        );
         
-        if ( startBlockSearch ) {
-            this->mMessenger->requestBlock ( *this, remoteMinerIt->first, remoteMiner.mURL, ( **this->mSearchTarget ).getDigest ());
-            this->mSearchLimit++;
+        if ( BlockTreeNode::compare ( truncated, this->mBestBranch ) < 0 ) {
+            this->mBestBranch = truncated;
         }
     }
+    assert ( this->mBestBranch );
 }
 
 //----------------------------------------------------------------//
@@ -438,7 +177,7 @@ void Miner::step ( bool solo ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
-    this->processIncoming ( *this );
+    this->processTransactions ( *this );
         
     if ( solo ) {
         this->extend ();
@@ -446,91 +185,32 @@ void Miner::step ( bool solo ) {
     else {
     
         // APPLY incoming blocks
-        this->processQueue ();
-        
-        // PRUNE expired
-        BlockTreeNode::ConstPtr originalBranch  = this->mGoalTag;
-        BlockTreeNode::ConstPtr nextBranch      = this->mGoalTag;
+        this->processResponses ();
         
         // CHOOSE new branch
+        this->selectBestBranch ();
         
-        // we only endorse a branch if it hasn't been blacklisted.
-        // if a branch is blacklisted, keep trying to find its nodes for as long
-        // as the blacklisted branch could beat the current best branch.
+        // SEARCH for missing blocks
+        this->updateSearches ();
         
-        map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
-        for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
-            const RemoteMiner& remoteMiner = remoteMinerIt->second;
-
-            BlockTreeNode::ConstPtr truncated = this->truncate ( this->trimExpired ( remoteMiner.mTag ));
-                      
-            if ( truncated && ( BlockTreeNode::compare ( truncated, nextBranch ) < 0 )) {
-                nextBranch = truncated;
-            }
-        }
+        // BUILD the current chain
+        this->composeChain ();
         
-        if ( originalBranch != nextBranch ) {
-        
-            this->mGoalTag = nextBranch;
-            
-            // REWIND chain to point of divergence
-            BlockTreeNode::ConstPtr root = BlockTreeNode::findRoot ( this->mChainTag, this->mGoalTag ).mRoot;
-            assert ( root );                // guaranteed -> common genesis
-            assert ( root->isComplete ());  // guaranteed -> was in chain
-            
-            this->mChain->reset (( **root ).getHeight () + 1 );
-            this->mChainTag = root;
-            
-            // TODO: this is a bit gratuitous; can do better than a full rebuld each time
-            this->mNodeQueue.clear ();
-            for ( BlockTreeNode::ConstPtr cursor = this->mGoalTag; cursor != this->mChainTag; cursor = cursor->getParent ()) {
-                this->mNodeQueue.push_front ( cursor );
-            }
-        }
-        
-        // ADVANCE chain (if blocks available)
-        while ( this->mNodeQueue.size ()) {
-        
-            BlockTreeNode::ConstPtr next = this->mNodeQueue.front ();
-            if ( !next->isComplete ()) break;
-            
-            this->pushBlock ( next->getBlock ());
-            this->mNodeQueue.pop_front ();
-        }
-        
-        // SEARCH for next missing block
-        if ( this->mNodeQueue.size ()) {
-            BlockTreeNode::ConstPtr search = this->mNodeQueue.front ();
-            if ( search != this->mSearchTarget ) {
-                this->mSearchTarget = search;
-                this->mSearchCount = 0;
-            }
-        }
-        
-        // EXTEND once chain is complete and has consensus
-        if ( this->hasConsensus ()) {
+        // EXTEND chain if complete and has consensus
+        if ( this->canExtend ()) {
             this->extend ();
         }
 
         // SCAN the ledger for miners
         this->discoverMiners ();
         
-        // QUERY the network for blocks
-        this->startTasks ();
+        // QUERY the network for headers
+        this->requestHeaders ();
     }
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode::ConstPtr Miner::trimExpired ( BlockTreeNode::ConstPtr tail ) {
-
-    while ( tail && tail->isExpired ()) {
-        tail = tail->getParent ();
-    }
-    return tail;
-}
-
-//----------------------------------------------------------------//
-BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail ) {
+BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail ) const {
 
     if ( TheContext::get ().getRewriteMode () == TheContext::REWRITE_NONE ) return tail;
 
@@ -565,55 +245,44 @@ BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail ) {
     return tail;
 }
 
-//================================================================//
-// overrides
-//================================================================//
-
 //----------------------------------------------------------------//
-void Miner::AbstractMiningMessengerClient_receive ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
+void Miner::updateChainRecurse ( BlockTreeNode::ConstPtr branch ) {
+
+    if ( this->mChainTag == branch ) return; // nothing to do
     
-    unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
-    blockQueueEntry->mRequest           = request;
-    blockQueueEntry->mBlockHeader       = header;
-    blockQueueEntry->mBlock             = block;
-
-    Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
-    this->mBlockQueue.push_back ( move ( blockQueueEntry ));
-}
-
-//----------------------------------------------------------------//
-void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
-    UNUSED ( serializer );
+    BlockTreeNode::ConstPtr parent = branch->getParent ();
+    if ( parent != this->mChainTag ) {
+        this->updateChainRecurse ( parent );
+    }
     
-//    serializer.serialize ( "chain", this->mChain );
+    assert ( this->mChainTag == parent );
+    if ( branch->checkStatus ( BlockTreeNode::STATUS_COMPLETE )) {
+        this->pushBlock ( branch->getBlock ());
+        assert ( this->mChainTag == branch );
+    }
 }
 
 //----------------------------------------------------------------//
-void Miner::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
-    UNUSED ( serializer );
+void Miner::updateSearches () {
 
-//    serializer.serialize ( "chain", this->mChain );
-}
+    map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
+        
+        const RemoteMiner& remoteMiner = remoteMinerIt->second;
 
-//----------------------------------------------------------------//
-time_t Miner::Miner_getTime () const {
-
-    time_t now;
-    time ( &now );
-    return now;
-}
-
-//----------------------------------------------------------------//
-void Miner::Miner_reset () {
-}
-
-
-//----------------------------------------------------------------//
-void Miner::Miner_shutdown ( bool kill ) {
-    UNUSED ( kill );
-
-    // explicitly release messenger and possibly trigger shutdown
-    this->mMessenger = NULL;
+        // we only care about missing branches; ignore new/complete/invalid branches.
+        if ( remoteMiner.mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
+        
+            BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner.mTag );
+        
+            // only affirm a search if the other chang could beat our current.
+            if ( BlockTreeNode::compare ( truncated, this->mBestBranch ) < 0 ) {
+                this->affirmSearch ( truncated );
+            }
+        }
+    }
+    // always affirm a search for the current branch
+    this->affirmSearch ( this->mBestBranch );
 }
 
 } // namespace Volition

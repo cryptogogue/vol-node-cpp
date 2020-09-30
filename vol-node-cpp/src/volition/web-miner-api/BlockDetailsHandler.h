@@ -31,7 +31,7 @@ public:
             u64 height = this->getMatchU64 ( "blockID" );
 
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            const Chain& chain = *this->mWebMiner->getBestBranch ();
+            const Chain& chain = *this->mWebMiner->getChain ();
 
             shared_ptr < Block > block = chain.getBlock ( height );
             if ( block ) {

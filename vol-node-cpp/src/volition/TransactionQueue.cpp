@@ -251,7 +251,7 @@ bool TransactionQueue::hasTransaction ( string accountName, string uuid ) const 
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::processIncoming ( Miner& miner ) {
+void TransactionQueue::processTransactions ( Miner& miner ) {
 
     while ( this->mIncoming.size ()) {
     

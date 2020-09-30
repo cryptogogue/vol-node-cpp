@@ -22,6 +22,23 @@ protected:
 
 public:
 
+     //----------------------------------------------------------------//
+    AbstractStringifiable& operator = ( string str ) {
+        this->fromString ( str );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    AbstractStringifiable& operator = ( const char* str ) {
+        this->fromString ( string ( str ));
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    operator string () const {
+        return this->toString ();
+    }
+
     //----------------------------------------------------------------//
     AbstractStringifiable () {
     }
@@ -43,23 +60,6 @@ public:
     //----------------------------------------------------------------//
     string toString () const {
         return this->AbstractStringifiable_toString ();
-    }
-    
-    //----------------------------------------------------------------//
-    AbstractStringifiable& operator = ( string str ) {
-        this->fromString ( str );
-        return *this;
-    }
-    
-    //----------------------------------------------------------------//
-    AbstractStringifiable& operator = ( const char* str ) {
-        this->fromString ( string ( str ));
-        return *this;
-    }
-    
-    //----------------------------------------------------------------//
-    operator string () const {
-        return this->toString ();
     }
     
     //----------------------------------------------------------------//

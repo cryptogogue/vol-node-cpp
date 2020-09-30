@@ -52,6 +52,13 @@ public:
     typedef shared_ptr < BlockTreeNode >            Ptr;
     typedef shared_ptr < const BlockTreeNode >      ConstPtr;
 
+    enum Status {
+        STATUS_NEW          = 0x01,
+        STATUS_COMPLETE     = 0x02,
+        STATUS_MISSING      = 0x04,
+        STATUS_INVALID      = 0x08,
+    };
+
 private:
 
     friend class BlockTree;
@@ -64,19 +71,13 @@ private:
     shared_ptr < BlockTreeNode >            mParent;
     set < BlockTreeNode* >                  mChildren;
 
-    enum Status {
-        STATUS_PENDING,
-        STATUS_EXPIRED,
-        STATUS_COMPLETE,
-    };
-
     Status                                  mStatus;
 
     //----------------------------------------------------------------//
     shared_ptr < const BlockTreeNode >      findInsertionRecurse    ( shared_ptr < const BlockTreeNode > tail, string minerID, const Digest& visage ) const;
     void                                    logBranchRecurse        ( string& str ) const;
+    void                                    mark                    ( BlockTreeNode::Status status );
     void                                    markComplete            ();
-    void                                    markExpired             ();
 
 public:
 
@@ -89,16 +90,17 @@ public:
     //----------------------------------------------------------------//
                                             BlockTreeNode           ();
                                             ~BlockTreeNode          ();
+    bool                                    checkStatus             ( Status status ) const;
     static int                              compare                 ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
+    shared_ptr < const BlockTreeNode >      findFirstIncomplete     () const;
     shared_ptr < const BlockTreeNode >      findInsertion           ( string minerID, const Digest& visage ) const;
     static BlockTreeRoot                    findRoot                ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
     shared_ptr < const Block >              getBlock                () const;
     shared_ptr < const BlockHeader >        getBlockHeader          () const;
     shared_ptr < const BlockTreeNode >      getParent               () const;
+    Status                                  getStatus               () const;
     bool                                    isAncestorOf            ( ConstPtr tail ) const;
-    bool                                    isComplete              () const;
-    bool                                    isExpired               () const;
-    bool                                    isPending               () const;
+    BlockTreeNode::ConstPtr                 trim                    ( Status status ) const;
     string                                  writeBranch             () const;
 };
 
@@ -127,7 +129,8 @@ public:
                                         ~BlockTree              ();
     BlockTreeNode::ConstPtr             findNodeForHash         ( string hash ) const;
     void                                logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
-    void                                markExpired             ( BlockTreeNode::ConstPtr node );
+    void                                mark                    ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status status );
+    BlockTreeNode::ConstPtr             update                  ( shared_ptr < const Block > block );
 };
 
 } // namespace Volition

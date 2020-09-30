@@ -57,19 +57,25 @@ size_t BlockTreeRoot::getSegLength () const {
 //----------------------------------------------------------------//
 BlockTreeNode::BlockTreeNode () :
     mTree ( NULL ),
-    mStatus ( STATUS_PENDING ) {
+    mStatus ( STATUS_INVALID ) {
 }
 
 //----------------------------------------------------------------//
 BlockTreeNode::~BlockTreeNode () {
 
     if ( this->mTree && this->mHeader ) {
-        this->mTree->mNodes.erase ( this->mHeader->getHash ());
+        this->mTree->mNodes.erase ( this->mHeader->getDigest ());
     }
     
     if ( this->mParent ) {
         this->mParent->mChildren.erase ( this );
     }
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNode::checkStatus ( Status status ) const {
+
+    return ( this->mStatus & status );
 }
 
 //----------------------------------------------------------------//
@@ -108,6 +114,16 @@ int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_pt
         return ( fullLength0 < fullLength1 ) ? 1 : -1;
     }
     return score < 0 ? -1 : score > 0 ? 1 : 0;
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTreeNode::findFirstIncomplete () const {
+
+    if ( this->mStatus & ( STATUS_INVALID | STATUS_COMPLETE )) return NULL;
+    if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return this->mParent->findFirstIncomplete ();
+    
+    assert ( this->mStatus & ( STATUS_NEW | STATUS_MISSING ));
+    return this->shared_from_this ();
 }
 
 //----------------------------------------------------------------//
@@ -194,6 +210,12 @@ shared_ptr < const BlockTreeNode > BlockTreeNode::getParent () const {
 }
 
 //----------------------------------------------------------------//
+BlockTreeNode::Status BlockTreeNode::getStatus () const {
+    
+    return this->mStatus;
+}
+
+//----------------------------------------------------------------//
 bool BlockTreeNode::isAncestorOf ( ConstPtr tail ) const {
 
     assert ( this->mHeader );
@@ -206,24 +228,6 @@ bool BlockTreeNode::isAncestorOf ( ConstPtr tail ) const {
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeNode::isComplete () const {
-
-    return ( this->mStatus == STATUS_COMPLETE );
-}
-
-//----------------------------------------------------------------//
-bool BlockTreeNode::isExpired () const {
-
-    return ( this->mStatus == STATUS_EXPIRED );
-}
-
-//----------------------------------------------------------------//
-bool BlockTreeNode::isPending () const {
-
-    return ( this->mStatus == STATUS_PENDING );
-}
-
-//----------------------------------------------------------------//
 void BlockTreeNode::logBranchRecurse ( string& str ) const {
 
     if ( this->mParent ) {
@@ -233,6 +237,44 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
     
     string charm = header.getCharm ().toHex ().substr ( 0, 6 );
     Format::write ( str, "%s[%s - %s]", header.isGenesis () ? "" : ",", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str ());
+}
+
+//----------------------------------------------------------------//
+void BlockTreeNode::mark ( BlockTreeNode::Status status ) {
+
+    if ( status == this->mStatus ) return;
+
+    switch ( this->mStatus ) {
+        
+        case STATUS_NEW:
+            // --> missing
+            // --> complete
+            assert ( status != STATUS_INVALID );
+            break;
+        
+        case STATUS_COMPLETE:
+            // --> invalid
+            assert ( status != STATUS_NEW );
+            assert ( status != STATUS_MISSING );
+            break;
+        
+        case STATUS_MISSING:
+            // --> complete
+            assert ( status != STATUS_NEW );
+            assert ( status != STATUS_INVALID );
+            break;
+            
+        case STATUS_INVALID:
+            assert ( false ); // no valid transition
+            break;
+    }
+    
+    this->mStatus = status;
+    
+    set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
+    for ( ; childIt != this->mChildren.end (); ++childIt ) {
+        ( *childIt )->mark ( status );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -250,15 +292,14 @@ void BlockTreeNode::markComplete () {
 }
 
 //----------------------------------------------------------------//
-void BlockTreeNode::markExpired () {
+BlockTreeNode::ConstPtr BlockTreeNode::trim ( Status status ) const {
 
-    this->mStatus = STATUS_EXPIRED;
-    this->mBlock = NULL;
-    
-    set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
-    for ( ; childIt != this->mChildren.end (); ++childIt ) {
-        ( *childIt )->markExpired ();
+    BlockTreeNode::ConstPtr cursor = this->shared_from_this ();
+
+    while ( cursor && ( cursor->mStatus & status )) {
+        cursor = cursor->getParent ();
     }
+    return cursor;
 }
 
 //----------------------------------------------------------------//
@@ -284,17 +325,14 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
 
     if ( !header ) return NULL;
 
-    string hash = header->getHash ();
+    string hash = header->getDigest ().toHex ();
     if ( block ) {
-        assert ( hash == block->getHash ());
+        assert ( hash == block->getDigest ().toHex ());
     }
 
     BlockTreeNode::Ptr node = this->findNodeForHash ( hash );;
 
-    if ( node ) {
-        node->mBlock = block;
-    }
-    else {
+    if ( !node ) {
 
         string prevHash = header->getPrevHash ();
         BlockTreeNode::Ptr prevNode = this->findNodeForHash ( prevHash );
@@ -305,27 +343,23 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
 
         node->mTree     = this;
         node->mHeader   = header;
-        node->mBlock    = block;
+        node->mStatus   = BlockTreeNode::STATUS_NEW;
 
         if ( prevNode ) {
             node->mParent = prevNode;
             prevNode->mChildren.insert ( node.get ());
+            
+            if (( node->mParent->mStatus == BlockTreeNode::STATUS_MISSING ) || ( node->mParent->mStatus == BlockTreeNode::STATUS_INVALID )) {
+                node->mStatus = node->mParent->mStatus;
+            }
         }
         else {
             this->mRoot = node;
         }
-
         this->mNodes [ hash ] = node.get ();
     }
     
-    if ( node->mBlock ) {
-        node->markComplete ();
-    }
-    
-    if ( node->mParent && node->mParent->isExpired ()) {
-        node->markExpired ();
-    }
-    
+    this->update ( block );
     return node;
 }
 
@@ -393,14 +427,32 @@ void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTree
 }
 
 //----------------------------------------------------------------//
-void BlockTree::markExpired ( BlockTreeNode::ConstPtr node ) {
+void BlockTree::mark ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status status ) {
 
     if ( !node ) return;
     
-    BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getHash ());
+    BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getDigest ());
     if ( cursor ) {
-        cursor->markExpired ();
+        cursor->mark ( status );
     }
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTree::update ( shared_ptr < const Block > block ) {
+
+    if ( !block ) return NULL;
+    string hash = block->getDigest ();
+
+    BlockTreeNode::Ptr node = this->findNodeForHash ( hash );
+    if ( !node ) return NULL;
+    
+    assert ( node->mHeader );
+    assert ( node->mHeader->getDigest ().toHex () == hash );
+    
+    node->mBlock = block;
+    node->markComplete ();
+    
+    return node;
 }
 
 } // namespace Volition

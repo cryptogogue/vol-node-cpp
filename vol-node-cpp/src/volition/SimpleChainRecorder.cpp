@@ -3,7 +3,7 @@
 
 #include <volition/Block.h>
 #include <volition/FileSys.h>
-#include <volition/Miner.h>
+#include <volition/MinerBase.h>
 #include <volition/SimpleChainRecorder.h>
 
 namespace Volition {
@@ -13,7 +13,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-SimpleChainRecorder::SimpleChainRecorder ( const Miner& miner, string path ) {
+SimpleChainRecorder::SimpleChainRecorder ( const MinerBase& miner, string path ) {
     
     Poco::Path basePath ( path );
     basePath.makeAbsolute ();
@@ -22,13 +22,14 @@ SimpleChainRecorder::SimpleChainRecorder ( const Miner& miner, string path ) {
     
     mkdir ( this->mBasePath.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
     
-    const Chain* chain = miner.getBestBranch ();
+    const Chain* chain = miner.getChain ();
     if ( !chain ) return;
 
     shared_ptr < Block > genesisBlock = chain->getBlock ( 0 );
     assert ( genesisBlock );
     
-    this->mGenesisHash = genesisBlock->getHash ();
+    string hash = genesisBlock->getDigest ();
+    this->mGenesisHash = hash;
     
     this->mChainFolderPath = Format::write ( "%s/%s/", this->mBasePath.c_str (), this->mGenesisHash.c_str ());
     mkdir ( this->mChainFolderPath.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
@@ -43,9 +44,9 @@ SimpleChainRecorder::~SimpleChainRecorder () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const {
+void SimpleChainRecorder::AbstractChainRecorder_loadChain ( MinerBase& miner ) const {
     
-    const Chain* chain = miner.getBestBranch ();
+    const Chain* chain = miner.getChain ();
     if ( !chain ) return;
     assert ( chain->countBlocks () == 1 );
     
@@ -74,9 +75,9 @@ void SimpleChainRecorder::AbstractChainRecorder_reset () {
 }
 
 //----------------------------------------------------------------//
-void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner ) {
+void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const MinerBase& miner ) {
 
-    const Chain* chain = miner.getBestBranch ();
+    const Chain* chain = miner.getChain ();
     if ( !chain ) return;
 
     size_t length = chain->countBlocks ();

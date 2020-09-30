@@ -29,7 +29,7 @@ public:
         string accountName = this->getMatchString ( "accountName" );
 
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Chain& chain = *this->mWebMiner->getBestBranch ();
+        const Chain& chain = *this->mWebMiner->getChain ();
 
         shared_ptr < Account > account = chain.getAccount ( chain.getAccountIndex ( accountName ));
         if ( account ) {

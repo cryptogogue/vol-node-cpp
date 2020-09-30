@@ -135,6 +135,8 @@
 		CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762AD7232827B3005AC85D /* EntitlementFactory.cpp */; };
 		CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD8232827B3005AC85D /* EntitlementFactory.h */; };
 		CD762AE12328D109005AC85D /* Entitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AE02328D109005AC85D /* Entitlements.h */; };
+		CD775196251FF03A00A53765 /* MinerBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD775194251FF03A00A53765 /* MinerBase.cpp */; };
+		CD775197251FF03A00A53765 /* MinerBase.h in Headers */ = {isa = PBXBuildFile; fileRef = CD775195251FF03A00A53765 /* MinerBase.h */; };
 		CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747823B052BF00FBE468 /* SerializableOpaque.h */; };
 		CD7C747B23B6EC6700FBE468 /* UpgradeAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */; };
 		CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1D0228F47DA000C2A54 /* FileSys.cpp */; };
@@ -752,6 +754,8 @@
 		CD762AD8232827B3005AC85D /* EntitlementFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntitlementFactory.h; path = src/volition/EntitlementFactory.h; sourceTree = "<group>"; };
 		CD762ADB23284438005AC85D /* TestEntitlements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestEntitlements.cpp; path = src/volition/gtest/TestEntitlements.cpp; sourceTree = "<group>"; };
 		CD762AE02328D109005AC85D /* Entitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entitlements.h; path = src/volition/Entitlements.h; sourceTree = "<group>"; };
+		CD775194251FF03A00A53765 /* MinerBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinerBase.cpp; path = src/volition/MinerBase.cpp; sourceTree = "<group>"; };
+		CD775195251FF03A00A53765 /* MinerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerBase.h; path = src/volition/MinerBase.h; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD7C747823B052BF00FBE468 /* SerializableOpaque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableOpaque.h; path = src/volition/serialization/SerializableOpaque.h; sourceTree = "<group>"; };
@@ -1107,6 +1111,8 @@
 				CD36658A20EB3BE0000E0B43 /* Miner.h */,
 				CD9E7BAE2500999C0065C5FC /* MinerAPIFactory.cpp */,
 				CD9E7BAC250099010065C5FC /* MinerAPIFactory.h */,
+				CD775194251FF03A00A53765 /* MinerBase.cpp */,
+				CD775195251FF03A00A53765 /* MinerBase.h */,
 				CD9E7BB52505A8550065C5FC /* MinerLaunchTests.cpp */,
 				CD9E7BB62505A8550065C5FC /* MinerLaunchTests.h */,
 				CD5ECAD92464CB26009146FB /* MinerLaunchTests.json.h */,
@@ -1779,6 +1785,7 @@
 				CD5ECAF3246C7257009146FB /* SchemaVersion.h in Headers */,
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,
 				CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */,
+				CD775197251FF03A00A53765 /* MinerBase.h in Headers */,
 				CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
 				CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */,
@@ -2226,6 +2233,7 @@
 				CDAA38EA251AA72400FEAFB5 /* SimulatorActivity.cpp in Sources */,
 				CDFA2396246016E700B4CECF /* Ledger_Inventory.cpp in Sources */,
 				CDFA239B24601DA100B4CECF /* TransactionResult.cpp in Sources */,
+				CD775196251FF03A00A53765 /* MinerBase.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
 				CDFA23A024604CC700B4CECF /* Ledger_Account.cpp in Sources */,
 				CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */,

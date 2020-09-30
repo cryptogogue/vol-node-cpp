@@ -33,9 +33,8 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
         
         case MiningMessengerRequest::REQUEST_HEADER: {
             
-            const Chain& chain = *miner->getBestBranch ();
-            shared_ptr < const Block > block = chain.getBlock ( request.mHeight );
-            request.mClient->receive ( request, block, NULL );
+            BlockTreeNode::ConstPtr node = miner->getBestBranch ();
+            request.mClient->receive ( request, node->getBlockHeader (), NULL );
             break;
         }
         

@@ -269,12 +269,14 @@ void Ledger::setBlock ( const Block& block ) {
 
     assert ( block.mHeight == this->getVersion ());
 
+    string hash = block.getDigest ();
+
     this->setObject < Block >( keyFor_block (), block );
-    this->setValue < string >( keyFor_blockHash (), block.getHash ());
+    this->setValue < string >( keyFor_blockHash (), hash );
     this->setValue < string >( keyFor_blockPose (), block.getPose ());
 
     if ( block.mHeight == 0 ) {
-        this->setValue < string >( keyFor_genesisHash (), block.getHash ());
+        this->setValue < string >( keyFor_genesisHash (), hash );
     }
 }
 

@@ -70,7 +70,7 @@ protected:
     //----------------------------------------------------------------//
     void                    acceptTransaction       ( shared_ptr < const Transaction > transaction );
     const MakerQueue*       getMakerQueueOrNull     ( string accountName ) const;
-    void                    processIncoming         ( Miner& miner );
+    void                    processTransactions     ( Miner& miner );
     void                    reset                   ();
     
 public:

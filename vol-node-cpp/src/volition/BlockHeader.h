@@ -62,7 +62,6 @@ public:
                         ~BlockHeader                        ();
     const Digest&       getCharm                            () const;
     const Digest&       getDigest                           () const;
-    string              getHash                             () const;
     size_t              getHeight                           () const;
     string              getMinerID                          () const;
     Digest              getNextCharm                        ( const Digest& visage ) const;
