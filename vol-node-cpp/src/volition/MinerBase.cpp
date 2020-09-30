@@ -62,7 +62,7 @@ bool MinerBase::checkBestBranch ( string miners ) const {
 //----------------------------------------------------------------//
 bool MinerBase::controlPermitted () const {
 
-    return this->mControlPermitted;
+    return ( this->mFlags & MINER_PERMIT_CONTROL );
 }
 
 //----------------------------------------------------------------//
@@ -87,7 +87,7 @@ void MinerBase::extend () {
     
         this->pushBlock ( block );
         
-        if ( this->mVerbose ) {
+        if ( this->mFlags & MINER_VERBOSE ) {
             LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )this->mChain->countBlocks ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain->print ().c_str ());
@@ -119,12 +119,6 @@ const Chain* MinerBase::getChain () const {
 const CryptoKey& MinerBase::getKeyPair () const {
 
     return this->mKeyPair;
-}
-
-//----------------------------------------------------------------//
-bool MinerBase::getLazy () const {
-
-    return this->mLazy;
 }
 
 //----------------------------------------------------------------//
@@ -172,6 +166,12 @@ const Signature& MinerBase::getVisage () const {
 }
 
 //----------------------------------------------------------------//
+bool MinerBase::isLazy () const {
+
+    return ( this->mFlags & MINER_LAZY );
+}
+
+//----------------------------------------------------------------//
 void MinerBase::loadGenesis ( string path ) {
 
     fstream inStream;
@@ -199,10 +199,7 @@ void MinerBase::loadKey ( string keyfile, string password ) {
 
 //----------------------------------------------------------------//
 MinerBase::MinerBase () :
-    mLazy ( false ),
-    mSolo ( true ),
-    mVerbose ( false ),
-    mControlPermitted ( false ),
+    mFlags ( DEFAULT_FLAGS ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ) {
     
     MinerLaunchTests::checkEnvironment ();
@@ -215,7 +212,7 @@ MinerBase::~MinerBase () {
 //----------------------------------------------------------------//
 void MinerBase::permitControl ( bool permit ) {
 
-    this->mControlPermitted = permit;
+    this->mFlags = SET_BITS ( this->mFlags, MINER_PERMIT_CONTROL, permit );
 }
 
 //----------------------------------------------------------------//
@@ -227,7 +224,7 @@ shared_ptr < Block > MinerBase::prepareBlock () {
     shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, this->getTime (), prevBlock.get (), this->mKeyPair );
     this->fillBlock ( *this->mChain, *block );
     
-    if ( !( this->mLazy && ( block->countTransactions () == 0 ))) {
+    if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
         block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
         return block;
     }
@@ -295,7 +292,7 @@ void MinerBase::setGenesis ( shared_ptr < const Block > block ) {
 //----------------------------------------------------------------//
 void MinerBase::setLazy ( bool lazy ) {
 
-    this->mLazy = lazy;
+    this->mFlags = SET_BITS ( this->mFlags, MINER_LAZY, lazy );
 }
 
 //----------------------------------------------------------------//
@@ -319,13 +316,13 @@ void MinerBase::setMotto ( string motto ) {
 //----------------------------------------------------------------//
 void MinerBase::setSolo ( bool solo ) {
 
-    this->mSolo = solo;
+    this->mFlags = SET_BITS ( this->mFlags, MINER_SOLO, solo );
 }
 
 //----------------------------------------------------------------//
 void MinerBase::setVerbose ( bool verbose ) {
 
-    this->mVerbose = verbose;
+    this->mFlags = SET_BITS ( this->mFlags, MINER_VERBOSE, verbose );
 }
 
 //----------------------------------------------------------------//

@@ -30,7 +30,7 @@ public:
         try {
             ScopedMinerLock scopedLock ( this->mWebMiner );
             
-            bool lazy = this->mWebMiner->getLazy ();
+            bool lazy = this->mWebMiner->isLazy ();
             this->mWebMiner->setLazy ( false );
             this->mWebMiner->extend ();
             this->mWebMiner->setLazy ( lazy );

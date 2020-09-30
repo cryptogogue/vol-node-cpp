@@ -117,4 +117,8 @@ typedef int64_t                 s64;
     #define UNUSED(x) ((void)(x))
 #endif
 
+#if !defined(SET_BITS)
+    #define SET_BITS(flags,mask,value) ( value ? ( flags | mask ) : ( flags & ~mask ))
+#endif
+
 #endif

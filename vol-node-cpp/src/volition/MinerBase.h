@@ -63,6 +63,17 @@ class MinerBase :
     public AbstractSerializable,
     public AbstractMiningMessengerClient,
     public TransactionQueue {
+public:
+
+    enum : int {
+         MINER_LAZY                 = 0x01,
+         MINER_SOLO                 = 0x02,
+         MINER_VERBOSE              = 0x04,
+         MINER_PERMIT_CONTROL       = 0x08,
+    };
+
+    static const int DEFAULT_FLAGS = MINER_SOLO;
+
 protected:
 
     friend class AbstractChainRecorder;
@@ -75,11 +86,8 @@ protected:
     CryptoKey                                       mKeyPair;
     string                                          mMotto;
     Signature                                       mVisage;
-    
-    bool                                            mLazy;
-    bool                                            mSolo;
-    bool                                            mVerbose;
-    bool                                            mControlPermitted;
+
+    int                                             mFlags;
 
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
@@ -139,7 +147,6 @@ public:
     const Chain*                            getChain                    () const;
     const CryptoKey&                        getKeyPair                  () const;
     size_t                                  getLongestBranchSize        () const;
-    bool                                    getLazy                     () const;
     Ledger&                                 getLedger                   ();
     const Ledger&                           getLedger                   () const;
     string                                  getMinerID                  () const;
@@ -147,6 +154,7 @@ public:
     SerializableTime                        getStartTime                () const;
     time_t                                  getTime                     () const;
     const Signature&                        getVisage                   () const;
+    bool                                    isLazy                      () const;
     void                                    loadGenesis                 ( string path );
     void                                    loadKey                     ( string keyfile, string password = "" );
                                             MinerBase                   ();
