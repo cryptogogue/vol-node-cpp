@@ -5,6 +5,8 @@
 #define VOLITION_ABSTRACTTRANSACTIONBODY_H
 
 #include <volition/common.h>
+#include <volition/CryptoKey.h>
+#include <volition/Digest.h>
 #include <volition/Ledger.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/TransactionContext.h>

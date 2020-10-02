@@ -7,10 +7,11 @@
 #include <volition/common.h>
 
 #include <volition/BlockHeader.h>
-#include <volition/Ledger.h>
-#include <volition/Transaction.h>
 
 namespace Volition {
+
+class Ledger;
+class Transaction;
 
 //================================================================//
 // Block
@@ -20,7 +21,6 @@ class Block :
 private:
 
     friend class Context;
-    friend class Chain;
     friend class Ledger;
 
     // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)

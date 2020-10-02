@@ -5,7 +5,7 @@
 #define VOLITION_SIMULATION_ANALYSIS_H
 
 #include <volition/common.h>
-#include <volition/Chain.h>
+#include <volition/Ledger.h>
 
 namespace Volition {
 namespace Simulation {
@@ -24,7 +24,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    void        addChain        ( const Chain& chain );
+    void        addChain        ( const Ledger& chain );
                 Tree            ();
 };
 

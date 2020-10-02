@@ -9,6 +9,8 @@
 
 namespace Volition {
 
+class Ledger;
+
 //================================================================//
 // SchemaHandle
 //================================================================//
@@ -36,19 +38,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    const Schema* getSchema () const {
-        return this->mSchema;
-    }
-
-    //----------------------------------------------------------------//
-    void reset ( Ledger& ledger ) {
-        this->mSchema = &ledger.getSchema ();
-    }
-
-    //----------------------------------------------------------------//
-    SchemaHandle ( Ledger& ledger ) {
-        this->reset ( ledger );
-    }
+    const Schema*       getSchema               () const;
+    void                reset                   ( Ledger& ledger );
+                        SchemaHandle            ( Ledger& ledger );
 };
 
 } // namespace Volition

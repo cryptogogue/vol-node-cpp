@@ -22,7 +22,7 @@ SimpleChainRecorder::SimpleChainRecorder ( const MinerBase& miner, string path )
     
     mkdir ( this->mBasePath.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
     
-    const Chain* chain = miner.getChain ();
+    const Ledger* chain = miner.getChain ();
     if ( !chain ) return;
 
     shared_ptr < Block > genesisBlock = chain->getBlock ( 0 );
@@ -46,7 +46,7 @@ SimpleChainRecorder::~SimpleChainRecorder () {
 //----------------------------------------------------------------//
 void SimpleChainRecorder::AbstractChainRecorder_loadChain ( MinerBase& miner ) const {
     
-    const Chain* chain = miner.getChain ();
+    const Ledger* chain = miner.getChain ();
     if ( !chain ) return;
     assert ( chain->countBlocks () == 1 );
     
@@ -77,7 +77,7 @@ void SimpleChainRecorder::AbstractChainRecorder_reset () {
 //----------------------------------------------------------------//
 void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const MinerBase& miner ) {
 
-    const Chain* chain = miner.getChain ();
+    const Ledger* chain = miner.getChain ();
     if ( !chain ) return;
 
     size_t length = chain->countBlocks ();

@@ -3,6 +3,7 @@
 
 #include <volition/AbstractTransactionBody.h>
 #include <volition/AccountODBM.h>
+#include <volition/Ledger.h>
 #include <volition/Miner.h>
 #include <volition/Transaction.h>
 #include <volition/TransactionContext.h>

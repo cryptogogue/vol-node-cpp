@@ -89,7 +89,7 @@ void MinerBase::extend ( time_t now ) {
         if ( this->mFlags & MINER_VERBOSE ) {
             LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: WebMiner::runSolo () - step" );
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )this->mChain->countBlocks ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain->print ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain->printChain ().c_str ());
         }
         this->saveChain ();
         this->pruneTransactions ( *this->mChain );
@@ -109,7 +109,7 @@ const BlockTree& MinerBase::getBlockTree () const {
 }
 
 //----------------------------------------------------------------//
-const Chain* MinerBase::getChain () const {
+const Ledger* MinerBase::getChain () const {
 
     return this->mChain.get ();
 }
@@ -290,7 +290,7 @@ void MinerBase::setGenesis ( shared_ptr < const Block > block ) {
     
     assert ( block );
     
-    shared_ptr < Chain > chain = make_shared < Chain >();
+    shared_ptr < Ledger > chain = make_shared < Ledger >();
     this->mChain = chain;
     
     this->pushBlock ( block );

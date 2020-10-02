@@ -6,13 +6,13 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
-#include <volition/Ledger.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/Signature.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
 
+class Ledger;
 class TransactionMaker;
 
 //================================================================//

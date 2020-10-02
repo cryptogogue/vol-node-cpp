@@ -3,8 +3,6 @@
 
 #include <gtest/gtest.h>
 #include <volition/Block.h>
-#include <volition/Chain.h>
-#include <volition/ChainMetadata.h>
 #include <volition/CryptoKey.h>
 #include <volition/Miner.h>
 #include <volition/Transactions.h>
@@ -22,7 +20,7 @@ public:
     bool checkBranch ( string miners ) {
         
         this->selectBranch ();
-        const Chain* chain = this->getBestBranch ();
+        const Ledger* chain = this->getBestBranch ();
         assert ( chain );
         return chain->checkMiners ( miners );
     }
@@ -83,7 +81,7 @@ void initializeTestChainAndMiners ( SimpleMiner* miners, size_t nMiners, u64 now
 }
 
 //----------------------------------------------------------------//
-TEST ( Chain, test0 ) {
+TEST ( Ledger, test0 ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER, 2 );
     TheContext::get ().setWindow ( 1000 );
@@ -147,11 +145,11 @@ TEST ( Chain, test0 ) {
 }
 
 //----------------------------------------------------------------//
-TEST ( Chain, test1 ) {
+TEST ( Ledger, test1 ) {
 
 //    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 //
-//    Chain chain;
+//    Ledger chain;
 //    SimpleMiner miners [ 4 ];
 //    initializeTestChainAndMiners ( chain, miners, 4 );
 //
@@ -254,14 +252,14 @@ TEST ( Chain, test1 ) {
 }
 
 //----------------------------------------------------------------//
-TEST ( Chain, test3 ) {
+TEST ( Ledger, test3 ) {
 
 //    TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 //
 //    stringstream strStream;
 //
 //    {
-//        Chain chain;
+//        Ledger chain;
 //        SimpleMiner miners [ 3 ];
 //        initializeTestChainAndMiners ( chain, miners, 3 );
 //        
@@ -283,7 +281,7 @@ TEST ( Chain, test3 ) {
 //        ToJSONSerializer::toJSON ( chain, strStream );
 //    }
 //    
-//    Chain chain;
+//    Ledger chain;
 //    FromJSONSerializer::fromJSON ( chain, strStream );
 // 
 //    ASSERT_TRUE ( chain.countCycles () == 3 );

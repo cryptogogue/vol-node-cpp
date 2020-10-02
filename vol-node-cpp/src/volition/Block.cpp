@@ -3,7 +3,9 @@
 
 #include <volition/Block.h>
 #include <volition/Format.h>
+#include <volition/Ledger.h>
 #include <volition/TheTransactionBodyFactory.h>
+#include <volition/Transaction.h>
 
 namespace Volition {
 

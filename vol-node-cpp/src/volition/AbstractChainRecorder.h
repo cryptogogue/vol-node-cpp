@@ -6,8 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/CryptoKey.h>
-#include <volition/Chain.h>
-#include <volition/ChainMetadata.h>
 #include <volition/Ledger.h>
 #include <volition/MinerBase.h>
 #include <volition/serialization/AbstractSerializable.h>

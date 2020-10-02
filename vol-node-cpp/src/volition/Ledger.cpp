@@ -11,13 +11,33 @@
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
-#include <volition/TransactionMaker.h>
+#include <volition/Transaction.h>
 
 namespace Volition {
 
 //================================================================//
 // Ledger
 //================================================================//
+
+//----------------------------------------------------------------//
+bool Ledger::checkMiners ( string miners ) const {
+    
+    const char* delim = ",";
+    
+    size_t start;
+    size_t end = 0;
+    
+    size_t blockID = 0;
+    while (( start = miners.find_first_not_of ( delim, end )) != std::string::npos ) {
+        end = miners.find ( delim, start );
+        string minerID = miners.substr ( start, end - start );
+        shared_ptr < Block > block = this->getBlock ( blockID );
+        if ( !block ) return false;
+        if (( blockID > 0 ) && ( block->getMinerID () != minerID )) return false;
+        blockID++;
+    }
+    return true;
+}
 
 //----------------------------------------------------------------//
 LedgerResult Ledger::checkSchemaMethods ( const Schema& schema ) const {
@@ -45,6 +65,12 @@ LedgerResult Ledger::checkSchemaMethods ( const Schema& schema ) const {
 void Ledger::clearSchemaCache () {
 
     this->mSchemaCache.clear ();
+}
+
+//----------------------------------------------------------------//
+size_t Ledger::countBlocks () const {
+
+    return this->getVersion ();
 }
 
 //----------------------------------------------------------------//
@@ -233,6 +259,48 @@ Ledger::~Ledger () {
 }
 
 //----------------------------------------------------------------//
+string Ledger::printChain ( const char* pre, const char* post ) const {
+
+    string str;
+
+    if ( pre ) {
+        Format::write ( str, "%s", pre );
+    }
+
+    size_t nBlocks = this->countBlocks ();
+    if ( nBlocks ) {
+    
+        Format::write ( str, "-" );
+    
+        for ( size_t i = 1; i < nBlocks; ++i ) {
+            shared_ptr < Block > block = this->getBlock ( i );
+            assert ( block );
+            Format::write ( str, ",%s", block->mMinerID.c_str ());
+        }
+    }
+
+    if ( post ) {
+        Format::write ( str, "%s", post );
+    }
+    
+    return str;
+}
+
+//----------------------------------------------------------------//
+bool Ledger::pushBlock ( const Block& block, Block::VerificationPolicy policy ) {
+
+    Ledger fork ( *this );
+
+    bool result = block.apply ( fork, policy );
+
+    if ( result ) {
+        fork.pushVersion ();
+        this->takeSnapshot ( fork );
+    }
+    return result;
+}
+
+//----------------------------------------------------------------//
 void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerTo& serializer ) const {
 
     serializer.context ( "account", [ & ]( AbstractSerializerTo& serializer ) {
@@ -339,6 +407,37 @@ Ledger& Ledger::AbstractLedgerComponent_getLedger () {
 const Ledger& Ledger::AbstractLedgerComponent_getLedger () const {
 
     return *this;
+}
+
+//----------------------------------------------------------------//
+void Ledger::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+
+    this->init ();
+    
+    SerializableVector < Block > blocks;
+    serializer.serialize ( "blocks", blocks );
+
+    size_t size = blocks.size ();
+    for ( size_t i = 0; i < size; ++i ) {
+    
+        Block block = blocks [ i ];
+        this->pushBlock ( block, Block::VerificationPolicy::NONE );
+    }
+}
+
+//----------------------------------------------------------------//
+void Ledger::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    SerializableVector < Block > blocks;
+    
+    size_t top = this->getVersion ();
+    VersionedStoreIterator chainIt ( *this, 0 );
+    for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
+        shared_ptr < Block > block = Ledger::getObjectOrNull < Block >( chainIt, keyFor_block ());
+        assert ( block );
+        blocks.push_back ( *block );
+    }
+    serializer.serialize ( "blocks", blocks );
 }
 
 } // namespace Volition

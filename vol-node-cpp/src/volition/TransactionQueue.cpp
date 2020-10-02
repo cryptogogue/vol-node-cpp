@@ -131,7 +131,7 @@ void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > tran
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::fillBlock ( Chain& chain, Block& block ) {
+void TransactionQueue::fillBlock ( Ledger& chain, Block& block ) {
 
     Ledger ledger;
     ledger.takeSnapshot ( chain );
@@ -269,7 +269,7 @@ void TransactionQueue::processTransactions ( Miner& miner ) {
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::pruneTransactions ( const Chain& chain ) {
+void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
 
     const Ledger& ledger = chain;
 

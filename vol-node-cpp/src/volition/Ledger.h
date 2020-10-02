@@ -10,6 +10,7 @@
 #include <volition/AccountEntitlements.h>
 #include <volition/AccountKeyLookup.h>
 #include <volition/Asset.h>
+#include <volition/Block.h>
 #include <volition/Entropy.h>
 #include <volition/KeyEntitlements.h>
 #include <volition/Ledger_Account.h>
@@ -85,6 +86,7 @@ public:
 // Ledger
 //================================================================//
 class Ledger :
+    public AbstractSerializable,
     public VersionedStore,
     virtual public AbstractLedgerComponent,
     public Ledger_Account,
@@ -95,8 +97,10 @@ private:
     map < string, Schema >  mSchemaCache;
 
     //----------------------------------------------------------------//
-    Ledger&             AbstractLedgerComponent_getLedger       ();
-    const Ledger&       AbstractLedgerComponent_getLedger       () const;
+    Ledger&             AbstractLedgerComponent_getLedger       () override;
+    const Ledger&       AbstractLedgerComponent_getLedger       () const override;
+    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
@@ -201,8 +205,10 @@ public:
     }
 
     //----------------------------------------------------------------//
+    bool                                checkMiners                     ( string miners ) const;
     LedgerResult                        checkSchemaMethods              ( const Schema& schema ) const;
     void                                clearSchemaCache                ();
+    size_t                              countBlocks                     () const;
     u64                                 countVOL                        () const;
     u64                                 createVOL                       ( u64 amount );
     shared_ptr < Block >                getBlock                        () const;
@@ -227,6 +233,8 @@ public:
                                         Ledger                          ();
                                         Ledger                          ( Ledger& other );
                                         ~Ledger                         ();
+    string                              printChain                      ( const char* pre = NULL, const char* post = NULL ) const;
+    bool                                pushBlock                       ( const Block& block, Block::VerificationPolicy policy );
     void                                serializeEntitlements           ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setBlock                        ( const Block& block );
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );

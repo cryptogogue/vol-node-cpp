@@ -5,13 +5,17 @@
 #define VOLITION_TRANSACTION_CONTEXT_H
 
 #include <volition/common.h>
-#include <volition/Ledger.h>
-#include <volition/LedgerFieldODBM.h>
-#include <volition/serialization/Serialization.h>
+#include <volition/AccountEntitlements.h>
+#include <volition/KeyEntitlements.h>
 #include <volition/SchemaHandle.h>
+#include <volition/serialization/Serialization.h>
 #include <volition/TransactionMaker.h>
 
 namespace Volition {
+
+class Account;
+class KeyAndPolicy;
+class Ledger;
 
 //================================================================//
 // TransactionContext
@@ -28,22 +32,7 @@ public:
     Entitlements            mKeyEntitlements;
 
     //----------------------------------------------------------------//
-    TransactionContext ( Ledger& ledger, SchemaHandle& schemaHandle, const Account& account, const KeyAndPolicy& keyAndPolicy, time_t time ) :
-        mLedger ( ledger ),
-        mSchemaHandle ( schemaHandle ),
-        mAccount ( account ),
-        mKeyAndPolicy ( keyAndPolicy ),
-        mTime ( time ) {
-        
-        if ( ledger.isGenesis ()) {
-            this->mAccountEntitlements = *AccountEntitlements::getMasterEntitlements ();
-            this->mKeyEntitlements = *KeyEntitlements::getMasterEntitlements ();
-        }
-        else {
-            this->mAccountEntitlements = ledger.getEntitlements < AccountEntitlements >( account );
-            this->mKeyEntitlements = ledger.getEntitlements < KeyEntitlements >( keyAndPolicy );
-        }
-    }
+    TransactionContext      ( Ledger& ledger, SchemaHandle& schemaHandle, const Account& account, const KeyAndPolicy& keyAndPolicy, time_t time );
 };
 
 } // namespace Volition

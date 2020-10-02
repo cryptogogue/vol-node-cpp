@@ -8,8 +8,6 @@
 #include <volition/AbstractMiningMessenger.h>
 #include <volition/BlockTree.h>
 #include <volition/CryptoKey.h>
-#include <volition/Chain.h>
-#include <volition/ChainMetadata.h>
 #include <volition/Ledger.h>
 #include <volition/TransactionQueue.h>
 #include <volition/serialization/AbstractSerializable.h>
@@ -96,7 +94,7 @@ protected:
     map < string, RemoteMiner >                     mRemoteMiners;
     BlockTree                                       mBlockTree;
     
-    shared_ptr < Chain >                            mChain;         // may run behind block tree tag
+    shared_ptr < Ledger >                           mChain;         // may run behind block tree tag
     BlockTreeNode::ConstPtr                         mChainTag;      // node corresponding to top of chain
     BlockTreeNode::ConstPtr                         mBestBranch;    // "leaf" of the current chain
     list < BlockTreeNode::ConstPtr >                mNodeQueue;
@@ -143,7 +141,7 @@ public:
     void                                    extend                      ( time_t now );
     BlockTreeNode::ConstPtr                 getBestBranch               () const;
     const BlockTree&                        getBlockTree                () const;
-    const Chain*                            getChain                    () const;
+    const Ledger*                           getChain                    () const;
     const CryptoKey&                        getKeyPair                  () const;
     size_t                                  getLongestBranchSize        () const;
     Ledger&                                 getLedger                   ();

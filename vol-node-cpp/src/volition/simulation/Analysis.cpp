@@ -23,7 +23,7 @@ void print_indent ( string& str, size_t indent ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Tree::addChain ( const Chain& chain ) {
+void Tree::addChain ( const Ledger& chain ) {
 
     Tree* cursor = this;
 

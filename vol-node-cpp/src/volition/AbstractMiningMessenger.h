@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractMiningMessengerClient.h>
+#include <volition/Digest.h>
 
 namespace Volition {
 

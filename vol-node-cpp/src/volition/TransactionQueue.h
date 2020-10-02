@@ -6,8 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/CryptoKey.h>
-#include <volition/Chain.h>
-#include <volition/ChainMetadata.h>
 #include <volition/Ledger.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
@@ -76,11 +74,11 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    void                    fillBlock               ( Chain& chain, Block& block );
+    void                    fillBlock               ( Ledger& chain, Block& block );
     TransactionResult       getLastResult           ( string accountName ) const;
     bool                    hasError                ( string accountName );
     bool                    hasTransaction          ( string accountName, string uuid ) const;
-    void                    pruneTransactions       ( const Chain& chain );
+    void                    pruneTransactions       ( const Ledger& chain );
     void                    pushTransaction         ( shared_ptr < const Transaction > transaction );
     void                    setError                ( shared_ptr < const Transaction > transaction, TransactionResult error );
                             TransactionQueue        ();
