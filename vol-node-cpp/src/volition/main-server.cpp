@@ -7,7 +7,6 @@
 #include <volition/RouteTable.h>
 #include <volition/SimpleChainRecorder.h>
 #include <volition/Singleton.h>
-#include <volition/TheContext.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
 #include <volition/WebMiner.h>

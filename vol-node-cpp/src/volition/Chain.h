@@ -23,7 +23,7 @@ class Chain :
 private:
 
     //----------------------------------------------------------------//
-    static int                  compareSegment      ( const Chain& chain0, const Chain& chain1, size_t base, size_t n );
+//    static int                  compareSegment      ( const Chain& chain0, const Chain& chain1, size_t base, size_t n );
 
     //----------------------------------------------------------------//
     void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -40,7 +40,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                checkMiners         ( string miners ) const;
-    static int          compare             ( const Chain& chain0, const Chain& chain1, time_t now );
+//    static int          compare             ( const Chain& chain0, const Chain& chain1, time_t now );
                         Chain               ();
                         ~Chain              ();
     size_t              countBlocks         () const;

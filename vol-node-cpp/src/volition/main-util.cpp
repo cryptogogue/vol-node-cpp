@@ -4,7 +4,6 @@
 #include <volition/Block.h>
 #include <volition/CryptoKey.h>
 #include <volition/CryptoKeyInfo.h>
-#include <volition/TheContext.h>
 
 //----------------------------------------------------------------//
 void defineKeyFileOptions ( Poco::Util::OptionSet& options, bool required ) {

@@ -39,17 +39,17 @@ protected:
     void                        composeChain                ();
     void                        processResponses            ();
     void                        requestHeaders              ();
-    void                        selectBestBranch            ();
-    BlockTreeNode::ConstPtr     truncate                    ( BlockTreeNode::ConstPtr tail ) const;
+    void                        selectBestBranch            ( time_t now );
+    BlockTreeNode::ConstPtr     truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
     void                        updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
-    void                        updateSearches              ();
+    void                        updateSearches              ( time_t now );
 
 public:
 
     //----------------------------------------------------------------//
                                 Miner                       ();
     virtual                     ~Miner                      ();
-    void                        step                        ( bool solo = false );
+    void                        step                        ( time_t now );
 };
 
 } // namespace Volition

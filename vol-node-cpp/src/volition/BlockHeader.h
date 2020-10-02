@@ -70,8 +70,7 @@ public:
     const Signature&    getSignature                        () const;
     time_t              getTime                             () const;
     bool                isGenesis                           () const;
-    bool                isInRewriteWindow                   () const;
-    bool                isInRewriteWindow                   ( time_t now ) const;
+    bool                isInRewriteWindow                   ( time_t window, time_t now ) const;
     bool                isParent                            ( const BlockHeader& block ) const;
     void                setMinerID                          ( string minerID );
 };

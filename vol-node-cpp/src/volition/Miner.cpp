@@ -7,7 +7,6 @@
 #include <volition/HTTPMiningMessenger.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
-#include <volition/TheContext.h>
 
 namespace Volition {
 
@@ -153,7 +152,7 @@ void Miner::requestHeaders () {
 }
 
 //----------------------------------------------------------------//
-void Miner::selectBestBranch () {
+void Miner::selectBestBranch ( time_t now ) {
 
     map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
@@ -162,10 +161,11 @@ void Miner::selectBestBranch () {
         if ( !remoteMiner.mTag ) continue;
 
         BlockTreeNode::ConstPtr truncated = this->truncate (
-            remoteMiner.mTag->trim (( BlockTreeNode::Status )( BlockTreeNode::STATUS_MISSING ))
+            remoteMiner.mTag->trim (( BlockTreeNode::Status )( BlockTreeNode::STATUS_MISSING )),
+            now
         );
         
-        if ( BlockTreeNode::compare ( truncated, this->mBestBranch ) < 0 ) {
+        if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
             this->mBestBranch = truncated;
         }
     }
@@ -173,32 +173,29 @@ void Miner::selectBestBranch () {
 }
 
 //----------------------------------------------------------------//
-void Miner::step ( bool solo ) {
+void Miner::step ( time_t now ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
     this->processTransactions ( *this );
-        
-    if ( solo ) {
-        this->extend ();
-    }
-    else {
+    
+    if ( this->mMessenger ) {
     
         // APPLY incoming blocks
         this->processResponses ();
         
         // CHOOSE new branch
-        this->selectBestBranch ();
+        this->selectBestBranch ( now );
         
         // SEARCH for missing blocks
-        this->updateSearches ();
+        this->updateSearches ( now );
         
         // BUILD the current chain
         this->composeChain ();
         
         // EXTEND chain if complete and has consensus
         if ( this->canExtend ()) {
-            this->extend ();
+            this->extend ( now );
         }
 
         // SCAN the ledger for miners
@@ -207,12 +204,15 @@ void Miner::step ( bool solo ) {
         // QUERY the network for headers
         this->requestHeaders ();
     }
+    else {
+        this->extend ( now );
+    }
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail ) const {
+BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail, time_t now ) const {
 
-    if ( TheContext::get ().getRewriteMode () == TheContext::REWRITE_NONE ) return tail;
+    if ( this->mRewriteMode == BlockTreeNode::REWRITE_NONE ) return tail;
 
     // if a block from self would be more charming at any point along the chain,
     // truncate the chain to the parent of that block. in other words: seek the
@@ -227,7 +227,7 @@ BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail ) const {
     
         const BlockHeader& header = **cursor;
     
-        if (( TheContext::get ().getRewriteMode () == TheContext::REWRITE_WINDOW ) && !header.isInRewriteWindow ()) return tail;
+        if (( this->mRewriteMode == BlockTreeNode::REWRITE_WINDOW ) && !header.isInRewriteWindow ( this->mRewriteWindowInSeconds, now )) return tail;
     
         BlockTreeNode::ConstPtr parent = cursor->getParent ();
         if ( !parent ) break;
@@ -263,7 +263,7 @@ void Miner::updateChainRecurse ( BlockTreeNode::ConstPtr branch ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::updateSearches () {
+void Miner::updateSearches ( time_t now ) {
 
     map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
@@ -273,10 +273,10 @@ void Miner::updateSearches () {
         // we only care about missing branches; ignore new/complete/invalid branches.
         if ( remoteMiner.mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
         
-            BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner.mTag );
+            BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner.mTag, now );
         
             // only affirm a search if the other chang could beat our current.
-            if ( BlockTreeNode::compare ( truncated, this->mBestBranch ) < 0 ) {
+            if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
                 this->affirmSearch ( truncated );
             }
         }

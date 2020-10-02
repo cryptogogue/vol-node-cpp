@@ -7,7 +7,6 @@
 #include <volition/ChainMetadata.h>
 #include <volition/CryptoKey.h>
 #include <volition/Miner.h>
-#include <volition/TheContext.h>
 #include <volition/Transactions.h>
 
 using namespace Volition;

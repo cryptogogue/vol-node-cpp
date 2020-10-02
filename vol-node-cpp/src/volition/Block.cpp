@@ -3,7 +3,6 @@
 
 #include <volition/Block.h>
 #include <volition/Format.h>
-#include <volition/TheContext.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {

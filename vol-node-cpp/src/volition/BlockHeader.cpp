@@ -4,7 +4,6 @@
 #include <volition/BlockHeader.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
-#include <volition/TheContext.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
@@ -168,17 +167,8 @@ bool BlockHeader::isGenesis () const {
 }
 
 //----------------------------------------------------------------//
-bool BlockHeader::isInRewriteWindow () const {
+bool BlockHeader::isInRewriteWindow ( time_t window, time_t now ) const {
 
-    time_t now;
-    time ( &now );
-    return this->isInRewriteWindow ( now );
-}
-
-//----------------------------------------------------------------//
-bool BlockHeader::isInRewriteWindow ( time_t now ) const {
-
-    double window = TheContext::get ().getWindow ();
     double diff = difftime ( now, this->mTime );
     return diff < window;
 }

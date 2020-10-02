@@ -74,8 +74,6 @@
 		CD4E8198210593BD007DA585 /* Chain.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B33620CE112F00300A96 /* Chain.h */; };
 		CD4E819D210593BD007DA585 /* MinerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */; };
 		CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0C3E1920C25A00006E3B1C /* MinerInfo.h */; };
-		CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B34220D1196900300A96 /* TheContext.cpp */; };
-		CD4E81A0210593BD007DA585 /* TheContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B34120D1182400300A96 /* TheContext.h */; };
 		CD4E81A2210593BD007DA585 /* Policy.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3BC20E8950100705AEB /* Policy.h */; };
 		CD4E81A3210593BD007DA585 /* Ledger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDC2B31420CCAD2400300A96 /* Ledger.cpp */; };
 		CD4E81A4210593BD007DA585 /* Ledger.h in Headers */ = {isa = PBXBuildFile; fileRef = CDC2B31520CCAD2400300A96 /* Ledger.h */; };
@@ -893,8 +891,6 @@
 		CDC2B31520CCAD2400300A96 /* Ledger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger.h; path = src/volition/Ledger.h; sourceTree = "<group>"; };
 		CDC2B33520CE112F00300A96 /* Chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chain.cpp; path = src/volition/Chain.cpp; sourceTree = "<group>"; };
 		CDC2B33620CE112F00300A96 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chain.h; path = src/volition/Chain.h; sourceTree = "<group>"; };
-		CDC2B34120D1182400300A96 /* TheContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheContext.h; path = src/volition/TheContext.h; sourceTree = "<group>"; };
-		CDC2B34220D1196900300A96 /* TheContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheContext.cpp; path = src/volition/TheContext.cpp; sourceTree = "<group>"; };
 		CDD11D8922ED6E070051F04E /* AssetFieldValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetFieldValue.h; path = src/volition/AssetFieldValue.h; sourceTree = "<group>"; };
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
 		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
@@ -1185,8 +1181,6 @@
 				CD59F3BC20E8950100705AEB /* Policy.h */,
 				CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */,
 				CD5ECAF2246C7257009146FB /* SchemaVersion.h */,
-				CDC2B34220D1196900300A96 /* TheContext.cpp */,
-				CDC2B34120D1182400300A96 /* TheContext.h */,
 			);
 			name = ledger;
 			sourceTree = "<group>";
@@ -1746,7 +1740,6 @@
 				CDFA23A5246051CD00B4CECF /* Ledger_Miner.h in Headers */,
 				CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
-				CD4E81A0210593BD007DA585 /* TheContext.h in Headers */,
 				CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */,
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,
 				CDFA239924601D6F00B4CECF /* TransactionResult.h in Headers */,
@@ -2247,7 +2240,6 @@
 				CDE9F7792375380600DB62EF /* SimpleChainRecorder.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */,
 				CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */,
-				CD4E819F210593BD007DA585 /* TheContext.cpp in Sources */,
 				CDAA38E6251AA13900FEAFB5 /* SimMiningMessenger.cpp in Sources */,
 				CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */,
 				CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */,

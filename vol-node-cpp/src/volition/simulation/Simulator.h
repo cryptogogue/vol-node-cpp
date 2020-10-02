@@ -65,6 +65,8 @@ protected:
 
     bool                                mIsPaused;
     size_t                              mStepCount;
+    time_t                              mNow;
+    time_t                              mTimeStep;
 
     //----------------------------------------------------------------//
     void            extendOptimal       ( size_t height );
@@ -80,6 +82,7 @@ public:
     void            pause               ( bool pause = true );
     void            setInterval         ( size_t base, size_t top, size_t interval );
     void            setReportMode       ( ReportMode reportMode );
+    void            setTimeStep         ( time_t seconds );
                     Simulator           ();
                     ~Simulator          ();
 };

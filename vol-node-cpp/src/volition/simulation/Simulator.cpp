@@ -191,10 +191,17 @@ void Simulator::setReportMode ( ReportMode reportMode ) {
 }
 
 //----------------------------------------------------------------//
+void Simulator::setTimeStep ( time_t seconds ) {
+
+    this->mTimeStep = seconds;
+}
+
+//----------------------------------------------------------------//
 Simulator::Simulator () :
     mReportMode ( REPORT_SUMMARY ),
     mIsPaused ( false ),
-    mStepCount ( 0 ) {
+    mStepCount ( 0 ),
+    mTimeStep ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -210,7 +217,13 @@ void Simulator::step () {
 
     if ( this->mIsPaused ) return;
 
-        
+    if (( this->mTimeStep == 0 ) || ( this->mStepCount == 0 )) {
+        time ( &this->mNow );
+    }
+    else {
+        this->mNow += this->mTimeStep;
+    }
+
     Simulation::Tree tree;
     
     for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
@@ -219,7 +232,7 @@ void Simulator::step () {
         SimMinerSettings& settings = this->mMinerSettings [ i ];
         
         if ( settings.mInterval && (( this->mStepCount % settings.mInterval ) == 0 )) {
-            miner->step ();
+            miner->step ( this->mNow );
         }
         
         ScopedMinerLock minerLock ( miner );

@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/simulation/Simulations.h>
-#include <volition/TheContext.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
 #include <volition/WebMiner.h>
 

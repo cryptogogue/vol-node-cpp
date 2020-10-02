@@ -4,7 +4,6 @@
 #include <volition/Block.h>
 #include <volition/Format.h>
 #include <volition/Singleton.h>
-#include <volition/TheContext.h>
 #include <volition/WebMiner.h>
 
 namespace Volition {
@@ -20,7 +19,10 @@ void WebMiner::runActivity () {
     
         Poco::Timestamp timestamp;
         
-        this->step ();
+        time_t now;
+        time ( &now );
+        
+        this->step ( now );
         
         u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
         u32 updateMillis = this->mUpdateIntervalInSeconds * 1000;

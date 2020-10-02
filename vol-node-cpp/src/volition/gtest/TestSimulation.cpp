@@ -3,7 +3,6 @@
 
 #include <gtest/gtest.h>
 #include <volition/simulation/Simulations.h>
-#include <volition/TheContext.h>
 
 using namespace Volition;
 

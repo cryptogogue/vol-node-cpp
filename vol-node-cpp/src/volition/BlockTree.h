@@ -23,7 +23,7 @@ public:
     shared_ptr < const BlockTreeNode >  mTop;
     
     //----------------------------------------------------------------//
-    size_t          getDefeatCount          () const;
+    size_t          getDefeatCount          ( time_t window ) const;
     size_t          getFullLength           () const;
     size_t          getSegLength            () const;
 };
@@ -58,6 +58,12 @@ public:
         STATUS_MISSING      = 0x04,
         STATUS_INVALID      = 0x08,
     };
+    
+    enum RewriteMode {
+        REWRITE_NONE,
+        REWRITE_WINDOW,
+        REWRITE_ANY,
+    };
 
 private:
 
@@ -91,7 +97,7 @@ public:
                                             BlockTreeNode           ();
                                             ~BlockTreeNode          ();
     bool                                    checkStatus             ( Status status ) const;
-    static int                              compare                 ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
+    static int                              compare                 ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode, time_t window );
     shared_ptr < const BlockTreeNode >      findFirstIncomplete     () const;
     shared_ptr < const BlockTreeNode >      findInsertion           ( string minerID, const Digest& visage ) const;
     static BlockTreeRoot                    findRoot                ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );

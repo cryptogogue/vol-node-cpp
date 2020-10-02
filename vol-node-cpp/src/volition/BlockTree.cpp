@@ -3,7 +3,6 @@
 
 #include <volition/Block.h>
 #include <volition/BlockTree.h>
-#include <volition/TheContext.h>
 
 // To compare chains:
 // 1. Find the common root.
@@ -23,9 +22,9 @@ namespace Volition {
 //================================================================//
     
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getDefeatCount () const {
+size_t BlockTreeSegment::getDefeatCount ( time_t window ) const {
 
-    return ( size_t )ceil ( difftime (( **this->mTop ).getTime (), ( **this->mHead ).getTime ()) / TheContext::get ().getWindow ());
+    return ( size_t )ceil ( difftime (( **this->mTop ).getTime (), ( **this->mHead ).getTime ()) / window );
 }
 
 //----------------------------------------------------------------//
@@ -79,7 +78,7 @@ bool BlockTreeNode::checkStatus ( Status status ) const {
 }
 
 //----------------------------------------------------------------//
-int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 ) {
+int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode, time_t window ) {
 
     assert ( node0 && node1 );
 
@@ -88,13 +87,13 @@ int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_pt
     size_t fullLength0  = root.mSeg0.getFullLength ();
     size_t fullLength1  = root.mSeg1.getFullLength ();
 
-    if ( TheContext::get ().getRewriteMode () == TheContext::REWRITE_WINDOW ) {
+    if ( rewriteMode == REWRITE_WINDOW ) {
         
         size_t segLength    = root.getSegLength (); // length of the shorter segment (if different lengths)
 
         // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
-        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getDefeatCount ())) return 1;
-        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getDefeatCount ())) return -1;
+        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getDefeatCount ( window ))) return 1;
+        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getDefeatCount ( window ))) return -1;
     }
 
     int score = 0;

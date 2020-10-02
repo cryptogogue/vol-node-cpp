@@ -4,7 +4,6 @@
 #include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
 #include <volition/TransactionQueue.h>
-#include <volition/TheContext.h>
 
 namespace Volition {
 

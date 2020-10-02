@@ -7,7 +7,6 @@
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/MinerLaunchTests.json.h>
-#include <volition/TheContext.h>
 
 namespace Volition {
 

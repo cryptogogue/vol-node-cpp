@@ -5,7 +5,6 @@
 #include <volition/Chain.h>
 #include <volition/ChainMetadata.h>
 #include <volition/Format.h>
-#include <volition/TheContext.h>
 
 namespace Volition {
 
@@ -41,78 +40,78 @@ bool Chain::checkMiners ( string miners ) const {
     return true;
 }
 
-//----------------------------------------------------------------//
-int Chain::compare ( const Chain& chain0, const Chain& chain1, time_t now ) {
-
-    size_t height0 = chain0.countBlocks ();
-    size_t height1 = chain1.countBlocks ();
-
-    size_t minHeight = height0 < height1 ? height0 : height1;    
-    size_t forkHeight = minHeight;
-    
-    time_t minTime = now;
-    
-    do {
-        forkHeight--;
-    
-        shared_ptr < Block > block0 = chain0.getBlock ( forkHeight );
-        shared_ptr < Block > block1 = chain1.getBlock ( forkHeight );
-    
-        assert ( block0 && block1 );
-    
-        if ( *block0 == *block1 ) break;
-        
-        time_t time0 = block0->getTime ();
-        time_t time1 = block1->getTime ();
-        
-        // TODO: is this safe?
-        minTime = time0 < minTime ? time0 : minTime;
-        minTime = time1 < minTime ? time1 : minTime;
-    }
-    while ( forkHeight > 0 );
-
-    assert ( forkHeight < minHeight ); // TODO: handle gracefully
-    
-    // TODO: maybe use time of top block (instead of current time)
-    size_t evalCount = (( size_t )( difftime ( now, minTime ) / TheContext::get ().getWindow ())) + 1;
-
-    // only need to compare blocks up through evalCount, starting just after the fork
-    int result = Chain::compareSegment ( chain0, chain1, forkHeight + 1, evalCount );
-    if ( result == 0 ) {
-    
-        if ( minHeight < height0 ) {
-            result -= ( height0 - minHeight );
-        }
-    
-        if ( minHeight < height1 ) {
-            result += ( height1 - minHeight );
-        }
-    }
-    return result;
-}
-
-//----------------------------------------------------------------//
-int Chain::compareSegment ( const Chain& chain0, const Chain& chain1, size_t base, size_t n ) {
-
-    size_t top = base + n;
-
-    size_t height0 = chain0.countBlocks ();
-    size_t height1 = chain1.countBlocks ();
-
-    size_t minHeight = height0 < height1 ? height0 : height1;
-    minHeight = minHeight < top ? minHeight : top;
-
-    int score = 0;
-    
-    for ( size_t i = base; i < minHeight; ++i ) {
-    
-        shared_ptr < Block > block0 = chain0.getBlock ( i );
-        shared_ptr < Block > block1 = chain1.getBlock ( i );
-        
-        score += Block::compare ( *block0, *block1 );
-    }
-    return score;
-}
+////----------------------------------------------------------------//
+//int Chain::compare ( const Chain& chain0, const Chain& chain1, time_t now ) {
+//
+//    size_t height0 = chain0.countBlocks ();
+//    size_t height1 = chain1.countBlocks ();
+//
+//    size_t minHeight = height0 < height1 ? height0 : height1;    
+//    size_t forkHeight = minHeight;
+//    
+//    time_t minTime = now;
+//    
+//    do {
+//        forkHeight--;
+//    
+//        shared_ptr < Block > block0 = chain0.getBlock ( forkHeight );
+//        shared_ptr < Block > block1 = chain1.getBlock ( forkHeight );
+//    
+//        assert ( block0 && block1 );
+//    
+//        if ( *block0 == *block1 ) break;
+//        
+//        time_t time0 = block0->getTime ();
+//        time_t time1 = block1->getTime ();
+//        
+//        // TODO: is this safe?
+//        minTime = time0 < minTime ? time0 : minTime;
+//        minTime = time1 < minTime ? time1 : minTime;
+//    }
+//    while ( forkHeight > 0 );
+//
+//    assert ( forkHeight < minHeight ); // TODO: handle gracefully
+//    
+//    // TODO: maybe use time of top block (instead of current time)
+//    size_t evalCount = (( size_t )( difftime ( now, minTime ) / TheContext::get ().getWindow ())) + 1;
+//
+//    // only need to compare blocks up through evalCount, starting just after the fork
+//    int result = Chain::compareSegment ( chain0, chain1, forkHeight + 1, evalCount );
+//    if ( result == 0 ) {
+//    
+//        if ( minHeight < height0 ) {
+//            result -= ( height0 - minHeight );
+//        }
+//    
+//        if ( minHeight < height1 ) {
+//            result += ( height1 - minHeight );
+//        }
+//    }
+//    return result;
+//}
+//
+////----------------------------------------------------------------//
+//int Chain::compareSegment ( const Chain& chain0, const Chain& chain1, size_t base, size_t n ) {
+//
+//    size_t top = base + n;
+//
+//    size_t height0 = chain0.countBlocks ();
+//    size_t height1 = chain1.countBlocks ();
+//
+//    size_t minHeight = height0 < height1 ? height0 : height1;
+//    minHeight = minHeight < top ? minHeight : top;
+//
+//    int score = 0;
+//    
+//    for ( size_t i = base; i < minHeight; ++i ) {
+//    
+//        shared_ptr < Block > block0 = chain0.getBlock ( i );
+//        shared_ptr < Block > block1 = chain1.getBlock ( i );
+//        
+//        score += Block::compare ( *block0, *block1 );
+//    }
+//    return score;
+//}
 
 //----------------------------------------------------------------//
 size_t Chain::countBlocks () const {

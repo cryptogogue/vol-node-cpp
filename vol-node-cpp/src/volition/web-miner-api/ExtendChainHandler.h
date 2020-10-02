@@ -30,9 +30,12 @@ public:
         try {
             ScopedMinerLock scopedLock ( this->mWebMiner );
             
+            time_t now;
+            time ( &now );
+            
             bool lazy = this->mWebMiner->isLazy ();
             this->mWebMiner->setLazy ( false );
-            this->mWebMiner->extend ();
+            this->mWebMiner->extend ( now );
             this->mWebMiner->setLazy ( lazy );
         }
         catch ( ... ) {

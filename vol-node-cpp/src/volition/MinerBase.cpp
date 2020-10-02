@@ -7,7 +7,6 @@
 #include <volition/HTTPMiningMessenger.h>
 #include <volition/MinerBase.h>
 #include <volition/MinerLaunchTests.h>
-#include <volition/TheContext.h>
 
 namespace Volition {
 
@@ -80,9 +79,9 @@ void MinerBase::discoverMiners () {
 }
 
 //----------------------------------------------------------------//
-void MinerBase::extend () {
+void MinerBase::extend ( time_t now ) {
 
-    shared_ptr < Block > block = this->prepareBlock ();
+    shared_ptr < Block > block = this->prepareBlock ( now );
     if ( block ) {
     
         this->pushBlock ( block );
@@ -148,15 +147,21 @@ string MinerBase::getMotto () const {
 }
 
 //----------------------------------------------------------------//
-SerializableTime MinerBase::getStartTime () const {
+BlockTreeNode::RewriteMode MinerBase::getRewriteMode () const {
 
-    return this->mStartTime;
+    return this->mRewriteMode;
 }
 
 //----------------------------------------------------------------//
-time_t MinerBase::getTime () const {
+time_t MinerBase::getRewriteWindow () const {
 
-    return this->Miner_getTime ();
+    return this->mRewriteWindowInSeconds;
+}
+
+//----------------------------------------------------------------//
+SerializableTime MinerBase::getStartTime () const {
+
+    return this->mStartTime;
 }
 
 //----------------------------------------------------------------//
@@ -200,6 +205,8 @@ void MinerBase::loadKey ( string keyfile, string password ) {
 //----------------------------------------------------------------//
 MinerBase::MinerBase () :
     mFlags ( DEFAULT_FLAGS ),
+    mRewriteMode ( BlockTreeNode::REWRITE_NONE ),
+    mRewriteWindowInSeconds ( 0 ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ) {
     
     MinerLaunchTests::checkEnvironment ();
@@ -216,12 +223,12 @@ void MinerBase::permitControl ( bool permit ) {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Block > MinerBase::prepareBlock () {
+shared_ptr < Block > MinerBase::prepareBlock ( time_t now ) {
         
     shared_ptr < Block > prevBlock = this->mChain->getBlock ();
     assert ( prevBlock );
     
-    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, this->getTime (), prevBlock.get (), this->mKeyPair );
+    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, now, prevBlock.get (), this->mKeyPair );
     this->fillBlock ( *this->mChain, *block );
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
@@ -314,9 +321,16 @@ void MinerBase::setMotto ( string motto ) {
 }
 
 //----------------------------------------------------------------//
-void MinerBase::setSolo ( bool solo ) {
+void MinerBase::setRewriteMode ( BlockTreeNode::RewriteMode mode ) {
 
-    this->mFlags = SET_BITS ( this->mFlags, MINER_SOLO, solo );
+    this->mRewriteMode = mode;
+}
+
+//----------------------------------------------------------------//
+void MinerBase::setRewriteWindow ( time_t window ) {
+
+    this->mRewriteWindowInSeconds = window;
+    this->setRewriteMode ( BlockTreeNode::REWRITE_WINDOW );
 }
 
 //----------------------------------------------------------------//
@@ -359,14 +373,6 @@ void MinerBase::AbstractSerializable_serializeTo ( AbstractSerializerTo& seriali
     UNUSED ( serializer );
 
 //    serializer.serialize ( "chain", this->mChain );
-}
-
-//----------------------------------------------------------------//
-time_t MinerBase::Miner_getTime () const {
-
-    time_t now;
-    time ( &now );
-    return now;
 }
 
 //----------------------------------------------------------------//

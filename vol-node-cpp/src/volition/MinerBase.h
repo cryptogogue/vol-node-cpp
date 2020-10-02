@@ -66,13 +66,12 @@ class MinerBase :
 public:
 
     enum : int {
-         MINER_LAZY                 = 0x01,
-         MINER_SOLO                 = 0x02,
-         MINER_VERBOSE              = 0x04,
-         MINER_PERMIT_CONTROL       = 0x08,
+        MINER_LAZY                  = 0x01,
+        MINER_VERBOSE               = 0x02,
+        MINER_PERMIT_CONTROL        = 0x04,
     };
 
-    static const int DEFAULT_FLAGS = MINER_SOLO;
+    static const int DEFAULT_FLAGS = 0;
 
 protected:
 
@@ -88,7 +87,8 @@ protected:
     Signature                                       mVisage;
 
     int                                             mFlags;
-
+    BlockTreeNode::RewriteMode                      mRewriteMode;
+    time_t                                          mRewriteWindowInSeconds;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
@@ -118,7 +118,6 @@ protected:
     void                        AbstractMiningMessengerClient_receive           ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) override;
     void                        AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
     void                        AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
-    virtual time_t              Miner_getTime                                   () const;
     virtual void                Miner_reset                                     ();
     virtual void                Miner_shutdown                                  ( bool kill );
 
@@ -141,7 +140,7 @@ public:
     bool                                    checkBestBranch             ( string miners ) const;
     bool                                    controlPermitted            () const;
     size_t                                  countBranches               () const;
-    void                                    extend                      ();
+    void                                    extend                      ( time_t now );
     BlockTreeNode::ConstPtr                 getBestBranch               () const;
     const BlockTree&                        getBlockTree                () const;
     const Chain*                            getChain                    () const;
@@ -151,8 +150,9 @@ public:
     const Ledger&                           getLedger                   () const;
     string                                  getMinerID                  () const;
     string                                  getMotto                    () const;
+    BlockTreeNode::RewriteMode              getRewriteMode              () const;
+    time_t                                  getRewriteWindow            () const;
     SerializableTime                        getStartTime                () const;
-    time_t                                  getTime                     () const;
     const Signature&                        getVisage                   () const;
     bool                                    isLazy                      () const;
     void                                    loadGenesis                 ( string path );
@@ -160,7 +160,7 @@ public:
                                             MinerBase                   ();
     virtual                                 ~MinerBase                  ();
     void                                    permitControl               ( bool permit );
-    shared_ptr < Block >                    prepareBlock                ();
+    shared_ptr < Block >                    prepareBlock                ( time_t now );
     void                                    reset                       ();
     void                                    setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                                    setGenesis                  ( shared_ptr < const Block > block );
@@ -168,7 +168,8 @@ public:
     void                                    setMessenger                ( shared_ptr < AbstractMiningMessenger > messenger );
     void                                    setMinerID                  ( string minerID );
     void                                    setMotto                    ( string motto );
-    void                                    setSolo                     ( bool solo );
+    void                                    setRewriteMode              ( BlockTreeNode::RewriteMode mode );
+    void                                    setRewriteWindow            ( time_t window );
     void                                    setVerbose                  ( bool verbose );
     void                                    shutdown                    ( bool kill = false );
 };
