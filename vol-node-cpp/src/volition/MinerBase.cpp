@@ -297,6 +297,12 @@ void MinerBase::setGenesis ( shared_ptr < const Block > block ) {
 }
 
 //----------------------------------------------------------------//
+void MinerBase::setKeyPair ( const CryptoKey& key ) {
+
+    this->mKeyPair = key;
+}
+
+//----------------------------------------------------------------//
 void MinerBase::setLazy ( bool lazy ) {
 
     this->mFlags = SET_BITS ( this->mFlags, MINER_LAZY, lazy );

@@ -228,10 +228,10 @@ public:
     }
     
     //----------------------------------------------------------------//
-    static string toJSONString ( const AbstractSerializable& serializable ) {
+    static string toJSONString ( const AbstractSerializable& serializable, unsigned int indent = 0, int step = -1 ) {
 
         stringstream strStream;
-        ToJSONSerializer::toJSON ( serializable, strStream, 0 );
+        ToJSONSerializer::toJSON ( serializable, strStream, indent, step );
         return strStream.str ();
     }
 };

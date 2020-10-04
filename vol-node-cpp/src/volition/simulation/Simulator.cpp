@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/FileSys.h>
 #include <volition/simulation/AbstractScenario.h>
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/Simulator.h>
@@ -51,6 +52,13 @@ void Simulator::extendOptimal ( size_t height ) {
 }
 
 //----------------------------------------------------------------//
+SimMiningMessenger& Simulator::getMessenger () {
+
+    assert ( this->mMessenger );
+    return *this->mMessenger;
+}
+
+//----------------------------------------------------------------//
 const Simulator::Miners& Simulator::getMiners () {
 
     return this->mMiners;
@@ -59,11 +67,10 @@ const Simulator::Miners& Simulator::getMiners () {
 //----------------------------------------------------------------//
 void Simulator::initialize ( size_t totalMiners, size_t basePort ) {
 
+    this->mBasePort = basePort;
+
     this->mMiners.resize ( totalMiners );
     this->mMinerSettings.resize ( totalMiners );
-
-    shared_ptr < Transactions::Genesis > genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
-    genesisMinerTransactionBody->setIdentity ( "SIMULATION" );
 
     this->mMessenger = make_shared < SimMiningMessenger >();
 
@@ -73,37 +80,10 @@ void Simulator::initialize ( size_t totalMiners, size_t basePort ) {
         this->mMiners [ i ] = miner;
 
         miner->setMinerID ( Format::write ( "%d", ( int )( basePort + i )));
-        miner->affirmKey ();
-        miner->affirmVisage ();
         miner->setMessenger ( this->mMessenger );
-
-        Transactions::GenesisAccount genesisAccount;
-        
-        genesisAccount.mName    = miner->getMinerID ();
-        genesisAccount.mKey     = miner->getKeyPair ();
-        genesisAccount.mGrant   = 0;
-        genesisAccount.mURL     = Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", ( int )basePort ).c_str (), miner->getMinerID ().c_str ());
-
-        genesisAccount.mMotto   = miner->getMotto ();
-        genesisAccount.mVisage  = miner->getVisage ();
-
-        genesisMinerTransactionBody->pushAccount ( genesisAccount );
     }
     
     this->mMessenger->setMiners ( this->mMiners );
-
-    shared_ptr < Transaction > transaction = make_shared < Transaction >();
-    transaction->setBody ( move ( genesisMinerTransactionBody ));
-    
-    shared_ptr < Block > genesisBlock = make_shared < Block >();
-    genesisBlock->pushTransaction ( transaction );
-    genesisBlock->affirmHash ();
-
-    for ( size_t i = 0; i < totalMiners; ++i ) {
-        this->mMiners [ i ]->setGenesis ( genesisBlock );
-    }
-
-    this->mOptimalTag = this->mOptimal.affirmBlock ( genesisBlock );
 }
 
 //----------------------------------------------------------------//
@@ -124,6 +104,63 @@ void Simulator::initialize ( shared_ptr < AbstractScenario > scenario ) {
 void Simulator::pause ( bool pause ) {
 
     this->mIsPaused = pause;
+}
+
+//----------------------------------------------------------------//
+void Simulator::prepare () {
+
+    size_t totalMiners = this->mMiners.size ();
+    assert ( totalMiners > 0 );
+
+    SerializableVector < CryptoKey > minerKeys;
+    SerializableVector < CryptoKey > keyDump;
+
+    static const cc8* MINER_KEYS_FILENAME = "sim-miner-keys.json";
+    if ( FileSys::exists ( MINER_KEYS_FILENAME )) {
+        FromJSONSerializer::fromJSONFile ( minerKeys, MINER_KEYS_FILENAME );
+    }
+
+    shared_ptr < Transactions::Genesis > genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
+    genesisMinerTransactionBody->setIdentity ( "SIMULATION" );
+
+    for ( size_t i = 0; i < totalMiners; ++i ) {
+    
+        shared_ptr < Miner > miner = this->mMiners [ i ];
+
+        if ( i < minerKeys.size ()) {
+            miner->setKeyPair ( minerKeys [ i ]);
+        }
+        miner->affirmKey ();
+        miner->affirmVisage ();
+
+        keyDump.push_back ( miner->getKeyPair ());
+
+        Transactions::GenesisAccount genesisAccount;
+        
+        genesisAccount.mName    = miner->getMinerID ();
+        genesisAccount.mKey     = miner->getKeyPair ();
+        genesisAccount.mGrant   = 0;
+        genesisAccount.mURL     = Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", ( int )this->mBasePort ).c_str (), miner->getMinerID ().c_str ());
+
+        genesisAccount.mMotto   = miner->getMotto ();
+        genesisAccount.mVisage  = miner->getVisage ();
+
+        genesisMinerTransactionBody->pushAccount ( genesisAccount );
+    }
+    
+    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", ToJSONSerializer::toJSONString ( keyDump, 4 ).c_str ());
+    
+    shared_ptr < Transaction > transaction = make_shared < Transaction >();
+    transaction->setBody ( move ( genesisMinerTransactionBody ));
+    
+    shared_ptr < Block > genesisBlock = make_shared < Block >();
+    genesisBlock->pushTransaction ( transaction );
+    genesisBlock->affirmHash ();
+
+    for ( size_t i = 0; i < totalMiners; ++i ) {
+        this->mMiners [ i ]->setGenesis ( genesisBlock );
+    }
+    this->mOptimalTag = this->mOptimal.affirmBlock ( genesisBlock );
 }
 
 //----------------------------------------------------------------//
@@ -183,6 +220,19 @@ void Simulator::setInterval ( size_t base, size_t top, size_t interval ) {
     }
 }
 
+//----------------------------------------------------------------//
+void Simulator::setMinerKey ( size_t idx, const CryptoKey& key ) {
+
+    this->mMiners [ idx ]->setKeyPair ( key );
+}
+
+//----------------------------------------------------------------//
+void Simulator::setMinerKey ( size_t idx, string pem ) {
+
+    CryptoKey key;
+    key.rsaFromPEM ( "", pem );
+    this->setMinerKey ( idx, key );
+}
 
 //----------------------------------------------------------------//
 void Simulator::setReportMode ( ReportMode reportMode ) {
@@ -199,6 +249,7 @@ void Simulator::setTimeStep ( time_t seconds ) {
 //----------------------------------------------------------------//
 Simulator::Simulator () :
     mReportMode ( REPORT_SUMMARY ),
+    mBasePort ( 0 ),
     mIsPaused ( false ),
     mStepCount ( 0 ),
     mTimeStep ( 0 ) {
@@ -211,11 +262,15 @@ Simulator::~Simulator () {
 //----------------------------------------------------------------//
 void Simulator::step () {
 
-    if ( this->mScenario ) {
-        this->mScenario->AbstractScenario_control ( *this, this->mStepCount );
+    if ( this->mIsPaused ) return;
+
+    if ( this->mStepCount == 0 ) {
+        this->prepare ();
     }
 
-    if ( this->mIsPaused ) return;
+    if ( this->mScenario ) {
+        this->mScenario->AbstractScenario_control ( *this, *this->mMessenger, this->mStepCount );
+    }
 
     if (( this->mTimeStep == 0 ) || ( this->mStepCount == 0 )) {
         time ( &this->mNow );

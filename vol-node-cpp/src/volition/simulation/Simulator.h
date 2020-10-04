@@ -54,6 +54,7 @@ protected:
     
     Analysis                            mAnalysis;
     
+    size_t                              mBasePort;
     Miners                              mMiners;
     vector < SimMinerSettings >         mMinerSettings;
     shared_ptr < SimMiningMessenger >   mMessenger;
@@ -68,22 +69,26 @@ protected:
     time_t                              mTimeStep;
 
     //----------------------------------------------------------------//
-    void            extendOptimal       ( size_t height );
-    void            report              ();
-    void            step                ();
+    void                    extendOptimal           ( size_t height );
+    void                    prepare                 ();
+    void                    report                  ();
+    void                    step                    ();
 
 public:
 
     //----------------------------------------------------------------//
-    const Miners&   getMiners           ();
-    void            initialize          ( size_t totalMiners, size_t basePort = 9090 );
-    void            initialize          ( shared_ptr < AbstractScenario > scenario );
-    void            pause               ( bool pause = true );
-    void            setInterval         ( size_t base, size_t top, size_t interval );
-    void            setReportMode       ( ReportMode reportMode );
-    void            setTimeStep         ( time_t seconds );
-                    Simulator           ();
-                    ~Simulator          ();
+    SimMiningMessenger&     getMessenger            ();
+    const Miners&           getMiners               ();
+    void                    initialize              ( size_t totalMiners, size_t basePort = 9090 );
+    void                    initialize              ( shared_ptr < AbstractScenario > scenario );
+    void                    pause                   ( bool pause = true );
+    void                    setInterval             ( size_t base, size_t top, size_t interval );
+    void                    setMinerKey             ( size_t idx, const CryptoKey& key );
+    void                    setMinerKey             ( size_t idx, string pem );
+    void                    setReportMode           ( ReportMode reportMode );
+    void                    setTimeStep             ( time_t seconds );
+                            Simulator               ();
+                            ~Simulator              ();
 };
 
 } // namespace Simulation

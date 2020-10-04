@@ -53,10 +53,12 @@ public:
     static bool         hasCurve                ( int nid );
     static bool         hasCurve                ( string groupName );
     void                rsa                     ( uint keyLength = RSA_1024, unsigned long exp = RSA_EXP_65537 );
+    void                rsaFromPEM              ( string publicKey, string privateKey );
     Signature           sign                    ( const Digest& digest, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     Signature           sign                    ( const Digest::DigestFunc& digestFunc, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     Signature           sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
     Signature           sign                    ( string message, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    string              toPEM                   () const;
     bool                verify                  ( const Signature& signature, const Digest& digest ) const;
     bool                verify                  ( const Signature& signature, const Digest::DigestFunc& digestFunc ) const;
     bool                verify                  ( const Signature& signature, const AbstractSerializable& serializable ) const;

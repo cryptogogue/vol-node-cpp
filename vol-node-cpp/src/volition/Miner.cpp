@@ -48,7 +48,7 @@ bool Miner::canExtend () const {
     map < string, RemoteMiner >::const_iterator minerIt = this->mRemoteMiners.cbegin ();
     for ( ; minerIt != this->mRemoteMiners.cend (); ++minerIt ) {
         const RemoteMiner& remoteMiner = minerIt->second;
-        if ( this->mBestBranch->isAncestorOf ( remoteMiner.mTag )) count++;
+        if ( remoteMiner.mTag && this->mBestBranch->isAncestorOf ( remoteMiner.mTag )) count++;
     }
     return ( count > ( this->mRemoteMiners.size () >> 1 ));
 }
@@ -271,11 +271,11 @@ void Miner::updateSearches ( time_t now ) {
         const RemoteMiner& remoteMiner = remoteMinerIt->second;
 
         // we only care about missing branches; ignore new/complete/invalid branches.
-        if ( remoteMiner.mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
+        if ( remoteMiner.mTag && remoteMiner.mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
         
             BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner.mTag, now );
         
-            // only affirm a search if the other chang could beat our current.
+            // only affirm a search if the other chain could beat our current.
             if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
                 this->affirmSearch ( truncated );
             }

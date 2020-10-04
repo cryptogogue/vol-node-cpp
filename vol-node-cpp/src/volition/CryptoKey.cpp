@@ -102,6 +102,20 @@ void CryptoKey::rsa ( uint keyLength, unsigned long exp ) {
 }
 
 //----------------------------------------------------------------//
+void CryptoKey::rsaFromPEM ( string publicKey, string privateKey ) {
+
+    // awkward, but DRY with CryptoKeyInfo.
+    
+    CryptoKeyInfo info;
+    info.mFormat        = CryptoKeyInfo::RSA_PEM;
+    info.mPublicKey     = publicKey;
+    info.mPrivateKey    = privateKey;
+
+    // TODO: passphrase
+    this->mKeyPair = info.makeKeyPair ();
+}
+
+//----------------------------------------------------------------//
 Signature CryptoKey::sign ( const Digest& digest, string hashAlgorithm ) const {
 
     Digest sig;
@@ -196,6 +210,13 @@ Signature CryptoKey::sign ( string message, string hashAlgorithm ) const {
         },
         hashAlgorithm
     );
+}
+
+//----------------------------------------------------------------//
+string CryptoKey::toPEM () const {
+
+    CryptoKeyInfo info ( *this, CryptoKeyInfo::ENCODE_AS_PEM );
+    return info.mPrivateKey.size () ? info.mPrivateKey : info.mPublicKey;
 }
 
 //----------------------------------------------------------------//

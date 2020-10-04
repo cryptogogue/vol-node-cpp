@@ -29,8 +29,9 @@ protected:
     SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, size_t step ) const override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) const override {
         UNUSED ( simulator );
+        UNUSED ( messenger );
         UNUSED ( step );
     }
     
@@ -52,7 +53,8 @@ protected:
     SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, size_t step ) const override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) const override {
+        UNUSED ( messenger );
         
         switch ( step ) {
             case 0:
@@ -73,6 +75,36 @@ protected:
 };
 
 //================================================================//
+// RandomDropScenario
+//================================================================//
+class RandomDropScenario :
+    public AbstractScenario {
+protected:
+
+    SCENARIO_BASE_PORT ( BASE_PORT )
+    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
+    SCENARIO_SIZE ( 16 )
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) const override {
+        UNUSED ( simulator );
+        UNUSED ( messenger );
+        
+        switch ( step ) {
+            case 0:
+                messenger.pushConstraintDropBlock ( 0.875, 0, 16 );
+                break;
+            
+            case 64:
+//                simulator.pause ();
+                break;
+        }
+    }
+};
+
+#define THE_SCENARO RandomDropScenario
+
+//================================================================//
 // SimulatorApp
 //================================================================//
 class SimulatorApp :
@@ -84,7 +116,7 @@ public:
         UNUSED ( args );
         
         SimulatorActivity simulator;
-        simulator.initialize ( make_shared < SimpleScenario >());
+        simulator.initialize ( make_shared < THE_SCENARO >());
         
         Poco::ThreadPool threadPool;
         

@@ -317,7 +317,7 @@ CryptoKeyInfo::KeyPairPtr CryptoKeyInfo::makeKeyPairEC () const {
             break;
         }
         case ENCODING_PEM: {
-        
+            
             stringstream publicKeyStream ( this->mPublicKey );
             stringstream privateKeyStream ( this->mPrivateKey );
 
