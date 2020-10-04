@@ -15,17 +15,26 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Miner::affirmSearch ( BlockTreeNode::ConstPtr branch ) {
+void Miner::affirmBranchSearch ( BlockTreeNode::ConstPtr node ) {
 
-    if ( branch->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_COMPLETE | BlockTreeNode::STATUS_INVALID ))) return;
+    while ( node && node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_NEW | BlockTreeNode::STATUS_MISSING ))) {
+        this->affirmNodeSearch ( node );
+        node = node->getParent ();
+    }
+}
 
-    string hash = ( **branch ).getDigest ();
+//----------------------------------------------------------------//
+void Miner::affirmNodeSearch ( BlockTreeNode::ConstPtr node ) {
+
+    if ( node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_COMPLETE | BlockTreeNode::STATUS_INVALID ))) return;
+
+    string hash = ( **node ).getDigest ();
     
     if ( this->mSearches.find ( hash ) != this->mSearches.end ()) return; // already searching
 
     MinerSearchEntry& search = this->mSearches [ hash ];
     
-    search.mSearchTarget = branch;
+    search.mSearchTarget = node;
     search.mSearchLimit = 0;
     
     map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
@@ -95,8 +104,9 @@ void Miner::processResponses () {
             case MiningMessengerRequest::REQUEST_HEADER: {
                 
                 if ( entry.mBlockHeader ) {
+                    size_t height = entry.mBlockHeader->getHeight ();
                     remoteMiner.mTag = entry.mBlockHeader ? this->mBlockTree.affirmBlock ( entry.mBlockHeader, NULL ) : NULL;
-                    remoteMiner.mCurrentBlock = remoteMiner.mTag ? entry.mRequest.mHeight + 1 : entry.mRequest.mHeight - 1;
+                    remoteMiner.mCurrentBlock = remoteMiner.mTag ? height + 1 : height - 1;
                 }
                 
                 if ( this->mMinerSet.find ( minerID ) != this->mMinerSet.end ()) {
@@ -277,12 +287,12 @@ void Miner::updateSearches ( time_t now ) {
         
             // only affirm a search if the other chain could beat our current.
             if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
-                this->affirmSearch ( truncated );
+                this->affirmBranchSearch ( truncated );
             }
         }
     }
     // always affirm a search for the current branch
-    this->affirmSearch ( this->mBestBranch );
+    this->affirmBranchSearch ( this->mBestBranch );
 }
 
 } // namespace Volition

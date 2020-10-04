@@ -132,6 +132,8 @@ double SimMiningMessenger::random () {
 SimMiningMessenger::SimMiningMessenger () :
     mPRNG ( 0 ),
     mUniformDistribution ( 0, 1 ) {
+    
+//    seed = random_device ()()
 }
 
 //----------------------------------------------------------------//

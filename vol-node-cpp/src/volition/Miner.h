@@ -34,7 +34,8 @@ protected:
     map < string, MinerSearchEntry >    mSearches;
     
     //----------------------------------------------------------------//
-    void                        affirmSearch                ( BlockTreeNode::ConstPtr branch );
+    void                        affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
+    void                        affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
     bool                        canExtend                   () const;
     void                        composeChain                ();
     void                        processResponses            ();

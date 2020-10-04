@@ -235,7 +235,7 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
     const BlockHeader& header = *this->mHeader;
     
     string charm = header.getCharm ().toHex ().substr ( 0, 6 );
-    Format::write ( str, "%s[%s - %s]", header.isGenesis () ? "" : ",", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str ());
+    Format::write ( str, "%s[%s:%s]", header.isGenesis () ? "" : ", ", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str ());
 }
 
 //----------------------------------------------------------------//
