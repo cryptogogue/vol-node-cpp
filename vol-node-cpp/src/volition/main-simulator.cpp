@@ -29,14 +29,14 @@ protected:
     SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) const override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
         UNUSED ( simulator );
         UNUSED ( messenger );
         UNUSED ( step );
     }
     
     //----------------------------------------------------------------//
-    void AbstractScenario_setup ( Simulator& simulator ) const override {
+    void AbstractScenario_setup ( Simulator& simulator ) override {
         UNUSED ( simulator );
     }
 };
@@ -53,8 +53,10 @@ protected:
     SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) const override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+        UNUSED ( simulator );
         UNUSED ( messenger );
+        UNUSED ( step );
         
         switch ( step ) {
             case 0:
@@ -86,9 +88,10 @@ protected:
     SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) const override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
         UNUSED ( simulator );
         UNUSED ( messenger );
+        UNUSED ( step );
         
         switch ( step ) {
             case 0:
@@ -96,13 +99,56 @@ protected:
                 break;
             
             case 64:
+                simulator.getSimMiner ( 0 )->setCharm ( 8 );
 //                simulator.pause ();
                 break;
         }
     }
 };
 
-#define THE_SCENARO RandomDropScenario
+//================================================================//
+// RewriteScenario
+//================================================================//
+class RewriteScenario :
+    public AbstractScenario {
+protected:
+
+    SCENARIO_BASE_PORT ( BASE_PORT )
+    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
+    SCENARIO_SIZE ( 16 )
+    
+    int     mCounter;
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+        UNUSED ( simulator );
+        UNUSED ( messenger );
+        UNUSED ( step );
+        
+        if ( step == 0 ) {
+            simulator.setTimeStep ( 1 );
+            simulator.setRewriteWindow ( 0, 16, 1 );
+        }
+        
+        shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( 0 );
+        if (( **simMiner->getBestBranch ()).getHeight () >= 16 ) {
+        
+            BlockTreeNode::ConstPtr prevBranch = simMiner->getBestBranch ();
+        
+            simMiner->setCharm ( 8, Format::write ( "%06x", this->mCounter ));
+            this->mCounter--;
+        }
+    }
+
+public:
+
+    //----------------------------------------------------------------//
+    RewriteScenario () :
+        mCounter ( 0x0000ff ) {
+    }
+};
+
+#define THE_SCENARO RewriteScenario
 
 //================================================================//
 // SimulatorApp

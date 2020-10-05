@@ -185,6 +185,12 @@ void BlockHeader::setMinerID ( string minerID ) {
     this->mMinerID = minerID;
 }
 
+//----------------------------------------------------------------//
+void BlockHeader::setCharm ( const Digest& charm ) {
+
+    this->mCharm = charm;
+}
+
 //================================================================//
 // overrides
 //================================================================//

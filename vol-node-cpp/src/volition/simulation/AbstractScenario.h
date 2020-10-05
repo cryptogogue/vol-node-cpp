@@ -41,7 +41,7 @@ protected:
     friend class Simulator;
 
     //----------------------------------------------------------------//
-    virtual void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) const {
+    virtual void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) {
         UNUSED ( simulator );
         UNUSED ( messenger );
         UNUSED ( step );
@@ -66,7 +66,7 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    virtual void AbstractScenario_setup ( Simulator& simulator ) const {
+    virtual void AbstractScenario_setup ( Simulator& simulator ) {
         UNUSED ( simulator );
     }
 

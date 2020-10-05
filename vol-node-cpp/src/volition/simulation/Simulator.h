@@ -8,8 +8,8 @@
 #include <volition/Block.h>
 #include <volition/BlockTree.h>
 #include <volition/Ledger.h>
-#include <volition/Miner.h>
 #include <volition/simulation/Analysis.h>
+#include <volition/simulation/SimMiner.h>
 #include <volition/simulation/SimMiningMessenger.h>
 #include <volition/Transaction.h>
 
@@ -69,26 +69,28 @@ protected:
     time_t                              mTimeStep;
 
     //----------------------------------------------------------------//
-    void                    extendOptimal           ( size_t height );
-    void                    prepare                 ();
-    void                    report                  ();
-    void                    step                    ();
+    void                                extendOptimal           ( size_t height );
+    void                                prepare                 ();
+    void                                step                    ();
 
 public:
 
     //----------------------------------------------------------------//
-    SimMiningMessenger&     getMessenger            ();
-    const Miners&           getMiners               ();
-    void                    initialize              ( size_t totalMiners, size_t basePort = 9090 );
-    void                    initialize              ( shared_ptr < AbstractScenario > scenario );
-    void                    pause                   ( bool pause = true );
-    void                    setInterval             ( size_t base, size_t top, size_t interval );
-    void                    setMinerKey             ( size_t idx, const CryptoKey& key );
-    void                    setMinerKey             ( size_t idx, string pem );
-    void                    setReportMode           ( ReportMode reportMode );
-    void                    setTimeStep             ( time_t seconds );
-                            Simulator               ();
-                            ~Simulator              ();
+    SimMiningMessenger&                 getMessenger            ();
+    const Miners&                       getMiners               ();
+    shared_ptr < SimMiner >             getSimMiner             ( size_t idx );
+    void                                initialize              ( size_t totalMiners, size_t basePort = 9090 );
+    void                                initialize              ( shared_ptr < AbstractScenario > scenario );
+    void                                pause                   ( bool pause = true );
+    void                                report                  ();
+    void                                setInterval             ( size_t base, size_t top, size_t interval );
+    void                                setMinerKey             ( size_t idx, const CryptoKey& key );
+    void                                setMinerKey             ( size_t idx, string pem );
+    void                                setReportMode           ( ReportMode reportMode );
+    void                                setRewriteWindow        ( size_t base, size_t top, time_t window );
+    void                                setTimeStep             ( time_t seconds );
+                                        Simulator               ();
+                                        ~Simulator              ();
 };
 
 } // namespace Simulation

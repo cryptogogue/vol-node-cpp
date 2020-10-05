@@ -65,6 +65,12 @@ const Simulator::Miners& Simulator::getMiners () {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < SimMiner > Simulator::getSimMiner ( size_t idx ) {
+
+    return dynamic_pointer_cast < SimMiner >( this->mMiners [ idx ]);
+}
+
+//----------------------------------------------------------------//
 void Simulator::initialize ( size_t totalMiners, size_t basePort ) {
 
     this->mBasePort = basePort;
@@ -76,7 +82,7 @@ void Simulator::initialize ( size_t totalMiners, size_t basePort ) {
 
     for ( size_t i = 0; i < totalMiners; ++i ) {
     
-        shared_ptr < Miner > miner = make_shared < Miner >();
+        shared_ptr < SimMiner > miner = make_shared < SimMiner >();
         this->mMiners [ i ] = miner;
 
         miner->setMinerID ( Format::write ( "%d", ( int )( basePort + i )));
@@ -238,6 +244,14 @@ void Simulator::setMinerKey ( size_t idx, string pem ) {
 void Simulator::setReportMode ( ReportMode reportMode ) {
 
     this->mReportMode = reportMode;
+}
+
+//----------------------------------------------------------------//
+void Simulator::setRewriteWindow ( size_t base, size_t top, time_t window ) {
+
+    for ( size_t i = base; i < top; ++i ) {
+        this->mMiners [ i ]->setRewriteWindow ( window );
+    }
 }
 
 //----------------------------------------------------------------//

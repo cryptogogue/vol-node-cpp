@@ -73,6 +73,7 @@ public:
     bool                isInRewriteWindow                   ( time_t window, time_t now ) const;
     bool                isParent                            ( const BlockHeader& block ) const;
     void                setMinerID                          ( string minerID );
+    void                setCharm                            ( const Digest& charm );
 };
 
 } // namespace Volition

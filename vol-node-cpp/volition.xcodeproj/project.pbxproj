@@ -135,6 +135,8 @@
 		CD775197251FF03A00A53765 /* MinerBase.h in Headers */ = {isa = PBXBuildFile; fileRef = CD775195251FF03A00A53765 /* MinerBase.h */; };
 		CD7751B12527093900A53765 /* TransactionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7751B02527093900A53765 /* TransactionContext.cpp */; };
 		CD7751BB252709CE00A53765 /* SchemaHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7751BA252709CE00A53765 /* SchemaHandle.cpp */; };
+		CD7751D2252A790400A53765 /* SimMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7751D0252A790400A53765 /* SimMiner.h */; };
+		CD7751D3252A790400A53765 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7751D1252A790400A53765 /* SimMiner.cpp */; };
 		CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747823B052BF00FBE468 /* SerializableOpaque.h */; };
 		CD7C747B23B6EC6700FBE468 /* UpgradeAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */; };
 		CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1D0228F47DA000C2A54 /* FileSys.cpp */; };
@@ -756,6 +758,8 @@
 		CD775195251FF03A00A53765 /* MinerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerBase.h; path = src/volition/MinerBase.h; sourceTree = "<group>"; };
 		CD7751B02527093900A53765 /* TransactionContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionContext.cpp; path = src/volition/TransactionContext.cpp; sourceTree = "<group>"; };
 		CD7751BA252709CE00A53765 /* SchemaHandle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SchemaHandle.cpp; path = src/volition/SchemaHandle.cpp; sourceTree = "<group>"; };
+		CD7751D0252A790400A53765 /* SimMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimMiner.h; path = src/volition/simulation/SimMiner.h; sourceTree = "<group>"; };
+		CD7751D1252A790400A53765 /* SimMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimMiner.cpp; path = src/volition/simulation/SimMiner.cpp; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD7C747823B052BF00FBE468 /* SerializableOpaque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableOpaque.h; path = src/volition/serialization/SerializableOpaque.h; sourceTree = "<group>"; };
@@ -1526,6 +1530,8 @@
 				CDAA38EC251ACBD300FEAFB5 /* AbstractScenario.h */,
 				CD73D81F2166D68700F43CC7 /* Analysis.cpp */,
 				CD73D8202166D68700F43CC7 /* Analysis.h */,
+				CD7751D1252A790400A53765 /* SimMiner.cpp */,
+				CD7751D0252A790400A53765 /* SimMiner.h */,
 				CDAA38E4251AA13900FEAFB5 /* SimMiningMessenger.cpp */,
 				CDAA38E5251AA13900FEAFB5 /* SimMiningMessenger.h */,
 				CDAA38E0251AA09200FEAFB5 /* Simulator.cpp */,
@@ -1703,6 +1709,7 @@
 				CD63A1D322AF892800D5C801 /* AssetMethodInvocation.h in Headers */,
 				CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */,
 				CDBFD54A218B8999002AB0C3 /* RestrictKey.h in Headers */,
+				CD7751D2252A790400A53765 /* SimMiner.h in Headers */,
 				CD9E7BB82505A8550065C5FC /* MinerLaunchTests.h in Headers */,
 				CDD36D012162A415004FC222 /* Format.h in Headers */,
 				CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */,
@@ -2216,6 +2223,7 @@
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
 				CD7751B12527093900A53765 /* TransactionContext.cpp in Sources */,
 				CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */,
+				CD7751D3252A790400A53765 /* SimMiner.cpp in Sources */,
 				CDAA38E2251AA09200FEAFB5 /* Simulator.cpp in Sources */,
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,

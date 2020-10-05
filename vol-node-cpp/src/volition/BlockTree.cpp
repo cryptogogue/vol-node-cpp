@@ -92,8 +92,8 @@ int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_pt
         size_t segLength    = root.getSegLength (); // length of the shorter segment (if different lengths)
 
         // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
-        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getDefeatCount ( window ))) return 1;
-        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getDefeatCount ( window ))) return -1;
+        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getDefeatCount ( window ))) return -1;
+        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getDefeatCount ( window ))) return 1;
     }
 
     int score = 0;
