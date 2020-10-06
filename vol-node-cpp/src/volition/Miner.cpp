@@ -65,6 +65,14 @@ bool Miner::canExtend () const {
 //----------------------------------------------------------------//
 void Miner::composeChain () {
 
+    if ( this->mChainTag == this->mBestBranch ) return;
+
+    if ( this->mBestBranch->isAncestorOf ( this->mChainTag )) {
+        this->mChain->reset (( **this->mBestBranch ).getHeight () + 1 );
+        this->mChainTag = this->mBestBranch;
+        return;
+    }
+
     // if chain is divergent from best branch, re-root it
     if ( !this->mChainTag->isAncestorOf ( this->mBestBranch )) {
                     
@@ -92,23 +100,71 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::processResponses () {
 
+    if ( this->mMinerID == "9090" ) {
+        printf ( "" );
+    }
+
     for ( ; this->mBlockQueue.size (); this->mBlockQueue.pop_front ()) {
     
         const BlockQueueEntry& entry = *this->mBlockQueue.front ().get ();
-        string minerID = entry.mRequest.mMinerID;
         
-        RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
-
         switch ( entry.mRequest.mRequestType ) {
         
             case MiningMessengerRequest::REQUEST_HEADER: {
                 
+                string minerID = entry.mRequest.mMinerID;
+                RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
+        
                 if ( entry.mBlockHeader ) {
-                    size_t height = entry.mBlockHeader->getHeight ();
-                    remoteMiner.mTag = entry.mBlockHeader ? this->mBlockTree.affirmBlock ( entry.mBlockHeader, NULL ) : NULL;
-                    remoteMiner.mCurrentBlock = remoteMiner.mTag ? height + 1 : height - 1;
-                }
                 
+                    remoteMiner.mTag = entry.mBlockHeader ? this->mBlockTree.affirmBlock ( entry.mBlockHeader, NULL ) : NULL;
+
+                    if ( remoteMiner.mTag ) {
+
+                        // header found a parent; advance to the next header;
+                        remoteMiner.mCurrentBlock = entry.mBlockHeader->getHeight () + 1;
+
+                        // next block may already be in the cache, since we may have filled the cache by backing up.
+                        map < size_t, shared_ptr < const BlockHeader >>::iterator cacheIt = remoteMiner.mHeaderCache.begin ();
+                        while ( cacheIt != remoteMiner.mHeaderCache.end ()) {
+
+                            shared_ptr < const BlockHeader > header = ( cacheIt++ )->second;
+                            size_t height = header->getHeight ();
+
+                            // no more current or previous headers in the cache; bail.
+                            if ( height > remoteMiner.mCurrentBlock ) break;
+
+                            // cache has the headers we need; try to add it.
+                            if ( height == remoteMiner.mCurrentBlock ) {
+
+                                BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( header, NULL );
+                                if ( node ) {
+
+                                    // header found a root and was added, so advance to the next header;
+                                    remoteMiner.mTag = node;
+                                    remoteMiner.mCurrentBlock = height + 1;
+                                }
+                                else {
+
+                                    // cache may be bad; empty it and bail;
+                                    remoteMiner.mHeaderCache.clear ();
+                                    break;
+                                }
+                            }
+
+                            // header is no longer needed.
+                            remoteMiner.mHeaderCache.erase ( height );
+                        }
+                    }
+                    else {
+                    
+                        // header is dangling; cache it and request the previous header.
+                        size_t height = entry.mBlockHeader->getHeight ();
+                        remoteMiner.mHeaderCache [ height ] = entry.mBlockHeader;
+                        remoteMiner.mCurrentBlock = height - 1;
+                    }
+                }
+
                 if ( this->mMinerSet.find ( minerID ) != this->mMinerSet.end ()) {
                     this->mMinerSet.erase ( minerID );
                 }
@@ -163,6 +219,10 @@ void Miner::requestHeaders () {
 
 //----------------------------------------------------------------//
 void Miner::selectBestBranch ( time_t now ) {
+
+    if ( this->mMinerID == "9090" ) {
+        printf ( "" );
+    }
 
     map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
@@ -265,7 +325,6 @@ void Miner::updateChainRecurse ( BlockTreeNode::ConstPtr branch ) {
         this->updateChainRecurse ( parent );
     }
     
-    assert ( this->mChainTag == parent );
     if ( branch->checkStatus ( BlockTreeNode::STATUS_COMPLETE )) {
         this->pushBlock ( branch->getBlock ());
         assert ( this->mChainTag == branch );

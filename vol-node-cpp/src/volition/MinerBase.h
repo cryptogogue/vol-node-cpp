@@ -23,17 +23,14 @@ class AbstractHashable;
 // RemoteMiner
 //================================================================//
 class RemoteMiner {
-private:
-
-    friend class MinerBase;
-    friend class Miner;
+public:
 
     string                      mURL;
     size_t                      mCurrentBlock;
     
     BlockTreeNode::ConstPtr     mTag;
 
-public:
+    map < size_t, shared_ptr < const BlockHeader >> mHeaderCache;
 
     //----------------------------------------------------------------//
                     RemoteMiner             ();

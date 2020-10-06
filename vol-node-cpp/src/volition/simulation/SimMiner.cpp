@@ -37,15 +37,10 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
 //----------------------------------------------------------------//
 void SimMiner::rewindChain ( size_t height ) {
 
-    BlockTreeNode::ConstPtr cursor = this->mBestBranch;
-    while (( **cursor ).getHeight () > height ) {
-        cursor = cursor->getParent ();
+    while (( **this->mBestBranch ).getHeight () > height ) {
+        this->mBestBranch = this->mBestBranch->getParent ();
     }
-    if (( **cursor ).getHeight () == height ) {
-        this->mChain->reset (( **cursor ).getHeight () + 1 );
-        this->mChainTag     = cursor;
-        this->mBestBranch   = cursor;
-    }
+    this->composeChain ();
 }
 
 //----------------------------------------------------------------//
@@ -63,6 +58,32 @@ void SimMiner::setCharm ( size_t height, string charmHex ) {
         }
         assert ( cursorHeight > height );
         cursor = cursor->getParent ();
+    }
+}
+
+//----------------------------------------------------------------//
+void SimMiner::scrambleRemotes () {
+
+    random_device rd;
+    mt19937 prng ( rd ());
+    uniform_real_distribution < double > dist ( 0, 1 );
+
+    map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
+        RemoteMiner& remoteMiner = remoteMinerIt->second;
+        
+        if ( !remoteMiner.mTag ) continue;
+        
+        size_t height = ( **remoteMiner.mTag ).getHeight ();
+        height = ( size_t )floor ( height * dist ( prng ));
+        
+        BlockTreeNode::ConstPtr cursor = remoteMiner.mTag;
+        while (( **cursor ).getHeight () > height ) {
+            cursor = cursor->getParent ();
+        }
+        
+        remoteMiner.mTag = cursor;
+        remoteMiner.mCurrentBlock = height + 1;
     }
 }
 

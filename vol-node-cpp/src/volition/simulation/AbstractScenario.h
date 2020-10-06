@@ -40,6 +40,24 @@ protected:
 
     friend class Simulator;
 
+    mt19937                                             mPRNG;
+    uniform_real_distribution < double >                mUniformDistribution;
+
+    //----------------------------------------------------------------//
+    double random () {
+
+        return this->mUniformDistribution ( this->mPRNG );
+    }
+
+    //----------------------------------------------------------------//
+    size_t random ( size_t base, size_t top ) {
+
+        // TODO: this is silly, but maybe good enough for simulator
+        size_t range = ( top - base ) + 1;
+        double r = this->random () * ( double )( range );
+        return base + (( size_t )floor ( r ) % range );
+    }
+
     //----------------------------------------------------------------//
     virtual void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) {
         UNUSED ( simulator );
@@ -73,7 +91,9 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    AbstractScenario () {
+    AbstractScenario () :
+        mPRNG ( 0 ),
+        mUniformDistribution ( 0, 1 ) {
     }
     
     //----------------------------------------------------------------//

@@ -148,7 +148,34 @@ public:
     }
 };
 
-#define THE_SCENARO RewriteScenario
+//================================================================//
+// ScrambleScenario
+//================================================================//
+class ScrambleScenario :
+    public AbstractScenario {
+protected:
+
+    SCENARIO_BASE_PORT ( BASE_PORT )
+    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
+    SCENARIO_SIZE ( 16 )
+        
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+        UNUSED ( simulator );
+        UNUSED ( messenger );
+        UNUSED ( step );
+        
+//        if ( this->random () < 0.0625 ) {
+        if ( this->random () < 0.125 ) {
+        
+            shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( this->random ( 0, 15 ));
+            simMiner->scrambleRemotes ();
+            simMiner->rewindChain ( this->random ( 0, ( **simMiner->getBestBranch ()).getHeight ()));
+        }
+    }
+};
+
+#define THE_SCENARO ScrambleScenario
 
 //================================================================//
 // SimulatorApp

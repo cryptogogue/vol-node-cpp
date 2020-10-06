@@ -81,6 +81,9 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
         case MiningMessengerRequest::REQUEST_HEADER: {
             
             BlockTreeNode::ConstPtr node = miner->getBestBranch ();
+            while (( **node ).getHeight () > request.mHeight ) {
+                node = node->getParent ();
+            }
             this->dispatch ( request, node->getBlockHeader (), NULL );
             break;
         }
