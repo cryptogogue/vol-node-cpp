@@ -100,10 +100,6 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 void Miner::processResponses () {
 
-    if ( this->mMinerID == "9090" ) {
-        printf ( "" );
-    }
-
     for ( ; this->mBlockQueue.size (); this->mBlockQueue.pop_front ()) {
     
         const BlockQueueEntry& entry = *this->mBlockQueue.front ().get ();
@@ -227,9 +223,7 @@ void Miner::requestHeaders () {
 //----------------------------------------------------------------//
 void Miner::selectBestBranch ( time_t now ) {
 
-    if ( this->mMinerID == "9090" ) {
-        printf ( "" );
-    }
+    BlockTreeNode::ConstPtr bestBranch = this->mBestBranch->trim (( BlockTreeNode::Status )( BlockTreeNode::STATUS_MISSING )); // best branch cannot be missing.
 
     map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
@@ -242,11 +236,12 @@ void Miner::selectBestBranch ( time_t now ) {
             now
         );
         
-        if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
-            this->mBestBranch = truncated;
+        if ( BlockTreeNode::compare ( truncated, bestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
+            bestBranch = truncated;
         }
     }
-    assert ( this->mBestBranch );
+    assert ( bestBranch );
+    this->mBestBranch = bestBranch;
 }
 
 //----------------------------------------------------------------//

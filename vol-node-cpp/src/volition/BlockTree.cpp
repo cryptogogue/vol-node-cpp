@@ -234,8 +234,29 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
     }
     const BlockHeader& header = *this->mHeader;
     
+    cc8* status = "";
+    switch ( this->mStatus ) {
+        
+        case STATUS_NEW:
+            status = "N";
+            break;
+            
+        case STATUS_COMPLETE:
+            status = "C";
+            break;
+        
+        case STATUS_MISSING:
+            status = "-";
+            break;
+            
+        case STATUS_INVALID:
+            status = "X";
+            break;
+    }
+    
     string charm = header.getCharm ().toHex ().substr ( 0, 6 );
-    Format::write ( str, "%s[%s:%s]", header.isGenesis () ? "" : ", ", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str ());
+    cc8* format = this->mBlock ? "%s[%s:%s:%s]" : "%s<%s:%s:%s>";
+    Format::write ( str, format, header.isGenesis () ? "" : ", ", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
 }
 
 //----------------------------------------------------------------//

@@ -50,7 +50,7 @@ protected:
 
     typedef list < SimMiningMessengerConstraint> ConstraintList;
 
-    static const size_t HEADER_BATCH_SIZE   = 32;
+    static const size_t HEADER_BATCH_SIZE   = 4;
 
     mt19937                                             mPRNG;
     uniform_real_distribution < double >                mUniformDistribution;
