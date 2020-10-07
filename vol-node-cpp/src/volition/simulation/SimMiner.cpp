@@ -83,7 +83,8 @@ void SimMiner::scrambleRemotes () {
         }
         
         remoteMiner.mTag = cursor;
-        remoteMiner.mCurrentBlock = height + 1;
+        remoteMiner.mHeight = height + 1;
+        remoteMiner.mForward = true;
     }
 }
 

@@ -26,11 +26,11 @@ class RemoteMiner {
 public:
 
     string                      mURL;
-    size_t                      mCurrentBlock;
-    
     BlockTreeNode::ConstPtr     mTag;
 
-    map < size_t, shared_ptr < const BlockHeader >> mHeaderCache;
+    bool                                                mForward;
+    size_t                                              mHeight;
+    list < shared_ptr < const BlockHeader >>            mHeaderQueue;
 
     //----------------------------------------------------------------//
                     RemoteMiner             ();
@@ -46,9 +46,9 @@ private:
     friend class MinerBase;
     friend class Miner;
 
-    MiningMessengerRequest              mRequest;
-    shared_ptr < const BlockHeader >    mBlockHeader;
-    shared_ptr < const Block >          mBlock;
+    MiningMessengerRequest                      mRequest;
+    shared_ptr < const Block >                  mBlock;
+    list < shared_ptr < const BlockHeader >>    mHeaders;
 };
 
 //================================================================//
@@ -110,7 +110,8 @@ protected:
     void                                saveChain                   ();
 
     //----------------------------------------------------------------//
-    void                                AbstractMiningMessengerClient_receive           ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) override;
+    void                                AbstractMiningMessengerClient_receiveBlock      ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) override;
+    void                                AbstractMiningMessengerClient_receiveHeaders    ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& header ) override;
     void                                AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
     void                                AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
     virtual void                        Miner_reset                                     ();

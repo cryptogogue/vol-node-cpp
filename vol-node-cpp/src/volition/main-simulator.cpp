@@ -17,6 +17,8 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
+#define THE_SCENARO SimpleScenario
+
 //================================================================//
 // SimpleScenario
 //================================================================//
@@ -26,7 +28,7 @@ protected:
 
     SCENARIO_BASE_PORT ( BASE_PORT )
     SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
-    SCENARIO_SIZE ( 16 )
+    SCENARIO_SIZE ( 4 )
     
     //----------------------------------------------------------------//
     void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
@@ -174,8 +176,6 @@ protected:
         }
     }
 };
-
-#define THE_SCENARO ScrambleScenario
 
 //================================================================//
 // SimulatorApp

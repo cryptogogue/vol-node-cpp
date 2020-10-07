@@ -88,7 +88,7 @@ public:
                 Format::write ( this->mURL, "%sblocks/%s", request.mBaseURL.c_str (), request.mBlockDigest.toHex ().c_str ());
                 break;
         
-            case MiningMessengerRequest::REQUEST_HEADER:
+            case MiningMessengerRequest::REQUEST_HEADERS:
                 Format::write ( this->mURL, "%schain/%d", request.mBaseURL.c_str (), ( int )request.mHeight );
                 break;
             
@@ -129,7 +129,7 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
     HTTPGetBlockTask* task = dynamic_cast < HTTPGetBlockTask* >( pNf->task ());
     if ( task ) {
         const MiningMessengerRequest& request = task->mRequest;
-        request.mClient->receive ( request, task->mBlockHeader, task->mBlock );
+        request.mClient->receiveBlock ( request, task->mBlock );
     }
     pNf->release ();
 }

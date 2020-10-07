@@ -50,6 +50,8 @@ protected:
 
     typedef list < SimMiningMessengerConstraint> ConstraintList;
 
+    static const size_t HEADER_BATCH_SIZE   = 32;
+
     mt19937                                             mPRNG;
     uniform_real_distribution < double >                mUniformDistribution;
 
@@ -60,7 +62,8 @@ protected:
     list < shared_ptr < MiningMessengerRequest >>       mTasks;
 
     //----------------------------------------------------------------//
-    void        dispatch                    ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block );
+    void        dispatchBlock               ( const MiningMessengerRequest& request, shared_ptr < const Block > block );
+    void        dispatchHeaders             ( const MiningMessengerRequest& request, list < shared_ptr < const BlockHeader >> headers );
     void        handleTask                  ( const MiningMessengerRequest& task );
     void        pushConstraint              ( const SimMiningMessengerConstraint& constraint, size_t base, size_t top );
     void        pushConstraint              ( SimMiningMessengerConstraint::Mode mode, double probability, size_t base, size_t top );

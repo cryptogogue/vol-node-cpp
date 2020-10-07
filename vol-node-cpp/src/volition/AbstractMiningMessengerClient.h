@@ -19,7 +19,8 @@ class AbstractMiningMessengerClient {
 protected:
 
     //----------------------------------------------------------------//
-    virtual void        AbstractMiningMessengerClient_receive           ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) = 0;
+    virtual void        AbstractMiningMessengerClient_receiveBlock      ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) = 0;
+    virtual void        AbstractMiningMessengerClient_receiveHeaders    ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) = 0;
 
 public:
 
@@ -32,9 +33,15 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void receive ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
+    void receiveBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
     
-        this->AbstractMiningMessengerClient_receive ( request, header, block );
+        this->AbstractMiningMessengerClient_receiveBlock ( request, block );
+    }
+
+    //----------------------------------------------------------------//
+    void receiveHeaders ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+    
+        this->AbstractMiningMessengerClient_receiveHeaders ( request, headers );
     }
 };
 

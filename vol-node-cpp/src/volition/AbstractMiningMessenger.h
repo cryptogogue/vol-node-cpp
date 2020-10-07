@@ -21,7 +21,8 @@ public:
     enum Type {
         UNKNOWN,
         REQUEST_BLOCK,
-        REQUEST_HEADER,
+        REQUEST_HEADERS,
+        REQUEST_PREV_HEADERS,
     };
 
     AbstractMiningMessengerClient*      mClient;
@@ -76,9 +77,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void requestHeader ( AbstractMiningMessengerClient& client, string minerID, string baseURL, size_t height ) {
+    void requestHeader ( AbstractMiningMessengerClient& client, string minerID, string baseURL, size_t height, bool forward = true ) {
     
-        MiningMessengerRequest request ( client, minerID, baseURL, MiningMessengerRequest::REQUEST_HEADER );
+        MiningMessengerRequest request ( client, minerID, baseURL, forward ? MiningMessengerRequest::REQUEST_HEADERS : MiningMessengerRequest::REQUEST_PREV_HEADERS );
         request.mHeight = height;
     
         this->AbstractMiningMessenger_request ( request );

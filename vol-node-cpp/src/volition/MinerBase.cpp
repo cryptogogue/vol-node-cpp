@@ -16,7 +16,8 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 RemoteMiner::RemoteMiner () :
-    mCurrentBlock ( 0 ) {
+    mHeight ( 0 ),
+    mForward ( true ) {
 }
 
 //----------------------------------------------------------------//
@@ -356,12 +357,22 @@ void MinerBase::shutdown ( bool kill ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void MinerBase::AbstractMiningMessengerClient_receive ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
+void MinerBase::AbstractMiningMessengerClient_receiveBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
     
     unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
     blockQueueEntry->mRequest           = request;
-    blockQueueEntry->mBlockHeader       = header;
     blockQueueEntry->mBlock             = block;
+
+    Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
+    this->mBlockQueue.push_back ( move ( blockQueueEntry ));
+}
+
+//----------------------------------------------------------------//
+void MinerBase::AbstractMiningMessengerClient_receiveHeaders ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+    
+    unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
+    blockQueueEntry->mRequest           = request;
+    blockQueueEntry->mHeaders           = headers;
 
     Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
     this->mBlockQueue.push_back ( move ( blockQueueEntry ));

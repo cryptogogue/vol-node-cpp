@@ -22,41 +22,33 @@ void SimMiningMessenger::clearConstraint ( size_t base, size_t top ) {
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::dispatch ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
+void SimMiningMessenger::dispatchBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
 
     ConstraintList& constraintList = this->mConstraintLists [ request.mMinerID ];
 
     for ( ConstraintList::iterator constraintIt = constraintList.begin (); constraintIt != constraintList.end (); ++constraintIt ) {
         SimMiningMessengerConstraint& constraint = *constraintIt;
 
-        switch ( constraint.mMode ) {
-        
-            case SimMiningMessengerConstraint::CONSTRAINT_DELAY:
-                break;
-            
-            case SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK:
-                
-                if ( this->random () <= constraint.mProbability ) {
-                    block = NULL;
-                }
-                break;
-            
-            case SimMiningMessengerConstraint::CONSTRAINT_DROP_HEADER:
-                
-                if ( this->random () <= constraint.mProbability ) {
-                    header = NULL;
-                }
-                break;
-            
-            case SimMiningMessengerConstraint::CONSTRAINT_DELAY_AND_DROP:
-                break;
-            
-            case SimMiningMessengerConstraint::CONSTRAINT_NONE:
-            default:
-                break;
+        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK ) && ( this->random () <= constraint.mProbability )) {
+            block = NULL;
         }
     }
-    request.mClient->receive ( request, header, block );
+    request.mClient->receiveBlock ( request, block );
+}
+
+//----------------------------------------------------------------//
+void SimMiningMessenger::dispatchHeaders ( const MiningMessengerRequest& request, list < shared_ptr < const BlockHeader >> headers ) {
+
+    ConstraintList& constraintList = this->mConstraintLists [ request.mMinerID ];
+
+    for ( ConstraintList::iterator constraintIt = constraintList.begin (); constraintIt != constraintList.end (); ++constraintIt ) {
+        SimMiningMessengerConstraint& constraint = *constraintIt;
+
+        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_HEADER ) && ( this->random () <= constraint.mProbability )) {
+            headers.clear ();
+        }
+    }
+    request.mClient->receiveHeaders ( request, headers );
 }
 
 //----------------------------------------------------------------//
@@ -74,17 +66,38 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             const BlockTree& blockTree = miner->getBlockTree ();
             BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( request.mBlockDigest.toHex ());
             shared_ptr < const Block > block = node ? node->getBlock () : NULL;
-            this->dispatch ( request, block, block );
+            this->dispatchBlock ( request, block );
             break;
         }
         
-        case MiningMessengerRequest::REQUEST_HEADER: {
-            
+        case MiningMessengerRequest::REQUEST_HEADERS: {
+        
             BlockTreeNode::ConstPtr node = miner->getBestBranch ();
-            while (( **node ).getHeight () > request.mHeight ) {
+            
+            list < shared_ptr < const BlockHeader >> headers;
+            while ( node && ( headers.size () < HEADER_BATCH_SIZE )) {
+                headers.push_front ( node->getBlockHeader ());
                 node = node->getParent ();
             }
-            this->dispatch ( request, node->getBlockHeader (), NULL );
+            this->dispatchHeaders ( request, headers );
+            break;
+        }
+        
+        case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
+            
+            BlockTreeNode::ConstPtr node = miner->getBestBranch ();
+            
+            size_t top = request.mHeight;
+            size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
+            
+            list < shared_ptr < const BlockHeader >> headers;
+            while ( node && ( base <= ( **node ).getHeight ())) {
+                if (( **node ).getHeight () < top ) {
+                    headers.push_front ( node->getBlockHeader ());
+                }
+                node = node->getParent ();
+            }
+            this->dispatchHeaders ( request, headers );
             break;
         }
         

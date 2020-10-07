@@ -109,67 +109,6 @@ void Miner::processResponses () {
         const BlockQueueEntry& entry = *this->mBlockQueue.front ().get ();
         
         switch ( entry.mRequest.mRequestType ) {
-        
-            case MiningMessengerRequest::REQUEST_HEADER: {
-                
-                string minerID = entry.mRequest.mMinerID;
-                RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
-        
-                if ( entry.mBlockHeader ) {
-                
-                    remoteMiner.mTag = entry.mBlockHeader ? this->mBlockTree.affirmBlock ( entry.mBlockHeader, NULL ) : NULL;
-
-                    if ( remoteMiner.mTag ) {
-
-                        // header found a parent; advance to the next header;
-                        remoteMiner.mCurrentBlock = entry.mBlockHeader->getHeight () + 1;
-
-                        // next block may already be in the cache, since we may have filled the cache by backing up.
-                        map < size_t, shared_ptr < const BlockHeader >>::iterator cacheIt = remoteMiner.mHeaderCache.begin ();
-                        while ( cacheIt != remoteMiner.mHeaderCache.end ()) {
-
-                            shared_ptr < const BlockHeader > header = ( cacheIt++ )->second;
-                            size_t height = header->getHeight ();
-
-                            // no more current or previous headers in the cache; bail.
-                            if ( height > remoteMiner.mCurrentBlock ) break;
-
-                            // cache has the headers we need; try to add it.
-                            if ( height == remoteMiner.mCurrentBlock ) {
-
-                                BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( header, NULL );
-                                if ( node ) {
-
-                                    // header found a root and was added, so advance to the next header;
-                                    remoteMiner.mTag = node;
-                                    remoteMiner.mCurrentBlock = height + 1;
-                                }
-                                else {
-
-                                    // cache may be bad; empty it and bail;
-                                    remoteMiner.mHeaderCache.clear ();
-                                    break;
-                                }
-                            }
-
-                            // header is no longer needed.
-                            remoteMiner.mHeaderCache.erase ( height );
-                        }
-                    }
-                    else {
-                    
-                        // header is dangling; cache it and request the previous header.
-                        size_t height = entry.mBlockHeader->getHeight ();
-                        remoteMiner.mHeaderCache [ height ] = entry.mBlockHeader;
-                        remoteMiner.mCurrentBlock = height - 1;
-                    }
-                }
-
-                if ( this->mMinerSet.find ( minerID ) != this->mMinerSet.end ()) {
-                    this->mMinerSet.erase ( minerID );
-                }
-                break;
-            }
             
             case MiningMessengerRequest::REQUEST_BLOCK: {
                 
@@ -192,9 +131,77 @@ void Miner::processResponses () {
                 break;
             }
             
+            case MiningMessengerRequest::REQUEST_HEADERS:
+            case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
+                
+                string minerID = entry.mRequest.mMinerID;
+                RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
+        
+                if ( entry.mHeaders.size ()) {
+                    if ( remoteMiner.mHeaderQueue.size () && ( remoteMiner.mHeaderQueue.front ()->getHeight () == ( entry.mHeaders.back ()->getHeight () + 1 ))) {
+                        remoteMiner.mHeaderQueue.insert ( remoteMiner.mHeaderQueue.begin (), entry.mHeaders.begin (), entry.mHeaders.end ());
+                    }
+                    else {
+                        remoteMiner.mHeaderQueue = entry.mHeaders;
+                    }
+                }
+                
+                if ( this->mMinerSet.find ( minerID ) != this->mMinerSet.end ()) {
+                    this->mMinerSet.erase ( minerID );
+                }
+                break;
+            }
+            
             default:
                 assert ( false );
                 break;
+        }
+    }
+    
+    map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
+    
+        RemoteMiner& remoteMiner = remoteMinerIt->second;
+        
+        // if 'tag' gets overwritten, 'thumb' will hang on to any nodes we might need later.
+        BlockTreeNode::ConstPtr thumb = remoteMiner.mTag;
+        
+        // visit each header in the cache and try to apply it.
+        size_t accepted = 0;
+        while ( remoteMiner.mHeaderQueue.size ()) {
+
+            shared_ptr < const BlockHeader > header = *remoteMiner.mHeaderQueue.begin ();
+            BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( header, NULL );
+            
+            if ( !node ) {
+                if ( accepted > 0 ) {
+                    // the queue is supposed to be sequential; if part of the queue has already been
+                    // accepted, then there's an error in the queue, so clear it.
+                    remoteMiner.mHeaderQueue.clear ();
+                }
+                break;
+            }
+            
+            // header found a parent and was added, so accept it and remove it from the cache.
+            remoteMiner.mTag = node;
+            remoteMiner.mHeaderQueue.pop_front ();
+            accepted++;
+        }
+        
+        if ( remoteMiner.mHeaderQueue.size ()) {
+            // if there's anything left in the queue, back up and get an earlier batch of blocks.
+            remoteMiner.mHeight = remoteMiner.mHeaderQueue.front ()->getHeight ();
+            remoteMiner.mForward = false;
+        }
+        else if ( remoteMiner.mTag ) {
+            // nothing in the queue, so get the next batch of blocks.
+            remoteMiner.mHeight = ( **remoteMiner.mTag ).getHeight () + 1; // this doesn't really matter.
+            remoteMiner.mForward = true;
+        }
+        else {
+            // nothing at all, so get the first batch of blocks.
+            remoteMiner.mHeight = 0; // doesn't matter.
+            remoteMiner.mForward = true;
         }
     }
 }
@@ -211,7 +218,7 @@ void Miner::requestHeaders () {
         
         // constantly refill active set
         if ( this->mMinerSet.find ( remoteMinerIt->first ) == this->mMinerSet.end ()) {
-            this->mMessenger->requestHeader ( *this, remoteMinerIt->first, remoteMiner.mURL, remoteMiner.mCurrentBlock );
+            this->mMessenger->requestHeader ( *this, remoteMinerIt->first, remoteMiner.mURL, remoteMiner.mHeight, remoteMiner.mForward );
             this->mMinerSet.insert ( remoteMinerIt->first );
         }
     }
