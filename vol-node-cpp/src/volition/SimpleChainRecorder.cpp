@@ -3,7 +3,7 @@
 
 #include <volition/Block.h>
 #include <volition/FileSys.h>
-#include <volition/MinerBase.h>
+#include <volition/Miner.h>
 #include <volition/SimpleChainRecorder.h>
 
 namespace Volition {
@@ -13,7 +13,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-SimpleChainRecorder::SimpleChainRecorder ( const MinerBase& miner, string path ) {
+SimpleChainRecorder::SimpleChainRecorder ( const Miner& miner, string path ) {
     
     Poco::Path basePath ( path );
     basePath.makeAbsolute ();
@@ -22,10 +22,9 @@ SimpleChainRecorder::SimpleChainRecorder ( const MinerBase& miner, string path )
     
     mkdir ( this->mBasePath.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
     
-    const Ledger* chain = miner.getChain ();
-    if ( !chain ) return;
+    const Ledger& ledger = miner.getLedger ();
 
-    shared_ptr < Block > genesisBlock = chain->getBlock ( 0 );
+    shared_ptr < Block > genesisBlock = ledger.getBlock ( 0 );
     assert ( genesisBlock );
     
     string hash = genesisBlock->getDigest ();
@@ -44,11 +43,10 @@ SimpleChainRecorder::~SimpleChainRecorder () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void SimpleChainRecorder::AbstractChainRecorder_loadChain ( MinerBase& miner ) const {
+void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const {
     
-    const Ledger* chain = miner.getChain ();
-    if ( !chain ) return;
-    assert ( chain->countBlocks () == 1 );
+    const Ledger& ledger = miner.getLedger ();
+    assert ( ledger.countBlocks () == 1 );
     
     for ( size_t i = 1; true; ++i ) {
     
@@ -75,15 +73,14 @@ void SimpleChainRecorder::AbstractChainRecorder_reset () {
 }
 
 //----------------------------------------------------------------//
-void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const MinerBase& miner ) {
+void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner ) {
 
-    const Ledger* chain = miner.getChain ();
-    if ( !chain ) return;
+    const Ledger& ledger = miner.getLedger ();
 
-    size_t length = chain->countBlocks ();
+    size_t length = ledger.countBlocks ();
     for ( size_t i = 0; i < length; ++i ) {
     
-        shared_ptr < Block > block = chain->getBlock ( i );
+        shared_ptr < Block > block = ledger.getBlock ( i );
         assert ( block );
                 
         string blockPath = Format::write ( "%sblock_%d.json", this->mChainFolderPath.c_str (), ( int )i );

@@ -41,7 +41,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-                    MinerAPIFactory          ( shared_ptr < Miner > webMiner );
+                    MinerAPIFactory          ( shared_ptr < Miner > minerActivity );
                     MinerAPIFactory          ( const vector < shared_ptr < Miner >>& webMiners );
                     ~MinerAPIFactory         ();
 };

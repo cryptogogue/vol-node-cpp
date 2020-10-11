@@ -9,7 +9,7 @@
 #include <volition/Singleton.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
-#include <volition/WebMiner.h>
+#include <volition/MinerActivity.h>
 #include <volition/MinerAPIFactory.h>
 
 //================================================================//
@@ -147,7 +147,7 @@ protected:
 //      this->printProperties ();
         
         string genesis                  = configuration.getString   ( "genesis" );
-        int interval                    = configuration.getInt      ( "interval", Volition::WebMiner::DEFAULT_UPDATE_INTERVAL );
+        int interval                    = configuration.getInt      ( "interval", Volition::MinerActivity::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile", "" );
         string logpath                  = configuration.getString   ( "logpath", "" );
         string minerID                  = configuration.getString   ( "miner", "" );
@@ -180,32 +180,32 @@ protected:
             persistenceProvider = make_shared < StringStorePersistenceProvider >( stringStore );
         }
         
-        shared_ptr < Volition::WebMiner > webMiner = make_shared < Volition::WebMiner >();
+        shared_ptr < Volition::MinerActivity > minerActivity = make_shared < Volition::MinerActivity >();
         
-        webMiner->setMinerID ( minerID );
+        minerActivity->setMinerID ( minerID );
     
         if ( permitControl ) {
             LOG_F ( INFO, "CONTROL IS PERMITTED" );
-            webMiner->permitControl ( permitControl );
+            minerActivity->permitControl ( permitControl );
         }
     
         if ( solo ) {
             LOG_F ( INFO, "LAZY and SOLO" );
-            webMiner->setLazy ( true );
+            minerActivity->setLazy ( true );
         }
         
-        webMiner->setUpdateInterval (( u32 )interval );
+        minerActivity->setUpdateInterval (( u32 )interval );
         
         LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
         if ( !Volition::FileSys::exists ( genesis )) {
             LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
             return Application::EXIT_CONFIG;
         }
-        webMiner->loadGenesis ( genesis );
+        minerActivity->loadGenesis ( genesis );
         
         if ( simpleRecorderFolder.size () > 0 ) {
-            shared_ptr < Volition::AbstractChainRecorder > chainRecorder = make_shared < Volition::SimpleChainRecorder >( *webMiner, simpleRecorderFolder );
-            webMiner->setChainRecorder ( chainRecorder );
+            shared_ptr < Volition::AbstractChainRecorder > chainRecorder = make_shared < Volition::SimpleChainRecorder >( *minerActivity, simpleRecorderFolder );
+            minerActivity->setChainRecorder ( chainRecorder );
         }
         
         if ( keyfile.size () > 0 ) {
@@ -214,13 +214,13 @@ protected:
                 LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
                 return Application::EXIT_CONFIG;
             }
-            webMiner->loadKey ( keyfile );
+            minerActivity->loadKey ( keyfile );
         }
-        webMiner->affirmKey ();
+        minerActivity->affirmKey ();
         
-        LOG_F ( INFO, "MINER ID: %s", webMiner->getMinerID ().c_str ());
+        LOG_F ( INFO, "MINER ID: %s", minerActivity->getMinerID ().c_str ());
 
-        this->serve ( webMiner, port, sslCertFile.length () > 0 );
+        this->serve ( minerActivity, port, sslCertFile.length () > 0 );
         
         return Application::EXIT_OK;
     }
@@ -258,26 +258,26 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void serve ( shared_ptr < Volition::WebMiner > webMiner, int port, bool ssl ) {
+    void serve ( shared_ptr < Volition::MinerActivity > minerActivity, int port, bool ssl ) {
 
         Poco::ThreadPool threadPool;
 
         Poco::Net::HTTPServer server (
-            new Volition::MinerAPIFactory ( webMiner ),
+            new Volition::MinerAPIFactory ( minerActivity ),
             threadPool,
             ssl ? Poco::Net::SecureServerSocket (( Poco::UInt16 )port ) : Poco::Net::ServerSocket (( Poco::UInt16 )port ),
             new Poco::Net::HTTPServerParams ()
         );
         
         server.start ();
-        webMiner->start ();
+        minerActivity->start ();
 
         LOG_F ( INFO, "\nSERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
 
         // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
         // need to find out how to stop POCO from doing this. in the meantime, this hack.
         #ifdef _DEBUG
-            webMiner->waitForShutdown ();
+            minerActivity->waitForShutdown ();
         #else
             this->waitForTerminationRequest ();  // wait for CTRL-C or kill
         #endif
@@ -286,8 +286,8 @@ protected:
         threadPool.stopAll ();
         
         {
-            Volition::ScopedMinerLock scopedLock ( webMiner );
-            webMiner->shutdown ( false );
+            Volition::ScopedMinerLock scopedLock ( minerActivity );
+            minerActivity->shutdown ( false );
         }
     }
 

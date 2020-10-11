@@ -11,6 +11,20 @@
 namespace Volition {
 
 //================================================================//
+// RemoteMiner
+//================================================================//
+
+//----------------------------------------------------------------//
+RemoteMiner::RemoteMiner () :
+    mHeight ( 0 ),
+    mForward ( true ) {
+}
+
+//----------------------------------------------------------------//
+RemoteMiner::~RemoteMiner () {
+}
+
+//================================================================//
 // Miner
 //================================================================//
 
@@ -20,6 +34,23 @@ void Miner::affirmBranchSearch ( BlockTreeNode::ConstPtr node ) {
     while ( node && node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_NEW | BlockTreeNode::STATUS_MISSING ))) {
         this->affirmNodeSearch ( node );
         node = node->getParent ();
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::affirmKey ( uint keyLength, unsigned long exp ) {
+
+    if ( !this->mKeyPair ) {
+        this->mKeyPair.rsa ( keyLength, exp );
+    }
+    assert ( this->mKeyPair );
+}
+
+//----------------------------------------------------------------//
+void Miner::affirmMessenger () {
+
+    if ( !this->mMessenger ) {
+        this->mMessenger = make_shared < HTTPMiningMessenger >();
     }
 }
 
@@ -48,6 +79,13 @@ void Miner::affirmNodeSearch ( BlockTreeNode::ConstPtr node ) {
 }
 
 //----------------------------------------------------------------//
+void Miner::affirmVisage () {
+
+    assert ( this->mKeyPair );
+    this->mVisage = this->mKeyPair.sign ( this->mMotto, Digest::HASH_ALGORITHM_SHA256 );
+}
+
+//----------------------------------------------------------------//
 bool Miner::canExtend () const {
 
     if ( !( this->mBestBranch && this->mBestBranch->checkStatus ( BlockTreeNode::STATUS_COMPLETE ))) return false;
@@ -60,6 +98,13 @@ bool Miner::canExtend () const {
         if ( remoteMiner.mTag && this->mBestBranch->isAncestorOf ( remoteMiner.mTag )) count++;
     }
     return ( count > ( this->mRemoteMiners.size () >> 1 ));
+}
+
+//----------------------------------------------------------------//
+bool Miner::checkBestBranch ( string miners ) const {
+
+    assert ( this->mChain );
+    return this->mChain->checkMiners ( miners );
 }
 
 //----------------------------------------------------------------//
@@ -90,11 +135,116 @@ void Miner::composeChain () {
 }
 
 //----------------------------------------------------------------//
-Miner::Miner () {
+bool Miner::controlPermitted () const {
+
+    return ( this->mFlags & MINER_PERMIT_CONTROL );
+}
+
+//----------------------------------------------------------------//
+void Miner::discoverMiners () {
+
+    map < string, MinerInfo > miners = this->getLedger ().getMiners ();
+        
+    map < string, MinerInfo >::iterator minerIt = miners.begin ();
+    for ( ; minerIt != miners.end (); ++minerIt ) {
+        MinerInfo& minerInfo = minerIt->second;
+        if ( minerIt->first != this->mMinerID ) {
+            this->mRemoteMiners [ minerIt->first ].mURL = minerInfo.getURL (); // affirm
+        }
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::extend ( time_t now ) {
+
+    shared_ptr < Block > block = this->prepareBlock ( now );
+    if ( block ) {
+    
+        this->pushBlock ( block );
+        
+        if ( this->mFlags & MINER_VERBOSE ) {
+            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: MinerActivity::runSolo () - step" );
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )this->mChain->countBlocks ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain->printChain ().c_str ());
+        }
+        this->saveChain ();
+        this->pruneTransactions ( *this->mChain );
+    }
+}
+
+//----------------------------------------------------------------//
+Ledger& Miner::getLedger () {
+
+    assert ( this->mChain );
+    return *this->mChain;
+}
+
+//----------------------------------------------------------------//
+bool Miner::isLazy () const {
+
+    return ( this->mFlags & MINER_LAZY );
+}
+
+//----------------------------------------------------------------//
+void Miner::loadGenesis ( string path ) {
+
+    fstream inStream;
+    inStream.open ( path, ios_base::in );
+    assert ( inStream.is_open ());
+
+    shared_ptr < Block > block = make_shared < Block >();
+    FromJSONSerializer::fromJSON ( *block, inStream );
+    this->setGenesis ( block );
+}
+
+//----------------------------------------------------------------//
+void Miner::loadKey ( string keyfile, string password ) {
+    UNUSED ( password );
+
+    // TODO: password
+
+    fstream inStream;
+    inStream.open ( keyfile, ios_base::in );
+    assert ( inStream.is_open ());
+    
+    Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
+    assert ( this->mKeyPair );
+}
+
+//----------------------------------------------------------------//
+Miner::Miner () :
+    mFlags ( DEFAULT_FLAGS ),
+    mRewriteMode ( BlockTreeNode::REWRITE_NONE ),
+    mRewriteWindowInSeconds ( 0 ),
+    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ) {
+    
+    MinerLaunchTests::checkEnvironment ();
 }
 
 //----------------------------------------------------------------//
 Miner::~Miner () {
+}
+
+//----------------------------------------------------------------//
+void Miner::permitControl ( bool permit ) {
+
+    this->mFlags = SET_BITS ( this->mFlags, MINER_PERMIT_CONTROL, permit );
+}
+
+//----------------------------------------------------------------//
+shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
+        
+    shared_ptr < Block > prevBlock = this->mChain->getBlock ();
+    assert ( prevBlock );
+    
+    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, now, prevBlock.get (), this->mKeyPair );
+    this->fillBlock ( *this->mChain, *block );
+    
+    if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
+        block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
+        return block;
+    }
+    return NULL;
 }
 
 //----------------------------------------------------------------//
@@ -203,6 +353,21 @@ void Miner::processResponses () {
 }
 
 //----------------------------------------------------------------//
+void Miner::pushBlock ( shared_ptr < const Block > block ) {
+
+    bool result = this->mChain->pushBlock ( *block, this->mBlockVerificationPolicy );
+    assert ( result );
+    
+    BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( block );
+    assert ( node );
+    
+    if ( this->mChainTag == this->mBestBranch ) {
+        this->mBestBranch = node;
+    }
+    this->mChainTag = node;
+}
+
+//----------------------------------------------------------------//
 void Miner::requestHeaders () {
 
     this->affirmMessenger ();
@@ -217,6 +382,26 @@ void Miner::requestHeaders () {
             this->mMessenger->requestHeader ( *this, remoteMinerIt->first, remoteMiner.mURL, remoteMiner.mHeight, remoteMiner.mForward );
             this->mMinerSet.insert ( remoteMinerIt->first );
         }
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::reset () {
+
+    this->TransactionQueue::reset ();
+    this->mChain->reset ( 1 );
+    this->mChain->clearSchemaCache ();
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->reset ();
+    }
+    this->Miner_reset ();
+}
+
+//----------------------------------------------------------------//
+void Miner::saveChain () {
+
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->saveChain ( *this );
     }
 }
 
@@ -242,6 +427,54 @@ void Miner::selectBestBranch ( time_t now ) {
     }
     assert ( bestBranch );
     this->mBestBranch = bestBranch;
+}
+
+//----------------------------------------------------------------//
+void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorder ) {
+
+    this->mChainRecorder = chainRecorder;
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->loadChain ( *this );
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::setGenesis ( shared_ptr < const Block > block ) {
+    
+    this->mChainTag = NULL;
+    this->mBestBranch = NULL;
+    
+    assert ( block );
+    
+    shared_ptr < Ledger > chain = make_shared < Ledger >();
+    this->mChain = chain;
+    
+    this->pushBlock ( block );
+}
+
+//----------------------------------------------------------------//
+void Miner::setLazy ( bool lazy ) {
+
+    this->mFlags = SET_BITS ( this->mFlags, MINER_LAZY, lazy );
+}
+
+//----------------------------------------------------------------//
+void Miner::setRewriteWindow ( time_t window ) {
+
+    this->mRewriteWindowInSeconds = window;
+    this->setRewriteMode ( BlockTreeNode::REWRITE_WINDOW );
+}
+
+//----------------------------------------------------------------//
+void Miner::setVerbose ( bool verbose ) {
+
+    this->mFlags = SET_BITS ( this->mFlags, MINER_VERBOSE, verbose );
+}
+
+//----------------------------------------------------------------//
+void Miner::shutdown ( bool kill ) {
+
+    this->Miner_shutdown ( kill );
 }
 
 //----------------------------------------------------------------//
@@ -354,6 +587,59 @@ void Miner::updateSearches ( time_t now ) {
     }
     // always affirm a search for the current branch
     this->affirmBranchSearch ( this->mBestBranch );
+}
+
+//================================================================//
+// overrides
+//================================================================//
+
+//----------------------------------------------------------------//
+void Miner::AbstractMiningMessengerClient_receiveBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
+    
+    unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
+    blockQueueEntry->mRequest           = request;
+    blockQueueEntry->mBlock             = block;
+
+    Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
+    this->mBlockQueue.push_back ( move ( blockQueueEntry ));
+}
+
+//----------------------------------------------------------------//
+void Miner::AbstractMiningMessengerClient_receiveHeaders ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+    
+    unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
+    blockQueueEntry->mRequest           = request;
+    blockQueueEntry->mHeaders           = headers;
+
+    Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
+    this->mBlockQueue.push_back ( move ( blockQueueEntry ));
+}
+
+//----------------------------------------------------------------//
+void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+    UNUSED ( serializer );
+    
+//    serializer.serialize ( "chain", this->mChain );
+}
+
+//----------------------------------------------------------------//
+void Miner::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+    UNUSED ( serializer );
+
+//    serializer.serialize ( "chain", this->mChain );
+}
+
+//----------------------------------------------------------------//
+void Miner::Miner_reset () {
+}
+
+
+//----------------------------------------------------------------//
+void Miner::Miner_shutdown ( bool kill ) {
+    UNUSED ( kill );
+
+    // explicitly release messenger and possibly trigger shutdown
+    this->mMessenger = NULL;
 }
 
 } // namespace Volition

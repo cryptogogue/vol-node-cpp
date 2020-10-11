@@ -5,7 +5,7 @@
 #include <volition/serialization/Serialization.h>
 #include <volition/simulation/Simulations.h>
 #include <volition/web-miner-api/HTTPRequestHandlerFactory.h>
-#include <volition/WebMiner.h>
+#include <volition/MinerActivity.h>
 
 using namespace Volition;
 
@@ -70,13 +70,13 @@ string loadFileAsString ( string filename ) {
 }
 
 //----------------------------------------------------------------//
-void waitChainSize ( shared_ptr < WebMiner > webMiner, size_t size, long sleep = 100 ) {
+void waitChainSize ( shared_ptr < MinerActivity > minerActivity, size_t size, long sleep = 100 ) {
 
     bool pass = false;
     do {
         Poco::Thread::sleep ( sleep );
-        ScopedWebMinerLock scopedLock ( webMiner );
-        pass = ( size <= webMiner->getChainSize ());
+        ScopedWebMinerLock scopedLock ( minerActivity );
+        pass = ( size <= minerActivity->getChainSize ());
     } while ( !pass );
 }
 
@@ -92,21 +92,21 @@ Poco::JSON::Object::Ptr waitServer ( string url ) {
 }
 
 //----------------------------------------------------------------//
-TEST ( WebMiner, asset_transformations ) {
+TEST ( MinerActivity, asset_transformations ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
-    shared_ptr < WebMiner > webMiner = make_shared < WebMiner >();
+    shared_ptr < MinerActivity > minerActivity = make_shared < MinerActivity >();
         
-    webMiner->setLazy ( true );
-    webMiner->setSolo ( true );
+    minerActivity->setLazy ( true );
+    minerActivity->setSolo ( true );
         
-    webMiner->loadKey ( "keys/pkey0.priv.json" );
-    webMiner->loadGenesis ( "genesis.signed" );
-    webMiner->setMinerID ( "9090" );
-    webMiner->start ();
+    minerActivity->loadKey ( "keys/pkey0.priv.json" );
+    minerActivity->loadGenesis ( "genesis.signed" );
+    minerActivity->setMinerID ( "9090" );
+    minerActivity->start ();
     
-    Poco::Net::HTTPServer server ( new Volition::MinerAPIFactory ( webMiner ), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
+    Poco::Net::HTTPServer server ( new Volition::MinerAPIFactory ( minerActivity ), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
     server.start ();
 
     Poco::JSON::Object::Ptr json = httpGetJSON ( "http://127.0.0.1:9090/" );
@@ -117,7 +117,7 @@ TEST ( WebMiner, asset_transformations ) {
 
     json = httpPostJSON ( "http://127.0.0.1:9090/transactions", loadFileAsString ( "test/publish-test-schema.json" ));
     ASSERT_FALSE ( json.isNull ());
-    waitChainSize ( webMiner, 2 );
+    waitChainSize ( minerActivity, 2 );
 
     json = httpGetJSON ( "http://127.0.0.1:9090/accounts/9090/inventory" );
     ASSERT_FALSE ( json.isNull ());
@@ -138,32 +138,32 @@ TEST ( WebMiner, asset_transformations ) {
     json = httpPostJSON ( "http://127.0.0.1:9090/test/extendChain", "{}" );
     ASSERT_FALSE ( json.isNull ());
     
-    waitChainSize ( webMiner, 3 );
+    waitChainSize ( minerActivity, 3 );
     
     json = httpPostJSON ( "http://127.0.0.1:9090/test/extendChain", "{}" );
     ASSERT_FALSE ( json.isNull ());
     
-    waitChainSize ( webMiner, 4 );
+    waitChainSize ( minerActivity, 4 );
 
     server.stop ();
     
-    webMiner->shutdown ();
+    minerActivity->shutdown ();
 }
 
 //----------------------------------------------------------------//
-TEST ( WebMiner, small_simulation ) {
+TEST ( MinerActivity, small_simulation ) {
 
     TheContext::get ().setScoringMode ( TheContext::ScoringMode::INTEGER );
 
-    shared_ptr < WebMiner > webMiner = make_shared < WebMiner >();
+    shared_ptr < MinerActivity > minerActivity = make_shared < MinerActivity >();
 
-    webMiner->setLazy ( true );
-    webMiner->setSolo ( true );
+    minerActivity->setLazy ( true );
+    minerActivity->setSolo ( true );
         
-    webMiner->loadKey ( "keys/pkey0.priv.json" );
-    webMiner->loadGenesis ( "genesis.signed" );
-    webMiner->setMinerID ( "9090" );
-    webMiner->start ();
+    minerActivity->loadKey ( "keys/pkey0.priv.json" );
+    minerActivity->loadGenesis ( "genesis.signed" );
+    minerActivity->setMinerID ( "9090" );
+    minerActivity->start ();
     
     Poco::Net::HTTPServer server ( new WebMinerAPI::HTTPRequestHandlerFactory (), Poco::Net::ServerSocket ( 9090 ), new Poco::Net::HTTPServerParams );
     server.start ();
@@ -200,5 +200,5 @@ TEST ( WebMiner, small_simulation ) {
 
     server.stop ();
 
-    webMiner->shutdown ();
+    minerActivity->shutdown ();
 }

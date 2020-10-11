@@ -29,9 +29,9 @@ public:
         string accountName = this->getMatchString ( "accountName" );
 
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Ledger& chain = *this->mWebMiner->getChain ();
+        const Ledger& ledger = this->mWebMiner->getLedger ();
 
-        shared_ptr < Account > account = chain.getAccount ( chain.getAccountIndex ( accountName ));
+        shared_ptr < Account > account = ledger.getAccount ( ledger.getAccountIndex ( accountName ));
         if ( account ) {
 
             SerializableMap < string, KeyAndPolicy > keys;

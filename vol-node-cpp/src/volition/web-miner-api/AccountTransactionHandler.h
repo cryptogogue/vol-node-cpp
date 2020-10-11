@@ -41,9 +41,9 @@ public:
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
 
-                const Ledger& chain = *this->mWebMiner->getChain ();
+                const Ledger& ledger = this->mWebMiner->getLedger ();
 
-                if ( chain.hasTransaction ( accountName, uuid )) {
+                if ( ledger.hasTransaction ( accountName, uuid )) {
                     jsonOut.set ( "status", "ACCEPTED" );
                     jsonOut.set ( "uuid", uuid );
                     return Poco::Net::HTTPResponse::HTTP_OK;

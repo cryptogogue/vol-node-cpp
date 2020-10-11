@@ -9,7 +9,7 @@
 
 namespace Volition {
 
-class MinerBase;
+class Miner;
 
 //================================================================//
 // SimpleChainRecorder
@@ -24,14 +24,14 @@ protected:
     string                  mGenesisHash;
 
     //----------------------------------------------------------------//
-    void                    AbstractChainRecorder_loadChain         ( MinerBase& miner ) const;
+    void                    AbstractChainRecorder_loadChain         ( Miner& miner ) const;
     void                    AbstractChainRecorder_reset             ();
-    void                    AbstractChainRecorder_saveChain         ( const MinerBase& miner );
+    void                    AbstractChainRecorder_saveChain         ( const Miner& miner );
 
 public:
 
     //----------------------------------------------------------------//
-                            SimpleChainRecorder         ( const MinerBase& miner, string path = "./" );
+                            SimpleChainRecorder         ( const Miner& miner, string path = "./" );
                             ~SimpleChainRecorder        ();
 };
 

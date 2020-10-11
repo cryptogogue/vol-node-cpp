@@ -4,16 +4,16 @@
 #include <volition/Block.h>
 #include <volition/Format.h>
 #include <volition/Singleton.h>
-#include <volition/WebMiner.h>
+#include <volition/MinerActivity.h>
 
 namespace Volition {
 
 //================================================================//
-// WebMiner
+// MinerActivity
 //================================================================//
 
 //----------------------------------------------------------------//
-void WebMiner::runActivity () {
+void MinerActivity::runActivity () {
 
     while ( !this->isStopped ()) {
     
@@ -35,25 +35,25 @@ void WebMiner::runActivity () {
 }
 
 //----------------------------------------------------------------//
-void WebMiner::setUpdateInterval ( u32 updateIntervalInSeconds ) {
+void MinerActivity::setUpdateInterval ( u32 updateIntervalInSeconds ) {
 
     this->mUpdateIntervalInSeconds = updateIntervalInSeconds;
 }
 
 //----------------------------------------------------------------//
-void WebMiner::waitForShutdown () {
+void MinerActivity::waitForShutdown () {
 
     this->mShutdownEvent.wait ();
 }
 
 //----------------------------------------------------------------//
-WebMiner::WebMiner () :
-    Poco::Activity < WebMiner >( this, &WebMiner::runActivity ),
+MinerActivity::MinerActivity () :
+    Poco::Activity < MinerActivity >( this, &MinerActivity::runActivity ),
     mUpdateIntervalInSeconds ( DEFAULT_UPDATE_INTERVAL ) {
 }
 
 //----------------------------------------------------------------//
-WebMiner::~WebMiner () {
+MinerActivity::~MinerActivity () {
 }
 
 //================================================================//
@@ -61,11 +61,11 @@ WebMiner::~WebMiner () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void WebMiner::Miner_reset () {
+void MinerActivity::Miner_reset () {
 }
 
 //----------------------------------------------------------------//
-void WebMiner::Miner_shutdown ( bool kill ) {
+void MinerActivity::Miner_shutdown ( bool kill ) {
 
     if ( !this->isStopped ()) {
     

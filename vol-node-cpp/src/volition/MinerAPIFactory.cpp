@@ -62,10 +62,10 @@ void MinerAPIFactory::initializeRoutes () {
 }
 
 //----------------------------------------------------------------//
-MinerAPIFactory::MinerAPIFactory ( shared_ptr < Miner > webMiner ) :
+MinerAPIFactory::MinerAPIFactory ( shared_ptr < Miner > minerActivity ) :
     mWithPrefix ( false ) {
     
-    this->mMiner = webMiner;
+    this->mMiner = minerActivity;
     this->initializeRoutes ();
 }
 

@@ -31,9 +31,9 @@ public:
             u64 height = this->getMatchU64 ( "blockID" );
 
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            const Ledger& chain = *this->mWebMiner->getChain ();
+            const Ledger& ledger = this->mWebMiner->getLedger ();
 
-            shared_ptr < Block > block = chain.getBlock ( height );
+            shared_ptr < Block > block = ledger.getBlock ( height );
             if ( block ) {
                 jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
                 return Poco::Net::HTTPResponse::HTTP_OK;

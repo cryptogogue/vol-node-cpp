@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINER_H
-#define VOLITION_WEBMINER_H
+#ifndef VOLITION_MINERACTIVITY_H
+#define VOLITION_MINERACTIVITY_H
 
 #include <volition/common.h>
 #include <volition/Block.h>
@@ -13,17 +13,13 @@
 
 namespace Volition {
 
-class WebMinerHTTPRequestHandler;
-
 //================================================================//
-// WebMiner
+// MinerActivity
 //================================================================//
-class WebMiner :
+class MinerActivity :
     public Miner,
-    public Poco::Activity < WebMiner > {
+    public Poco::Activity < MinerActivity > {
 private:
-
-    friend class WebMinerHTTPRequestHandlerFactory;
 
     u32                 mUpdateIntervalInSeconds;
     Poco::Event         mShutdownEvent;
@@ -42,8 +38,8 @@ public:
     //----------------------------------------------------------------//
     void                setUpdateInterval           ( u32 updateIntervalInSeconds );
     void                waitForShutdown             ();
-                        WebMiner                    ();
-                        ~WebMiner                   ();
+                        MinerActivity               ();
+                        ~MinerActivity              ();
 };
 
 } // namespace Volition

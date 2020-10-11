@@ -4,7 +4,16 @@
 #ifndef VOLITION_MINER_H
 #define VOLITION_MINER_H
 
-#include <volition/MinerBase.h>
+#include <volition/common.h>
+#include <volition/AbstractMiningMessenger.h>
+#include <volition/Accessors.h>
+#include <volition/BlockTree.h>
+#include <volition/CryptoKey.h>
+#include <volition/Ledger.h>
+#include <volition/TransactionQueue.h>
+#include <volition/serialization/AbstractSerializable.h>
+#include <volition/Singleton.h>
+#include <volition/Transaction.h>
 
 namespace Volition {
 
@@ -25,32 +34,184 @@ protected:
 };
 
 //================================================================//
+// RemoteMiner
+//================================================================//
+class RemoteMiner {
+public:
+
+    string                      mURL;
+    BlockTreeNode::ConstPtr     mTag;
+
+    bool                                                mForward;
+    size_t                                              mHeight;
+    list < shared_ptr < const BlockHeader >>            mHeaderQueue;
+
+    //----------------------------------------------------------------//
+                    RemoteMiner             ();
+                    ~RemoteMiner            ();
+};
+
+//================================================================//
+// BlockQueueEntry
+//================================================================//
+class BlockQueueEntry {
+private:
+
+    friend class Miner;
+
+    MiningMessengerRequest                      mRequest;
+    shared_ptr < const Block >                  mBlock;
+    list < shared_ptr < const BlockHeader >>    mHeaders;
+};
+
+//================================================================//
 // Miner
 //================================================================//
 class Miner :
-    public MinerBase {
+    public AbstractSerializable,
+    public AbstractMiningMessengerClient,
+    public TransactionQueue {
+public:
+
+    enum : int {
+        MINER_LAZY                  = 0x01,
+        MINER_VERBOSE               = 0x02,
+        MINER_PERMIT_CONTROL        = 0x04,
+    };
+
+    static const int DEFAULT_FLAGS = 0;
+
 protected:
+
+    friend class AbstractChainRecorder;
+
+    static constexpr const char* MASTER_BRANCH      = "master";
+
+    string                                          mMinerID;
+    SerializableTime                                mStartTime;
+
+    CryptoKey                                       mKeyPair;
+    string                                          mMotto;
+    Signature                                       mVisage;
+
+    int                                             mFlags;
+    BlockTreeNode::RewriteMode                      mRewriteMode;
+    time_t                                          mRewriteWindowInSeconds;
+    Block::VerificationPolicy                       mBlockVerificationPolicy;
+
+    shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
-    map < string, MinerSearchEntry >    mSearches;
+    map < string, RemoteMiner >                     mRemoteMiners;
+    map < string, MinerSearchEntry >                mSearches;
+    BlockTree                                       mBlockTree;
+    
+    shared_ptr < Ledger >                           mChain;         // may run behind block tree tag
+    BlockTreeNode::ConstPtr                         mChainTag;      // node corresponding to top of chain
+    BlockTreeNode::ConstPtr                         mBestBranch;    // "leaf" of the current chain
+    list < BlockTreeNode::ConstPtr >                mNodeQueue;
+    
+    Poco::Mutex                                     mMutex;
+
+    shared_ptr < AbstractMiningMessenger >          mMessenger;
+    set < string >                                  mMinerSet;
+
+    list < unique_ptr < BlockQueueEntry >>          mBlockQueue;
     
     //----------------------------------------------------------------//
-    void                        affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
-    void                        affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
-    bool                        canExtend                   () const;
-    void                        composeChain                ();
-    void                        processResponses            ();
-    void                        requestHeaders              ();
-    void                        selectBestBranch            ( time_t now );
-    BlockTreeNode::ConstPtr     truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
-    void                        updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
-    void                        updateSearches              ( time_t now );
+    void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
+    void                                affirmMessenger             ();
+    void                                affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
+    bool                                canExtend                   () const;
+    void                                composeChain                ();
+    void                                discoverMiners              ();
+    void                                processResponses            ();
+    void                                pushBlock                   ( shared_ptr < const Block > block );
+    void                                requestHeaders              ();
+    void                                saveChain                   ();
+    void                                selectBestBranch            ( time_t now );
+    BlockTreeNode::ConstPtr             truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
+    void                                updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
+    void                                updateSearches              ( time_t now );    
+
+    //----------------------------------------------------------------//
+    void                                AbstractMiningMessengerClient_receiveBlock      ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) override;
+    void                                AbstractMiningMessengerClient_receiveHeaders    ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& header ) override;
+    void                                AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
+    void                                AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
+    virtual void                        Miner_reset                                     ();
+    virtual void                        Miner_shutdown                                  ( bool kill );
+
+public:
+
+    enum class SubmissionResponse {
+        ACCEPTED = 0,
+        RESUBMIT_EARLIER,
+    };
+    
+    GET ( BlockTreeNode::ConstPtr,                  BestBranch,                 mBestBranch )
+    GET ( const BlockTree&,                         BlockTree,                  mBlockTree )
+    GET ( const CryptoKey&,                         KeyPair,                    mKeyPair )
+    GET ( const Ledger&,                            Ledger,                     *this->mChain )
+    GET ( string,                                   MinerID,                    this->mMinerID )
+    GET ( string,                                   Motto,                      this->mMotto )
+    GET ( BlockTreeNode::RewriteMode,               RewriteMode,                this->mRewriteMode )
+    GET ( time_t,                                   RewriteWindowInSeconds,     this->mRewriteWindowInSeconds )
+    GET ( SerializableTime,                         StartTime,                  this->mStartTime )
+    GET ( const Signature&,                         Visage,                     this->mVisage )
+    
+    SET ( const CryptoKey&,                         KeyPair,                    this->mKeyPair )
+    SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  this->mMessenger )
+    SET ( string,                                   MinerID,                    this->mMinerID )
+    SET ( string,                                   Motto,                      this->mMotto )
+    SET ( BlockTreeNode::RewriteMode,               RewriteMode,                this->mRewriteMode)
+    
+    //----------------------------------------------------------------//
+    operator Poco::Mutex& () {
+    
+        return this->mMutex;
+    }
+
+    //----------------------------------------------------------------//
+    void                                affirmKey                   ( uint keyLength = CryptoKey::RSA_1024, unsigned long exp = CryptoKey::RSA_EXP_65537 );
+    void                                affirmVisage                ();
+    bool                                checkBestBranch             ( string miners ) const;
+    bool                                controlPermitted            () const;
+    size_t                              countBranches               () const;
+    void                                extend                      ( time_t now );
+    Ledger&                             getLedger                   ();
+    bool                                isLazy                      () const;
+    void                                loadGenesis                 ( string path );
+    void                                loadKey                     ( string keyfile, string password = "" );
+                                        Miner                   ();
+    virtual                             ~Miner                  ();
+    void                                permitControl               ( bool permit );
+    shared_ptr < Block >                prepareBlock                ( time_t now );
+    void                                reset                       ();
+    void                                setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
+    void                                setGenesis                  ( shared_ptr < const Block > block );
+    void                                setLazy                     ( bool lazy );
+    void                                setRewriteWindow            ( time_t window );
+    void                                setVerbose                  ( bool verbose );
+    void                                shutdown                    ( bool kill = false );
+    void                                step                        ( time_t now );
+};
+
+//================================================================//
+// ScopedMinerLock
+//================================================================//
+class ScopedMinerLock {
+private:
+
+    shared_ptr < Miner >            mMiner;
+    Poco::ScopedLock < Poco::Mutex >    mScopedLock;
 
 public:
 
     //----------------------------------------------------------------//
-                                Miner                       ();
-    virtual                     ~Miner                      ();
-    void                        step                        ( time_t now );
+    ScopedMinerLock ( shared_ptr < Miner > minerActivity ) :
+        mMiner ( minerActivity ),
+        mScopedLock ( *minerActivity ) {
+    }
 };
 
 } // namespace Volition
