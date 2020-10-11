@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_BLOCKHEADERHANDLER_H
-#define VOLITION_WEBMINERAPI_BLOCKHEADERHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_CONSENSUSBLOCKDETAILSHANDLER_H
+#define VOLITION_WEBMINERAPI_CONSENSUSBLOCKDETAILSHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
@@ -13,9 +13,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// BlockHeaderHandler
+// ConsensusBlockDetailsHandler
 //================================================================//
-class BlockHeaderHandler :
+class ConsensusBlockDetailsHandler :
     public MinerAPIRequestHandler {
 public:
 
@@ -27,15 +27,17 @@ public:
         UNUSED ( jsonIn );
 
         try {
-        
-            u64 height = this->getMatchU64 ( "blockID" );
+            
+            string hash = this->getMatchString ( "hash" );
 
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            const Ledger& chain = *this->mWebMiner->getChain ();
 
-            shared_ptr < BlockHeader > header = chain.getBlock ( height );
-            if ( header ) {
-                jsonOut.set ( "header", ToJSONSerializer::toJSON ( *header ));
+            const BlockTree& blockTree = this->mWebMiner->getBlockTree ();
+            BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( hash );
+            shared_ptr < const Block > block = node ? node->getBlock () : NULL;
+
+            if ( block ) {
+                jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
                 return Poco::Net::HTTPResponse::HTTP_OK;
             }
         }

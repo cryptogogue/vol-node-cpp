@@ -192,7 +192,6 @@ protected:
         if ( solo ) {
             LOG_F ( INFO, "LAZY and SOLO" );
             webMiner->setLazy ( true );
-            webMiner->setSolo ( true );
         }
         
         webMiner->setUpdateInterval (( u32 )interval );

@@ -40,7 +40,6 @@ public:
     static const u32    DEFAULT_UPDATE_INTERVAL = 60;
 
     //----------------------------------------------------------------//
-    void                setSolo                     ( bool solo );
     void                setUpdateInterval           ( u32 updateIntervalInSeconds );
     void                waitForShutdown             ();
                         WebMiner                    ();

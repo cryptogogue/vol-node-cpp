@@ -4,8 +4,13 @@
 #include <volition/Block.h>
 #include <volition/CryptoKey.h>
 #include <volition/CryptoKeyInfo.h>
+#include <volition/Miner.h>
+#include <volition/transactions/Genesis.h>
+
+using namespace Volition;
 
 //----------------------------------------------------------------//
+void defineKeyFileOptions ( Poco::Util::OptionSet& options, bool required );
 void defineKeyFileOptions ( Poco::Util::OptionSet& options, bool required ) {
 
     options.addOption (
@@ -36,11 +41,11 @@ public:
         defineKeyFileOptions ( options, false );
         
         options.addOption (
-        Poco::Util::Option ( "outfile", "o", "output file" )
-            .required ( true )
-            .argument ( "value", true )
-            .binding ( "outfile" )
-    );
+            Poco::Util::Option ( "outfile", "o", "output file" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "outfile" )
+        );
     }
 
     //----------------------------------------------------------------//
@@ -58,13 +63,14 @@ public:
         if ( keyfile.size () && Poco::File ( keyfile ).exists ()) {
             fstream inStream;
             inStream.open ( keyfile, ios_base::in );
-            Volition::FromJSONSerializer::fromJSON ( cryptoKey, inStream );
+            FromJSONSerializer::fromJSON ( cryptoKey, inStream );
         }
         else {
-            cryptoKey.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
+            //cryptoKey.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
+            cryptoKey.rsa ( Volition::CryptoKey::RSA_4096 );
         }
 
-        Volition::CryptoKeyInfo keyInfo ( cryptoKey, Volition::CryptoKeyInfo::ENCODING_PEM );
+        CryptoKeyInfo keyInfo ( cryptoKey, Volition::CryptoKeyInfo::ENCODE_AS_PEM );
         Poco::Dynamic::Var var = Volition::ToJSONSerializer::toJSON ( keyInfo );
         Poco::JSON::Object::Ptr object = var.extract < Poco::JSON::Object::Ptr >();
 
@@ -72,6 +78,87 @@ public:
         jsonOutStream.open ( outfile, ios_base::out );
         object->stringify ( jsonOutStream, 4 );
         jsonOutStream.close ();
+        
+        return EXIT_OK;
+    }
+};
+
+//================================================================//
+// DumpMinerApp
+//================================================================//
+class DumpMinerApp :
+    public Poco::Util::Application {
+public:
+
+    //----------------------------------------------------------------//
+    void defineOptions ( Poco::Util::OptionSet& options ) override {
+        Application::defineOptions ( options );
+        defineKeyFileOptions ( options, false );
+        
+        options.addOption (
+            Poco::Util::Option ( "name", "n", "miner name" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "name" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "motto", "m", "miner motto" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "motto" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "url", "u", "miner url" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "url" )
+        );
+    }
+
+    //----------------------------------------------------------------//
+    int main ( const vector < string > &args ) override {
+        UNUSED ( args );
+        
+        Poco::Util::AbstractConfiguration& configuration = this->config ();
+    
+        string keyfile      = configuration.getString ( "keyfile", "" );
+        string password     = configuration.getString ( "password", "" );
+        string name         = configuration.getString ( "name" );
+        string motto        = configuration.getString ( "motto", "" );
+        string url          = configuration.getString ( "url" );
+        
+        shared_ptr < Volition::Miner > miner = make_shared < Volition::Miner >();
+        
+        CryptoKey cryptoKey;
+
+        if ( keyfile.size () && Poco::File ( keyfile ).exists ()) {
+            fstream inStream;
+            inStream.open ( keyfile, ios_base::in );
+            Volition::FromJSONSerializer::fromJSON ( cryptoKey, inStream );
+        }
+        else {
+            cryptoKey.rsa ( Volition::CryptoKey::RSA_4096 );
+        }
+
+        miner->setKeyPair ( cryptoKey );
+        miner->setMinerID ( name );
+        miner->setMotto ( motto );
+        miner->affirmKey ();
+        miner->affirmVisage ();
+
+        Transactions::GenesisAccount genesisAccount;
+        
+        genesisAccount.mName    = miner->getMinerID ();
+        genesisAccount.mKey     = miner->getKeyPair ();
+        genesisAccount.mGrant   = 0;
+        genesisAccount.mURL     = url;
+        genesisAccount.mMotto   = miner->getMotto ();
+        genesisAccount.mVisage  = miner->getVisage ();
+
+        ToJSONSerializer::toJSONFile ( genesisAccount, Format::write ( "%s.account.json", name.c_str ()));
+        ToJSONSerializer::toJSONFile ( cryptoKey, Format::write ( "%s.keypair.json", name.c_str ()));
         
         return EXIT_OK;
     }
@@ -143,6 +230,7 @@ public:
 //POCO_APP_MAIN ( SignBlockApp );
 
 //----------------------------------------------------------------//
+int runApp ( int argc, char** argv, Poco::Util::Application* app );
 int runApp ( int argc, char** argv, Poco::Util::Application* app ) {
 
     Poco::AutoPtr < Poco::Util::Application > pApp = app;
@@ -166,6 +254,10 @@ int main ( int argc, char** argv ) {
 
     if ( command == "dump-key" ) {
         return runApp ( argc, argv, new DumpKeyApp );
+    }
+    
+    if ( command == "dump-miner" ) {
+        return runApp ( argc, argv, new DumpMinerApp );
     }
     
     if ( command == "sign-block" ) {
