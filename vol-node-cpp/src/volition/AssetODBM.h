@@ -50,7 +50,7 @@ public:
     }
 
     ConstOpt < Ledger >     mLedger;
-    AssetID::Index          mIndex;
+    AssetID                 mAssetID;
 
     LedgerFieldODBM < AccountID::Index >    mOwner;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
@@ -65,11 +65,11 @@ public:
     //----------------------------------------------------------------//
     AssetODBM ( ConstOpt < Ledger > ledger, AssetID::Index index ) :
         mLedger ( ledger ),
-        mIndex ( index ),
-        mOwner ( ledger,            keyFor_owner ( this->mIndex ),              AccountID::NULL_INDEX ),
-        mInventoryNonce ( ledger,   keyFor_inventoryNonce ( this->mIndex ),     0 ),
-        mPosition ( ledger,         keyFor_position ( this->mIndex ),           0 ),
-        mType ( ledger,             keyFor_type ( this->mIndex ),               "" ) {
+        mAssetID ( index ),
+        mOwner ( ledger,            keyFor_owner ( this->mAssetID ),            AccountID::NULL_INDEX ),
+        mInventoryNonce ( ledger,   keyFor_inventoryNonce ( this->mAssetID ),   0 ),
+        mPosition ( ledger,         keyFor_position ( this->mAssetID ),         0 ),
+        mType ( ledger,             keyFor_type ( this->mAssetID ),             "" ) {
     }
     
     //----------------------------------------------------------------//
@@ -85,7 +85,7 @@ public:
         
         shared_ptr < Asset > asset = make_shared < Asset >();
         asset->mType            = this->mType.get ();
-        asset->mAssetID         = this->mIndex;
+        asset->mAssetID         = this->mAssetID;
         asset->mOwner           = ownerODBM.mName.get ();
         asset->mInventoryNonce  = this->mInventoryNonce.get ( 0 );
         
@@ -100,7 +100,7 @@ public:
             
             if ( field.mMutable  ) {
 
-                LedgerKey KEY_FOR_ASSET_FIELD = keyFor_field ( this->mIndex, fieldName );
+                LedgerKey KEY_FOR_ASSET_FIELD = keyFor_field ( this->mAssetID, fieldName );
 
                 switch ( field.getType ()) {
                 

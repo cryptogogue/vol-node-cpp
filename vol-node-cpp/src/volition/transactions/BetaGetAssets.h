@@ -58,7 +58,7 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        return ledger.awardAssetsAll ( *context.mSchemaHandle, accountODBM.mIndex, ( size_t )this->mNumAssets, context.mTime );
+        return ledger.awardAssetsAll ( *context.mSchemaHandle, accountODBM.mAccountID, ( size_t )this->mNumAssets, context.mTime );
     }
 };
 

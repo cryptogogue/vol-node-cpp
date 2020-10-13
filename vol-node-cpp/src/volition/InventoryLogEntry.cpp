@@ -43,7 +43,7 @@ void InventoryLogEntry::decode ( const SerializableSet < AssetID::Index >& index
 //----------------------------------------------------------------//
 void InventoryLogEntry::expand ( const Ledger& ledger, const Schema& schema, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedConstPtr < Asset >>& assetList ) {
     
-    AccountID accountID = ledger.getAccountIndex ( accountName );
+    AccountID accountID = ledger.getAccountID ( accountName );
     
     SerializableSet < AssetID::Index >::const_iterator indexIt = indexSet.cbegin ();
     for ( ; indexIt != indexSet.cend (); ++indexIt ) {

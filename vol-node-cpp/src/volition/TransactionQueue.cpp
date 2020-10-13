@@ -163,7 +163,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block ) {
           
             // make sure the account exists
             if ( info.mAccountIndex == AccountID::NULL_INDEX ) {
-                info.mAccountIndex = ledger.getAccountIndex ( accountName );
+                info.mAccountIndex = ledger.getAccountID ( accountName );
                 if ( info.mAccountIndex == AccountID::NULL_INDEX ) {
                     this->mDatabase.erase ( makerQueueIt );
                     continue;
@@ -282,10 +282,10 @@ void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
         string accountName = makerQueueIt->first;
         MakerQueue& makerQueue = makerQueueIt->second;
     
-        AccountID accountIndex = ledger.getAccountIndex ( accountName );
-        if ( accountIndex != AccountID::NULL_INDEX ) {
+        AccountID accountID = ledger.getAccountID ( accountName );
+        if ( accountID != AccountID::NULL_INDEX ) {
             
-            makerQueue.prune ( AccountODBM ( ledger, accountIndex ).mTransactionNonce.get ());
+            makerQueue.prune ( AccountODBM ( ledger, accountID ).mTransactionNonce.get ());
         
             if ( makerQueue.hasError ()) continue;
             if ( makerQueue.hasTransactions ()) continue;

@@ -21,25 +21,20 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-map < string, MinerInfo > Ledger_Miner::getMiners () const {
+set < string > Ledger_Miner::getMiners () const {
 
     const Ledger& ledger = this->getLedger ();
 
-    map < string, MinerInfo > minerInfoMap;
+    set < string > minerInfoSet;
 
     shared_ptr < SerializableSet < string >> miners = ledger.getObjectOrNull < SerializableSet < string >>( Ledger::keyFor_miners ());
     assert ( miners );
     
     set < string >::const_iterator minerIt = miners->cbegin ();
     for ( ; minerIt != miners->cend (); ++minerIt ) {
-    
-        const string& minerID = *minerIt;
-        
-        shared_ptr < const MinerInfo > minerInfo = AccountODBM ( ledger, minerID ).mMinerInfo.get ();
-        assert ( minerInfo );
-        minerInfoMap [ minerID ] = *minerInfo;
+        minerInfoSet.insert ( *minerIt );
     }
-    return minerInfoMap;
+    return minerInfoSet;
 }
 
 //----------------------------------------------------------------//
@@ -51,11 +46,11 @@ shared_ptr < Ledger::MinerURLMap > Ledger_Miner::getMinerURLs () const {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Miner::registerMiner ( AccountID accountIndex, string keyName, string url, string motto, const Signature& visage ) {
+LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, string keyName, string url, string motto, const Signature& visage ) {
 
     Ledger& ledger = this->getLedger ();
 
-    AccountKey accountKey = ledger.getAccountKey ( accountIndex, keyName );
+    AccountKey accountKey = ledger.getAccountKey ( accountID, keyName );
     if ( accountKey ) {
 
         shared_ptr < const Account > account = accountKey.mAccount;
@@ -63,8 +58,8 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountIndex, string keyNam
         
         if ( !key.verify ( visage, motto )) return "Corrupt visage.";
         
-        AccountODBM accountODBM ( ledger, accountIndex );
-        accountODBM.mMinerInfo.set ( MinerInfo ( accountIndex, url, key, visage ));
+        AccountODBM accountODBM ( ledger, accountID );
+        accountODBM.mMinerInfo.set ( MinerInfo ( url, key, visage ));
         
         // TODO: find an efficient way to do all this
         string accountName = accountODBM.mName.get ();

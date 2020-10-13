@@ -40,7 +40,7 @@ private:
     static int              _setAssetField          ( lua_State* L );
 
     //----------------------------------------------------------------//
-    AccountID          checkAccountName        ( string accountName );
+    AccountID               checkAccountName        ( string accountName );
     AssetID::Index          checkAssetID            ( string assetID );
     bool                    checkAssetType          ( string assetType );
     bool                    checkDeckOrSet          ( string deckName );

@@ -71,20 +71,20 @@ private:
     void initialize ( ConstOpt < Ledger > ledger, AccountID index ) {
     
         this->mLedger       = ledger;
-        this->mIndex        = index;
+        this->mAccountID    = index;
     
-        mAssetCount         = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mIndex ),             0 );
-        mInventoryNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mIndex ),         0 );
-        mTransactionNonce   = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mIndex ),       0 );
-        mName               = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mIndex ),                   "" );
-        mBody               = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mIndex ));
-        mMinerInfo          = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mIndex ));
+        mAssetCount         = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
+        mInventoryNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
+        mTransactionNonce   = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
+        mName               = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
+        mBody               = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
+        mMinerInfo          = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mAccountID ));
     }
 
 public:
 
     ConstOpt < Ledger >     mLedger;
-    AccountID               mIndex;
+    AccountID               mAccountID;
 
     LedgerFieldODBM < u64 >                 mAssetCount;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
@@ -106,25 +106,25 @@ public:
     
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < Ledger > ledger, string accountName ) {
-        this->initialize ( ledger, ledger->getAccountIndex ( accountName ));
+        this->initialize ( ledger, ledger->getAccountID ( accountName ));
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM < AssetID::Index > getInventoryField ( size_t position ) {
     
-        return LedgerFieldODBM < AssetID::Index >( this->mLedger, keyFor_inventoryField ( this->mIndex, position ), AssetID::NULL_INDEX );
+        return LedgerFieldODBM < AssetID::Index >( this->mLedger, keyFor_inventoryField ( this->mAccountID, position ), AssetID::NULL_INDEX );
     }
     
     //----------------------------------------------------------------//
     LedgerObjectFieldODBM < InventoryLogEntry > getInventoryLogEntryField ( u64 inventoryNonce ) {
     
-        return LedgerObjectFieldODBM < InventoryLogEntry >( this->mLedger, keyFor_inventoryLogEntry ( this->mIndex, inventoryNonce ));
+        return LedgerObjectFieldODBM < InventoryLogEntry >( this->mLedger, keyFor_inventoryLogEntry ( this->mAccountID, inventoryNonce ));
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM < u64 > getTransactionLookupField ( string uuid ) {
     
-        return LedgerFieldODBM < u64 >( this->mLedger, keyFor_transactionLookup ( this->mIndex, uuid ), 0 );
+        return LedgerFieldODBM < u64 >( this->mLedger, keyFor_transactionLookup ( this->mAccountID, uuid ), 0 );
     }
     
     //----------------------------------------------------------------//

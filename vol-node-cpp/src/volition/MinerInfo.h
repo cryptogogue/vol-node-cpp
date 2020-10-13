@@ -17,7 +17,6 @@ class MinerInfo :
     public AbstractSerializable {
 private:
 
-    AccountID          mAccountIndex;
     string                  mURL;
     CryptoKey               mPublicKey;
     Digest                  mVisage;
@@ -25,19 +24,17 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    AccountID          getAccountIndex     () const;
     const CryptoKey&        getPublicKey        () const;
     string                  getURL              () const;
     const Digest&           getVisage           () const;
                             MinerInfo           ();
-                            MinerInfo           ( AccountID accountIndex, string url, const CryptoKey& publicKey, const Digest& visage );
+                            MinerInfo           ( string url, const CryptoKey& publicKey, const Digest& visage );
                             MinerInfo           ( const MinerInfo& minerInfo );
                             ~MinerInfo          ();
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "accountIndex",      this->mAccountIndex );
         serializer.serialize ( "url",               this->mURL );
         serializer.serialize ( "publicKey",         this->mPublicKey );
         serializer.serialize ( "visage",            this->mVisage );
@@ -46,7 +43,6 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
-        serializer.serialize ( "accountIndex",      this->mAccountIndex );
         serializer.serialize ( "url",               this->mURL );
         serializer.serialize ( "publicKey",         this->mPublicKey );
         serializer.serialize ( "visage",            this->mVisage );

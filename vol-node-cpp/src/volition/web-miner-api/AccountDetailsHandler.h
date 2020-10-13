@@ -36,7 +36,7 @@ public:
         
         // decorate with virtual fields
         accountJSON->set ( "name", accountName );
-        accountJSON->set ( "index", accountODBM.mIndex );
+        accountJSON->set ( "index", accountODBM.mAccountID );
         accountJSON->set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
         accountJSON->set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
         accountJSON->set ( "nonce", accountODBM.mTransactionNonce.get ( 0 ));

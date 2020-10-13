@@ -50,7 +50,7 @@ public:
         
         return context.mLedger.transferAssets (
             context.mIndex,
-            context.mLedger.getAccountIndex ( this->mAccountName ),
+            context.mLedger.getAccountID ( this->mAccountName ),
             this->mAssetIdentifiers.data (),
             this->mAssetIdentifiers.size (),
             context.mTime

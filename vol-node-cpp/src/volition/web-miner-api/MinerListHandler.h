@@ -29,21 +29,20 @@ public:
     
         ScopedMinerLock scopedLock ( this->mWebMiner );
         const Ledger& ledger = this->mWebMiner->getLedger ();
-        const map < string, MinerInfo >& minerInfoMap = ledger.getMiners ();
+        set < string > miners = ledger.getMiners ();
         
         Poco::JSON::Object::Ptr minersJSON = new Poco::JSON::Object ();
         
-        map < string, MinerInfo >::const_iterator minerInfoIt = minerInfoMap.cbegin ();
-        for ( unsigned int i = 0; minerInfoIt != minerInfoMap.cend (); ++minerInfoIt, ++i ) {
-            const MinerInfo& minerInfo = minerInfoIt->second;
-            
-            string accountName = AccountODBM ( ledger, minerInfo.getAccountIndex ()).mName.get ();
-            if ( accountName.size () == 0 ) continue;
+        set < string >::const_iterator minerIt = miners.cbegin ();
+        for ( unsigned int i = 0; minerIt != miners.cend (); ++minerIt, ++i ) {
+        
+            AccountODBM minerODBM ( ledger, *minerIt );
+            if ( !minerODBM ) continue;
             
             Poco::JSON::Object::Ptr minerInfoJSON = new Poco::JSON::Object ();
-            minerInfoJSON->set ( "url",         minerInfo.getURL ().c_str ());
+            minerInfoJSON->set ( "url",         minerODBM.mMinerInfo.get ()->getURL ().c_str ());
             
-            minersJSON->set ( accountName, minerInfoJSON );
+            minersJSON->set ( *minerIt, minerInfoJSON );
         }
         
         jsonOut.set ( "miners", minersJSON );

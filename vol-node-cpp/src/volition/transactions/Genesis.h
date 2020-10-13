@@ -76,7 +76,7 @@ public:
             if ( !ledger.newAccount ( account.mName, grant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
             if ( account.mURL.size () > 0 ) {
                 if ( !ledger.registerMiner (
-                    ledger.getAccountIndex ( account.mName ),
+                    ledger.getAccountID ( account.mName ),
                     Ledger::MASTER_KEY_NAME,
                     account.mURL,
                     account.mMotto,

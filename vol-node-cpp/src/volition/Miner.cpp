@@ -143,13 +143,15 @@ bool Miner::controlPermitted () const {
 //----------------------------------------------------------------//
 void Miner::discoverMiners () {
 
-    map < string, MinerInfo > miners = this->getLedger ().getMiners ();
+    set < string > miners = this->getLedger ().getMiners ();
         
-    map < string, MinerInfo >::iterator minerIt = miners.begin ();
+    set < string >::iterator minerIt = miners.begin ();
     for ( ; minerIt != miners.end (); ++minerIt ) {
-        MinerInfo& minerInfo = minerIt->second;
-        if ( minerIt->first != this->mMinerID ) {
-            this->mRemoteMiners [ minerIt->first ].mURL = minerInfo.getURL (); // affirm
+        string minerID = *minerIt;
+        
+        if ( minerID != this->mMinerID ) {
+            AccountODBM minerODBM ( this->getLedger (), *minerIt );
+            this->mRemoteMiners [ minerID ].mURL = minerODBM.mMinerInfo.get ()->getURL (); // affirm
         }
     }
 }

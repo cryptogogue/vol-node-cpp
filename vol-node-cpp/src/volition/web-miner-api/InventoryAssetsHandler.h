@@ -35,7 +35,7 @@ public:
             const Schema& schema = ledger.getSchema ();
             
             SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-            ledger.getInventory ( schema, ledger.getAccountIndex ( accountName ), inventory, 0, true );
+            ledger.getInventory ( schema, ledger.getAccountID ( accountName ), inventory, 0, true );
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         
