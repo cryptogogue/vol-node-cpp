@@ -21,7 +21,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger_Account::affirmKey ( Account::Index accountIndex, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy ) {
+bool Ledger_Account::affirmKey ( AccountID accountIndex, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -37,7 +37,7 @@ bool Ledger_Account::affirmKey ( Account::Index accountIndex, string makerKeyNam
     shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getObjectOrNull < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP );
 
     // keys must be unique to accounts; no sharing keys across multiple accounts!
-    if ( accountKeyLookup && ( accountKeyLookup->mAccountIndex != account->mIndex )) return false;
+    if ( accountKeyLookup && ( accountKeyLookup->mAccountIndex != accountODBM.mIndex )) return false;
 
     if ( key ) {
         
@@ -57,7 +57,7 @@ bool Ledger_Account::affirmKey ( Account::Index accountIndex, string makerKeyNam
         updatedAccount.mKeys [ keyName ] = KeyAndPolicy ( key, *selectedPolicy );
         accountODBM.mBody.set ( updatedAccount );
         
-        ledger.setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( account->mIndex, keyName ));
+        ledger.setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( accountODBM.mIndex, keyName ));
         
         return true;
     }
@@ -65,7 +65,7 @@ bool Ledger_Account::affirmKey ( Account::Index accountIndex, string makerKeyNam
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Account::awardVOL ( Account::Index accountIndex, u64 amount ) {
+LedgerResult Ledger_Account::awardVOL ( AccountID accountIndex, u64 amount ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -86,7 +86,7 @@ LedgerResult Ledger_Account::awardVOL ( Account::Index accountIndex, u64 amount 
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Account::deleteKey ( Account::Index accountIndex, string keyName ) {
+bool Ledger_Account::deleteKey ( AccountID accountIndex, string keyName ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -101,18 +101,18 @@ bool Ledger_Account::deleteKey ( Account::Index accountIndex, string keyName ) {
 }
 
 //----------------------------------------------------------------//
-Account::Index Ledger_Account::getAccountIndex ( string accountName ) const {
+AccountID Ledger_Account::getAccountIndex ( string accountName ) const {
 
     const Ledger& ledger = this->getLedger ();
-    if ( accountName.size () == 0 ) return Account::NULL_INDEX;
+    if ( accountName.size () == 0 ) return AccountID::NULL_INDEX;
 
     string lowerName = Format::tolower ( accountName );
     LedgerKey KEY_FOR_ACCOUNT_ALIAS = Ledger::keyFor_accountAlias ( lowerName );
-    return ledger.getValueOrFallback < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, Account::NULL_INDEX );
+    return ledger.getValueOrFallback < AccountID::Index >( KEY_FOR_ACCOUNT_ALIAS, AccountID::NULL_INDEX );
 }
 
 //----------------------------------------------------------------//
-AccountKey Ledger_Account::getAccountKey ( Account::Index accountIndex, string keyName ) const {
+AccountKey Ledger_Account::getAccountKey ( AccountID accountIndex, string keyName ) const {
 
     const Ledger& ledger = this->getLedger ();
 
@@ -196,13 +196,12 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
 
     // provision the account ID
     LedgerKey KEY_FOR_GLOBAL_ACCOUNT_COUNT = Ledger::keyFor_globalAccountCount ();
-    Account::Index accountIndex = ledger.getValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT );
-    ledger.setValue < Account::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, accountIndex + 1 ); // increment counter
+    AccountID accountIndex = ledger.getValue < AccountID::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT );
+    ledger.setValue < AccountID::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, accountIndex + 1 ); // increment counter
 
     // store the account
     Account account;
     account.mPolicy     = accountPolicy;
-    account.mIndex      = accountIndex;
     account.mBalance    = balance;
     
     if ( key ) {
@@ -220,13 +219,13 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
     accountODBM.mBody.set ( account );
     
     // store the alias
-    ledger.setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
+    ledger.setValue < AccountID::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
 
     return true;
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Account::renameAccount ( Account::Index accountIndex, string revealedName ) {
+LedgerResult Ledger_Account::renameAccount ( AccountID accountIndex, string revealedName ) {
 
     Ledger& ledger = this->getLedger ();
     
@@ -242,7 +241,7 @@ LedgerResult Ledger_Account::renameAccount ( Account::Index accountIndex, string
     string lowerRevealedName = Format::tolower ( revealedName );
     
     // check to see if the alias already exists
-    LedgerFieldODBM < Account::Index > alias = LedgerFieldODBM < Account::Index > ( ledger, Ledger::keyFor_accountAlias ( lowerRevealedName ));
+    LedgerFieldODBM < AccountID::Index > alias = LedgerFieldODBM < AccountID::Index > ( ledger, Ledger::keyFor_accountAlias ( lowerRevealedName ));
     if ( alias.exists ()) {
     
         // error if alias isn't owned by this account

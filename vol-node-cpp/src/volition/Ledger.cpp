@@ -202,8 +202,8 @@ UnfinishedBlockList Ledger::getUnfinished () {
 //----------------------------------------------------------------//
 bool Ledger::hasTransaction ( string accountName, string uuid ) const {
 
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex != Account::NULL_INDEX ) {
+    AccountID accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex != AccountID::NULL_INDEX ) {
     
         return AccountODBM ( this->getLedger (), accountIndex ).getTransactionLookupField ( uuid ).exists ();
     }
@@ -229,8 +229,8 @@ LedgerResult Ledger::invoke ( const Schema& schema, string accountName, const As
     if ( !( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ))) return false;
 
     // make sure account exists
-    Account::Index accountIndex = this->getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return false;
+    AccountID accountIndex = this->getAccountIndex ( accountName );
+    if ( accountIndex == AccountID::NULL_INDEX ) return false;
 
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
     LuaContext lua ( *this, schema, time );

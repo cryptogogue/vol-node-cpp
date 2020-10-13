@@ -27,7 +27,7 @@ public:
     //----------------------------------------------------------------//
     map < string, MinerInfo >           getMiners                       () const;
     shared_ptr < MinerURLMap >          getMinerURLs                    () const;
-    LedgerResult                        registerMiner                   ( Account::Index accountIndex, string keyName, string url, string motto, const Signature& visage );
+    LedgerResult                        registerMiner                   ( AccountID accountIndex, string keyName, string url, string motto, const Signature& visage );
 };
 
 } // namespace Volition

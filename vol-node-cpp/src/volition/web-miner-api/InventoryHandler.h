@@ -34,7 +34,7 @@ public:
             ScopedMinerLock scopedLock ( this->mWebMiner );
             Ledger& ledger = this->mWebMiner->getLedger ();
         
-            Account::Index accountIndex = ledger.getAccountIndex ( accountName );
+            AccountID accountIndex = ledger.getAccountIndex ( accountName );
             
             AccountODBM accountODBM ( ledger, accountIndex );
             jsonOut.set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));

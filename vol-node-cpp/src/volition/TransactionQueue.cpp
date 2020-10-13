@@ -14,12 +14,12 @@ namespace Volition {
 class MakerQueueInfo {
 public:
 
-    Account::Index  mAccountIndex;
+    AccountID  mAccountIndex;
     u64             mNonce;
 
     //----------------------------------------------------------------//
     MakerQueueInfo () :
-        mAccountIndex ( Account::NULL_INDEX ),
+        mAccountIndex ( AccountID::NULL_INDEX ),
         mNonce ( 0 ) {
     }
 };
@@ -162,9 +162,9 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block ) {
             MakerQueueInfo info = infoCache [ accountName ];
           
             // make sure the account exists
-            if ( info.mAccountIndex == Account::NULL_INDEX ) {
+            if ( info.mAccountIndex == AccountID::NULL_INDEX ) {
                 info.mAccountIndex = ledger.getAccountIndex ( accountName );
-                if ( info.mAccountIndex == Account::NULL_INDEX ) {
+                if ( info.mAccountIndex == AccountID::NULL_INDEX ) {
                     this->mDatabase.erase ( makerQueueIt );
                     continue;
                 }
@@ -282,8 +282,8 @@ void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
         string accountName = makerQueueIt->first;
         MakerQueue& makerQueue = makerQueueIt->second;
     
-        Account::Index accountIndex = ledger.getAccountIndex ( accountName );
-        if ( accountIndex != Account::NULL_INDEX ) {
+        AccountID accountIndex = ledger.getAccountIndex ( accountName );
+        if ( accountIndex != AccountID::NULL_INDEX ) {
             
             makerQueue.prune ( AccountODBM ( ledger, accountIndex ).mTransactionNonce.get ());
         

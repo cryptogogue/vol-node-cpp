@@ -169,8 +169,8 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     string assetType        = _to_string ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
 
-    Account::Index accountIndex = self.checkAccountName ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return 0;
+    AccountID accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == AccountID::NULL_INDEX ) return 0;
     if ( !self.checkAssetType ( assetType )) return 0;
 
     self.setResult ( self.mLedger->awardAssets ( self.mSchema, accountIndex, assetType, quantity, self.mTime ));
@@ -184,8 +184,8 @@ int LuaContext::_awardDeck ( lua_State* L ) {
     string accountName      = _to_string ( L, 1 );
     string setOrDeckName    = _to_string ( L, 2 );
 
-    Account::Index accountIndex = self.checkAccountName ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return 0;
+    AccountID accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == AccountID::NULL_INDEX ) return 0;
     if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
 
     self.setResult ( self.mLedger->awardDeck ( self.mSchema, accountIndex, setOrDeckName, self.mTime ));
@@ -199,8 +199,8 @@ int LuaContext::_awardVOL ( lua_State* L ) {
     string accountName      = _to_string ( L, 1 );
     size_t amount           = ( size_t )lua_tointeger ( L, 2 );
 
-    Account::Index accountIndex = self.checkAccountName ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return 0;
+    AccountID accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == AccountID::NULL_INDEX ) return 0;
 
     self.setResult ( self.mLedger->awardVOL ( accountIndex, amount ));
     return 0;
@@ -257,8 +257,8 @@ int LuaContext::_randomAward ( lua_State* L ) {
     string seed             = _to_string ( L, 3 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 4 );
 
-    Account::Index accountIndex = self.checkAccountName ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) return 0;
+    AccountID accountIndex = self.checkAccountName ( accountName );
+    if ( accountIndex == AccountID::NULL_INDEX ) return 0;
     if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
 
     self.setResult ( self.mLedger->awardAssetsRandom ( self.mSchema, accountIndex, setOrDeckName, seed, quantity, self.mTime ));
@@ -336,15 +336,15 @@ int LuaContext::_setAssetField ( lua_State* L ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-Account::Index LuaContext::checkAccountName ( string accountName ) {
+AccountID LuaContext::checkAccountName ( string accountName ) {
 
     if ( accountName.size () == 0 ) {
         this->setResult ( "Missing account name." );
-        return Account::NULL_INDEX;
+        return AccountID::NULL_INDEX;
     }
 
-    Account::Index accountIndex = this->mLedger->getAccountIndex ( accountName );
-    if ( accountIndex == Account::NULL_INDEX ) {
+    AccountID accountIndex = this->mLedger->getAccountIndex ( accountName );
+    if ( accountIndex == AccountID::NULL_INDEX ) {
         this->setResult ( Format::write ( "Account name '%s' not found.", accountName.c_str ()));
     }
     return accountIndex;

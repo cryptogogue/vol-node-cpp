@@ -24,18 +24,19 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    static void formatJSON ( const Ledger& ledger, const Account& account, Poco::JSON::Object& jsonOut ) {
-    
-        AccountODBM accountODBM ( ledger, account.mIndex );
+    static void formatJSON ( const Ledger& ledger, AccountODBM& accountODBM, Poco::JSON::Object& jsonOut ) {
         
         // account's "primary" name
         string accountName = accountODBM.mName.get ();
         
+        shared_ptr < const Account > account = accountODBM.mBody.get ();
+        
         // get the account JSON
-        Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( account ).extract < Poco::JSON::Object::Ptr >();
+        Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( *account ).extract < Poco::JSON::Object::Ptr >();
         
         // decorate with virtual fields
         accountJSON->set ( "name", accountName );
+        accountJSON->set ( "index", accountODBM.mIndex );
         accountJSON->set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
         accountJSON->set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
         accountJSON->set ( "nonce", accountODBM.mTransactionNonce.get ( 0 ));
@@ -44,7 +45,7 @@ public:
         jsonOut.set ( "account", accountJSON );
         
         ToJSONSerializer entitlements;
-        ledger.serializeEntitlements ( account, entitlements );
+        ledger.serializeEntitlements ( *account, entitlements );
         jsonOut.set ( "entitlements", entitlements );
     }
 
@@ -58,9 +59,9 @@ public:
         ScopedMinerLock scopedLock ( this->mWebMiner );
         const Ledger& ledger = this->mWebMiner->getLedger ();
 
-        shared_ptr < const Account > account = AccountODBM ( ledger, accountName ).mBody.get ();
-        if ( account ) {
-            AccountDetailsHandler::formatJSON ( ledger, *account, jsonOut );
+        AccountODBM accountODBM ( ledger, accountName );
+        if ( accountODBM ) {
+            AccountDetailsHandler::formatJSON ( ledger, accountODBM, jsonOut );
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;

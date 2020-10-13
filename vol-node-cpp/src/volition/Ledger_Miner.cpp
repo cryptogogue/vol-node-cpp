@@ -51,7 +51,7 @@ shared_ptr < Ledger::MinerURLMap > Ledger_Miner::getMinerURLs () const {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Miner::registerMiner ( Account::Index accountIndex, string keyName, string url, string motto, const Signature& visage ) {
+LedgerResult Ledger_Miner::registerMiner ( AccountID accountIndex, string keyName, string url, string motto, const Signature& visage ) {
 
     Ledger& ledger = this->getLedger ();
 

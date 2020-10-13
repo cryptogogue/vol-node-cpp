@@ -45,7 +45,7 @@ public:
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::RENAME_ACCOUNT )) return "Permission denied.";
         
         if ( this->mRevealedName.size () > 0 ) {
-            return context.mLedger.renameAccount ( context.mAccount.mIndex, this->mRevealedName );
+            return context.mLedger.renameAccount ( context.mIndex, this->mRevealedName );
         }
         return "Missing parameters.";
     }

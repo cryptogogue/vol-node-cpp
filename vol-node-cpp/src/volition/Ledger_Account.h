@@ -53,17 +53,17 @@ public:
     static constexpr const char* MASTER_KEY_NAME = "master";
 
     //----------------------------------------------------------------//
-    bool                                affirmKey                       ( Account::Index accountIndex, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
-    LedgerResult                        awardVOL                        ( Account::Index accountIndex, u64 amount );
-    bool                                deleteKey                       ( Account::Index accountIndex, string keyName );
-    Account::Index                      getAccountIndex                 ( string accountName ) const;
-    AccountKey                          getAccountKey                   ( Account::Index accountIndex, string keyName ) const;
+    bool                                affirmKey                       ( AccountID accountIndex, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
+    LedgerResult                        awardVOL                        ( AccountID accountIndex, u64 amount );
+    bool                                deleteKey                       ( AccountID accountIndex, string keyName );
+    AccountID                           getAccountIndex                 ( string accountName ) const;
+    AccountKey                          getAccountKey                   ( AccountID accountIndex, string keyName ) const;
     shared_ptr < AccountKeyLookup >     getAccountKeyLookup             ( string keyID ) const;
     static bool                         isAccountName                   ( string accountName );
     static bool                         isChildName                     ( string accountName );
     static bool                         isSuffix                        ( string suffix );
     bool                                newAccount                      ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
-    LedgerResult                        renameAccount                   ( Account::Index accountIndex, string revealedName );
+    LedgerResult                        renameAccount                   ( AccountID accountIndex, string revealedName );
     LedgerResult                        reserveAccountname              ( string nameHash, string nameSecret );
 };
 

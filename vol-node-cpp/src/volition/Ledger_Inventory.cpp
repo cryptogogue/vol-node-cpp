@@ -53,12 +53,12 @@ LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& 
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity, time_t time ) {
+LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountID accountIndex, string assetType, size_t quantity, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountIndex );
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return "Account not found.";
+    if ( accountODBM.mIndex == AccountID::NULL_INDEX ) return "Account not found.";
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
 
     InventoryLogEntry logEntry ( time );
@@ -70,12 +70,12 @@ LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, Account::Inde
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssetsAll ( const Schema& schema, Account::Index accountIndex, size_t quantity, time_t time ) {
+LedgerResult Ledger_Inventory::awardAssetsAll ( const Schema& schema, AccountID accountIndex, size_t quantity, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountIndex );
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return "Account not found.";
+    if ( accountODBM.mIndex == AccountID::NULL_INDEX ) return "Account not found.";
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
     
     InventoryLogEntry logEntry ( time );
@@ -91,7 +91,7 @@ LedgerResult Ledger_Inventory::awardAssetsAll ( const Schema& schema, Account::I
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account::Index accountIndex, string deckName, string seed, size_t quantity, time_t time ) {
+LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, AccountID accountIndex, string deckName, string seed, size_t quantity, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -101,7 +101,7 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account
     if ( !deck ) return Format::write ( "Deck '%s' not found.", deckName.c_str ());
 
     AccountODBM accountODBM ( ledger, accountIndex );
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return false;
+    if ( accountODBM.mIndex == AccountID::NULL_INDEX ) return false;
 
     // TODO: yes, this is inefficient. optimize (and/or cache) later.
     vector < string > expandedSetOrDeck;
@@ -165,7 +165,7 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index accountIndex, string deckName, time_t time ) {
+LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, AccountID accountIndex, string deckName, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
         
@@ -187,20 +187,20 @@ AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
     AssetID::Index assetIndex = AssetID::decode ( assetID );
     
     AssetODBM assetODBM ( ledger, assetIndex );
-    if ( assetODBM.mOwner.get () == Account::NULL_INDEX ) return AssetID::NULL_INDEX; // if an asset doesn't have an owner, it doesn't exist.
+    if ( assetODBM.mOwner.get () == AccountID::NULL_INDEX ) return AssetID::NULL_INDEX; // if an asset doesn't have an owner, it doesn't exist.
     
     return assetIndex;
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) const {
+void Ledger_Inventory::getInventory ( const Schema& schema, AccountID accountIndex, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) const {
 
     const Ledger& ledger = this->getLedger ();
 
     SerializableList < Asset > assets;
 
     AccountODBM accountODBM ( ledger, accountIndex );
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return;
+    if ( accountODBM.mIndex == AccountID::NULL_INDEX ) return;
 
     size_t assetCount = accountODBM.mAssetCount.get ();
     
@@ -269,8 +269,8 @@ bool Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
     if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return false;
 
     // get the owner
-    Account::Index accountIndex = assetODBM.mOwner.get ();
-    if ( accountIndex == Account::NULL_INDEX ) return true; // already revoked!
+    AccountID accountIndex = assetODBM.mOwner.get ();
+    if ( accountIndex == AccountID::NULL_INDEX ) return true; // already revoked!
     AccountODBM accountODBM ( ledger, accountIndex );
 
     // count the assets in the account
@@ -343,15 +343,15 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetI
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountIndex, Account::Index receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
+LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, AccountID receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
     
     Ledger& ledger = this->getLedger ();
     
     AccountODBM senderODBM ( ledger, senderAccountIndex );
     AccountODBM receiverODBM ( ledger, receiverAccountIndex );
 
-    if ( senderODBM.mIndex == Account::NULL_INDEX ) return "Count not find sender account.";
-    if ( receiverODBM.mIndex == Account::NULL_INDEX ) return "Could not find recipient account.";
+    if ( senderODBM.mIndex == AccountID::NULL_INDEX ) return "Count not find sender account.";
+    if ( receiverODBM.mIndex == AccountID::NULL_INDEX ) return "Could not find recipient account.";
     if ( senderODBM.mIndex == receiverODBM.mIndex ) return "Cannot send assets to self.";
 
     size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
@@ -411,7 +411,7 @@ LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountInde
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::updateInventory ( Account::Index accountIndex, const InventoryLogEntry& entry ) {
+void Ledger_Inventory::updateInventory ( AccountID accountIndex, const InventoryLogEntry& entry ) {
 
     Ledger& ledger = this->getLedger ();
     AccountODBM accountODBM ( ledger, accountIndex );
@@ -426,8 +426,8 @@ void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, Inve
 
     Ledger& ledger = this->getLedger ();
 
-    Account::Index ownerIndex = assetODBM.mOwner.get ( Account::NULL_INDEX );
-    if ( ownerIndex != Account::NULL_INDEX  ) {
+    AccountID ownerIndex = assetODBM.mOwner.get ( AccountID::NULL_INDEX );
+    if ( ownerIndex != AccountID::NULL_INDEX  ) {
     
         AccountODBM accountODBM ( ledger, ownerIndex );
         assetODBM.mInventoryNonce.set ( accountODBM.mInventoryNonce.get ( 0 ));
@@ -439,12 +439,12 @@ void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, Inve
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, Account::Index accountIndex, const map < string, string >& upgrades, time_t time ) {
+LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, AccountID accountIndex, const map < string, string >& upgrades, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountIndex );
-    if ( accountODBM.mIndex == Account::NULL_INDEX ) return "No such account.";
+    if ( accountODBM.mIndex == AccountID::NULL_INDEX ) return "No such account.";
 
     // check the upgrades
     SerializableMap < string, string >::const_iterator upgradeIt = upgrades.cbegin ();

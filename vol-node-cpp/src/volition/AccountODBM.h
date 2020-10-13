@@ -23,52 +23,52 @@ class AccountODBM {
 private:
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_assetCount ( Account::Index index ) {
+    static LedgerKey keyFor_assetCount ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.assetCount", index ); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_body ( Account::Index index ) {
+    static LedgerKey keyFor_body ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d", index ); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_inventoryField ( Account::Index index, size_t position ) {
+    static LedgerKey keyFor_inventoryField ( AssetID::Index index, size_t position ) {
         return Format::write ( "account.%d.assets.%d", index, position );
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_inventoryLogEntry ( Account::Index index, u64 inventoryNonce ) {
+    static LedgerKey keyFor_inventoryLogEntry ( AssetID::Index index, u64 inventoryNonce ) {
         return Format::write ( "account.%d.inventoryLog.%d", index, inventoryNonce );
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_inventoryNonce ( Account::Index index ) {
+    static LedgerKey keyFor_inventoryNonce ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.inventoryNonce", index ); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_minerInfo ( Account::Index index ) {
+    static LedgerKey keyFor_minerInfo ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.miner", index ); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_name ( Account::Index index ) {
+    static LedgerKey keyFor_name ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.name", index ); });
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionLookup ( Account::Index index, string uuid ) {
+    static LedgerKey keyFor_transactionLookup ( AssetID::Index index, string uuid ) {
         return Format::write ( "account.%d.transactionLookup.%s", index, uuid.c_str ());
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionNonce ( Account::Index index ) {
+    static LedgerKey keyFor_transactionNonce ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.transactionNonce", index ); });
     }
 
     //----------------------------------------------------------------//
-    void initialize ( ConstOpt < Ledger > ledger, Account::Index index ) {
+    void initialize ( ConstOpt < Ledger > ledger, AccountID index ) {
     
         this->mLedger       = ledger;
         this->mIndex        = index;
@@ -84,7 +84,7 @@ private:
 public:
 
     ConstOpt < Ledger >     mLedger;
-    Account::Index          mIndex;
+    AccountID               mIndex;
 
     LedgerFieldODBM < u64 >                 mAssetCount;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
@@ -100,7 +100,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) {
+    AccountODBM ( ConstOpt < Ledger > ledger, AccountID index ) {
         this->initialize ( ledger, index );
     }
     

@@ -52,10 +52,10 @@ public:
     ConstOpt < Ledger >     mLedger;
     AssetID::Index          mIndex;
 
-    LedgerFieldODBM < Account::Index >  mOwner;
-    LedgerFieldODBM < u64 >             mInventoryNonce;
-    LedgerFieldODBM < u64 >             mPosition;
-    LedgerFieldODBM < string >          mType;
+    LedgerFieldODBM < AccountID::Index >    mOwner;
+    LedgerFieldODBM < u64 >                 mInventoryNonce;
+    LedgerFieldODBM < u64 >                 mPosition;
+    LedgerFieldODBM < string >              mType;
 
     //----------------------------------------------------------------//
     operator bool () {
@@ -66,7 +66,7 @@ public:
     AssetODBM ( ConstOpt < Ledger > ledger, AssetID::Index index ) :
         mLedger ( ledger ),
         mIndex ( index ),
-        mOwner ( ledger,            keyFor_owner ( this->mIndex ),              Account::NULL_INDEX ),
+        mOwner ( ledger,            keyFor_owner ( this->mIndex ),              AccountID::NULL_INDEX ),
         mInventoryNonce ( ledger,   keyFor_inventoryNonce ( this->mIndex ),     0 ),
         mPosition ( ledger,         keyFor_position ( this->mIndex ),           0 ),
         mType ( ledger,             keyFor_type ( this->mIndex ),               "" ) {
@@ -80,10 +80,13 @@ public:
         const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( this->mType.get ());
         if ( !assetDefinition ) return NULL;
         
+        AccountID ownerAccountIndex = this->mOwner.get ();
+        AccountODBM ownerODBM ( this->mLedger, ownerAccountIndex );
+        
         shared_ptr < Asset > asset = make_shared < Asset >();
         asset->mType            = this->mType.get ();
         asset->mAssetID         = this->mIndex;
-        asset->mOwner           = AccountODBM ( this->mLedger, this->mOwner.get ()).mName.get ();
+        asset->mOwner           = ownerODBM.mName.get ();
         asset->mInventoryNonce  = this->mInventoryNonce.get ( 0 );
         
         // copy the fields and apply any overrides

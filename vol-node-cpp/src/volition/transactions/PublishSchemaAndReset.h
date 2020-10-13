@@ -55,7 +55,7 @@ public:
         context.mSchemaHandle.reset ( context.mLedger );
 
         if ( this->mDeckName.size () > 0 ) {
-            return context.mLedger.awardDeck ( *context.mSchemaHandle, context.mAccount.mIndex, this->mDeckName, context.mTime );
+            return context.mLedger.awardDeck ( *context.mSchemaHandle, context.mIndex, this->mDeckName, context.mTime );
         }
         return true;
     }

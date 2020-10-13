@@ -25,23 +25,23 @@ private:
 
     //----------------------------------------------------------------//
     LedgerResult                        awardAssets                 ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
-    void                                updateInventory             ( Account::Index accountIndex, const InventoryLogEntry& entry );
+    void                                updateInventory             ( AccountID accountIndex, const InventoryLogEntry& entry );
     void                                updateInventory             ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op );
 
 public:
 
     //----------------------------------------------------------------//
-    LedgerResult                        awardAssets                 ( const Schema& schema, Account::Index accountIndex, string assetType, size_t quantity, time_t time );
-    LedgerResult                        awardAssetsAll              ( const Schema& schema, Account::Index accountIndex, size_t quantity, time_t time );
-    LedgerResult                        awardAssetsRandom           ( const Schema& schema, Account::Index accountIndex, string deckName, string seed, size_t quantity, time_t time );
-    LedgerResult                        awardDeck                   ( const Schema& schema, Account::Index accountIndex, string deckName, time_t time );
+    LedgerResult                        awardAssets                 ( const Schema& schema, AccountID accountIndex, string assetType, size_t quantity, time_t time );
+    LedgerResult                        awardAssetsAll              ( const Schema& schema, AccountID accountIndex, size_t quantity, time_t time );
+    LedgerResult                        awardAssetsRandom           ( const Schema& schema, AccountID accountIndex, string deckName, string seed, size_t quantity, time_t time );
+    LedgerResult                        awardDeck                   ( const Schema& schema, AccountID accountIndex, string deckName, time_t time );
     AssetID::Index                      getAssetID                  ( string assetID ) const;
-    void                                getInventory                ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
+    void                                getInventory                ( const Schema& schema, AccountID accountIndex, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
     bool                                resetAssetFieldValue        ( const Schema& schema, AssetID::Index index, string fieldName, time_t time );
     bool                                revokeAsset                 ( AssetID::Index index, time_t time  );
     LedgerResult                        setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time );
-    LedgerResult                        transferAssets              ( Account::Index senderAccountIndex, Account::Index receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time );
-    LedgerResult                        upgradeAssets               ( const Schema& schema, Account::Index accountIndex, const map < string, string >& upgrades, time_t time );
+    LedgerResult                        transferAssets              ( AccountID senderAccountIndex, AccountID receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time );
+    LedgerResult                        upgradeAssets               ( const Schema& schema, AccountID accountIndex, const map < string, string >& upgrades, time_t time );
 };
 
 } // namespace Volition

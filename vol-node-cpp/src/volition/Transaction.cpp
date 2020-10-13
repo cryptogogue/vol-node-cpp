@@ -54,7 +54,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
     const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
     if ( !keyAndPolicy ) return "Transaction maker key not found.";
     
-    TransactionResult result = this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy );
+    TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mIndex, *keyAndPolicy );
     if ( result ) {
         
         TransactionContext context ( ledger, schemaHandle, accountODBM, *keyAndPolicy, time );
@@ -106,7 +106,7 @@ bool Transaction::checkMaker ( string accountName, string uuid ) const {
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, const Account& account, const KeyAndPolicy& keyAndPolicy ) const {
+TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, AccountID accountIndex, const KeyAndPolicy& keyAndPolicy ) const {
 
     if ( ledger.isGenesis ()) return true;
     if ( this->getUUID ().size () == 0 ) return false;
@@ -116,7 +116,7 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
 
     if ( maker && signature ) {
         if ( !this->needsControl ()) {
-            u64 nonce = AccountODBM ( ledger, account.mIndex ).mTransactionNonce.get ();
+            u64 nonce = AccountODBM ( ledger, accountIndex ).mTransactionNonce.get ();
             if ( nonce != this->getNonce ()) return false;
         }
         const CryptoKey& key = keyAndPolicy.mKey;
@@ -134,10 +134,10 @@ TransactionResult Transaction::control ( Miner& miner ) const {
     Ledger& ledger = miner.getLedger ();
 
     TransactionMaker* maker = this->mBody->mMaker.get ();
-    shared_ptr < const Account > account = AccountODBM ( ledger, maker->getAccountName ()).mBody.get ();
-    const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
+    AccountODBM accountODBM ( ledger, maker->getAccountName ());
+    const KeyAndPolicy* keyAndPolicy = accountODBM.mBody.get ()->getKeyAndPolicyOrNull ( maker->getKeyName ());
 
-    TransactionResult result = this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy );
+    TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mIndex, *keyAndPolicy );
     if ( !result ) return "CONTROL: Invalid account or signature.";
         
     Entitlements entitlements = ledger.getEntitlements < KeyEntitlements >( *keyAndPolicy );

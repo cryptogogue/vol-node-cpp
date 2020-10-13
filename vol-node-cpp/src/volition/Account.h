@@ -5,6 +5,7 @@
 #define VOLITION_ACCOUNT_H
 
 #include <volition/common.h>
+#include <volition/AccountID.h>
 #include <volition/KeyAndPolicy.h>
 #include <volition/serialization/Serialization.h>
 
@@ -16,13 +17,7 @@ namespace Volition {
 class Account :
     public AbstractSerializable {
 public:
-
-    typedef u64 Index;
-    enum {
-        NULL_INDEX      = ( u64 )-1,
-    };
     
-    Index                               mIndex;
     u64                                 mBalance;
     Policy                              mPolicy;
     SerializableSharedPtr < Policy >    mBequest;
@@ -37,7 +32,6 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "index",             this->mIndex );
         serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
@@ -47,7 +41,6 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
-        serializer.serialize ( "index",             this->mIndex );
         serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );

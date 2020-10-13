@@ -44,14 +44,13 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
         Ledger& ledger = context.mLedger;
-        const Account& account = context.mAccount;
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_ASSETS )) return "Permission denied.";
         
         const Schema::Definitions& definitions = context.mSchemaHandle->getDefinitions ();
         size_t addedAssetCount = definitions.size () * ( size_t )this->mNumAssets;
         
-        AccountODBM accountODBM ( ledger, account.mIndex );
+        AccountODBM accountODBM ( ledger, context.mIndex );
         size_t assetCount = accountODBM.mAssetCount.get ( 0 );
         
         if ( !context.mAccountEntitlements.check ( AccountEntitlements::MAX_ASSETS, assetCount + addedAssetCount )) {

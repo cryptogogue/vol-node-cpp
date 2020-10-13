@@ -45,19 +45,17 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
         Ledger& ledger = context.mLedger;
-        const Account& account = context.mAccount;
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return "Permission denied.";
         
         AccountODBM receiverODBM ( ledger, this->mAccountName );
         
-        shared_ptr < const Account > recipient = receiverODBM.mBody.get ();
-        if ( !recipient ) return "Could not find recipient account.";
-        if ( account.mIndex == recipient->mIndex ) return "Cannot send VOL to self.";
+        if ( !receiverODBM ) return "Could not find recipient account.";
+        if ( context.mIndex == receiverODBM.mIndex ) return "Cannot send VOL to self.";
         
-        Account recipientUpdated = *recipient;
-        recipientUpdated.mBalance += this->mAmount;
-        receiverODBM.mBody.set ( recipientUpdated );
+        Account receiverUpdated = *receiverODBM.mBody.get ();
+        receiverUpdated.mBalance += this->mAmount;
+        receiverODBM.mBody.set ( receiverUpdated );
         
         return true;
     }

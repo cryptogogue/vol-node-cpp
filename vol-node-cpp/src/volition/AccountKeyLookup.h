@@ -5,6 +5,7 @@
 #define VOLITION_ACCOUNTKEYLOOKUP_H
 
 #include <volition/common.h>
+#include <volition/AccountID.h>
 #include <volition/CryptoKey.h>
 #include <volition/Policy.h>
 #include <volition/serialization/Serialization.h>
@@ -18,7 +19,7 @@ class AccountKeyLookup :
     public AbstractSerializable {
 public:
     
-    Account::Index  mAccountIndex;
+    AccountID       mAccountIndex;
     string          mKeyName;
 
     //----------------------------------------------------------------//
@@ -26,7 +27,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    AccountKeyLookup ( Account::Index accountIndex, string keyName ) :
+    AccountKeyLookup ( AccountID accountIndex, string keyName ) :
         mAccountIndex ( accountIndex ),
         mKeyName ( keyName ) {
     }

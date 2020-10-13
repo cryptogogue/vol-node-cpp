@@ -50,7 +50,7 @@ public:
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::AFFIRM_KEY )) return "Permission denied.";
     
         return context.mLedger.affirmKey (
-            context.mAccount.mIndex,
+            context.mIndex,
             this->mMaker->getKeyName (),
             this->mKeyName,
             this->mKey,

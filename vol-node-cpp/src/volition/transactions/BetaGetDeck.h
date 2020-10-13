@@ -42,7 +42,6 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
         Ledger& ledger = context.mLedger;
-        const Account& account = context.mAccount;
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_DECK )) return "Permission denied.";
         
@@ -55,7 +54,7 @@ public:
             addedAssetCount += deckIt->second;
         }
         
-        AccountODBM accountODBM ( ledger, account.mIndex );
+        AccountODBM accountODBM ( ledger, context.mIndex );
         size_t assetCount = accountODBM.mAssetCount.get ( 0 );
         
         if ( !context.mAccountEntitlements.check ( AccountEntitlements::MAX_ASSETS, assetCount + addedAssetCount )) {
@@ -63,7 +62,7 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        return ledger.awardDeck ( *context.mSchemaHandle, account.mIndex, this->mDeckName, context.mTime );
+        return ledger.awardDeck ( *context.mSchemaHandle, context.mIndex, this->mDeckName, context.mTime );
     }
 };
 

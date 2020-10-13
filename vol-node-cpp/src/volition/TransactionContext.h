@@ -26,6 +26,7 @@ public:
 
     Ledger&                 mLedger;
     SchemaHandle&           mSchemaHandle;
+    AccountID               mIndex;
     AccountODBM&            mAccountODBM;
     const Account           mAccount;
     const KeyAndPolicy&     mKeyAndPolicy;

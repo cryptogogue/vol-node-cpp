@@ -17,7 +17,7 @@ class MinerInfo :
     public AbstractSerializable {
 private:
 
-    Account::Index          mAccountIndex;
+    AccountID          mAccountIndex;
     string                  mURL;
     CryptoKey               mPublicKey;
     Digest                  mVisage;
@@ -25,12 +25,12 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    Account::Index          getAccountIndex     () const;
+    AccountID          getAccountIndex     () const;
     const CryptoKey&        getPublicKey        () const;
     string                  getURL              () const;
     const Digest&           getVisage           () const;
                             MinerInfo           ();
-                            MinerInfo           ( Account::Index accountIndex, string url, const CryptoKey& publicKey, const Digest& visage );
+                            MinerInfo           ( AccountID accountIndex, string url, const CryptoKey& publicKey, const Digest& visage );
                             MinerInfo           ( const MinerInfo& minerInfo );
                             ~MinerInfo          ();
     
