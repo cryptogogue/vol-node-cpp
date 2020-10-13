@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/AbstractChainRecorder.h>
+#include <volition/AccountODBM.h>
 #include <volition/Block.h>
 #include <volition/TransactionQueue.h>
 
@@ -167,7 +168,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block ) {
                     this->mDatabase.erase ( makerQueueIt );
                     continue;
                 }
-                info.mNonce = ledger.getAccountTransactionNonce ( info.mAccountIndex );
+                info.mNonce = AccountODBM ( ledger, info.mAccountIndex ).mTransactionNonce.get ();
                 infoCache [ accountName ] = info;
             }
             
@@ -284,8 +285,7 @@ void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
         Account::Index accountIndex = ledger.getAccountIndex ( accountName );
         if ( accountIndex != Account::NULL_INDEX ) {
             
-            u64 nonce = ledger.getAccountTransactionNonce ( accountIndex );
-            makerQueue.prune ( nonce );
+            makerQueue.prune ( AccountODBM ( ledger, accountIndex ).mTransactionNonce.get ());
         
             if ( makerQueue.hasError ()) continue;
             if ( makerQueue.hasTransactions ()) continue;

@@ -34,7 +34,7 @@ public:
 
         shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );
         if ( accountKeyLookup ) {
-            shared_ptr < Account > account = ledger.getAccount ( accountKeyLookup->mAccountIndex );
+            shared_ptr < const Account > account = AccountODBM ( ledger, accountKeyLookup->mAccountIndex ).mBody.get ();
             if ( account ) {
                 AccountDetailsHandler::formatJSON ( ledger, *account, jsonOut );
                 return Poco::Net::HTTPResponse::HTTP_OK;

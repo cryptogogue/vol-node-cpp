@@ -40,27 +40,24 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
     
     if ( !this->mBody ) return "Missing body.";
     
-    shared_ptr < const Account > account;
-    const KeyAndPolicy* keyAndPolicy = NULL;
-    
     TransactionMaker* maker = this->mBody->mMaker.get ();
-    if ( maker ) {
-        
-        account = ledger.getAccount ( ledger.getAccountIndex ( maker->getAccountName ()));
-        if ( !account ) return "Transaction maker account not found.";
-        
-        keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
-        if ( !keyAndPolicy ) return "Transaction maker key not found.";
-    }
-    else if ( ledger.isGenesis ()) {
-        const Transactions::Genesis* genesis = dynamic_cast < const Transactions::Genesis* >( this->mBody.get ());
+    if ( !maker ) {
+        const Transactions::Genesis* genesis = ledger.isGenesis () ? dynamic_cast < const Transactions::Genesis* >( this->mBody.get ()) : NULL;
         return genesis ? genesis->genesis ( ledger ) : TransactionResult ( "Missing transaction maker." );
     }
+    
+    AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( maker->getAccountName ()));
+        
+    shared_ptr < const Account > account = accountODBM.mBody.get ();
+    if ( !account ) return "Transaction maker account not found.";
+    
+    const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
+    if ( !keyAndPolicy ) return "Transaction maker key not found.";
     
     TransactionResult result = this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy );
     if ( result ) {
         
-        TransactionContext context ( ledger, schemaHandle, *account, *keyAndPolicy, time );
+        TransactionContext context ( ledger, schemaHandle, accountODBM, *keyAndPolicy, time );
         
         u64 cost = this->mBody->cost ();
         if ( account->mBalance < cost ) return "Insufficient funds.";
@@ -70,12 +67,12 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         if ( result ) {
             if ( !ledger.isGenesis ()) {
                 
-                ledger.incAccountTransactionNonce ( account->mIndex, this->getNonce (), this->getUUID ());
+                accountODBM.incAccountTransactionNonce ( this->getNonce (), this->getUUID ());
                 
                 if ( cost > 0 ) {
                     Account accountUpdated = *account;
                     accountUpdated.mBalance -= cost;
-                    ledger.setAccount ( accountUpdated );
+                    accountODBM.mBody.set ( accountUpdated );
                 }
             }
         }
@@ -119,7 +116,7 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, co
 
     if ( maker && signature ) {
         if ( !this->needsControl ()) {
-            u64 nonce = ledger.getAccountTransactionNonce ( account.mIndex );
+            u64 nonce = AccountODBM ( ledger, account.mIndex ).mTransactionNonce.get ();
             if ( nonce != this->getNonce ()) return false;
         }
         const CryptoKey& key = keyAndPolicy.mKey;
@@ -137,7 +134,7 @@ TransactionResult Transaction::control ( Miner& miner ) const {
     Ledger& ledger = miner.getLedger ();
 
     TransactionMaker* maker = this->mBody->mMaker.get ();
-    shared_ptr < const Account > account = ledger.getAccount ( ledger.getAccountIndex ( maker->getAccountName ()));
+    shared_ptr < const Account > account = AccountODBM ( ledger, ledger.getAccountIndex ( maker->getAccountName ())).mBody.get ();
     const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
 
     TransactionResult result = this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy );

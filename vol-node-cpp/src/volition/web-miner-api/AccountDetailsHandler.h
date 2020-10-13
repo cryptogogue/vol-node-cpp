@@ -5,6 +5,7 @@
 #define VOLITION_WEBMINERAPI_KEYACCOUNTDETAILSHANDLER_H
 
 #include <volition/AccountODBM.h>
+#include <volition/AssetODBM.h>
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -28,7 +29,7 @@ public:
         AccountODBM accountODBM ( ledger, account.mIndex );
         
         // account's "primary" name
-        string accountName = ledger.getAccountName ( account.mIndex );
+        string accountName = accountODBM.mName.get ();
         
         // get the account JSON
         Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( account ).extract < Poco::JSON::Object::Ptr >();
@@ -57,7 +58,7 @@ public:
         ScopedMinerLock scopedLock ( this->mWebMiner );
         const Ledger& ledger = this->mWebMiner->getLedger ();
 
-        shared_ptr < Account > account = ledger.getAccount ( ledger.getAccountIndex ( accountName ));
+        shared_ptr < const Account > account = AccountODBM ( ledger, ledger.getAccountIndex ( accountName )).mBody.get ();
         if ( account ) {
             AccountDetailsHandler::formatJSON ( ledger, *account, jsonOut );
             return Poco::Net::HTTPResponse::HTTP_OK;

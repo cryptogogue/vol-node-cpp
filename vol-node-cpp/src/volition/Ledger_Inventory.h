@@ -35,10 +35,8 @@ public:
     LedgerResult                        awardAssetsAll              ( const Schema& schema, Account::Index accountIndex, size_t quantity, time_t time );
     LedgerResult                        awardAssetsRandom           ( const Schema& schema, Account::Index accountIndex, string deckName, string seed, size_t quantity, time_t time );
     LedgerResult                        awardDeck                   ( const Schema& schema, Account::Index accountIndex, string deckName, time_t time );
-    shared_ptr < Asset >                getAsset                    ( const Schema& schema, AssetID::Index index, bool sparse = false ) const;
     AssetID::Index                      getAssetID                  ( string assetID ) const;
-    void                                getInventory                ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
-    shared_ptr < InventoryLogEntry >    getInventoryLogEntry        ( Account::Index accountIndex, u64 inventoryNonce ) const;
+    void                                getInventory                ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
     bool                                resetAssetFieldValue        ( const Schema& schema, AssetID::Index index, string fieldName, time_t time );
     bool                                revokeAsset                 ( AssetID::Index index, time_t time  );
     LedgerResult                        setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time );

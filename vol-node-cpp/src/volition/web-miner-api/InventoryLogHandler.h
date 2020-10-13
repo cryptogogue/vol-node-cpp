@@ -40,15 +40,17 @@ public:
             SerializableSet < AssetID::Index > additions;
             SerializableSet < AssetID::Index > deletions;
             
+            AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( accountName ));
+            
             for ( u64 i = 0; i < count; ++i ) {
                 
-                shared_ptr < InventoryLogEntry > logEntry = ledger.getInventoryLogEntry ( ledger.getAccountIndex ( accountName ), nonce + i );
+                shared_ptr < const InventoryLogEntry > logEntry = accountODBM.getInventoryLogEntryField ( nonce + i ).get ();
                 if ( !logEntry ) continue;
                 
                 logEntry->apply ( additions, deletions );
             }
             
-            SerializableList < SerializableSharedPtr < Asset >> assets;
+            SerializableList < SerializableSharedConstPtr < Asset >> assets;
             InventoryLogEntry::expand ( ledger, schema, accountName, additions, assets );
             jsonOut.set ( "assets", ToJSONSerializer::toJSON ( assets ));
             

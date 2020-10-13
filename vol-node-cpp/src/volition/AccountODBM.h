@@ -10,6 +10,7 @@
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LedgerKey.h>
+#include <volition/LedgerObjectFieldODBM.h>
 #include <volition/Policy.h>
 #include <volition/Schema.h>
 
@@ -19,26 +20,16 @@ namespace Volition {
 // AccountODBM
 //================================================================//
 class AccountODBM {
-public:
-
-    ConstOpt < Ledger >     mLedger;
-    Account::Index          mIndex;
-
-    LedgerFieldODBM < string >      mBody;
-    LedgerFieldODBM < u64 >         mAssetCount;
-    LedgerFieldODBM < u64 >         mInventoryNonce;
-    LedgerFieldODBM < string >      mMinerInfo;
-    LedgerFieldODBM < u64 >         mTransactionNonce;
-    LedgerFieldODBM < string >      mName;
+private:
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_assetCount ( Account::Index index ) {
-        return Format::write ( "account.%d.assetCount", index );
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.assetCount", index ); });
     }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_body ( Account::Index index ) {
-        return Format::write ( "account.%d", index );
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d", index ); });
     }
 
     //----------------------------------------------------------------//
@@ -53,51 +44,84 @@ public:
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_inventoryNonce ( Account::Index index ) {
-        return Format::write ( "account.%d.inventoryNonce", index );
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.inventoryNonce", index ); });
     }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_minerInfo ( Account::Index index ) {
-        return Format::write ( "account.%d.miner", index );
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.miner", index ); });
     }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_name ( Account::Index index ) {
-        return Format::write ( "account.%d.name", index );
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.name", index ); });
     }
     
     //----------------------------------------------------------------//
     static LedgerKey keyFor_transactionLookup ( Account::Index index, string uuid ) {
-       return Format::write ( "account.%d.transactionLookup.%s", index, uuid.c_str ());
+        return Format::write ( "account.%d.transactionLookup.%s", index, uuid.c_str ());
     }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_transactionNonce ( Account::Index index ) {
-        return Format::write ( "account.%d.transactionNonce", index );
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.transactionNonce", index ); });
+    }
+
+public:
+
+    ConstOpt < Ledger >     mLedger;
+    Account::Index          mIndex;
+
+    LedgerFieldODBM < u64 >                 mAssetCount;
+    LedgerFieldODBM < u64 >                 mInventoryNonce;
+    LedgerFieldODBM < u64 >                 mTransactionNonce;
+    LedgerFieldODBM < string >              mName;
+
+    LedgerObjectFieldODBM < Account >       mBody;
+    LedgerObjectFieldODBM < MinerInfo >     mMinerInfo;
+
+    //----------------------------------------------------------------//
+    operator bool () {
+        return this->mName.exists ();
     }
 
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) :
         mLedger ( ledger ),
         mIndex ( index ),
+        mAssetCount ( ledger,           keyFor_assetCount ( this->mIndex ),             0 ),
+        mInventoryNonce ( ledger,       keyFor_inventoryNonce ( this->mIndex ),         0 ),
+        mTransactionNonce ( ledger,     keyFor_transactionNonce ( this->mIndex ),       0 ),
+        mName ( ledger,                 keyFor_name ( this->mIndex ),                   "" ),
         mBody ( ledger,                 keyFor_body ( this->mIndex )),
-        mAssetCount ( ledger,           keyFor_assetCount ( this->mIndex )),
-        mInventoryNonce ( ledger,       keyFor_inventoryNonce ( this->mIndex )),
-        mMinerInfo ( ledger,            keyFor_minerInfo ( this->mIndex )),
-        mTransactionNonce ( ledger,     keyFor_transactionNonce ( this->mIndex )),
-        mName ( ledger,                 keyFor_name ( this->mIndex )) {
+        mMinerInfo ( ledger,            keyFor_minerInfo ( this->mIndex )) {
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM < AssetID::Index > getInventoryField ( size_t position ) {
     
-        return LedgerFieldODBM < AssetID::Index >( this->mLedger, keyFor_inventoryField ( this->mIndex, position ));
+        return LedgerFieldODBM < AssetID::Index >( this->mLedger, keyFor_inventoryField ( this->mIndex, position ), AssetID::NULL_INDEX );
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerObjectFieldODBM < InventoryLogEntry > getInventoryLogEntryField ( u64 inventoryNonce ) {
+    
+        return LedgerObjectFieldODBM < InventoryLogEntry >( this->mLedger, keyFor_inventoryLogEntry ( this->mIndex, inventoryNonce ));
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM < u64 > getTransactionLookupField ( string uuid ) {
     
-        return LedgerFieldODBM < u64 >( this->mLedger, keyFor_transactionLookup ( this->mIndex, uuid ));
+        return LedgerFieldODBM < u64 >( this->mLedger, keyFor_transactionLookup ( this->mIndex, uuid ), 0 );
+    }
+    
+    //----------------------------------------------------------------//
+    void incAccountTransactionNonce ( u64 nonce, string uuid ) {
+        
+        if ( !( *this )) return;
+        
+        this->getTransactionLookupField ( uuid ).set ( nonce );
+        this->mTransactionNonce.set ( nonce + 1 );
     }
 };
 

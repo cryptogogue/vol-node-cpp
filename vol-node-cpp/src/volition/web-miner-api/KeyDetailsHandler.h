@@ -4,8 +4,9 @@
 #ifndef VOLITION_WEBMINERAPI_KEYDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_KEYDETAILSHANDLER_H
 
-#include <volition/Block.h>
+#include <volition/AccountODBM.h>
 #include <volition/AbstractAPIRequestHandler.h>
+#include <volition/Block.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/MinerAPIFactory.h>
 
@@ -34,7 +35,7 @@ public:
         shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );
         if ( accountKeyLookup ) {
             
-            string accountName = ledger.getAccountName ( accountKeyLookup->mAccountIndex );
+            string accountName = AccountODBM ( ledger, accountKeyLookup->mAccountIndex ).mName.get ();
             if ( accountName.size () > 0 ) {
             
                 Poco::JSON::Object::Ptr accountLookupJSON = new Poco::JSON::Object ();

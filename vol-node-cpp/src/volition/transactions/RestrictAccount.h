@@ -67,7 +67,7 @@ public:
             accountUpdated.mBequest = this->mBequest;
         }
         
-        ledger.setAccount ( accountUpdated );
+        context.mAccountODBM.mBody.set ( accountUpdated );
         
         return true;
     }

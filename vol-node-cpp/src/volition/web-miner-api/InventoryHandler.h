@@ -40,7 +40,7 @@ public:
             jsonOut.set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
             jsonOut.set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
         
-            shared_ptr < InventoryLogEntry > baseEntry = ledger.getInventoryLogEntry ( accountIndex, 0 );
+            shared_ptr < const InventoryLogEntry > baseEntry = accountODBM.getInventoryLogEntryField ( 0 ).get ();
             if ( baseEntry ) {
                 jsonOut.set ( "inventoryTimestamp", ( string )baseEntry->mTime );
             }

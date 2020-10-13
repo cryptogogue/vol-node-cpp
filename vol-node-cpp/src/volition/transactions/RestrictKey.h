@@ -68,8 +68,8 @@ public:
         }
         
         Account accountUpdated = context.mAccount;
-        accountUpdated.mKeys [ this->mMaker->getKeyName ()] = keyUpdated;
-        ledger.setAccount ( accountUpdated );
+        accountUpdated.mKeys [ this->mMaker->getKeyName ()] = keyUpdated;        
+        context.mAccountODBM.mBody.set ( accountUpdated );
         
         return true;
     }

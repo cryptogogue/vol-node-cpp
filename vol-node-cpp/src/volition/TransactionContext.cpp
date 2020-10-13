@@ -12,10 +12,11 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionContext::TransactionContext ( Ledger& ledger, SchemaHandle& schemaHandle, const Account& account, const KeyAndPolicy& keyAndPolicy, time_t time ) :
+TransactionContext::TransactionContext ( Ledger& ledger, SchemaHandle& schemaHandle, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time ) :
     mLedger ( ledger ),
     mSchemaHandle ( schemaHandle ),
-    mAccount ( account ),
+    mAccountODBM ( accountODBM ),
+    mAccount ( *accountODBM.mBody.get ()),
     mKeyAndPolicy ( keyAndPolicy ),
     mTime ( time ) {
     
@@ -24,7 +25,7 @@ TransactionContext::TransactionContext ( Ledger& ledger, SchemaHandle& schemaHan
         this->mKeyEntitlements = *KeyEntitlements::getMasterEntitlements ();
     }
     else {
-        this->mAccountEntitlements = ledger.getEntitlements < AccountEntitlements >( account );
+        this->mAccountEntitlements = ledger.getEntitlements < AccountEntitlements >( *accountODBM.mBody.get ());
         this->mKeyEntitlements = ledger.getEntitlements < KeyEntitlements >( keyAndPolicy );
     }
 }

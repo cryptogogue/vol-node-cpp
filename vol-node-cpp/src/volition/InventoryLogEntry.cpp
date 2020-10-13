@@ -14,7 +14,7 @@ namespace Volition {
 //================================================================//
     
 //----------------------------------------------------------------//
-void InventoryLogEntry::apply ( SerializableSet < AssetID::Index >& additions, SerializableSet < AssetID::Index >& deletions ) {
+void InventoryLogEntry::apply ( SerializableSet < AssetID::Index >& additions, SerializableSet < AssetID::Index >& deletions ) const {
     
     SerializableSet < AssetID::Index >::const_iterator assetIt;
     
@@ -23,28 +23,13 @@ void InventoryLogEntry::apply ( SerializableSet < AssetID::Index >& additions, S
 }
 
 //----------------------------------------------------------------//
-void InventoryLogEntry::applyToSet ( SerializableSet < AssetID::Index > assets, SerializableSet < AssetID::Index >& set ) {
+void InventoryLogEntry::applyToSet ( const SerializableSet < AssetID::Index >& assets, SerializableSet < AssetID::Index >& set ) {
             
     SerializableSet < AssetID::Index >::const_iterator assetIt = assets.cbegin ();
     for ( ; assetIt != assets.cend (); ++assetIt ) {
         set.insert ( *assetIt );
     }
 }
-    
-////----------------------------------------------------------------//
-//void InventoryLogEntry::apply ( SerializableSet < AssetID::Index > assets, SerializableSet < AssetID::Index >& positive, SerializableSet < AssetID::Index >& negative ) {
-//
-//    SerializableSet < AssetID::Index >::const_iterator assetIt = assets.cbegin ();
-//    for ( ; assetIt != assets.cend (); ++assetIt ) {
-//        AssetID::Index assetID = *assetIt;
-//        if ( negative.find ( assetID ) != negative.cend ()) {
-//            negative.erase ( assetID );
-//        }
-//        else {
-//            positive.insert ( assetID );
-//        }
-//    }
-//}
     
 //----------------------------------------------------------------//
 void InventoryLogEntry::decode ( const SerializableSet < AssetID::Index >& indexSet, SerializableList < string >& assetIDs ) {
@@ -56,7 +41,7 @@ void InventoryLogEntry::decode ( const SerializableSet < AssetID::Index >& index
 }
 
 //----------------------------------------------------------------//
-void InventoryLogEntry::expand ( const Ledger& ledger, const Schema& schema, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedPtr < Asset >>& assetList ) {
+void InventoryLogEntry::expand ( const Ledger& ledger, const Schema& schema, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedConstPtr < Asset >>& assetList ) {
     
     Account::Index accountID = ledger.getAccountIndex ( accountName );
     
@@ -64,10 +49,10 @@ void InventoryLogEntry::expand ( const Ledger& ledger, const Schema& schema, str
     for ( ; indexIt != indexSet.cend (); ++indexIt ) {
     
         AssetID::Index assetID = *indexIt;
-        Account::Index ownerID = LedgerFieldODBM < AssetID::Index >( ledger, AssetODBM::keyFor_owner ( assetID )).get ( Account::NULL_INDEX );
+        Account::Index ownerID = AssetODBM ( ledger, assetID ).mOwner.get ();
     
         if ( ownerID == accountID ) {
-            shared_ptr < Asset > asset = ledger.getAsset ( schema, assetID, true );
+            shared_ptr < const Asset > asset = AssetODBM ( ledger, assetID ).getAsset ( schema, true );
             assert ( asset );
             assetList.push_back ( asset );
         }

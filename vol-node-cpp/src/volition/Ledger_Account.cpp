@@ -28,36 +28,38 @@ bool Ledger_Account::affirmKey ( Account::Index accountIndex, string makerKeyNam
     string keyID = key.getKeyID ();
     if ( keyID.size ()) return false;
 
-    shared_ptr < Account > account = ledger.getAccount ( accountIndex );
-    if ( account ) {
+    AccountODBM accountODBM ( ledger, accountIndex );
+    if ( !accountODBM ) return false;
 
-        const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = Ledger::keyFor_accountKeyLookup ( keyID );
-        shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getObjectOrNull < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP );
+    shared_ptr < const Account > account = accountODBM.mBody.get ();
 
-        // keys must be unique to accounts; no sharing keys across multiple accounts!
-        if ( accountKeyLookup && ( accountKeyLookup->mAccountIndex != account->mIndex )) return false;
+    const LedgerKey KEY_FOR_ACCOUNT_KEY_LOOKUP = Ledger::keyFor_accountKeyLookup ( keyID );
+    shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getObjectOrNull < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP );
 
-        if ( key ) {
-            
-            const KeyAndPolicy* makerKeyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
-            if ( !makerKeyAndPolicy ) return false;
-            
-            const Policy* selectedPolicy = policy;
-            if ( selectedPolicy ) {
-                if ( !ledger.isValidPolicy < KeyEntitlements >( *selectedPolicy, makerKeyAndPolicy->mPolicy )) return false;
-            }
-            else {
-                const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
-                selectedPolicy = keyAndPolicy ? &keyAndPolicy->mPolicy : &makerKeyAndPolicy->mPolicy;
-            }
-            
-            account->mKeys [ keyName ] = KeyAndPolicy ( key, *selectedPolicy );
-            ledger.setAccount ( *account );
-            
-            ledger.setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( account->mIndex, keyName ));
-            
-            return true;
+    // keys must be unique to accounts; no sharing keys across multiple accounts!
+    if ( accountKeyLookup && ( accountKeyLookup->mAccountIndex != account->mIndex )) return false;
+
+    if ( key ) {
+        
+        const KeyAndPolicy* makerKeyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
+        if ( !makerKeyAndPolicy ) return false;
+        
+        const Policy* selectedPolicy = policy;
+        if ( selectedPolicy ) {
+            if ( !ledger.isValidPolicy < KeyEntitlements >( *selectedPolicy, makerKeyAndPolicy->mPolicy )) return false;
         }
+        else {
+            const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
+            selectedPolicy = keyAndPolicy ? &keyAndPolicy->mPolicy : &makerKeyAndPolicy->mPolicy;
+        }
+        
+        Account updatedAccount = *account;
+        updatedAccount.mKeys [ keyName ] = KeyAndPolicy ( key, *selectedPolicy );
+        accountODBM.mBody.set ( updatedAccount );
+        
+        ledger.setObject < AccountKeyLookup >( KEY_FOR_ACCOUNT_KEY_LOOKUP, AccountKeyLookup ( account->mIndex, keyName ));
+        
+        return true;
     }
     return false;
 }
@@ -67,14 +69,17 @@ LedgerResult Ledger_Account::awardVOL ( Account::Index accountIndex, u64 amount 
 
     Ledger& ledger = this->getLedger ();
 
-    shared_ptr < Account > account = ledger.getAccount ( accountIndex );
+    AccountODBM accountODBM ( ledger, accountIndex );
+
+    shared_ptr < const Account > account = accountODBM.mBody.get ();
     if ( account ) {
         
         u64 created = ledger.createVOL ( amount );
         if ( created < amount ) return "New VOL request exceeds ledger maximum.";
     
-        account->mBalance += created;
-        ledger.setAccount ( *account );
+        Account updatedAccount = *account;
+        updatedAccount.mBalance += created;
+        accountODBM.mBody.set ( updatedAccount );
         return true;
     }
     return false;
@@ -89,17 +94,10 @@ bool Ledger_Account::deleteKey ( Account::Index accountIndex, string keyName ) {
     if ( accountKey ) {
         Account updatedAccount = *accountKey.mAccount;
         updatedAccount.mKeys.erase ( keyName );
-        ledger.setAccount ( updatedAccount );
+        AccountODBM ( ledger, accountIndex ).mBody.set ( updatedAccount );
         return true;
     }
     return false;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < Account > Ledger_Account::getAccount ( Account::Index index ) const {
-
-    const Ledger& ledger = this->getLedger ();
-    return ledger.getObjectOrNull < Account >( AccountODBM::keyFor_body ( index ));
 }
 
 //----------------------------------------------------------------//
@@ -121,7 +119,7 @@ AccountKey Ledger_Account::getAccountKey ( Account::Index accountIndex, string k
     AccountKey accountKey;
     accountKey.mKeyAndPolicy = NULL;
 
-    accountKey.mAccount = ledger.getAccount ( accountIndex );
+    accountKey.mAccount = AccountODBM ( ledger, accountIndex ).mBody.get ();
     if ( accountKey.mAccount ) {
         map < string, KeyAndPolicy >::const_iterator keyAndPolicyIt = accountKey.mAccount->mKeys.find ( keyName );
         if ( keyAndPolicyIt != accountKey.mAccount->mKeys.cend ()) {
@@ -136,41 +134,6 @@ shared_ptr < AccountKeyLookup > Ledger_Account::getAccountKeyLookup ( string key
 
     const Ledger& ledger = this->getLedger ();
     return ledger.getObjectOrNull < AccountKeyLookup >( Ledger::keyFor_accountKeyLookup ( keyID ));
-}
-
-//----------------------------------------------------------------//
-string Ledger_Account::getAccountName ( Account::Index accountIndex ) const {
-
-    const Ledger& ledger = this->getLedger ();
-    return ledger.getValueOrFallback < string >( AccountODBM::keyFor_name ( accountIndex ), "" );
-}
-
-//----------------------------------------------------------------//
-u64 Ledger_Account::getAccountInventoryNonce ( Account::Index accountIndex ) const {
-
-    const Ledger& ledger = this->getLedger ();
-    return ledger.getValueOrFallback < u64 >( AccountODBM::keyFor_inventoryNonce ( accountIndex ), 0 );
-}
-
-//----------------------------------------------------------------//
-u64 Ledger_Account::getAccountTransactionNonce ( Account::Index accountIndex ) const {
-
-    const Ledger& ledger = this->getLedger ();
-    return ledger.getValueOrFallback < u64 >( AccountODBM::keyFor_transactionNonce ( accountIndex ), 0 );
-}
-
-//----------------------------------------------------------------//
-void Ledger_Account::incAccountTransactionNonce ( Account::Index accountIndex, u64 nonce, string uuid ) {
-
-    Ledger& ledger = this->getLedger ();
-
-    AccountODBM accountODBM ( ledger, accountIndex );
-    if ( !accountODBM.mBody.exists ()) return;
-    
-    LedgerKey KEY_FOR_ACCOUNT_TRANSACTION_LOOKUP = AccountODBM::keyFor_transactionLookup ( accountIndex, uuid );
-    ledger.setValue < u64 >( KEY_FOR_ACCOUNT_TRANSACTION_LOOKUP, nonce );
-
-    accountODBM.mTransactionNonce.set ( nonce + 1 );
 }
 
 //----------------------------------------------------------------//
@@ -243,21 +206,21 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
     account.mBalance    = balance;
     
     if ( key ) {
-        account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
-    }
-    
-    ledger.setObject < Account >( AccountODBM::keyFor_body ( accountIndex ), account );
 
-    if ( key ) {
+        account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
+
         // store the key (for reverse lookup):
         string keyID = key.getKeyID ();
         assert ( keyID.size ());
         ledger.setObject < AccountKeyLookup >( Ledger::keyFor_accountKeyLookup ( keyID ), AccountKeyLookup ( accountIndex, keyName ));
     }
-
+    
+    AccountODBM accountODBM ( ledger, accountIndex );
+    accountODBM.mName.set ( accountName );
+    accountODBM.mBody.set ( account );
+    
     // store the alias
     ledger.setValue < Account::Index >( KEY_FOR_ACCOUNT_ALIAS, accountIndex );
-    ledger.setValue < string >( AccountODBM::keyFor_name ( accountIndex ), accountName );
 
     return true;
 }
@@ -267,9 +230,10 @@ LedgerResult Ledger_Account::renameAccount ( Account::Index accountIndex, string
 
     Ledger& ledger = this->getLedger ();
     
-    LedgerFieldODBM < string > accountNameField = LedgerFieldODBM < string > ( ledger, AccountODBM::keyFor_name ( accountIndex ));
-    if ( !accountNameField.exists ()) return "Account not found.";
-    string accountName = accountNameField.get ();
+    AccountODBM accountODBM ( ledger, accountIndex );
+    
+    if ( !accountODBM ) return "Account not found.";
+    string accountName = accountODBM.mName.get ();
 
     // make sure the revealed name is valid
     if ( Ledger::isChildName ( revealedName )) return "Renamed accounts must not begin with '.'"; // new names must not begin with a '~'
@@ -308,7 +272,7 @@ LedgerResult Ledger_Account::renameAccount ( Account::Index accountIndex, string
 //    ledger.setObject < Account >( AccountODBM::keyFor_body ( account->mIndex ), accountUpdated );
 //    ledger.setValue < string >( AccountODBM::keyFor_name ( account->mIndex ), revealedName );
     
-    accountNameField.set ( revealedName );
+    accountODBM.mName.set ( revealedName );
     
     return true;
 }
@@ -324,15 +288,6 @@ LedgerResult Ledger_Account::reserveAccountname ( string nameHash, string nameSe
     reservedNameField.set ( nameSecret );
     
     return true;
-}
-
-//----------------------------------------------------------------//
-void Ledger_Account::setAccount ( const Account& account ) {
-
-    Ledger& ledger = this->getLedger ();
-
-    assert ( account.mIndex != Account::NULL_INDEX );
-    ledger.setObject < Account >( AccountODBM::keyFor_body ( account.mIndex ), account );
 }
 
 } // namespace Volition

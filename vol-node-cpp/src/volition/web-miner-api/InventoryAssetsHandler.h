@@ -34,7 +34,7 @@ public:
             Ledger& ledger = this->mWebMiner->getLedger ();
             const Schema& schema = ledger.getSchema ();
             
-            SerializableList < SerializableSharedPtr < Asset >> inventory;
+            SerializableList < SerializableSharedConstPtr < Asset >> inventory;
             ledger.getInventory ( schema, ledger.getAccountIndex ( accountName ), inventory, 0, true );
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );

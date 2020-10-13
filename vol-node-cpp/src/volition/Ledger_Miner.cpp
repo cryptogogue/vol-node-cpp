@@ -21,9 +21,9 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-shared_ptr < MinerInfo > Ledger_Miner::getMinerInfo ( Account::Index accountIndex ) const {
+shared_ptr < const MinerInfo > Ledger_Miner::getMinerInfo ( Account::Index accountIndex ) const {
 
-    return this->getLedger ().getObjectOrNull < MinerInfo >( AccountODBM::keyFor_minerInfo ( accountIndex ));
+    return AccountODBM ( this->getLedger (), accountIndex ).mMinerInfo.get ();
 }
 
 //----------------------------------------------------------------//
@@ -41,7 +41,7 @@ map < string, MinerInfo > Ledger_Miner::getMiners () const {
     
         const string& minerID = *minerIt;
         
-        shared_ptr < MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( minerID ));
+        shared_ptr < const MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( minerID ));
         assert ( minerInfo );
         minerInfoMap [ minerID ] = *minerInfo;
     }
@@ -64,18 +64,16 @@ LedgerResult Ledger_Miner::registerMiner ( Account::Index accountIndex, string k
     AccountKey accountKey = ledger.getAccountKey ( accountIndex, keyName );
     if ( accountKey ) {
 
-        shared_ptr < Account > account = accountKey.mAccount;
+        shared_ptr < const Account > account = accountKey.mAccount;
         CryptoKey key = accountKey.mKeyAndPolicy->mKey;
         
         if ( !key.verify ( visage, motto )) return "Corrupt visage.";
         
-        ledger.setObject < MinerInfo >(
-            AccountODBM::keyFor_minerInfo ( accountIndex ),
-            MinerInfo ( accountIndex, url, key, visage )
-        );
+        AccountODBM accountODBM ( ledger, accountIndex );
+        accountODBM.mMinerInfo.set ( MinerInfo ( accountIndex, url, key, visage ));
         
         // TODO: find an efficient way to do all this
-        string accountName = ledger.getAccountName ( accountIndex );
+        string accountName = accountODBM.mName.get ();
         
         LedgerKey KEY_FOR_MINERS = Ledger::keyFor_miners ();
         shared_ptr < SerializableSet < string >> miners = ledger.getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );

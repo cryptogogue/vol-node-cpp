@@ -25,7 +25,7 @@ public:
     typedef SerializableMap < string, string > MinerURLMap;
 
     //----------------------------------------------------------------//
-    shared_ptr < MinerInfo >            getMinerInfo                    ( Account::Index accountIndex ) const;
+    shared_ptr < const MinerInfo >      getMinerInfo                    ( Account::Index accountIndex ) const;
     map < string, MinerInfo >           getMiners                       () const;
     shared_ptr < MinerURLMap >          getMinerURLs                    () const;
     LedgerResult                        registerMiner                   ( Account::Index accountIndex, string keyName, string url, string motto, const Signature& visage );

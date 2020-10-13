@@ -23,7 +23,7 @@ class InventoryLogEntry;
 class AccountKey {
 public:
     
-    shared_ptr < Account >              mAccount;
+    shared_ptr < const Account >        mAccount;
     const KeyAndPolicy*                 mKeyAndPolicy;
     
     //----------------------------------------------------------------//
@@ -56,21 +56,15 @@ public:
     bool                                affirmKey                       ( Account::Index accountIndex, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy );
     LedgerResult                        awardVOL                        ( Account::Index accountIndex, u64 amount );
     bool                                deleteKey                       ( Account::Index accountIndex, string keyName );
-    shared_ptr < Account >              getAccount                      ( Account::Index index ) const;
     Account::Index                      getAccountIndex                 ( string accountName ) const;
     AccountKey                          getAccountKey                   ( Account::Index accountIndex, string keyName ) const;
     shared_ptr < AccountKeyLookup >     getAccountKeyLookup             ( string keyID ) const;
-    string                              getAccountName                  ( Account::Index accountIndex ) const;
-    u64                                 getAccountInventoryNonce        ( Account::Index accountIndex ) const;
-    u64                                 getAccountTransactionNonce      ( Account::Index accountIndex ) const;
-    void                                incAccountTransactionNonce      ( Account::Index accountIndex, u64 nonce, string uuid );
     static bool                         isAccountName                   ( string accountName );
     static bool                         isChildName                     ( string accountName );
     static bool                         isSuffix                        ( string suffix );
     bool                                newAccount                      ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
     LedgerResult                        renameAccount                   ( Account::Index accountIndex, string revealedName );
     LedgerResult                        reserveAccountname              ( string nameHash, string nameSecret );
-    void                                setAccount                      ( const Account& account );
 };
 
 } // namespace Volition

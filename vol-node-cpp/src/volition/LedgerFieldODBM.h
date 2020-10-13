@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_LEDGERODBM_H
-#define VOLITION_LEDGERODBM_H
+#ifndef VOLITION_LEDGERFIELDODBM_H
+#define VOLITION_LEDGERFIELDODBM_H
 
 #include <volition/common.h>
 #include <volition/Account.h>
@@ -21,15 +21,21 @@ template < typename TYPE >
 class LedgerFieldODBM {
 private:
 
+    enum State {
+        EMPTY,
+        FALLBACK,
+        LOADED,
+    };
+
     ConstOpt < Ledger >     mLedger;
     LedgerKey               mKey;
-    bool                    mIsLoaded;
+    State                   mState;
     TYPE                    mValue;
 
 public:
 
     //----------------------------------------------------------------//
-    bool exists () const {
+    bool exists () {
             
         return this->mLedger.getConst ().hasValue ( this->mKey );
     }
@@ -37,9 +43,11 @@ public:
     //----------------------------------------------------------------//
     TYPE get () {
         
-        if ( !this->mIsLoaded ) {
-            this->mValue = this->mLedger.getConst ().template getValue < TYPE >( this->mKey );
-            this->mIsLoaded = true;
+        if ( this->mState != LOADED ) {
+            this->mValue = ( this->mState == FALLBACK ) ?
+                this->mLedger.getConst ().template getValueOrFallback < TYPE >( this->mKey, this->mValue ) :
+                this->mLedger.getConst ().template getValue < TYPE >( this->mKey );
+            this->mState = LOADED;
         }
         return this->mValue;
     }
@@ -47,9 +55,9 @@ public:
     //----------------------------------------------------------------//
     TYPE get ( const TYPE& fallback ) {
         
-        if ( !this->mIsLoaded ) {
+        if ( this->mState != LOADED ) {
             this->mValue = this->mLedger.getConst ().template getValueOrFallback < TYPE >( this->mKey, fallback );
-            this->mIsLoaded = true;
+            this->mState = LOADED;
         }
         return this->mValue;
     }
@@ -69,23 +77,31 @@ public:
     //----------------------------------------------------------------//
     void set ( const TYPE& value ) {
         
-        if ( !( this->mIsLoaded && ( this->mValue == value ))) {
+        if ( !(( this->mState == LOADED ) && ( this->mValue == value ))) {
             this->mLedger.getMutable ().template setValue < TYPE >( this->mKey, value );
             this->mValue = value;
-            this->mIsLoaded = true;
+            this->mState = LOADED;
         }
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM () :
-        mIsLoaded ( false ) {
+        mState ( EMPTY ) {
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM ( ConstOpt < Ledger > ledger, const LedgerKey& ledgerKey ) :
         mLedger ( ledger ),
         mKey ( ledgerKey ),
-        mIsLoaded ( false ) {
+        mState ( EMPTY ) {
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerFieldODBM ( ConstOpt < Ledger > ledger, const LedgerKey& ledgerKey, TYPE fallback ) :
+        mLedger ( ledger ),
+        mKey ( ledgerKey ),
+        mState ( FALLBACK ),
+        mValue ( fallback ) {
     }
 };
 

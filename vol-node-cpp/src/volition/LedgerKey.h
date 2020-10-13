@@ -17,9 +17,14 @@ namespace Volition {
 // LedgerKey
 //================================================================//
 class LedgerKey {
+public:
+
+    typedef std::function < string ()> KeyFunc;
+
 protected:
 
-    string  mKey;
+    string      mKey;
+    KeyFunc     mKeyFunc;
 
 public:
 
@@ -38,7 +43,15 @@ public:
     }
     
     //----------------------------------------------------------------//
-    operator const string () const {
+    LedgerKey ( const KeyFunc& keyFunc ) :
+        mKeyFunc ( keyFunc ) {
+    }
+    
+    //----------------------------------------------------------------//
+    operator string () {
+        if ( !this->mKey.size () && this->mKeyFunc ) {
+            this->mKey = this->mKeyFunc ();
+        }
         return this->mKey;
     }
 };

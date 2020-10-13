@@ -47,10 +47,10 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void            apply                   ( SerializableSet < AssetID::Index >& additions, SerializableSet < AssetID::Index >& deletions );
-    static void     applyToSet              ( SerializableSet < AssetID::Index > assets, SerializableSet < AssetID::Index >& set );
+    void            apply                   ( SerializableSet < AssetID::Index >& additions, SerializableSet < AssetID::Index >& deletions ) const;
+    static void     applyToSet              ( const SerializableSet < AssetID::Index >& assets, SerializableSet < AssetID::Index >& set );
     static void     decode                  ( const SerializableSet < AssetID::Index >& indexSet, SerializableList < string >& assetIDs );
-    static void     expand                  ( const Ledger& ledger, const Schema& schema, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedPtr < Asset >>& assetList );
+    static void     expand                  ( const Ledger& ledger, const Schema& schema, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedConstPtr < Asset >>& assetList );
     void            insert                  ( AssetID::Index assetID, EntryOp op );
     void            insertAddition          ( AssetID::Index addition );
     void            insertDeletion          ( AssetID::Index deletion );

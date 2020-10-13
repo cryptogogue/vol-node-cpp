@@ -49,13 +49,15 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return "Permission denied.";
         
-        shared_ptr < Account > recipient = ledger.getAccount ( ledger.getAccountIndex ( this->mAccountName ));
+        AccountODBM receiverODBM ( ledger, ledger.getAccountIndex ( this->mAccountName ));
+        
+        shared_ptr < const Account > recipient = receiverODBM.mBody.get ();
         if ( !recipient ) return "Could not find recipient account.";
         if ( account.mIndex == recipient->mIndex ) return "Cannot send VOL to self.";
         
         Account recipientUpdated = *recipient;
         recipientUpdated.mBalance += this->mAmount;
-        ledger.setAccount ( recipientUpdated );
+        receiverODBM.mBody.set ( recipientUpdated );
         
         return true;
     }

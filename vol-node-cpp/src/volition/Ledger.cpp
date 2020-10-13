@@ -205,7 +205,7 @@ bool Ledger::hasTransaction ( string accountName, string uuid ) const {
     Account::Index accountIndex = this->getAccountIndex ( accountName );
     if ( accountIndex != Account::NULL_INDEX ) {
     
-        return LedgerFieldODBM < u64 >( *this, AccountODBM::keyFor_transactionLookup ( accountIndex, uuid )).exists ();
+        return AccountODBM ( this->getLedger (), accountIndex ).getTransactionLookupField ( uuid ).exists ();
     }
     return false;
 }

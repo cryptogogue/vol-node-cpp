@@ -180,76 +180,20 @@ LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, Account::Index 
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Asset > Ledger_Inventory::getAsset ( const Schema& schema, AssetID::Index index, bool sparse ) const {
-
-    const Ledger& ledger = this->getLedger ();
-
-    AssetODBM assetODBM ( ledger, index );
-    if ( !assetODBM.mOwner.exists ()) return NULL;
-
-    const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetODBM.mType.get ());
-    if ( !assetDefinition ) return NULL;
-    
-    shared_ptr < Asset > asset = make_shared < Asset >();
-    asset->mType            = assetODBM.mType.get ();
-    asset->mAssetID         = assetODBM.mIndex;
-    asset->mOwner           = ledger.getAccountName ( assetODBM.mOwner.get ());
-    asset->mInventoryNonce  = assetODBM.mInventoryNonce.get ( 0 );
-    
-    // copy the fields and apply any overrides
-    AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
-    for ( ; fieldIt != assetDefinition->mFields.cend (); ++fieldIt ) {
-        
-        string fieldName = fieldIt->first;
-        
-        const AssetFieldDefinition& field = fieldIt->second;
-        AssetFieldValue value = field;
-        
-        if ( field.mMutable  ) {
-
-            LedgerKey KEY_FOR_ASSET_FIELD = AssetODBM::keyFor_field ( index, fieldName );
-
-            switch ( field.getType ()) {
-            
-                case AssetFieldValue::Type::TYPE_BOOL:
-                    value = ledger.getValueOrFallback < bool >( KEY_FOR_ASSET_FIELD, value.strictBoolean ());
-                    break;
-                    
-                case AssetFieldValue::Type::TYPE_NUMBER:
-                    value = ledger.getValueOrFallback < double >( KEY_FOR_ASSET_FIELD, value.strictNumber ());
-                    break;
-                    
-                case AssetFieldValue::Type::TYPE_STRING:
-                    value = ledger.getValueOrFallback < string >( KEY_FOR_ASSET_FIELD, value.strictString ());
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-        
-        if (( sparse == false ) || ( value != field )) {
-            asset->mFields [ fieldName ] = value;
-        }
-    }
-    return asset;
-}
-
-//----------------------------------------------------------------//
 AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 
     const Ledger& ledger = this->getLedger ();
 
     AssetID::Index assetIndex = AssetID::decode ( assetID );
     
-    Account::Index accountIndex = ledger.getValueOrFallback < Account::Index >( AssetODBM::keyFor_owner ( assetIndex ), Account::NULL_INDEX );
-    if ( accountIndex == Account::NULL_INDEX ) return AssetID::NULL_INDEX; // if an asset doesn't have an owner, it doesn't exist.
+    AssetODBM assetODBM ( ledger, assetIndex );
+    if ( assetODBM.mOwner.get () == Account::NULL_INDEX ) return AssetID::NULL_INDEX; // if an asset doesn't have an owner, it doesn't exist.
     
     return assetIndex;
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedPtr < Asset >>& assetList, size_t max, bool sparse ) const {
+void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accountIndex, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) const {
 
     const Ledger& ledger = this->getLedger ();
 
@@ -267,16 +211,10 @@ void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accou
     for ( size_t i = 0; i < assetCount; ++i ) {
     
         AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
-        shared_ptr < Asset > asset = ledger.getAsset ( schema, assetIndex, sparse );
+        shared_ptr < const Asset > asset = AssetODBM ( ledger, assetIndex ).getAsset ( schema, sparse );
         assert ( asset );
         assetList.push_back ( asset );
     }
-}
-
-//----------------------------------------------------------------//
-shared_ptr < InventoryLogEntry > Ledger_Inventory::getInventoryLogEntry ( Account::Index accountIndex, u64 inventoryNonce ) const {
-
-    return this->getLedger ().getObjectOrNull < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ));
 }
 
 //----------------------------------------------------------------//
@@ -419,7 +357,7 @@ LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountInde
     size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
     size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
 
-    shared_ptr < Account > receiverAccount = ledger.getAccount ( receiverODBM.mIndex );
+    shared_ptr < const Account > receiverAccount = receiverODBM.mBody.get ();
     Entitlements receiverEntitlements = ledger.getEntitlements < AccountEntitlements >( *receiverAccount );
     if ( !receiverEntitlements.check ( AccountEntitlements::MAX_ASSETS, receiverAssetCount + totalAssets )) {
         double max = receiverEntitlements.resolvePathAs < NumericEntitlement >( AccountEntitlements::MAX_ASSETS )->getUpperLimit ().mLimit;
@@ -431,7 +369,7 @@ LedgerResult Ledger_Inventory::transferAssets ( Account::Index senderAccountInde
         string assetIdentifier ( assetIdentifiers [ i ]);
         AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
         if ( assetODBM.mIndex == AssetID::NULL_INDEX ) return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
-        if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), ledger.getAccountName ( senderAccountIndex ).c_str ());
+        if ( assetODBM.mOwner.get () != senderODBM.mIndex ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderODBM.mName.get ().c_str ());
     }
     
     InventoryLogEntry senderLogEntry ( time );
@@ -479,7 +417,7 @@ void Ledger_Inventory::updateInventory ( Account::Index accountIndex, const Inve
     AccountODBM accountODBM ( ledger, accountIndex );
 
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
-    this->getLedger ().setObject < InventoryLogEntry >( AccountODBM::keyFor_inventoryLogEntry ( accountIndex, inventoryNonce ), entry );
+    accountODBM.getInventoryLogEntryField ( inventoryNonce ).set ( entry );
     accountODBM.mInventoryNonce.set ( inventoryNonce + 1 );
 }
 
@@ -518,7 +456,7 @@ LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, Account::In
         AssetODBM assetODBM ( ledger, AssetID::decode ( assetID ));
 
         if ( !assetODBM.mOwner.exists ()) return Format::write ( "Asset %s does not exist.", assetID.c_str ());
-        if ( assetODBM.mOwner.get () != accountODBM.mIndex ) return Format::write ( "Asset %s does not belong to account %s.", assetID.c_str (), ledger.getAccountName ( accountIndex ).c_str ());
+        if ( assetODBM.mOwner.get () != accountODBM.mIndex ) return Format::write ( "Asset %s does not belong to account %s.", assetID.c_str (), accountODBM.mName.get ().c_str ());
         if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return Format::write (  "Cannot upgrade asset %s to %s.",  assetID.c_str (),  upgradeType.c_str ());
     }
     

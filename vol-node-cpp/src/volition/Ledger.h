@@ -165,6 +165,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_globalMinerCount () {
+        return "miner.count";
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_identity () {
         return "identity";
     }

@@ -457,7 +457,7 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
         string paramName = assetParamIt->first;
         AssetID::Index assetID = assetParamIt->second;
     
-        assets [ paramName ] = this->mLedger->getAsset ( this->mSchema, assetID );
+        assets [ paramName ] = AssetODBM ( this->mLedger, assetID ).getAsset ( this->mSchema );
     }
     if ( !method.checkInvocation ( assets, invocation.mConstParams )) return false;
 

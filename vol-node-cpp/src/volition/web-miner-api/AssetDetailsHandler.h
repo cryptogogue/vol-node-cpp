@@ -40,7 +40,7 @@ public:
             Ledger& ledger = this->mWebMiner->getLedger ();
             const Schema& schema = ledger.getSchema ();
         
-            shared_ptr < Asset > asset = ledger.getAsset ( schema, index );
+            shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ( schema );
             
             if ( asset ) {
                 Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );

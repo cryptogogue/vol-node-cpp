@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AccountEntitlements.h>
+#include <volition/AccountODBM.h>
 #include <volition/KeyEntitlements.h>
 #include <volition/SchemaHandle.h>
 #include <volition/serialization/Serialization.h>
@@ -25,14 +26,15 @@ public:
 
     Ledger&                 mLedger;
     SchemaHandle&           mSchemaHandle;
-    const Account&          mAccount;
+    AccountODBM&            mAccountODBM;
+    const Account           mAccount;
     const KeyAndPolicy&     mKeyAndPolicy;
     time_t                  mTime;
     Entitlements            mAccountEntitlements;
     Entitlements            mKeyEntitlements;
 
     //----------------------------------------------------------------//
-    TransactionContext      ( Ledger& ledger, SchemaHandle& schemaHandle, const Account& account, const KeyAndPolicy& keyAndPolicy, time_t time );
+    TransactionContext      ( Ledger& ledger, SchemaHandle& schemaHandle, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time );
 };
 
 } // namespace Volition

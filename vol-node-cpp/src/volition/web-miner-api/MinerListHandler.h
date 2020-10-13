@@ -4,8 +4,9 @@
 #ifndef VOLITION_WEBMINERAPI_MINERLISTHANDLER_H
 #define VOLITION_WEBMINERAPI_MINERLISTHANDLER_H
 
-#include <volition/Block.h>
+#include <volition/AccountODBM.h>
 #include <volition/AbstractAPIRequestHandler.h>
+#include <volition/Block.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/MinerAPIFactory.h>
 
@@ -36,7 +37,7 @@ public:
         for ( unsigned int i = 0; minerInfoIt != minerInfoMap.cend (); ++minerInfoIt, ++i ) {
             const MinerInfo& minerInfo = minerInfoIt->second;
             
-            string accountName = ledger.getAccountName ( minerInfo.getAccountIndex ());
+            string accountName = AccountODBM ( ledger, minerInfo.getAccountIndex ()).mName.get ();
             if ( accountName.size () == 0 ) continue;
             
             Poco::JSON::Object::Ptr minerInfoJSON = new Poco::JSON::Object ();
