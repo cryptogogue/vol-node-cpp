@@ -31,7 +31,7 @@ public:
         ScopedMinerLock scopedLock ( this->mWebMiner );
         const Ledger& ledger = this->mWebMiner->getLedger ();
 
-        shared_ptr < const Account > account = AccountODBM ( ledger, ledger.getAccountIndex ( accountName )).mBody.get ();
+        shared_ptr < const Account > account = AccountODBM ( ledger, accountName ).mBody.get ();
         if ( account ) {
 
             SerializableMap < string, KeyAndPolicy > keys;

@@ -21,12 +21,6 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-shared_ptr < const MinerInfo > Ledger_Miner::getMinerInfo ( Account::Index accountIndex ) const {
-
-    return AccountODBM ( this->getLedger (), accountIndex ).mMinerInfo.get ();
-}
-
-//----------------------------------------------------------------//
 map < string, MinerInfo > Ledger_Miner::getMiners () const {
 
     const Ledger& ledger = this->getLedger ();
@@ -41,7 +35,7 @@ map < string, MinerInfo > Ledger_Miner::getMiners () const {
     
         const string& minerID = *minerIt;
         
-        shared_ptr < const MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( minerID ));
+        shared_ptr < const MinerInfo > minerInfo = AccountODBM ( ledger, minerID ).mMinerInfo.get ();
         assert ( minerInfo );
         minerInfoMap [ minerID ] = *minerInfo;
     }

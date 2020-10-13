@@ -98,7 +98,7 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
 
     SchemaHandle schemaHandle ( ledger );
 
-    AccountODBM minerODBM ( ledger, ledger.getAccountIndex ( this->mMinerID ));
+    AccountODBM minerODBM ( ledger, this->mMinerID );
     shared_ptr < const Account > miner = minerODBM.mBody.get ();
     assert ( miner || ledger.isGenesis ());
 
@@ -172,7 +172,7 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
         return true;
     }
 
-    shared_ptr < const MinerInfo > minerInfo = ledger.getMinerInfo ( ledger.getAccountIndex ( this->mMinerID ));
+    shared_ptr < const MinerInfo > minerInfo = AccountODBM ( ledger, this->mMinerID ).mMinerInfo.get ();
     if ( !minerInfo ) return false;
 
     const CryptoKey& key = minerInfo->getPublicKey ();

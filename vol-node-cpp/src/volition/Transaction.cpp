@@ -46,7 +46,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
         return genesis ? genesis->genesis ( ledger ) : TransactionResult ( "Missing transaction maker." );
     }
     
-    AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( maker->getAccountName ()));
+    AccountODBM accountODBM ( ledger, maker->getAccountName ());
         
     shared_ptr < const Account > account = accountODBM.mBody.get ();
     if ( !account ) return "Transaction maker account not found.";
@@ -134,7 +134,7 @@ TransactionResult Transaction::control ( Miner& miner ) const {
     Ledger& ledger = miner.getLedger ();
 
     TransactionMaker* maker = this->mBody->mMaker.get ();
-    shared_ptr < const Account > account = AccountODBM ( ledger, ledger.getAccountIndex ( maker->getAccountName ())).mBody.get ();
+    shared_ptr < const Account > account = AccountODBM ( ledger, maker->getAccountName ()).mBody.get ();
     const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( maker->getKeyName ());
 
     TransactionResult result = this->checkNonceAndSignature ( ledger, *account, *keyAndPolicy );

@@ -67,6 +67,20 @@ private:
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.transactionNonce", index ); });
     }
 
+    //----------------------------------------------------------------//
+    void initialize ( ConstOpt < Ledger > ledger, Account::Index index ) {
+    
+        this->mLedger       = ledger;
+        this->mIndex        = index;
+    
+        mAssetCount         = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mIndex ),             0 );
+        mInventoryNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mIndex ),         0 );
+        mTransactionNonce   = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mIndex ),       0 );
+        mName               = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mIndex ),                   "" );
+        mBody               = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mIndex ));
+        mMinerInfo          = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mIndex ));
+    }
+
 public:
 
     ConstOpt < Ledger >     mLedger;
@@ -86,15 +100,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) :
-        mLedger ( ledger ),
-        mIndex ( index ),
-        mAssetCount ( ledger,           keyFor_assetCount ( this->mIndex ),             0 ),
-        mInventoryNonce ( ledger,       keyFor_inventoryNonce ( this->mIndex ),         0 ),
-        mTransactionNonce ( ledger,     keyFor_transactionNonce ( this->mIndex ),       0 ),
-        mName ( ledger,                 keyFor_name ( this->mIndex ),                   "" ),
-        mBody ( ledger,                 keyFor_body ( this->mIndex )),
-        mMinerInfo ( ledger,            keyFor_minerInfo ( this->mIndex )) {
+    AccountODBM ( ConstOpt < Ledger > ledger, Account::Index index ) {
+        this->initialize ( ledger, index );
+    }
+    
+    //----------------------------------------------------------------//
+    AccountODBM ( ConstOpt < Ledger > ledger, string accountName ) {
+        this->initialize ( ledger, ledger->getAccountIndex ( accountName ));
     }
     
     //----------------------------------------------------------------//

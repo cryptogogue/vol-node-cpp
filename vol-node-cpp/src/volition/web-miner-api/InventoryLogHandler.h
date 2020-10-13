@@ -40,7 +40,7 @@ public:
             SerializableSet < AssetID::Index > additions;
             SerializableSet < AssetID::Index > deletions;
             
-            AccountODBM accountODBM ( ledger, ledger.getAccountIndex ( accountName ));
+            AccountODBM accountODBM ( ledger, accountName );
             
             for ( u64 i = 0; i < count; ++i ) {
                 

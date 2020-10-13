@@ -49,7 +49,7 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_VOL )) return "Permission denied.";
         
-        AccountODBM receiverODBM ( ledger, ledger.getAccountIndex ( this->mAccountName ));
+        AccountODBM receiverODBM ( ledger, this->mAccountName );
         
         shared_ptr < const Account > recipient = receiverODBM.mBody.get ();
         if ( !recipient ) return "Could not find recipient account.";
