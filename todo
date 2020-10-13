@@ -103,12 +103,29 @@ DONE: wallet - strictly order state service polling
 DONE: node - (bug) reset asset field not updating inventory nonces
 DONE: wallet - add event listener for IndexedDB (to handle multi-tab updates) - just used account version stamp
 
+DONE: node - add timstamps and lookback to simulator
+DONE: node - test lookback scenarios
+DONE: node - consensus for missing blocks (header is published but not block)
+
 ----------------------------------------------------------------
 LAUNCH
 
-node - add timstamps and lookback to simulator
-node - test lookback scenarios
-node - consensus for missing blocks (header is published but not block)
+node - setup guide
+node - command line utils (for generating genesis miner account; distribute via Docker)
+node - VOLOPT (transaction fees)
+node - mining reward transaction (first in block? transaction count? transaction needed at all, or part of block?)
+node - exercise option transaction (claim mining reward)
+node - high-confidence chain (based on consensus)
+node - sqlite persistence (or anything ACID)
+node - report other active nodes
+node - RSA transaction signatures
+node - sponsor miner transaction
+node - enforce mining key permissions (mining keys must *not* restrict reward claim; check *before* and *after* apply block)
+node - automatically close mining account if mining key is restricted
+
+wallet - RSA key support
+wallet - mining account request (RSA key, motto, visage)
+wallet - multi-node scan, consensus and transaction dispatch
 
 mining - legal ToS
 mining - chain ToS (copyright/trademark inheritance)
@@ -116,6 +133,7 @@ mining - onboard new miners (check certs)
 
 node - publish default media url prefix (from schema, with miner override)
 
+schema - mining reward definition and schedule
 schema - asset visualization descriptor (i.e. 2D/3D, front/back, language, etc.)
 schema - asset definition inheritance (sparse updrages)
 schema - default tags?
