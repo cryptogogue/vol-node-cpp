@@ -21,7 +21,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger_Account::affirmKey ( AccountID accountID, string makerKeyName, string keyName, const CryptoKey& key, const Policy* policy ) {
+bool Ledger_Account::affirmKey ( AccountID accountID, string makerKeyName, string keyName, const CryptoPublicKey& key, const Policy* policy ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -184,7 +184,7 @@ bool Ledger_Account::isSuffix ( string suffix ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyName, const CryptoKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
+bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyName, const CryptoPublicKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
 
     Ledger& ledger = this->getLedger ();
 

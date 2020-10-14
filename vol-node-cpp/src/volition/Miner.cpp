@@ -41,7 +41,9 @@ void Miner::affirmBranchSearch ( BlockTreeNode::ConstPtr node ) {
 void Miner::affirmKey ( uint keyLength, unsigned long exp ) {
 
     if ( !this->mKeyPair ) {
-        this->mKeyPair.rsa ( keyLength, exp );
+        CryptoKeyPair keyPair;
+        keyPair.rsa ( keyLength, exp );
+        this->setKeyPair ( keyPair );
     }
     assert ( this->mKeyPair );
 }
@@ -239,7 +241,13 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
     shared_ptr < Block > prevBlock = this->mChain->getBlock ();
     assert ( prevBlock );
     
-    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, now, prevBlock.get (), this->mKeyPair );
+    shared_ptr < Block > block = make_shared < Block >(
+        this->mMinerID,
+        this->mVisage,
+        now,
+        prevBlock.get (),
+        this->mKeyPair
+    );
     this->fillBlock ( *this->mChain, *block );
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {

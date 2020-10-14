@@ -58,7 +58,7 @@ public:
     static int          compare                             ( const BlockHeader& block0, const BlockHeader& block1 );
     static int          compare                             ( const Digest& charm0, const Digest& charm1 );
                         BlockHeader                         ();
-                        BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKey& key );
+                        BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKeyPair& key );
                         ~BlockHeader                        ();
     const Digest&       getCharm                            () const;
     const Digest&       getDigest                           () const;

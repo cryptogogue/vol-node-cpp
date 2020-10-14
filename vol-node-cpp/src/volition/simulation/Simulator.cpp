@@ -118,8 +118,8 @@ void Simulator::prepare () {
     size_t totalMiners = this->mMiners.size ();
     assert ( totalMiners > 0 );
 
-    SerializableVector < CryptoKey > minerKeys;
-    SerializableVector < CryptoKey > keyDump;
+    SerializableVector < CryptoKeyPair > minerKeys;
+    SerializableVector < CryptoKeyPair > keyDump;
 
     static const cc8* MINER_KEYS_FILENAME = "sim-miner-keys.json";
     if ( FileSys::exists ( MINER_KEYS_FILENAME )) {
@@ -145,13 +145,13 @@ void Simulator::prepare () {
         
         shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
             Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", ( int )this->mBasePort ).c_str (), miner->getMinerID ().c_str ()),
-            miner->getKeyPair (),
+            miner->getKeyPair ().getPublicKey (),
             miner->getMotto (),
             miner->getVisage ()
         );
         
         genesisAccount.mName            = miner->getMinerID ();
-        genesisAccount.mKey             = miner->getKeyPair ();
+        genesisAccount.mKey             = miner->getKeyPair ().getPublicKey ();
         genesisAccount.mGrant           = 0;
         genesisAccount.mMinerInfo       = minerInfo;
 
@@ -231,7 +231,7 @@ void Simulator::setInterval ( size_t base, size_t top, size_t interval ) {
 }
 
 //----------------------------------------------------------------//
-void Simulator::setMinerKey ( size_t idx, const CryptoKey& key ) {
+void Simulator::setMinerKey ( size_t idx, const CryptoKeyPair& key ) {
 
     this->mMiners [ idx ]->setKeyPair ( key );
 }
@@ -239,7 +239,7 @@ void Simulator::setMinerKey ( size_t idx, const CryptoKey& key ) {
 //----------------------------------------------------------------//
 void Simulator::setMinerKey ( size_t idx, string pem ) {
 
-    CryptoKey key;
+    CryptoKeyPair key;
     key.rsaFromPEM ( "", pem );
     this->setMinerKey ( idx, key );
 }

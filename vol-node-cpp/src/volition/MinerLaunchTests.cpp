@@ -3,6 +3,7 @@
 
 #include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
+#include <volition/CryptoKey.h>
 #include <volition/Digest.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
@@ -15,7 +16,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-bool MinerLaunchTests::checkDeterministic ( const CryptoKey& key, size_t cycles, size_t expectedResult ) {
+bool MinerLaunchTests::checkDeterministic ( const CryptoKeyPair& key, size_t cycles, size_t expectedResult ) {
 
     set < string > sigSet;
     
@@ -94,8 +95,8 @@ void MinerLaunchTests::checkEnvironment () {
     assert ( Digest ( hashBlock, Digest::HASH_ALGORITHM_SHA256 ).toHex () == "8f7383032c626071fde10fad55814c2107e4ed87f36e8370b36d10ad1f2870bc" );
     assert ( Digest ( hashBlock, Digest::HASH_ALGORITHM_MD5 ).toHex () == "f81606c250f6a0d55ba7c4f39bfea41f" );
     
-    CryptoKey ellipticKey;
-    ellipticKey.elliptic ( CryptoKey::DEFAULT_EC_GROUP_NID );
+    CryptoKeyPair ellipticKey;
+    ellipticKey.elliptic ( CryptoKeyPair::DEFAULT_EC_GROUP_NID );
     assert ( MinerLaunchTests::checkDeterministic ( ellipticKey, 16, 16 ));
     
     Signature ellipticSigSHA256 = ellipticKey.sign ( "abc", Digest::HASH_ALGORITHM_SHA256 );
@@ -106,8 +107,8 @@ void MinerLaunchTests::checkEnvironment () {
     assert ( ellipticKey.verify ( ellipticSigMD5, "abc" ));
     assert ( ellipticKey.verify ( ellipticSigMD5, "abcd" ) == false );
     
-    CryptoKey rsaKey;
-    rsaKey.rsa ( CryptoKey::RSA_1024 );
+    CryptoKeyPair rsaKey;
+    rsaKey.rsa ( CryptoKeyPair::RSA_1024 );
     assert ( MinerLaunchTests::checkDeterministic ( rsaKey, 16, 1 ));
     
     Signature rsaSigSHA256 = rsaKey.sign ( "abc", Digest::HASH_ALGORITHM_SHA256 );

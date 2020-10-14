@@ -67,7 +67,7 @@ void initializeTestChainAndMiners ( SimpleMiner* miners, size_t nMiners, u64 now
         miner.pushGenesisTransaction ( genesisBlock );
     }
     
-    CryptoKey genesisKey;
+    CryptoPrivateKey genesisKey;
     genesisKey.elliptic ();
     TheContext::get ().setGenesisBlockKey ( genesisKey );
     

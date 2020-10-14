@@ -84,7 +84,7 @@ public:
     void                                pause                   ( bool pause = true );
     void                                report                  ();
     void                                setInterval             ( size_t base, size_t top, size_t interval );
-    void                                setMinerKey             ( size_t idx, const CryptoKey& key );
+    void                                setMinerKey             ( size_t idx, const CryptoKeyPair& key );
     void                                setMinerKey             ( size_t idx, string pem );
     void                                setReportMode           ( ReportMode reportMode );
     void                                setRewriteWindow        ( size_t base, size_t top, time_t window );

@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/CryptoKey.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -136,7 +137,7 @@ Block::Block () {
 }
 
 //----------------------------------------------------------------//
-Block::Block ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKey& key ) :
+Block::Block ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKeyPair& key ) :
     BlockHeader ( minerID, visage, now, prevBlock, key ) {
 }
 
@@ -157,7 +158,7 @@ void Block::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 }
 
 //----------------------------------------------------------------//
-const Digest& Block::sign ( const CryptoKey& key, string hashAlgorithm ) {
+const Digest& Block::sign ( const CryptoKeyPair& key, string hashAlgorithm ) {
         
     this->mDigest = Digest ( *this );
     this->mSignature = key.sign ( this->mDigest, hashAlgorithm );
@@ -175,7 +176,7 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
     shared_ptr < const MinerInfo > minerInfo = AccountODBM ( ledger, this->mMinerID ).mMinerInfo.get ();
     if ( !minerInfo ) return false;
 
-    const CryptoKey& key = minerInfo->getPublicKey ();
+    const CryptoPublicKey& key = minerInfo->getPublicKey ();
 
     if ( policy & ( VerificationPolicy::VERIFY_POSE | VerificationPolicy::VERIFY_CHARM )) {
 

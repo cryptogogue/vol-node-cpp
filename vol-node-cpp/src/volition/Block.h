@@ -5,7 +5,6 @@
 #define VOLITION_BLOCK_H
 
 #include <volition/common.h>
-
 #include <volition/BlockHeader.h>
 
 namespace Volition {
@@ -47,11 +46,11 @@ public:
     void                affirmHash                          ();
     bool                apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
                         Block                               ();
-                        Block                               ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKey& key );
+                        Block                               ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKeyPair& key );
                         ~Block                              ();
     size_t              countTransactions                   () const;
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
-    const Digest&       sign                                ( const CryptoKey& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
+    const Digest&       sign                                ( const CryptoKeyPair& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
     bool                verify                              ( const Ledger& ledger, VerificationPolicy policy ) const;
 };
 

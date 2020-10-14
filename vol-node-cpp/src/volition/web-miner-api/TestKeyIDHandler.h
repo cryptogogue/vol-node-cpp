@@ -27,10 +27,10 @@ public:
         UNUSED ( method );
         UNUSED ( jsonOut );
 
-        CryptoKey key;
+        CryptoKeyPair key;
         FromJSONSerializer::fromJSON ( key, jsonIn );
 
-        CryptoKeyInfo keyInfo ( key, CryptoKeyInfo::ENCODE_AS_HEX );
+        CryptoKeyInfo keyInfo ( key.getKeyPair (), CryptoKeyInfo::ENCODE_AS_HEX );
 
         if ( keyInfo ) {
             jsonOut.set ( "keyID", key.getKeyID ().c_str ());

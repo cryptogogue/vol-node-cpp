@@ -25,7 +25,7 @@ TEST ( Crafting, crafting ) {
     schema.compose ( updateSchema );
     ledger.setObject < Schema >( FormatLedgerKey::forSchema (), schema );
     
-    CryptoKey key;
+    CryptoPrivateKey key;
     key.elliptic ();
     
     Policy keyPolicy;

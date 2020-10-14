@@ -1,18 +1,12 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/CryptoKey.h>
 #include <volition/CryptoKeyInfo.h>
 #include <volition/FNV1a.h>
 #include <volition/Format.h>
 
 #include <openssl/ecdsa.h>
 #include <openssl/rsa.h>
-
-// bitaddress.org
-// private: KzvyiCGoxXMaraHf3HmtZsttox2U99VTPq9RTWyJqsTVdEZ9nYDV
-// public compressed: 0322FDB3D240158274B8FCA64263B04215A55B6F248AEB51DDED78F052C2A73DC1
-// public: 0422FDB3D240158274B8FCA64263B04215A55B6F248AEB51DDED78F052C2A73DC135CB34215CFC80ECCAF0FE74982DDBA6A85F629C71D0BEB4434E4F7DEA1E623D
 
 namespace Volition {
 
@@ -26,17 +20,17 @@ CryptoKeyInfo::CryptoKeyInfo () :
 }
 
 //----------------------------------------------------------------//
-CryptoKeyInfo::CryptoKeyInfo ( const CryptoKey& cryptoKey, EncodeAs encodeAs ) :
+CryptoKeyInfo::CryptoKeyInfo ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs ) :
     mFormat ( UNKNOWN ) {
     
-    switch ( cryptoKey.getType ()) {
+    switch ( keyPair->type ()) {
         
-        case TYPE_EC:
-            this->initFromEC ( cryptoKey, encodeAs );
+        case Poco::Crypto::KeyPair::KT_EC:
+            this->initFromEC ( keyPair, encodeAs );
             break;
 
-        case TYPE_RSA:
-            this->initFromRSA ( cryptoKey, encodeAs );
+        case Poco::Crypto::KeyPair::KT_RSA:
+            this->initFromRSA ( keyPair, encodeAs );
             break;
 
         default:
@@ -45,9 +39,9 @@ CryptoKeyInfo::CryptoKeyInfo ( const CryptoKey& cryptoKey, EncodeAs encodeAs ) :
 }
 
 //----------------------------------------------------------------//
-void CryptoKeyInfo::dumpRSAHex ( const CryptoKey& cryptoKey ) {
+void CryptoKeyInfo::dumpRSAHex ( const Poco::Crypto::KeyPair* keyPair ) {
 
-    const Poco::Crypto::RSAKey* pocoRSAKey = cryptoKey;
+    const Poco::Crypto::RSAKey* pocoRSAKey = dynamic_cast < const Poco::Crypto::RSAKey* >( keyPair );
     assert ( pocoRSAKey );
 
     RSA* rsaKey = pocoRSAKey->impl ()->getRSA ();
@@ -93,16 +87,15 @@ CryptoKeyInfo::Format CryptoKeyInfo::getFormatFromString ( string format ) {
 }
 
 //----------------------------------------------------------------//
-string CryptoKeyInfo::getKeyID ( const CryptoKey& cryptoKey ) {
+string CryptoKeyInfo::getKeyID ( const Poco::Crypto::KeyPair* keyPair ) {
 
-    const Poco::Crypto::KeyPair* keyPair = cryptoKey;
     assert ( keyPair );
     
     switch ( keyPair->type ()) {
         
         case Poco::Crypto::KeyPair::KT_EC: {
             
-            const Poco::Crypto::ECKey* pocoECKey = cryptoKey;
+            const Poco::Crypto::ECKey* pocoECKey = dynamic_cast < const Poco::Crypto::ECKey* >( keyPair );
             assert ( pocoECKey );
 
             EC_KEY* ecKey = pocoECKey->impl ()->getECKey ();
@@ -116,7 +109,7 @@ string CryptoKeyInfo::getKeyID ( const CryptoKey& cryptoKey ) {
         }
         case Poco::Crypto::KeyPair::KT_RSA: {
         
-            const Poco::Crypto::RSAKey* pocoRSAKey = cryptoKey;
+            const Poco::Crypto::RSAKey* pocoRSAKey = dynamic_cast < const Poco::Crypto::RSAKey* >( keyPair );
             assert ( pocoRSAKey );
 
             RSA* rsaKey = pocoRSAKey->impl ()->getRSA ();
@@ -156,9 +149,8 @@ string CryptoKeyInfo::getStringFromFormat ( Format format ) {
 }
 
 //----------------------------------------------------------------//
-void CryptoKeyInfo::initAsPEM ( const CryptoKey& cryptoKey ) {
+void CryptoKeyInfo::initAsPEM ( const Poco::Crypto::KeyPair* keyPair ) {
 
-    const Poco::Crypto::KeyPair* keyPair = cryptoKey;
     if ( !keyPair ) return;
 
     stringstream pubKeyStream;
@@ -173,9 +165,8 @@ void CryptoKeyInfo::initAsPEM ( const CryptoKey& cryptoKey ) {
 }
 
 //----------------------------------------------------------------//
-void CryptoKeyInfo::initFromEC ( const CryptoKey& cryptoKey, EncodeAs encodeAs ) {
+void CryptoKeyInfo::initFromEC ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs ) {
 
-    const Poco::Crypto::KeyPair* keyPair = cryptoKey;
     if ( !keyPair ) return;
     assert ( keyPair->type () == Poco::Crypto::KeyPair::KT_EC );
 
@@ -184,14 +175,14 @@ void CryptoKeyInfo::initFromEC ( const CryptoKey& cryptoKey, EncodeAs encodeAs )
         case ENCODE_AS_ANY:
         case ENCODE_AS_HEX: {
 
-            const Poco::Crypto::ECKey* pocoECKey = cryptoKey;
+            const Poco::Crypto::ECKey* pocoECKey = dynamic_cast < const Poco::Crypto::ECKey* >( keyPair );
             assert ( pocoECKey );
 
             EC_KEY* ecKey = pocoECKey->impl ()->getECKey ();
             assert ( ecKey );
             
             const EC_GROUP* ecGroup = EC_KEY_get0_group ( ecKey );
-            this->mGroupName = CryptoKey::getGroupNameFromNID ( EC_GROUP_get_curve_name ( ecGroup ));
+            this->mGroupName = Poco::Crypto::ECKey::getCurveName ( EC_GROUP_get_curve_name ( ecGroup ));
             
             const EC_POINT* ecPubKey = EC_KEY_get0_public_key ( ecKey );
             assert ( ecPubKey );
@@ -209,7 +200,7 @@ void CryptoKeyInfo::initFromEC ( const CryptoKey& cryptoKey, EncodeAs encodeAs )
         
         case ENCODE_AS_PEM: {
                     
-            this->initAsPEM ( cryptoKey );
+            this->initAsPEM ( keyPair );
             this->mFormat = ( Format )( TYPE_EC | ENCODING_PEM );
             break;
         }
@@ -221,9 +212,8 @@ void CryptoKeyInfo::initFromEC ( const CryptoKey& cryptoKey, EncodeAs encodeAs )
 }
 
 //----------------------------------------------------------------//
-void CryptoKeyInfo::initFromRSA ( const CryptoKey& cryptoKey, EncodeAs encodeAs ) {
+void CryptoKeyInfo::initFromRSA ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs ) {
 
-    const Poco::Crypto::KeyPair* keyPair = cryptoKey;
     if ( !keyPair ) return;
     assert ( keyPair->type () == Poco::Crypto::KeyPair::KT_RSA );
 
@@ -238,7 +228,7 @@ void CryptoKeyInfo::initFromRSA ( const CryptoKey& cryptoKey, EncodeAs encodeAs 
         case ENCODE_AS_ANY:
         case ENCODE_AS_PEM: {
             
-            this->initAsPEM ( cryptoKey );
+            this->initAsPEM ( keyPair );
             this->mFormat = ( Format )( TYPE_RSA | ENCODING_PEM );
             break;
         }
@@ -273,7 +263,7 @@ CryptoKeyInfo::KeyPairPtr CryptoKeyInfo::makeKeyPairEC () const {
             // load the public key
             string groupName = this->mGroupName;
             assert ( groupName.size ());
-            EC_GROUP* ecGroup = EC_GROUP_new_by_curve_name ( CryptoKey::getNIDFromGroupName ( groupName ));
+            EC_GROUP* ecGroup = EC_GROUP_new_by_curve_name ( Poco::Crypto::ECKey::getCurveNID ( groupName ));
             assert ( ecGroup );
             
             string ecPubKeyHexStr = this->mPublicKey;

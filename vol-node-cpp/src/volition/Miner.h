@@ -90,7 +90,7 @@ protected:
     string                                          mMinerID;
     SerializableTime                                mStartTime;
 
-    CryptoKey                                       mKeyPair;
+    CryptoKeyPair                                   mKeyPair;
     string                                          mMotto;
     Signature                                       mVisage;
 
@@ -150,7 +150,7 @@ public:
     
     GET ( BlockTreeNode::ConstPtr,                  BestBranch,                 mBestBranch )
     GET ( const BlockTree&,                         BlockTree,                  mBlockTree )
-    GET ( const CryptoKey&,                         KeyPair,                    mKeyPair )
+    GET ( const CryptoKeyPair&,                     KeyPair,                    mKeyPair )
     GET ( const Ledger&,                            Ledger,                     *mChain )
     GET ( string,                                   MinerID,                    mMinerID )
     GET ( string,                                   Motto,                      mMotto )
@@ -159,7 +159,7 @@ public:
     GET ( SerializableTime,                         StartTime,                  mStartTime )
     GET ( const Signature&,                         Visage,                     mVisage )
     
-    SET ( const CryptoKey&,                         KeyPair,                    mKeyPair )
+    SET ( const CryptoKeyPair&,                     KeyPair,                    mKeyPair )
     SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  mMessenger )
     SET ( string,                                   MinerID,                    mMinerID )
     SET ( string,                                   Motto,                      mMotto )
@@ -172,7 +172,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void                                affirmKey                   ( uint keyLength = CryptoKey::RSA_1024, unsigned long exp = CryptoKey::RSA_EXP_65537 );
+    void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
     void                                affirmVisage                ();
     bool                                checkBestBranch             ( string miners ) const;
     bool                                controlPermitted            () const;
@@ -182,8 +182,8 @@ public:
     bool                                isLazy                      () const;
     void                                loadGenesis                 ( string path );
     void                                loadKey                     ( string keyfile, string password = "" );
-                                        Miner                   ();
-    virtual                             ~Miner                  ();
+                                        Miner                       ();
+    virtual                             ~Miner                      ();
     void                                permitControl               ( bool permit );
     shared_ptr < Block >                prepareBlock                ( time_t now );
     void                                reset                       ();
@@ -202,7 +202,7 @@ public:
 class ScopedMinerLock {
 private:
 
-    shared_ptr < Miner >            mMiner;
+    shared_ptr < Miner >                mMiner;
     Poco::ScopedLock < Poco::Mutex >    mScopedLock;
 
 public:

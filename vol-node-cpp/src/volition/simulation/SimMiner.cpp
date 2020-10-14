@@ -21,7 +21,13 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
     shared_ptr < const Block > prevBlock = prevNode->getBlock ();
     assert ( prevBlock );
     
-    shared_ptr < Block > block = make_shared < Block >( this->mMinerID, this->mVisage, oldBlock->getTime (), prevBlock.get (), this->mKeyPair );
+    shared_ptr < Block > block = make_shared < Block >(
+        this->mMinerID,
+        this->mVisage,
+        oldBlock->getTime (),
+        prevBlock.get (),
+        this->mKeyPair
+    );
     
     Digest charm = block->getCharm ();
     std::fill ( charm.begin (), charm.end (), 0 );

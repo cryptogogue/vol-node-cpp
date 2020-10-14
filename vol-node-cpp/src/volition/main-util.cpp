@@ -3,7 +3,6 @@
 
 #include <volition/Block.h>
 #include <volition/CryptoKey.h>
-#include <volition/CryptoKeyInfo.h>
 #include <volition/Miner.h>
 #include <volition/transactions/Genesis.h>
 
@@ -58,7 +57,7 @@ public:
         string password     = configuration.getString ( "password", "" );
         string outfile      = configuration.getString ( "outfile" );
         
-        Volition::CryptoKey cryptoKey;
+        Volition::CryptoKeyPair cryptoKey;
 
         if ( keyfile.size () && Poco::File ( keyfile ).exists ()) {
             fstream inStream;
@@ -66,8 +65,8 @@ public:
             FromJSONSerializer::fromJSON ( cryptoKey, inStream );
         }
         else {
-            //cryptoKey.elliptic ( Volition::CryptoKey::DEFAULT_EC_GROUP_NAME );
-            cryptoKey.rsa ( Volition::CryptoKey::RSA_4096 );
+            //cryptoKey.elliptic ( Volition::CryptoPrivateKey::DEFAULT_EC_GROUP_NAME );
+            cryptoKey.rsa ( Volition::CryptoKeyPair::RSA_4096 );
         }
 
         CryptoKeyInfo keyInfo ( cryptoKey, Volition::CryptoKeyInfo::ENCODE_AS_PEM );
@@ -131,7 +130,7 @@ public:
         
         shared_ptr < Volition::Miner > miner = make_shared < Volition::Miner >();
         
-        CryptoKey cryptoKey;
+        CryptoKeyPair cryptoKey;
 
         if ( keyfile.size () && Poco::File ( keyfile ).exists ()) {
             fstream inStream;
@@ -139,7 +138,7 @@ public:
             Volition::FromJSONSerializer::fromJSON ( cryptoKey, inStream );
         }
         else {
-            cryptoKey.rsa ( Volition::CryptoKey::RSA_4096 );
+            cryptoKey.rsa ( Volition::CryptoKeyPair::RSA_4096 );
         }
 
         miner->setKeyPair ( cryptoKey );
@@ -152,13 +151,13 @@ public:
         
         shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
             url,
-            miner->getKeyPair (),
+            miner->getPublicKey (),
             miner->getMotto (),
             miner->getVisage ()
         );
         
         genesisAccount.mName            = miner->getMinerID ();
-        genesisAccount.mKey             = miner->getKeyPair ();
+        genesisAccount.mKey             = miner->getPublicKey ();
         genesisAccount.mGrant           = 0;
         genesisAccount.mMinerInfo       = minerInfo;
 
@@ -207,7 +206,7 @@ public:
         string inpath       = configuration.getString ( "inpath" );
         string outpath      = configuration.getString ( "outpath", "" );
         
-        Volition::CryptoKey keyPair;
+        Volition::CryptoKeyPair keyPair;
         
         fstream keyStream;
         keyStream.open ( keyfile, ios_base::in );

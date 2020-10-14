@@ -6,6 +6,8 @@
 
 namespace Volition {
 
+class CryptoKeyPair;
+
 //================================================================//
 // MinerLaunchTests
 //================================================================//
@@ -13,7 +15,7 @@ class MinerLaunchTests {
 public:
     
     //----------------------------------------------------------------//
-    static bool             checkDeterministic          ( const CryptoKey& key, size_t cycles, size_t expectedResult );
+    static bool             checkDeterministic          ( const CryptoKeyPair& key, size_t cycles, size_t expectedResult );
     static void             checkEnvironment            ();
 };
 

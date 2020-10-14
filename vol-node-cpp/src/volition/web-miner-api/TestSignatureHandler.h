@@ -33,7 +33,7 @@ public:
             
             string message = jsonIn.optValue < string >( "message", "" );
 
-            CryptoKey key;
+            CryptoKeyPair key;
             FromJSONSerializer::fromJSON ( key, keyJSON );
 
             Signature signature;

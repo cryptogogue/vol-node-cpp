@@ -25,7 +25,7 @@ BlockHeader::BlockHeader () :
 }
 
 //----------------------------------------------------------------//
-BlockHeader::BlockHeader ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKey& key ) :
+BlockHeader::BlockHeader ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKeyPair& key ) :
     mMinerID ( minerID ),
     mHeight ( 0 ),
     mTime ( now ) {

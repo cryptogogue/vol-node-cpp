@@ -21,7 +21,7 @@ public:
     friend class Ledger;
     friend class Account;
     
-    CryptoKey                           mKey;
+    CryptoPublicKey                     mKey;
     Policy                              mPolicy;
     SerializableSharedPtr < Policy >    mBequest;
 
@@ -31,7 +31,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    operator const CryptoKey& () const {
+    operator const CryptoPublicKey& () const {
         return this->mKey;
     }
 
@@ -71,7 +71,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    KeyAndPolicy ( const CryptoKey& key, const Policy& policy ) :
+    KeyAndPolicy ( const CryptoPublicKey& key, const Policy& policy ) :
         mKey ( key ),
         mPolicy ( policy ) {
     }

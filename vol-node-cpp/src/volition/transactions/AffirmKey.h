@@ -23,7 +23,7 @@ public:
     TRANSACTION_MATURITY ( 0 )
 
     string                              mKeyName;
-    CryptoKey                           mKey;
+    CryptoPublicKey                     mKey;
     SerializableSharedPtr < Policy >    mPolicy;
 
     //----------------------------------------------------------------//

@@ -19,23 +19,23 @@ class MinerInfo :
 private:
 
     string                  mURL;
-    CryptoKey               mPublicKey;
+    CryptoPublicKey         mPublicKey;
     string                  mMotto;
     Signature               mVisage;
 
 public:
 
-    GET ( string,               Motto,              mMotto )
-    GET ( const CryptoKey&,     PublicKey,          mPublicKey )
-    GET ( string,               URL,                mURL )
-    GET ( const Signature&,     Visage,             mVisage )
+    GET ( string,                   Motto,              mMotto )
+    GET ( const CryptoPublicKey&,   PublicKey,          mPublicKey )
+    GET ( string,                   URL,                mURL )
+    GET ( const Signature&,         Visage,             mVisage )
 
     //----------------------------------------------------------------//
-    bool                    isValid             () const;
-                            MinerInfo           ();
-                            MinerInfo           ( string url, const CryptoKey& publicKey, string motto, const Signature& visage );
-                            MinerInfo           ( const MinerInfo& minerInfo );
-                            ~MinerInfo          ();
+    bool            isValid             () const;
+                    MinerInfo           ();
+                    MinerInfo           ( string url, const CryptoPublicKey& publicKey, string motto, const Signature& visage );
+                    MinerInfo           ( const MinerInfo& minerInfo );
+                    ~MinerInfo          ();
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -50,7 +50,7 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
         serializer.serialize ( "url",           this->mURL );
-        serializer.serialize ( "key",           this->mPublicKey.getPublicKey ());
+        serializer.serialize ( "key",           this->mPublicKey );
         serializer.serialize ( "motto",         this->mMotto );
         serializer.serialize ( "visage",        this->mVisage );
     }

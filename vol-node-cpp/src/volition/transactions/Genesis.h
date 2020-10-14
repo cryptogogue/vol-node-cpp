@@ -19,9 +19,9 @@ class GenesisAccount :
     public AbstractSerializable {
 public:
 
-    string          mName;
-    CryptoKey       mKey;
-    u64             mGrant;
+    string              mName;
+    CryptoPublicKey     mKey;
+    u64                 mGrant;
     SerializableSharedConstPtr < MinerInfo > mMinerInfo;
 
     //----------------------------------------------------------------//

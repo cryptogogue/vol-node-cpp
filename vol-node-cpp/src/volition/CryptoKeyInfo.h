@@ -10,8 +10,6 @@
 
 namespace Volition {
 
-class CryptoKey;
-
 //================================================================//
 // CryptoKeyInfo
 //================================================================//
@@ -52,12 +50,12 @@ public:
 private:
 
     //----------------------------------------------------------------//
-    static void         dumpRSAHex              ( const CryptoKey& cryptoKey );
+    static void         dumpRSAHex              ( const Poco::Crypto::KeyPair* keyPair );
     static Format       getFormatFromString     ( string format );
     static string       getStringFromFormat     ( Format format );
-    void                initAsPEM               ( const CryptoKey& cryptoKey );
-    void                initFromEC              ( const CryptoKey& cryptoKey, EncodeAs encodeAs );
-    void                initFromRSA             ( const CryptoKey& cryptoKey, EncodeAs encodeAs );
+    void                initAsPEM               ( const Poco::Crypto::KeyPair* keyPair);
+    void                initFromEC              ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs );
+    void                initFromRSA             ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs );
     KeyPairPtr          makeKeyPairEC           () const;
     KeyPairPtr          makeKeyPairRSA          () const;
     static string       openSSLString           ( char* c );
@@ -80,8 +78,8 @@ public:
 
     //----------------------------------------------------------------//
                         CryptoKeyInfo           ();
-                        CryptoKeyInfo           ( const CryptoKey& cryptoKey, EncodeAs encodeAs = ENCODE_AS_ANY );
-    static string       getKeyID                ( const CryptoKey& cryptoKey );
+                        CryptoKeyInfo           ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs = ENCODE_AS_ANY );
+    static string       getKeyID                ( const Poco::Crypto::KeyPair* keyPair );
     KeyPairPtr          makeKeyPair             () const;
 };
 

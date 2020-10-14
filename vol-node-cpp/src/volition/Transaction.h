@@ -44,7 +44,7 @@ public:
     //----------------------------------------------------------------//
     TransactionResult           apply                   ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle ) const;
     bool                        checkMaker              ( string accountName, string uuid ) const;
-    TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoKey& key ) const;
+    TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key ) const;
     TransactionResult           control                 ( Miner& miner ) const;
     u64                         getGratuity             () const;
     const TransactionMaker*     getMaker                () const;

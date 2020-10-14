@@ -20,9 +20,9 @@ MinerInfo::MinerInfo () {
 }
 
 //----------------------------------------------------------------//
-MinerInfo::MinerInfo ( string url, const CryptoKey& publicKey, string motto, const Signature& visage ) :
+MinerInfo::MinerInfo ( string url, const CryptoPublicKey& publicKey, string motto, const Signature& visage ) :
     mURL ( url ),
-    mPublicKey ( publicKey.getPublicKey ()),
+    mPublicKey ( publicKey ),
     mMotto ( motto ),
     mVisage ( visage ) {
 }

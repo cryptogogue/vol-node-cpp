@@ -105,7 +105,7 @@ bool Transaction::checkMaker ( string accountName, string uuid ) const {
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, AccountID accountID, const CryptoKey& key ) const {
+TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key ) const {
 
     if ( ledger.isGenesis ()) return true;
     if ( this->getUUID ().size () == 0 ) return false;

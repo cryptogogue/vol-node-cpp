@@ -131,7 +131,7 @@ public:
         shared_ptr < const MinerInfo > minerInfo = this->mMinerInfo.get ();
         if ( minerInfo ) {
         
-            const CryptoKey& key = minerInfo->getPublicKey ();
+            const CryptoPublicKey& key = minerInfo->getPublicKey ();
             Policy policy;
             policy.setRestrictions ( KeyEntitlements::getMiningKeyEntitlements ());
             return KeyAndPolicy ( key, policy );

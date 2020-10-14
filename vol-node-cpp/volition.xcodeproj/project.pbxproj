@@ -46,6 +46,7 @@
 		CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CD1FD29D24B0309000B0D88A /* HardReset.h in Headers */ = {isa = PBXBuildFile; fileRef = CD1FD29C24B0309000B0D88A /* HardReset.h */; };
+		CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF052536A2ED00DEB809 /* CryptoKey.h */; };
 		CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB814230E79D400805F70 /* Transaction.cpp */; };
 		CD2AB817230E79D400805F70 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB815230E79D400805F70 /* Transaction.h */; };
 		CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */; };
@@ -65,8 +66,8 @@
 		CD4E815C210579C8007DA585 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CD4E817221057E91007DA585 /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
 		CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E816B21057DD1007DA585 /* main-gtest.cpp */; };
-		CD4E8190210593A4007DA585 /* CryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* CryptoKey.cpp */; };
-		CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80D72102BB57007DA585 /* CryptoKey.h */; };
+		CD4E8190210593A4007DA585 /* AbstractCryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD4E80D62102BB57007DA585 /* AbstractCryptoKey.cpp */; };
+		CD4E8191210593A4007DA585 /* AbstractCryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80D72102BB57007DA585 /* AbstractCryptoKey.h */; };
 		CD4E8192210593A4007DA585 /* Digest.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4E80DC21031AB0007DA585 /* Digest.h */; };
 		CD4E8193210593A4007DA585 /* Signature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD59F3B120E889A000705AEB /* Signature.cpp */; };
 		CD4E8194210593A4007DA585 /* Signature.h in Headers */ = {isa = PBXBuildFile; fileRef = CD59F3B220E889A000705AEB /* Signature.h */; };
@@ -142,6 +143,10 @@
 		CD77522D2532A76200A53765 /* Accessors.h in Headers */ = {isa = PBXBuildFile; fileRef = CD77522B2532A76200A53765 /* Accessors.h */; };
 		CD775257253535FA00A53765 /* LedgerObjectFieldODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */; };
 		CD7752972536515400A53765 /* AccountID.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7752962536515400A53765 /* AccountID.h */; };
+		CD7752A22536960B00A53765 /* CryptoKeyPair.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7752A02536960B00A53765 /* CryptoKeyPair.h */; };
+		CD7752A32536960B00A53765 /* CryptoKeyPair.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7752A12536960B00A53765 /* CryptoKeyPair.cpp */; };
+		CD7752B62536966100A53765 /* CryptoPublicKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7752B42536966100A53765 /* CryptoPublicKey.h */; };
+		CD7752B72536966100A53765 /* CryptoPublicKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7752B52536966100A53765 /* CryptoPublicKey.cpp */; };
 		CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747823B052BF00FBE468 /* SerializableOpaque.h */; };
 		CD7C747B23B6EC6700FBE468 /* UpgradeAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */; };
 		CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1D0228F47DA000C2A54 /* FileSys.cpp */; };
@@ -700,6 +705,7 @@
 		CD0C3E6720C86D88006E3B1C /* util */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = util; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD0C3E6820C86FBA006E3B1C /* main-util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-util.cpp"; path = "src/volition/main-util.cpp"; sourceTree = "<group>"; };
 		CD1FD29C24B0309000B0D88A /* HardReset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HardReset.h; path = src/volition/transactions/HardReset.h; sourceTree = "<group>"; };
+		CD20FF052536A2ED00DEB809 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
 		CD2AB814230E79D400805F70 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = src/volition/Transaction.cpp; sourceTree = "<group>"; };
 		CD2AB815230E79D400805F70 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Transaction.h; path = src/volition/Transaction.h; sourceTree = "<group>"; };
 		CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMaker.cpp; path = src/volition/TransactionMaker.cpp; sourceTree = "<group>"; };
@@ -723,8 +729,8 @@
 		CD4665AB20BFF3DD00A02D55 /* AbstractTransactionBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractTransactionBody.cpp; path = src/volition/AbstractTransactionBody.cpp; sourceTree = "<group>"; };
 		CD4665AC20BFF3DD00A02D55 /* AbstractTransactionBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractTransactionBody.h; path = src/volition/AbstractTransactionBody.h; sourceTree = "<group>"; };
 		CD4B5F0123FD6274005EB2CC /* KeyAccountDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyAccountDetailsHandler.h; path = "src/volition/web-miner-api/KeyAccountDetailsHandler.h"; sourceTree = "<group>"; };
-		CD4E80D62102BB57007DA585 /* CryptoKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoKey.cpp; path = src/volition/CryptoKey.cpp; sourceTree = "<group>"; };
-		CD4E80D72102BB57007DA585 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
+		CD4E80D62102BB57007DA585 /* AbstractCryptoKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractCryptoKey.cpp; path = src/volition/AbstractCryptoKey.cpp; sourceTree = "<group>"; };
+		CD4E80D72102BB57007DA585 /* AbstractCryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractCryptoKey.h; path = src/volition/AbstractCryptoKey.h; sourceTree = "<group>"; };
 		CD4E80DC21031AB0007DA585 /* Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Digest.h; path = src/volition/Digest.h; sourceTree = "<group>"; };
 		CD4E80E121031FC9007DA585 /* AbstractStringifiable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractStringifiable.h; path = src/volition/serialization/AbstractStringifiable.h; sourceTree = "<group>"; };
 		CD4E80E221033E44007DA585 /* SortedDigestSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SortedDigestSerializer.h; path = src/volition/serialization/SortedDigestSerializer.h; sourceTree = "<group>"; };
@@ -775,6 +781,10 @@
 		CD77522B2532A76200A53765 /* Accessors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Accessors.h; path = src/volition/Accessors.h; sourceTree = "<group>"; };
 		CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerObjectFieldODBM.h; path = src/volition/LedgerObjectFieldODBM.h; sourceTree = "<group>"; };
 		CD7752962536515400A53765 /* AccountID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountID.h; path = src/volition/AccountID.h; sourceTree = "<group>"; };
+		CD7752A02536960B00A53765 /* CryptoKeyPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKeyPair.h; path = src/volition/CryptoKeyPair.h; sourceTree = "<group>"; };
+		CD7752A12536960B00A53765 /* CryptoKeyPair.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoKeyPair.cpp; path = src/volition/CryptoKeyPair.cpp; sourceTree = "<group>"; };
+		CD7752B42536966100A53765 /* CryptoPublicKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoPublicKey.h; path = src/volition/CryptoPublicKey.h; sourceTree = "<group>"; };
+		CD7752B52536966100A53765 /* CryptoPublicKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoPublicKey.cpp; path = src/volition/CryptoPublicKey.cpp; sourceTree = "<group>"; };
 		CD7791FC20F93B1E0058EBAC /* SerializableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableSet.h; path = src/volition/serialization/SerializableSet.h; sourceTree = "<group>"; };
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD7C747823B052BF00FBE468 /* SerializableOpaque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableOpaque.h; path = src/volition/serialization/SerializableOpaque.h; sourceTree = "<group>"; };
@@ -1228,10 +1238,15 @@
 		CD4E80E021031D24007DA585 /* crypto */ = {
 			isa = PBXGroup;
 			children = (
-				CD4E80D62102BB57007DA585 /* CryptoKey.cpp */,
-				CD4E80D72102BB57007DA585 /* CryptoKey.h */,
+				CD4E80D62102BB57007DA585 /* AbstractCryptoKey.cpp */,
+				CD4E80D72102BB57007DA585 /* AbstractCryptoKey.h */,
+				CD20FF052536A2ED00DEB809 /* CryptoKey.h */,
 				CDDB4BAE23319E5E00EEAA60 /* CryptoKeyInfo.cpp */,
 				CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */,
+				CD7752A12536960B00A53765 /* CryptoKeyPair.cpp */,
+				CD7752A02536960B00A53765 /* CryptoKeyPair.h */,
+				CD7752B52536966100A53765 /* CryptoPublicKey.cpp */,
+				CD7752B42536966100A53765 /* CryptoPublicKey.h */,
 				CD4E80DC21031AB0007DA585 /* Digest.h */,
 				CD59F3B120E889A000705AEB /* Signature.cpp */,
 				CD59F3B220E889A000705AEB /* Signature.h */,
@@ -1710,6 +1725,7 @@
 				CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */,
 				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
+				CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */,
 				CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */,
 				CDFA23A7246065AF00B4CECF /* InventoryLogEntry.h in Headers */,
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
@@ -1772,6 +1788,7 @@
 				CDFA238D246007C300B4CECF /* ConstOpt.h in Headers */,
 				CD5EE7FC247E121400060B24 /* PublishSchemaAndReset.h in Headers */,
 				CDFA238A2460071700B4CECF /* AccountODBM.h in Headers */,
+				CD7752B62536966100A53765 /* CryptoPublicKey.h in Headers */,
 				CD1FD29D24B0309000B0D88A /* HardReset.h in Headers */,
 				CD7752972536515400A53765 /* AccountID.h in Headers */,
 				CDF8AD5821F39969000E285F /* Entropy.h in Headers */,
@@ -1815,6 +1832,7 @@
 				CD762AD5232826D7005AC85D /* PathEntitlement.h in Headers */,
 				CD5ECAF3246C7257009146FB /* SchemaVersion.h in Headers */,
 				CD73D8292166D68700F43CC7 /* Analysis.h in Headers */,
+				CD7752A22536960B00A53765 /* CryptoKeyPair.h in Headers */,
 				CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */,
 				CD775197251FF03A00A53765 /* Miner.h in Headers */,
 				CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */,
@@ -1823,7 +1841,7 @@
 				CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
 				CD775257253535FA00A53765 /* LedgerObjectFieldODBM.h in Headers */,
-				CD4E8191210593A4007DA585 /* CryptoKey.h in Headers */,
+				CD4E8191210593A4007DA585 /* AbstractCryptoKey.h in Headers */,
 				CD762AE12328D109005AC85D /* Entitlements.h in Headers */,
 				CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */,
 			);
@@ -2343,6 +2361,7 @@
 				CD4E81AC210593CA007DA585 /* MinerActivity.cpp in Sources */,
 				CD762ACF232825BE005AC85D /* AbstractEntitlement.cpp in Sources */,
 				CD9E7BA124FF67C30065C5FC /* BlockTree.cpp in Sources */,
+				CD7752A32536960B00A53765 /* CryptoKeyPair.cpp in Sources */,
 				CD4E81CB2105941A007DA585 /* AbstractTransactionBody.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
@@ -2352,6 +2371,7 @@
 				CDAA38E6251AA13900FEAFB5 /* SimMiningMessenger.cpp in Sources */,
 				CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */,
 				CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */,
+				CD7752B72536966100A53765 /* CryptoPublicKey.cpp in Sources */,
 				CD9E7BC0250B976C0065C5FC /* HTTPMiningMessenger.cpp in Sources */,
 				CD4E81A3210593BD007DA585 /* Ledger.cpp in Sources */,
 				CD9E7BAF2500999C0065C5FC /* MinerAPIFactory.cpp in Sources */,
@@ -2363,7 +2383,7 @@
 				CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */,
 				CDA1574023FAA92300DFACCF /* Munge.cpp in Sources */,
 				CD4E819D210593BD007DA585 /* MinerInfo.cpp in Sources */,
-				CD4E8190210593A4007DA585 /* CryptoKey.cpp in Sources */,
+				CD4E8190210593A4007DA585 /* AbstractCryptoKey.cpp in Sources */,
 				CD9E7BB72505A8550065C5FC /* MinerLaunchTests.cpp in Sources */,
 				CD73D8282166D68700F43CC7 /* Analysis.cpp in Sources */,
 			);
