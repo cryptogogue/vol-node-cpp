@@ -5,6 +5,7 @@
 #define VOLITION_MINERINFO_H
 
 #include <volition/common.h>
+#include <volition/Accessors.h>
 #include <volition/Account.h>
 #include <volition/CryptoKey.h>
 
@@ -19,33 +20,39 @@ private:
 
     string                  mURL;
     CryptoKey               mPublicKey;
-    Digest                  mVisage;
+    string                  mMotto;
+    Signature               mVisage;
 
 public:
 
+    GET ( string,               Motto,              mMotto )
+    GET ( const CryptoKey&,     PublicKey,          mPublicKey )
+    GET ( string,               URL,                mURL )
+    GET ( const Signature&,     Visage,             mVisage )
+
     //----------------------------------------------------------------//
-    const CryptoKey&        getPublicKey        () const;
-    string                  getURL              () const;
-    const Digest&           getVisage           () const;
+    bool                    isValid             () const;
                             MinerInfo           ();
-                            MinerInfo           ( string url, const CryptoKey& publicKey, const Digest& visage );
+                            MinerInfo           ( string url, const CryptoKey& publicKey, string motto, const Signature& visage );
                             MinerInfo           ( const MinerInfo& minerInfo );
                             ~MinerInfo          ();
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "url",               this->mURL );
-        serializer.serialize ( "publicKey",         this->mPublicKey );
-        serializer.serialize ( "visage",            this->mVisage );
+        serializer.serialize ( "url",           this->mURL );
+        serializer.serialize ( "key",           this->mPublicKey );
+        serializer.serialize ( "motto",         this->mMotto );
+        serializer.serialize ( "visage",        this->mVisage );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
-        serializer.serialize ( "url",               this->mURL );
-        serializer.serialize ( "publicKey",         this->mPublicKey );
-        serializer.serialize ( "visage",            this->mVisage );
+        serializer.serialize ( "url",           this->mURL );
+        serializer.serialize ( "key",           this->mPublicKey.getPublicKey ());
+        serializer.serialize ( "motto",         this->mMotto );
+        serializer.serialize ( "visage",        this->mVisage );
     }
 };
 

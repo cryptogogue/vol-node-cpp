@@ -38,7 +38,7 @@ public:
     static constexpr const char* NODE_CONTROL               = "NODE_CONTROL";
 
     //----------------------------------------------------------------//
-    static shared_ptr < Entitlements > getMasterEntitlements () {
+    static shared_ptr < const Entitlements > getMasterEntitlements () {
         
         shared_ptr < Entitlements > entitlements = make_shared < Entitlements >();
         assert ( entitlements );
@@ -62,6 +62,35 @@ public:
         entitlements->setPath ( UPGRADE_ASSETS,             BooleanEntitlement ( true ));
         
         entitlements->setPath ( NODE_CONTROL,               BooleanEntitlement ( true ));
+        
+        return entitlements;
+    }
+    
+    //----------------------------------------------------------------//
+    static shared_ptr < const Entitlements > getMiningKeyEntitlements () {
+        
+        shared_ptr < Entitlements > entitlements = make_shared < Entitlements >();
+        assert ( entitlements );
+        
+        entitlements->setPath ( AFFIRM_KEY,                 BooleanEntitlement ( false ));
+        entitlements->setPath ( BETA_GET_ASSETS,            BooleanEntitlement ( false ));
+        entitlements->setPath ( BETA_GET_DECK,              BooleanEntitlement ( false ));
+        entitlements->setPath ( HARD_RESET,                 BooleanEntitlement ( false ));
+        entitlements->setPath ( OPEN_ACCOUNT,               BooleanEntitlement ( false ));
+        entitlements->setPath ( PUBLISH_SCHEMA,             BooleanEntitlement ( false ));
+        entitlements->setPath ( PUBLISH_SCHEMA_AND_RESET,   BooleanEntitlement ( false ));
+        entitlements->setPath ( REGISTER_MINER,             BooleanEntitlement ( false ));
+        entitlements->setPath ( RENAME_ACCOUNT,             BooleanEntitlement ( false ));
+        entitlements->setPath ( RESERVE_ACCOUNT_NAME,       BooleanEntitlement ( false ));
+        entitlements->setPath ( RESTRICT_ACCOUNT,           BooleanEntitlement ( false ));
+        entitlements->setPath ( RESTRICT_KEY,               BooleanEntitlement ( false ));
+        entitlements->setPath ( RUN_SCRIPT,                 BooleanEntitlement ( false ));
+        entitlements->setPath ( SEND_ASSETS,                BooleanEntitlement ( true ));
+        entitlements->setPath ( SEND_VOL,                   BooleanEntitlement ( true ));
+        entitlements->setPath ( SET_ENTITLEMENTS,           BooleanEntitlement ( false ));
+        entitlements->setPath ( UPGRADE_ASSETS,             BooleanEntitlement ( false ));
+        
+        entitlements->setPath ( NODE_CONTROL,               BooleanEntitlement ( false ));
         
         return entitlements;
     }

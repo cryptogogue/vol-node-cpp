@@ -10,18 +10,9 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-const CryptoKey& MinerInfo::getPublicKey () const {
-    return this->mPublicKey;
-}
+bool MinerInfo::isValid () const {
 
-//----------------------------------------------------------------//
-string MinerInfo::getURL () const {
-    return this->mURL;
-}
-
-//----------------------------------------------------------------//
-const Digest& MinerInfo::getVisage () const {
-    return this->mVisage;
+    return (( this->mPublicKey.getType () == CryptoKeyInfo::TYPE_RSA ) && this->mPublicKey.verify ( this->mVisage, this->mMotto ));
 }
 
 //----------------------------------------------------------------//
@@ -29,9 +20,10 @@ MinerInfo::MinerInfo () {
 }
 
 //----------------------------------------------------------------//
-MinerInfo::MinerInfo ( string url, const CryptoKey& publicKey, const Digest& visage ) :
+MinerInfo::MinerInfo ( string url, const CryptoKey& publicKey, string motto, const Signature& visage ) :
     mURL ( url ),
-    mPublicKey ( publicKey ),
+    mPublicKey ( publicKey.getPublicKey ()),
+    mMotto ( motto ),
     mVisage ( visage ) {
 }
 
@@ -39,6 +31,7 @@ MinerInfo::MinerInfo ( string url, const CryptoKey& publicKey, const Digest& vis
 MinerInfo::MinerInfo ( const MinerInfo& minerInfo ) :
     mURL ( minerInfo.getURL ()),
     mPublicKey ( minerInfo.getPublicKey ()),
+    mMotto ( minerInfo.getMotto ()),
     mVisage ( minerInfo.getVisage ()) {
 }
 

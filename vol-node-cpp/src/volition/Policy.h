@@ -28,8 +28,8 @@ class Policy :
     public AbstractSerializable {
 private:
 
-    string                                      mBase; // If empty string, will load the base (i.e. most permissive) policy.
-    SerializableSharedPtr < Entitlements >      mRestrictions;
+    string                                          mBase; // If empty string, will load the base (i.e. most permissive) policy.
+    SerializableSharedConstPtr < Entitlements >     mRestrictions;
 
 public:
 
@@ -77,6 +77,12 @@ public:
     
     //----------------------------------------------------------------//
     ~Policy () {
+    }
+    
+    //----------------------------------------------------------------//
+    void setRestrictions ( shared_ptr < const Entitlements > restrictions ) {
+    
+        this->mRestrictions = restrictions;
     }
 };
 

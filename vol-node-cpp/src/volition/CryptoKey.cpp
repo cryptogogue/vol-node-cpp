@@ -61,6 +61,34 @@ int CryptoKey::getNIDFromGroupName ( string groupName ) {
 }
 
 //----------------------------------------------------------------//
+CryptoKey CryptoKey::getPublicKey () const {
+
+    CryptoKey publicKey;
+
+    if ( this->mKeyPair ) {
+        CryptoKeyInfo info ( *this );
+        info.mPrivateKey.clear ();
+        publicKey.mKeyPair = info.makeKeyPair ();
+    }
+    return publicKey;
+}
+
+//----------------------------------------------------------------//
+CryptoKeyInfo::Type CryptoKey::getType () const {
+
+    if ( this->mKeyPair ) {
+        switch ( this->mKeyPair->type ()) {
+            
+            case Poco::Crypto::KeyPair::KT_EC:      return CryptoKeyInfo::TYPE_EC;
+            case Poco::Crypto::KeyPair::KT_RSA:     return CryptoKeyInfo::TYPE_RSA;
+            default:
+                break;
+        }
+    }
+    return CryptoKeyInfo::TYPE_UNKNOWN;
+}
+
+//----------------------------------------------------------------//
 bool CryptoKey::hasCurve ( int nid ) {
 
     return CryptoKey::hasCurve ( CryptoKey::getGroupNameFromNID ( nid ));

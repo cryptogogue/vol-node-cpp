@@ -28,20 +28,19 @@ CryptoKeyInfo::CryptoKeyInfo () :
 //----------------------------------------------------------------//
 CryptoKeyInfo::CryptoKeyInfo ( const CryptoKey& cryptoKey, EncodeAs encodeAs ) :
     mFormat ( UNKNOWN ) {
-        
-    const Poco::Crypto::KeyPair* keyPair = cryptoKey;
-    if ( !keyPair ) return;
     
-    switch ( keyPair->type ()) {
+    switch ( cryptoKey.getType ()) {
         
-        case Poco::Crypto::KeyPair::KT_EC: {
+        case TYPE_EC:
             this->initFromEC ( cryptoKey, encodeAs );
             break;
-        }
-        case Poco::Crypto::KeyPair::KT_RSA: {
+
+        case TYPE_RSA:
             this->initFromRSA ( cryptoKey, encodeAs );
             break;
-        }
+
+        default:
+            break;
     }
 }
 

@@ -41,16 +41,15 @@ bool Ledger_Account::affirmKey ( AccountID accountID, string makerKeyName, strin
 
     if ( key ) {
         
-        const KeyAndPolicy* makerKeyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
+        KeyAndPolicy makerKeyAndPolicy = account->getKeyAndPolicy ( makerKeyName );
         if ( !makerKeyAndPolicy ) return false;
         
         const Policy* selectedPolicy = policy;
         if ( selectedPolicy ) {
-            if ( !ledger.isValidPolicy < KeyEntitlements >( *selectedPolicy, makerKeyAndPolicy->mPolicy )) return false;
+            if ( !ledger.isValidPolicy < KeyEntitlements >( *selectedPolicy, makerKeyAndPolicy.mPolicy )) return false;
         }
         else {
-            const KeyAndPolicy* keyAndPolicy = account->getKeyAndPolicyOrNull ( makerKeyName );
-            selectedPolicy = keyAndPolicy ? &keyAndPolicy->mPolicy : &makerKeyAndPolicy->mPolicy;
+            selectedPolicy = &makerKeyAndPolicy.mPolicy;
         }
         
         Account updatedAccount = *account;

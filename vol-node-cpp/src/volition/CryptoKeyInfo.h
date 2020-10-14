@@ -22,6 +22,7 @@ public:
     typedef shared_ptr < Poco::Crypto::KeyPair > KeyPairPtr;
 
     enum Type {
+        TYPE_UNKNOWN    = 0x00,
         TYPE_EC         = 0x01,
         TYPE_RSA        = 0x02,
         TYPE_MASK       = 0x0f,

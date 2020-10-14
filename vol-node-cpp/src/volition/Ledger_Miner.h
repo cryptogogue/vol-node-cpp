@@ -26,8 +26,7 @@ public:
 
     //----------------------------------------------------------------//
     set < string >                      getMiners                       () const;
-    shared_ptr < MinerURLMap >          getMinerURLs                    () const;
-    LedgerResult                        registerMiner                   ( AccountID accountID, string keyName, string url, string motto, const Signature& visage );
+    LedgerResult                        registerMiner                   ( AccountID accountID, const MinerInfo& minerInfo );
 };
 
 } // namespace Volition

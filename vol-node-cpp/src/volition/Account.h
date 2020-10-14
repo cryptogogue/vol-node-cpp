@@ -63,13 +63,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    const KeyAndPolicy* getKeyAndPolicyOrNull ( string keyName ) const {
-    
+    KeyAndPolicy getKeyAndPolicy ( string keyName ) const {
+        
         map < string, KeyAndPolicy >::const_iterator keyAndPolicyIt = this->mKeys.find ( keyName );
         if ( keyAndPolicyIt != this->mKeys.cend ()) {
-            return &keyAndPolicyIt->second;
+            return keyAndPolicyIt->second;
         }
-        return NULL;
+        return KeyAndPolicy ();
     }
 
     //----------------------------------------------------------------//

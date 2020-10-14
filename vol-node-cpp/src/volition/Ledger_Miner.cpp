@@ -38,47 +38,25 @@ set < string > Ledger_Miner::getMiners () const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Ledger::MinerURLMap > Ledger_Miner::getMinerURLs () const {
+LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo& minerInfo ) {
 
-    const Ledger& ledger = this->getLedger ();
-    
-    return ledger.getObjectOrNull < MinerURLMap >( Ledger::keyFor_minerURLs ());
-}
-
-//----------------------------------------------------------------//
-LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, string keyName, string url, string motto, const Signature& visage ) {
+    if ( !minerInfo.isValid ()) return "Invalid miner info.";
 
     Ledger& ledger = this->getLedger ();
+    
+    AccountODBM accountODBM ( ledger, accountID );
+    accountODBM.mMinerInfo.set ( minerInfo );
+    
+    // TODO: find an efficient way to do all this
+    string accountName = accountODBM.mName.get ();
+    
+    LedgerKey KEY_FOR_MINERS = Ledger::keyFor_miners ();
+    shared_ptr < SerializableSet < string >> miners = ledger.getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );
+    assert ( miners );
+    miners->insert ( accountName );
+    ledger.setObject < SerializableSet < string >>( KEY_FOR_MINERS, *miners );
 
-    AccountKey accountKey = ledger.getAccountKey ( accountID, keyName );
-    if ( accountKey ) {
-
-        shared_ptr < const Account > account = accountKey.mAccount;
-        CryptoKey key = accountKey.mKeyAndPolicy->mKey;
-        
-        if ( !key.verify ( visage, motto )) return "Corrupt visage.";
-        
-        AccountODBM accountODBM ( ledger, accountID );
-        accountODBM.mMinerInfo.set ( MinerInfo ( url, key, visage ));
-        
-        // TODO: find an efficient way to do all this
-        string accountName = accountODBM.mName.get ();
-        
-        LedgerKey KEY_FOR_MINERS = Ledger::keyFor_miners ();
-        shared_ptr < SerializableSet < string >> miners = ledger.getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );
-        assert ( miners );
-        miners->insert ( accountName );
-        ledger.setObject < SerializableSet < string >>( KEY_FOR_MINERS, *miners );
-        
-        LedgerKey KEY_FOR_MINER_URLS = Ledger::keyFor_minerURLs ();
-        shared_ptr < SerializableMap < string, string >> minerURLs = ledger.getObjectOrNull < SerializableMap < string, string >>( KEY_FOR_MINER_URLS );
-        assert ( minerURLs );
-        ( *minerURLs )[ accountName ] = url;
-        ledger.setObject < SerializableMap < string, string >>( KEY_FOR_MINER_URLS, *minerURLs );
-
-        return true;
-    }
-    return false;
+    return true;
 }
 
 } // namespace Volition

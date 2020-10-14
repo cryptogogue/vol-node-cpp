@@ -19,7 +19,7 @@ public:
     static constexpr const char* MAX_VOL            = "MAX_VOL";
 
     //----------------------------------------------------------------//
-    static shared_ptr < Entitlements > getMasterEntitlements () {
+    static shared_ptr < const Entitlements > getMasterEntitlements () {
     
         shared_ptr < Entitlements > entitlements = make_shared < Entitlements >();
         assert ( entitlements );

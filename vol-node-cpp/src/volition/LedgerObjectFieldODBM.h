@@ -28,7 +28,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    bool exists () const {
+    bool exists () {
             
         return this->mLedger.getConst ().hasValue ( this->mKey );
     }

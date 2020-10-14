@@ -143,13 +143,17 @@ void Simulator::prepare () {
 
         Transactions::GenesisAccount genesisAccount;
         
-        genesisAccount.mName    = miner->getMinerID ();
-        genesisAccount.mKey     = miner->getKeyPair ();
-        genesisAccount.mGrant   = 0;
-        genesisAccount.mURL     = Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", ( int )this->mBasePort ).c_str (), miner->getMinerID ().c_str ());
-
-        genesisAccount.mMotto   = miner->getMotto ();
-        genesisAccount.mVisage  = miner->getVisage ();
+        shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
+            Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", ( int )this->mBasePort ).c_str (), miner->getMinerID ().c_str ()),
+            miner->getKeyPair (),
+            miner->getMotto (),
+            miner->getVisage ()
+        );
+        
+        genesisAccount.mName            = miner->getMinerID ();
+        genesisAccount.mKey             = miner->getKeyPair ();
+        genesisAccount.mGrant           = 0;
+        genesisAccount.mMinerInfo       = minerInfo;
 
         genesisMinerTransactionBody->pushAccount ( genesisAccount );
     }

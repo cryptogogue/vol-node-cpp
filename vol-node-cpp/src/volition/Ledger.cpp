@@ -214,7 +214,6 @@ void Ledger::init () {
 
     this->clear ();
     this->setObject < SerializableSet < string >>( keyFor_miners (), SerializableSet < string > ());
-    this->setObject < SerializableMap < string, string >>( keyFor_minerURLs (), SerializableMap < string, string > ());
     this->setValue < AssetID::Index >( keyFor_globalAccountCount (), 0 );
     this->setValue < AssetID::Index >( keyFor_globalAssetCount (), 0 );
     this->setValue < string >( keyFor_schema (), "{}" );

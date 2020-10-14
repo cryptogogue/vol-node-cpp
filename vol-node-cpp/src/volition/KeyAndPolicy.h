@@ -26,6 +26,16 @@ public:
     SerializableSharedPtr < Policy >    mBequest;
 
     //----------------------------------------------------------------//
+    operator bool () const {
+        return ( bool )this->mKey;
+    }
+
+    //----------------------------------------------------------------//
+    operator const CryptoKey& () const {
+        return this->mKey;
+    }
+
+    //----------------------------------------------------------------//
     operator const Policy& () const {
         return this->mPolicy;
     }

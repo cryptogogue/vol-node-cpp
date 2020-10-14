@@ -150,12 +150,17 @@ public:
 
         Transactions::GenesisAccount genesisAccount;
         
-        genesisAccount.mName    = miner->getMinerID ();
-        genesisAccount.mKey     = miner->getKeyPair ();
-        genesisAccount.mGrant   = 0;
-        genesisAccount.mURL     = url;
-        genesisAccount.mMotto   = miner->getMotto ();
-        genesisAccount.mVisage  = miner->getVisage ();
+        shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
+            url,
+            miner->getKeyPair (),
+            miner->getMotto (),
+            miner->getVisage ()
+        );
+        
+        genesisAccount.mName            = miner->getMinerID ();
+        genesisAccount.mKey             = miner->getKeyPair ();
+        genesisAccount.mGrant           = 0;
+        genesisAccount.mMinerInfo       = minerInfo;
 
         ToJSONSerializer::toJSONFile ( genesisAccount, Format::write ( "%s.account.json", name.c_str ()));
         ToJSONSerializer::toJSONFile ( cryptoKey, Format::write ( "%s.keypair.json", name.c_str ()));

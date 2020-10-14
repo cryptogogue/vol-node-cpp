@@ -6,7 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
-#include <volition/Policy.h>
+#include <volition/MinerInfo.h>
 
 namespace Volition {
 namespace Transactions {
@@ -22,34 +22,29 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string          mURL;
-    string          mMotto;
-    Signature       mVisage;
+    SerializableSharedConstPtr < MinerInfo > mMinerInfo;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "url",           this->mURL );
-        serializer.serialize ( "motto",         this->mMotto );
-        serializer.serialize ( "visage",        this->mVisage );
+        serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "url",           this->mURL );
-        serializer.serialize ( "motto",         this->mMotto );
-        serializer.serialize ( "visage",        this->mVisage );
+        serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
 
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
+        if ( !this->mMinerInfo ) return "Missing miner info.";
         
-        return context.mLedger.registerMiner ( context.mIndex, this->mMaker->getKeyName (), this->mURL, this->mMotto, this->mVisage );
+        return context.mLedger.registerMiner ( context.mIndex, *this->mMinerInfo );
     }
 };
 

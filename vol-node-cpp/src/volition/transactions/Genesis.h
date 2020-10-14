@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/MinerInfo.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -21,31 +22,24 @@ public:
     string          mName;
     CryptoKey       mKey;
     u64             mGrant;
-    string          mURL;
-    string          mMotto;
-    Signature       mVisage;
-
+    SerializableSharedConstPtr < MinerInfo > mMinerInfo;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         
-        serializer.serialize ( "name",      this->mName );
-        serializer.serialize ( "grant",     this->mGrant  );
-        serializer.serialize ( "key",       this->mKey );
-        serializer.serialize ( "url",       this->mURL );
-        serializer.serialize ( "motto",     this->mMotto );
-        serializer.serialize ( "visage",    this->mVisage );
+        serializer.serialize ( "name",          this->mName );
+        serializer.serialize ( "grant",         this->mGrant  );
+        serializer.serialize ( "key",           this->mKey );
+        serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
-        serializer.serialize ( "name",      this->mName );
-        serializer.serialize ( "grant",     this->mGrant  );
-        serializer.serialize ( "key",       this->mKey );
-        serializer.serialize ( "url",       this->mURL );
-        serializer.serialize ( "motto",     this->mMotto );
-        serializer.serialize ( "visage",    this->mVisage );
+        serializer.serialize ( "name",          this->mName );
+        serializer.serialize ( "grant",         this->mGrant  );
+        serializer.serialize ( "key",           this->mKey );
+        serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
 };
 
@@ -74,13 +68,10 @@ public:
             u64 grant = ledger.createVOL ( account.mGrant );
             
             if ( !ledger.newAccount ( account.mName, grant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
-            if ( account.mURL.size () > 0 ) {
+            if ( account.mMinerInfo ) {
                 if ( !ledger.registerMiner (
                     ledger.getAccountID ( account.mName ),
-                    Ledger::MASTER_KEY_NAME,
-                    account.mURL,
-                    account.mMotto,
-                    account.mVisage
+                    *account.mMinerInfo
                 )) return false;
             }
         }

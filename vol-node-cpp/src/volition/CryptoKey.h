@@ -5,6 +5,7 @@
 #define VOLITION_CRYPTOKEY_H
 
 #include <volition/common.h>
+#include <volition/CryptoKeyInfo.h>
 #include <volition/Signature.h>
 #include <volition/serialization/Serialization.h>
 
@@ -43,26 +44,28 @@ public:
     static const int    DEFAULT_EC_GROUP_NID = NID_secp256k1;
 
     //----------------------------------------------------------------//
-                        CryptoKey               ();
-                        ~CryptoKey              ();
-    void                elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
-    void                elliptic                ( string groupName );
-    static string       getGroupNameFromNID     ( int nid );
-    string              getKeyID                () const; // this is just a simple hash of the hex-encoded public key
-    static int          getNIDFromGroupName     ( string groupName );
-    static bool         hasCurve                ( int nid );
-    static bool         hasCurve                ( string groupName );
-    void                rsa                     ( uint keyLength = RSA_1024, unsigned long exp = RSA_EXP_65537 );
-    void                rsaFromPEM              ( string publicKey, string privateKey );
-    Signature           sign                    ( const Digest& digest, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
-    Signature           sign                    ( const Digest::DigestFunc& digestFunc, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
-    Signature           sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
-    Signature           sign                    ( string message, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
-    string              toPEM                   () const;
-    bool                verify                  ( const Signature& signature, const Digest& digest ) const;
-    bool                verify                  ( const Signature& signature, const Digest::DigestFunc& digestFunc ) const;
-    bool                verify                  ( const Signature& signature, const AbstractSerializable& serializable ) const;
-    bool                verify                  ( const Signature& signature, string message ) const;
+                            CryptoKey               ();
+                            ~CryptoKey              ();
+    void                    elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
+    void                    elliptic                ( string groupName );
+    static string           getGroupNameFromNID     ( int nid );
+    string                  getKeyID                () const; // this is just a simple hash of the hex-encoded public key
+    static int              getNIDFromGroupName     ( string groupName );
+    CryptoKey               getPublicKey            () const;
+    CryptoKeyInfo::Type     getType                 () const;
+    static bool             hasCurve                ( int nid );
+    static bool             hasCurve                ( string groupName );
+    void                    rsa                     ( uint keyLength = RSA_1024, unsigned long exp = RSA_EXP_65537 );
+    void                    rsaFromPEM              ( string publicKey, string privateKey );
+    Signature               sign                    ( const Digest& digest, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    Signature               sign                    ( const Digest::DigestFunc& digestFunc, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    Signature               sign                    ( const AbstractSerializable& serializable, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    Signature               sign                    ( string message, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;
+    string                  toPEM                   () const;
+    bool                    verify                  ( const Signature& signature, const Digest& digest ) const;
+    bool                    verify                  ( const Signature& signature, const Digest::DigestFunc& digestFunc ) const;
+    bool                    verify                  ( const Signature& signature, const AbstractSerializable& serializable ) const;
+    bool                    verify                  ( const Signature& signature, string message ) const;
     
     //----------------------------------------------------------------//
     operator bool () const {

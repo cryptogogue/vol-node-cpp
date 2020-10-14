@@ -122,6 +122,24 @@ public:
     }
     
     //----------------------------------------------------------------//
+    KeyAndPolicy getKeyAndPolicyOrNull ( string keyName ) {
+    
+        if ( keyName.size ()) {
+            return this->mBody.get ()->getKeyAndPolicy ( keyName );
+        }
+        
+        shared_ptr < const MinerInfo > minerInfo = this->mMinerInfo.get ();
+        if ( minerInfo ) {
+        
+            const CryptoKey& key = minerInfo->getPublicKey ();
+            Policy policy;
+            policy.setRestrictions ( KeyEntitlements::getMiningKeyEntitlements ());
+            return KeyAndPolicy ( key, policy );
+        }
+        return KeyAndPolicy ();
+    }
+    
+    //----------------------------------------------------------------//
     LedgerFieldODBM < u64 > getTransactionLookupField ( string uuid ) {
     
         return LedgerFieldODBM < u64 >( this->mLedger, keyFor_transactionLookup ( this->mAccountID, uuid ), 0 );

@@ -178,11 +178,6 @@ public:
     static LedgerKey keyFor_miners () {
         return "miners";
     }
-
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_minerURLs () {
-        return "minerURLs";
-    }
     
     //----------------------------------------------------------------//
     static LedgerKey keyFor_schema () {
