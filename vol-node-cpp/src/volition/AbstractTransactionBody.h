@@ -8,12 +8,18 @@
 #include <volition/CryptoKey.h>
 #include <volition/Digest.h>
 #include <volition/Ledger.h>
+#include <volition/Miner.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/TransactionContext.h>
 #include <volition/TransactionMaker.h>
 #include <volition/TransactionResult.h>
 
 namespace Volition {
+
+#define TRANSACTION_CONTROL(level)                                  \
+    Miner::Control AbstractTransactionBody_controlLevel () const override { \
+        return level;                                               \
+    }
 
 #define TRANSACTION_TYPE(typeString)                                \
     static constexpr const char* TYPE_STRING = typeString;          \
@@ -35,6 +41,7 @@ namespace Volition {
 
 class Miner;
 class Transaction;
+class TransactionContext;
 
 //================================================================//
 // AbstractTransactionBody
@@ -55,14 +62,14 @@ protected:
     void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
     //----------------------------------------------------------------//
-    virtual TransactionResult   AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
-    virtual TransactionResult   AbstractTransactionBody_control         ( Miner& miner ) const;
-    virtual u64                 AbstractTransactionBody_cost            () const;
-    virtual u64                 AbstractTransactionBody_maturity        () const = 0;
-    virtual bool                AbstractTransactionBody_needsControl    () const;
-    virtual u64                 AbstractTransactionBody_nonce           () const;
-    virtual string              AbstractTransactionBody_typeString      () const = 0;
-    virtual u64                 AbstractTransactionBody_weight          () const = 0;
+    virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
+    virtual TransactionResult       AbstractTransactionBody_control         ( Miner& miner ) const;
+    virtual Miner::Control          AbstractTransactionBody_controlLevel    () const;
+    virtual u64                     AbstractTransactionBody_cost            () const;
+    virtual u64                     AbstractTransactionBody_maturity        () const = 0;
+    virtual u64                     AbstractTransactionBody_nonce           () const;
+    virtual string                  AbstractTransactionBody_typeString      () const = 0;
+    virtual u64                     AbstractTransactionBody_weight          () const = 0;
 
 public:
 
@@ -71,10 +78,10 @@ public:
                             ~AbstractTransactionBody                ();
     TransactionResult       apply                                   ( TransactionContext& context ) const;
     TransactionResult       control                                 ( Miner& miner ) const;
+    Miner::Control          controlLevel                            () const;
     u64                     cost                                    () const;
     u64                     gratuity                                () const;
     u64                     maturity                                () const;
-    bool                    needsControl                            () const;
     u64                     nonce                                   () const;
     string                  typeString                              () const;
     string                  uuid                                    () const;

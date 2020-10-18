@@ -19,6 +19,7 @@
 #include <volition/web-miner-api/KeyAccountDetailsHandler.h>
 #include <volition/web-miner-api/KeyDetailsHandler.h>
 #include <volition/web-miner-api/MinerListHandler.h>
+#include <volition/web-miner-api/NodeDetailsHandler.h>
 #include <volition/web-miner-api/ResetChainHandler.h>
 #include <volition/web-miner-api/SchemaHandler.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
@@ -53,6 +54,7 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyAccountDetailsHandler >             ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/account/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >                    ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >                     ( HTTP::GET,        Format::write ( "%s/miners/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::NodeDetailsHandler >                   ( HTTP::GET,        Format::write ( "%s/node/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::SchemaHandler >                        ( HTTP::GET,        Format::write ( "%s/schema/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >                   ( HTTP::POST,       Format::write ( "%s/test/extendChain/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >                     ( HTTP::POST,       Format::write ( "%s/test/keyid/?", prefix ));

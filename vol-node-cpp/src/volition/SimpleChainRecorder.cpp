@@ -43,7 +43,7 @@ SimpleChainRecorder::~SimpleChainRecorder () {
 //================================================================//
 
 //----------------------------------------------------------------//
-void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const {
+void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) {
     
     const Ledger& ledger = miner.getLedger ();
     assert ( ledger.countBlocks () == 1 );
@@ -56,6 +56,15 @@ void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) const
         shared_ptr < Block > block = make_shared < Block >();
         FromJSONSerializer::fromJSONFile ( *block, blockPath );
         AbstractChainRecorder::pushBlock ( miner, block );
+    }
+}
+
+//----------------------------------------------------------------//
+void SimpleChainRecorder::AbstractChainRecorder_loadConfig ( MinerConfig& minerConfig ) {
+
+    string configPath = Format::write ( "%sconfig.json", this->mChainFolderPath.c_str ());
+    if ( FileSys::exists ( configPath )) {
+        FromJSONSerializer::fromJSONFile ( minerConfig, configPath );
     }
 }
 
@@ -87,6 +96,13 @@ void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner )
         if ( FileSys::exists ( blockPath )) continue;
         ToJSONSerializer::toJSONFile ( *block, blockPath );
     }
+}
+
+//----------------------------------------------------------------//
+void SimpleChainRecorder::AbstractChainRecorder_saveConfig ( const MinerConfig& minerConfig ) {
+
+    string configPath = Format::write ( "%sconfig.json", this->mChainFolderPath.c_str ());
+    ToJSONSerializer::toJSONFile ( minerConfig, configPath );
 }
 
 } // namespace Volition

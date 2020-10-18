@@ -127,7 +127,7 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, Ac
 TransactionResult Transaction::control ( Miner& miner ) const {
 
     if ( !this->needsControl ()) return true;
-    if ( !miner.controlPermitted ()) return "CONTROL: Control not permitted by this mining node.";
+    if ( !miner.controlPermitted ( *this )) return "CONTROL: Control not permitted by this mining node.";
 
     Ledger& ledger = miner.getLedger ();
 
@@ -142,6 +142,12 @@ TransactionResult Transaction::control ( Miner& miner ) const {
     if ( !entitlements.check ( KeyEntitlements::NODE_CONTROL )) return "Permission denied.";
     
     return this->mBody->control ( miner );
+}
+
+//----------------------------------------------------------------//
+Miner::Control Transaction::controlLevel () const {
+
+    return this->mBody ? this->mBody->controlLevel () : Miner::CONTROL_NONE;
 }
 
 //----------------------------------------------------------------//
@@ -170,13 +176,14 @@ string Transaction::getUUID () const {
 
 //----------------------------------------------------------------//
 u64 Transaction::maturity () const {
+
     return this->mBody->maturity ();
 }
 
 //----------------------------------------------------------------//
 bool Transaction::needsControl () const {
 
-    return ( this->mBody && this->mBody->needsControl ());
+    return this->mBody ? ( this->mBody->controlLevel () > Miner::CONTROL_NONE ) : false;
 }
 
 //----------------------------------------------------------------//

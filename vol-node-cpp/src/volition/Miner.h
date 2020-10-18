@@ -13,7 +13,6 @@
 #include <volition/TransactionQueue.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
-#include <volition/Transaction.h>
 
 namespace Volition {
 
@@ -65,6 +64,36 @@ private:
 };
 
 //================================================================//
+// MinerConfig
+//================================================================//
+class MinerConfig :
+    public AbstractSerializable {
+public:
+
+    string      mReward;
+    u64         mMinimumGratuity;
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "reward",            this->mReward );
+        serializer.serialize ( "minimumGratuity",   this->mMinimumGratuity );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "reward",            this->mReward );
+        serializer.serialize ( "minimumGratuity",   this->mMinimumGratuity );
+    }
+    
+    //----------------------------------------------------------------//
+    MinerConfig () :
+        mMinimumGratuity ( 0 ) {
+    }
+};
+
+//================================================================//
 // Miner
 //================================================================//
 class Miner :
@@ -73,10 +102,16 @@ class Miner :
     public TransactionQueue {
 public:
 
+    enum Control {
+        CONTROL_NONE,
+        CONTROL_CONFIG,
+        CONTROL_ADMIN,
+    };
+
     enum : int {
         MINER_LAZY                  = 0x01,
         MINER_VERBOSE               = 0x02,
-        MINER_PERMIT_CONTROL        = 0x04,
+        MINER_MUTE                  = 0x08,
     };
 
     static const int DEFAULT_FLAGS = 0;
@@ -96,8 +131,11 @@ protected:
 
     int                                             mFlags;
     BlockTreeNode::RewriteMode                      mRewriteMode;
+    Control                                         mControlLevel;
     time_t                                          mRewriteWindowInSeconds;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
+
+    MinerConfig                                     mConfig;
 
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
@@ -128,6 +166,7 @@ protected:
     void                                pushBlock                   ( shared_ptr < const Block > block );
     void                                requestHeaders              ();
     void                                saveChain                   ();
+    void                                saveConfig                  ();
     void                                selectBestBranch            ( time_t now );
     BlockTreeNode::ConstPtr             truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
     void                                updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
@@ -150,20 +189,21 @@ public:
     
     GET ( BlockTreeNode::ConstPtr,                  BestBranch,                 mBestBranch )
     GET ( const BlockTree&,                         BlockTree,                  mBlockTree )
-    GET ( const CryptoKeyPair&,                     KeyPair,                    mKeyPair )
+    GET ( BlockTreeNode::ConstPtr,                  ChainTag,                   mChainTag )
     GET ( const Ledger&,                            Ledger,                     *mChain )
-    GET ( string,                                   MinerID,                    mMinerID )
-    GET ( string,                                   Motto,                      mMotto )
-    GET ( BlockTreeNode::RewriteMode,               RewriteMode,                mRewriteMode )
+    GET ( u64,                                      MinimumGratuity,            mConfig.mMinimumGratuity )
+    GET ( string,                                   Reward,                     mConfig.mReward )
     GET ( time_t,                                   RewriteWindowInSeconds,     mRewriteWindowInSeconds )
     GET ( SerializableTime,                         StartTime,                  mStartTime )
     GET ( const Signature&,                         Visage,                     mVisage )
     
-    SET ( const CryptoKeyPair&,                     KeyPair,                    mKeyPair )
     SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  mMessenger )
-    SET ( string,                                   MinerID,                    mMinerID )
-    SET ( string,                                   Motto,                      mMotto )
-    SET ( BlockTreeNode::RewriteMode,               RewriteMode,                mRewriteMode)
+    
+    GET_SET ( Control,                              ControlLevel,               mControlLevel)
+    GET_SET ( const CryptoKeyPair&,                 KeyPair,                    mKeyPair )
+    GET_SET ( string,                               MinerID,                    mMinerID )
+    GET_SET ( string,                               Motto,                      mMotto )
+    GET_SET ( BlockTreeNode::RewriteMode,           RewriteMode,                mRewriteMode)
     
     //----------------------------------------------------------------//
     operator Poco::Mutex& () {
@@ -175,7 +215,7 @@ public:
     void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
     void                                affirmVisage                ();
     bool                                checkBestBranch             ( string miners ) const;
-    bool                                controlPermitted            () const;
+    bool                                controlPermitted            ( const Transaction& transaction ) const;
     size_t                              countBranches               () const;
     void                                extend                      ( time_t now );
     Ledger&                             getLedger                   ();
@@ -184,12 +224,14 @@ public:
     void                                loadKey                     ( string keyfile, string password = "" );
                                         Miner                       ();
     virtual                             ~Miner                      ();
-    void                                permitControl               ( bool permit );
     shared_ptr < Block >                prepareBlock                ( time_t now );
     void                                reset                       ();
     void                                setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                                setGenesis                  ( shared_ptr < const Block > block );
     void                                setLazy                     ( bool lazy );
+    void                                setMinimumGratuity          ( u64 minimumGratuity );
+    void                                setMute                     ( bool paused );
+    void                                setReward                   ( string reward );
     void                                setRewriteWindow            ( time_t window );
     void                                setVerbose                  ( bool verbose );
     void                                shutdown                    ( bool kill = false );

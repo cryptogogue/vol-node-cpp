@@ -31,6 +31,11 @@ TransactionResult AbstractTransactionBody::control ( Miner& miner ) const {
 }
 
 //----------------------------------------------------------------//
+Miner::Control AbstractTransactionBody::controlLevel () const {
+    return this->AbstractTransactionBody_controlLevel ();
+}
+
+//----------------------------------------------------------------//
 u64 AbstractTransactionBody::cost () const {
     return this->gratuity () + this->AbstractTransactionBody_cost ();
 }
@@ -43,11 +48,6 @@ u64 AbstractTransactionBody::gratuity () const {
 //----------------------------------------------------------------//
 u64 AbstractTransactionBody::maturity () const {
     return this->AbstractTransactionBody_maturity ();
-}
-
-//----------------------------------------------------------------//
-bool AbstractTransactionBody::needsControl () const {
-    return this->AbstractTransactionBody_needsControl ();
 }
 
 //----------------------------------------------------------------//
@@ -107,15 +107,15 @@ TransactionResult AbstractTransactionBody::AbstractTransactionBody_control ( Min
 }
 
 //----------------------------------------------------------------//
-u64 AbstractTransactionBody::AbstractTransactionBody_cost () const {
+Miner::Control AbstractTransactionBody::AbstractTransactionBody_controlLevel () const {
 
-    return 0;
+    return Miner::CONTROL_NONE;
 }
 
 //----------------------------------------------------------------//
-bool AbstractTransactionBody::AbstractTransactionBody_needsControl () const {
+u64 AbstractTransactionBody::AbstractTransactionBody_cost () const {
 
-    return false;
+    return 0;
 }
 
 //----------------------------------------------------------------//

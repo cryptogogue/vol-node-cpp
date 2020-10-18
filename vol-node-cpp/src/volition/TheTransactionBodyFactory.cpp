@@ -32,10 +32,12 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::RestrictAccount >();
     this->registerTransaction < Volition::Transactions::RestrictKey >();
     this->registerTransaction < Volition::Transactions::RunScript >();
+    this->registerTransaction < Volition::Transactions::SelectReward >();
     this->registerTransaction < Volition::Transactions::SendAssets >();
     this->registerTransaction < Volition::Transactions::SendVOL >();
     this->registerTransaction < Volition::Transactions::SetEntitlements >();
-    this->registerTransaction < Volition::Transactions::UpgradeAssets >();
+    this->registerTransaction < Volition::Transactions::SetMinimumGratuity >();
+    this->registerTransaction < Volition::Transactions::UpgradeAssets >();    
 }
 
 //----------------------------------------------------------------//

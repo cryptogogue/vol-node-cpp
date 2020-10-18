@@ -13,7 +13,7 @@
 namespace Volition {
 
 class Ledger;
-class TransactionMaker;
+class Miner;
 
 //================================================================//
 // Transaction
@@ -36,8 +36,8 @@ protected:
     TransactionResult           checkBody               ( Ledger& ledger, time_t time ) const;
     
     //----------------------------------------------------------------//
-    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
@@ -46,6 +46,7 @@ public:
     bool                        checkMaker              ( string accountName, string uuid ) const;
     TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key ) const;
     TransactionResult           control                 ( Miner& miner ) const;
+    Miner::Control              controlLevel            () const;
     u64                         getGratuity             () const;
     const TransactionMaker*     getMaker                () const;
     u64                         getNonce                () const;

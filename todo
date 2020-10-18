@@ -106,22 +106,24 @@ DONE: wallet - add event listener for IndexedDB (to handle multi-tab updates) - 
 DONE: node - add timstamps and lookback to simulator
 DONE: node - test lookback scenarios
 DONE: node - consensus for missing blocks (header is published but not block)
+DONE: node - enforce mining key permissions (mining keys use default entitlements)
 
 ----------------------------------------------------------------
 LAUNCH
 
 node - setup guide
 node - command line utils (for generating genesis miner account; distribute via Docker)
-node - VOLOPT (transaction fees)
 node - mining reward transaction (first in block? transaction count? transaction needed at all, or part of block?)
-node - exercise option transaction (claim mining reward)
 node - high-confidence chain (based on consensus)
 node - sqlite persistence (or anything ACID)
 node - report other active nodes
-node - RSA transaction signatures
 node - sponsor miner transaction
-node - enforce mining key permissions (mining keys must *not* restrict reward claim; check *before* and *after* apply block)
-node - automatically close mining account if mining key is restricted
+node - fixed gratuity requirement
+node - implement rake
+node - implement tax
+node - set minimal time between blocks
+
+wallet - decimal points for VOL (3)
 
 wallet - RSA key support
 wallet - mining account request (RSA key, motto, visage)
@@ -164,6 +166,9 @@ node - finalize multi-part transaction implementation
 node - reimplement 'run script' as multi-part transaction
 node - per asset modification metadata
 node - record asset exchange metadata (inventory nonce, sender, note)
+
+node - VOLOPT (transaction fees)
+node - exercise option transaction (claim mining reward)
 
 ----------------------------------------------------------------
 FUTURE (?)

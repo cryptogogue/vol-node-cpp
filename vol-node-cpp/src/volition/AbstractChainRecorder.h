@@ -27,9 +27,11 @@ protected:
     }
 
     //----------------------------------------------------------------//
-    virtual void            AbstractChainRecorder_loadChain         ( Miner& miner ) const = 0;
+    virtual void            AbstractChainRecorder_loadChain         ( Miner& miner ) = 0;
+    virtual void            AbstractChainRecorder_loadConfig        ( MinerConfig& minerConfig ) = 0;
     virtual void            AbstractChainRecorder_reset             () = 0;
     virtual void            AbstractChainRecorder_saveChain         ( const Miner& miner ) = 0;
+    virtual void            AbstractChainRecorder_saveConfig        ( const MinerConfig& minerConfig ) = 0;
 
 public:
 
@@ -47,8 +49,13 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void loadChain ( Miner& miner ) const {
+    void loadChain ( Miner& miner ) {
         this->AbstractChainRecorder_loadChain ( miner );
+    }
+    
+    //----------------------------------------------------------------//
+    void loadConfig ( MinerConfig& minerConfig ) {
+        this->AbstractChainRecorder_loadConfig ( minerConfig );
     }
     
     //----------------------------------------------------------------//
@@ -59,6 +66,11 @@ public:
     //----------------------------------------------------------------//
     void saveChain ( const Miner& miner ) {
         this->AbstractChainRecorder_saveChain ( miner );
+    }
+    
+    //----------------------------------------------------------------//
+    void saveConfig ( const MinerConfig& minerConfig ) {
+        this->AbstractChainRecorder_saveConfig ( minerConfig );
     }
 };
 

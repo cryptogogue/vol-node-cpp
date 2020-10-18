@@ -22,7 +22,7 @@ namespace Volition {
 
 #define GET_SET(type,name,member) \
 	inline type get##name () const { return member; } \
-	inline void set##name ( const type value ) { member = value; }
+	inline void set##name ( type value ) { member = value; }
 
 } // namespace Volition
 #endif

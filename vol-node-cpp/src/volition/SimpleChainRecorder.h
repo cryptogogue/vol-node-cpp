@@ -24,14 +24,16 @@ protected:
     string                  mGenesisHash;
 
     //----------------------------------------------------------------//
-    void                    AbstractChainRecorder_loadChain         ( Miner& miner ) const;
+    void                    AbstractChainRecorder_loadChain         ( Miner& miner );
+    void                    AbstractChainRecorder_loadConfig        ( MinerConfig& minerConfig );
     void                    AbstractChainRecorder_reset             ();
     void                    AbstractChainRecorder_saveChain         ( const Miner& miner );
+    void                    AbstractChainRecorder_saveConfig        ( const MinerConfig& minerConfig );
 
 public:
 
     //----------------------------------------------------------------//
-                            SimpleChainRecorder         ( const Miner& miner, string path = "./" );
+                            SimpleChainRecorder         ( const Miner& miner, string path = "." );
                             ~SimpleChainRecorder        ();
 };
 

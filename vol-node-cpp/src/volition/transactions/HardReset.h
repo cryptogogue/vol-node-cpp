@@ -23,6 +23,7 @@ public:
     TRANSACTION_TYPE ( "HARD_RESET" )
     TRANSACTION_WEIGHT ( 0 )
     TRANSACTION_MATURITY ( 0 )
+    TRANSACTION_CONTROL ( Miner::CONTROL_ADMIN )
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -48,12 +49,6 @@ public:
         
         miner.reset ();
         miner.shutdown ( true );
-        
-        return true;
-    }
-    
-    //----------------------------------------------------------------//
-    bool AbstractTransactionBody_needsControl () const override {
         
         return true;
     }

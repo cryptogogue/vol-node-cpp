@@ -90,6 +90,7 @@ void Miner::affirmVisage () {
 //----------------------------------------------------------------//
 bool Miner::canExtend () const {
 
+    if ( this->mFlags & MINER_MUTE ) return false;
     if ( !( this->mBestBranch && this->mBestBranch->checkStatus ( BlockTreeNode::STATUS_COMPLETE ))) return false;
 
     size_t count = 0;
@@ -114,6 +115,7 @@ void Miner::composeChain () {
 
     if ( this->mChainTag == this->mBestBranch ) return;
 
+    // check to see if chain tag is *behind* best branch
     if ( this->mBestBranch->isAncestorOf ( this->mChainTag )) {
         this->mChain->reset (( **this->mBestBranch ).getHeight () + 1 );
         this->mChainTag = this->mBestBranch;
@@ -137,9 +139,9 @@ void Miner::composeChain () {
 }
 
 //----------------------------------------------------------------//
-bool Miner::controlPermitted () const {
+bool Miner::controlPermitted ( const Transaction& transaction ) const {
 
-    return ( this->mFlags & MINER_PERMIT_CONTROL );
+    return (( transaction.getMaker ()->getAccountName () == this->mMinerID ) && ( transaction.controlLevel () <= this->mControlLevel ));
 }
 
 //----------------------------------------------------------------//
@@ -227,12 +229,6 @@ Miner::Miner () :
 
 //----------------------------------------------------------------//
 Miner::~Miner () {
-}
-
-//----------------------------------------------------------------//
-void Miner::permitControl ( bool permit ) {
-
-    this->mFlags = SET_BITS ( this->mFlags, MINER_PERMIT_CONTROL, permit );
 }
 
 //----------------------------------------------------------------//
@@ -416,6 +412,14 @@ void Miner::saveChain () {
 }
 
 //----------------------------------------------------------------//
+void Miner::saveConfig () {
+
+    if ( this->mChainRecorder ) {
+        this->mChainRecorder->saveConfig ( this->mConfig );
+    }
+}
+
+//----------------------------------------------------------------//
 void Miner::selectBestBranch ( time_t now ) {
 
     BlockTreeNode::ConstPtr bestBranch = this->mBestBranch->trim (( BlockTreeNode::Status )( BlockTreeNode::STATUS_MISSING )); // best branch cannot be missing.
@@ -445,6 +449,7 @@ void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorde
     this->mChainRecorder = chainRecorder;
     if ( this->mChainRecorder ) {
         this->mChainRecorder->loadChain ( *this );
+        this->mChainRecorder->loadConfig ( this->mConfig );
     }
 }
 
@@ -466,6 +471,26 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
 void Miner::setLazy ( bool lazy ) {
 
     this->mFlags = SET_BITS ( this->mFlags, MINER_LAZY, lazy );
+}
+
+//----------------------------------------------------------------//
+void Miner::setMinimumGratuity ( u64 minimumGratuity ) {
+
+    this->mConfig.mMinimumGratuity = minimumGratuity;
+    this->saveConfig ();
+}
+
+//----------------------------------------------------------------//
+void Miner::setMute ( bool paused ) {
+
+    this->mFlags = SET_BITS ( this->mFlags, MINER_MUTE, paused );
+}
+
+//----------------------------------------------------------------//
+void Miner::setReward ( string reward ) {
+
+    this->mConfig.mReward = reward;
+    this->saveConfig ();
 }
 
 //----------------------------------------------------------------//
@@ -494,6 +519,8 @@ void Miner::step ( time_t now ) {
 
     this->processTransactions ( *this );
     
+    BlockTreeNode::ConstPtr prevChain = this->mChainTag;
+    
     if ( this->mMessenger ) {
     
         // APPLY incoming blocks
@@ -521,6 +548,10 @@ void Miner::step ( time_t now ) {
     }
     else {
         this->extend ( now );
+    }
+    
+    if ( this->mChainTag != prevChain ) {
+        this->saveChain ();
     }
 }
 

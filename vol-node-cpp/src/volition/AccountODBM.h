@@ -106,7 +106,7 @@ public:
     
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < Ledger > ledger, string accountName ) {
-        this->initialize ( ledger, ledger->getAccountID ( accountName ));
+        this->initialize ( ledger, ledger.getConst ().getAccountID ( accountName ));
     }
     
     //----------------------------------------------------------------//

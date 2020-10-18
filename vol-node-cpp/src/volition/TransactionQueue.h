@@ -9,13 +9,15 @@
 #include <volition/Ledger.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionResult.h>
 
 namespace Volition {
 
 class AbstractChainRecorder;
 class AbstractHashable;
 class Block;
+class Miner;
+class Transaction;
 
 //================================================================//
 // MakerQueue

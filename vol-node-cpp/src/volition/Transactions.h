@@ -20,8 +20,10 @@
 #include <volition/transactions/RestrictKey.h>
 #include <volition/transactions/RunScript.h>
 #include <volition/transactions/SendAssets.h>
+#include <volition/transactions/SelectReward.h>
 #include <volition/transactions/SendVOL.h>
 #include <volition/transactions/SetEntitlements.h>
+#include <volition/transactions/SetMinimumGratuity.h>
 #include <volition/transactions/UpgradeAssets.h>
 
 #endif

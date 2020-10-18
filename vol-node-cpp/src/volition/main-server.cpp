@@ -6,11 +6,14 @@
 #include <volition/FileSys.h>
 #include <volition/RouteTable.h>
 #include <volition/SimpleChainRecorder.h>
+#include <volition/SQLiteChainRecorder.h>
 #include <volition/Singleton.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
 #include <volition/MinerActivity.h>
 #include <volition/MinerAPIFactory.h>
+
+using namespace Volition;
 
 //================================================================//
 // ServerApp
@@ -28,6 +31,13 @@ protected:
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "config" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "control-level", "", "miner control level ('config', 'admin')" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "control-level" )
         );
         
         options.addOption (
@@ -73,10 +83,10 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "permit-control", "", "permit miner control transactions" )
+            Poco::Util::Option ( "persist-mode", "", "persist mode ('simple', 'sqlite')" )
                 .required ( false )
                 .argument ( "value", true )
-                .binding ( "permit-control" )
+                .binding ( "persist-mode" )
         );
         
         options.addOption (
@@ -127,6 +137,13 @@ protected:
                 .argument ( "value" )
                 .binding ( "solo" )
         );
+        
+        options.addOption (
+            Poco::Util::Option ( "sqlite-db-file", "", "sqlite db filename" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "sqlite-db-file" )
+        );
     }
 
     //----------------------------------------------------------------//
@@ -146,25 +163,28 @@ protected:
         }
 //      this->printProperties ();
         
+        string controlLevel             = configuration.getString   ( "control-level", "" );
         string genesis                  = configuration.getString   ( "genesis" );
-        int interval                    = configuration.getInt      ( "interval", Volition::MinerActivity::DEFAULT_UPDATE_INTERVAL );
+        int interval                    = configuration.getInt      ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile", "" );
         string logpath                  = configuration.getString   ( "logpath", "" );
         string minerID                  = configuration.getString   ( "miner", "" );
         string nodelist                 = configuration.getString   ( "nodelist", "" );
-        bool permitControl              = configuration.getBool     ( "permit-control", false );
+        string persistMode              = configuration.getString   ( "persist-mode", "" );
+        string persistFolder            = configuration.getString   ( "persist-folder", "persist-chain" );
         int port                        = configuration.getInt      ( "port", 9090 );
         string redisConf                = configuration.getString   ( "redis-conf", "./redis.conf" );
         string redisHost                = configuration.getString   ( "redis-conf", "127.0.0.1" );
         string redisFolder              = configuration.getString   ( "redis-folder", "./redis" );
         int redisPort                   = configuration.getInt      ( "redis-port", 0 );
-        string simpleRecorderFolder     = configuration.getString   ( "simple-recorder-folder", "" );
         bool solo                       = configuration.getBool     ( "solo", false );
+        string sqliteDBFile             = configuration.getString   ( "sqlite-db-file", "" );
+        
         string sslCertFile              = configuration.getString   ( "openSSL.server.certificateFile", "" );
         
         if ( logpath.size () > 0 ) {
-            freopen ( Volition::Format::write ( "%s/%s.log", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stdout );
-            freopen ( Volition::Format::write ( "%s/%s.err", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stderr );
+            freopen ( Format::write ( "%s/%s.log", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stdout );
+            freopen ( Format::write ( "%s/%s.err", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stderr );
         }
         
         Padamose::RedisServerProc redisServerProc;
@@ -180,13 +200,18 @@ protected:
             persistenceProvider = make_shared < StringStorePersistenceProvider >( stringStore );
         }
         
-        shared_ptr < Volition::MinerActivity > minerActivity = make_shared < Volition::MinerActivity >();
+        shared_ptr < MinerActivity > minerActivity = make_shared < MinerActivity >();
         
         minerActivity->setMinerID ( minerID );
-    
-        if ( permitControl ) {
-            LOG_F ( INFO, "CONTROL IS PERMITTED" );
-            minerActivity->permitControl ( permitControl );
+        
+        if ( controlLevel == "config" ) {
+            LOG_F ( INFO, "CONTROL LEVEL: CONFIG" );
+            minerActivity->setControlLevel ( Miner::CONTROL_CONFIG );
+        }
+        
+        if ( controlLevel == "admin" ) {
+            LOG_F ( INFO, "CONTROL LEVEL: ADMIN" );
+            minerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
         }
     
         if ( solo ) {
@@ -197,26 +222,32 @@ protected:
         minerActivity->setUpdateInterval (( u32 )interval );
         
         LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
-        if ( !Volition::FileSys::exists ( genesis )) {
+        if ( !FileSys::exists ( genesis )) {
             LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
             return Application::EXIT_CONFIG;
         }
         minerActivity->loadGenesis ( genesis );
         
-        if ( simpleRecorderFolder.size () > 0 ) {
-            shared_ptr < Volition::AbstractChainRecorder > chainRecorder = make_shared < Volition::SimpleChainRecorder >( *minerActivity, simpleRecorderFolder );
+        if ( persistMode == "simple" ) {
+            shared_ptr < AbstractChainRecorder > chainRecorder = make_shared < SimpleChainRecorder >( *minerActivity, persistFolder );
+            minerActivity->setChainRecorder ( chainRecorder );
+        }
+        
+        if ( persistMode == "sqlite" ) {
+            shared_ptr < AbstractChainRecorder > chainRecorder = make_shared < SQLiteChainRecorder >( *minerActivity, persistFolder );
             minerActivity->setChainRecorder ( chainRecorder );
         }
         
         if ( keyfile.size () > 0 ) {
             LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
-            if ( !Volition::FileSys::exists ( keyfile )) {
+            if ( !FileSys::exists ( keyfile )) {
                 LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
                 return Application::EXIT_CONFIG;
             }
             minerActivity->loadKey ( keyfile );
         }
         minerActivity->affirmKey ();
+        minerActivity->affirmVisage ();
         
         LOG_F ( INFO, "MINER ID: %s", minerActivity->getMinerID ().c_str ());
 
@@ -258,12 +289,12 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void serve ( shared_ptr < Volition::MinerActivity > minerActivity, int port, bool ssl ) {
+    void serve ( shared_ptr < MinerActivity > minerActivity, int port, bool ssl ) {
 
         Poco::ThreadPool threadPool;
 
         Poco::Net::HTTPServer server (
-            new Volition::MinerAPIFactory ( minerActivity ),
+            new MinerAPIFactory ( minerActivity ),
             threadPool,
             ssl ? Poco::Net::SecureServerSocket (( Poco::UInt16 )port ) : Poco::Net::ServerSocket (( Poco::UInt16 )port ),
             new Poco::Net::HTTPServerParams ()
@@ -286,7 +317,7 @@ protected:
         threadPool.stopAll ();
         
         {
-            Volition::ScopedMinerLock scopedLock ( minerActivity );
+            ScopedMinerLock scopedLock ( minerActivity );
             minerActivity->shutdown ( false );
         }
     }

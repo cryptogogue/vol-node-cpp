@@ -35,12 +35,12 @@ public:
         Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( *account ).extract < Poco::JSON::Object::Ptr >();
         
         // decorate with virtual fields
-        accountJSON->set ( "name", accountName );
-        accountJSON->set ( "index", accountODBM.mAccountID );
-        accountJSON->set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
-        accountJSON->set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
-        accountJSON->set ( "nonce", accountODBM.mTransactionNonce.get ( 0 ));
-        accountJSON->set ( "height", ledger.getHeight ());
+        accountJSON->set ( "name",              accountName );
+        accountJSON->set ( "index",             ( u64 )accountODBM.mAccountID );
+        accountJSON->set ( "assetCount",        accountODBM.mAssetCount.get ( 0 ));
+        accountJSON->set ( "inventoryNonce",    accountODBM.mInventoryNonce.get ( 0 ));
+        accountJSON->set ( "nonce",             accountODBM.mTransactionNonce.get ( 0 ));
+        accountJSON->set ( "height",            ledger.getHeight ());
         
         jsonOut.set ( "account", accountJSON );
         

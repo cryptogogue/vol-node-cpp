@@ -76,7 +76,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-k keys/key9090.priv.json"
+            argument = "-k keys/9090.keypair.json"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
