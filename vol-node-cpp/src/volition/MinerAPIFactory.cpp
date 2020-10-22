@@ -11,6 +11,7 @@
 #include <volition/web-miner-api/BlockListHandler.h>
 #include <volition/web-miner-api/ConsensusBlockDetailsHandler.h>
 #include <volition/web-miner-api/ConsensusBlockHeaderListHandler.h>
+#include <volition/web-miner-api/ControlCommandHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
 #include <volition/web-miner-api/ExtendChainHandler.h>
 #include <volition/web-miner-api/InventoryAssetsHandler.h>
@@ -50,6 +51,8 @@ void MinerAPIFactory::initializeRoutes () {
     
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockDetailsHandler >         ( HTTP::GET,        Format::write ( "%s/consensus/blocks/:hash/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockHeaderListHandler >      ( HTTP::GET,        Format::write ( "%s/consensus/headers/?", prefix ));
+    
+    this->mRouteTable.addEndpoint < WebMinerAPI::ControlCommandHandler >                ( HTTP::POST,       Format::write ( "%s/control/?", prefix ));
     
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyAccountDetailsHandler >             ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/account/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >                    ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/?", prefix ));

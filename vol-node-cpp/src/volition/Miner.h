@@ -131,9 +131,11 @@ protected:
 
     int                                             mFlags;
     BlockTreeNode::RewriteMode                      mRewriteMode;
-    Control                                         mControlLevel;
     time_t                                          mRewriteWindowInSeconds;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
+
+    CryptoPublicKey                                 mControlKey;
+    Control                                         mControlLevel;
 
     MinerConfig                                     mConfig;
 
@@ -199,7 +201,8 @@ public:
     
     SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  mMessenger )
     
-    GET_SET ( Control,                              ControlLevel,               mControlLevel)
+    GET_SET ( const CryptoPublicKey&,               ControlKey,                 mControlKey )
+    GET_SET ( Control,                              ControlLevel,               mControlLevel )
     GET_SET ( const CryptoKeyPair&,                 KeyPair,                    mKeyPair )
     GET_SET ( string,                               MinerID,                    mMinerID )
     GET_SET ( string,                               Motto,                      mMotto )
@@ -215,7 +218,6 @@ public:
     void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
     void                                affirmVisage                ();
     bool                                checkBestBranch             ( string miners ) const;
-    bool                                controlPermitted            ( const Transaction& transaction ) const;
     size_t                              countBranches               () const;
     void                                extend                      ( time_t now );
     Ledger&                             getLedger                   ();

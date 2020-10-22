@@ -22,7 +22,6 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::BetaGetAssets >();
     this->registerTransaction < Volition::Transactions::BetaGetDeck >();
     this->registerTransaction < Volition::Transactions::Genesis >();
-    this->registerTransaction < Volition::Transactions::HardReset >();
     this->registerTransaction < Volition::Transactions::OpenAccount >();
     this->registerTransaction < Volition::Transactions::PublishSchema >();
     this->registerTransaction < Volition::Transactions::PublishSchemaAndReset >();
@@ -32,11 +31,9 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::RestrictAccount >();
     this->registerTransaction < Volition::Transactions::RestrictKey >();
     this->registerTransaction < Volition::Transactions::RunScript >();
-    this->registerTransaction < Volition::Transactions::SelectReward >();
     this->registerTransaction < Volition::Transactions::SendAssets >();
     this->registerTransaction < Volition::Transactions::SendVOL >();
     this->registerTransaction < Volition::Transactions::SetEntitlements >();
-    this->registerTransaction < Volition::Transactions::SetMinimumGratuity >();
     this->registerTransaction < Volition::Transactions::UpgradeAssets >();    
 }
 

@@ -23,7 +23,6 @@ public:
     TRANSACTION_TYPE ( "PUBLISH_SCHEMA_AND_RESET" )
     TRANSACTION_WEIGHT ( 0 )
     TRANSACTION_MATURITY ( 0 )
-    TRANSACTION_CONTROL ( Miner::CONTROL_ADMIN )
 
     Schema      mSchema;
     string      mDeckName;
@@ -55,25 +54,12 @@ public:
         context.mLedger.setSchema ( this->mSchema );
         context.mSchemaHandle.reset ( context.mLedger );
 
+        // TODO: delete all inventories
+
         if ( this->mDeckName.size () > 0 ) {
             return context.mLedger.awardDeck ( *context.mSchemaHandle, context.mIndex, this->mDeckName, context.mTime );
         }
         return true;
-    }
-    
-    //----------------------------------------------------------------//
-    TransactionResult AbstractTransactionBody_control ( Miner& miner ) const override {
-        
-        printf ( "CONTROL: doing publish and reset.\n" );
-        
-        miner.reset ();
-        return true;
-    }
-
-    //----------------------------------------------------------------//
-    u64 AbstractTransactionBody_nonce () const override {
-    
-        return 0;
     }
 };
 

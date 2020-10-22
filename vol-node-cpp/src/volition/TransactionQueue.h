@@ -38,12 +38,9 @@ protected:
     Lookup                              mLookup;
     TransactionResult                   mLastResult;
 
-    shared_ptr < const Transaction >    mControl;
-
 public:
 
     //----------------------------------------------------------------//
-    shared_ptr < const Transaction >    getControl              () const;
     shared_ptr < const Transaction >    getTransaction          ( string uuid ) const;
     bool                                hasError                () const;
     bool                                hasTransaction          ( u64 nonce ) const;
@@ -70,7 +67,7 @@ protected:
     //----------------------------------------------------------------//
     void                    acceptTransaction       ( shared_ptr < const Transaction > transaction );
     const MakerQueue*       getMakerQueueOrNull     ( string accountName ) const;
-    void                    processTransactions     ( Miner& miner );
+    void                    processTransactions     ();
     void                    reset                   ();
     
 public:

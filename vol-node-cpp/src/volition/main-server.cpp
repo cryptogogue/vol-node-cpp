@@ -34,6 +34,13 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "control-key", "", "path to public key for verifying control commands." )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "control-key" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "control-level", "", "miner control level ('config', 'admin')" )
                 .required ( false )
                 .argument ( "value", true )
@@ -163,6 +170,7 @@ protected:
         }
 //      this->printProperties ();
         
+        string controlKeyfile           = configuration.getString   ( "control-key", "" );
         string controlLevel             = configuration.getString   ( "control-level", "" );
         string genesis                  = configuration.getString   ( "genesis" );
         int interval                    = configuration.getInt      ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
@@ -203,6 +211,18 @@ protected:
         shared_ptr < MinerActivity > minerActivity = make_shared < MinerActivity >();
         
         minerActivity->setMinerID ( minerID );
+        
+        if ( controlKeyfile.size ()) {
+        
+            CryptoPublicKey controlKey;
+            FromJSONSerializer::fromJSONFile ( controlKey, controlKeyfile );
+            if ( !controlKey ) {
+                LOG_F ( INFO, "CONTROL KEY NOT FOUND: %s", controlKeyfile.c_str ());
+                return Application::EXIT_CONFIG;
+            }
+            LOG_F ( INFO, "CONTROL KEY: %s", controlKeyfile.c_str ());
+            minerActivity->setControlKey ( controlKey );
+        }
         
         if ( controlLevel == "config" ) {
             LOG_F ( INFO, "CONTROL LEVEL: CONFIG" );

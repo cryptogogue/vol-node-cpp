@@ -9,7 +9,6 @@
 #include <volition/transactions/BetaGetAssets.h>
 #include <volition/transactions/BetaGetDeck.h>
 #include <volition/transactions/Genesis.h>
-#include <volition/transactions/HardReset.h>
 #include <volition/transactions/OpenAccount.h>
 #include <volition/transactions/PublishSchema.h>
 #include <volition/transactions/PublishSchemaAndReset.h>
@@ -20,10 +19,8 @@
 #include <volition/transactions/RestrictKey.h>
 #include <volition/transactions/RunScript.h>
 #include <volition/transactions/SendAssets.h>
-#include <volition/transactions/SelectReward.h>
 #include <volition/transactions/SendVOL.h>
 #include <volition/transactions/SetEntitlements.h>
-#include <volition/transactions/SetMinimumGratuity.h>
 #include <volition/transactions/UpgradeAssets.h>
 
 #endif

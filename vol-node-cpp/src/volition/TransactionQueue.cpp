@@ -31,9 +31,6 @@ public:
 //----------------------------------------------------------------//
 shared_ptr < const Transaction > MakerQueue::getTransaction ( string uuid ) const {
 
-    if ( this->mControl && ( this->mControl->getUUID () == uuid )) {
-        return this->mControl;
-    }
     TransactionLookupConstIt transactionIt = this->mLookup.find ( uuid );
     return transactionIt != this->mLookup.cend () ? transactionIt->second : NULL;
 }
@@ -54,7 +51,7 @@ bool MakerQueue::hasTransaction ( u64 nonce ) const {
 //----------------------------------------------------------------//
 bool MakerQueue::hasTransactions () const {
 
-    return ( this->mControl || ( this->mQueue.size () > 0 ));
+    return ( this->mQueue.size () > 0 );
 }
 
 //----------------------------------------------------------------//
@@ -65,9 +62,6 @@ MakerQueue::MakerQueue () :
 //----------------------------------------------------------------//
 shared_ptr < const Transaction > MakerQueue::nextTransaction ( u64 nonce ) const {
 
-    if ( this->mControl && ( nonce <= this->mControl->getNonce ())) {
-        return this->mControl;
-    }
     TransactionQueueConstIt transactionIt = this->mQueue.find ( nonce );
     return transactionIt != this->mQueue.cend () ? transactionIt->second : NULL;
 }
@@ -75,27 +69,14 @@ shared_ptr < const Transaction > MakerQueue::nextTransaction ( u64 nonce ) const
 //----------------------------------------------------------------//
 void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
-    if ( this->mControl ) return;
+    this->mQueue [ transaction->getNonce ()] = transaction;
+    this->mLookup [ transaction->getUUID ()] = transaction;
 
-    if ( transaction->needsControl ()) {
-    
-        this->mQueue.clear ();
-        this->mLookup.clear ();
-        this->mControl = transaction;
-    }
-    else {
-        this->mQueue [ transaction->getNonce ()] = transaction;
-        this->mLookup [ transaction->getUUID ()] = transaction;
-    }
     this->mLastResult = true;
 }
 
 //----------------------------------------------------------------//
 void MakerQueue::prune ( u64 nonce ) {
-    
-    if ( this->mControl && ( this->mControl->getNonce () < nonce )) {
-        this->mControl = NULL;
-    }
 
     TransactionQueueIt transactionItCursor = this->mQueue.begin ();
     while ( transactionItCursor != this->mQueue.end ()) {
@@ -191,10 +172,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block ) {
             if ( result ) {
                 // transaction succeeded!
                 block.pushTransaction ( transaction );
-                
-                if ( !transaction->needsControl ()) {
-                    blockSize += transactionSize;
-                }
+                blockSize += transactionSize;
                 info.mNonce = transaction->getNonce () + 1;
                 infoCache [ accountName ] = info;
                 
@@ -251,20 +229,12 @@ bool TransactionQueue::hasTransaction ( string accountName, string uuid ) const 
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::processTransactions ( Miner& miner ) {
+void TransactionQueue::processTransactions () {
 
     while ( this->mIncoming.size ()) {
     
         shared_ptr < const Transaction > transaction = this->mIncoming.front ();
         this->mIncoming.pop_front ();
-        
-        if ( transaction->needsControl ()) {
-            TransactionResult result = transaction->control ( miner );
-            if ( !result ) {
-                this->setError ( transaction, result );
-                continue;
-            }
-        }
         this->acceptTransaction ( transaction );
     }
 }
@@ -278,7 +248,7 @@ void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
     MakerQueueIt makerQueueItCursor = this->mDatabase.begin ();
     while ( makerQueueItCursor != this->mDatabase.end ()) {
         MakerQueueIt makerQueueIt = makerQueueItCursor++;
-    
+        
         string accountName = makerQueueIt->first;
         MakerQueue& makerQueue = makerQueueIt->second;
     

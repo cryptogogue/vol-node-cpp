@@ -114,40 +114,11 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, Ac
     Signature* signature = this->mSignature.get ();
 
     if ( maker && signature ) {
-        if ( !this->needsControl ()) {
-            u64 nonce = AccountODBM ( ledger, accountID ).mTransactionNonce.get ();
-            if ( nonce != this->getNonce ()) return false;
-        }
+        u64 nonce = AccountODBM ( ledger, accountID ).mTransactionNonce.get ();
+        if ( nonce != this->getNonce ()) return false;
         return key.verify ( *signature, this->mBodyString );
     }
     return false;
-}
-
-//----------------------------------------------------------------//
-TransactionResult Transaction::control ( Miner& miner ) const {
-
-    if ( !this->needsControl ()) return true;
-    if ( !miner.controlPermitted ( *this )) return "CONTROL: Control not permitted by this mining node.";
-
-    Ledger& ledger = miner.getLedger ();
-
-    TransactionMaker* maker = this->mBody->mMaker.get ();
-    AccountODBM accountODBM ( ledger, maker->getAccountName ());
-    KeyAndPolicy keyAndPolicy = accountODBM.mBody.get ()->getKeyAndPolicy ( maker->getKeyName ());
-
-    TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey );
-    if ( !result ) return "CONTROL: Invalid account or signature.";
-    
-    Entitlements entitlements = ledger.getEntitlements < KeyEntitlements >( keyAndPolicy );
-    if ( !entitlements.check ( KeyEntitlements::NODE_CONTROL )) return "Permission denied.";
-    
-    return this->mBody->control ( miner );
-}
-
-//----------------------------------------------------------------//
-Miner::Control Transaction::controlLevel () const {
-
-    return this->mBody ? this->mBody->controlLevel () : Miner::CONTROL_NONE;
 }
 
 //----------------------------------------------------------------//
@@ -178,12 +149,6 @@ string Transaction::getUUID () const {
 u64 Transaction::maturity () const {
 
     return this->mBody->maturity ();
-}
-
-//----------------------------------------------------------------//
-bool Transaction::needsControl () const {
-
-    return this->mBody ? ( this->mBody->controlLevel () > Miner::CONTROL_NONE ) : false;
 }
 
 //----------------------------------------------------------------//

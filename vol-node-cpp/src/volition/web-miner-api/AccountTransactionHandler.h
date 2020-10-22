@@ -66,17 +66,8 @@ public:
                 FromJSONSerializer::fromJSON ( transaction, jsonIn );
 
                 if ( transaction && transaction->checkMaker ( accountName, uuid )) {
-                    if ( transaction->needsControl ()) {
-                        if ( this->mWebMiner->controlPermitted ( *transaction )) {
-                            printf ( "***CONTROL TRANSACTION***\n" );
-                            printf ( "%s\n", transaction->typeString ().c_str ());
-                            this->mWebMiner->pushTransaction ( move ( transaction ));
-                        }
-                    }
-                    else {
-                        this->mWebMiner->pushTransaction ( move ( transaction ));
-                        jsonOut.set ( "status", "RETRY" );
-                    }
+                    this->mWebMiner->pushTransaction ( move ( transaction ));
+                    jsonOut.set ( "status", "RETRY" );
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
                 return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

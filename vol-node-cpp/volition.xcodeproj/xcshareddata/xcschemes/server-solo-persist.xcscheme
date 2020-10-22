@@ -90,6 +90,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--control-key keys/key9090.pub.json"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--control-level config"
             isEnabled = "YES">
          </CommandLineArgument>

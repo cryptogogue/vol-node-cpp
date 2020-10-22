@@ -139,12 +139,6 @@ void Miner::composeChain () {
 }
 
 //----------------------------------------------------------------//
-bool Miner::controlPermitted ( const Transaction& transaction ) const {
-
-    return (( transaction.getMaker ()->getAccountName () == this->mMinerID ) && ( transaction.controlLevel () <= this->mControlLevel ));
-}
-
-//----------------------------------------------------------------//
 void Miner::discoverMiners () {
 
     set < string > miners = this->getLedger ().getMiners ();
@@ -222,7 +216,8 @@ Miner::Miner () :
     mFlags ( DEFAULT_FLAGS ),
     mRewriteMode ( BlockTreeNode::REWRITE_NONE ),
     mRewriteWindowInSeconds ( 0 ),
-    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ) {
+    mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
+    mControlLevel ( CONTROL_NONE ) {
     
     MinerLaunchTests::checkEnvironment ();
 }
@@ -517,7 +512,7 @@ void Miner::step ( time_t now ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
-    this->processTransactions ( *this );
+    this->processTransactions ();
     
     BlockTreeNode::ConstPtr prevChain = this->mChainTag;
     

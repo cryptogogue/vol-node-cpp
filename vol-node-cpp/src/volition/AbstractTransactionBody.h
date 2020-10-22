@@ -16,11 +16,6 @@
 
 namespace Volition {
 
-#define TRANSACTION_CONTROL(level)                                  \
-    Miner::Control AbstractTransactionBody_controlLevel () const override { \
-        return level;                                               \
-    }
-
 #define TRANSACTION_TYPE(typeString)                                \
     static constexpr const char* TYPE_STRING = typeString;          \
     string AbstractTransactionBody_typeString () const override {   \
@@ -63,11 +58,8 @@ protected:
 
     //----------------------------------------------------------------//
     virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
-    virtual TransactionResult       AbstractTransactionBody_control         ( Miner& miner ) const;
-    virtual Miner::Control          AbstractTransactionBody_controlLevel    () const;
     virtual u64                     AbstractTransactionBody_cost            () const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
-    virtual u64                     AbstractTransactionBody_nonce           () const;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;
     virtual u64                     AbstractTransactionBody_weight          () const = 0;
 
