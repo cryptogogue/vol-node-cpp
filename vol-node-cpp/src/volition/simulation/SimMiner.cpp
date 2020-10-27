@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/simulation/SimMiner.h>
+#include <volition/UnsecureRandom.h>
 
 namespace Volition {
 namespace Simulation {
@@ -95,10 +96,6 @@ void SimMiner::setCharm ( size_t height, string charmHex ) {
 //----------------------------------------------------------------//
 void SimMiner::scrambleRemotes () {
 
-    random_device rd;
-    mt19937 prng ( rd ());
-    uniform_real_distribution < double > dist ( 0, 1 );
-
     map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         RemoteMiner& remoteMiner = remoteMinerIt->second;
@@ -106,7 +103,7 @@ void SimMiner::scrambleRemotes () {
         if ( !remoteMiner.mTag ) continue;
         
         size_t height = ( **remoteMiner.mTag ).getHeight ();
-        height = ( size_t )floor ( height * dist ( prng ));
+        height = ( size_t )floor ( height * UnsecureRandom::get ().random ());
         
         BlockTreeNode::ConstPtr cursor = remoteMiner.mTag;
         while (( **cursor ).getHeight () > height ) {

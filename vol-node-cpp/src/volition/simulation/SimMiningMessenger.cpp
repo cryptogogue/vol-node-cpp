@@ -4,6 +4,7 @@
 #include <volition/Block.h>
 #include <volition/Miner.h>
 #include <volition/simulation/SimMiningMessenger.h>
+#include <volition/UnsecureRandom.h>
 
 namespace Volition {
 namespace Simulation {
@@ -29,7 +30,7 @@ void SimMiningMessenger::dispatchBlock ( const MiningMessengerRequest& request, 
     for ( ConstraintList::iterator constraintIt = constraintList.begin (); constraintIt != constraintList.end (); ++constraintIt ) {
         SimMiningMessengerConstraint& constraint = *constraintIt;
 
-        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK ) && ( this->random () <= constraint.mProbability )) {
+        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK ) && ( UnsecureRandom::get ().random () <= constraint.mProbability )) {
             block = NULL;
         }
     }
@@ -44,7 +45,7 @@ void SimMiningMessenger::dispatchHeaders ( const MiningMessengerRequest& request
     for ( ConstraintList::iterator constraintIt = constraintList.begin (); constraintIt != constraintList.end (); ++constraintIt ) {
         SimMiningMessengerConstraint& constraint = *constraintIt;
 
-        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_HEADER ) && ( this->random () <= constraint.mProbability )) {
+        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_HEADER ) && (  UnsecureRandom::get ().random () <= constraint.mProbability )) {
             headers.clear ();
         }
     }
@@ -155,17 +156,7 @@ void SimMiningMessenger::pushConstraintDropHeader ( double probability, size_t b
 }
 
 //----------------------------------------------------------------//
-double SimMiningMessenger::random () {
-
-    return this->mUniformDistribution ( this->mPRNG );
-}
-
-//----------------------------------------------------------------//
-SimMiningMessenger::SimMiningMessenger () :
-    mPRNG ( 0 ),
-    mUniformDistribution ( 0, 1 ) {
-    
-//    seed = random_device ()()
+SimMiningMessenger::SimMiningMessenger () {
 }
 
 //----------------------------------------------------------------//

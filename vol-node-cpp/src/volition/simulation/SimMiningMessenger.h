@@ -52,9 +52,6 @@ protected:
 
     static const size_t HEADER_BATCH_SIZE   = 4;
 
-    mt19937                                             mPRNG;
-    uniform_real_distribution < double >                mUniformDistribution;
-
     map < string, shared_ptr < Miner >>                 mMiners;
     map < string, ConstraintList >                      mConstraintLists;
     vector < ConstraintList* >                          mConstraintListsByIndex;
@@ -67,7 +64,6 @@ protected:
     void        handleTask                  ( const MiningMessengerRequest& task );
     void        pushConstraint              ( const SimMiningMessengerConstraint& constraint, size_t base, size_t top );
     void        pushConstraint              ( SimMiningMessengerConstraint::Mode mode, double probability, size_t base, size_t top );
-    double      random                      ();
 
     //----------------------------------------------------------------//
     void        AbstractMiningMessenger_request         ( const MiningMessengerRequest& request ) override;

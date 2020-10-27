@@ -10,6 +10,7 @@
 #include <volition/RouteTable.h>
 #include <volition/simulation/AbstractScenario.h>
 #include <volition/simulation/SimulatorActivity.h>
+#include <volition/UnsecureRandom.h>
 #include <volition/version.h>
 
 using namespace Volition;
@@ -168,11 +169,11 @@ protected:
         UNUSED ( step );
         
 //        if ( this->random () < 0.0625 ) {
-        if ( this->random () < 0.25 ) {
+        if ( UnsecureRandom::get ().random () < 0.25 ) {
         
-            shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( this->random ( 0, 15 ));
+            shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( UnsecureRandom::get ().random ( 0, 15 ));
             simMiner->scrambleRemotes ();
-            simMiner->rewindChain ( this->random ( 0, ( **simMiner->getBestBranch ()).getHeight ()));
+            simMiner->rewindChain ( UnsecureRandom::get ().random ( 0, ( **simMiner->getBestBranch ()).getHeight ()));
         }
     }
 };

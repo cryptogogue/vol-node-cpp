@@ -20,7 +20,6 @@ void SimulatorActivity::runActivity () {
     }
 }
 
-
 //----------------------------------------------------------------//
 SimulatorActivity::SimulatorActivity () :
     Poco::Activity < SimulatorActivity >( this, &SimulatorActivity::runActivity ) {
