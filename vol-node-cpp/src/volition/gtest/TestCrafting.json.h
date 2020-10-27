@@ -156,7 +156,7 @@ static const char* schema_json = JSON_STR (
                 },
                 "constArgs": {},
                 "constraints": [],
-                "lua": "function main ( caller, assetArgs, constArgs )\r\n    print ( 'openPack:', caller, assetArgs.pack.assetID )\r\n    randomAward ( caller, 'commons', assetArgs.pack.assetID, 3 )\r\n    randomAward ( caller, 'rares', assetArgs.pack.assetID, 2 )\r\n    randomAward ( caller, 'ultraRares', assetArgs.pack.assetID, 1 )\r\n    revokeAsset ( caller, assetArgs.pack.assetID )\r\nend"
+                "lua": "function main ( caller, assetArgs, constArgs )\r\n    print ( 'openPack:', caller, assetArgs.pack.assetID )\r\n    randomAward ( caller, 'commons', assetArgs.pack.assetID, 3 )\r\n    randomAward ( caller, 'rares', assetArgs.pack.assetID, 2 )\r\n    randomAward ( caller, 'ultraRares', assetArgs.pack.assetID, 1 )\r\n    revokeAsset ( assetArgs.pack.assetID )\r\nend"
             }
         },
         "sets": {

@@ -356,8 +356,6 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
 
         string prevHash = header->getPrevHash ();
         BlockTreeNode::Ptr prevNode = this->findNodeForHash ( prevHash );
-        
-        if ( !prevNode && ( this->mRoot )) return NULL; // already have a root
 
         node = make_shared < BlockTreeNode >();
 

@@ -26,30 +26,6 @@ TransactionMaker::~TransactionMaker () {
 //================================================================//
 
 //----------------------------------------------------------------//
-string TransactionMaker::getAccountName () const {
-
-    return this->mAccountName;
-}
-
-//----------------------------------------------------------------//
-u64 TransactionMaker::getGratuity () const {
-
-    return this->mGratuity;
-}
-
-//----------------------------------------------------------------//
-string TransactionMaker::getKeyName () const {
-
-    return this->mKeyName;
-}
-
-//----------------------------------------------------------------//
-u64 TransactionMaker::getNonce () const {
-
-    return this->mNonce;
-}
-
-//----------------------------------------------------------------//
 void TransactionMaker::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
     serializer.serialize ( "accountName",   this->mAccountName );

@@ -23,6 +23,8 @@ public:
         REQUEST_BLOCK,
         REQUEST_HEADERS,
         REQUEST_PREV_HEADERS,
+        REQUEST_MINER,
+        REQUEST_MINER_URLS,
     };
 
     AbstractMiningMessengerClient*      mClient;
@@ -69,19 +71,35 @@ public:
 
     //----------------------------------------------------------------//
     void requestBlock ( AbstractMiningMessengerClient& client, string minerID, string baseURL, const Digest& digest ) {
-    
+        
         MiningMessengerRequest request ( client, minerID, baseURL, MiningMessengerRequest::REQUEST_BLOCK );
         request.mBlockDigest = digest;
-    
+        
         this->AbstractMiningMessenger_request ( request );
     }
 
     //----------------------------------------------------------------//
     void requestHeader ( AbstractMiningMessengerClient& client, string minerID, string baseURL, size_t height, bool forward = true ) {
-    
+        
         MiningMessengerRequest request ( client, minerID, baseURL, forward ? MiningMessengerRequest::REQUEST_HEADERS : MiningMessengerRequest::REQUEST_PREV_HEADERS );
         request.mHeight = height;
+        
+        this->AbstractMiningMessenger_request ( request );
+    }
     
+    //----------------------------------------------------------------//
+    void requestMiner ( AbstractMiningMessengerClient& client, string baseURL ) {
+        
+        MiningMessengerRequest request ( client, "", baseURL, MiningMessengerRequest::REQUEST_MINER );
+        
+        this->AbstractMiningMessenger_request ( request );
+    }
+    
+    //----------------------------------------------------------------//
+    void requestMinerURLs ( AbstractMiningMessengerClient& client, string minerID, string baseURL ) {
+        
+        MiningMessengerRequest request ( client, minerID, baseURL, MiningMessengerRequest::REQUEST_MINER_URLS );
+        
         this->AbstractMiningMessenger_request ( request );
     }
 };

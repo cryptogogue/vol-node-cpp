@@ -45,6 +45,26 @@ u64 AbstractTransactionBody::nonce () const {
 }
 
 //----------------------------------------------------------------//
+void AbstractTransactionBody::setMaker ( const TransactionMaker& maker ) {
+    this->mMaker = make_unique < TransactionMaker >( maker );
+}
+
+//----------------------------------------------------------------//
+void AbstractTransactionBody::setMaxHeight ( u64 maxHeight ) {
+    this->mMaxHeight = maxHeight;
+}
+
+//----------------------------------------------------------------//
+void AbstractTransactionBody::setRecordBy ( time_t recordBy ) {
+    this->mRecordBy = recordBy;
+}
+
+//----------------------------------------------------------------//
+void AbstractTransactionBody::setUUID ( string uuid ) {
+    this->mUUID = uuid;
+}
+
+//----------------------------------------------------------------//
 string AbstractTransactionBody::typeString () const {
     return this->AbstractTransactionBody_typeString ();
 }

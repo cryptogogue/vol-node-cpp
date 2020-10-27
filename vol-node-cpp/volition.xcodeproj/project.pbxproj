@@ -45,6 +45,10 @@
 		CD0C3E5F20C86D88006E3B1C /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
 		CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
+		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
+		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
+		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
+		CD20002A254660F300DEB809 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF052536A2ED00DEB809 /* CryptoKey.h */; };
 		CD20FF182536D03900DEB809 /* NodeDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */; };
 		CD20FF3525381BDB00DEB809 /* SQLiteChainRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */; };
@@ -60,6 +64,9 @@
 		CD20FFB0253D904A00DEB809 /* SelectReward.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FFAD253D904A00DEB809 /* SelectReward.h */; };
 		CD20FFB1253D904A00DEB809 /* SetMinimumGratuity.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FFAE253D904A00DEB809 /* SetMinimumGratuity.h */; };
 		CD20FFC3253D978600DEB809 /* ControlCommandHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FFC2253D978600DEB809 /* ControlCommandHandler.h */; };
+		CD20FFD12542327500DEB809 /* SetMotto.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FFCF2542327500DEB809 /* SetMotto.h */; };
+		CD20FFDB2542327C00DEB809 /* ExtendNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FFDA2542327C00DEB809 /* ExtendNetwork.h */; };
+		CD20FFFE254545FA00DEB809 /* TestAssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */; };
 		CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB814230E79D400805F70 /* Transaction.cpp */; };
 		CD2AB817230E79D400805F70 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB815230E79D400805F70 /* Transaction.h */; };
 		CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */; };
@@ -363,7 +370,6 @@
 		CDF8AD5D21F52B34000E285F /* LuaContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5B21F52B34000E285F /* LuaContext.h */; };
 		CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */; };
 		CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA235521C24AF300987232 /* TestKeyIDHandler.h */; };
-		CDFA2383245188DF00B4CECF /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CDFA23872453B25B00B4CECF /* Schema.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA23862453B25B00B4CECF /* Schema.cpp */; };
 		CDFA238A2460071700B4CECF /* AccountODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA23882460071700B4CECF /* AccountODBM.h */; };
 		CDFA238B2460071700B4CECF /* AssetODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFA23892460071700B4CECF /* AssetODBM.h */; };
@@ -732,6 +738,8 @@
 		CD20FFAD253D904A00DEB809 /* SelectReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectReward.h; path = "src/volition/control-commands/SelectReward.h"; sourceTree = "<group>"; };
 		CD20FFAE253D904A00DEB809 /* SetMinimumGratuity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetMinimumGratuity.h; path = "src/volition/control-commands/SetMinimumGratuity.h"; sourceTree = "<group>"; };
 		CD20FFC2253D978600DEB809 /* ControlCommandHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlCommandHandler.h; path = "src/volition/web-miner-api/ControlCommandHandler.h"; sourceTree = "<group>"; };
+		CD20FFCF2542327500DEB809 /* SetMotto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetMotto.h; path = "src/volition/control-commands/SetMotto.h"; sourceTree = "<group>"; };
+		CD20FFDA2542327C00DEB809 /* ExtendNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtendNetwork.h; path = "src/volition/control-commands/ExtendNetwork.h"; sourceTree = "<group>"; };
 		CD2AB814230E79D400805F70 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = src/volition/Transaction.cpp; sourceTree = "<group>"; };
 		CD2AB815230E79D400805F70 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Transaction.h; path = src/volition/Transaction.h; sourceTree = "<group>"; };
 		CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMaker.cpp; path = src/volition/TransactionMaker.cpp; sourceTree = "<group>"; };
@@ -1153,6 +1161,9 @@
 				CDF8AD5B21F52B34000E285F /* LuaContext.h */,
 				CDFA23862453B25B00B4CECF /* Schema.cpp */,
 				CDBFD558218BA145002AB0C3 /* Schema.h */,
+				CD7751BA252709CE00A53765 /* SchemaHandle.cpp */,
+				CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */,
+				CD5ECAF2246C7257009146FB /* SchemaVersion.h */,
 			);
 			name = schema;
 			sourceTree = "<group>";
@@ -1193,9 +1204,11 @@
 		CD20FFAB253D903700DEB809 /* control-commands */ = {
 			isa = PBXGroup;
 			children = (
+				CD20FFDA2542327C00DEB809 /* ExtendNetwork.h */,
 				CD20FFAC253D904A00DEB809 /* HardReset.h */,
 				CD20FFAD253D904A00DEB809 /* SelectReward.h */,
 				CD20FFAE253D904A00DEB809 /* SetMinimumGratuity.h */,
+				CD20FFCF2542327500DEB809 /* SetMotto.h */,
 			);
 			name = "control-commands";
 			sourceTree = "<group>";
@@ -1261,9 +1274,6 @@
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
-				CD7751BA252709CE00A53765 /* SchemaHandle.cpp */,
-				CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */,
-				CD5ECAF2246C7257009146FB /* SchemaVersion.h */,
 			);
 			name = ledger;
 			sourceTree = "<group>";
@@ -1490,6 +1500,8 @@
 				CD9E7BC3250C5E2C0065C5FC /* AbstractMiningMessengerClient.h */,
 				CD9E7BBE250B976C0065C5FC /* HTTPMiningMessenger.cpp */,
 				CD9E7BBF250B976C0065C5FC /* HTTPMiningMessenger.h */,
+				CDAA38E4251AA13900FEAFB5 /* SimMiningMessenger.cpp */,
+				CDAA38E5251AA13900FEAFB5 /* SimMiningMessenger.h */,
 			);
 			name = messenger;
 			sourceTree = "<group>";
@@ -1621,8 +1633,6 @@
 				CD73D8202166D68700F43CC7 /* Analysis.h */,
 				CD7751D1252A790400A53765 /* SimMiner.cpp */,
 				CD7751D0252A790400A53765 /* SimMiner.h */,
-				CDAA38E4251AA13900FEAFB5 /* SimMiningMessenger.cpp */,
-				CDAA38E5251AA13900FEAFB5 /* SimMiningMessenger.h */,
 				CDAA38E0251AA09200FEAFB5 /* Simulator.cpp */,
 				CDAA38E1251AA09200FEAFB5 /* Simulator.h */,
 				CDAA38E8251AA72400FEAFB5 /* SimulatorActivity.cpp */,
@@ -1852,6 +1862,7 @@
 				CD5EE7FC247E121400060B24 /* PublishSchemaAndReset.h in Headers */,
 				CDFA238A2460071700B4CECF /* AccountODBM.h in Headers */,
 				CD7752B62536966100A53765 /* CryptoPublicKey.h in Headers */,
+				CD20FFD12542327500DEB809 /* SetMotto.h in Headers */,
 				CD7752972536515400A53765 /* AccountID.h in Headers */,
 				CDF8AD5821F39969000E285F /* Entropy.h in Headers */,
 				CDFA23A5246051CD00B4CECF /* Ledger_Miner.h in Headers */,
@@ -1900,6 +1911,7 @@
 				CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */,
 				CD775197251FF03A00A53765 /* Miner.h in Headers */,
 				CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */,
+				CD20FFDB2542327C00DEB809 /* ExtendNetwork.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
 				CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */,
 				CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */,
@@ -2396,7 +2408,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CDFA2383245188DF00B4CECF /* TestCrafting.cpp in Sources */,
+				CD20FFFE254545FA00DEB809 /* TestAssetID.cpp in Sources */,
+				CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */,
+				CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */,
+				CD20002A254660F300DEB809 /* TestWebMiner.cpp in Sources */,
+				CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

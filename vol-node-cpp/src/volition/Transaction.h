@@ -51,6 +51,7 @@ public:
     string                      getUUID                 () const;
     u64                         maturity                () const;
     void                        setBody                 ( shared_ptr < AbstractTransactionBody > body );
+    void                        sign                    ( const CryptoKeyPair& keyPair );
                                 Transaction             ();
                                 ~Transaction            ();
     string                      typeString              () const;

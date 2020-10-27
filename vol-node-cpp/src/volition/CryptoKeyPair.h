@@ -33,7 +33,7 @@ public:
                             CryptoKeyPair           ();
                             CryptoKeyPair           ( CryptoKeyInfo keyInfo );
                             ~CryptoKeyPair          ();
-    void                    elliptic                ( int nid );
+    void                    elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
     void                    elliptic                ( string groupName );
     CryptoPublicKey         getPublicKey            () const;
     void                    rsa                     ( uint keyLength = RSA_1024, unsigned long exp = RSA_EXP_65537 );

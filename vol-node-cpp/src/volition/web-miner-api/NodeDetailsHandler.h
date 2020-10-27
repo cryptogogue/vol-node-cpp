@@ -31,6 +31,7 @@ public:
         
         Poco::JSON::Object::Ptr nodeInfoJSON = new Poco::JSON::Object ();
         
+        nodeInfoJSON->set ( "minerID",          this->mWebMiner->getMinerID ().c_str ());
         nodeInfoJSON->set ( "publicKey",        ToJSONSerializer::toJSON ( this->mWebMiner->getKeyPair ().getPublicKey ()));
         nodeInfoJSON->set ( "motto",            this->mWebMiner->getMotto ());
         nodeInfoJSON->set ( "visage",           ToJSONSerializer::toJSON ( this->mWebMiner->getVisage ()));

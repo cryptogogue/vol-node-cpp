@@ -1,0 +1,4 @@
+{
+    "type" : "EC_PEM",
+    "privateKey" : "-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgkzanno8BmA8rM+UAMv5k\nw6PRA3qqnOtqnQx0TVEhDomhRANCAAQ6UJzPUhRhYW\/GfFMwFnIjYZs3KnawuMIC\n1L0kiGOePsGTeIBIf0MMykxCnS3LJa9i7P1vjPcPSXej331vT6th\n-----END PRIVATE KEY-----\n"
+}

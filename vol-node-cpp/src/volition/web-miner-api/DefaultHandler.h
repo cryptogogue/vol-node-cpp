@@ -33,7 +33,7 @@ public:
         const Ledger& ledger = this->mWebMiner->getLedger ();
         SchemaVersion schemaVersion = ledger.getSchemaVersion ();
         
-        jsonOut.set ( "type", "VOL_MINING_NODE" );
+        jsonOut.set ( "type",           "VOL_MINING_NODE" );
         jsonOut.set ( "minerID",        this->mWebMiner->getMinerID ().c_str ());
         jsonOut.set ( "started",        ( string )this->mWebMiner->getStartTime ());
         jsonOut.set ( "genesis",        ledger.getGenesisHash ());

@@ -69,12 +69,14 @@ public:
                             AbstractTransactionBody                 ();
                             ~AbstractTransactionBody                ();
     TransactionResult       apply                                   ( TransactionContext& context ) const;
-    TransactionResult       control                                 ( Miner& miner ) const;
-    Miner::Control          controlLevel                            () const;
     u64                     cost                                    () const;
     u64                     gratuity                                () const;
     u64                     maturity                                () const;
     u64                     nonce                                   () const;
+    void                    setMaker                                ( const TransactionMaker& maker );
+    void                    setMaxHeight                            ( u64 maxHeight );
+    void                    setRecordBy                             ( time_t recordBy );
+    void                    setUUID                                 ( string uuid );
     string                  typeString                              () const;
     string                  uuid                                    () const;
     u64                     weight                                  () const;

@@ -20,6 +20,8 @@ protected:
     Poco::TaskManager       mTaskManager;
 
     //----------------------------------------------------------------//
+    void        onTaskCancelledNotification                 ( Poco::TaskCancelledNotification* pNf );
+    void        onTaskFailedNotification                    ( Poco::TaskFailedNotification* pNf );
     void        onTaskFinishedNotification                  ( Poco::TaskFinishedNotification* pNf );
 
     //----------------------------------------------------------------//

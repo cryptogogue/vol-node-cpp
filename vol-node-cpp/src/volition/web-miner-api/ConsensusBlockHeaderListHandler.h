@@ -32,14 +32,15 @@ public:
         
             ScopedMinerLock scopedLock ( this->mWebMiner );
             BlockTreeNode::ConstPtr node = this->mWebMiner->getBestBranch ();
-            
-            size_t top = this->optQuery ( "height", ( **node ).getHeight ());
+                        
+            size_t top = this->optQuery ( "height", ( **node ).getHeight ()) + 1; // this handles "forward" and "backward" cases alike
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
             
             SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
             while ( node && ( base <= ( **node ).getHeight ())) {
                 if (( **node ).getHeight () < top ) {
-                    headers.push_front ( node->getBlockHeader ());
+                    SerializableSharedConstPtr < BlockHeader > header = node->getBlockHeader ();
+                    headers.push_front ( header );
                 }
                 node = node->getParent ();
             }

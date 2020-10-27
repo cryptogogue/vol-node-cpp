@@ -27,11 +27,12 @@ protected:
 
 public:
 
+    GET_SET ( string,       AccountName,        mAccountName )
+    GET_SET ( u64,          Gratuity,           mGratuity )
+    GET_SET ( string,       KeyName,            mKeyName )
+    GET_SET ( u64,          Nonce,              mNonce )
+
     //----------------------------------------------------------------//
-    string                  getAccountName                      () const;
-    u64                     getGratuity                         () const;
-    string                  getKeyName                          () const;
-    u64                     getNonce                            () const;
                             TransactionMaker                    ();
                             ~TransactionMaker                   ();
 };

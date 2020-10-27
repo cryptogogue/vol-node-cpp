@@ -24,6 +24,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
+    void                    extendChain             ( string charmHex, time_t time = 0 );
     void                    rewindChain             ( size_t height );
     void                    setCharm                ( size_t height, string charmHex = "" );
     void                    scrambleRemotes         ();

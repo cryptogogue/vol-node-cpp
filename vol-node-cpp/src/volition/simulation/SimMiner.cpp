@@ -11,6 +11,31 @@ namespace Simulation {
 //================================================================//
 
 //----------------------------------------------------------------//
+void SimMiner::extendChain ( string charmHex, time_t time ) {
+
+    shared_ptr < Block > prevBlock = this->mChain->getBlock ();
+
+    shared_ptr < Block > block = make_shared < Block >(
+        this->mMinerID,
+        this->mVisage,
+        time,
+        prevBlock ? prevBlock.get () : NULL,
+        this->mKeyPair
+    );
+    
+    Digest charm = block->getCharm ();
+    std::fill ( charm.begin (), charm.end (), 0 );
+    string compose = charm.toHex ();
+    compose.replace ( 0, charmHex.size (), charmHex );
+    charm.fromHex ( compose );
+    
+    block->setCharm ( charm );
+    block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
+    
+    this->pushBlock ( block );
+}
+
+//----------------------------------------------------------------//
 shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBlock, string charmHex ) {
     
     assert ( oldBlock );

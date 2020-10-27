@@ -5,6 +5,7 @@
 #define VOLITION_BLOCKTREE_H
 
 #include <volition/common.h>
+#include <volition/Accessors.h>
 #include <volition/Block.h>
 
 namespace Volition {
@@ -127,6 +128,8 @@ private:
     void                                logTreeRecurse          ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const;
 
 public:
+
+    GET ( BlockTreeNode::ConstPtr, Root, mRoot )
 
     //----------------------------------------------------------------//
     BlockTreeNode::ConstPtr             affirmBlock             ( shared_ptr < const Block > block );

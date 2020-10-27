@@ -38,12 +38,21 @@ protected:
 class RemoteMiner {
 public:
 
+    enum MinerState {
+        STATE_NEW,
+        STATE_TIMEOUT,
+        STATE_ONLINE,
+        STATE_ERROR,
+    };
+
     string                      mURL;
     BlockTreeNode::ConstPtr     mTag;
+    MinerState                  mState;
+    string                      mMessage;
 
-    bool                                                mForward;
     size_t                                              mHeight;
-    list < shared_ptr < const BlockHeader >>            mHeaderQueue;
+    bool                                                mForward;
+    map < size_t, shared_ptr < const BlockHeader >>     mHeaderQueue;
 
     //----------------------------------------------------------------//
                     RemoteMiner             ();
@@ -58,9 +67,9 @@ private:
 
     friend class Miner;
 
-    MiningMessengerRequest                      mRequest;
-    shared_ptr < const Block >                  mBlock;
-    list < shared_ptr < const BlockHeader >>    mHeaders;
+    MiningMessengerRequest              mRequest;
+    shared_ptr < const Block >          mBlock;
+    shared_ptr < const BlockHeader >    mHeader;
 };
 
 //================================================================//
@@ -141,6 +150,8 @@ protected:
 
     shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
+    set < string >                                  mNewMinerURLs;
+    set < string >                                  mActiveMinerURLs;
     map < string, RemoteMiner >                     mRemoteMiners;
     map < string, MinerSearchEntry >                mSearches;
     BlockTree                                       mBlockTree;
@@ -161,6 +172,7 @@ protected:
     void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
     void                                affirmMessenger             ();
     void                                affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
+    void                                affirmRemoteMiner           ( string url );
     bool                                canExtend                   () const;
     void                                composeChain                ();
     void                                discoverMiners              ();
@@ -176,7 +188,11 @@ protected:
 
     //----------------------------------------------------------------//
     void                                AbstractMiningMessengerClient_receiveBlock      ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) override;
-    void                                AbstractMiningMessengerClient_receiveHeaders    ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& header ) override;
+    void                                AbstractMiningMessengerClient_receiveError      ( const MiningMessengerRequest& request ) override;
+    void                                AbstractMiningMessengerClient_receiveHeader     ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header ) override;
+    void                                AbstractMiningMessengerClient_receiveMiner      ( const MiningMessengerRequest& request, string minerID, string url ) override;
+    void                                AbstractMiningMessengerClient_receiveMinerURL   ( const MiningMessengerRequest& request, string url ) override;
+    
     void                                AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
     void                                AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
     virtual void                        Miner_reset                                     ();
@@ -220,6 +236,8 @@ public:
     bool                                checkBestBranch             ( string miners ) const;
     size_t                              countBranches               () const;
     void                                extend                      ( time_t now );
+    const set < string >&               getActiveMinerURLs          () const;
+    size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
     bool                                isLazy                      () const;
     void                                loadGenesis                 ( string path );

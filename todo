@@ -112,7 +112,6 @@ DONE: node - enforce mining key permissions (mining keys use default entitlement
 LAUNCH
 
 node - setup guide
-node - command line utils (for generating genesis miner account; distribute via Docker)
 node - mining reward transaction (first in block? transaction count? transaction needed at all, or part of block?)
 node - high-confidence chain (based on consensus)
 node - sqlite persistence (or anything ACID)
@@ -122,6 +121,7 @@ node - fixed gratuity requirement
 node - implement rake
 node - implement tax
 node - set minimal time between blocks
+node - import transactions
 
 wallet - decimal points for VOL (3)
 

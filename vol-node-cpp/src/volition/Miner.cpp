@@ -16,6 +16,7 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 RemoteMiner::RemoteMiner () :
+    mState ( STATE_NEW ),
     mHeight ( 0 ),
     mForward ( true ) {
 }
@@ -74,9 +75,18 @@ void Miner::affirmNodeSearch ( BlockTreeNode::ConstPtr node ) {
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         
         RemoteMiner& remoteMiner = remoteMinerIt->second;
+        if ( remoteMiner.mState == RemoteMiner::STATE_ERROR ) continue;
         
         this->mMessenger->requestBlock ( *this, remoteMinerIt->first, remoteMiner.mURL, ( **search.mSearchTarget ).getDigest ());
         search.mSearchLimit++;
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::affirmRemoteMiner ( string url ) {
+
+    if ( url.size () && ( this->mRemoteMiners.find ( url ) == this->mRemoteMiners.cend ())) {
+        this->mNewMinerURLs.insert ( url );
     }
 }
 
@@ -141,15 +151,31 @@ void Miner::composeChain () {
 //----------------------------------------------------------------//
 void Miner::discoverMiners () {
 
+    while ( this->mNewMinerURLs.size ()) {
+        this->mMessenger->requestMiner ( *this, *this->mNewMinerURLs.begin ());
+        this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
+    }
+
     set < string > miners = this->getLedger ().getMiners ();
-        
     set < string >::iterator minerIt = miners.begin ();
     for ( ; minerIt != miners.end (); ++minerIt ) {
+    
         string minerID = *minerIt;
         
         if ( minerID != this->mMinerID ) {
             AccountODBM minerODBM ( this->getLedger (), *minerIt );
-            this->mRemoteMiners [ minerID ].mURL = minerODBM.mMinerInfo.get ()->getURL (); // affirm
+            RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
+            remoteMiner.mURL = minerODBM.mMinerInfo.get ()->getURL ();
+        }
+    }
+    
+    // refresh list of active URLs
+    this->mActiveMinerURLs.clear ();
+    map < string, RemoteMiner >::const_iterator remoteMinerIt = this->mRemoteMiners.cbegin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.cend (); ++remoteMinerIt ) {
+        const RemoteMiner& remoteMiner = remoteMinerIt->second;
+        if ( remoteMiner.mTag && ( remoteMiner.mState == RemoteMiner::STATE_ONLINE )) {
+            this->mActiveMinerURLs.insert ( remoteMiner.mURL );
         }
     }
 }
@@ -170,6 +196,18 @@ void Miner::extend ( time_t now ) {
         this->saveChain ();
         this->pruneTransactions ( *this->mChain );
     }
+}
+
+//----------------------------------------------------------------//
+const set < string >& Miner::getActiveMinerURLs () const {
+
+    return this->mActiveMinerURLs;
+}
+
+//----------------------------------------------------------------//
+size_t Miner::getChainSize () const {
+
+    return this->mChainTag ? (( **this->mChainTag ).getHeight () + 1 ) : 0;
 }
 
 //----------------------------------------------------------------//
@@ -259,7 +297,10 @@ void Miner::processResponses () {
             
             case MiningMessengerRequest::REQUEST_BLOCK: {
                 
-                this->mBlockTree.update ( entry.mBlock ); // update no matter what (will do nothing if node is missing)
+                // in this case, we don't care about which miner the block came from since (presumably)
+                // the block is already in our tree somewhere.
+                
+                this->mBlockTree.update ( entry.mBlock ); // update no matter what (will do nothing if node is missing).
                 
                 string hash = entry.mRequest.mBlockDigest;
                 map < string, MinerSearchEntry >::iterator searchIt = this->mSearches.find ( hash );
@@ -283,15 +324,8 @@ void Miner::processResponses () {
                 
                 string minerID = entry.mRequest.mMinerID;
                 RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
-        
-                if ( entry.mHeaders.size ()) {
-                    if ( remoteMiner.mHeaderQueue.size () && ( remoteMiner.mHeaderQueue.front ()->getHeight () == ( entry.mHeaders.back ()->getHeight () + 1 ))) {
-                        remoteMiner.mHeaderQueue.insert ( remoteMiner.mHeaderQueue.begin (), entry.mHeaders.begin (), entry.mHeaders.end ());
-                    }
-                    else {
-                        remoteMiner.mHeaderQueue = entry.mHeaders;
-                    }
-                }
+                
+                remoteMiner.mHeaderQueue [ entry.mHeader->getHeight ()] = entry.mHeader;
                 
                 if ( this->mMinerSet.find ( minerID ) != this->mMinerSet.end ()) {
                     this->mMinerSet.erase ( minerID );
@@ -309,35 +343,53 @@ void Miner::processResponses () {
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
     
         RemoteMiner& remoteMiner = remoteMinerIt->second;
-        
-        // if 'tag' gets overwritten, 'thumb' will hang on to any nodes we might need later.
-        BlockTreeNode::ConstPtr thumb = remoteMiner.mTag;
-        
-        // visit each header in the cache and try to apply it.
-        size_t accepted = 0;
-        while ( remoteMiner.mHeaderQueue.size ()) {
-
-            shared_ptr < const BlockHeader > header = *remoteMiner.mHeaderQueue.begin ();
-            BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( header, NULL );
-            
-            if ( !node ) {
-                if ( accepted > 0 ) {
-                    // the queue is supposed to be sequential; if part of the queue has already been
-                    // accepted, then there's an error in the queue, so clear it.
+        remoteMiner.mState = RemoteMiner::STATE_ONLINE;
+    
+        // process the queue
+        if ( remoteMiner.mHeaderQueue.size ()) {
+    
+            shared_ptr < const BlockHeader > genesisHeader = remoteMiner.mHeaderQueue.begin ()->second;
+            if ( genesisHeader->getHeight () == 0 ) {
+                BlockTreeNode::ConstPtr root = this->mBlockTree.getRoot ();
+                if (( **root ).getDigest () != genesisHeader->getDigest ()) {
+                
                     remoteMiner.mHeaderQueue.clear ();
+                    remoteMiner.mState      = RemoteMiner::STATE_ERROR;
+                    remoteMiner.mMessage    = "Unrecoverable error: genesis block mismatch.";
+                    
+                    continue;
                 }
-                break;
             }
             
-            // header found a parent and was added, so accept it and remove it from the cache.
-            remoteMiner.mTag = node;
-            remoteMiner.mHeaderQueue.pop_front ();
-            accepted++;
+            // if 'tag' gets overwritten, 'thumb' will hang on to any nodes we might need later.
+            BlockTreeNode::ConstPtr thumb = remoteMiner.mTag;
+            
+            // visit each header in the cache and try to apply it.
+            size_t accepted = 0;
+            while ( remoteMiner.mHeaderQueue.size ()) {
+
+                shared_ptr < const BlockHeader > header = remoteMiner.mHeaderQueue.begin ()->second;
+                BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( header, NULL );
+                
+                if ( !node ) {
+                    if ( accepted > 0 ) {
+                        // the queue is supposed to be sequential; if part of the queue has already been
+                        // accepted, then there's an error in the queue, so clear it.
+                        remoteMiner.mHeaderQueue.clear ();
+                    }
+                    break;
+                }
+                
+                // header found a parent and was added, so accept it and remove it from the cache.
+                remoteMiner.mTag = node;
+                remoteMiner.mHeaderQueue.erase ( remoteMiner.mHeaderQueue.begin ());
+                accepted++;
+            }
         }
         
         if ( remoteMiner.mHeaderQueue.size ()) {
             // if there's anything left in the queue, back up and get an earlier batch of blocks.
-            remoteMiner.mHeight = remoteMiner.mHeaderQueue.front ()->getHeight ();
+            remoteMiner.mHeight = remoteMiner.mHeaderQueue.begin ()->second->getHeight ();
             remoteMiner.mForward = false;
         }
         else if ( remoteMiner.mTag ) {
@@ -377,6 +429,7 @@ void Miner::requestHeaders () {
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
     
         RemoteMiner& remoteMiner = remoteMinerIt->second;
+        if ( remoteMiner.mState == RemoteMiner::STATE_ERROR ) continue;
         
         // constantly refill active set
         if ( this->mMinerSet.find ( remoteMinerIt->first ) == this->mMinerSet.end ()) {
@@ -423,6 +476,7 @@ void Miner::selectBestBranch ( time_t now ) {
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         const RemoteMiner& remoteMiner = remoteMinerIt->second;
 
+        if ( remoteMiner.mState == RemoteMiner::STATE_ERROR ) continue;
         if ( !remoteMiner.mTag ) continue;
 
         BlockTreeNode::ConstPtr truncated = this->truncate (
@@ -609,6 +663,7 @@ void Miner::updateSearches ( time_t now ) {
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         
         const RemoteMiner& remoteMiner = remoteMinerIt->second;
+        if ( remoteMiner.mState == RemoteMiner::STATE_ERROR ) continue;
 
         // we only care about missing branches; ignore new/complete/invalid branches.
         if ( remoteMiner.mTag && remoteMiner.mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
@@ -641,14 +696,34 @@ void Miner::AbstractMiningMessengerClient_receiveBlock ( const MiningMessengerRe
 }
 
 //----------------------------------------------------------------//
-void Miner::AbstractMiningMessengerClient_receiveHeaders ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+void Miner::AbstractMiningMessengerClient_receiveError ( const MiningMessengerRequest& request ) {
+    UNUSED ( request );
+}
+
+//----------------------------------------------------------------//
+void Miner::AbstractMiningMessengerClient_receiveHeader ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header ) {
     
     unique_ptr < BlockQueueEntry > blockQueueEntry = make_unique < BlockQueueEntry >();
     blockQueueEntry->mRequest           = request;
-    blockQueueEntry->mHeaders           = headers;
+    blockQueueEntry->mHeader            = header;
 
     Poco::ScopedLock < Poco::Mutex > chainMutexLock ( this->mMutex );
     this->mBlockQueue.push_back ( move ( blockQueueEntry ));
+}
+
+//----------------------------------------------------------------//
+void Miner::AbstractMiningMessengerClient_receiveMiner ( const MiningMessengerRequest& request, string minerID, string url ) {
+    UNUSED ( request );
+
+    RemoteMiner& remoteMiner = this->mRemoteMiners [ minerID ];
+    remoteMiner.mURL = url;
+}
+
+//----------------------------------------------------------------//
+void Miner::AbstractMiningMessengerClient_receiveMinerURL ( const MiningMessengerRequest& request, string url ) {
+    UNUSED ( request );
+
+    this->affirmRemoteMiner ( url );
 }
 
 //----------------------------------------------------------------//

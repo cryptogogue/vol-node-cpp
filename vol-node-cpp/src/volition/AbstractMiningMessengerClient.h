@@ -19,8 +19,11 @@ class AbstractMiningMessengerClient {
 protected:
 
     //----------------------------------------------------------------//
-    virtual void        AbstractMiningMessengerClient_receiveBlock      ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) = 0;
-    virtual void        AbstractMiningMessengerClient_receiveHeaders    ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) = 0;
+    virtual void        AbstractMiningMessengerClient_receiveBlock          ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) = 0;
+    virtual void        AbstractMiningMessengerClient_receiveError          ( const MiningMessengerRequest& request ) = 0;
+    virtual void        AbstractMiningMessengerClient_receiveHeader         ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header ) = 0;
+    virtual void        AbstractMiningMessengerClient_receiveMiner          ( const MiningMessengerRequest& request, string minerID, string url ) = 0;
+    virtual void        AbstractMiningMessengerClient_receiveMinerURL       ( const MiningMessengerRequest& request, string url ) = 0;
 
 public:
 
@@ -39,9 +42,27 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void receiveHeaders ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+    void receiveError ( const MiningMessengerRequest& request ) {
     
-        this->AbstractMiningMessengerClient_receiveHeaders ( request, headers );
+        this->AbstractMiningMessengerClient_receiveError ( request );
+    }
+
+    //----------------------------------------------------------------//
+    void receiveHeader ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header ) {
+    
+        this->AbstractMiningMessengerClient_receiveHeader ( request, header );
+    }
+    
+    //----------------------------------------------------------------//
+    void receiveMiner ( const MiningMessengerRequest& request, string minerID, string url ) {
+    
+        this->AbstractMiningMessengerClient_receiveMiner ( request, minerID, url );
+    }
+    
+    //----------------------------------------------------------------//
+    void receiveMinerURL ( const MiningMessengerRequest& request, string url ) {
+    
+        this->AbstractMiningMessengerClient_receiveMinerURL ( request, url );
     }
 };
 

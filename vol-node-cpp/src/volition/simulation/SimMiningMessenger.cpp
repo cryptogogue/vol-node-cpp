@@ -48,7 +48,11 @@ void SimMiningMessenger::dispatchHeaders ( const MiningMessengerRequest& request
             headers.clear ();
         }
     }
-    request.mClient->receiveHeaders ( request, headers );
+    
+    list < shared_ptr < const BlockHeader >>::const_iterator headerIt = headers.cbegin ();
+    for ( ; headerIt != headers.cend (); ++headerIt ) {
+        request.mClient->receiveHeader ( request, *headerIt );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -98,6 +102,18 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
                 node = node->getParent ();
             }
             this->dispatchHeaders ( request, headers );
+            break;
+        }
+        
+        case MiningMessengerRequest::REQUEST_MINER: {
+        
+            // no miner to discover in sim (for now)
+            break;
+        }
+        
+        case MiningMessengerRequest::REQUEST_MINER_URLS: {
+        
+            // no miners to discover in sim (for now)
             break;
         }
         

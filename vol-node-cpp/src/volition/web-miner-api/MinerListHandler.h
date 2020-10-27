@@ -20,6 +20,8 @@ class MinerListHandler :
     public MinerAPIRequestHandler {
 public:
 
+    static const size_t RANDOM_BATCH_SIZE = 16;
+
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
@@ -28,24 +30,28 @@ public:
         UNUSED ( jsonIn );
     
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Ledger& ledger = this->mWebMiner->getLedger ();
-        set < string > miners = ledger.getMiners ();
+        set < string > miners = this->mWebMiner->getActiveMinerURLs ();
         
-        Poco::JSON::Object::Ptr minersJSON = new Poco::JSON::Object ();
+        if (( RANDOM_BATCH_SIZE < miners.size ()) && ( this->optQuery ( "sample", "" ) == "random" )) {
         
-        set < string >::const_iterator minerIt = miners.cbegin ();
-        for ( unsigned int i = 0; minerIt != miners.cend (); ++minerIt, ++i ) {
-        
-            AccountODBM minerODBM ( ledger, *minerIt );
-            if ( !minerODBM ) continue;
-            
-            Poco::JSON::Object::Ptr minerInfoJSON = new Poco::JSON::Object ();
-            minerInfoJSON->set ( "url",         minerODBM.mMinerInfo.get ()->getURL ().c_str ());
-            
-            minersJSON->set ( *minerIt, minerInfoJSON );
+            set < string > subset;
+            for ( size_t i = 0; i < RANDOM_BATCH_SIZE; ++i ) {
+                set < string >::iterator minerIt = miners.begin ();
+                advance ( minerIt, ( long )(( size_t )rand () % miners.size ())); // this doesn't need to be cryptographically random; keep it simple
+                subset.insert ( *minerIt );
+                miners.erase ( minerIt );
+            }
+            miners = subset;
         }
         
-        jsonOut.set ( "miners", minersJSON );
+        SerializableList < string > minerList;
+        
+        set < string >::const_iterator minerIt = miners.cbegin ();
+        for ( ; minerIt != miners.cend (); ++minerIt ) {
+            minerList.push_back ( *minerIt );
+        }
+        
+        jsonOut.set ( "miners", ToJSONSerializer::toJSON ( minerList ));
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

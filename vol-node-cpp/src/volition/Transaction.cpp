@@ -159,6 +159,13 @@ void Transaction::setBody ( shared_ptr < AbstractTransactionBody > body ) {
 }
 
 //----------------------------------------------------------------//
+void Transaction::sign ( const CryptoKeyPair& keyPair ) {
+
+    this->mSignature = make_shared < Signature >();
+    *this->mSignature = keyPair.sign ( this->mBodyString );
+}
+
+//----------------------------------------------------------------//
 Transaction::Transaction () {
 }
 
