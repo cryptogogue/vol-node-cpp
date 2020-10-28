@@ -114,14 +114,51 @@ protected:
                 simulator.getSimMiner ( 7 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
 
                 break;
+            
+            case 24:
+            
+                // add 9094 - 9097 as miners
+                simulator.getSimMiner ( 1 )->pushTransaction (
+                    SimTransaction::makeTransaction (
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 4 )),
+                        "8f460ff6-a290-44c7-98d3-a678449a613b",
+                        "9094"
+                    )
+                );
+                
+                simulator.getSimMiner ( 1 )->pushTransaction (
+                    SimTransaction::makeTransaction (
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 5 )),
+                        "1d69ad2a-8ee1-4f35-968f-a4ce725c8dea",
+                        "9095"
+                    )
+                );
+                
+                simulator.getSimMiner ( 1 )->pushTransaction (
+                    SimTransaction::makeTransaction (
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 6 )),
+                        "a9f4409e-7a1b-48ef-8fcf-b58070a2ee9a",
+                        "9096"
+                    )
+                );
+                
+                simulator.getSimMiner ( 1 )->pushTransaction (
+                    SimTransaction::makeTransaction (
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 7 )),
+                        "356cff67-a911-4602-8950-a667fd2fd040",
+                        "9097"
+                    )
+                );
+                
+                break;
         }
     }
     
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 16, 15, BASE_PORT );
-        simulator.setActive ( 1, 16, false );
+        simulator.initialize ( 8, 7, BASE_PORT );
+        simulator.setActive ( 1, 8, false );
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
