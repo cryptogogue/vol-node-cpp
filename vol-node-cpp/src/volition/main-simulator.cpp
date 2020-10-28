@@ -9,6 +9,7 @@
 #include <volition/MinerAPIFactory.h>
 #include <volition/RouteTable.h>
 #include <volition/simulation/AbstractScenario.h>
+#include <volition/simulation/SimTransaction.h>
 #include <volition/simulation/SimulatorActivity.h>
 #include <volition/UnsecureRandom.h>
 #include <volition/version.h>
@@ -18,7 +19,7 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
-#define THE_SCENARO ScrambleScenario
+#define THE_SCENARO MinerScenario
 
 //================================================================//
 // SimpleScenario
@@ -26,10 +27,6 @@ const int BASE_PORT         = 9090;
 class SimpleScenario :
     public AbstractScenario {
 protected:
-
-    SCENARIO_BASE_PORT ( BASE_PORT )
-    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
-    SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
     void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
@@ -40,7 +37,92 @@ protected:
     
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
+    }
+};
+
+//================================================================//
+// MinerScenario
+//================================================================//
+class MinerScenario :
+    public AbstractScenario {
+protected:
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
         UNUSED ( simulator );
+        UNUSED ( messenger );
+        UNUSED ( step );
+        
+        switch ( step ) {
+
+            case 0:
+            
+                // add 9091 as a miner
+                simulator.setActive ( 1, 2, true );
+                simulator.getSimMiner ( 0 )->pushTransaction (
+                    SimTransaction::makeTransaction (
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 1 )),
+                        "0e449540-5c04-4c2b-a437-dcc75db54de8",
+                        "9091"
+                    )
+                );
+                break;
+            
+            case 4:
+            
+                // 9092 and 9093 wake up
+                simulator.setActive ( 2, 4, true );
+                simulator.setActive ( 1, 2, true );
+                break;
+            
+            case 8:
+            
+                // 9090 goes away
+                simulator.setActive ( 0, 1, false );
+            
+            case 12:
+
+                // add 9092, 9093 as miners
+                simulator.getSimMiner ( 1 )->pushTransaction (
+                    SimTransaction::makeTransaction (
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 2 )),
+                        "12ad8de5-0aa1-4fbf-a6fe-bdce7640aed3",
+                        "9092"
+                    )
+                );
+
+                simulator.getSimMiner ( 1 )->pushTransaction (
+                    SimTransaction::makeTransaction (
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 3 )),
+                        "333a6f1b-cdf3-4b1d-8979-898d99d22f5c",
+                        "9093"
+                    )
+                );
+                break;
+
+            case 16:
+
+                // wake up 9094 - 9097
+                simulator.setActive ( 4, 8, true );
+
+                simulator.getSimMiner ( 4 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 5 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 6 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 7 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
+
+                break;
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initialize ( 16, 15, BASE_PORT );
+        simulator.setActive ( 1, 16, false );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
 
@@ -50,10 +132,6 @@ protected:
 class MixedScenario :
     public AbstractScenario {
 protected:
-
-    SCENARIO_BASE_PORT ( BASE_PORT )
-    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
-    SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
     void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
@@ -77,6 +155,13 @@ protected:
                 break;
         }
     }
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
+    }
 };
 
 //================================================================//
@@ -85,10 +170,6 @@ protected:
 class RandomDropScenario :
     public AbstractScenario {
 protected:
-
-    SCENARIO_BASE_PORT ( BASE_PORT )
-    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
-    SCENARIO_SIZE ( 16 )
     
     //----------------------------------------------------------------//
     void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
@@ -107,6 +188,13 @@ protected:
                 break;
         }
     }
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
+    }
 };
 
 //================================================================//
@@ -115,10 +203,6 @@ protected:
 class RewriteScenario :
     public AbstractScenario {
 protected:
-
-    SCENARIO_BASE_PORT ( BASE_PORT )
-    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
-    SCENARIO_SIZE ( 16 )
     
     int     mCounter;
     
@@ -142,6 +226,13 @@ protected:
             this->mCounter--;
         }
     }
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
+    }
 
 public:
 
@@ -157,10 +248,6 @@ public:
 class ScrambleScenario :
     public AbstractScenario {
 protected:
-
-    SCENARIO_BASE_PORT ( BASE_PORT )
-    SCENARIO_REPORT_MODE ( Simulator::REPORT_ALL_MINERS )
-    SCENARIO_SIZE ( 16 )
         
     //----------------------------------------------------------------//
     void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
@@ -175,6 +262,14 @@ protected:
             simMiner->scrambleRemotes ();
             simMiner->rewindChain ( UnsecureRandom::get ().random ( 0, ( **simMiner->getBestBranch ()).getHeight ()));
         }
+    }
+    
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
 

@@ -13,7 +13,6 @@
 #include <volition/web-miner-api/ConsensusBlockHeaderListHandler.h>
 #include <volition/web-miner-api/ControlCommandHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
-#include <volition/web-miner-api/ExtendChainHandler.h>
 #include <volition/web-miner-api/InventoryAssetsHandler.h>
 #include <volition/web-miner-api/InventoryHandler.h>
 #include <volition/web-miner-api/InventoryLogHandler.h>
@@ -61,7 +60,6 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >                     ( HTTP::GET,        Format::write ( "%s/miners/?.*", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::NodeDetailsHandler >                   ( HTTP::GET,        Format::write ( "%s/node/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::SchemaHandler >                        ( HTTP::GET,        Format::write ( "%s/schema/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::ExtendChainHandler >                   ( HTTP::POST,       Format::write ( "%s/test/extendChain/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >                     ( HTTP::POST,       Format::write ( "%s/test/keyid/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >                 ( HTTP::POST,       Format::write ( "%s/test/signature/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ResetChainHandler >                    ( HTTP::DELETE,     Format::write ( "%s/?", prefix ));

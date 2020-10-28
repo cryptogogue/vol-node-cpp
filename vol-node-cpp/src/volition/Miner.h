@@ -5,7 +5,7 @@
 #define VOLITION_MINER_H
 
 #include <volition/common.h>
-#include <volition/AbstractMiningMessenger.h>
+#include <volition/AbstractMiningMessengerClient.h>
 #include <volition/Accessors.h>
 #include <volition/BlockTree.h>
 #include <volition/CryptoKey.h>
@@ -45,6 +45,7 @@ public:
         STATE_ERROR,
     };
 
+    string                      mMinerID;
     string                      mURL;
     BlockTreeNode::ConstPtr     mTag;
     MinerState                  mState;
@@ -57,19 +58,7 @@ public:
     //----------------------------------------------------------------//
                     RemoteMiner             ();
                     ~RemoteMiner            ();
-};
-
-//================================================================//
-// BlockQueueEntry
-//================================================================//
-class BlockQueueEntry {
-private:
-
-    friend class Miner;
-
-    MiningMessengerRequest              mRequest;
-    shared_ptr < const Block >          mBlock;
-    shared_ptr < const BlockHeader >    mHeader;
+    void            setError                ( string message = "" );
 };
 
 //================================================================//
@@ -118,7 +107,6 @@ public:
     };
 
     enum : int {
-        MINER_LAZY                  = 0x01,
         MINER_VERBOSE               = 0x02,
         MINER_MUTE                  = 0x08,
     };
@@ -132,6 +120,7 @@ protected:
     static constexpr const char* MASTER_BRANCH      = "master";
 
     string                                          mMinerID;
+    string                                          mURL;
     SerializableTime                                mStartTime;
 
     CryptoKeyPair                                   mKeyPair;
@@ -152,8 +141,12 @@ protected:
     
     set < string >                                  mNewMinerURLs;
     set < string >                                  mActiveMinerURLs;
-    map < string, RemoteMiner >                     mRemoteMiners;
-    map < string, MinerSearchEntry >                mSearches;
+    map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByID;
+    map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByURL;
+    set < shared_ptr < RemoteMiner >>               mOnlineMiners;
+    map < string, MinerSearchEntry >                mBlockSearches;
+    set < string >                                  mHeaderSearches;
+    
     BlockTree                                       mBlockTree;
     
     shared_ptr < Ledger >                           mChain;         // may run behind block tree tag
@@ -164,15 +157,12 @@ protected:
     Poco::Mutex                                     mMutex;
 
     shared_ptr < AbstractMiningMessenger >          mMessenger;
-    set < string >                                  mMinerSet;
-
-    list < unique_ptr < BlockQueueEntry >>          mBlockQueue;
+    list < MiningMessengerResponse >                mResponseQueue;
     
     //----------------------------------------------------------------//
     void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
     void                                affirmMessenger             ();
     void                                affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
-    void                                affirmRemoteMiner           ( string url );
     bool                                canExtend                   () const;
     void                                composeChain                ();
     void                                discoverMiners              ();
@@ -187,12 +177,7 @@ protected:
     void                                updateSearches              ( time_t now );    
 
     //----------------------------------------------------------------//
-    void                                AbstractMiningMessengerClient_receiveBlock      ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) override;
-    void                                AbstractMiningMessengerClient_receiveError      ( const MiningMessengerRequest& request ) override;
-    void                                AbstractMiningMessengerClient_receiveHeader     ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header ) override;
-    void                                AbstractMiningMessengerClient_receiveMiner      ( const MiningMessengerRequest& request, string minerID, string url ) override;
-    void                                AbstractMiningMessengerClient_receiveMinerURL   ( const MiningMessengerRequest& request, string url ) override;
-    
+    void                                AbstractMiningMessengerClient_receiveResponse   ( const MiningMessengerResponse& response ) override;
     void                                AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
     void                                AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
     virtual void                        Miner_reset                                     ();
@@ -223,6 +208,7 @@ public:
     GET_SET ( string,                               MinerID,                    mMinerID )
     GET_SET ( string,                               Motto,                      mMotto )
     GET_SET ( BlockTreeNode::RewriteMode,           RewriteMode,                mRewriteMode)
+    GET_SET ( string,                               URL,                        mURL )
     
     //----------------------------------------------------------------//
     operator Poco::Mutex& () {
@@ -232,6 +218,7 @@ public:
 
     //----------------------------------------------------------------//
     void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
+    void                                affirmRemoteMiner           ( string url );
     void                                affirmVisage                ();
     bool                                checkBestBranch             ( string miners ) const;
     size_t                              countBranches               () const;
@@ -246,9 +233,9 @@ public:
     virtual                             ~Miner                      ();
     shared_ptr < Block >                prepareBlock                ( time_t now );
     void                                reset                       ();
+    set < string >                      sampleActiveMinerURLs       ( size_t sampleSize ) const;
     void                                setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                                setGenesis                  ( shared_ptr < const Block > block );
-    void                                setLazy                     ( bool lazy );
     void                                setMinimumGratuity          ( u64 minimumGratuity );
     void                                setMute                     ( bool paused );
     void                                setReward                   ( string reward );

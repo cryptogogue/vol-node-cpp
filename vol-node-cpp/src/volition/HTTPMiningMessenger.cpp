@@ -156,7 +156,7 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
                 
                     Poco::JSON::Object::Ptr minerListJSON = json ? json->getObject ( "miners" ) : NULL;
                     if ( minerListJSON ) {
-                
+                        
                         SerializableList < string > minerList;
                         FromJSONSerializer::fromJSON ( minerList, *minerListJSON );
                         
@@ -191,23 +191,23 @@ void HTTPMiningMessenger::AbstractMiningMessenger_request ( const MiningMessenge
     switch ( request.mRequestType ) {
         
         case MiningMessengerRequest::REQUEST_BLOCK:
-            Format::write ( url, "%sconsensus/blocks/%s", request.mBaseURL.c_str (), request.mBlockDigest.toHex ().c_str ());
+            Format::write ( url, "%sconsensus/blocks/%s", request.mMinerURL.c_str (), request.mBlockDigest.toHex ().c_str ());
             break;
     
         case MiningMessengerRequest::REQUEST_HEADERS:
-            Format::write ( url, "%sconsensus/headers", request.mBaseURL.c_str ());
+            Format::write ( url, "%sconsensus/headers", request.mMinerURL.c_str ());
             break;
         
         case MiningMessengerRequest::REQUEST_PREV_HEADERS:
-            Format::write ( url, "%sconsensus/headers?height=%llu", request.mBaseURL.c_str (), request.mHeight );
+            Format::write ( url, "%sconsensus/headers?height=%llu", request.mMinerURL.c_str (), request.mHeight );
             break;
         
         case MiningMessengerRequest::REQUEST_MINER:
-            Format::write ( url, "%snode", request.mBaseURL.c_str ());
+            Format::write ( url, "%snode", request.mMinerURL.c_str ());
             break;
         
         case MiningMessengerRequest::REQUEST_MINER_URLS:
-            Format::write ( url, "%sminers?sample=random", request.mBaseURL.c_str ());
+            Format::write ( url, "%sminers?sample=random", request.mMinerURL.c_str ());
             break;
         
         default:

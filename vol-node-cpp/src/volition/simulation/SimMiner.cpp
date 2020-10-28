@@ -76,6 +76,12 @@ void SimMiner::rewindChain ( size_t height ) {
 }
 
 //----------------------------------------------------------------//
+void SimMiner::setActive ( bool active ) {
+
+    this->mActive = active;
+}
+
+//----------------------------------------------------------------//
 void SimMiner::setCharm ( size_t height, string charmHex ) {
 
     BlockTreeNode::ConstPtr cursor = this->mBestBranch;
@@ -96,28 +102,29 @@ void SimMiner::setCharm ( size_t height, string charmHex ) {
 //----------------------------------------------------------------//
 void SimMiner::scrambleRemotes () {
 
-    map < string, RemoteMiner >::iterator remoteMinerIt = this->mRemoteMiners.begin ();
-    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
-        RemoteMiner& remoteMiner = remoteMinerIt->second;
-        
-        if ( !remoteMiner.mTag ) continue;
-        
-        size_t height = ( **remoteMiner.mTag ).getHeight ();
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+                
+        size_t height = ( **remoteMiner->mTag ).getHeight ();
         height = ( size_t )floor ( height * UnsecureRandom::get ().random ());
         
-        BlockTreeNode::ConstPtr cursor = remoteMiner.mTag;
+        BlockTreeNode::ConstPtr cursor = remoteMiner->mTag;
         while (( **cursor ).getHeight () > height ) {
             cursor = cursor->getParent ();
         }
         
-        remoteMiner.mTag = cursor;
-        remoteMiner.mHeight = height + 1;
-        remoteMiner.mForward = true;
+        remoteMiner->mTag = cursor;
+        remoteMiner->mHeight = height + 1;
+        remoteMiner->mForward = true;
     }
 }
 
 //----------------------------------------------------------------//
-SimMiner::SimMiner () {
+SimMiner::SimMiner ( bool isGenesisMiner ) :
+    mActive ( true ),
+    mInterval ( 1 ),
+    mIsGenesisMiner ( isGenesisMiner ) {
 
     this->mBlockVerificationPolicy = Block::VerificationPolicy::NONE;
 }

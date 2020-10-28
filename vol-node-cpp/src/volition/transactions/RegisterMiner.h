@@ -22,7 +22,8 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    SerializableSharedConstPtr < MinerInfo > mMinerInfo;
+    string                                      mAccountName;
+    SerializableSharedConstPtr < MinerInfo >    mMinerInfo;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -44,7 +45,7 @@ public:
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
         if ( !this->mMinerInfo ) return "Missing miner info.";
         
-        return context.mLedger.registerMiner ( context.mIndex, *this->mMinerInfo );
+        return context.mLedger.registerMiner ( context.mLedger.getAccountID ( this->mAccountName ), *this->mMinerInfo );
     }
 };
 

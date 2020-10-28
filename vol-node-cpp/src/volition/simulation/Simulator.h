@@ -19,20 +19,6 @@ namespace Simulation {
 class AbstractScenario;
 
 //================================================================//
-// SimMinerSettings
-//================================================================//
-class SimMinerSettings {
-public:
-
-    size_t      mInterval;
-
-    //----------------------------------------------------------------//
-    SimMinerSettings () :
-        mInterval ( 1 ) {
-    }
-};
-
-//================================================================//
 // Simulator
 //================================================================//
 class Simulator {
@@ -56,7 +42,6 @@ protected:
     
     size_t                              mBasePort;
     Miners                              mMiners;
-    vector < SimMinerSettings >         mMinerSettings;
     shared_ptr < SimMiningMessenger >   mMessenger;
     Poco::Event                         mShutdownEvent;
     
@@ -79,10 +64,11 @@ public:
     SimMiningMessenger&                 getMessenger            ();
     const Miners&                       getMiners               ();
     shared_ptr < SimMiner >             getSimMiner             ( size_t idx );
-    void                                initialize              ( size_t totalMiners, size_t basePort = 9090 );
+    void                                initialize              ( size_t totalMiners, size_t deferredMiners = 0, size_t basePort = 9090 );
     void                                initialize              ( shared_ptr < AbstractScenario > scenario );
     void                                pause                   ( bool pause = true );
     void                                report                  ();
+    void                                setActive               ( size_t base, size_t top, bool active );
     void                                setInterval             ( size_t base, size_t top, size_t interval );
     void                                setMinerKey             ( size_t idx, const CryptoKeyPair& key );
     void                                setMinerKey             ( size_t idx, string pem );

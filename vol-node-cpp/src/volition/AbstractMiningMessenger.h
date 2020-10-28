@@ -5,12 +5,11 @@
 #define VOLITION_ABSTRACTMININGMESSENGER_H
 
 #include <volition/common.h>
-#include <volition/AbstractMiningMessengerClient.h>
 #include <volition/Digest.h>
 
 namespace Volition {
 
-class MiningMessengerRequest;
+class AbstractMiningMessengerClient;
 
 //================================================================//
 // MiningMessengerRequest
@@ -22,30 +21,29 @@ public:
         UNKNOWN,
         REQUEST_BLOCK,
         REQUEST_HEADERS,
-        REQUEST_PREV_HEADERS,
         REQUEST_MINER,
         REQUEST_MINER_URLS,
+        REQUEST_PREV_HEADERS,
     };
 
+    Type                                mRequestType;
+
     AbstractMiningMessengerClient*      mClient;
-    string                              mMinerID;
-    string                              mBaseURL;
+    string                              mMinerURL;
     Digest                              mBlockDigest;
     size_t                              mHeight;
-    Type                                mRequestType;
     
     //----------------------------------------------------------------//
     MiningMessengerRequest () :
+        mRequestType ( UNKNOWN ),
         mClient ( NULL ),
-        mHeight ( 0 ),
-        mRequestType ( UNKNOWN ) {
+        mHeight ( 0 ) {
     }
     
     //----------------------------------------------------------------//
-    MiningMessengerRequest ( AbstractMiningMessengerClient& client, string minerID, string baseURL, MiningMessengerRequest::Type requestType ) :
+    MiningMessengerRequest ( AbstractMiningMessengerClient& client, string minerURL, MiningMessengerRequest::Type requestType ) :
         mClient ( &client ),
-        mMinerID ( minerID ),
-        mBaseURL ( baseURL ),
+        mMinerURL ( minerURL ),
         mRequestType ( requestType ) {
     }
 };
@@ -70,35 +68,35 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void requestBlock ( AbstractMiningMessengerClient& client, string minerID, string baseURL, const Digest& digest ) {
+    void requestBlock ( AbstractMiningMessengerClient& client, string minerURL, const Digest& digest ) {
         
-        MiningMessengerRequest request ( client, minerID, baseURL, MiningMessengerRequest::REQUEST_BLOCK );
+        MiningMessengerRequest request ( client, minerURL, MiningMessengerRequest::REQUEST_BLOCK );
         request.mBlockDigest = digest;
         
         this->AbstractMiningMessenger_request ( request );
     }
 
     //----------------------------------------------------------------//
-    void requestHeader ( AbstractMiningMessengerClient& client, string minerID, string baseURL, size_t height, bool forward = true ) {
+    void requestHeader ( AbstractMiningMessengerClient& client, string minerURL, size_t height, bool forward = true ) {
         
-        MiningMessengerRequest request ( client, minerID, baseURL, forward ? MiningMessengerRequest::REQUEST_HEADERS : MiningMessengerRequest::REQUEST_PREV_HEADERS );
+        MiningMessengerRequest request ( client, minerURL, forward ? MiningMessengerRequest::REQUEST_HEADERS : MiningMessengerRequest::REQUEST_PREV_HEADERS );
         request.mHeight = height;
         
         this->AbstractMiningMessenger_request ( request );
     }
     
     //----------------------------------------------------------------//
-    void requestMiner ( AbstractMiningMessengerClient& client, string baseURL ) {
+    void requestMiner ( AbstractMiningMessengerClient& client, string minerURL ) {
         
-        MiningMessengerRequest request ( client, "", baseURL, MiningMessengerRequest::REQUEST_MINER );
+        MiningMessengerRequest request ( client, minerURL, MiningMessengerRequest::REQUEST_MINER );
         
         this->AbstractMiningMessenger_request ( request );
     }
     
     //----------------------------------------------------------------//
-    void requestMinerURLs ( AbstractMiningMessengerClient& client, string minerID, string baseURL ) {
+    void requestMinerURLs ( AbstractMiningMessengerClient& client, string minerURL ) {
         
-        MiningMessengerRequest request ( client, minerID, baseURL, MiningMessengerRequest::REQUEST_MINER_URLS );
+        MiningMessengerRequest request ( client, minerURL, MiningMessengerRequest::REQUEST_MINER_URLS );
         
         this->AbstractMiningMessenger_request ( request );
     }

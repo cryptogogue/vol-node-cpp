@@ -5,8 +5,9 @@
 #define VOLITION_SIMULATION_SIMMININGMESSENGER_H
 
 #include <volition/common.h>
-#include <volition/AbstractMiningMessenger.h>
+#include <volition/AbstractMiningMessengerClient.h>
 #include <volition/Miner.h>
+#include <volition/simulation/SimMiner.h>
 
 namespace Volition {
 namespace Simulation {
@@ -50,20 +51,21 @@ protected:
 
     typedef list < SimMiningMessengerConstraint> ConstraintList;
 
-    static const size_t HEADER_BATCH_SIZE   = 4;
+    static const size_t HEADER_BATCH_SIZE       = 4;
+    static const size_t MINER_URL_BATCH_SIZE    = 2;
 
-    map < string, shared_ptr < Miner >>                 mMiners;
+    map < string, shared_ptr < SimMiner >>              mMinersByURL;
     map < string, ConstraintList >                      mConstraintLists;
     vector < ConstraintList* >                          mConstraintListsByIndex;
     
     list < shared_ptr < MiningMessengerRequest >>       mTasks;
 
     //----------------------------------------------------------------//
-    void        dispatchBlock               ( const MiningMessengerRequest& request, shared_ptr < const Block > block );
-    void        dispatchHeaders             ( const MiningMessengerRequest& request, list < shared_ptr < const BlockHeader >> headers );
-    void        handleTask                  ( const MiningMessengerRequest& task );
-    void        pushConstraint              ( const SimMiningMessengerConstraint& constraint, size_t base, size_t top );
-    void        pushConstraint              ( SimMiningMessengerConstraint::Mode mode, double probability, size_t base, size_t top );
+    shared_ptr < SimMiner >     getMiner                    ( const MiningMessengerRequest& request );
+    const ConstraintList&       getMinerConstraints         ( const MiningMessengerRequest& request );
+    void                        handleTask                  ( const MiningMessengerRequest& task );
+    void                        pushConstraint              ( const SimMiningMessengerConstraint& constraint, size_t base, size_t top );
+    void                        pushConstraint              ( SimMiningMessengerConstraint::Mode mode, double probability, size_t base, size_t top );
 
     //----------------------------------------------------------------//
     void        AbstractMiningMessenger_request         ( const MiningMessengerRequest& request ) override;

@@ -17,21 +17,6 @@
 namespace Volition {
 namespace Simulation {
 
-#define SCENARIO_BASE_PORT(port)                                \
-    size_t AbstractScenario_getBasePort () const override {     \
-        return port;                                            \
-    }
-
-#define SCENARIO_REPORT_MODE(reportMode)                        \
-    Simulator::ReportMode AbstractScenario_getReportMode () const override { \
-        return reportMode;                                      \
-    }
-
-#define SCENARIO_SIZE(size)                                     \
-    size_t AbstractScenario_getSize () const override {         \
-        return size;                                            \
-    }
-
 //================================================================//
 // AbstractScenario
 //================================================================//
@@ -45,24 +30,6 @@ protected:
         UNUSED ( simulator );
         UNUSED ( messenger );
         UNUSED ( step );
-    }
-    
-    //----------------------------------------------------------------//
-    virtual size_t AbstractScenario_getBasePort () const {
-    
-        return 9090;
-    }
-    
-    //----------------------------------------------------------------//
-    virtual Simulator::ReportMode AbstractScenario_getReportMode () const {
-    
-        return Simulator::REPORT_SUMMARY;
-    }
-    
-    //----------------------------------------------------------------//
-    virtual size_t AbstractScenario_getSize () const {
-    
-        return 16;
     }
     
     //----------------------------------------------------------------//

@@ -50,6 +50,7 @@
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
 		CD20002A254660F300DEB809 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000442548CC9200DEB809 /* UnsecureRandom.h */; };
+		CD2000592548DAF100DEB809 /* SimTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000572548DAF100DEB809 /* SimTransaction.h */; };
 		CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF052536A2ED00DEB809 /* CryptoKey.h */; };
 		CD20FF182536D03900DEB809 /* NodeDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */; };
 		CD20FF3525381BDB00DEB809 /* SQLiteChainRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */; };
@@ -364,7 +365,6 @@
 		CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF4B7682325A94A0004392C /* BetaGetAssets.h */; };
 		CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7981E21EC3010002C4D80 /* FuncSquap.h */; };
 		CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7982121EC30B6002C4D80 /* ConstSquap.h */; };
-		CDF8AD5021F29045000E285F /* ExtendChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */; };
 		CDF8AD5621F2D106000E285F /* Transactions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5521F2D106000E285F /* Transactions.h */; };
 		CDF8AD5821F39969000E285F /* Entropy.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF8AD5721F39969000E285F /* Entropy.h */; };
 		CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDF8AD5A21F52B34000E285F /* LuaContext.cpp */; };
@@ -725,6 +725,7 @@
 		CD0C3E6720C86D88006E3B1C /* util */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = util; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD0C3E6820C86FBA006E3B1C /* main-util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-util.cpp"; path = "src/volition/main-util.cpp"; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
+		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD20FF052536A2ED00DEB809 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
 		CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NodeDetailsHandler.h; path = "src/volition/web-miner-api/NodeDetailsHandler.h"; sourceTree = "<group>"; };
 		CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteChainRecorder.cpp; path = src/volition/SQLiteChainRecorder.cpp; sourceTree = "<group>"; };
@@ -1001,7 +1002,6 @@
 		CDF4B7682325A94A0004392C /* BetaGetAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BetaGetAssets.h; path = src/volition/transactions/BetaGetAssets.h; sourceTree = "<group>"; };
 		CDF7981E21EC3010002C4D80 /* FuncSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuncSquap.h; path = src/volition/FuncSquap.h; sourceTree = "<group>"; };
 		CDF7982121EC30B6002C4D80 /* ConstSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConstSquap.h; path = src/volition/ConstSquap.h; sourceTree = "<group>"; };
-		CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtendChainHandler.h; path = "src/volition/web-miner-api/ExtendChainHandler.h"; sourceTree = "<group>"; };
 		CDF8AD5521F2D106000E285F /* Transactions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Transactions.h; path = src/volition/Transactions.h; sourceTree = "<group>"; };
 		CDF8AD5721F39969000E285F /* Entropy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entropy.h; path = src/volition/Entropy.h; sourceTree = "<group>"; };
 		CDF8AD5A21F52B34000E285F /* LuaContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaContext.cpp; path = src/volition/LuaContext.cpp; sourceTree = "<group>"; };
@@ -1522,7 +1522,6 @@
 				CD7751E5252FE41C00A53765 /* ConsensusBlockHeaderListHandler.h */,
 				CD20FFC2253D978600DEB809 /* ControlCommandHandler.h */,
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
-				CDF8AD4F21F29045000E285F /* ExtendChainHandler.h */,
 				CD51E51D24A60A3E00A0033B /* InventoryAssetsHandler.h */,
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
 				CDFA23A82460808A00B4CECF /* InventoryLogHandler.h */,
@@ -1636,6 +1635,7 @@
 				CD73D8202166D68700F43CC7 /* Analysis.h */,
 				CD7751D1252A790400A53765 /* SimMiner.cpp */,
 				CD7751D0252A790400A53765 /* SimMiner.h */,
+				CD2000572548DAF100DEB809 /* SimTransaction.h */,
 				CDAA38E0251AA09200FEAFB5 /* Simulator.cpp */,
 				CDAA38E1251AA09200FEAFB5 /* Simulator.h */,
 				CDAA38E8251AA72400FEAFB5 /* SimulatorActivity.cpp */,
@@ -1796,6 +1796,7 @@
 				CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */,
 				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
+				CD2000592548DAF100DEB809 /* SimTransaction.h in Headers */,
 				CD20FF3625381BDB00DEB809 /* SQLiteChainRecorder.h in Headers */,
 				CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */,
 				CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */,
@@ -1855,7 +1856,6 @@
 				CD2AB81E230F3D5700805F70 /* Genesis.h in Headers */,
 				CDBFD551218B8999002AB0C3 /* RunScript.h in Headers */,
 				CDBFD547218B8999002AB0C3 /* AffirmKey.h in Headers */,
-				CDF8AD5021F29045000E285F /* ExtendChainHandler.h in Headers */,
 				CD8BAE4121EBD3A400B5040E /* AbstractSquap.h in Headers */,
 				CD8BAE3B21EBC81900B5040E /* SerializablePtrFactory.h in Headers */,
 				CD20FFB0253D904A00DEB809 /* SelectReward.h in Headers */,

@@ -17,12 +17,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle ) const {
+TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle, Block::VerificationPolicy policy ) const {
 
     try {
         TransactionResult result = this->checkBody ( ledger, time );
         if ( result ) {
-            result = this->applyInner ( ledger, schemaHandle, time );
+            result = this->applyInner ( ledger, schemaHandle, time, policy );
         }
         result.setTransactionDetails ( *this );
         return result;
@@ -36,7 +36,7 @@ TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time ) const {
+TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time, Block::VerificationPolicy policy ) const {
     
     if ( !this->mBody ) return "Missing body.";
     
@@ -53,7 +53,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
     KeyAndPolicy keyAndPolicy = accountODBM.getKeyAndPolicyOrNull ( maker->getKeyName ());
     if ( !keyAndPolicy ) return "Transaction maker key not found.";
     
-    TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey );
+    TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey, policy );
     if ( result ) {
         
         TransactionContext context ( ledger, schemaHandle, accountODBM, keyAndPolicy, time );
@@ -105,20 +105,20 @@ bool Transaction::checkMaker ( string accountName, string uuid ) const {
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key ) const {
+TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const {
 
     if ( ledger.isGenesis ()) return true;
     if ( this->getUUID ().size () == 0 ) return false;
 
-    TransactionMaker* maker = this->mBody->mMaker.get ();
-    Signature* signature = this->mSignature.get ();
+    u64 nonce = AccountODBM ( ledger, accountID ).mTransactionNonce.get ();
+    if ( nonce != this->getNonce ()) return false;
 
-    if ( maker && signature ) {
-        u64 nonce = AccountODBM ( ledger, accountID ).mTransactionNonce.get ();
-        if ( nonce != this->getNonce ()) return false;
-        return key.verify ( *signature, this->mBodyString );
+    if ( policy & Block::VERIFY_TRANSACTION_SIG ) {
+    
+        Signature* signature = this->mSignature.get ();
+        return signature ? key.verify ( *signature, this->mBodyString ) : false;
     }
-    return false;
+    return true;
 }
 
 //----------------------------------------------------------------//

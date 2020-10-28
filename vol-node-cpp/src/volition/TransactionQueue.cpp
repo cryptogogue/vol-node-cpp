@@ -113,7 +113,7 @@ void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > tran
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::fillBlock ( Ledger& chain, Block& block ) {
+void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::VerificationPolicy policy ) {
 
     Ledger ledger;
     ledger.takeSnapshot ( chain );
@@ -168,7 +168,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block ) {
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
-            TransactionResult result = transaction->apply ( ledger, block.getTime (), schemaHandle );
+            TransactionResult result = transaction->apply ( ledger, block.getTime (), schemaHandle, policy );
             if ( result ) {
                 // transaction succeeded!
                 block.pushTransaction ( transaction );

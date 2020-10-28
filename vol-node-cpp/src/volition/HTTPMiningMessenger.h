@@ -5,7 +5,7 @@
 #define VOLITION_HTTPMININGMESSENGER_H
 
 #include <volition/common.h>
-#include <volition/AbstractMiningMessenger.h>
+#include <volition/AbstractMiningMessengerClient.h>
 
 namespace Volition {
 

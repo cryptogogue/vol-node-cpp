@@ -71,21 +71,22 @@ shared_ptr < SimMiner > Simulator::getSimMiner ( size_t idx ) {
 }
 
 //----------------------------------------------------------------//
-void Simulator::initialize ( size_t totalMiners, size_t basePort ) {
+void Simulator::initialize ( size_t totalMiners, size_t deferredMiners, size_t basePort ) {
 
     this->mBasePort = basePort;
 
     this->mMiners.resize ( totalMiners );
-    this->mMinerSettings.resize ( totalMiners );
-
     this->mMessenger = make_shared < SimMiningMessenger >();
+
+    size_t genesisMiners = totalMiners - deferredMiners;
 
     for ( size_t i = 0; i < totalMiners; ++i ) {
     
-        shared_ptr < SimMiner > miner = make_shared < SimMiner >();
+        shared_ptr < SimMiner > miner = make_shared < SimMiner >( i < genesisMiners );
         this->mMiners [ i ] = miner;
 
         miner->setMinerID ( Format::write ( "%d", ( int )( basePort + i )));
+        miner->setURL ( Format::write ( "http://127.0.0.1:%d/%s/", ( int )this->mBasePort, miner->getMinerID ().c_str ()));
         miner->setMessenger ( this->mMessenger );
     }
     
@@ -97,12 +98,8 @@ void Simulator::initialize ( shared_ptr < AbstractScenario > scenario ) {
 
     assert ( scenario );
 
+    this->setReportMode ( REPORT_SUMMARY );
     this->mScenario = scenario;
-    this->initialize (
-        scenario->AbstractScenario_getSize (),
-        scenario->AbstractScenario_getBasePort ()
-    );
-    this->setReportMode ( scenario->AbstractScenario_getReportMode ());
     scenario->AbstractScenario_setup ( *this );
 }
 
@@ -131,7 +128,8 @@ void Simulator::prepare () {
 
     for ( size_t i = 0; i < totalMiners; ++i ) {
     
-        shared_ptr < Miner > miner = this->mMiners [ i ];
+        shared_ptr < SimMiner > miner = dynamic_pointer_cast < SimMiner >( this->mMiners [ i ]);
+        assert ( miner );
 
         if ( i < minerKeys.size ()) {
             miner->setKeyPair ( minerKeys [ i ]);
@@ -143,18 +141,20 @@ void Simulator::prepare () {
 
         Transactions::GenesisAccount genesisAccount;
         
-        shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
-            Format::write ( "http://127.0.0.1:%s/%s/", Format::write ( "%d", ( int )this->mBasePort ).c_str (), miner->getMinerID ().c_str ()),
-            miner->getKeyPair ().getPublicKey (),
-            miner->getMotto (),
-            miner->getVisage ()
-        );
-        
         genesisAccount.mName            = miner->getMinerID ();
         genesisAccount.mKey             = miner->getKeyPair ().getPublicKey ();
         genesisAccount.mGrant           = 0;
-        genesisAccount.mMinerInfo       = minerInfo;
-
+        
+        if ( miner->mIsGenesisMiner ) {
+            
+            shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
+                miner->getURL (),
+                miner->getKeyPair ().getPublicKey (),
+                miner->getMotto (),
+                miner->getVisage ()
+            );
+            genesisAccount.mMinerInfo = minerInfo;
+        }
         genesisMinerTransactionBody->pushAccount ( genesisAccount );
     }
     
@@ -223,10 +223,22 @@ void Simulator::report () {
 }
 
 //----------------------------------------------------------------//
+void Simulator::setActive ( size_t base, size_t top, bool active ) {
+
+    for ( size_t i = base; i < top; ++i ) {
+        shared_ptr < SimMiner > miner = dynamic_pointer_cast < SimMiner >( this->mMiners [ i ]);
+        assert ( miner );
+        miner->setActive ( active );
+    }
+}
+
+//----------------------------------------------------------------//
 void Simulator::setInterval ( size_t base, size_t top, size_t interval ) {
 
     for ( size_t i = base; i < top; ++i ) {
-        this->mMinerSettings [ i ].mInterval = interval;
+        shared_ptr < SimMiner > miner = dynamic_pointer_cast < SimMiner >( this->mMiners [ i ]);
+        assert ( miner );
+        miner->mInterval = interval;
     }
 }
 
@@ -301,10 +313,10 @@ void Simulator::step () {
     
     for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
         
-        shared_ptr < Miner > miner = this->mMiners [ i ];
-        SimMinerSettings& settings = this->mMinerSettings [ i ];
+        shared_ptr < SimMiner > miner = dynamic_pointer_cast < SimMiner >( this->mMiners [ i ]);
+        assert ( miner );
         
-        if ( settings.mInterval && (( this->mStepCount % settings.mInterval ) == 0 )) {
+        if ( miner->mActive && ( miner->mInterval && (( this->mStepCount % miner->mInterval ) == 0 ))) {
             miner->step ( this->mNow );
         }
         

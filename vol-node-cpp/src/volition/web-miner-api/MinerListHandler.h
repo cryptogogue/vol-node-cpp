@@ -9,6 +9,7 @@
 #include <volition/Block.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/MinerAPIFactory.h>
+#include <volition/UnsecureRandom.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -30,19 +31,7 @@ public:
         UNUSED ( jsonIn );
     
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        set < string > miners = this->mWebMiner->getActiveMinerURLs ();
-        
-        if (( RANDOM_BATCH_SIZE < miners.size ()) && ( this->optQuery ( "sample", "" ) == "random" )) {
-        
-            set < string > subset;
-            for ( size_t i = 0; i < RANDOM_BATCH_SIZE; ++i ) {
-                set < string >::iterator minerIt = miners.begin ();
-                advance ( minerIt, ( long )(( size_t )rand () % miners.size ())); // this doesn't need to be cryptographically random; keep it simple
-                subset.insert ( *minerIt );
-                miners.erase ( minerIt );
-            }
-            miners = subset;
-        }
+        set < string > miners = ( this->optQuery ( "sample", "" ) == "random" ) ? this->mWebMiner->sampleActiveMinerURLs ( RANDOM_BATCH_SIZE ) : this->mWebMiner->getActiveMinerURLs ();
         
         SerializableList < string > minerList;
         

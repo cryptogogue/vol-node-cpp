@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/Block.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/Signature.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -32,7 +33,7 @@ protected:
     SignaturePtr                mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
-    TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time ) const;
+    TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time, Block::VerificationPolicy policy ) const;
     TransactionResult           checkBody               ( Ledger& ledger, time_t time ) const;
     
     //----------------------------------------------------------------//
@@ -42,9 +43,9 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    TransactionResult           apply                   ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle ) const;
+    TransactionResult           apply                   ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle, Block::VerificationPolicy policy ) const;
     bool                        checkMaker              ( string accountName, string uuid ) const;
-    TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key ) const;
+    TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
     u64                         getGratuity             () const;
     const TransactionMaker*     getMaker                () const;
     u64                         getNonce                () const;

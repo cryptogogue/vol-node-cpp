@@ -73,7 +73,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    void                    fillBlock               ( Ledger& chain, Block& block );
+    void                    fillBlock               ( Ledger& chain, Block& block, Block::VerificationPolicy policy );
     TransactionResult       getLastResult           ( string accountName ) const;
     bool                    hasError                ( string accountName );
     bool                    hasTransaction          ( string accountName, string uuid ) const;

@@ -22,47 +22,73 @@ void SimMiningMessenger::clearConstraint ( size_t base, size_t top ) {
     }
 }
 
+// TODO: restore constraint functionality
+
+////----------------------------------------------------------------//
+//void SimMiningMessenger::dispatchBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
+//
+//    const ConstraintList& constraintList = this->getMinerConstraints ( request );
+//
+//    for ( ConstraintList::const_iterator constraintIt = constraintList.cbegin (); constraintIt != constraintList.cend (); ++constraintIt ) {
+//        const SimMiningMessengerConstraint& constraint = *constraintIt;
+//
+//        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK ) && ( UnsecureRandom::get ().random () <= constraint.mProbability )) {
+//            block = NULL;
+//        }
+//    }
+//    request.mClient->receiveBlock ( request, block );
+//}
+
+////----------------------------------------------------------------//
+//void SimMiningMessenger::dispatchHeaders ( const MiningMessengerRequest& request, list < shared_ptr < const BlockHeader >> headers ) {
+//
+//    const ConstraintList& constraintList = this->getMinerConstraints ( request );
+//
+//    for ( ConstraintList::const_iterator constraintIt = constraintList.cbegin (); constraintIt != constraintList.cend (); ++constraintIt ) {
+//        const SimMiningMessengerConstraint& constraint = *constraintIt;
+//
+//        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_HEADER ) && (  UnsecureRandom::get ().random () <= constraint.mProbability )) {
+//            headers.clear ();
+//        }
+//    }
+//
+//    list < shared_ptr < const BlockHeader >>::const_iterator headerIt = headers.cbegin ();
+//    for ( ; headerIt != headers.cend (); ++headerIt ) {
+//        request.mClient->receiveHeader ( request, *headerIt );
+//    }
+//}
+
 //----------------------------------------------------------------//
-void SimMiningMessenger::dispatchBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
+shared_ptr < SimMiner > SimMiningMessenger::getMiner ( const MiningMessengerRequest& request ) {
 
-    ConstraintList& constraintList = this->mConstraintLists [ request.mMinerID ];
-
-    for ( ConstraintList::iterator constraintIt = constraintList.begin (); constraintIt != constraintList.end (); ++constraintIt ) {
-        SimMiningMessengerConstraint& constraint = *constraintIt;
-
-        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK ) && ( UnsecureRandom::get ().random () <= constraint.mProbability )) {
-            block = NULL;
-        }
-    }
-    request.mClient->receiveBlock ( request, block );
+    return this->mMinersByURL [ request.mMinerURL ];
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::dispatchHeaders ( const MiningMessengerRequest& request, list < shared_ptr < const BlockHeader >> headers ) {
+const SimMiningMessenger::ConstraintList& SimMiningMessenger::getMinerConstraints ( const MiningMessengerRequest& request ) {
 
-    ConstraintList& constraintList = this->mConstraintLists [ request.mMinerID ];
-
-    for ( ConstraintList::iterator constraintIt = constraintList.begin (); constraintIt != constraintList.end (); ++constraintIt ) {
-        SimMiningMessengerConstraint& constraint = *constraintIt;
-
-        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_HEADER ) && (  UnsecureRandom::get ().random () <= constraint.mProbability )) {
-            headers.clear ();
-        }
-    }
+    shared_ptr < SimMiner > miner = this->getMiner ( request );
+    assert ( miner );
     
-    list < shared_ptr < const BlockHeader >>::const_iterator headerIt = headers.cbegin ();
-    for ( ; headerIt != headers.cend (); ++headerIt ) {
-        request.mClient->receiveHeader ( request, *headerIt );
-    }
+    map < string, ConstraintList >::const_iterator constraintsIt = this->mConstraintLists.find ( miner->getMinerID ());
+    assert ( constraintsIt != this->mConstraintLists.cend ());
+    
+    return constraintsIt->second;
 }
 
 //----------------------------------------------------------------//
 void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
 
-    shared_ptr < Miner > miner = this->mMiners [ request.mMinerID ];
+    shared_ptr < SimMiner > miner = this->getMiner ( request );
     assert ( miner );
     
     ScopedMinerLock scopedLock ( miner );
+    string minerID = miner->getMinerID ();
+    
+    if ( !miner->mActive ) {
+        request.mClient->receiveError ( request );
+        return;
+    }
     
     switch ( request.mRequestType ) {
         
@@ -71,7 +97,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             const BlockTree& blockTree = miner->getBlockTree ();
             BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( request.mBlockDigest.toHex ());
             shared_ptr < const Block > block = node ? node->getBlock () : NULL;
-            this->dispatchBlock ( request, block );
+            request.mClient->receiveBlock ( request, block );
             break;
         }
         
@@ -81,10 +107,9 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             
             list < shared_ptr < const BlockHeader >> headers;
             while ( node && ( headers.size () < HEADER_BATCH_SIZE )) {
-                headers.push_front ( node->getBlockHeader ());
+                request.mClient->receiveHeader ( request, node->getBlockHeader ());
                 node = node->getParent ();
             }
-            this->dispatchHeaders ( request, headers );
             break;
         }
         
@@ -98,23 +123,26 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             list < shared_ptr < const BlockHeader >> headers;
             while ( node && ( base <= ( **node ).getHeight ())) {
                 if (( **node ).getHeight () < top ) {
-                    headers.push_front ( node->getBlockHeader ());
+                    request.mClient->receiveHeader ( request, node->getBlockHeader ());
                 }
-                node = node->getParent ();
             }
-            this->dispatchHeaders ( request, headers );
             break;
         }
         
         case MiningMessengerRequest::REQUEST_MINER: {
         
-            // no miner to discover in sim (for now)
+            request.mClient->receiveMiner ( request, minerID, miner->getURL ());
             break;
         }
         
         case MiningMessengerRequest::REQUEST_MINER_URLS: {
         
             // no miners to discover in sim (for now)
+            set < string > miners = miner->sampleActiveMinerURLs ( MINER_URL_BATCH_SIZE );
+            set < string >::const_iterator urlIt = miners.cbegin ();
+            for ( ; urlIt != miners.cend (); ++urlIt ) {
+                request.mClient->receiveMinerURL ( request, *urlIt );
+            }
             break;
         }
         
@@ -170,10 +198,13 @@ void SimMiningMessenger::setMiners ( vector < shared_ptr < Miner >> miners ) {
 
     for ( size_t i = 0; i < miners.size (); ++i ) {
     
-        shared_ptr < Miner > miner = miners [ i ];
-        string minerID = miner->getMinerID ();
+        shared_ptr < SimMiner > miner = dynamic_pointer_cast < SimMiner >( miners [ i ]);
+        assert ( miner );
         
-        this->mMiners [ minerID ]               = miner;
+        string minerID  = miner->getMinerID ();
+        string url      = miner->getURL ();
+        
+        this->mMinersByURL [ url ]              = miner;
         this->mConstraintListsByIndex [ i ]     = &this->mConstraintLists [ minerID ];
     }
 }

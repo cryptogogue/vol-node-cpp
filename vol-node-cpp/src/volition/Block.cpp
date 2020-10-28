@@ -56,7 +56,7 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
             shared_ptr < Block > block = ledger.getBlock ( unfinishedBlock.mBlockID );
             assert ( block );
             
-            size_t nextMaturity = block->applyTransactions ( ledger );
+            size_t nextMaturity = block->applyTransactions ( ledger, policy );
             
             if ( nextMaturity > this->mHeight ) {
             
@@ -69,7 +69,7 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
     }
 
     // apply transactions
-    size_t nextMaturity = this->applyTransactions ( ledger );
+    size_t nextMaturity = this->applyTransactions ( ledger, policy );
     
     if ( nextMaturity > this->mHeight ) {
     
@@ -92,7 +92,7 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
 }
 
 //----------------------------------------------------------------//
-size_t Block::applyTransactions ( Ledger& ledger ) const {
+size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) const {
 
     size_t nextMaturity = this->mHeight;
     size_t height = ledger.getVersion ();
@@ -113,7 +113,7 @@ size_t Block::applyTransactions ( Ledger& ledger ) const {
             
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
-                TransactionResult result = transaction.apply ( ledger, this->mTime, schemaHandle );
+                TransactionResult result = transaction.apply ( ledger, this->mTime, schemaHandle, policy );
                 assert ( result );
                 gratuity += transaction.getGratuity ();
             }
@@ -196,7 +196,7 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
         }
     }
 
-    if ( policy & VerificationPolicy::VERIFY_SIG ) {
+    if ( policy & VerificationPolicy::VERIFY_BLOCK_SIG ) {
         return key.verify ( this->mSignature, *this );
     }
     return true;

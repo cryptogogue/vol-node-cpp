@@ -17,6 +17,17 @@ class Transaction;
 //================================================================//
 class Block :
     public BlockHeader {
+public:
+
+    enum VerificationPolicy {
+        ALL                         = -1,
+        VERIFY_POSE                 = 1 << 0,
+        VERIFY_CHARM                = 1 << 1,
+        VERIFY_BLOCK_SIG            = 1 << 2,
+        VERIFY_TRANSACTION_SIG      = 1 << 3,
+        NONE                        = 0,
+    };
+
 private:
 
     friend class Context;
@@ -26,21 +37,13 @@ private:
     SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;
 
     //----------------------------------------------------------------//
-    size_t              applyTransactions                   ( Ledger& ledger ) const;
+    size_t              applyTransactions                   ( Ledger& ledger, VerificationPolicy policy ) const;
     
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
     void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
-
-    enum VerificationPolicy {
-        ALL                 = -1,
-        VERIFY_POSE         = 1 << 0,
-        VERIFY_CHARM        = 1 << 1,
-        VERIFY_SIG          = 1 << 2,
-        NONE                = 0,
-    };
 
     //----------------------------------------------------------------//
     void                affirmHash                          ();
