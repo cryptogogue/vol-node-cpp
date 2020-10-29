@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/AssetDefinition.h>
 #include <volition/AssetMethod.h>
+#include <volition/MiningReward.h>
 #include <volition/SchemaVersion.h>
 #include <volition/SquapFactory.h>
 
@@ -28,6 +29,7 @@ public:
     typedef SerializableMap < string, SerializableOpaque >  Icons;
     typedef SerializableMap < string, SerializableOpaque >  Layouts;
     typedef SerializableMap < string, AssetMethod >         Methods;
+    typedef SerializableMap < string, MiningReward >        Rewards;
     typedef SerializableMap < string, string >              Upgrades;
 
 private:
@@ -41,6 +43,7 @@ private:
     Icons                   mIcons;
     Layouts                 mLayouts;
     Methods                 mMethods;
+    Rewards                 mRewards;
     Decks                   mSets;
     Upgrades                mUpgrades;
     SchemaVersion           mVersion;
@@ -80,6 +83,7 @@ public:
     const AssetDefinition*      getDefinitionOrNull         ( string name ) const;
     const Methods&              getMethods                  () const;
     const AssetMethod*          getMethodOrNull             ( string name ) const;
+    const MiningReward*         getRewardOrNull             ( string name ) const;
     const Upgrades&             getUpgrades                 () const;
     const SchemaVersion&        getVersion                  () const;
     bool                        hasAssetType                ( string assetType ) const;

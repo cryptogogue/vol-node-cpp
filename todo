@@ -107,21 +107,24 @@ DONE: node - add timstamps and lookback to simulator
 DONE: node - test lookback scenarios
 DONE: node - consensus for missing blocks (header is published but not block)
 DONE: node - enforce mining key permissions (mining keys use default entitlements)
+DONE: node - sqlite persistence (or anything ACID)
+DONE: node - report other active nodes
+DONE: node - sponsor miner transaction
+DONE: node - mining reward from block
 
 ----------------------------------------------------------------
 LAUNCH
 
 node - setup guide
-node - mining reward transaction (first in block? transaction count? transaction needed at all, or part of block?)
 node - high-confidence chain (based on consensus)
-node - sqlite persistence (or anything ACID)
-node - report other active nodes
-node - sponsor miner transaction
 node - fixed gratuity requirement
 node - implement rake
 node - implement tax
 node - set minimal time between blocks
 node - import transactions
+node - make sure transactions can be resubmitted with new gratuity
+node - gather transactions when rewinding chain
+node - implement pluggable transaction database (mysql and in-memory drivers)
 
 wallet - decimal points for VOL (3)
 
@@ -162,6 +165,9 @@ layout tool - paragraph styles (leading indent)
 layout tool - justify text
 layout tool - layouts-as-icons (and/or "layered" icons)
 
+node - method to mark mining rewards as depleted
+node - mining reward fallback (detect if no reward and fallback on next reward)
+
 node - finalize multi-part transaction implementation
 node - reimplement 'run script' as multi-part transaction
 node - per asset modification metadata
@@ -176,3 +182,12 @@ FUTURE (?)
 VOL:ETH
 VOL:ETH - onboarding
 VOL:ETH - bearer bond vs oracles
+
+----------------------------------------------------------------
+MINING NETWORK
+
+- remove non-responsive miners from the pool (after N missed blocks)
+- uniquely identify mining pool forks
+	- changes to mining pool
+	- history of pool changes (to tell if a fork is an ancestor of another)
+	- wallet can identify multiple forks (and reject smaller forks?)

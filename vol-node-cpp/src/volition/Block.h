@@ -33,6 +33,8 @@ private:
     friend class Context;
     friend class Ledger;
 
+    string              mReward;
+
     // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
     SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;
 

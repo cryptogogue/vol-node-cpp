@@ -51,6 +51,7 @@
 		CD20002A254660F300DEB809 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000442548CC9200DEB809 /* UnsecureRandom.h */; };
 		CD2000592548DAF100DEB809 /* SimTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000572548DAF100DEB809 /* SimTransaction.h */; };
+		CD200074254A42E900DEB809 /* MiningReward.h in Headers */ = {isa = PBXBuildFile; fileRef = CD200073254A42E900DEB809 /* MiningReward.h */; };
 		CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF052536A2ED00DEB809 /* CryptoKey.h */; };
 		CD20FF182536D03900DEB809 /* NodeDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */; };
 		CD20FF3525381BDB00DEB809 /* SQLiteChainRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */; };
@@ -726,6 +727,7 @@
 		CD0C3E6820C86FBA006E3B1C /* main-util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-util.cpp"; path = "src/volition/main-util.cpp"; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
+		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
 		CD20FF052536A2ED00DEB809 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
 		CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NodeDetailsHandler.h; path = "src/volition/web-miner-api/NodeDetailsHandler.h"; sourceTree = "<group>"; };
 		CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteChainRecorder.cpp; path = src/volition/SQLiteChainRecorder.cpp; sourceTree = "<group>"; };
@@ -1161,6 +1163,7 @@
 				CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */,
 				CDF8AD5A21F52B34000E285F /* LuaContext.cpp */,
 				CDF8AD5B21F52B34000E285F /* LuaContext.h */,
+				CD200073254A42E900DEB809 /* MiningReward.h */,
 				CDFA23862453B25B00B4CECF /* Schema.cpp */,
 				CDBFD558218BA145002AB0C3 /* Schema.h */,
 				CD7751BA252709CE00A53765 /* SchemaHandle.cpp */,
@@ -1904,6 +1907,7 @@
 				CD63A1C422AC6B4100D5C801 /* AssetDefinition.h in Headers */,
 				CD20FFC3253D978600DEB809 /* ControlCommandHandler.h in Headers */,
 				CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */,
+				CD200074254A42E900DEB809 /* MiningReward.h in Headers */,
 				CD762AD4232826D7005AC85D /* BooleanEntitlement.h in Headers */,
 				CDB8B40321ACC874004EE816 /* BlockDetailsHandler.h in Headers */,
 				CD9E7BC4250C5E2D0065C5FC /* AbstractMiningMessengerClient.h in Headers */,

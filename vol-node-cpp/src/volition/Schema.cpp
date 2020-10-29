@@ -71,6 +71,12 @@ const AssetMethod* Schema::getMethodOrNull ( string name ) const {
 }
 
 //----------------------------------------------------------------//
+const MiningReward* Schema::getRewardOrNull ( string name ) const {
+    Rewards::const_iterator rewardIt = this->mRewards.find ( name );
+    return ( rewardIt != this->mRewards.cend ()) ? &rewardIt->second : NULL;
+}
+
+//----------------------------------------------------------------//
 const Schema::Upgrades& Schema::getUpgrades () const {
     return this->mUpgrades;
 }
@@ -95,6 +101,7 @@ bool Schema::hasCollisions ( const Schema& other ) const {
     if ( Schema::hasKeyCollisions ( this->mIcons, other.mIcons )) return true;
     if ( Schema::hasKeyCollisions ( this->mLayouts, other.mLayouts )) return true;
     if ( Schema::hasKeyCollisions ( this->mMethods, other.mMethods )) return true;
+    if ( Schema::hasKeyCollisions ( this->mRewards, other.mRewards )) return true;
     if ( Schema::hasKeyCollisions ( this->mSets, other.mSets )) return true;
     if ( Schema::hasKeyCollisions ( this->mUpgrades, other.mUpgrades )) return true;
 
@@ -114,6 +121,7 @@ void Schema::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& 
     serializer.serialize ( "icons",             this->mIcons );
     serializer.serialize ( "layouts",           this->mLayouts );
     serializer.serialize ( "methods",           this->mMethods );
+    serializer.serialize ( "rewards",           this->mRewards );
     serializer.serialize ( "sets",              this->mSets );
     serializer.serialize ( "upgrades",          this->mUpgrades );
     serializer.serialize ( "version",           this->mVersion );
@@ -128,6 +136,7 @@ void Schema::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer
     serializer.serialize ( "icons",             this->mIcons );
     serializer.serialize ( "layouts",           this->mLayouts );
     serializer.serialize ( "methods",           this->mMethods );
+    serializer.serialize ( "rewards",           this->mRewards );
     serializer.serialize ( "sets",              this->mSets );
     serializer.serialize ( "upgrades",          this->mUpgrades );
     serializer.serialize ( "version",           this->mVersion );

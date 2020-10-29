@@ -48,7 +48,7 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA_AND_RESET )) return "Permission denied.";
 
-        LedgerResult result = context.mLedger.checkSchemaMethods ( this->mSchema );
+        LedgerResult result = context.mLedger.checkSchemaMethodsAndRewards ( this->mSchema );
         if ( !result ) return result;
 
         context.mLedger.setSchema ( this->mSchema );

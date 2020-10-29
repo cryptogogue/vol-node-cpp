@@ -180,6 +180,13 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_rewardCount ( string name ) {
+
+        assert ( name.size () > 0 );
+        return Format::write ( "rewards.%s.count", name.c_str ());
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_schema () {
         return "schema";
     }
@@ -206,7 +213,7 @@ public:
 
     //----------------------------------------------------------------//
     bool                                checkMiners                     ( string miners ) const;
-    LedgerResult                        checkSchemaMethods              ( const Schema& schema ) const;
+    LedgerResult                        checkSchemaMethodsAndRewards    ( const Schema& schema ) const;
     void                                clearSchemaCache                ();
     size_t                              countBlocks                     () const;
     u64                                 countVOL                        () const;
@@ -229,6 +236,7 @@ public:
     bool                                hasTransaction                  ( string accountName, string uuid ) const;
     void                                init                            ();
     LedgerResult                        invoke                          ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation, time_t time );
+    LedgerResult                        invokeReward                    ( const Schema& schema, string minerID, string rewardName, time_t time );
     bool                                isGenesis                       () const;
                                         Ledger                          ();
                                         Ledger                          ( Ledger& other );

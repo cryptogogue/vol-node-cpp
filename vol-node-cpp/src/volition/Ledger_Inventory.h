@@ -37,6 +37,7 @@ public:
     LedgerResult                        awardDeck                   ( const Schema& schema, AccountID accountID, string deckName, time_t time );
     AssetID::Index                      getAssetID                  ( string assetID ) const;
     void                                getInventory                ( const Schema& schema, AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
+    map < string, size_t >              getInventoryHistogram       ( const Schema& schema, AccountID accountID );
     bool                                resetAssetFieldValue        ( const Schema& schema, AssetID::Index index, string fieldName, time_t time );
     bool                                revokeAsset                 ( AssetID::Index index, time_t time  );
     LedgerResult                        setAssetFieldValue          ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time );

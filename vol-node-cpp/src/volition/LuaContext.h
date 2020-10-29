@@ -46,6 +46,7 @@ private:
     bool                    checkDeckOrSet          ( string deckName );
     const AssetDefinition*  checkDefinition         ( string definitionName );
     AssetFieldDefinition    checkDefinitionField    ( const AssetDefinition& definition, string fieldName );
+    LedgerResult            compile                 ( string lua );
     static LuaContext&      getSelf                 ( lua_State* L );
     void                    push                    ( const Asset& asset );
     void                    push                    ( const AssetFieldValue& value );
@@ -55,8 +56,8 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    LedgerResult            compile                 ( const AssetMethod& method );
     LedgerResult            invoke                  ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation );
+    LedgerResult            invoke                  ( string accountName, string rewardName );
                             LuaContext              ( ConstOpt < Ledger > ledger, const Schema& schema, time_t time );
                             ~LuaContext             ();
     void                    miningReward            ( Ledger& ledger, string rewardName );

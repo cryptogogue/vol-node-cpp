@@ -23,12 +23,8 @@ TEST ( Crafting, crafting ) {
     Ledger ledger;
     ledger.init ();
     
-    Schema updateSchema;
-    FromJSONSerializer::fromJSONString ( updateSchema, schema_json );
-    
     Schema schema;
-    ledger.getSchema ( schema );
-    schema.compose ( updateSchema );
+    FromJSONSerializer::fromJSONString ( schema, schema_json );
     ledger.setSchema ( schema );
     
     CryptoKeyPair key;
@@ -55,23 +51,51 @@ TEST ( Crafting, crafting ) {
     result = ledger.invoke ( schema, "test", invocation, t );
     ASSERT_TRUE ( result );
     
-    map < string, size_t > histogram;
-    
-    SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-    ledger.getInventory ( schema, accountID, inventory );
-    
-    SerializableList < SerializableSharedConstPtr < Asset >>::const_iterator inventoryIt = inventory.cbegin ();
-    for ( ; inventoryIt != inventory.cend (); ++inventoryIt ) {
-        SerializableSharedConstPtr < Asset > asset = *inventoryIt;
-    
-        if ( histogram.find ( asset->mType ) == histogram.cend ()) {
-            histogram [ asset->mType ] = 0;
-        }
-        histogram [ asset->mType ] = histogram [ asset->mType ] + 1;
-    }
+    map < string, size_t > histogram = ledger.getInventoryHistogram ( schema, accountID );
     
     ASSERT_TRUE ( histogram [ "common" ] == 3 );
     ASSERT_TRUE ( histogram [ "rare" ] == 2 );
     ASSERT_TRUE ( histogram [ "ultrarare" ] == 1 );
     ASSERT_TRUE ( histogram.find ( "pack" ) == histogram.cend ());
 }
+
+//----------------------------------------------------------------//
+TEST ( Rewards, rewards ) {
+    
+    time_t t;
+    time ( &t );
+
+    LedgerResult result = false;
+
+    Ledger ledger;
+    ledger.init ();
+
+    Schema schema;
+    FromJSONSerializer::fromJSONString ( schema, schema_json );
+    ledger.setSchema ( schema );
+
+    CryptoKeyPair key;
+    key.elliptic ();
+
+    Policy keyPolicy;
+    ledger.getEntitlements < KeyEntitlements >( keyPolicy );
+
+    Policy accountPolicy;
+    ledger.getEntitlements < AccountEntitlements >( accountPolicy );
+
+    result = ledger.newAccount ( "test", 1000, "master", key.getPublicKey (), keyPolicy, accountPolicy );
+    ASSERT_TRUE ( result );
+
+    AccountID accountID = ledger.getAccountID ( "test" );
+    ASSERT_TRUE ( accountID != AccountID::NULL_INDEX );
+
+    // boosterBox has a limit of 3 rewards
+    for ( size_t i = 0; i < 5; ++i ) {
+        result = ledger.invokeReward ( schema, "test", "boosterBox", t );
+        ASSERT_TRUE ( result );
+    }
+
+    map < string, size_t > histogram = ledger.getInventoryHistogram ( schema, accountID );
+    ASSERT_TRUE ( histogram [ "pack" ] == 36 );
+}
+

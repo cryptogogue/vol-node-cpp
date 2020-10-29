@@ -132,6 +132,9 @@ protected:
     time_t                                          mRewriteWindowInSeconds;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
+    string                                          mReward;
+    u64                                             mMinimumGratuity;
+
     CryptoPublicKey                                 mControlKey;
     Control                                         mControlLevel;
 

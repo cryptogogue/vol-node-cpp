@@ -148,6 +148,8 @@ bool Miner::checkBestBranch ( string miners ) const {
 //----------------------------------------------------------------//
 void Miner::composeChain () {
 
+    // TODO: gather transactions if rewinding chain
+
     if ( this->mChainTag == this->mBestBranch ) return;
 
     // check to see if chain tag is *behind* best branch
@@ -159,7 +161,7 @@ void Miner::composeChain () {
 
     // if chain is divergent from best branch, re-root it
     if ( !this->mChainTag->isAncestorOf ( this->mBestBranch )) {
-                    
+        
         // REWIND chain to point of divergence
         BlockTreeNode::ConstPtr root = BlockTreeNode::findRoot ( this->mChainTag, this->mBestBranch ).mRoot;
         assert ( root ); // guaranteed -> common genesis

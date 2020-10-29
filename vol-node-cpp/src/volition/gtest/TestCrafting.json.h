@@ -15,9 +15,7 @@ static const char* schema_json = JSON_STR (
                     "name": {
                         "type": "STRING",
                         "value": "Common",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
+                        "mutable": false
                     }
                 }
             },
@@ -26,9 +24,7 @@ static const char* schema_json = JSON_STR (
                     "name": {
                         "type": "STRING",
                         "value": "Rare",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
+                        "mutable": false
                     }
                 }
             },
@@ -37,9 +33,7 @@ static const char* schema_json = JSON_STR (
                     "name": {
                         "type": "STRING",
                         "value": "UltraRare",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
+                        "mutable": false
                     }
                 }
             },
@@ -48,9 +42,7 @@ static const char* schema_json = JSON_STR (
                     "name": {
                         "type": "STRING",
                         "value": "Pack",
-                        "mutable": false,
-                        "scriptable": true,
-                        "alternates": {}
+                        "mutable": false
                     }
                 }
             }
@@ -61,33 +53,40 @@ static const char* schema_json = JSON_STR (
             "makeRare": {
                 "weight": 1,
                 "maturity": 0,
+                "friendlyName": "",
                 "description": "",
                 "assetArgs": {
                     "asset0": {
-                        "op": "EQUAL",
-                        "left": {
-                            "op": "INDEX",
-                            "value": "@"
-                        },
-                        "right": {
-                            "op": "CONST",
-                            "const": {
-                                "type": "STRING",
-                                "value": "common"
+                        "qualifier": {
+                            "op": "EQUAL",
+                            "left": {
+                                "op": "INDEX",
+                                "paramID": "",
+                                "value": "@"
+                            },
+                            "right": {
+                                "op": "CONST",
+                                "const": {
+                                    "type": "STRING",
+                                    "value": "common"
+                                }
                             }
                         }
                     },
                     "asset1": {
-                        "op": "EQUAL",
-                        "left": {
-                            "op": "INDEX",
-                            "value": "@"
-                        },
-                        "right": {
-                            "op": "CONST",
-                            "const": {
-                                "type": "STRING",
-                                "value": "common"
+                        "qualifier": {
+                            "op": "EQUAL",
+                            "left": {
+                                "op": "INDEX",
+                                "paramID": "",
+                                "value": "@"
+                            },
+                            "right": {
+                                "op": "CONST",
+                                "const": {
+                                    "type": "STRING",
+                                    "value": "common"
+                                }
                             }
                         }
                     }
@@ -99,33 +98,40 @@ static const char* schema_json = JSON_STR (
             "makeUltraRare": {
                 "weight": 1,
                 "maturity": 0,
+                "friendlyName": "",
                 "description": "",
                 "assetArgs": {
                     "asset0": {
-                        "op": "EQUAL",
-                        "left": {
-                            "op": "INDEX",
-                            "value": "@"
-                        },
-                        "right": {
-                            "op": "CONST",
-                            "const": {
-                                "type": "STRING",
-                                "value": "rare"
+                        "qualifier": {
+                            "op": "EQUAL",
+                            "left": {
+                                "op": "INDEX",
+                                "paramID": "",
+                                "value": "@"
+                            },
+                            "right": {
+                                "op": "CONST",
+                                "const": {
+                                    "type": "STRING",
+                                    "value": "rare"
+                                }
                             }
                         }
                     },
                     "asset1": {
-                        "op": "EQUAL",
-                        "left": {
-                            "op": "INDEX",
-                            "value": "@"
-                        },
-                        "right": {
-                            "op": "CONST",
-                            "const": {
-                                "type": "STRING",
-                                "value": "rare"
+                        "qualifier": {
+                            "op": "EQUAL",
+                            "left": {
+                                "op": "INDEX",
+                                "paramID": "",
+                                "value": "@"
+                            },
+                            "right": {
+                                "op": "CONST",
+                                "const": {
+                                    "type": "STRING",
+                                    "value": "rare"
+                                }
                             }
                         }
                     }
@@ -137,19 +143,23 @@ static const char* schema_json = JSON_STR (
             "openPack": {
                 "weight": 1,
                 "maturity": 0,
+                "friendlyName": "",
                 "description": "",
                 "assetArgs": {
                     "pack": {
-                        "op": "EQUAL",
-                        "left": {
-                            "op": "INDEX",
-                            "value": "@"
-                        },
-                        "right": {
-                            "op": "CONST",
-                            "const": {
-                                "type": "STRING",
-                                "value": "pack"
+                        "qualifier": {
+                            "op": "EQUAL",
+                            "left": {
+                                "op": "INDEX",
+                                "paramID": "",
+                                "value": "@"
+                            },
+                            "right": {
+                                "op": "CONST",
+                                "const": {
+                                    "type": "STRING",
+                                    "value": "pack"
+                                }
                             }
                         }
                     }
@@ -157,6 +167,13 @@ static const char* schema_json = JSON_STR (
                 "constArgs": {},
                 "constraints": [],
                 "lua": "function main ( caller, assetArgs, constArgs )\r\n    print ( 'openPack:', caller, assetArgs.pack.assetID )\r\n    randomAward ( caller, 'commons', assetArgs.pack.assetID, 3 )\r\n    randomAward ( caller, 'rares', assetArgs.pack.assetID, 2 )\r\n    randomAward ( caller, 'ultraRares', assetArgs.pack.assetID, 1 )\r\n    revokeAsset ( assetArgs.pack.assetID )\r\nend"
+            }
+        },
+        "rewards": {
+            "boosterBox": {
+                "friendlyName": "",
+                "description": "",
+                "lua": "function main ( caller, count )\r\n    print ( 'boosterBox', caller, count )\r\n    if count < 3 then\r\n        awardAsset ( caller, 'pack', 12 )\r\n    end\r\nend"
             }
         },
         "sets": {
@@ -174,6 +191,12 @@ static const char* schema_json = JSON_STR (
             "common": "rare",
             "rare": "ultraRare",
             "ultraRare": "pack"
+        },
+        "version": {
+            "release": "test",
+            "major": 0,
+            "minor": 0,
+            "revision": 0
         }
     }
 );

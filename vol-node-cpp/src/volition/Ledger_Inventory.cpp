@@ -218,6 +218,26 @@ void Ledger_Inventory::getInventory ( const Schema& schema, AccountID accountID,
 }
 
 //----------------------------------------------------------------//
+map < string, size_t > Ledger_Inventory::getInventoryHistogram ( const Schema& schema, AccountID accountID ) {
+
+    map < string, size_t > histogram;
+
+    SerializableList < SerializableSharedConstPtr < Asset >> inventory;
+    this->getInventory ( schema, accountID, inventory );
+
+    SerializableList < SerializableSharedConstPtr < Asset >>::const_iterator inventoryIt = inventory.cbegin ();
+    for ( ; inventoryIt != inventory.cend (); ++inventoryIt ) {
+        SerializableSharedConstPtr < Asset > asset = *inventoryIt;
+
+        if ( histogram.find ( asset->mType ) == histogram.cend ()) {
+            histogram [ asset->mType ] = 0;
+        }
+        histogram [ asset->mType ] = histogram [ asset->mType ] + 1;
+    }
+    return histogram;
+}
+
+//----------------------------------------------------------------//
 bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, time_t time ) {
 
     Ledger& ledger = this->getLedger ();

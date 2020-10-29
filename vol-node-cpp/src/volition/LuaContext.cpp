@@ -8,6 +8,7 @@
 #include <volition/Format.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
+#include <volition/MiningReward.h>
 
 namespace Volition {
 
@@ -424,9 +425,9 @@ AssetFieldDefinition LuaContext::checkDefinitionField ( const AssetDefinition& d
 }
 
 //----------------------------------------------------------------//
-LedgerResult LuaContext::compile ( const AssetMethod& method ) {
+LedgerResult LuaContext::compile ( string lua ) {
 
-    luaL_loadbuffer ( this->mLuaState, method.mLua.c_str (), method.mLua.size (), "main" );
+    luaL_loadbuffer ( this->mLuaState, lua.c_str (), lua.size (), "main" );
     return _lua_call ( this->mLuaState, 0, 0 );
 }
 
@@ -444,10 +445,8 @@ LuaContext& LuaContext::getSelf ( lua_State* L ) {
 //----------------------------------------------------------------//
 LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation ) {
 
-    LedgerResult result = this->compile ( method );
-    if ( !result ) {
-        return result;
-    }
+    LedgerResult result = this->compile ( method.mLua );
+    if ( !result ) return result;
 
     // get all the assets for the asset params
     map < string, shared_ptr < const Asset >> assets;
@@ -490,6 +489,43 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
     // call the method
     this->mResult = true;
     result = _lua_call ( this->mLuaState, 2, 0 );
+    return result ? this->mResult : result;
+}
+
+//----------------------------------------------------------------//
+LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
+
+    const MiningReward* reward = this->mSchema.getRewardOrNull ( rewardName );
+    if ( !reward ) return "No such reward.";
+
+    // make sure account exists
+    AccountODBM accountODBM ( this->mLedger, accountName );
+    if ( !accountODBM ) return false;
+
+    LedgerResult result = this->compile ( reward->mLua );
+    if ( !result ) return result;
+
+    // get the main
+    int type = lua_getglobal ( this->mLuaState, MAIN_FUNC_NAME );
+    assert ( type == LUA_TFUNCTION );
+
+    // push the account name
+    lua_pushstring ( this->mLuaState, accountName.c_str ());
+
+    // push the reward count
+    LedgerFieldODBM < u64 > rewardCountField ( this->mLedger, Ledger::keyFor_rewardCount ( rewardName ));
+    u64 rewardCount = rewardCountField.get ( 0 );
+    
+    lua_pushnumber ( this->mLuaState, ( int )rewardCount ); // TODO: check for overflow
+
+    // call the method
+    this->mResult = true;
+    result = _lua_call ( this->mLuaState, 2, 0 );
+    
+    if ( result && this->mResult ) {
+        rewardCountField.set ( rewardCount + 1 );
+    }
+    
     return result ? this->mResult : result;
 }
 

@@ -54,7 +54,7 @@ public:
         if ( updateSchema.hasCollisions ( this->mSchema )) return "Error publishing schema - found collisions.";
         if ( !updateSchema.compose ( this->mSchema )) return "Error publishing schema.";
         
-        LedgerResult result = context.mLedger.checkSchemaMethods ( this->mSchema );
+        LedgerResult result = context.mLedger.checkSchemaMethodsAndRewards ( this->mSchema );
         if ( !result ) return result;
         
         context.mLedger.setSchema ( updateSchema );

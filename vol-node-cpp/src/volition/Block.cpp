@@ -129,6 +129,9 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
         minerUpdated.mBalance += gratuity;
         minerODBM.mBody.set ( minerUpdated );
     }
+    
+    ledger.invokeReward ( *schemaHandle, this->mMinerID, this->mReward, this->mTime );
+    
     return nextMaturity;
 }
 
@@ -210,6 +213,7 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     BlockHeader::AbstractSerializable_serializeFrom ( serializer );
     
+    serializer.serialize ( "reward",        this->mReward );
     serializer.serialize ( "transactions",  this->mTransactions );
     this->affirmHash ();
 }
@@ -218,6 +222,7 @@ void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
 void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
     BlockHeader::AbstractSerializable_serializeTo ( serializer );
     
+    serializer.serialize ( "reward",        this->mReward );
     serializer.serialize ( "transactions",  this->mTransactions );
 }
 
