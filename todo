@@ -111,22 +111,25 @@ DONE: node - sqlite persistence (or anything ACID)
 DONE: node - report other active nodes
 DONE: node - sponsor miner transaction
 DONE: node - mining reward from block
+DONE: wallet - decimal points for VOL (3)
+DONE: schema - mining reward definition and schedule
 
 ----------------------------------------------------------------
 LAUNCH
 
-node - setup guide
 node - high-confidence chain (based on consensus)
-node - fixed gratuity requirement
 node - implement rake
 node - implement tax
+node - fixed gratuity requirement
+node - implement TOS (user and miner)
 node - set minimal time between blocks
-node - import transactions
+node - set block size (protocol param setup)
+node - setup guide
+node - import accounts
 node - make sure transactions can be resubmitted with new gratuity
-node - gather transactions when rewinding chain
+node - alert users when their transactions are declined for insufficient gratuity
+node - capture transactions when rewinding chain
 node - implement pluggable transaction database (mysql and in-memory drivers)
-
-wallet - decimal points for VOL (3)
 
 wallet - RSA key support
 wallet - mining account request (RSA key, motto, visage)
@@ -138,7 +141,6 @@ mining - onboard new miners (check certs)
 
 node - publish default media url prefix (from schema, with miner override)
 
-schema - mining reward definition and schedule
 schema - asset visualization descriptor (i.e. 2D/3D, front/back, language, etc.)
 schema - asset definition inheritance (sparse updrages)
 schema - default tags?
@@ -165,7 +167,7 @@ layout tool - paragraph styles (leading indent)
 layout tool - justify text
 layout tool - layouts-as-icons (and/or "layered" icons)
 
-node - method to mark mining rewards as depleted
+node - scripting method to mark mining rewards as depleted
 node - mining reward fallback (detect if no reward and fallback on next reward)
 
 node - finalize multi-part transaction implementation
