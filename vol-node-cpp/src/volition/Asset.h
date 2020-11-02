@@ -32,7 +32,7 @@ public:
     string      mOwner;
     u64         mInventoryNonce;
     Fields      mFields;
-        
+    
     //----------------------------------------------------------------//
     Asset () {
     }

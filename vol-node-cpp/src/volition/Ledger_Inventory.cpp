@@ -258,7 +258,7 @@ void Ledger_Inventory::getInventory ( const Schema& schema, Account::Index accou
     AccountODBM accountODBM ( ledger, accountIndex );
     if ( accountODBM.mIndex == Account::NULL_INDEX ) return;
 
-    size_t assetCount = accountODBM.mAssetCount.get ();
+    size_t assetCount = accountODBM.mAssetCount.get ( 0 );
     
     if (( max > 0 ) && ( max < assetCount )) {
         assetCount = max;
