@@ -86,10 +86,6 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s true"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "--control-key keys/key9090.pub.json"
             isEnabled = "YES">
          </CommandLineArgument>

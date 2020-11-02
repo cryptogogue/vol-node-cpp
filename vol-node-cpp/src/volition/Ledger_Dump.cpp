@@ -15,6 +15,7 @@
 #include <volition/LuaContext.h>
 #include <volition/SQLite.h>
 #include <volition/TransactionMaker.h>
+#include <volition/transactions/RestoreAccount.h>
 
 namespace Volition {
 
@@ -25,16 +26,20 @@ namespace Volition {
 //----------------------------------------------------------------//
 void Ledger_Dump::dump ( string filename ) {
 
+    map < AccountID::Index, Transactions::RestoreAccount > restoreAccountTransactions;
+
     SQLite db ( filename );
     assert ( db );
     
     db.exec ( "DROP TABLE IF EXISTS accounts" );
     db.exec ( "DROP TABLE IF EXISTS keys" );
     db.exec ( "DROP TABLE IF EXISTS assets" );
+    db.exec ( "DROP TABLE IF EXISTS restore" );
     
     db.exec ( "CREATE TABLE accounts ( id INTEGER PRIMARY KEY, name TEXT NOT NULL, balance INTEGER, policy TEXT NOT NULL, bequest TEXT NOT NULL )" );
     db.exec ( "CREATE TABLE keys ( id INTEGER PRIMARY KEY, ownerID INTEGER, name TEXT NOT NULL, body TEXT NOT NULL, policy TEXT NOT NULL, bequest TEXT NOT NULL )" );
     db.exec ( "CREATE TABLE assets ( id INTEGER PRIMARY KEY, ownerID INTEGER, body TEXT NOT NULL )" );
+    db.exec ( "CREATE TABLE restore ( id INTEGER PRIMARY KEY, body TEXT NOT NULL )" );
     
     s64 keyCount = 0;
     
@@ -48,6 +53,13 @@ void Ledger_Dump::dump ( string filename ) {
     
         shared_ptr < const Account > account = accountODBM.mBody.get ( );
         string name = accountODBM.mName.get ( "" );
+        
+        Transactions::RestoreAccount& restoreAccount = restoreAccountTransactions [ i ];
+        restoreAccount.mName        = name;
+        restoreAccount.mBalance     = account->mBalance;
+        restoreAccount.mPolicy      = make_shared < Policy >( account->mPolicy );
+        restoreAccount.mBequest     = account->mBequest;
+        restoreAccount.mKeys        = account->mKeys;
         
         db.exec (
             Format::write ( "REPLACE INTO accounts ( id, name, balance, policy, bequest ) VALUES ( ?1, ?2, ?3, ?4, ?5 )" ),
@@ -97,6 +109,13 @@ void Ledger_Dump::dump ( string filename ) {
     
         shared_ptr < const Asset > asset = assetODBM.getAsset ( ledger.getSchema (), true );
         
+        AccountID accountID = ledger.getAccountID ( asset->mOwner );
+        
+        if (( accountID.mIndex != AccountID::NULL_INDEX ) && ( restoreAccountTransactions.find ( accountID.mIndex ) != restoreAccountTransactions.end ())) {
+            Transactions::RestoreAccount& restoreAccount = restoreAccountTransactions [ accountID.mIndex ];
+            restoreAccount.mInventory.push_back ( asset );
+        }
+        
         db.exec (
             Format::write ( "REPLACE INTO assets ( id, ownerID, body ) VALUES ( ?1, ?2, ?3 )" ),
             [ &ledger, &assetODBM, &asset ]( sqlite3_stmt* stmt ) {
@@ -107,6 +126,22 @@ void Ledger_Dump::dump ( string filename ) {
                 sqlite3_bind_int64  ( stmt, 1, ( s64 )asset->mAssetID.mIndex );
                 sqlite3_bind_int64  ( stmt, 2, ( s64 )accountIndex);
                 sqlite3_bind_text   ( stmt, 3, body.c_str (), ( int )body.size (), SQLITE_TRANSIENT ) ;
+            }
+        );
+    }
+    
+    size_t restoreCount = 0;
+    map < AccountID::Index, Transactions::RestoreAccount >::const_iterator restoreAccountIt = restoreAccountTransactions.cbegin ();
+    for ( ; restoreAccountIt != restoreAccountTransactions.cend (); ++restoreAccountIt ) {
+        const Transactions::RestoreAccount& restoreAccount = restoreAccountIt->second;
+        string body = ToJSONSerializer::toJSONString ( restoreAccount );
+        
+        db.exec (
+            Format::write ( "REPLACE INTO restore ( id, body ) VALUES ( ?1, ?2 )" ),
+            [ &restoreCount, &body ]( sqlite3_stmt* stmt ) {
+                            
+                sqlite3_bind_int64  ( stmt, 1, ( s64 )restoreCount++ );
+                sqlite3_bind_text   ( stmt, 2, body.c_str (), ( int )body.size (), SQLITE_TRANSIENT ) ;
             }
         );
     }

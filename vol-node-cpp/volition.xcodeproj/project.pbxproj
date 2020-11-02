@@ -321,6 +321,7 @@
 		CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E6820C86FBA006E3B1C /* main-util.cpp */; };
 		CDD36D012162A415004FC222 /* Format.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD36D002162A415004FC222 /* Format.h */; };
 		CDD36D032162A496004FC222 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36D022162A496004FC222 /* Format.cpp */; };
+		CDDA73F5255003A8007AAA07 /* RestoreAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA73F3255003A8007AAA07 /* RestoreAccount.h */; };
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
@@ -971,6 +972,7 @@
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
 		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
 		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
+		CDDA73F3255003A8007AAA07 /* RestoreAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RestoreAccount.h; path = src/volition/transactions/RestoreAccount.h; sourceTree = "<group>"; };
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
@@ -1631,6 +1633,7 @@
 				CDBFD541218B8999002AB0C3 /* RegisterMiner.h */,
 				CD2AB82F2314E35500805F70 /* RenameAccount.h */,
 				CDAD9436247138B0003FD2CC /* ReserveAccountName.h */,
+				CDDA73F3255003A8007AAA07 /* RestoreAccount.h */,
 				CDBFD53A218B8999002AB0C3 /* RestrictAccount.h */,
 				CDBFD53E218B8999002AB0C3 /* RestrictKey.h */,
 				CDBFD545218B8999002AB0C3 /* RunScript.h */,
@@ -1804,6 +1807,7 @@
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
 				CD20FF84253D870800DEB809 /* ControlCommand.h in Headers */,
+				CDDA73F5255003A8007AAA07 /* RestoreAccount.h in Headers */,
 				CD20FF77253D86FE00DEB809 /* TheControlCommandBodyFactory.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
 				CDFA23A124604CC700B4CECF /* Ledger_Account.h in Headers */,

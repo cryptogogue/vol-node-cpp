@@ -172,7 +172,7 @@ protected:
         
         string controlKeyfile           = configuration.getString   ( "control-key", "" );
         string controlLevel             = configuration.getString   ( "control-level", "" );
-        string dump                     = configuration.getString   ( "dump" );
+        string dump                     = configuration.getString   ( "dump", "" );
         string genesis                  = configuration.getString   ( "genesis" );
         int interval                    = configuration.getInt      ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile", "" );
