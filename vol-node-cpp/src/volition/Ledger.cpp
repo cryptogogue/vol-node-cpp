@@ -11,6 +11,7 @@
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
+#include <volition/TheContext.h>
 #include <volition/TransactionMaker.h>
 
 namespace Volition {
@@ -44,7 +45,7 @@ LedgerResult Ledger::checkSchemaMethods ( const Schema& schema ) const {
 //----------------------------------------------------------------//
 void Ledger::clearSchemaCache () {
 
-    this->mSchemaCache.clear ();
+    TheContext::get ().mSchemaCache.clear ();
 }
 
 //----------------------------------------------------------------//
@@ -117,24 +118,19 @@ string Ledger::getIdentity () const {
 const Schema& Ledger::getSchema () {
 
     string schemaHash = this->getSchemaHash ();
+    map < string, Schema >& schemaCache = TheContext::get ().mSchemaCache;
     
-    map < string, Schema >::const_iterator schemaIt = this->mSchemaCache.find ( schemaHash );
-    if ( schemaIt != this->mSchemaCache.cend ()) {
+    map < string, Schema >::const_iterator schemaIt = schemaCache.find ( schemaHash );
+    if ( schemaIt != schemaCache.cend ()) {
         return schemaIt->second;
     }
     
-    Schema& schema = this->mSchemaCache [ schemaHash ];
-    this->getSchema ( schema );
-    return schema;
-}
-
-//----------------------------------------------------------------//
-void Ledger::getSchema ( Schema& schema ) const {
-
+    Schema& schema = schemaCache[ schemaHash ];
     string schemaString = this->getSchemaString ();
     if ( schemaString.size () > 0 ) {
         FromJSONSerializer::fromJSONString ( schema, schemaString );
     }
+    return schema;
 }
 
 //----------------------------------------------------------------//

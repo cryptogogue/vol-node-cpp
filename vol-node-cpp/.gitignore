@@ -17,4 +17,6 @@ Makefile
 *.perspectivev3
 valgrind.out
 genesis
+sim-miner-keys.json
 /volition
+Pods/

@@ -24,7 +24,7 @@ class Ledger_Dump :
 public:
 
     //----------------------------------------------------------------//
-    void                                dump                        ( string sqlfile );
+    void                                dump                        ( string filename );
 };
 
 } // namespace Volition

@@ -32,6 +32,13 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "dump", "dmp", "dump ledger to sqlite file" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "dump" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
                 .required ( false )
                 .argument ( "value", true )
@@ -140,6 +147,7 @@ protected:
         }
 //      this->printProperties ();
         
+        string dump                     = configuration.getString   ( "dump" );
         string genesis                  = configuration.getString   ( "genesis" );
         int interval                    = configuration.getInt      ( "interval", Volition::WebMiner::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile" );
@@ -199,6 +207,11 @@ protected:
             if ( simpleRecorderFolder.size () > 0 ) {
                 shared_ptr < Volition::AbstractChainRecorder > chainRecorder = make_shared < Volition::SimpleChainRecorder >( webMiner, simpleRecorderFolder );
                 webMiner.setChainRecorder ( chainRecorder );
+            
+                if ( dump.size ()) {
+                    webMiner.getLedger ().dump ( dump );
+                    return Application::EXIT_OK;
+                }
             }
             
             LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());

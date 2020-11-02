@@ -12,6 +12,7 @@
 namespace Volition {
 
 class Block;
+class Schema;
 
 //================================================================//
 // TheContext
@@ -27,24 +28,27 @@ public:
 
 private:
 
+    friend class Ledger;
+
     ScoringMode     mScoringMode;
     size_t          mScoringModulo;
     
     double          mRewriteWindowInSeconds;
 
+    // TODO: park this here for now
+    map < string, Schema > mSchemaCache;
+
 public:
 
     //----------------------------------------------------------------//
-    const Digest&       getGenesisBlockDigest       () const;
-    const CryptoKey&    getGenesisBlockKey          () const;
-    ScoringMode         getScoringMode              () const;
-    size_t              getScoringModulo            () const;
-    double              getWindow                   () const;
-                        TheContext                  ();
-    void                setGenesisBlockDigest       ( const Digest& digest );
-    void                setGenesisBlockKey          ( const CryptoKey& key );
-    void                setScoringMode              ( ScoringMode scoringMode, size_t modulo = 0 );
-    void                setWindow                   ( double window );
+    ScoringMode                     getScoringMode              () const;
+    size_t                          getScoringModulo            () const;
+    double                          getWindow                   () const;
+                                    TheContext                  ();
+    void                            setGenesisBlockDigest       ( const Digest& digest );
+    void                            setGenesisBlockKey          ( const CryptoKey& key );
+    void                            setScoringMode              ( ScoringMode scoringMode, size_t modulo = 0 );
+    void                            setWindow                   ( double window );
 };
 
 } // namespace Volition

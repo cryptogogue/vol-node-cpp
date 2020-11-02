@@ -48,6 +48,8 @@
 		CD1FD29D24B0309000B0D88A /* HardReset.h in Headers */ = {isa = PBXBuildFile; fileRef = CD1FD29C24B0309000B0D88A /* HardReset.h */; };
 		CD2000B5254EEE9100DEB809 /* Ledger_Dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2000B3254EEE9100DEB809 /* Ledger_Dump.cpp */; };
 		CD2000B6254EEE9100DEB809 /* Ledger_Dump.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000B4254EEE9100DEB809 /* Ledger_Dump.h */; };
+		CD2000F0254EF17300DEB809 /* SQLite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2000EE254EF17300DEB809 /* SQLite.cpp */; };
+		CD2000F1254EF17300DEB809 /* SQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000EF254EF17300DEB809 /* SQLite.h */; };
 		CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB814230E79D400805F70 /* Transaction.cpp */; };
 		CD2AB817230E79D400805F70 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB815230E79D400805F70 /* Transaction.h */; };
 		CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */; };
@@ -696,6 +698,8 @@
 		CD1FD29C24B0309000B0D88A /* HardReset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HardReset.h; path = src/volition/transactions/HardReset.h; sourceTree = "<group>"; };
 		CD2000B3254EEE9100DEB809 /* Ledger_Dump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Dump.cpp; path = src/volition/Ledger_Dump.cpp; sourceTree = "<group>"; };
 		CD2000B4254EEE9100DEB809 /* Ledger_Dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger_Dump.h; path = src/volition/Ledger_Dump.h; sourceTree = "<group>"; };
+		CD2000EE254EF17300DEB809 /* SQLite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLite.cpp; path = src/volition/SQLite.cpp; sourceTree = "<group>"; };
+		CD2000EF254EF17300DEB809 /* SQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLite.h; path = src/volition/SQLite.h; sourceTree = "<group>"; };
 		CD2AB814230E79D400805F70 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = src/volition/Transaction.cpp; sourceTree = "<group>"; };
 		CD2AB815230E79D400805F70 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Transaction.h; path = src/volition/Transaction.h; sourceTree = "<group>"; };
 		CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMaker.cpp; path = src/volition/TransactionMaker.cpp; sourceTree = "<group>"; };
@@ -1222,6 +1226,8 @@
 				CDA1573E23FAA92300DFACCF /* Munge.cpp */,
 				CDA1573F23FAA92300DFACCF /* Munge.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
+				CD2000EE254EF17300DEB809 /* SQLite.cpp */,
+				CD2000EF254EF17300DEB809 /* SQLite.h */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -1682,6 +1688,7 @@
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
 				CD73D82F2166D68700F43CC7 /* Simulation.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
+				CD2000F1254EF17300DEB809 /* SQLite.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
 				CD5ECAF0246B2945009146FB /* version.h in Headers */,
 				CD5ECAEE246B2938009146FB /* version.h in Headers */,
@@ -2288,6 +2295,7 @@
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
 				CD4E8197210593BD007DA585 /* Chain.cpp in Sources */,
+				CD2000F0254EF17300DEB809 /* SQLite.cpp in Sources */,
 				CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */,
 				CD059BE324CAB1150049C97E /* InventoryLogEntry.cpp in Sources */,
 				CDFA23A4246051CD00B4CECF /* Ledger_Miner.cpp in Sources */,

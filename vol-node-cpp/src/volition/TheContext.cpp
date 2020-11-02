@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/Schema.h>
 #include <volition/TheContext.h>
 
 namespace Volition {
