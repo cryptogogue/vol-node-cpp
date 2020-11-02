@@ -62,7 +62,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "--dump dump.db"
+            argument = "--dump persist-chain/dump.db"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
