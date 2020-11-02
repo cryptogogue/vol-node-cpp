@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <sqlite3.h>
 #include <volition/AbstractChainRecorder.h>
+#include <volition/SQLite.h>
 
 namespace Volition {
 
@@ -19,16 +20,7 @@ class SQLiteChainRecorder :
     public AbstractChainRecorder {
 protected:
 
-    typedef std::function < int ( int, char**, char** )>                                SQLCallbackFunc;
-    typedef std::function < void ( sqlite3_stmt* )>                                     SQLPrepareCallbackFunc;
-    typedef std::function < void ( int, const map < string, int >&, sqlite3_stmt* )>    SQLRowCallbackFunc;
-
-    sqlite3*                mDB;
-
-    //----------------------------------------------------------------//
-    void                    exec                        ( sqlite3_stmt* stmt, SQLRowCallbackFunc onRow );
-    void                    exec                        ( string sql, SQLPrepareCallbackFunc onPrepare = NULL, SQLRowCallbackFunc onRow = NULL );
-    sqlite3_stmt*           prepare                     ( string sql, SQLPrepareCallbackFunc onPrepare = NULL );
+    SQLite                  mDB;
 
     //----------------------------------------------------------------//
     void                    AbstractChainRecorder_loadChain         ( Miner& miner );

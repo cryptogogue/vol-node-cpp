@@ -48,6 +48,13 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "dump", "dmp", "dump ledger to sqlite file" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "dump" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
                 .required ( false )
                 .argument ( "value", true )
@@ -139,13 +146,6 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "solo", "s", "operate in solo mode" )
-                .required ( false )
-                .argument ( "value" )
-                .binding ( "solo" )
-        );
-        
-        options.addOption (
             Poco::Util::Option ( "sqlite-db-file", "", "sqlite db filename" )
                 .required ( false )
                 .argument ( "value", true )
@@ -172,6 +172,7 @@ protected:
         
         string controlKeyfile           = configuration.getString   ( "control-key", "" );
         string controlLevel             = configuration.getString   ( "control-level", "" );
+        string dump                     = configuration.getString   ( "dump" );
         string genesis                  = configuration.getString   ( "genesis" );
         int interval                    = configuration.getInt      ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile", "" );
@@ -185,7 +186,6 @@ protected:
         string redisHost                = configuration.getString   ( "redis-conf", "127.0.0.1" );
         string redisFolder              = configuration.getString   ( "redis-folder", "./redis" );
         int redisPort                   = configuration.getInt      ( "redis-port", 0 );
-        bool solo                       = configuration.getBool     ( "solo", false );
         string sqliteDBFile             = configuration.getString   ( "sqlite-db-file", "" );
         
         string sslCertFile              = configuration.getString   ( "openSSL.server.certificateFile", "" );
@@ -233,12 +233,7 @@ protected:
             LOG_F ( INFO, "CONTROL LEVEL: ADMIN" );
             minerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
         }
-    
-        if ( solo ) {
-            LOG_F ( INFO, "LAZY and SOLO" );
-            minerActivity->setLazy ( true );
-        }
-        
+
         minerActivity->setUpdateInterval (( u32 )interval );
         
         LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
@@ -258,7 +253,13 @@ protected:
             minerActivity->setChainRecorder ( chainRecorder );
         }
         
+        if ( dump.size ()) {
+            minerActivity->getLedger ().dump ( dump );
+            return Application::EXIT_OK;
+        }
+        
         if ( keyfile.size () > 0 ) {
+
             LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
             if ( !FileSys::exists ( keyfile )) {
                 LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );

@@ -14,6 +14,7 @@
 #include <volition/Entropy.h>
 #include <volition/KeyEntitlements.h>
 #include <volition/Ledger_Account.h>
+#include <volition/Ledger_Dump.h>
 #include <volition/Ledger_Inventory.h>
 #include <volition/Ledger_Miner.h>
 #include <volition/LedgerKey.h>
@@ -90,11 +91,12 @@ class Ledger :
     public VersionedStore,
     virtual public AbstractLedgerComponent,
     public Ledger_Account,
+    public Ledger_Dump,
     public Ledger_Inventory,
     public Ledger_Miner {
 private:
 
-    map < string, Schema >  mSchemaCache;
+    shared_ptr < map < string, Schema >> mSchemaCache;
 
     //----------------------------------------------------------------//
     Ledger&             AbstractLedgerComponent_getLedger       () override;
@@ -228,7 +230,6 @@ public:
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
     const Schema&                       getSchema                       ();
-    void                                getSchema                       ( Schema& schema ) const;
     SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaHash                   () const;
     string                              getSchemaString                 () const;

@@ -226,6 +226,10 @@
 		CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAB334E2479293500901558 /* AssetMethod.cpp */; };
 		CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD94332470A8A0003FD2CC /* SerializableTime.h */; };
 		CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD9436247138B0003FD2CC /* ReserveAccountName.h */; };
+		CDAF1ABF254FECB400CF1010 /* SQLite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1ABC254FECB400CF1010 /* SQLite.cpp */; };
+		CDAF1AC0254FECB400CF1010 /* SQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAF1ABE254FECB400CF1010 /* SQLite.h */; };
+		CDAF1AE2254FEF1E00CF1010 /* Ledger_Dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */; };
+		CDAF1AE3254FEF1E00CF1010 /* Ledger_Dump.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAF1AE1254FEF1E00CF1010 /* Ledger_Dump.h */; };
 		CDB8B3C721AC7DB8004EE816 /* Asset.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Asset.h */; };
 		CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C921AC7EBF004EE816 /* SerializableList.h */; };
 		CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */; };
@@ -876,6 +880,10 @@
 		CDAB334E2479293500901558 /* AssetMethod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetMethod.cpp; path = src/volition/AssetMethod.cpp; sourceTree = "<group>"; };
 		CDAD94332470A8A0003FD2CC /* SerializableTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableTime.h; path = src/volition/serialization/SerializableTime.h; sourceTree = "<group>"; };
 		CDAD9436247138B0003FD2CC /* ReserveAccountName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReserveAccountName.h; path = src/volition/transactions/ReserveAccountName.h; sourceTree = "<group>"; };
+		CDAF1ABC254FECB400CF1010 /* SQLite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLite.cpp; path = src/volition/SQLite.cpp; sourceTree = "<group>"; };
+		CDAF1ABE254FECB400CF1010 /* SQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLite.h; path = src/volition/SQLite.h; sourceTree = "<group>"; };
+		CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Dump.cpp; path = src/volition/Ledger_Dump.cpp; sourceTree = "<group>"; };
+		CDAF1AE1254FEF1E00CF1010 /* Ledger_Dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger_Dump.h; path = src/volition/Ledger_Dump.h; sourceTree = "<group>"; };
 		CDB8B3C521AC7DB8004EE816 /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asset.h; path = src/volition/Asset.h; sourceTree = "<group>"; };
 		CDB8B3C921AC7EBF004EE816 /* SerializableList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableList.h; path = src/volition/serialization/SerializableList.h; sourceTree = "<group>"; };
 		CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestWebMiner.cpp; path = src/volition/gtest/TestWebMiner.cpp; sourceTree = "<group>"; };
@@ -1268,6 +1276,8 @@
 				CDC2B31520CCAD2400300A96 /* Ledger.h */,
 				CDFA239E24604CC700B4CECF /* Ledger_Account.cpp */,
 				CDFA239F24604CC700B4CECF /* Ledger_Account.h */,
+				CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */,
+				CDAF1AE1254FEF1E00CF1010 /* Ledger_Dump.h */,
 				CDFA2394246016E700B4CECF /* Ledger_Inventory.cpp */,
 				CDFA2395246016E700B4CECF /* Ledger_Inventory.h */,
 				CDFA23A2246051CD00B4CECF /* Ledger_Miner.cpp */,
@@ -1297,6 +1307,8 @@
 				CDA1573E23FAA92300DFACCF /* Munge.cpp */,
 				CDA1573F23FAA92300DFACCF /* Munge.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
+				CDAF1ABC254FECB400CF1010 /* SQLite.cpp */,
+				CDAF1ABE254FECB400CF1010 /* SQLite.h */,
 				CD2000442548CC9200DEB809 /* UnsecureRandom.h */,
 			);
 			name = util;
@@ -1834,6 +1846,7 @@
 				CD63A1D322AF892800D5C801 /* AssetMethodInvocation.h in Headers */,
 				CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */,
 				CDBFD54A218B8999002AB0C3 /* RestrictKey.h in Headers */,
+				CDAF1AC0254FECB400CF1010 /* SQLite.h in Headers */,
 				CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */,
 				CD7751D2252A790400A53765 /* SimMiner.h in Headers */,
 				CD20FF86253D870800DEB809 /* ControlCommands.h in Headers */,
@@ -1884,6 +1897,7 @@
 				CD4E81AD210593CA007DA585 /* MinerActivity.h in Headers */,
 				CD63A1D122AF750000D5C801 /* IndexSquap.h in Headers */,
 				CD73D8162165474000F43CC7 /* AbstractSerializerTo.h in Headers */,
+				CDAF1AE3254FEF1E00CF1010 /* Ledger_Dump.h in Headers */,
 				CD63A1C822AC6BEA00D5C801 /* AssetMethod.h in Headers */,
 				CD7751E7252FE41C00A53765 /* ConsensusBlockHeaderListHandler.h in Headers */,
 				CD4E8194210593A4007DA585 /* Signature.h in Headers */,
@@ -2433,6 +2447,7 @@
 				CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */,
 				CD7751D3252A790400A53765 /* SimMiner.cpp in Sources */,
 				CDAA38E2251AA09200FEAFB5 /* Simulator.cpp in Sources */,
+				CDAF1ABF254FECB400CF1010 /* SQLite.cpp in Sources */,
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
 				CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */,
@@ -2443,6 +2458,7 @@
 				CDFA239B24601DA100B4CECF /* TransactionResult.cpp in Sources */,
 				CD775196251FF03A00A53765 /* Miner.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
+				CDAF1AE2254FEF1E00CF1010 /* Ledger_Dump.cpp in Sources */,
 				CDFA23A024604CC700B4CECF /* Ledger_Account.cpp in Sources */,
 				CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */,
 				CDFA23872453B25B00B4CECF /* Schema.cpp in Sources */,

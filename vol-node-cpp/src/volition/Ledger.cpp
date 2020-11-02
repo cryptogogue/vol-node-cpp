@@ -77,7 +77,7 @@ LedgerResult Ledger::checkSchemaMethodsAndRewards ( const Schema& schema ) const
 //----------------------------------------------------------------//
 void Ledger::clearSchemaCache () {
 
-    this->mSchemaCache.clear ();
+    this->mSchemaCache = NULL;
 }
 
 //----------------------------------------------------------------//
@@ -161,25 +161,24 @@ string Ledger::getIdentity () const {
 //----------------------------------------------------------------//
 const Schema& Ledger::getSchema () {
 
+    if ( !this->mSchemaCache ) {
+        this->mSchemaCache = make_shared < map < string, Schema >>();
+    }
+    map < string, Schema >& schemaCache = *this->mSchemaCache;
+    
     string schemaHash = this->getSchemaHash ();
     
-    map < string, Schema >::const_iterator schemaIt = this->mSchemaCache.find ( schemaHash );
-    if ( schemaIt != this->mSchemaCache.cend ()) {
+    map < string, Schema >::const_iterator schemaIt = schemaCache.find ( schemaHash );
+    if ( schemaIt != schemaCache.cend ()) {
         return schemaIt->second;
     }
     
-    Schema& schema = this->mSchemaCache [ schemaHash ];
-    this->getSchema ( schema );
-    return schema;
-}
-
-//----------------------------------------------------------------//
-void Ledger::getSchema ( Schema& schema ) const {
-
+    Schema& schema = schemaCache[ schemaHash ];
     string schemaString = this->getSchemaString ();
     if ( schemaString.size () > 0 ) {
         FromJSONSerializer::fromJSONString ( schema, schemaString );
     }
+    return schema;
 }
 
 //----------------------------------------------------------------//

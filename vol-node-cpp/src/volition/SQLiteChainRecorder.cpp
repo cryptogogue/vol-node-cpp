@@ -13,68 +13,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void SQLiteChainRecorder::exec ( sqlite3_stmt* stmt, SQLiteChainRecorder::SQLRowCallbackFunc onRow ) {
-
-    int rows = 0;
-    map < string, int > columns;
-    
-    while ( true ) {
-        
-        int result = sqlite3_step ( stmt );
-        if ( result != SQLITE_ROW ) break;
-        
-        if ( rows == 0 ){
-            int nCols = sqlite3_column_count ( stmt );
-            for ( int i = 0; i < nCols; i++ ) {
-                cc8* name = ( char* )sqlite3_column_name ( stmt, i );
-                columns [ name ] = i;
-            }
-        }
-        if ( onRow ) {
-            onRow ( rows, columns, stmt );
-        }
-        rows++;
-    }
-    sqlite3_reset ( stmt );
-}
-
-//----------------------------------------------------------------//
-void SQLiteChainRecorder::exec ( string sql, SQLPrepareCallbackFunc onPrepare, SQLiteChainRecorder::SQLRowCallbackFunc onRow ) {
-    
-    sqlite3_stmt* stmt = this->prepare ( sql, onPrepare );
-    if ( !stmt ) return;
-
-    this->exec ( stmt, onRow );
-    sqlite3_finalize ( stmt );
-}
-
-//----------------------------------------------------------------//
-sqlite3_stmt* SQLiteChainRecorder::prepare ( string sql, SQLPrepareCallbackFunc onPrepare ) {
-
-    sqlite3_stmt* stmt = NULL;
-    int result = sqlite3_prepare_v2 (
-        this->mDB,
-        sql.c_str (),
-        ( int )sql.size (),
-        &stmt,
-        NULL
-    );
-    
-    if ( result != SQLITE_OK ) {
-        sqlite3_finalize ( stmt );
-        stmt = NULL;
-    }
-    
-    if ( stmt && onPrepare ) {
-        onPrepare ( stmt );
-    }
-    
-    return stmt;
-}
-
-//----------------------------------------------------------------//
-SQLiteChainRecorder::SQLiteChainRecorder ( const Miner& miner, string path ) :
-    mDB ( NULL ) {
+SQLiteChainRecorder::SQLiteChainRecorder ( const Miner& miner, string path ) {
     
     const Ledger& ledger = miner.getLedger ();
 
@@ -84,22 +23,14 @@ SQLiteChainRecorder::SQLiteChainRecorder ( const Miner& miner, string path ) :
     
     string filename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
     
-    int result = sqlite3_open ( filename.c_str (), &this->mDB );
-    if ( result ) {
-        sqlite3_close ( this->mDB );
-        this->mDB = NULL;
-        assert ( false );
-        return;
-    }
+    this->mDB.open ( filename );
     
-    this->exec ( "CREATE TABLE IF NOT EXISTS chain ( height INTEGER PRIMARY KEY, hash TEXT NOT NULL, body TEXT NOT NULL )" );
-    this->exec ( "CREATE TABLE IF NOT EXISTS config ( id INTEGER PRIMARY KEY, body TEXT NOT NULL )" );
+    this->mDB.exec ( "CREATE TABLE IF NOT EXISTS chain ( height INTEGER PRIMARY KEY, hash TEXT NOT NULL, body TEXT NOT NULL )" );
+    this->mDB.exec ( "CREATE TABLE IF NOT EXISTS config ( id INTEGER PRIMARY KEY, body TEXT NOT NULL )" );
 }
 
 //----------------------------------------------------------------//
 SQLiteChainRecorder::~SQLiteChainRecorder () {
-
-    sqlite3_close ( this->mDB );
 }
 
 //================================================================//
@@ -113,7 +44,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) {
     const Ledger& ledger = miner.getLedger ();
     assert ( ledger.countBlocks () == 1 );
 
-    this->exec (
+    this->mDB.exec (
         "SELECT * FROM chain",
         NULL,
         [ &miner ]( int row, const map < string, int >& columns, sqlite3_stmt* stmt ) {
@@ -141,7 +72,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) {
 //----------------------------------------------------------------//
 void SQLiteChainRecorder::AbstractChainRecorder_loadConfig ( MinerConfig& minerConfig ) {
 
-    this->exec (
+    this->mDB.exec (
         "SELECT * FROM config WHERE id = 0",
         NULL,
         [ &minerConfig ]( int row, const map < string, int >& columns, sqlite3_stmt* stmt ) {
@@ -155,7 +86,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_loadConfig ( MinerConfig& minerC
 //----------------------------------------------------------------//
 void SQLiteChainRecorder::AbstractChainRecorder_reset () {
 
-    this->exec ( "DELETE FROM chain" );
+    this->mDB.exec ( "DELETE FROM chain" );
 }
 
 //----------------------------------------------------------------//
@@ -172,7 +103,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner )
         size_t height = block->getHeight ();
     
         string storedHash;
-        this->exec (
+        this->mDB.exec (
             Format::write ( "SELECT * FROM chain WHERE height = ?1", height ),
             [ height ]( sqlite3_stmt* stmt ) {
                 sqlite3_bind_int64 ( stmt, 1, ( sqlite_int64 )height );
@@ -188,7 +119,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner )
         if ( storedHash == hash ) break;
         string body = ToJSONSerializer::toJSONString ( *block );
         
-        this->exec (
+        this->mDB.exec (
             Format::write ( "REPLACE INTO chain ( height, hash, body ) VALUES ( ?1, ?2, ?3 )" ),
             [ height, hash, &body ]( sqlite3_stmt* stmt ) {
                 sqlite3_bind_int64 ( stmt, 1, ( sqlite_int64 )height );
@@ -204,12 +135,12 @@ void SQLiteChainRecorder::AbstractChainRecorder_saveConfig ( const MinerConfig& 
 
     string body = ToJSONSerializer::toJSONString ( minerConfig );
 
-    this->exec (
-    Format::write ( "REPLACE INTO config ( id, body ) VALUES ( 0, ?1 )" ),
-    [ &body ]( sqlite3_stmt* stmt ) {
-        sqlite3_bind_text ( stmt, 1, body.c_str (), ( int )body.size (), SQLITE_TRANSIENT );
-    }
-);
+    this->mDB.exec (
+        Format::write ( "REPLACE INTO config ( id, body ) VALUES ( 0, ?1 )" ),
+        [ &body ]( sqlite3_stmt* stmt ) {
+            sqlite3_bind_text ( stmt, 1, body.c_str (), ( int )body.size (), SQLITE_TRANSIENT );
+        }
+    );
 }
 
 } // namespace Volition
