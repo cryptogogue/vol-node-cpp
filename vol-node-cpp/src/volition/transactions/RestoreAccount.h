@@ -59,6 +59,20 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTORE_ACCOUNT )) return "Permission denied.";
         
+        Account account;
+        account.mBalance = this->mBalance;
+        if ( this->mPolicy ) {
+            account.mPolicy = *this->mPolicy;
+        }
+        account.mBequest = this->mBequest;
+        account.mKeys = this->mKeys;
+
+        Ledger& ledger = context.mLedger;
+        if ( !ledger.newAccount ( this->mName, account )) return "Failed to restore account.";
+        
+        AccountID accountID = ledger.getAccountID ( this->mName );
+        if ( !ledger.awardAssets ( accountID, this->mInventory, context.mTime )) return "Failed to restore inventory.";
+
         return true;
     }
 };

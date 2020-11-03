@@ -32,10 +32,9 @@ public:
         
             ScopedMinerLock scopedLock ( this->mWebMiner );
             Ledger& ledger = this->mWebMiner->getLedger ();
-            const Schema& schema = ledger.getSchema ();
             
             SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-            ledger.getInventory ( schema, ledger.getAccountID ( accountName ), inventory, 0, true );
+            ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, 0, true );
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         

@@ -45,7 +45,8 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_DECK )) return "Permission denied.";
         
-        const Schema::Deck* deck = context.mSchemaHandle->getDeck ( this->mDeckName );
+        const Schema& schema = context.mLedger.getSchema ();
+        const Schema::Deck* deck = schema.getDeck ( this->mDeckName );
         if ( !deck ) return "Deck not found.";
         
         size_t addedAssetCount = 0;
@@ -62,7 +63,7 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        return ledger.awardDeck ( *context.mSchemaHandle, context.mIndex, this->mDeckName, context.mTime );
+        return ledger.awardDeck ( context.mIndex, this->mDeckName, context.mTime );
     }
 };
 

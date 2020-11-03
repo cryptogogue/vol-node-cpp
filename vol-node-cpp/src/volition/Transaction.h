@@ -33,7 +33,7 @@ protected:
     SignaturePtr                mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
-    TransactionResult           applyInner              ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time, Block::VerificationPolicy policy ) const;
+    TransactionResult           applyInner              ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const;
     TransactionResult           checkBody               ( Ledger& ledger, time_t time ) const;
     
     //----------------------------------------------------------------//
@@ -43,7 +43,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    TransactionResult           apply                   ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle, Block::VerificationPolicy policy ) const;
+    TransactionResult           apply                   ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker              ( string accountName, string uuid ) const;
     TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
     u64                         getGratuity             () const;

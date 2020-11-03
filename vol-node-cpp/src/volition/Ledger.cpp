@@ -45,7 +45,7 @@ LedgerResult Ledger::checkSchemaMethodsAndRewards ( const Schema& schema ) const
 
     string out;
 
-    LuaContext lua ( *this, schema, 0 );
+    LuaContext lua ( *this, 0 );
 
     Schema::Methods::const_iterator methodIt = schema.mMethods.cbegin ();
     for ( ; methodIt != schema.mMethods.cend (); ++methodIt ) {
@@ -233,7 +233,9 @@ void Ledger::init () {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::invoke ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation, time_t time ) {
+LedgerResult Ledger::invoke ( string accountName, const AssetMethodInvocation& invocation, time_t time ) {
+
+    const Schema& schema = this->getSchema ();
 
     const AssetMethod* method = schema.getMethodOrNull ( invocation.mMethodName );
     if ( !( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ))) return false;
@@ -243,7 +245,7 @@ LedgerResult Ledger::invoke ( const Schema& schema, string accountName, const As
     if ( accountID == AccountID::NULL_INDEX ) return false;
 
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
-    LuaContext lua ( *this, schema, time );
+    LuaContext lua ( *this, time );
     return lua.invoke ( accountName, *method, invocation );
 }
 
@@ -254,12 +256,12 @@ bool Ledger::isGenesis () const {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::invokeReward ( const Schema& schema, string minerID, string rewardName, time_t time ) {
+LedgerResult Ledger::invokeReward ( string minerID, string rewardName, time_t time ) {
 
     if ( !rewardName.size ()) return true;
 
     // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
-    LuaContext lua ( *this, schema, time );
+    LuaContext lua ( *this, time );
     return lua.invoke ( minerID, rewardName );
 }
 
@@ -398,6 +400,11 @@ void Ledger::setSchema ( const Schema& schema ) {
     this->setObject < Schema >( Ledger::keyFor_schema (), schema );
     this->setObject < SchemaVersion >( Ledger::keyFor_schemaVersion (), schema.mVersion );
     this->setValue < string >( Ledger::keyFor_schemaHash (), schemaHash );
+    
+    if ( !this->mSchemaCache ) {
+        this->mSchemaCache = make_shared < map < string, Schema >>();
+    }
+    ( *this->mSchemaCache )[ schemaHash ] = schema;
 }
 
 //----------------------------------------------------------------//
@@ -407,8 +414,9 @@ void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::verify ( const Schema& schema, const AssetMethodInvocation& invocation ) const {
+bool Ledger::verify ( const AssetMethodInvocation& invocation ) {
 
+    const Schema& schema = this->getSchema ();
     const AssetMethod* method = schema.getMethodOrNull ( invocation.mMethodName );
     return ( method && ( method->mWeight == invocation.mWeight ) && ( method->mMaturity == invocation.mMaturity ));
 }

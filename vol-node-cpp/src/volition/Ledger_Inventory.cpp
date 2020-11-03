@@ -22,11 +22,56 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry ) {
+LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inventoryNonce, const SerializableList < SerializableSharedConstPtr < Asset >>& assets, InventoryLogEntry& logEntry ) {
+
+    size_t quantity = assets.size ();
+    if ( quantity == 0 ) return true;
 
     Ledger& ledger = this->getLedger ();
+    const Schema& schema = ledger.getSchema ();
+
+    LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = Ledger::keyFor_globalAssetCount ();
+    size_t globalAssetCount = ledger.getValueOrFallback < u64 >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
+    size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
+    
+    SerializableList < SerializableSharedConstPtr < Asset >>::const_iterator assetIt = assets.cbegin ();
+    for ( size_t i = 0; assetIt != assets.cend (); ++assetIt, ++i ) {
+    
+        const Asset& asset = **assetIt;
+    
+        string assetType = asset.mType;
+        if ( !schema.getDefinitionOrNull ( assetType )) return Format::write ( "Asset type '%s' not found.", assetType.c_str ());
+    
+        AssetODBM assetODBM ( ledger, globalAssetCount );
+                
+        assetODBM.mOwner.set ( accountODBM.mAccountID );
+        assetODBM.mInventoryNonce.set ( inventoryNonce );
+        assetODBM.mPosition.set ( accountAssetCount + i );
+        assetODBM.mType.set ( assetType );
+        
+        Asset::Fields::const_iterator fieldIt = asset.mFields.cbegin ();
+        for ( ; fieldIt != asset.mFields.end (); ++fieldIt ) {
+            assetODBM.setFieldValue ( fieldIt->first, fieldIt->second );
+        }
+        
+        accountODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mAssetID );
+        logEntry.insertAddition ( assetODBM.mAssetID );
+    }
+    
+    ledger.setValue < u64 >( KEY_FOR_GLOBAL_ASSET_COUNT, globalAssetCount + quantity );
+    accountODBM.mAssetCount.set ( accountAssetCount + quantity );
+
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry ) {
 
     if ( quantity == 0 ) return true;
+
+    Ledger& ledger = this->getLedger ();
+    const Schema& schema = ledger.getSchema ();
+
     if ( !schema.getDefinitionOrNull ( assetType )) return Format::write ( "Asset type '%s' not found.", assetType.c_str ());
 
     LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = Ledger::keyFor_globalAssetCount ();
@@ -53,7 +98,7 @@ LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountODBM& 
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountID accountID, string assetType, size_t quantity, time_t time ) {
+LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, string assetType, size_t quantity, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
     
@@ -62,7 +107,7 @@ LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountID acc
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
 
     InventoryLogEntry logEntry ( time );
-    this->awardAssets ( schema, accountODBM, inventoryNonce, assetType, quantity, logEntry );
+    this->awardAssets ( accountODBM, inventoryNonce, assetType, quantity, logEntry );
    
     ledger.updateInventory ( accountODBM.mAccountID, logEntry );
 
@@ -70,9 +115,27 @@ LedgerResult Ledger_Inventory::awardAssets ( const Schema& schema, AccountID acc
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssetsAll ( const Schema& schema, AccountID accountID, size_t quantity, time_t time ) {
+LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, const SerializableList < SerializableSharedConstPtr < Asset >>& assets, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
+    
+    AccountODBM accountODBM ( ledger, accountID );
+    if ( accountODBM.mAccountID == AccountID::NULL_INDEX ) return "Account not found.";
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+
+    InventoryLogEntry logEntry ( time );
+    this->awardAssets ( accountODBM, inventoryNonce, assets, logEntry );
+   
+    ledger.updateInventory ( accountODBM.mAccountID, logEntry );
+
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::awardAssetsAll ( AccountID accountID, size_t quantity, time_t time ) {
+
+    Ledger& ledger = this->getLedger ();
+    const Schema& schema = ledger.getSchema ();
     
     AccountODBM accountODBM ( ledger, accountID );
     if ( accountODBM.mAccountID == AccountID::NULL_INDEX ) return "Account not found.";
@@ -83,7 +146,7 @@ LedgerResult Ledger_Inventory::awardAssetsAll ( const Schema& schema, AccountID 
     const Schema::Definitions& definitions = schema.getDefinitions ();
     Schema::Definitions::const_iterator definitionIt = definitions.cbegin ();
     for ( ; definitionIt != definitions.cend (); ++definitionIt ) {
-        ledger.awardAssets ( schema, accountODBM, inventoryNonce, definitionIt->first, quantity, logEntry );
+        ledger.awardAssets ( accountODBM, inventoryNonce, definitionIt->first, quantity, logEntry );
     }
     
     ledger.updateInventory ( accountODBM.mAccountID, logEntry );
@@ -91,9 +154,10 @@ LedgerResult Ledger_Inventory::awardAssetsAll ( const Schema& schema, AccountID 
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, AccountID accountID, string deckName, string seed, size_t quantity, time_t time ) {
+LedgerResult Ledger_Inventory::awardAssetsRandom ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
+    const Schema& schema = ledger.getSchema ();
 
     if ( quantity == 0 ) return true;
 
@@ -157,7 +221,7 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account
     
     map < string, size_t >::const_iterator awardIt = awards.cbegin ();
     for ( ; awardIt != awards.cend (); ++awardIt ) {
-        ledger.awardAssets ( schema, accountODBM, inventoryNonce, awardIt->first, awardIt->second, logEntry );
+        ledger.awardAssets ( accountODBM, inventoryNonce, awardIt->first, awardIt->second, logEntry );
     }
     ledger.updateInventory ( accountODBM.mAccountID, logEntry );
     
@@ -165,16 +229,17 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( const Schema& schema, Account
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardDeck ( const Schema& schema, AccountID accountID, string deckName, time_t time ) {
+LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
-        
+    const Schema& schema = ledger.getSchema ();
+
     const Schema::Deck* deck = schema.getDeck ( deckName );
     if ( !deck ) return Format::write ( "Deck '%s' not found.", deckName.c_str ());
     
     Schema::Deck::const_iterator deckIt = deck->cbegin ();
     for ( ; deckIt != deck->cend (); ++deckIt ) {
-        ledger.awardAssets ( schema, accountID, deckIt->first, deckIt->second, time );
+        ledger.awardAssets ( accountID, deckIt->first, deckIt->second, time );
     }
     return true;
 }
@@ -193,7 +258,7 @@ AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::getInventory ( const Schema& schema, AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) const {
+void Ledger_Inventory::getInventory ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) const {
 
     const Ledger& ledger = this->getLedger ();
 
@@ -211,19 +276,19 @@ void Ledger_Inventory::getInventory ( const Schema& schema, AccountID accountID,
     for ( size_t i = 0; i < assetCount; ++i ) {
     
         AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
-        shared_ptr < const Asset > asset = AssetODBM ( ledger, assetIndex ).getAsset ( schema, sparse );
+        shared_ptr < const Asset > asset = AssetODBM ( ledger, assetIndex ).getAsset ( sparse );
         assert ( asset );
         assetList.push_back ( asset );
     }
 }
 
 //----------------------------------------------------------------//
-map < string, size_t > Ledger_Inventory::getInventoryHistogram ( const Schema& schema, AccountID accountID ) {
+map < string, size_t > Ledger_Inventory::getInventoryHistogram ( AccountID accountID ) {
 
     map < string, size_t > histogram;
 
     SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-    this->getInventory ( schema, accountID, inventory );
+    this->getInventory ( accountID, inventory );
 
     SerializableList < SerializableSharedConstPtr < Asset >>::const_iterator inventoryIt = inventory.cbegin ();
     for ( ; inventoryIt != inventory.cend (); ++inventoryIt ) {
@@ -238,9 +303,10 @@ map < string, size_t > Ledger_Inventory::getInventoryHistogram ( const Schema& s
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::resetAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, time_t time ) {
+bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string fieldName, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
+    const Schema& schema = ledger.getSchema ();
 
     AssetODBM assetODBM ( ledger, index );
     if ( assetODBM.mAssetID == AssetID::NULL_INDEX ) return false;
@@ -324,40 +390,14 @@ bool Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::setAssetFieldValue ( const Schema& schema, AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time ) {
+LedgerResult Ledger_Inventory::setAssetFieldValue ( AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
-
-    AssetODBM assetODBM ( ledger, index );
+    AssetODBM assetODBM ( this->getLedger (), index );
     if ( assetODBM.mAssetID == AssetID::NULL_INDEX ) return "No such account.";
     
-    string assetType = assetODBM.mType.get ();
-    const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
-    if ( !assetDefinition ) return false;
+    LedgerResult result = assetODBM.setFieldValue ( fieldName, field );
+    if ( !result ) return result;
 
-    AssetFieldDefinition fieldDefinition = assetDefinition->getField ( fieldName );
-    if ( !fieldDefinition.mMutable ) return Format::write ( "Field '%s' is not mutable.",fieldName.c_str ());
-
-    LedgerKey KEY_FOR_ASSET_FIELD = AssetODBM::keyFor_field ( index, fieldName );
-
-    switch ( field.getType ()) {
-    
-        case AssetFieldValue::Type::TYPE_BOOL:
-            ledger.setValue < bool >( KEY_FOR_ASSET_FIELD, field.strictBoolean ());
-            break;
-            
-        case AssetFieldValue::Type::TYPE_NUMBER:
-            ledger.setValue < double >( KEY_FOR_ASSET_FIELD, field.strictNumber ());
-            break;
-            
-        case AssetFieldValue::Type::TYPE_STRING:
-            ledger.setValue < string >( KEY_FOR_ASSET_FIELD, field.strictString ());
-            break;
-            
-        default:
-            return "Unknown or invalid param type.";;
-    }
-    
     this->updateInventory ( assetODBM, time, InventoryLogEntry::EntryOp::UPDATE_ASSET );
     return true;
 }
@@ -459,9 +499,10 @@ void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, Inve
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::upgradeAssets ( const Schema& schema, AccountID accountID, const map < string, string >& upgrades, time_t time ) {
+LedgerResult Ledger_Inventory::upgradeAssets ( AccountID accountID, const map < string, string >& upgrades, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
+    const Schema& schema = ledger.getSchema ();
     
     AccountODBM accountODBM ( ledger, accountID );
     if ( accountODBM.mAccountID == AccountID::NULL_INDEX ) return "No such account.";

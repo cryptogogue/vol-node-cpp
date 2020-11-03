@@ -35,7 +35,6 @@ public:
             
             ScopedMinerLock scopedLock ( this->mWebMiner );
             Ledger& ledger = this->mWebMiner->getLedger ();
-            const Schema& schema = ledger.getSchema ();
             
             SerializableSet < AssetID::Index > additions;
             SerializableSet < AssetID::Index > deletions;
@@ -51,7 +50,7 @@ public:
             }
             
             SerializableList < SerializableSharedConstPtr < Asset >> assets;
-            InventoryLogEntry::expand ( ledger, schema, accountName, additions, assets );
+            InventoryLogEntry::expand ( ledger, accountName, additions, assets );
             jsonOut.set ( "assets", ToJSONSerializer::toJSON ( assets ));
             
             SerializableList < string > additionDecoded;

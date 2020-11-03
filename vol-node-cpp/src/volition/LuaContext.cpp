@@ -174,7 +174,7 @@ int LuaContext::_awardAsset ( lua_State* L ) {
     if ( accountID == AccountID::NULL_INDEX ) return 0;
     if ( !self.checkAssetType ( assetType )) return 0;
 
-    self.setResult ( self.mLedger->awardAssets ( self.mSchema, accountID, assetType, quantity, self.mTime ));
+    self.setResult ( self.mLedger->awardAssets ( accountID, assetType, quantity, self.mTime ));
     return 0;
 }
 
@@ -189,7 +189,7 @@ int LuaContext::_awardDeck ( lua_State* L ) {
     if ( accountID == AccountID::NULL_INDEX ) return 0;
     if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
 
-    self.setResult ( self.mLedger->awardDeck ( self.mSchema, accountID, setOrDeckName, self.mTime ));
+    self.setResult ( self.mLedger->awardDeck ( accountID, setOrDeckName, self.mTime ));
     return 0;
 }
 
@@ -262,7 +262,7 @@ int LuaContext::_randomAward ( lua_State* L ) {
     if ( accountID == AccountID::NULL_INDEX ) return 0;
     if ( !self.checkDeckOrSet ( setOrDeckName )) return 0;
 
-    self.setResult ( self.mLedger->awardAssetsRandom ( self.mSchema, accountID, setOrDeckName, seed, quantity, self.mTime ));
+    self.setResult ( self.mLedger->awardAssetsRandom ( accountID, setOrDeckName, seed, quantity, self.mTime ));
     return 0;
 }
 
@@ -277,7 +277,7 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
     AssetID::Index assetindex = self.checkAssetID ( assetID );
     if ( assetindex == AssetID::NULL_INDEX ) return 0;
 
-    self.setResult ( ledger.resetAssetFieldValue ( self.mSchema, assetindex, fieldName, self.mTime ));
+    self.setResult ( ledger.resetAssetFieldValue ( assetindex, fieldName, self.mTime ));
     return 0;
 }
 
@@ -327,7 +327,7 @@ int LuaContext::_setAssetField ( lua_State* L ) {
         self.setResult ( "Invalid field value." );
     }
     else {
-        self.setResult ( ledger.setAssetFieldValue ( self.mSchema, assetindex, fieldName, value, self.mTime ));
+        self.setResult ( ledger.setAssetFieldValue ( assetindex, fieldName, value, self.mTime ));
     }
     return 0;
 }
@@ -374,7 +374,9 @@ bool LuaContext::checkAssetType ( string assetType ) {
         return false;
     }
     
-    if ( !this->mSchema.hasAssetType ( assetType )) {
+    const Schema& schema = this->mLedger->getSchema ();
+    
+    if ( !schema.hasAssetType ( assetType )) {
         this->setResult ( Format::write ( "Asset type '%s' not found.", assetType.c_str ()));
         return false;
     }
@@ -384,7 +386,9 @@ bool LuaContext::checkAssetType ( string assetType ) {
 //----------------------------------------------------------------//
 bool LuaContext::checkDeckOrSet ( string deckName ) {
 
-    if ( !this->mSchema.getDeck ( deckName )) {
+    const Schema& schema = this->mLedger->getSchema ();
+
+    if ( !schema.getDeck ( deckName )) {
         this->setResult ( Format::write ( "Deck '%s' not found.", deckName.c_str ()));
         return false;
     }
@@ -399,7 +403,8 @@ const AssetDefinition* LuaContext::checkDefinition ( string definitionName ) {
         return NULL;
     }
 
-    const AssetDefinition* definition = this->mSchema.getDefinitionOrNull ( definitionName );
+    const Schema& schema = this->mLedger->getSchema ();
+    const AssetDefinition* definition = schema.getDefinitionOrNull ( definitionName );
     if ( !definition ) {
         this->setResult ( Format::write ( "Definition '%s' not found.", definitionName.c_str ()));
     }
@@ -456,7 +461,7 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
         string paramName = assetParamIt->first;
         AssetID::Index assetID = assetParamIt->second;
     
-        assets [ paramName ] = AssetODBM ( this->mLedger, assetID ).getAsset ( this->mSchema );
+        assets [ paramName ] = AssetODBM ( this->mLedger, assetID ).getAsset ();
     }
     if ( !method.checkInvocation ( assets, invocation.mConstParams )) return false;
 
@@ -495,7 +500,9 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
 //----------------------------------------------------------------//
 LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
 
-    const MiningReward* reward = this->mSchema.getRewardOrNull ( rewardName );
+    const Schema& schema = this->mLedger->getSchema ();
+
+    const MiningReward* reward = schema.getRewardOrNull ( rewardName );
     if ( !reward ) return "No such reward.";
 
     // make sure account exists
@@ -530,9 +537,8 @@ LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
 }
 
 //----------------------------------------------------------------//
-LuaContext::LuaContext ( ConstOpt < Ledger > ledger, const Schema& schema, time_t time ) :
+LuaContext::LuaContext ( ConstOpt < Ledger > ledger, time_t time ) :
     mLedger ( ledger ),
-    mSchema ( schema ),
     mTime ( time ),
     mResult ( true ) {
     

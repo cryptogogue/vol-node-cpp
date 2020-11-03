@@ -97,8 +97,6 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
     size_t nextMaturity = this->mHeight;
     size_t height = ledger.getVersion ();
 
-    SchemaHandle schemaHandle ( ledger );
-
     AccountODBM minerODBM ( ledger, this->mMinerID );
     shared_ptr < const Account > miner = minerODBM.mBody.get ();
     assert ( miner || ledger.isGenesis ());
@@ -113,7 +111,7 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
             
             size_t transactionMaturity = this->mHeight + transaction.maturity ();
             if ( transactionMaturity == height ) {
-                TransactionResult result = transaction.apply ( ledger, this->mTime, schemaHandle, policy );
+                TransactionResult result = transaction.apply ( ledger, this->mTime, policy );
                 assert ( result );
                 gratuity += transaction.getGratuity ();
             }
@@ -130,7 +128,7 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
         minerODBM.mBody.set ( minerUpdated );
     }
     
-    ledger.invokeReward ( *schemaHandle, this->mMinerID, this->mReward, this->mTime );
+    ledger.invokeReward ( this->mMinerID, this->mReward, this->mTime );
     
     return nextMaturity;
 }

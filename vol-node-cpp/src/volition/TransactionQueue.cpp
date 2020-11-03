@@ -117,7 +117,6 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
 
     Ledger ledger;
     ledger.takeSnapshot ( chain );
-    SchemaHandle schemaHandle ( ledger );
 
     const u64 maxBlockSize = ledger.getBlockSize ();
     u64 blockSize = 0;
@@ -168,7 +167,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
-            TransactionResult result = transaction->apply ( ledger, block.getTime (), schemaHandle, policy );
+            TransactionResult result = transaction->apply ( ledger, block.getTime (), policy );
             if ( result ) {
                 // transaction succeeded!
                 block.pushTransaction ( transaction );

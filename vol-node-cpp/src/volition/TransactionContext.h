@@ -8,7 +8,6 @@
 #include <volition/AccountEntitlements.h>
 #include <volition/AccountODBM.h>
 #include <volition/KeyEntitlements.h>
-#include <volition/SchemaHandle.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/TransactionMaker.h>
 
@@ -25,7 +24,6 @@ class TransactionContext {
 public:
 
     Ledger&                 mLedger;
-    SchemaHandle&           mSchemaHandle;
     AccountID               mIndex;
     AccountODBM&            mAccountODBM;
     const Account           mAccount;
@@ -35,7 +33,7 @@ public:
     Entitlements            mKeyEntitlements;
 
     //----------------------------------------------------------------//
-    TransactionContext      ( Ledger& ledger, SchemaHandle& schemaHandle, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time );
+    TransactionContext      ( Ledger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time );
 };
 
 } // namespace Volition

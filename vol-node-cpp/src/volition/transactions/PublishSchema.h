@@ -44,7 +44,7 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA )) return "Permission denied.";
         
-        Schema updateSchema = *context.mSchemaHandle.getSchema ();
+        Schema updateSchema = context.mLedger.getSchema ();
 
         const SchemaVersion& version0 = updateSchema.getVersion ();
         const SchemaVersion& version1 = this->mSchema.getVersion ();
@@ -58,7 +58,6 @@ public:
         if ( !result ) return result;
         
         context.mLedger.setSchema ( updateSchema );
-        context.mSchemaHandle.reset ( context.mLedger );
 
         return true;
     }

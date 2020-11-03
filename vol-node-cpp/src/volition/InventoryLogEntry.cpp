@@ -41,7 +41,7 @@ void InventoryLogEntry::decode ( const SerializableSet < AssetID::Index >& index
 }
 
 //----------------------------------------------------------------//
-void InventoryLogEntry::expand ( const Ledger& ledger, const Schema& schema, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedConstPtr < Asset >>& assetList ) {
+void InventoryLogEntry::expand ( const Ledger& ledger, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedConstPtr < Asset >>& assetList ) {
     
     AccountID accountID = ledger.getAccountID ( accountName );
     
@@ -52,7 +52,7 @@ void InventoryLogEntry::expand ( const Ledger& ledger, const Schema& schema, str
         AccountID ownerID = AssetODBM ( ledger, assetID ).mOwner.get ();
     
         if ( ownerID == accountID ) {
-            shared_ptr < const Asset > asset = AssetODBM ( ledger, assetID ).getAsset ( schema, true );
+            shared_ptr < const Asset > asset = AssetODBM ( ledger, assetID ).getAsset ( true );
             assert ( asset );
             assetList.push_back ( asset );
         }

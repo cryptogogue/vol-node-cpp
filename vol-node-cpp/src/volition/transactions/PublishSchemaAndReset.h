@@ -52,12 +52,11 @@ public:
         if ( !result ) return result;
 
         context.mLedger.setSchema ( this->mSchema );
-        context.mSchemaHandle.reset ( context.mLedger );
 
         // TODO: delete all inventories
 
         if ( this->mDeckName.size () > 0 ) {
-            return context.mLedger.awardDeck ( *context.mSchemaHandle, context.mIndex, this->mDeckName, context.mTime );
+            return context.mLedger.awardDeck ( context.mIndex, this->mDeckName, context.mTime );
         }
         return true;
     }

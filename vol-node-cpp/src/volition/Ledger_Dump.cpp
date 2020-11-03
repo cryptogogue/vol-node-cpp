@@ -107,7 +107,7 @@ void Ledger_Dump::dump ( string filename ) {
         AssetODBM assetODBM ( ledger, AssetID ( i ));
         if ( !assetODBM ) continue;
     
-        shared_ptr < const Asset > asset = assetODBM.getAsset ( ledger.getSchema (), true );
+        shared_ptr < const Asset > asset = assetODBM.getAsset ( true );
         
         AccountID accountID = ledger.getAccountID ( asset->mOwner );
         

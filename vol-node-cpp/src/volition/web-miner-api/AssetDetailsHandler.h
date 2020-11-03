@@ -38,9 +38,8 @@ public:
             
             ScopedMinerLock scopedLock ( this->mWebMiner );
             Ledger& ledger = this->mWebMiner->getLedger ();
-            const Schema& schema = ledger.getSchema ();
         
-            shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ( schema );
+            shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ();
             
             if ( asset ) {
                 Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );

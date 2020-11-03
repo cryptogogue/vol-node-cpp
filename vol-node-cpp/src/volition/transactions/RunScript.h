@@ -57,7 +57,7 @@ public:
         
         Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
         for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
-            TransactionResult result = context.mLedger.invoke ( *context.mSchemaHandle, this->mMaker->getAccountName (), *invocationIt, context.mTime );
+            TransactionResult result = context.mLedger.invoke ( this->mMaker->getAccountName (), *invocationIt, context.mTime );
             if ( !result ) return result;
         }
         return true;
@@ -83,7 +83,7 @@ public:
     
         Invocations::const_iterator invocationIt = this->mInvocations.cbegin ();
         for ( ; invocationIt != this->mInvocations.cend (); ++invocationIt ) {
-            if ( !context.mLedger.verify ( *context.mSchemaHandle, *invocationIt )) return false;
+            if ( !context.mLedger.verify ( *invocationIt )) return false;
             totalWeight += invocationIt->mWeight;
             
             if ( maxMaturity < invocationIt->mMaturity ) {

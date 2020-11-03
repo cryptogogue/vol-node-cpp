@@ -17,12 +17,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle& schemaHandle, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::apply ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
         TransactionResult result = this->checkBody ( ledger, time );
         if ( result ) {
-            result = this->applyInner ( ledger, schemaHandle, time, policy );
+            result = this->applyInner ( ledger, time, policy );
         }
         result.setTransactionDetails ( *this );
         return result;
@@ -36,7 +36,7 @@ TransactionResult Transaction::apply ( Ledger& ledger, time_t time, SchemaHandle
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schemaHandle, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const {
     
     if ( !this->mBody ) return "Missing body.";
     
@@ -56,7 +56,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, SchemaHandle& schema
     TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey, policy );
     if ( result ) {
         
-        TransactionContext context ( ledger, schemaHandle, accountODBM, keyAndPolicy, time );
+        TransactionContext context ( ledger, accountODBM, keyAndPolicy, time );
         
         u64 cost = this->mBody->cost ();
         if ( context.mAccount.mBalance < cost ) return "Insufficient funds.";

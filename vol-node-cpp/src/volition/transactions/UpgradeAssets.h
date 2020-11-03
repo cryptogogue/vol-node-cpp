@@ -45,7 +45,6 @@ public:
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::UPGRADE_ASSETS )) return "Permission denied.";
         
         return context.mLedger.upgradeAssets (
-            *context.mSchemaHandle,
             context.mIndex,
             this->mUpgrades,
             context.mTime

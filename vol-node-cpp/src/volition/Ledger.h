@@ -236,8 +236,8 @@ public:
     UnfinishedBlockList                 getUnfinished                   ();
     bool                                hasTransaction                  ( string accountName, string uuid ) const;
     void                                init                            ();
-    LedgerResult                        invoke                          ( const Schema& schema, string accountName, const AssetMethodInvocation& invocation, time_t time );
-    LedgerResult                        invokeReward                    ( const Schema& schema, string minerID, string rewardName, time_t time );
+    LedgerResult                        invoke                          ( string accountName, const AssetMethodInvocation& invocation, time_t time );
+    LedgerResult                        invokeReward                    ( string minerID, string rewardName, time_t time );
     bool                                isGenesis                       () const;
                                         Ledger                          ();
                                         Ledger                          ( Ledger& other );
@@ -251,7 +251,7 @@ public:
     bool                                setIdentity                     ( string identity );
     void                                setSchema                       ( const Schema& schema );
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
-    bool                                verify                          ( const Schema& schema, const AssetMethodInvocation& invocation ) const;
+    bool                                verify                          ( const AssetMethodInvocation& invocation );
 
     //----------------------------------------------------------------//
     template < typename ENTITLEMENTS_FAMILY >

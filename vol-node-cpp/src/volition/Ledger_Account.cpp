@@ -184,7 +184,7 @@ bool Ledger_Account::isSuffix ( string suffix ) {
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyName, const CryptoPublicKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
+LedgerResult Ledger_Account::newAccount ( string accountName, const Account& account ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -197,20 +197,15 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
     LedgerKey KEY_FOR_GLOBAL_ACCOUNT_COUNT = Ledger::keyFor_globalAccountCount ();
     AccountID accountID = ledger.getValue < AccountID::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT );
     ledger.setValue < AccountID::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, accountID + 1 ); // increment counter
-
-    // store the account
-    Account account;
-    account.mPolicy     = accountPolicy;
-    account.mBalance    = balance;
     
-    if ( key ) {
-
-        account.mKeys [ MASTER_KEY_NAME ] = KeyAndPolicy ( key, keyPolicy );
-
+    map < string, KeyAndPolicy >::const_iterator keyIt = account.mKeys.cbegin ();
+    for ( ; keyIt != account.mKeys.end (); ++keyIt ) {
+        const KeyAndPolicy& keyAndPolicy = keyIt->second;
+        
         // store the key (for reverse lookup):
-        string keyID = key.getKeyID ();
+        string keyID = keyAndPolicy.mKey.getKeyID ();
         assert ( keyID.size ());
-        ledger.setObject < AccountKeyLookup >( Ledger::keyFor_accountKeyLookup ( keyID ), AccountKeyLookup ( accountID, keyName ));
+        ledger.setObject < AccountKeyLookup >( Ledger::keyFor_accountKeyLookup ( keyID ), AccountKeyLookup ( accountID, keyIt->first ));
     }
     
     AccountODBM accountODBM ( ledger, accountID );
@@ -221,6 +216,20 @@ bool Ledger_Account::newAccount ( string accountName, u64 balance, string keyNam
     ledger.setValue < AccountID::Index >( KEY_FOR_ACCOUNT_ALIAS, accountID );
 
     return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Account::newAccount ( string accountName, u64 balance, string keyName, const CryptoPublicKey& key, const Policy& keyPolicy, const Policy& accountPolicy ) {
+
+    // store the account
+    Account account;
+    account.mPolicy     = accountPolicy;
+    account.mBalance    = balance;
+    
+    if ( key ) {
+        account.mKeys [ keyName ] = KeyAndPolicy ( key, keyPolicy );
+    }
+    return this->newAccount ( accountName, account );
 }
 
 //----------------------------------------------------------------//

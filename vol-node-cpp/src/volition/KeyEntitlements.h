@@ -88,6 +88,7 @@ public:
         entitlements->setPath ( REGISTER_MINER,             BooleanEntitlement ( false ));
         entitlements->setPath ( RENAME_ACCOUNT,             BooleanEntitlement ( false ));
         entitlements->setPath ( RESERVE_ACCOUNT_NAME,       BooleanEntitlement ( false ));
+        entitlements->setPath ( RESTORE_ACCOUNT,            BooleanEntitlement ( false ));
         entitlements->setPath ( RESTRICT_ACCOUNT,           BooleanEntitlement ( false ));
         entitlements->setPath ( RESTRICT_KEY,               BooleanEntitlement ( false ));
         entitlements->setPath ( RUN_SCRIPT,                 BooleanEntitlement ( false ));

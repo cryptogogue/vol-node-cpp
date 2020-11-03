@@ -47,7 +47,8 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_ASSETS )) return "Permission denied.";
         
-        const Schema::Definitions& definitions = context.mSchemaHandle->getDefinitions ();
+        const Schema& schema = context.mLedger.getSchema ();
+        const Schema::Definitions& definitions = schema.getDefinitions ();
         size_t addedAssetCount = definitions.size () * ( size_t )this->mNumAssets;
         
         AccountODBM accountODBM ( ledger, context.mIndex );
@@ -58,7 +59,7 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        return ledger.awardAssetsAll ( *context.mSchemaHandle, accountODBM.mAccountID, ( size_t )this->mNumAssets, context.mTime );
+        return ledger.awardAssetsAll ( accountODBM.mAccountID, ( size_t )this->mNumAssets, context.mTime );
     }
 };
 

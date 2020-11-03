@@ -158,7 +158,6 @@
 		CD775196251FF03A00A53765 /* Miner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD775194251FF03A00A53765 /* Miner.cpp */; };
 		CD775197251FF03A00A53765 /* Miner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD775195251FF03A00A53765 /* Miner.h */; };
 		CD7751B12527093900A53765 /* TransactionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7751B02527093900A53765 /* TransactionContext.cpp */; };
-		CD7751BB252709CE00A53765 /* SchemaHandle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7751BA252709CE00A53765 /* SchemaHandle.cpp */; };
 		CD7751D2252A790400A53765 /* SimMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7751D0252A790400A53765 /* SimMiner.h */; };
 		CD7751D3252A790400A53765 /* SimMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7751D1252A790400A53765 /* SimMiner.cpp */; };
 		CD7751E6252FE41C00A53765 /* ConsensusBlockDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7751E4252FE41C00A53765 /* ConsensusBlockDetailsHandler.h */; };
@@ -211,7 +210,6 @@
 		CDA1573423FA59EC00DFACCF /* AccountKeyLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573323FA59EC00DFACCF /* AccountKeyLookup.h */; };
 		CDA1573723FA59FE00DFACCF /* KeyAndPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573623FA59FE00DFACCF /* KeyAndPolicy.h */; };
 		CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573823FA7B8800DFACCF /* TransactionContext.h */; };
-		CDA1573B23FA7BDE00DFACCF /* SchemaHandle.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */; };
 		CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */; };
 		CDA1574023FAA92300DFACCF /* Munge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA1573E23FAA92300DFACCF /* Munge.cpp */; };
 		CDA1574123FAA92300DFACCF /* Munge.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573F23FAA92300DFACCF /* Munge.h */; };
@@ -817,7 +815,6 @@
 		CD775194251FF03A00A53765 /* Miner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Miner.cpp; path = src/volition/Miner.cpp; sourceTree = "<group>"; };
 		CD775195251FF03A00A53765 /* Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Miner.h; path = src/volition/Miner.h; sourceTree = "<group>"; };
 		CD7751B02527093900A53765 /* TransactionContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionContext.cpp; path = src/volition/TransactionContext.cpp; sourceTree = "<group>"; };
-		CD7751BA252709CE00A53765 /* SchemaHandle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SchemaHandle.cpp; path = src/volition/SchemaHandle.cpp; sourceTree = "<group>"; };
 		CD7751D0252A790400A53765 /* SimMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimMiner.h; path = src/volition/simulation/SimMiner.h; sourceTree = "<group>"; };
 		CD7751D1252A790400A53765 /* SimMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimMiner.cpp; path = src/volition/simulation/SimMiner.cpp; sourceTree = "<group>"; };
 		CD7751E4252FE41C00A53765 /* ConsensusBlockDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConsensusBlockDetailsHandler.h; path = "src/volition/web-miner-api/ConsensusBlockDetailsHandler.h"; sourceTree = "<group>"; };
@@ -866,7 +863,6 @@
 		CDA1573323FA59EC00DFACCF /* AccountKeyLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountKeyLookup.h; path = src/volition/AccountKeyLookup.h; sourceTree = "<group>"; };
 		CDA1573623FA59FE00DFACCF /* KeyAndPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyAndPolicy.h; path = src/volition/KeyAndPolicy.h; sourceTree = "<group>"; };
 		CDA1573823FA7B8800DFACCF /* TransactionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionContext.h; path = src/volition/TransactionContext.h; sourceTree = "<group>"; };
-		CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaHandle.h; path = src/volition/SchemaHandle.h; sourceTree = "<group>"; };
 		CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetEntitlements.h; path = src/volition/transactions/SetEntitlements.h; sourceTree = "<group>"; };
 		CDA1573E23FAA92300DFACCF /* Munge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Munge.cpp; path = src/volition/Munge.cpp; sourceTree = "<group>"; };
 		CDA1573F23FAA92300DFACCF /* Munge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Munge.h; path = src/volition/Munge.h; sourceTree = "<group>"; };
@@ -1176,8 +1172,6 @@
 				CD200073254A42E900DEB809 /* MiningReward.h */,
 				CDFA23862453B25B00B4CECF /* Schema.cpp */,
 				CDBFD558218BA145002AB0C3 /* Schema.h */,
-				CD7751BA252709CE00A53765 /* SchemaHandle.cpp */,
-				CDA1573A23FA7BDE00DFACCF /* SchemaHandle.h */,
 				CD5ECAF2246C7257009146FB /* SchemaVersion.h */,
 			);
 			name = schema;
@@ -1869,7 +1863,6 @@
 				CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */,
 				CD9E7BC1250B976C0065C5FC /* HTTPMiningMessenger.h in Headers */,
 				CDAA38E7251AA13900FEAFB5 /* SimMiningMessenger.h in Headers */,
-				CDA1573B23FA7BDE00DFACCF /* SchemaHandle.h in Headers */,
 				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,
 				CDBFD550218B8999002AB0C3 /* SendVOL.h in Headers */,
 				CDFA238F24600A9300B4CECF /* LedgerKey.h in Headers */,
@@ -2488,7 +2481,6 @@
 				CD20FF92253D873300DEB809 /* AbstractControlCommandBody.cpp in Sources */,
 				CD9E7BAF2500999C0065C5FC /* MinerAPIFactory.cpp in Sources */,
 				CD4E81CD2105941A007DA585 /* TheTransactionBodyFactory.cpp in Sources */,
-				CD7751BB252709CE00A53765 /* SchemaHandle.cpp in Sources */,
 				CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */,
 				CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */,
 				CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */,
@@ -2862,6 +2854,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_SEMICOLON_BEFORE_METHOD_BODY = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -2954,6 +2947,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_SEMICOLON_BEFORE_METHOD_BODY = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;

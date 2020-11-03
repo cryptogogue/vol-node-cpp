@@ -45,6 +45,11 @@ private:
 public:
 
     //----------------------------------------------------------------//
+    LedgerKey keyFor_field ( string fieldName ) {
+        return keyFor_field ( this->mAssetID, fieldName );
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_field ( AssetID::Index index, string fieldName ) {
         return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
     }
@@ -73,9 +78,11 @@ public:
     }
     
     //----------------------------------------------------------------//
-    shared_ptr < const Asset > getAsset ( const Schema& schema, bool sparse = false ) {
+    shared_ptr < const Asset > getAsset ( bool sparse = false ) {
 
         if ( !this->mOwner.exists ()) return NULL;
+
+        const Schema& schema = this->mLedger->getSchema ();
 
         const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( this->mType.get ());
         if ( !assetDefinition ) return NULL;
@@ -126,6 +133,40 @@ public:
             }
         }
         return asset;
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerResult setFieldValue ( string fieldName, const AssetFieldValue& fieldValue ) {
+    
+        const Schema& schema = this->mLedger->getSchema ();
+    
+        string assetType = this->mType.get ();
+        const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
+        if ( !assetDefinition ) return false;
+
+        AssetFieldDefinition fieldDefinition = assetDefinition->getField ( fieldName );
+        if ( !fieldDefinition.mMutable ) return Format::write ( "Field '%s' is not mutable.", fieldName.c_str ());
+    
+        LedgerKey KEY_FOR_ASSET_FIELD = this->keyFor_field ( fieldName );
+        
+        switch ( fieldValue.getType ()) {
+        
+            case AssetFieldValue::Type::TYPE_BOOL:
+                this->mLedger->setValue < bool >( KEY_FOR_ASSET_FIELD, fieldValue.strictBoolean ());
+                break;
+                
+            case AssetFieldValue::Type::TYPE_NUMBER:
+                this->mLedger->setValue < double >( KEY_FOR_ASSET_FIELD, fieldValue.strictNumber ());
+                break;
+                
+            case AssetFieldValue::Type::TYPE_STRING:
+                this->mLedger->setValue < string >( KEY_FOR_ASSET_FIELD, fieldValue.strictString ());
+                break;
+                
+            default:
+                return "Unknown or invalid param type.";
+        }
+        return true;
     }
 };
 
