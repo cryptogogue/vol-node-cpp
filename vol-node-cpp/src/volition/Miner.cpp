@@ -7,6 +7,8 @@
 #include <volition/HTTPMiningMessenger.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
+#include <volition/Transaction.h>
+#include <volition/transactions/GenesisSQLite.h>
 #include <volition/UnsecureRandom.h>
 
 namespace Volition {
@@ -246,7 +248,7 @@ bool Miner::isLazy () const {
 }
 
 //----------------------------------------------------------------//
-void Miner::loadGenesis ( string path ) {
+void Miner::loadGenesisJSON ( string path ) {
 
     fstream inStream;
     inStream.open ( path, ios_base::in );
@@ -254,6 +256,20 @@ void Miner::loadGenesis ( string path ) {
 
     shared_ptr < Block > block = make_shared < Block >();
     FromJSONSerializer::fromJSON ( *block, inStream );
+    this->setGenesis ( block );
+}
+
+//----------------------------------------------------------------//
+void Miner::loadGenesisSQLite ( string path ) {
+
+    shared_ptr < Transactions::GenesisSQLite > genesis = make_shared < Transactions::GenesisSQLite >();
+    genesis->load ( path );
+    
+    shared_ptr < Transaction > transaction = make_shared < Transaction >();
+    transaction->setBody ( genesis );
+    
+    shared_ptr < Block > block = make_shared < Block >();
+    block->pushTransaction ( transaction );
     this->setGenesis ( block );
 }
 

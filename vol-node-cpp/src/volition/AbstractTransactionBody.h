@@ -59,6 +59,7 @@ protected:
     //----------------------------------------------------------------//
     virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
     virtual u64                     AbstractTransactionBody_cost            () const;
+    virtual TransactionResult       AbstractTransactionBody_genesis         ( Ledger& ledger ) const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;
     virtual u64                     AbstractTransactionBody_weight          () const = 0;
@@ -70,6 +71,7 @@ public:
                             ~AbstractTransactionBody                ();
     TransactionResult       apply                                   ( TransactionContext& context ) const;
     u64                     cost                                    () const;
+    TransactionResult       genesis                                 ( Ledger& ledger );
     u64                     gratuity                                () const;
     u64                     maturity                                () const;
     u64                     nonce                                   () const;

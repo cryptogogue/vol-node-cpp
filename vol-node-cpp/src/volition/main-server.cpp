@@ -56,9 +56,16 @@ protected:
         
         options.addOption (
             Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
-                .required ( false )
+                .required ( true )
                 .argument ( "value", true )
                 .binding ( "genesis" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "genesis-format", "gen-fmt", "genesis block format ('json', 'sqlite')" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "genesis-format" )
         );
         
         options.addOption (
@@ -174,6 +181,7 @@ protected:
         string controlLevel             = configuration.getString   ( "control-level", "" );
         string dump                     = configuration.getString   ( "dump", "" );
         string genesis                  = configuration.getString   ( "genesis" );
+        string genesisFormat            = configuration.getString   ( "genesis-format", "json" );
         int interval                    = configuration.getInt      ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
         string keyfile                  = configuration.getString   ( "keyfile", "" );
         string logpath                  = configuration.getString   ( "logpath", "" );
@@ -241,7 +249,14 @@ protected:
             LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
             return Application::EXIT_CONFIG;
         }
-        minerActivity->loadGenesis ( genesis );
+        
+        if ( genesisFormat == "json" ) {
+            minerActivity->loadGenesisJSON ( genesis );
+        }
+        
+        if ( genesisFormat == "sqlite" ) {
+            minerActivity->loadGenesisSQLite ( genesis );
+        }
         
         if ( persistMode == "simple" ) {
             shared_ptr < AbstractChainRecorder > chainRecorder = make_shared < SimpleChainRecorder >( *minerActivity, persistFolder );

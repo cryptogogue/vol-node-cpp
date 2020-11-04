@@ -35,6 +35,11 @@ u64 AbstractTransactionBody::gratuity () const {
 }
 
 //----------------------------------------------------------------//
+TransactionResult AbstractTransactionBody::genesis ( Ledger& ledger ) {
+    return this->AbstractTransactionBody_genesis ( ledger );
+}
+
+//----------------------------------------------------------------//
 u64 AbstractTransactionBody::maturity () const {
     return this->AbstractTransactionBody_maturity ();
 }
@@ -111,6 +116,12 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
 u64 AbstractTransactionBody::AbstractTransactionBody_cost () const {
 
     return 0;
+}
+
+//----------------------------------------------------------------//
+TransactionResult AbstractTransactionBody::AbstractTransactionBody_genesis ( Ledger& ledger ) const {
+    UNUSED ( ledger );
+    return "Missing transaction maker.";
 }
 
 } // namespace Volition

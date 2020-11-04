@@ -58,27 +58,6 @@ public:
     SerializableVector < GenesisAccount >   mAccounts;
 
     //----------------------------------------------------------------//
-    TransactionResult genesis ( Ledger& ledger ) const {
-    
-        ledger.setIdentity ( this->mIdentity );
-        
-        for ( size_t i = 0; i < this->mAccounts.size (); ++i ) {
-            const GenesisAccount& account = this->mAccounts [ i ];
-            
-            u64 grant = ledger.createVOL ( account.mGrant );
-            
-            if ( !ledger.newAccount ( account.mName, grant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
-            if ( account.mMinerInfo ) {
-                if ( !ledger.registerMiner (
-                    ledger.getAccountID ( account.mName ),
-                    *account.mMinerInfo
-                )) return false;
-            }
-        }
-        return true;
-    }
-
-    //----------------------------------------------------------------//
     void pushAccount ( const GenesisAccount& genesisAccount ) {
     
         this->mAccounts.push_back ( genesisAccount );
@@ -110,6 +89,27 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         UNUSED ( context );
         return false;
+    }
+    
+    //----------------------------------------------------------------//
+    TransactionResult AbstractTransactionBody_genesis ( Ledger& ledger ) const override {
+    
+        ledger.setIdentity ( this->mIdentity );
+        
+        for ( size_t i = 0; i < this->mAccounts.size (); ++i ) {
+            const GenesisAccount& account = this->mAccounts [ i ];
+            
+            u64 grant = ledger.createVOL ( account.mGrant );
+            
+            if ( !ledger.newAccount ( account.mName, grant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
+            if ( account.mMinerInfo ) {
+                if ( !ledger.registerMiner (
+                    ledger.getAccountID ( account.mName ),
+                    *account.mMinerInfo
+                )) return false;
+            }
+        }
+        return true;
     }
 };
 

@@ -15,7 +15,7 @@
 #include <volition/LuaContext.h>
 #include <volition/SQLite.h>
 #include <volition/TransactionMaker.h>
-#include <volition/transactions/RestoreAccount.h>
+#include <volition/transactions/GenesisSQLite.h>
 
 namespace Volition {
 

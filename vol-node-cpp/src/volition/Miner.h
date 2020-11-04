@@ -230,7 +230,8 @@ public:
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
     bool                                isLazy                      () const;
-    void                                loadGenesis                 ( string path );
+    void                                loadGenesisJSON             ( string path );
+    void                                loadGenesisSQLite           ( string path );
     void                                loadKey                     ( string keyfile, string password = "" );
                                         Miner                       ();
     virtual                             ~Miner                      ();

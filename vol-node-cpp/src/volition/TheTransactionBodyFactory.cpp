@@ -22,13 +22,13 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::BetaGetAssets >();
     this->registerTransaction < Volition::Transactions::BetaGetDeck >();
     this->registerTransaction < Volition::Transactions::Genesis >();
+    this->registerTransaction < Volition::Transactions::GenesisSQLite >();
     this->registerTransaction < Volition::Transactions::OpenAccount >();
     this->registerTransaction < Volition::Transactions::PublishSchema >();
     this->registerTransaction < Volition::Transactions::PublishSchemaAndReset >();
     this->registerTransaction < Volition::Transactions::RegisterMiner >();
     this->registerTransaction < Volition::Transactions::RenameAccount >();
     this->registerTransaction < Volition::Transactions::ReserveAccountName >();
-    this->registerTransaction < Volition::Transactions::RestoreAccount >();
     this->registerTransaction < Volition::Transactions::RestrictAccount >();
     this->registerTransaction < Volition::Transactions::RestrictKey >();
     this->registerTransaction < Volition::Transactions::RunScript >();

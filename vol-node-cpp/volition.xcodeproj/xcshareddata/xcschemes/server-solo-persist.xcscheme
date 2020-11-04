@@ -78,7 +78,11 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-g genesis"
+            argument = "--genesis persist-chain/genesis.db"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--genesis-format sqlite"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

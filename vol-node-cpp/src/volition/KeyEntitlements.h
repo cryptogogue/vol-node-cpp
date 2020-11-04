@@ -27,7 +27,6 @@ public:
     static constexpr const char* REGISTER_MINER             = "REGISTER_MINER";
     static constexpr const char* RENAME_ACCOUNT             = "RENAME_ACCOUNT";
     static constexpr const char* RESERVE_ACCOUNT_NAME       = "RESERVE_ACCOUNT_NAME";
-    static constexpr const char* RESTORE_ACCOUNT            = "RESTORE_ACCOUNT";
     static constexpr const char* RESTRICT_ACCOUNT           = "RESTRICT_ACCOUNT";
     static constexpr const char* RESTRICT_KEY               = "RESTRICT_KEY";
     static constexpr const char* RUN_SCRIPT                 = "RUN_SCRIPT";
@@ -56,7 +55,6 @@ public:
         entitlements->setPath ( REGISTER_MINER,             BooleanEntitlement ( true ));
         entitlements->setPath ( RENAME_ACCOUNT,             BooleanEntitlement ( true ));
         entitlements->setPath ( RESERVE_ACCOUNT_NAME,       BooleanEntitlement ( true ));
-        entitlements->setPath ( RESTORE_ACCOUNT,            BooleanEntitlement ( true ));
         entitlements->setPath ( RESTRICT_ACCOUNT,           BooleanEntitlement ( true ));
         entitlements->setPath ( RESTRICT_KEY,               BooleanEntitlement ( true ));
         entitlements->setPath ( RUN_SCRIPT,                 BooleanEntitlement ( true ));
@@ -88,7 +86,6 @@ public:
         entitlements->setPath ( REGISTER_MINER,             BooleanEntitlement ( false ));
         entitlements->setPath ( RENAME_ACCOUNT,             BooleanEntitlement ( false ));
         entitlements->setPath ( RESERVE_ACCOUNT_NAME,       BooleanEntitlement ( false ));
-        entitlements->setPath ( RESTORE_ACCOUNT,            BooleanEntitlement ( false ));
         entitlements->setPath ( RESTRICT_ACCOUNT,           BooleanEntitlement ( false ));
         entitlements->setPath ( RESTRICT_KEY,               BooleanEntitlement ( false ));
         entitlements->setPath ( RUN_SCRIPT,                 BooleanEntitlement ( false ));

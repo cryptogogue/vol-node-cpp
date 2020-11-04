@@ -42,8 +42,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::
     
     TransactionMaker* maker = this->mBody->mMaker.get ();
     if ( !maker ) {
-        const Transactions::Genesis* genesis = ledger.isGenesis () ? dynamic_cast < const Transactions::Genesis* >( this->mBody.get ()) : NULL;
-        return genesis ? genesis->genesis ( ledger ) : TransactionResult ( "Missing transaction maker." );
+        return this->mBody->genesis ( ledger );
     }
     
     AccountODBM accountODBM ( ledger, maker->getAccountName ());
