@@ -78,11 +78,10 @@ void LoadLedger::init ( Ledger& ledger ) {
         SerializableList < SerializableSharedPtr < Asset >> inventory;
         ledger.getInventory ( ledger.getSchema (), i, inventory, 0, true );
         
-        SerializableList < SerializableSharedConstPtr < Asset >> constInventory;
-        SerializableList < SerializableSharedPtr < Asset >>::const_iterator assetIt = inventory.cbegin ();
-        for ( ; assetIt != inventory.cend (); ++assetIt ) {
-            shared_ptr < const Asset > asset = *assetIt;
-            constInventory.push_back ( asset );
+        SerializableList < AssetBase > baseInventory;
+        SerializableList < SerializableSharedPtr < Asset >>::iterator assetIt = inventory.begin ();
+        for ( ; assetIt != inventory.end (); ++assetIt ) {
+            baseInventory.push_back ( **assetIt );
         }
         
         LoadLedgerAccount loadLedgerAccount;
@@ -91,7 +90,7 @@ void LoadLedger::init ( Ledger& ledger ) {
         loadLedgerAccount.mPolicy       = account->mPolicy;
         loadLedgerAccount.mBequest      = account->mBequest;
         loadLedgerAccount.mKeys         = account->mKeys;
-        loadLedgerAccount.mInventory    = constInventory;
+        loadLedgerAccount.mInventory    = baseInventory;
         loadLedgerAccount.mMinerInfo    = ledger.getMinerInfo ( i );
         
         this->mAccounts.push_back ( loadLedgerAccount );

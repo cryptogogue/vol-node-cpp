@@ -25,8 +25,8 @@ public:
     SerializableSharedPtr < Policy >        mBequest;
     SerializableSharedPtr < MinerInfo >     mMinerInfo;
 
-    SerializableMap < string, KeyAndPolicy >                    mKeys;
-    SerializableList < SerializableSharedConstPtr < Asset >>    mInventory;
+    SerializableMap < string, KeyAndPolicy >    mKeys;
+    SerializableList < AssetBase >              mInventory;
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom          ( const AbstractSerializerFrom& serializer ) override;

@@ -14,27 +14,19 @@
 namespace Volition {
 
 //================================================================//
-// Asset
+// AssetBase
 //================================================================//
-class Asset :
+class AssetBase :
      public AbstractSerializable {
 public:
 
     typedef SerializableMap < string, AssetFieldValue > Fields;
-
-    enum {
-        NULL_POSITION   = ( u64 )-1,
-    };
-    
-    AssetID     mAssetID;
-    
+        
     string      mType;
-    string      mOwner;
-    u64         mInventoryNonce;
     Fields      mFields;
     
     //----------------------------------------------------------------//
-    Asset () {
+    AssetBase () {
     }
     
     //----------------------------------------------------------------//
@@ -54,21 +46,56 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         
-        serializer.serialize ( "assetID",           this->mAssetID );
         serializer.serialize ( "type",              this->mType );
-        serializer.serialize ( "owner",             this->mOwner );
-        serializer.serialize ( "inventoryNonce",    this->mInventoryNonce );
         serializer.serialize ( "fields",            this->mFields );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
-        serializer.serialize ( "assetID",           this->mAssetID );
         serializer.serialize ( "type",              this->mType );
+        
+        if ( this->mFields.size ()) {
+            serializer.serialize ( "fields", this->mFields );
+        }
+    }
+};
+
+//================================================================//
+// Asset
+//================================================================//
+class Asset :
+     public AssetBase {
+public:
+
+    enum {
+        NULL_POSITION   = ( u64 )-1,
+    };
+    
+    AssetID     mAssetID;
+    string      mOwner;
+    u64         mInventoryNonce;
+    
+    //----------------------------------------------------------------//
+    Asset () {
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+        AssetBase::AbstractSerializable_serializeFrom ( serializer );
+        
+        serializer.serialize ( "assetID",           this->mAssetID );
         serializer.serialize ( "owner",             this->mOwner );
         serializer.serialize ( "inventoryNonce",    this->mInventoryNonce );
-        serializer.serialize ( "fields",            this->mFields );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+        AssetBase::AbstractSerializable_serializeTo ( serializer );
+        
+        serializer.serialize ( "assetID",           this->mAssetID );
+        serializer.serialize ( "owner",             this->mOwner );
+        serializer.serialize ( "inventoryNonce",    this->mInventoryNonce );
     }
 };
 
