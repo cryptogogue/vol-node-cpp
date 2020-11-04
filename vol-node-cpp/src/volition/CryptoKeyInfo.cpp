@@ -23,18 +23,20 @@ CryptoKeyInfo::CryptoKeyInfo () :
 CryptoKeyInfo::CryptoKeyInfo ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs ) :
     mFormat ( UNKNOWN ) {
     
-    switch ( keyPair->type ()) {
-        
-        case Poco::Crypto::KeyPair::KT_EC:
-            this->initFromEC ( keyPair, encodeAs );
-            break;
+    if ( keyPair ) {
+        switch ( keyPair->type ()) {
+            
+            case Poco::Crypto::KeyPair::KT_EC:
+                this->initFromEC ( keyPair, encodeAs );
+                break;
 
-        case Poco::Crypto::KeyPair::KT_RSA:
-            this->initFromRSA ( keyPair, encodeAs );
-            break;
+            case Poco::Crypto::KeyPair::KT_RSA:
+                this->initFromRSA ( keyPair, encodeAs );
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
 }
 

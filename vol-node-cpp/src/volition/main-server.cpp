@@ -62,7 +62,7 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "genesis-format", "gen-fmt", "genesis block format ('json', 'sqlite')" )
+            Poco::Util::Option ( "genesis-format", "gen-fmt", "genesis block format ('block', 'ledger')" )
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "genesis-format" )
@@ -250,12 +250,12 @@ protected:
             return Application::EXIT_CONFIG;
         }
         
-        if ( genesisFormat == "json" ) {
-            minerActivity->loadGenesisJSON ( genesis );
+        if ( genesisFormat == "block" ) {
+            minerActivity->loadGenesisBlock ( genesis );
         }
         
-        if ( genesisFormat == "sqlite" ) {
-            minerActivity->loadGenesisSQLite ( genesis );
+        if ( genesisFormat == "ledger" ) {
+            minerActivity->loadGenesisLedger ( genesis );
         }
         
         if ( persistMode == "simple" ) {

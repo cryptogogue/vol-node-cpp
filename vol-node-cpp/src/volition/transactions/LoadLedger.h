@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_GENESISSQLITE_H
-#define VOLITION_TRANSACTIONS_GENESISSQLITE_H
+#ifndef VOLITION_TRANSACTIONS_LOADLEDGER_H
+#define VOLITION_TRANSACTIONS_LOADLEDGER_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -13,16 +13,17 @@ namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// RestoreAccount
+// LoadLedgerAccount
 //================================================================//
-class RestoreAccount :
+class LoadLedgerAccount :
     public AbstractSerializable {
 public:
 
-    string                              mName;
-    u64                                 mBalance;
-    SerializableSharedPtr < Policy >    mPolicy;
-    SerializableSharedPtr < Policy >    mBequest;
+    string                                      mName;
+    u64                                         mBalance;
+    Policy                                      mPolicy;
+    SerializableSharedPtr < Policy >            mBequest;
+    SerializableSharedConstPtr < MinerInfo >    mMinerInfo;
 
     SerializableMap < string, KeyAndPolicy >                    mKeys;
     SerializableList < SerializableSharedConstPtr < Asset >>    mInventory;
@@ -36,17 +37,19 @@ public:
 };
 
 //================================================================//
-// GenesisSQLite
+// LoadLedger
 //================================================================//
-class GenesisSQLite :
+class LoadLedger :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "GENESIS_SQLITE" )
+    TRANSACTION_TYPE ( "LOAD_LEDGER" )
     TRANSACTION_WEIGHT ( 0 )
     TRANSACTION_MATURITY ( 0 )
 
-    SerializableList < RestoreAccount >     mAccounts;
+    string                                      mIdentity;
+    Schema                                      mSchema;
+    SerializableList < LoadLedgerAccount >      mAccounts;
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -55,7 +58,7 @@ public:
     TransactionResult       AbstractTransactionBody_genesis         ( Ledger& ledger ) const override;
     
     //----------------------------------------------------------------//
-    void                    load                    ( string filename );
+    void                    init                    ( Ledger& ledger );
 };
 
 } // namespace Transactions

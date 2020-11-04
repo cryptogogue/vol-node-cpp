@@ -319,8 +319,8 @@
 		CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E6820C86FBA006E3B1C /* main-util.cpp */; };
 		CDD36D012162A415004FC222 /* Format.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD36D002162A415004FC222 /* Format.h */; };
 		CDD36D032162A496004FC222 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36D022162A496004FC222 /* Format.cpp */; };
-		CDDA740F2551883F007AAA07 /* GenesisSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA740E2551883F007AAA07 /* GenesisSQLite.h */; };
-		CDDA741925518864007AAA07 /* GenesisSQLite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA741825518864007AAA07 /* GenesisSQLite.cpp */; };
+		CDDA74902552D423007AAA07 /* LoadLedger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA748E2552D423007AAA07 /* LoadLedger.cpp */; };
+		CDDA74912552D423007AAA07 /* LoadLedger.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA748F2552D423007AAA07 /* LoadLedger.h */; };
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
@@ -969,8 +969,8 @@
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
 		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
 		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
-		CDDA740E2551883F007AAA07 /* GenesisSQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenesisSQLite.h; path = src/volition/transactions/GenesisSQLite.h; sourceTree = "<group>"; };
-		CDDA741825518864007AAA07 /* GenesisSQLite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenesisSQLite.cpp; path = src/volition/transactions/GenesisSQLite.cpp; sourceTree = "<group>"; };
+		CDDA748E2552D423007AAA07 /* LoadLedger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LoadLedger.cpp; path = src/volition/transactions/LoadLedger.cpp; sourceTree = "<group>"; };
+		CDDA748F2552D423007AAA07 /* LoadLedger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadLedger.h; path = src/volition/transactions/LoadLedger.h; sourceTree = "<group>"; };
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
@@ -1623,8 +1623,8 @@
 				CDF4B7682325A94A0004392C /* BetaGetAssets.h */,
 				CDA7208223FF6B7400E1401D /* BetaGetDeck.h */,
 				CD2AB81D230F3D5700805F70 /* Genesis.h */,
-				CDDA741825518864007AAA07 /* GenesisSQLite.cpp */,
-				CDDA740E2551883F007AAA07 /* GenesisSQLite.h */,
+				CDDA748E2552D423007AAA07 /* LoadLedger.cpp */,
+				CDDA748F2552D423007AAA07 /* LoadLedger.h */,
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
 				CDBFD540218B8999002AB0C3 /* PublishSchema.h */,
 				CD5EE7FB247E121400060B24 /* PublishSchemaAndReset.h */,
@@ -1859,7 +1859,6 @@
 				CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */,
 				CD9E7BA724FF69D00065C5FC /* BlockHeader.h in Headers */,
 				CDBFD54D218B8999002AB0C3 /* RegisterMiner.h in Headers */,
-				CDDA740F2551883F007AAA07 /* GenesisSQLite.h in Headers */,
 				CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */,
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
 				CD9E7BA224FF67C30065C5FC /* BlockTree.h in Headers */,
@@ -1889,6 +1888,7 @@
 				CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
 				CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */,
+				CDDA74912552D423007AAA07 /* LoadLedger.h in Headers */,
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,
 				CDFA239924601D6F00B4CECF /* TransactionResult.h in Headers */,
 				CDFA2397246016E700B4CECF /* Ledger_Inventory.h in Headers */,
@@ -2444,11 +2444,11 @@
 			files = (
 				CD4E8195210593BD007DA585 /* Block.cpp in Sources */,
 				CD7751B12527093900A53765 /* TransactionContext.cpp in Sources */,
+				CDDA74902552D423007AAA07 /* LoadLedger.cpp in Sources */,
 				CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */,
 				CD7751D3252A790400A53765 /* SimMiner.cpp in Sources */,
 				CDAA38E2251AA09200FEAFB5 /* Simulator.cpp in Sources */,
 				CDAF1ABF254FECB400CF1010 /* SQLite.cpp in Sources */,
-				CDDA741925518864007AAA07 /* GenesisSQLite.cpp in Sources */,
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
 				CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */,

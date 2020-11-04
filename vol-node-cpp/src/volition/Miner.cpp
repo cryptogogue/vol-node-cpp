@@ -8,7 +8,7 @@
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/Transaction.h>
-#include <volition/transactions/GenesisSQLite.h>
+#include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
 
 namespace Volition {
@@ -248,25 +248,21 @@ bool Miner::isLazy () const {
 }
 
 //----------------------------------------------------------------//
-void Miner::loadGenesisJSON ( string path ) {
-
-    fstream inStream;
-    inStream.open ( path, ios_base::in );
-    assert ( inStream.is_open ());
+void Miner::loadGenesisBlock ( string path ) {
 
     shared_ptr < Block > block = make_shared < Block >();
-    FromJSONSerializer::fromJSON ( *block, inStream );
+    FromJSONSerializer::fromJSONFile ( *block, path );
     this->setGenesis ( block );
 }
 
 //----------------------------------------------------------------//
-void Miner::loadGenesisSQLite ( string path ) {
+void Miner::loadGenesisLedger ( string path ) {
 
-    shared_ptr < Transactions::GenesisSQLite > genesis = make_shared < Transactions::GenesisSQLite >();
-    genesis->load ( path );
+    shared_ptr < Transactions::LoadLedger > loadLedger = make_shared < Transactions::LoadLedger >();
+    FromJSONSerializer::fromJSONFile ( *loadLedger, path );
     
     shared_ptr < Transaction > transaction = make_shared < Transaction >();
-    transaction->setBody ( genesis );
+    transaction->setBody ( loadLedger );
     
     shared_ptr < Block > block = make_shared < Block >();
     block->pushTransaction ( transaction );
