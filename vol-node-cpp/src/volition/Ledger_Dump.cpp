@@ -26,23 +26,15 @@ namespace Volition {
 //----------------------------------------------------------------//
 void Ledger_Dump::dump ( string filename ) {
 
-    map < AccountID::Index, Transactions::RestoreAccount > restoreAccountTransactions;
-
     SQLite db ( filename );
     assert ( db );
     
     db.exec ( "DROP TABLE IF EXISTS accounts" );
-    db.exec ( "DROP TABLE IF EXISTS keys" );
-    db.exec ( "DROP TABLE IF EXISTS assets" );
-    db.exec ( "DROP TABLE IF EXISTS restore" );
+    db.exec ( "DROP TABLE IF EXISTS ledger" );
     
-    db.exec ( "CREATE TABLE accounts ( id INTEGER PRIMARY KEY, name TEXT NOT NULL, balance INTEGER, policy TEXT NOT NULL, bequest TEXT NOT NULL )" );
-    db.exec ( "CREATE TABLE keys ( id INTEGER PRIMARY KEY, ownerID INTEGER, name TEXT NOT NULL, body TEXT NOT NULL, policy TEXT NOT NULL, bequest TEXT NOT NULL )" );
-    db.exec ( "CREATE TABLE assets ( id INTEGER PRIMARY KEY, ownerID INTEGER, body TEXT NOT NULL )" );
-    db.exec ( "CREATE TABLE restore ( id INTEGER PRIMARY KEY, body TEXT NOT NULL )" );
-    
-    s64 keyCount = 0;
-    
+    db.exec ( "CREATE TABLE accounts ( id INTEGER PRIMARY KEY, name TEXT NOT NULL, balance INTEGER, keys TEXT NOT NULL, inventory TEXT NOT NULL, policy TEXT NOT NULL, bequest TEXT NOT NULL, minerInfo TEXT NOT NULL )" );
+    db.exec ( "CREATE TABLE ledger ( id INTEGER PRIMARY KEY, identity TEXT NOT NULL, schema TEXT NOT NULL )" );
+        
     Ledger& ledger = this->getLedger ();
     
     AccountID::Index totalAccounts = ledger.getValue < AccountID::Index >( Ledger::keyFor_globalAccountCount ());
@@ -50,101 +42,48 @@ void Ledger_Dump::dump ( string filename ) {
         
         AccountODBM accountODBM ( ledger, AccountID ( i ));
         if ( !accountODBM ) continue;
-    
-        shared_ptr < const Account > account = accountODBM.mBody.get ( );
-        string name = accountODBM.mName.get ( "" );
-        
-        Transactions::RestoreAccount& restoreAccount = restoreAccountTransactions [ i ];
-        restoreAccount.mName        = name;
-        restoreAccount.mBalance     = account->mBalance;
-        restoreAccount.mPolicy      = make_shared < Policy >( account->mPolicy );
-        restoreAccount.mBequest     = account->mBequest;
-        restoreAccount.mKeys        = account->mKeys;
         
         db.exec (
-            Format::write ( "REPLACE INTO accounts ( id, name, balance, policy, bequest ) VALUES ( ?1, ?2, ?3, ?4, ?5 )" ),
-            [ &accountODBM, &account, name ]( sqlite3_stmt* stmt ) {
+            Format::write ( "REPLACE INTO accounts ( id, name, balance, keys, inventory, policy, bequest, minerInfo ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8 )" ),
+            [ &ledger, &accountODBM ]( sqlite3_stmt* stmt ) {
                 
-                string policy   = ToJSONSerializer::toJSONString ( account->mPolicy );
-                string bequest  = account->mBequest ? ToJSONSerializer::toJSONString ( *account->mBequest ) : "";
-            
+                string name = accountODBM.mName.get ( "" );
+                shared_ptr < const Account > account        = accountODBM.mBody.get ();
+                shared_ptr < const MinerInfo > minerInfo    = accountODBM.mMinerInfo.get ( );
+                
+                SerializableList < SerializableSharedConstPtr < Asset >> inventory;
+                ledger.getInventory ( accountODBM.mAccountID, inventory, 0, true );
+                
+                string keysJSON         = ToJSONSerializer::toJSONString ( account->mKeys );
+                string inventoryJSON    = ToJSONSerializer::toJSONString ( inventory );
+                string policyJSON       = ToJSONSerializer::toJSONString ( account->mPolicy );
+                string bequestJSON      = account->mBequest ? ToJSONSerializer::toJSONString ( *account->mBequest ) : "";
+                string minerInfoJSON    = minerInfo ? ToJSONSerializer::toJSONString ( *minerInfo ) : "";
+                
                 sqlite3_bind_int64  ( stmt, 1, ( s64 )accountODBM.mAccountID.mIndex );
                 sqlite3_bind_text   ( stmt, 2, name.c_str (), ( int )name.size (), SQLITE_TRANSIENT );
                 sqlite3_bind_int64  ( stmt, 3, ( s64 )account->mBalance );
-                sqlite3_bind_text   ( stmt, 4, policy.c_str (), ( int )policy.size (), SQLITE_TRANSIENT );
-                sqlite3_bind_text   ( stmt, 5, bequest.c_str (), ( int )bequest.size (), SQLITE_TRANSIENT );
+                sqlite3_bind_text   ( stmt, 4, keysJSON.c_str (), ( int )keysJSON.size (), SQLITE_TRANSIENT );
+                sqlite3_bind_text   ( stmt, 5, inventoryJSON.c_str (), ( int )inventoryJSON.size (), SQLITE_TRANSIENT );
+                sqlite3_bind_text   ( stmt, 6, policyJSON.c_str (), ( int )policyJSON.size (), SQLITE_TRANSIENT );
+                sqlite3_bind_text   ( stmt, 7, bequestJSON.c_str (), ( int )bequestJSON.size (), SQLITE_TRANSIENT );
+                sqlite3_bind_text   ( stmt, 8, minerInfoJSON.c_str (), ( int )minerInfoJSON.size (), SQLITE_TRANSIENT );
             }
         );
-        
-        SerializableMap < string, KeyAndPolicy >::const_iterator keyAndPolicyIt = account->mKeys.cbegin ();
-        for ( ; keyAndPolicyIt != account->mKeys.cend (); ++keyAndPolicyIt ) {
+    }
+    
+    db.exec (
+        Format::write ( "REPLACE INTO ledger ( id, identity, schema ) VALUES ( ?1, ?2, ?3 )" ),
+        [ &ledger ]( sqlite3_stmt* stmt ) {
             
-            string keyName = keyAndPolicyIt->first;
-            const KeyAndPolicy& keyAndPolicy = keyAndPolicyIt->second;
+            string schema = ToJSONSerializer::toJSONString ( ledger.getSchema ());
+            string identity = ledger.getIdentity ();
             
-            db.exec (
-                Format::write ( "REPLACE INTO keys ( id, ownerID, name, body, policy, bequest ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6 )" ),
-                [ &accountODBM, &keyAndPolicy, &keyCount, keyName ]( sqlite3_stmt* stmt ) {
-                    
-                    string body     = ToJSONSerializer::toJSONString ( keyAndPolicy.mKey );
-                    string policy   = ToJSONSerializer::toJSONString ( keyAndPolicy.mPolicy );
-                    string bequest  = keyAndPolicy.mBequest ? ToJSONSerializer::toJSONString ( *keyAndPolicy.mBequest ) : "";
-                
-                    sqlite3_bind_int64  ( stmt, 1, ( s64 )keyCount++ );
-                    sqlite3_bind_int64  ( stmt, 2, ( s64 )accountODBM.mAccountID.mIndex );
-                    sqlite3_bind_text   ( stmt, 3, keyName.c_str (), ( int )keyName.size (), SQLITE_TRANSIENT );
-                    sqlite3_bind_text   ( stmt, 4, body.c_str (), ( int )body.size (), SQLITE_TRANSIENT );
-                    sqlite3_bind_text   ( stmt, 5, policy.c_str (), ( int )policy.size (), SQLITE_TRANSIENT );
-                    sqlite3_bind_text   ( stmt, 6, bequest.c_str (), ( int )bequest.size (), SQLITE_TRANSIENT );
-                }
-            );
+            sqlite3_bind_int64  ( stmt, 1, 0 );
+            sqlite3_bind_text   ( stmt, 2, identity.c_str (), ( int )identity.size (), SQLITE_TRANSIENT ) ;
+            sqlite3_bind_text   ( stmt, 3, schema.c_str (), ( int )schema.size (), SQLITE_TRANSIENT ) ;
         }
-    }
-    
-    AssetID::Index totalAssets = ledger.getValue < AssetID::Index >( Ledger::keyFor_globalAssetCount ());
-    for ( AssetID::Index i = 0; i < totalAssets; ++i ) {
-    
-        AssetODBM assetODBM ( ledger, AssetID ( i ));
-        if ( !assetODBM ) continue;
-    
-        shared_ptr < const Asset > asset = assetODBM.getAsset ( true );
-        
-        AccountID accountID = ledger.getAccountID ( asset->mOwner );
-        
-        if (( accountID.mIndex != AccountID::NULL_INDEX ) && ( restoreAccountTransactions.find ( accountID.mIndex ) != restoreAccountTransactions.end ())) {
-            Transactions::RestoreAccount& restoreAccount = restoreAccountTransactions [ accountID.mIndex ];
-            restoreAccount.mInventory.push_back ( asset );
-        }
-        
-        db.exec (
-            Format::write ( "REPLACE INTO assets ( id, ownerID, body ) VALUES ( ?1, ?2, ?3 )" ),
-            [ &ledger, &assetODBM, &asset ]( sqlite3_stmt* stmt ) {
-                
-                string body = ToJSONSerializer::toJSONString ( *asset );
-                AccountID::Index accountIndex = ledger.getAccountID ( asset->mOwner );
-                
-                sqlite3_bind_int64  ( stmt, 1, ( s64 )asset->mAssetID.mIndex );
-                sqlite3_bind_int64  ( stmt, 2, ( s64 )accountIndex);
-                sqlite3_bind_text   ( stmt, 3, body.c_str (), ( int )body.size (), SQLITE_TRANSIENT ) ;
-            }
-        );
-    }
-    
-    size_t restoreCount = 0;
-    map < AccountID::Index, Transactions::RestoreAccount >::const_iterator restoreAccountIt = restoreAccountTransactions.cbegin ();
-    for ( ; restoreAccountIt != restoreAccountTransactions.cend (); ++restoreAccountIt ) {
-        const Transactions::RestoreAccount& restoreAccount = restoreAccountIt->second;
-        string body = ToJSONSerializer::toJSONString ( restoreAccount );
-        
-        db.exec (
-            Format::write ( "REPLACE INTO restore ( id, body ) VALUES ( ?1, ?2 )" ),
-            [ &restoreCount, &body ]( sqlite3_stmt* stmt ) {
-                            
-                sqlite3_bind_int64  ( stmt, 1, ( s64 )restoreCount++ );
-                sqlite3_bind_text   ( stmt, 2, body.c_str (), ( int )body.size (), SQLITE_TRANSIENT ) ;
-            }
-        );
-    }
+    );
 }
 
 } // namespace Volition
