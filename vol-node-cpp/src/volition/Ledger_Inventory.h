@@ -24,7 +24,7 @@ class Ledger_Inventory :
 private:
 
     //----------------------------------------------------------------//
-    LedgerResult                        awardAssets                 ( AccountODBM& accountODBM, u64 inventoryNonce, const SerializableList < SerializableSharedConstPtr < Asset >>& assets, InventoryLogEntry& logEntry );
+    LedgerResult                        awardAssets                 ( AccountODBM& accountODBM, u64 inventoryNonce, const list < AssetBase >& assets, InventoryLogEntry& logEntry );
     LedgerResult                        awardAssets                 ( AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
     void                                updateInventory             ( AccountID accountID, const InventoryLogEntry& entry );
     void                                updateInventory             ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op );
@@ -33,7 +33,7 @@ public:
 
     //----------------------------------------------------------------//
     LedgerResult                        awardAssets                 ( AccountID accountID, string assetType, size_t quantity, time_t time );
-    LedgerResult                        awardAssets                 ( AccountID accountID, const SerializableList < SerializableSharedConstPtr < Asset >>& assets, time_t time );
+    LedgerResult                        awardAssets                 ( AccountID accountID, const list < AssetBase >& assets, time_t time );
     LedgerResult                        awardAssetsAll              ( AccountID accountID, size_t quantity, time_t time );
     LedgerResult                        awardAssetsRandom           ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time );
     LedgerResult                        awardDeck                   ( AccountID accountID, string deckName, time_t time );

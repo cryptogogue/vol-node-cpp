@@ -23,10 +23,10 @@ public:
     u64                                         mBalance;
     Policy                                      mPolicy;
     SerializableSharedPtr < Policy >            mBequest;
-    SerializableSharedConstPtr < MinerInfo >    mMinerInfo;
+    SerializableSharedPtr < MinerInfo >         mMinerInfo;
 
-    SerializableMap < string, KeyAndPolicy >                    mKeys;
-    SerializableList < SerializableSharedConstPtr < Asset >>    mInventory;
+    SerializableMap < string, KeyAndPolicy >    mKeys;
+    SerializableList < AssetBase >              mInventory;
 
     //----------------------------------------------------------------//
     void                    AbstractSerializable_serializeFrom          ( const AbstractSerializerFrom& serializer ) override;

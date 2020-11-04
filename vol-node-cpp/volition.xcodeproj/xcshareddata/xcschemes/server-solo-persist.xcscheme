@@ -78,7 +78,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--genesis persist-chain/genesis.dump"
+            argument = "--genesis persist-chain/genesis.import"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

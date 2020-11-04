@@ -22,7 +22,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inventoryNonce, const SerializableList < SerializableSharedConstPtr < Asset >>& assets, InventoryLogEntry& logEntry ) {
+LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inventoryNonce, const list < AssetBase >& assets, InventoryLogEntry& logEntry ) {
 
     size_t quantity = assets.size ();
     if ( quantity == 0 ) return true;
@@ -34,16 +34,16 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
     size_t globalAssetCount = ledger.getValueOrFallback < u64 >( KEY_FOR_GLOBAL_ASSET_COUNT, 0 );
     size_t accountAssetCount = accountODBM.mAssetCount.get ( 0 );
     
-    SerializableList < SerializableSharedConstPtr < Asset >>::const_iterator assetIt = assets.cbegin ();
+    list < AssetBase >::const_iterator assetIt = assets.cbegin ();
     for ( size_t i = 0; assetIt != assets.cend (); ++assetIt, ++i ) {
     
-        const Asset& asset = **assetIt;
+        const AssetBase& asset = *assetIt;
     
         string assetType = asset.mType;
         if ( !schema.getDefinitionOrNull ( assetType )) return Format::write ( "Asset type '%s' not found.", assetType.c_str ());
     
         AssetODBM assetODBM ( ledger, globalAssetCount );
-                
+        
         assetODBM.mOwner.set ( accountODBM.mAccountID );
         assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mPosition.set ( accountAssetCount + i );
@@ -115,7 +115,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, string assetTy
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, const SerializableList < SerializableSharedConstPtr < Asset >>& assets, time_t time ) {
+LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, const list < AssetBase >& assets, time_t time ) {
 
     Ledger& ledger = this->getLedger ();
     

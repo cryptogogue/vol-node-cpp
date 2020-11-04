@@ -15,18 +15,23 @@ namespace Transactions {
 TransactionResult LoadLedgerAccount::apply ( Ledger& ledger ) const {
     UNUSED ( ledger );
 
-//    Account account;
-//    account.mBalance = this->mBalance;
-//    if ( this->mPolicy ) {
-//        account.mPolicy = *this->mPolicy;
-//    }
-//    account.mBequest = this->mBequest;
-//    account.mKeys = this->mKeys;
-//
-//    if ( !ledger.newAccount ( this->mName, account )) return "Failed to restore account.";
-//
-//    AccountID accountID = ledger.getAccountID ( this->mName );
-//    if ( !ledger.awardAssets ( accountID, this->mInventory, 0 )) return "Failed to restore inventory.";
+    Account account;
+    account.mBalance    = this->mBalance;
+    account.mPolicy     = this->mPolicy;
+    account.mBequest    = this->mBequest;
+    account.mKeys       = this->mKeys;
+
+    if ( !ledger.newAccount ( this->mName, account )) return "Failed to restore account.";
+
+    AccountID accountID = ledger.getAccountID ( this->mName );
+    if ( !ledger.awardAssets ( accountID, this->mInventory, 0 )) return "Failed to restore inventory.";
+
+    if ( this->mMinerInfo ) {
+        if ( !ledger.registerMiner (
+            ledger.getAccountID ( this->mName ),
+            *this->mMinerInfo
+        )) return false;
+    }
 
     return true;
 }
@@ -78,15 +83,7 @@ void LoadLedger::init ( Ledger& ledger ) {
         shared_ptr < const Account > account = accountODBM.mBody.get ();
         if ( !account ) continue;
         
-        SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-        ledger.getInventory ( accountODBM.mAccountID, inventory, 0, true );
-        
-//        SerializableList < SerializableSharedConstPtr < Asset >> constInventory;
-//        SerializableList < SerializableSharedPtr < Asset >>::const_iterator assetIt = inventory.cbegin ();
-//        for ( ; assetIt != inventory.cend (); ++assetIt ) {
-//            shared_ptr < const Asset > asset = *assetIt;
-//            constInventory.push_back ( asset );
-//        }
+        shared_ptr < const MinerInfo > minerInfo = accountODBM.mMinerInfo.get ();
         
         LoadLedgerAccount loadLedgerAccount;
         loadLedgerAccount.mName         = accountODBM.mName.get ( "" );
@@ -94,8 +91,15 @@ void LoadLedger::init ( Ledger& ledger ) {
         loadLedgerAccount.mPolicy       = account->mPolicy;
         loadLedgerAccount.mBequest      = account->mBequest;
         loadLedgerAccount.mKeys         = account->mKeys;
-        loadLedgerAccount.mInventory    = inventory;
-        loadLedgerAccount.mMinerInfo    = accountODBM.mMinerInfo.get ();
+        loadLedgerAccount.mMinerInfo    = minerInfo ? make_shared < MinerInfo >( *minerInfo ) : NULL;
+        
+        SerializableList < SerializableSharedConstPtr < Asset >> inventory;
+        ledger.getInventory ( accountODBM.mAccountID, inventory, 0, true );
+        
+        SerializableList < SerializableSharedConstPtr < Asset >>::const_iterator assetIt = inventory.cbegin ();
+        for ( ; assetIt != inventory.cend (); ++assetIt ) {
+            loadLedgerAccount.mInventory.push_back ( **assetIt );
+        }
         
         this->mAccounts.push_back ( loadLedgerAccount );
     }
@@ -133,11 +137,14 @@ TransactionResult LoadLedger::AbstractTransactionBody_apply ( TransactionContext
 TransactionResult LoadLedger::AbstractTransactionBody_genesis ( Ledger& ledger ) const {
     UNUSED ( ledger );
 
-//    SerializableList < RestoreAccount >::const_iterator accountIt = this->mAccounts.cbegin ();
-//    for ( ; accountIt != this->mAccounts.cend (); ++accountIt ) {
-//        const RestoreAccount& account = *accountIt;
-//        account.apply ( ledger );
-//    }
+    ledger.setIdentity ( this->mIdentity );
+    ledger.setSchema ( this->mSchema );
+
+    SerializableList < LoadLedgerAccount >::const_iterator accountIt = this->mAccounts.cbegin ();
+    for ( ; accountIt != this->mAccounts.cend (); ++accountIt ) {
+        const LoadLedgerAccount& account = *accountIt;
+        account.apply ( ledger );
+    }
     return true;
 }
 
