@@ -10,6 +10,7 @@
 #include <volition/transactions/BetaGetDeck.h>
 #include <volition/transactions/Genesis.h>
 #include <volition/transactions/HardReset.h>
+#include <volition/transactions/LoadLedger.h>
 #include <volition/transactions/OpenAccount.h>
 #include <volition/transactions/PublishSchema.h>
 #include <volition/transactions/PublishSchemaAndReset.h>

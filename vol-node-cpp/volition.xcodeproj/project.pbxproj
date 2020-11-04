@@ -283,6 +283,8 @@
 		CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0C3E6820C86FBA006E3B1C /* main-util.cpp */; };
 		CDD36D012162A415004FC222 /* Format.h in Headers */ = {isa = PBXBuildFile; fileRef = CDD36D002162A415004FC222 /* Format.h */; };
 		CDD36D032162A496004FC222 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36D022162A496004FC222 /* Format.cpp */; };
+		CDDA74642552CB47007AAA07 /* LoadLedger.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74612552CB47007AAA07 /* LoadLedger.h */; };
+		CDDA74652552CB47007AAA07 /* LoadLedger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA74632552CB47007AAA07 /* LoadLedger.cpp */; };
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
@@ -903,6 +905,8 @@
 		CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = padamose.xcodeproj; path = "3rd-party/padamose/padamose.xcodeproj"; sourceTree = "<group>"; };
 		CDD36D002162A415004FC222 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Format.h; path = src/volition/Format.h; sourceTree = "<group>"; };
 		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
+		CDDA74612552CB47007AAA07 /* LoadLedger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadLedger.h; path = src/volition/transactions/LoadLedger.h; sourceTree = "<group>"; };
+		CDDA74632552CB47007AAA07 /* LoadLedger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LoadLedger.cpp; path = src/volition/transactions/LoadLedger.cpp; sourceTree = "<group>"; };
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
@@ -1520,6 +1524,8 @@
 				CDA7208223FF6B7400E1401D /* BetaGetDeck.h */,
 				CD2AB81D230F3D5700805F70 /* Genesis.h */,
 				CD1FD29C24B0309000B0D88A /* HardReset.h */,
+				CDDA74632552CB47007AAA07 /* LoadLedger.cpp */,
+				CDDA74612552CB47007AAA07 /* LoadLedger.h */,
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
 				CDBFD540218B8999002AB0C3 /* PublishSchema.h */,
 				CD5EE7FB247E121400060B24 /* PublishSchemaAndReset.h */,
@@ -1722,6 +1728,7 @@
 				CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */,
 				CD2AB81C230E7D1E00805F70 /* TransactionMaker.h in Headers */,
 				CDBFD54B218B8999002AB0C3 /* OpenAccount.h in Headers */,
+				CDDA74642552CB47007AAA07 /* LoadLedger.h in Headers */,
 				CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */,
 				CDBFD54D218B8999002AB0C3 /* RegisterMiner.h in Headers */,
 				CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */,
@@ -2308,6 +2315,7 @@
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
 				CDFA23A024604CC700B4CECF /* Ledger_Account.cpp in Sources */,
 				CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */,
+				CDDA74652552CB47007AAA07 /* LoadLedger.cpp in Sources */,
 				CDFA23872453B25B00B4CECF /* Schema.cpp in Sources */,
 				CD4E81AC210593CA007DA585 /* WebMiner.cpp in Sources */,
 				CD762ACF232825BE005AC85D /* AbstractEntitlement.cpp in Sources */,
