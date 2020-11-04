@@ -56,7 +56,7 @@ void Ledger_Dump::dump ( string filename ) {
                 string inventoryJSON    = ToJSONSerializer::toJSONString ( inventory );
                 string policyJSON       = ToJSONSerializer::toJSONString ( account->mPolicy );
                 string bequestJSON      = account->mBequest ? ToJSONSerializer::toJSONString ( *account->mBequest ) : "";
-                string minerInfoJSON    = account->mBequest ? ToJSONSerializer::toJSONString ( *minerInfo ) : "";
+                string minerInfoJSON    = minerInfo ? ToJSONSerializer::toJSONString ( *minerInfo ) : "";
             
                 sqlite3_bind_int64  ( stmt, 1, ( s64 )account->mIndex );
                 sqlite3_bind_text   ( stmt, 2, name.c_str (), ( int )name.size (), SQLITE_TRANSIENT );
