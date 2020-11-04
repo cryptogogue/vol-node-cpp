@@ -140,11 +140,16 @@ TransactionResult LoadLedger::AbstractTransactionBody_genesis ( Ledger& ledger )
     ledger.setIdentity ( this->mIdentity );
     ledger.setSchema ( this->mSchema );
 
+    u64 vol = 0;
+
     SerializableList < LoadLedgerAccount >::const_iterator accountIt = this->mAccounts.cbegin ();
     for ( ; accountIt != this->mAccounts.cend (); ++accountIt ) {
         const LoadLedgerAccount& account = *accountIt;
-        account.apply ( ledger );
+        LedgerResult result = account.apply ( ledger );
+        if ( !result ) return result;
+        vol += account.mBalance;
     }
+    ledger.setVOL ( vol );
     return true;
 }
 

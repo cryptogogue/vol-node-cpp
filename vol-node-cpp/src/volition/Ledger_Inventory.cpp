@@ -44,7 +44,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
     
         AssetODBM assetODBM ( ledger, globalAssetCount );
         
-        assetODBM.mOwner.set ( accountODBM.mAccountID );
+        assetODBM.mOwner.set ( accountODBM.mAccountID + i );
         assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mPosition.set ( accountAssetCount + i );
         assetODBM.mType.set ( assetType );
@@ -258,9 +258,9 @@ AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::getInventory ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) const {
+void Ledger_Inventory::getInventory ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) {
 
-    const Ledger& ledger = this->getLedger ();
+    Ledger& ledger = this->getLedger ();
 
     SerializableList < Asset > assets;
 

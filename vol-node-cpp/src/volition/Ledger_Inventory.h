@@ -38,7 +38,7 @@ public:
     LedgerResult                        awardAssetsRandom           ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time );
     LedgerResult                        awardDeck                   ( AccountID accountID, string deckName, time_t time );
     AssetID::Index                      getAssetID                  ( string assetID ) const;
-    void                                getInventory                ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max = 0, bool sparse = false ) const;
+    void                                getInventory                ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max = 0, bool sparse = false );
     map < string, size_t >              getInventoryHistogram       ( AccountID accountID );
     bool                                resetAssetFieldValue        ( AssetID::Index index, string fieldName, time_t time );
     bool                                revokeAsset                 ( AssetID::Index index, time_t time  );

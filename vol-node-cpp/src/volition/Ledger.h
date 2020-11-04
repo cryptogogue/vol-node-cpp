@@ -246,6 +246,7 @@ public:
     bool                                setIdentity                     ( string identity );
     void                                setSchema                       ( const Schema& schema );
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
+    void                                setVOL                          ( u64 vol );
     bool                                verify                          ( const AssetMethodInvocation& invocation );
 
     //----------------------------------------------------------------//

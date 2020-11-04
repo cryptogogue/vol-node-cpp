@@ -414,6 +414,13 @@ void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 }
 
 //----------------------------------------------------------------//
+void Ledger::setVOL ( u64 vol ) {
+
+    LedgerFieldODBM < u64 > totalVOLField ( *this, Ledger::keyFor_VOL ());
+    totalVOLField.set ( vol );
+}
+
+//----------------------------------------------------------------//
 bool Ledger::verify ( const AssetMethodInvocation& invocation ) {
 
     const Schema& schema = this->getSchema ();
