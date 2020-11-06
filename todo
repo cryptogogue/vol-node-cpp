@@ -127,8 +127,8 @@ node - fixed gratuity requirement
 node - implement TOS (user and miner)
 node - setup guide
 node - make sure transactions can be resubmitted with new gratuity
-node - alert users when their transactions are declined for insufficient gratuity
 node - capture transactions when rewinding chain
+node - alert users when their transactions are declined for insufficient gratuity
 node - implement pluggable transaction database (mysql and in-memory drivers)
 
 wallet - RSA key support

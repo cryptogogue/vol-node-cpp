@@ -2,7 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/simulation/Analysis.h>
-#include <volition/Block.h>
+#include <volition/BlockODBM.h>
 #include <volition/Format.h>
 
 namespace Volition {
@@ -26,17 +26,19 @@ void print_indent ( string& str, size_t indent ) {
 void Tree::addChain ( const Ledger& chain ) {
 
     Tree* cursor = this;
-
-    VersionedStoreIterator chainIt ( chain, 0 );
     
-    size_t top = chain.getVersion ();
-    for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
-        shared_ptr < Block > block = Ledger::getObjectOrNull < Block >( chainIt, Ledger::keyFor_block ());
+    size_t totalBlocks = chain.countBlocks ();
+    for ( size_t i = 0; i < totalBlocks; ++i ) {
+        BlockODBM blockODBM ( chain, ( u64 )i );
+        assert ( blockODBM );
+        
+        shared_ptr < const Block > block = blockODBM.mBlock.get ();
         assert ( block );
         
         string minerID      = block->getMinerID ();
         cursor              = &cursor->mChildren [ minerID ];
         cursor->mMinerID    = minerID;
+        
     }
 }
 

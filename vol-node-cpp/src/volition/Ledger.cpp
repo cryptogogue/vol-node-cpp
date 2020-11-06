@@ -6,7 +6,7 @@
 #include <volition/AssetMethod.h>
 #include <volition/AssetMethodInvocation.h>
 #include <volition/AssetODBM.h>
-#include <volition/Block.h>
+#include <volition/BlockODBM.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
@@ -32,7 +32,7 @@ bool Ledger::checkMiners ( string miners ) const {
     while (( start = miners.find_first_not_of ( delim, end )) != std::string::npos ) {
         end = miners.find ( delim, start );
         string minerID = miners.substr ( start, end - start );
-        shared_ptr < Block > block = this->getBlock ( blockID );
+        shared_ptr < const Block > block = this->getBlock ( blockID );
         if ( !block ) return false;
         if (( blockID > 0 ) && ( block->getMinerID () != minerID )) return false;
         blockID++;
@@ -83,7 +83,7 @@ void Ledger::clearSchemaCache () {
 //----------------------------------------------------------------//
 size_t Ledger::countBlocks () const {
 
-    return this->getVersion ();
+    return LedgerFieldODBM < u64 >( *this, Ledger::keyFor_globalBlockCount ()).get ( 0 );
 }
 
 //----------------------------------------------------------------//
@@ -101,19 +101,19 @@ u64 Ledger::createVOL ( u64 amount ) {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Block > Ledger::getBlock () const {
+shared_ptr < const Block > Ledger::getBlock () const {
 
-    return this->getObjectOrNull < Block >( keyFor_block ());
+    u64 totalBlocks = this->countBlocks ();
+    if ( !totalBlocks ) return NULL;
+
+    return this->getBlock ( totalBlocks - 1 );
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
+shared_ptr < const Block > Ledger::getBlock ( u64 height ) const {
 
-    VersionedStore snapshot ( *this );
-    if ( height < snapshot.getVersion ()) {
-        snapshot.revert ( height );
-    }
-    return Ledger::getObjectOrNull < Block >( snapshot, keyFor_block ());
+    BlockODBM blockODBM ( *this, height );
+    return blockODBM.mBlock.get ();
 }
 
 //----------------------------------------------------------------//
@@ -123,10 +123,10 @@ time_t Ledger::getBlockDelayInSeconds () const {
 }
 
 //----------------------------------------------------------------//
-string Ledger::getBlockHash () const {
-
-    return this->getValue < string >( keyFor_blockHash ());
-}
+//string Ledger::getBlockHash () const {
+//
+//    return this->getValue < string >( keyFor_blockHash ());
+//}
 
 //----------------------------------------------------------------//
 u64 Ledger::getBlockSizeInPoints () const {
@@ -148,8 +148,9 @@ string Ledger::getEntropyString () const {
 
 //----------------------------------------------------------------//
 string Ledger::getGenesisHash () const {
-
-    return this->getValueOrFallback < string >( keyFor_genesisHash (), "" );
+    
+    BlockODBM genesisODBM ( *this, 0 );
+    return genesisODBM ? genesisODBM.mHash.get () : "";
 }
 
 //----------------------------------------------------------------//
@@ -306,7 +307,7 @@ string Ledger::printChain ( const char* pre, const char* post ) const {
         Format::write ( str, "-" );
     
         for ( size_t i = 1; i < nBlocks; ++i ) {
-            shared_ptr < Block > block = this->getBlock ( i );
+            shared_ptr < const Block > block = this->getBlock ( i );
             assert ( block );
             Format::write ( str, ",%s", block->mMinerID.c_str ());
         }
@@ -363,22 +364,6 @@ void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerT
             });
         }
     });
-}
-
-//----------------------------------------------------------------//
-void Ledger::setBlock ( const Block& block ) {
-
-    assert ( block.mHeight == this->getVersion ());
-
-    string hash = block.getDigest ();
-
-    this->setObject < Block >( keyFor_block (), block );
-    this->setValue < string >( keyFor_blockHash (), hash );
-    this->setValue < string >( keyFor_blockPose (), block.getPose ());
-
-    if ( block.mHeight == 0 ) {
-        this->setValue < string >( keyFor_genesisHash (), hash );
-    }
 }
 
 //----------------------------------------------------------------//
@@ -476,10 +461,9 @@ void Ledger::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer
 
     SerializableVector < Block > blocks;
     
-    size_t top = this->getVersion ();
-    VersionedStoreIterator chainIt ( *this, 0 );
-    for ( ; chainIt && ( chainIt.getVersion () < top ); chainIt.next ()) {
-        shared_ptr < Block > block = Ledger::getObjectOrNull < Block >( chainIt, keyFor_block ());
+    u64 totalBlocks = this->countBlocks ();
+    for ( u64 i = 0; i < totalBlocks; ++i ) {
+        shared_ptr < const Block > block = this->getBlock ( i );
         assert ( block );
         blocks.push_back ( *block );
     }

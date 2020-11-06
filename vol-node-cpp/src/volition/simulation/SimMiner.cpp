@@ -14,7 +14,7 @@ namespace Simulation {
 //----------------------------------------------------------------//
 void SimMiner::extendChain ( string charmHex, time_t time ) {
 
-    shared_ptr < Block > prevBlock = this->mChain->getBlock ();
+    shared_ptr < const Block > prevBlock = this->mChain->getBlock ();
 
     shared_ptr < Block > block = make_shared < Block >(
         this->mMinerID,

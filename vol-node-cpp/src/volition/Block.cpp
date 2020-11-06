@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/BlockODBM.h>
 #include <volition/CryptoKey.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
@@ -34,6 +35,10 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
         ledger.setValue < u64 >( Ledger::keyFor_blockDelay (), ( u64 )this->mBlockDelay );
         ledger.setValue < u64 >( Ledger::keyFor_rewriteWindow (), ( u64 )this->mRewriteWindow );
     }
+    else {
+        BlockODBM parentODBM ( ledger, this->mHeight - 1 );
+        if ( parentODBM.mHash.get ( "" ) != this->mPrevDigest.toHex ()) return false;
+    }
 
     // some transactions need to be applied later.
     // we need to evaluate if they are legal now.
@@ -60,7 +65,7 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
         
         if ( unfinishedBlock.mMaturity == this->mHeight ) {
             
-            shared_ptr < Block > block = ledger.getBlock ( unfinishedBlock.mBlockID );
+            shared_ptr < const Block > block = ledger.getBlock ( unfinishedBlock.mBlockID );
             assert ( block );
             
             size_t nextMaturity = block->applyTransactions ( ledger, policy );
@@ -92,9 +97,17 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
     if ( unfinishedChanged ) {
         ledger.setUnfinished ( nextUnfinished );
     }
-    
-    ledger.setBlock ( *this );
         
+    BlockODBM blockODBM ( ledger, this->mHeight );
+    
+    string hash = this->mDigest.toHex ();
+    
+    blockODBM.mHash.set ( this->mDigest.toHex ());
+    blockODBM.mPose.set ( this->mPose.toHex ());
+    blockODBM.mHeader.set ( *this );
+    blockODBM.mBlock.set ( *this );
+
+    ledger.setValue < u64 >( Ledger::keyFor_globalBlockCount (), this->mHeight + 1 );
     return true;
 }
 
@@ -177,8 +190,8 @@ const Digest& Block::sign ( const CryptoKeyPair& key, string hashAlgorithm ) {
 bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 
     if ( this->mHeight == 0 ) {
-        // TODO: verify using the genesis key
-        return true;
+        BlockODBM genesisODBM ( ledger, 0 );
+        return genesisODBM ? ( genesisODBM.mHash.get () == this->mDigest.toHex ()) : true;
     }
 
     shared_ptr < const MinerInfo > minerInfo = AccountODBM ( ledger, this->mMinerID ).mMinerInfo.get ();
@@ -188,7 +201,8 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 
     if ( policy & ( VerificationPolicy::VERIFY_POSE | VerificationPolicy::VERIFY_CHARM )) {
 
-        string prevPoseHex = ledger.getValue < string >( Ledger::keyFor_blockPose (), this->mHeight - 1 );
+        BlockODBM parentODBM ( ledger, this->mHeight - 1 );
+        string prevPoseHex = parentODBM.mPose.get ();
 
         if ( policy & VerificationPolicy::VERIFY_POSE ) {
             Digest digest = this->hashPose ( prevPoseHex );

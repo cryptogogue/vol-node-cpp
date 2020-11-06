@@ -120,25 +120,10 @@ public:
     static LedgerKey keyFor_accountKeyLookup ( string keyID ) {
         return Format::write ( "key.%s", keyID.c_str ());
     }
-
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_block () {
-        return "block";
-    }
     
     //----------------------------------------------------------------//
     static LedgerKey keyFor_blockDelay () {
         return "blockDelay";
-    }
-    
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_blockHash () {
-        return "blockHash";
-    }
-    
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_blockPose () {
-        return "blockPose";
     }
     
     //----------------------------------------------------------------//
@@ -159,11 +144,6 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_genesisHash () {
-        return "genesis";
-    }
-
-    //----------------------------------------------------------------//
     static LedgerKey keyFor_globalAccountCount () {
         return "account.count";
     }
@@ -171,6 +151,11 @@ public:
     //----------------------------------------------------------------//
     static LedgerKey keyFor_globalAssetCount () {
         return Format::write ( "asset.count" );
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_globalBlockCount () {
+        return "block.count";
     }
 
     //----------------------------------------------------------------//
@@ -227,10 +212,9 @@ public:
     size_t                              countBlocks                     () const;
     u64                                 countVOL                        () const;
     u64                                 createVOL                       ( u64 amount );
-    shared_ptr < Block >                getBlock                        () const;
-    shared_ptr < Block >                getBlock                        ( size_t height ) const;
+    shared_ptr < const Block >          getBlock                        () const;
+    shared_ptr < const Block >          getBlock                        ( u64 height ) const;
     time_t                              getBlockDelayInSeconds          () const;
-    string                              getBlockHash                    () const;
     u64                                 getBlockSizeInPoints            () const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
@@ -254,7 +238,6 @@ public:
     string                              printChain                      ( const char* pre = NULL, const char* post = NULL ) const;
     bool                                pushBlock                       ( const Block& block, Block::VerificationPolicy policy );
     void                                serializeEntitlements           ( const Account& account, AbstractSerializerTo& serializer ) const;
-    void                                setBlock                        ( const Block& block );
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
     bool                                setIdentity                     ( string identity );

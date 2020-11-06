@@ -321,6 +321,7 @@
 		CDD36D032162A496004FC222 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDD36D022162A496004FC222 /* Format.cpp */; };
 		CDDA74902552D423007AAA07 /* LoadLedger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA748E2552D423007AAA07 /* LoadLedger.cpp */; };
 		CDDA74912552D423007AAA07 /* LoadLedger.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA748F2552D423007AAA07 /* LoadLedger.h */; };
+		CDDA74C5255568F4007AAA07 /* BlockODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74C3255568F4007AAA07 /* BlockODBM.h */; };
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
@@ -971,6 +972,7 @@
 		CDD36D022162A496004FC222 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = src/volition/Format.cpp; sourceTree = "<group>"; };
 		CDDA748E2552D423007AAA07 /* LoadLedger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LoadLedger.cpp; path = src/volition/transactions/LoadLedger.cpp; sourceTree = "<group>"; };
 		CDDA748F2552D423007AAA07 /* LoadLedger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadLedger.h; path = src/volition/transactions/LoadLedger.h; sourceTree = "<group>"; };
+		CDDA74C3255568F4007AAA07 /* BlockODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockODBM.h; path = src/volition/BlockODBM.h; sourceTree = "<group>"; };
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
@@ -1253,18 +1255,17 @@
 		CD4665AA20BFE49000A02D55 /* ledger */ = {
 			isa = PBXGroup;
 			children = (
+				CDDA74CF25556908007AAA07 /* odbm */,
 				CDFA2392246015FA00B4CECF /* AbstractLedgerComponent.h */,
 				CD63A1DA22B2244600D5C801 /* Account.h */,
 				CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */,
 				CD7752962536515400A53765 /* AccountID.h */,
 				CDA1573323FA59EC00DFACCF /* AccountKeyLookup.h */,
-				CDFA23882460071700B4CECF /* AccountODBM.h */,
 				CDB8B3C521AC7DB8004EE816 /* Asset.h */,
 				CDEDC20A22BD5AD800C5643C /* AssetID.cpp */,
 				CDEDC20722BD57BC00C5643C /* AssetID.h */,
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CDD11D8922ED6E070051F04E /* AssetFieldValue.h */,
-				CDFA23892460071700B4CECF /* AssetODBM.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
 				CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */,
 				CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */,
@@ -1280,9 +1281,7 @@
 				CDFA2395246016E700B4CECF /* Ledger_Inventory.h */,
 				CDFA23A2246051CD00B4CECF /* Ledger_Miner.cpp */,
 				CDFA23A3246051CD00B4CECF /* Ledger_Miner.h */,
-				CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */,
 				CDFA238E24600A9300B4CECF /* LedgerKey.h */,
-				CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */,
 				CDFA239C24601E0A00B4CECF /* LedgerResult.h */,
 				CD0C3E1820C25A00006E3B1C /* MinerInfo.cpp */,
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
@@ -1671,6 +1670,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CDDA74CF25556908007AAA07 /* odbm */ = {
+			isa = PBXGroup;
+			children = (
+				CDFA23882460071700B4CECF /* AccountODBM.h */,
+				CDDA74C3255568F4007AAA07 /* BlockODBM.h */,
+				CDFA23892460071700B4CECF /* AssetODBM.h */,
+				CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */,
+				CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */,
+			);
+			name = odbm;
+			sourceTree = "<group>";
+		};
 		CDE9F771237537E600DB62EF /* recorder */ = {
 			isa = PBXGroup;
 			children = (
@@ -1811,6 +1822,7 @@
 				CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */,
 				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
+				CDDA74C5255568F4007AAA07 /* BlockODBM.h in Headers */,
 				CD2000592548DAF100DEB809 /* SimTransaction.h in Headers */,
 				CD20FF3625381BDB00DEB809 /* SQLiteChainRecorder.h in Headers */,
 				CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */,

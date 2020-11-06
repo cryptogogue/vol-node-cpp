@@ -17,7 +17,7 @@ SQLiteChainRecorder::SQLiteChainRecorder ( const Miner& miner, string path ) {
     
     const Ledger& ledger = miner.getLedger ();
 
-    shared_ptr < Block > genesisBlock = ledger.getBlock ( 0 );
+    shared_ptr < const Block > genesisBlock = ledger.getBlock ( 0 );
     assert ( genesisBlock );
     string hash = genesisBlock->getDigest ();
     
@@ -56,7 +56,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) {
             assert ( height == row );
             if ( row == 0 ) {
                 const Ledger& ledger = miner.getLedger ();
-                shared_ptr < Block > genesisBlock = ledger.getBlock ( 0 );
+                shared_ptr < const Block > genesisBlock = ledger.getBlock ( 0 );
                 assert ( genesisBlock );
                 assert ( genesisBlock->getDigest ().toHex () == hash );
             }

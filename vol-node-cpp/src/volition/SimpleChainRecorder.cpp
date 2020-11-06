@@ -24,7 +24,7 @@ SimpleChainRecorder::SimpleChainRecorder ( const Miner& miner, string path ) {
     
     const Ledger& ledger = miner.getLedger ();
 
-    shared_ptr < Block > genesisBlock = ledger.getBlock ( 0 );
+    shared_ptr < const Block > genesisBlock = ledger.getBlock ( 0 );
     assert ( genesisBlock );
     
     string hash = genesisBlock->getDigest ();
@@ -91,7 +91,7 @@ void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner )
     size_t length = ledger.countBlocks ();
     for ( size_t i = 0; i < length; ++i ) {
     
-        shared_ptr < Block > block = ledger.getBlock ( i );
+        shared_ptr < const Block > block = ledger.getBlock ( i );
         assert ( block );
                 
         string blockPath = Format::write ( "%sblock_%d.json", this->mChainFolderPath.c_str (), ( int )i );

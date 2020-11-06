@@ -139,7 +139,7 @@ bool Miner::canExtend ( time_t now ) const {
         if ( this->mBestBranch->isAncestorOf ( remoteMiner->mTag )) count++;
         current++;
     }
-    return ( count >= ( current >> 1 ));
+    return ( this->checkConsensus ( this->mBestBranch ) >= 0.5 );
 }
 
 //----------------------------------------------------------------//
@@ -147,6 +147,23 @@ bool Miner::checkBestBranch ( string miners ) const {
 
     assert ( this->mChain );
     return this->mChain->checkMiners ( miners );
+}
+
+//----------------------------------------------------------------//
+double Miner::checkConsensus ( BlockTreeNode::ConstPtr tag ) const {
+
+    double count = 0;
+    double current = 0;
+
+    set < shared_ptr < RemoteMiner >>::const_iterator minerIt = this->mOnlineMiners.cbegin ();
+    for ( ; minerIt != this->mOnlineMiners.cend (); ++minerIt ) {
+        shared_ptr < RemoteMiner > remoteMiner = *minerIt;
+        if ( !remoteMiner->mTag ) continue;
+        if ( tag->isAncestorOf ( remoteMiner->mTag )) count += 1;
+        current += 1;
+    }
+    if (( current == 0 ) || ( count == current )) return 1;
+    return ( count / current );
 }
 
 //----------------------------------------------------------------//
@@ -302,7 +319,7 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
         
-    shared_ptr < Block > prevBlock = this->mChain->getBlock ();
+    shared_ptr < const Block > prevBlock = this->mChain->getBlock ();
     assert ( prevBlock );
     
     shared_ptr < Block > block = make_shared < Block >(
@@ -645,6 +662,7 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
     this->mChain = chain;
     
     this->pushBlock ( block );
+    this->updateHighConfidenceTag ();
 }
 
 //----------------------------------------------------------------//
@@ -707,6 +725,9 @@ void Miner::step ( time_t now ) {
         
         // BUILD the current chain
         this->composeChain ();
+        
+        // UPDATE the high confidence tag
+        this->updateHighConfidenceTag ();
         
         // EXTEND chain if complete and has consensus
         if ( this->canExtend ( now )) {
@@ -778,6 +799,23 @@ void Miner::updateChainRecurse ( BlockTreeNode::ConstPtr branch ) {
         this->pushBlock ( branch->getBlock ());
         assert ( this->mChainTag == branch );
     }
+}
+
+//----------------------------------------------------------------//
+void Miner::updateHighConfidenceTag () {
+
+    assert ( this->mChain );
+
+    BlockTreeNode::ConstPtr tag = this->mBestBranch;
+    while ( tag->getParent () && (( this->checkConsensus ( tag ) < 1 ) || ( !tag->getBlock ()))) tag = tag->getParent ();
+    
+    assert ( tag );
+    assert ( tag->getBlock ());
+    assert ( tag->isAncestorOf ( this->mBestBranch ));
+    
+    this->mHighConfidenceTag = tag;
+    this->mHighConfidenceLedger = *this->mChain;
+    this->mHighConfidenceLedger.revert (( **this->mHighConfidenceTag ).getHeight ());
 }
 
 //----------------------------------------------------------------//

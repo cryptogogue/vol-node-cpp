@@ -151,9 +151,12 @@ protected:
     
     BlockTree                                       mBlockTree;
     
-    shared_ptr < Ledger >                           mChain;         // may run behind block tree tag
-    BlockTreeNode::ConstPtr                         mChainTag;      // node corresponding to top of chain
-    BlockTreeNode::ConstPtr                         mBestBranch;    // "leaf" of the current chain
+    shared_ptr < Ledger >                           mChain;                 // may run behind block tree tag
+    Ledger                                          mHighConfidenceLedger;  // may run behind main ledger
+    
+    BlockTreeNode::ConstPtr                         mChainTag;              // node corresponding to top of chain
+    BlockTreeNode::ConstPtr                         mHighConfidenceTag;     // node corresponding to top of chain
+    BlockTreeNode::ConstPtr                         mBestBranch;            // "leaf" of the current chain
     list < BlockTreeNode::ConstPtr >                mNodeQueue;
     
     Poco::Mutex                                     mMutex;
@@ -166,6 +169,7 @@ protected:
     void                                affirmMessenger             ();
     void                                affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
     bool                                canExtend                   ( time_t now ) const;
+    double                              checkConsensus              ( BlockTreeNode::ConstPtr tag ) const;
     void                                composeChain                ();
     void                                discoverMiners              ();
     void                                processResponses            ( time_t now );
@@ -176,6 +180,7 @@ protected:
     void                                selectBestBranch            ( time_t now );
     BlockTreeNode::ConstPtr             truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
     void                                updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
+    void                                updateHighConfidenceTag     ();
     void                                updateSearches              ( time_t now );    
 
     //----------------------------------------------------------------//
@@ -195,6 +200,7 @@ public:
     GET ( BlockTreeNode::ConstPtr,                  BestBranch,                 mBestBranch )
     GET ( const BlockTree&,                         BlockTree,                  mBlockTree )
     GET ( BlockTreeNode::ConstPtr,                  ChainTag,                   mChainTag )
+    GET ( const Ledger&,                            HighConfidenceLedger,       mHighConfidenceLedger )
     GET ( const Ledger&,                            Ledger,                     *mChain )
     GET ( u64,                                      MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                   Reward,                     mConfig.mReward )
