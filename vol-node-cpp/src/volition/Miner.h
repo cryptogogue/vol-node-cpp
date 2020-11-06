@@ -121,7 +121,7 @@ protected:
 
     string                                          mMinerID;
     string                                          mURL;
-    SerializableTime                                mStartTime;
+    time_t                                          mStartTime;
 
     CryptoKeyPair                                   mKeyPair;
     string                                          mMotto;
@@ -129,7 +129,6 @@ protected:
 
     int                                             mFlags;
     BlockTreeNode::RewriteMode                      mRewriteMode;
-    time_t                                          mRewriteWindowInSeconds;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
     string                                          mReward;
@@ -166,10 +165,10 @@ protected:
     void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
     void                                affirmMessenger             ();
     void                                affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
-    bool                                canExtend                   () const;
+    bool                                canExtend                   ( time_t now ) const;
     void                                composeChain                ();
     void                                discoverMiners              ();
-    void                                processResponses            ();
+    void                                processResponses            ( time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
     void                                requestHeaders              ();
     void                                saveChain                   ();
@@ -199,8 +198,7 @@ public:
     GET ( const Ledger&,                            Ledger,                     *mChain )
     GET ( u64,                                      MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                   Reward,                     mConfig.mReward )
-    GET ( time_t,                                   RewriteWindowInSeconds,     mRewriteWindowInSeconds )
-    GET ( SerializableTime,                         StartTime,                  mStartTime )
+    GET ( time_t,                                   StartTime,                  mStartTime )
     GET ( const Signature&,                         Visage,                     mVisage )
     
     SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  mMessenger )
@@ -243,7 +241,7 @@ public:
     void                                setMinimumGratuity          ( u64 minimumGratuity );
     void                                setMute                     ( bool paused );
     void                                setReward                   ( string reward );
-    void                                setRewriteWindow            ( time_t window );
+    void                                setRewriteWindow            ();
     void                                setVerbose                  ( bool verbose );
     void                                shutdown                    ( bool kill = false );
     void                                step                        ( time_t now );

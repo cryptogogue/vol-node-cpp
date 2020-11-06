@@ -19,7 +19,7 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
-#define THE_SCENARO MinerScenario
+#define THE_SCENARO SimpleScenario
 
 //================================================================//
 // SimpleScenario
@@ -250,8 +250,7 @@ protected:
         UNUSED ( step );
         
         if ( step == 0 ) {
-            simulator.setTimeStep ( 1 );
-            simulator.setRewriteWindow ( 0, 16, 1 );
+            simulator.setTimeStepInSeconds ( 600 );
         }
         
         shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( 0 );

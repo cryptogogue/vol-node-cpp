@@ -118,7 +118,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
     Ledger ledger;
     ledger.takeSnapshot ( chain );
 
-    const u64 maxBlockSize = ledger.getBlockSize ();
+    const u64 maxBlockSize = ledger.getBlockSizeInPoints ();
     u64 blockSize = 0;
 
     map < string, MakerQueueInfo > infoCache;

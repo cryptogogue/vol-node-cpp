@@ -113,6 +113,9 @@ DONE: node - sponsor miner transaction
 DONE: node - mining reward from block
 DONE: wallet - decimal points for VOL (3)
 DONE: schema - mining reward definition and schedule
+DONE: node - import accounts
+DONE: node - set minimal time between blocks
+DONE: node - set block size (protocol param setup)
 
 ----------------------------------------------------------------
 LAUNCH
@@ -122,10 +125,7 @@ node - implement rake
 node - implement tax
 node - fixed gratuity requirement
 node - implement TOS (user and miner)
-node - set minimal time between blocks
-node - set block size (protocol param setup)
 node - setup guide
-node - import accounts
 node - make sure transactions can be resubmitted with new gratuity
 node - alert users when their transactions are declined for insufficient gratuity
 node - capture transactions when rewinding chain

@@ -119,13 +119,15 @@ void Miner::affirmVisage () {
 }
 
 //----------------------------------------------------------------//
-bool Miner::canExtend () const {
+bool Miner::canExtend ( time_t now ) const {
 
     AccountODBM accountODBM ( *this->mChain, this->mMinerID );
     if ( !accountODBM.mMinerInfo.exists ()) return false;
 
     if ( this->mFlags & MINER_MUTE ) return false;
     if ( !( this->mBestBranch && this->mBestBranch->checkStatus ( BlockTreeNode::STATUS_COMPLETE ))) return false;
+
+    if ( now < ( **this->mBestBranch ).getNextTime ()) return false;
 
     size_t count = 0;
     size_t current = 0;
@@ -287,7 +289,6 @@ void Miner::loadKey ( string keyfile, string password ) {
 Miner::Miner () :
     mFlags ( DEFAULT_FLAGS ),
     mRewriteMode ( BlockTreeNode::REWRITE_NONE ),
-    mRewriteWindowInSeconds ( 0 ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ) {
     
@@ -311,6 +312,10 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
         prevBlock.get (),
         this->mKeyPair
     );
+    
+    block->setBlockDelayInSeconds( this->mChain->getBlockDelayInSeconds ());
+    block->setRewriteWindow ( this->mChain->getRewriteWindowInSeconds ());
+    
     this->fillBlock ( *this->mChain, *block, this->mBlockVerificationPolicy );
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
@@ -321,7 +326,7 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::processResponses () {
+void Miner::processResponses ( time_t now ) {
 
     for ( ; this->mResponseQueue.size (); this->mResponseQueue.pop_front ()) {
     
@@ -386,20 +391,28 @@ void Miner::processResponses () {
             case MiningMessengerResponse::RESPONSE_HEADER: {
                 
                 assert ( remoteMiner );
-                
-                if ( response.mHeader->getHeight () == 0 ) {
-                    BlockTreeNode::ConstPtr root = this->mBlockTree.getRoot ();
-                    if (( **root ).getDigest () != response.mHeader->getDigest ()) {
-                        remoteMiner->setError ( "Unrecoverable error: genesis block mismatch." );
+                if ( response.mHeader ) {
+                    
+                    shared_ptr < const BlockHeader > header = response.mHeader;
+                    
+                    if ( header->getHeight () == 0 ) {
+                        BlockTreeNode::ConstPtr root = this->mBlockTree.getRoot ();
+                        if (( **root ).getDigest () != response.mHeader->getDigest ()) {
+                            remoteMiner->setError ( "Unrecoverable error: genesis block mismatch." );
+                        }
                     }
-                }
-                
-                if ( remoteMiner->mState != RemoteMiner::STATE_ERROR ) {
                     
-                    remoteMiner->mHeaderQueue [ response.mHeader->getHeight ()] = response.mHeader;
+                    if ( remoteMiner->mState != RemoteMiner::STATE_ERROR ) {
                     
-                    if ( this->mHeaderSearches.find ( response.mRequest.mMinerURL ) != this->mHeaderSearches.end ()) {
-                        this->mHeaderSearches.erase ( response.mRequest.mMinerURL );
+                        // ignore headers from the future
+                        if ( header->getTime () <= now ) {
+                            remoteMiner->mHeaderQueue [ header->getHeight ()] = header;
+                        }
+                        
+                        // TODO: why isn't this always done? double check.
+                        if ( this->mHeaderSearches.find ( response.mRequest.mMinerURL ) != this->mHeaderSearches.end ()) {
+                            this->mHeaderSearches.erase ( response.mRequest.mMinerURL );
+                        }
                     }
                 }
                 break;
@@ -451,31 +464,36 @@ void Miner::processResponses () {
         this->mOnlineMiners.insert ( remoteMiner );;
         
         // process the queue
+        size_t accepted = 0;
         if ( remoteMiner->mHeaderQueue.size ()) {
             
             // if 'tag' gets overwritten, 'thumb' will hang on to any nodes we might need later.
             BlockTreeNode::ConstPtr thumb = remoteMiner->mTag;
             
             // visit each header in the cache and try to apply it.
-            size_t accepted = 0;
             while ( remoteMiner->mHeaderQueue.size ()) {
 
                 shared_ptr < const BlockHeader > header = remoteMiner->mHeaderQueue.begin ()->second;
-                BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( header, NULL );
                 
-                if ( !node ) {
-                    if ( accepted > 0 ) {
-                        // the queue is supposed to be sequential; if part of the queue has already been
-                        // accepted, then there's an error in the queue, so clear it.
+                BlockTree::CanAppend canAppend = this->mBlockTree.checkAppend ( *header );
+                
+                switch ( canAppend ) {
+                
+                    case BlockTree::APPEND_OK:
+                    case BlockTree::ALREADY_EXISTS:
+                        remoteMiner->mTag = this->mBlockTree.affirmBlock ( header, NULL );
+                        remoteMiner->mHeaderQueue.erase ( remoteMiner->mHeaderQueue.begin ());
+                        accepted++;
+                        break;
+                    
+                    case BlockTree::MISSING_PARENT:
+                        if ( accepted == 0 ) break;
+                        // FALL THROUGH ->
+                    
+                    case BlockTree::TOO_SOON:
                         remoteMiner->mHeaderQueue.clear ();
-                    }
-                    break;
+                        break;
                 }
-                
-                // header found a parent and was added, so accept it and remove it from the cache.
-                remoteMiner->mTag = node;
-                remoteMiner->mHeaderQueue.erase ( remoteMiner->mHeaderQueue.begin ());
-                accepted++;
             }
         }
         
@@ -597,7 +615,7 @@ void Miner::selectBestBranch ( time_t now ) {
             now
         );
         
-        if ( BlockTreeNode::compare ( truncated, bestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
+        if ( BlockTreeNode::compare ( truncated, bestBranch, this->mRewriteMode ) < 0 ) {
             bestBranch = truncated;
         }
     }
@@ -650,9 +668,8 @@ void Miner::setReward ( string reward ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::setRewriteWindow ( time_t window ) {
+void Miner::setRewriteWindow () {
 
-    this->mRewriteWindowInSeconds = window;
     this->setRewriteMode ( BlockTreeNode::REWRITE_WINDOW );
 }
 
@@ -680,7 +697,7 @@ void Miner::step ( time_t now ) {
     if ( this->mMessenger ) {
     
         // APPLY incoming blocks
-        this->processResponses ();
+        this->processResponses ( now );
         
         // CHOOSE new branch
         this->selectBestBranch ( now );
@@ -692,7 +709,7 @@ void Miner::step ( time_t now ) {
         this->composeChain ();
         
         // EXTEND chain if complete and has consensus
-        if ( this->canExtend ()) {
+        if ( this->canExtend ( now )) {
             this->extend ( now );
         }
 
@@ -729,7 +746,7 @@ BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail, time_t n
     
         const BlockHeader& header = **cursor;
     
-        if (( this->mRewriteMode == BlockTreeNode::REWRITE_WINDOW ) && !header.isInRewriteWindow ( this->mRewriteWindowInSeconds, now )) return tail;
+        if (( this->mRewriteMode == BlockTreeNode::REWRITE_WINDOW ) && !header.isInRewriteWindow ( now )) return tail;
     
         BlockTreeNode::ConstPtr parent = cursor->getParent ();
         if ( !parent ) break;
@@ -773,11 +790,11 @@ void Miner::updateSearches ( time_t now ) {
 
         // we only care about missing branches; ignore new/complete/invalid branches.
         if ( remoteMiner->mTag && remoteMiner->mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
-        
+            
             BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner->mTag, now );
-        
+            
             // only affirm a search if the other chain could beat our current.
-            if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode, this->mRewriteWindowInSeconds ) < 0 ) {
+            if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode ) < 0 ) {
                 this->affirmBranchSearch ( truncated );
             }
         }

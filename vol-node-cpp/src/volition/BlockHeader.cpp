@@ -21,14 +21,18 @@ void BlockHeader::applyEntropy ( Ledger& ledger ) const {
 //----------------------------------------------------------------//
 BlockHeader::BlockHeader () :
     mHeight ( 0 ),
-    mTime ( 0 ) {
+    mTime ( 0 ),
+    mBlockDelay ( Ledger::DEFAULT_BLOCK_DELAY_IN_SECONDS ),
+    mRewriteWindow ( Ledger::DEFAULT_REWRITE_WINDOW_IN_SECONDS ) {
 }
 
 //----------------------------------------------------------------//
 BlockHeader::BlockHeader ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKeyPair& key ) :
     mMinerID ( minerID ),
     mHeight ( 0 ),
-    mTime ( now ) {
+    mTime ( now ),
+    mBlockDelay ( Ledger::DEFAULT_BLOCK_DELAY_IN_SECONDS ),
+    mRewriteWindow ( Ledger::DEFAULT_REWRITE_WINDOW_IN_SECONDS ) {
         
     if ( prevBlockHeader ) {
         
@@ -101,57 +105,9 @@ string BlockHeader::formatPoseString ( string prevPose ) const {
 }
 
 //----------------------------------------------------------------//
-const Digest& BlockHeader::getCharm () const {
-
-    return this->mCharm;
-}
-
-//----------------------------------------------------------------//
-const Digest& BlockHeader::getDigest () const {
-
-    return this->mDigest;
-}
-
-//----------------------------------------------------------------//
-size_t BlockHeader::getHeight () const {
-
-    return this->mHeight;
-}
-
-//----------------------------------------------------------------//
-string BlockHeader::getMinerID () const {
-
-    return this->mMinerID;
-}
-
-//----------------------------------------------------------------//
 Digest BlockHeader::getNextCharm ( const Digest& visage ) const {
 
     return BlockHeader::calculateCharm ( this->mPose, visage );
-}
-
-//----------------------------------------------------------------//
-const Digest& BlockHeader::getPose () const {
-
-    return this->mPose;
-}
-
-//----------------------------------------------------------------//
-string BlockHeader::getPrevHash () const {
-
-    return this->mPrevDigest.toString ();
-}
-
-//----------------------------------------------------------------//
-const Signature& BlockHeader::getSignature () const {
-
-    return this->mSignature;
-}
-
-//----------------------------------------------------------------//
-time_t BlockHeader::getTime () const {
-
-    return this->mTime;
 }
 
 //----------------------------------------------------------------//
@@ -167,28 +123,16 @@ bool BlockHeader::isGenesis () const {
 }
 
 //----------------------------------------------------------------//
-bool BlockHeader::isInRewriteWindow ( time_t window, time_t now ) const {
+bool BlockHeader::isInRewriteWindow ( time_t now ) const {
 
     double diff = difftime ( now, this->mTime );
-    return diff < window;
+    return diff < this->mRewriteWindow;
 }
 
 //----------------------------------------------------------------//
 bool BlockHeader::isParent ( const BlockHeader& block ) const {
 
     return ( this->mDigest == block.mPrevDigest ); // TODO: does not need to be constant time
-}
-
-//----------------------------------------------------------------//
-void BlockHeader::setMinerID ( string minerID ) {
-
-    this->mMinerID = minerID;
-}
-
-//----------------------------------------------------------------//
-void BlockHeader::setCharm ( const Digest& charm ) {
-
-    this->mCharm = charm;
 }
 
 //================================================================//
@@ -198,32 +142,36 @@ void BlockHeader::setCharm ( const Digest& charm ) {
 //----------------------------------------------------------------//
 void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     
-    serializer.serialize ( "height",        this->mHeight );
-    serializer.serialize ( "time",          this->mTime );
+    serializer.serialize ( "height",            this->mHeight );
+    serializer.serialize ( "time",              this->mTime );
+    serializer.serialize ( "blockDelay",        this->mBlockDelay );
+    serializer.serialize ( "rewriteWindow",     this->mRewriteWindow );
     
     if ( !this->isGenesis ()) {
     
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
-        serializer.serialize ( "pose",        this->mPose );
+        serializer.serialize ( "pose",          this->mPose );
         serializer.serialize ( "charm",         this->mCharm );
     }
     
-    serializer.serialize ( "digest",        this->mDigest );
-    serializer.serialize ( "signature",     this->mSignature );
+    serializer.serialize ( "digest",            this->mDigest );
+    serializer.serialize ( "signature",         this->mSignature );
 }
 
 //----------------------------------------------------------------//
 void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
     
-    serializer.serialize ( "height",        this->mHeight );
-    serializer.serialize ( "time",          this->mTime );
+    serializer.serialize ( "height",            this->mHeight );
+    serializer.serialize ( "time",              this->mTime );
+    serializer.serialize ( "blockDelay",        this->mBlockDelay );
+    serializer.serialize ( "rewriteWindow",     this->mRewriteWindow );
     
     if ( !this->isGenesis ()) {
         
         serializer.serialize ( "minerID",       this->mMinerID );
         serializer.serialize ( "prevDigest",    this->mPrevDigest );
-        serializer.serialize ( "pose",        this->mPose );
+        serializer.serialize ( "pose",          this->mPose );
         serializer.serialize ( "charm",         this->mCharm );
     }
     

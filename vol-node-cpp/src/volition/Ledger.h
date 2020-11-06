@@ -106,7 +106,9 @@ private:
 
 public:
 
-    static constexpr const u64 DEFAULT_BLOCK_SIZE   = 1024;
+    static constexpr const u64 DEFAULT_BLOCK_SIZE_IN_POINTS             = 1024;     // not enforced for genesis block
+    static constexpr const u64 DEFAULT_BLOCK_DELAY_IN_SECONDS           = 30;       // 0.5 min
+    static constexpr const u64 DEFAULT_REWRITE_WINDOW_IN_SECONDS        = 600;      // 10 min
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_accountAlias ( string accountName ) {
@@ -125,13 +127,18 @@ public:
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_blockPose () {
-        return "blockPose";
+    static LedgerKey keyFor_blockDelay () {
+        return "blockDelay";
     }
     
     //----------------------------------------------------------------//
     static LedgerKey keyFor_blockHash () {
         return "blockHash";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_blockPose () {
+        return "blockPose";
     }
     
     //----------------------------------------------------------------//
@@ -184,6 +191,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_rewriteWindow () {
+        return "rewriteWindow";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_schema () {
         return "schema";
     }
@@ -217,13 +229,15 @@ public:
     u64                                 createVOL                       ( u64 amount );
     shared_ptr < Block >                getBlock                        () const;
     shared_ptr < Block >                getBlock                        ( size_t height ) const;
+    time_t                              getBlockDelayInSeconds          () const;
     string                              getBlockHash                    () const;
-    u64                                 getBlockSize                    () const;
+    u64                                 getBlockSizeInPoints            () const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
     string                              getGenesisHash                  () const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
+    time_t                              getRewriteWindowInSeconds       () const;
     const Schema&                       getSchema                       ();
     SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaHash                   () const;

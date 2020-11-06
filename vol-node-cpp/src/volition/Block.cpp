@@ -28,6 +28,13 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
     if ( ledger.getVersion () != this->mHeight ) return false;
     if ( !this->verify ( ledger, policy )) return false;
 
+    // TODO: move this out to a transaction
+    if ( this->mHeight == 0 ) {
+        ledger.setValue < u64 >( Ledger::keyFor_blockSize (), Ledger::DEFAULT_BLOCK_SIZE_IN_POINTS );
+        ledger.setValue < u64 >( Ledger::keyFor_blockDelay (), ( u64 )this->mBlockDelay );
+        ledger.setValue < u64 >( Ledger::keyFor_rewriteWindow (), ( u64 )this->mRewriteWindow );
+    }
+
     // some transactions need to be applied later.
     // we need to evaluate if they are legal now.
     // then process them once we have the entropy.

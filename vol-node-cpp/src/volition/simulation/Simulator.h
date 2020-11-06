@@ -73,8 +73,7 @@ public:
     void                                setMinerKey             ( size_t idx, const CryptoKeyPair& key );
     void                                setMinerKey             ( size_t idx, string pem );
     void                                setReportMode           ( ReportMode reportMode );
-    void                                setRewriteWindow        ( size_t base, size_t top, time_t window );
-    void                                setTimeStep             ( time_t seconds );
+    void                                setTimeStepInSeconds    ( time_t seconds );
                                         Simulator               ();
                                         ~Simulator              ();
 };

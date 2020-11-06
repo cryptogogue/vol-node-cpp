@@ -117,13 +117,19 @@ shared_ptr < Block > Ledger::getBlock ( size_t height ) const {
 }
 
 //----------------------------------------------------------------//
+time_t Ledger::getBlockDelayInSeconds () const {
+
+    return ( time_t )this->getValue < u64 >( keyFor_blockDelay ());
+}
+
+//----------------------------------------------------------------//
 string Ledger::getBlockHash () const {
 
     return this->getValue < string >( keyFor_blockHash ());
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getBlockSize () const {
+u64 Ledger::getBlockSizeInPoints () const {
 
     return this->getValue < u64 >( keyFor_blockSize ());
 }
@@ -156,6 +162,12 @@ u64 Ledger::getHeight () const {
 string Ledger::getIdentity () const {
 
     return this->getValueOrFallback < string >( keyFor_identity (), "" );
+}
+
+//----------------------------------------------------------------//
+time_t Ledger::getRewriteWindowInSeconds () const {
+
+    return ( time_t )this->getValue < u64 >( keyFor_rewriteWindow ());
 }
 
 //----------------------------------------------------------------//
@@ -229,7 +241,6 @@ void Ledger::init () {
     this->setValue < AssetID::Index >( keyFor_globalAccountCount (), 0 );
     this->setValue < AssetID::Index >( keyFor_globalAssetCount (), 0 );
     this->setValue < string >( keyFor_schema (), "{}" );
-    this->setValue < u64 >( keyFor_blockSize (), DEFAULT_BLOCK_SIZE );
 }
 
 //----------------------------------------------------------------//

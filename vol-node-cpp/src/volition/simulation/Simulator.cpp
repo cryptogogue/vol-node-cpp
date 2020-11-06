@@ -164,6 +164,8 @@ void Simulator::prepare () {
     transaction->setBody ( move ( genesisMinerTransactionBody ));
     
     shared_ptr < Block > genesisBlock = make_shared < Block >();
+    genesisBlock->setBlockDelayInSeconds ( 1 );
+    genesisBlock->setRewriteWindow ( 10 );
     genesisBlock->pushTransaction ( transaction );
     genesisBlock->affirmHash ();
 
@@ -263,15 +265,7 @@ void Simulator::setReportMode ( ReportMode reportMode ) {
 }
 
 //----------------------------------------------------------------//
-void Simulator::setRewriteWindow ( size_t base, size_t top, time_t window ) {
-
-    for ( size_t i = base; i < top; ++i ) {
-        this->mMiners [ i ]->setRewriteWindow ( window );
-    }
-}
-
-//----------------------------------------------------------------//
-void Simulator::setTimeStep ( time_t seconds ) {
+void Simulator::setTimeStepInSeconds ( time_t seconds ) {
 
     this->mTimeStep = seconds;
 }

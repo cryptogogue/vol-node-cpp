@@ -24,8 +24,8 @@ public:
     shared_ptr < const BlockTreeNode >  mTop;
     
     //----------------------------------------------------------------//
-    size_t          getDefeatCount          ( time_t window ) const;
     size_t          getFullLength           () const;
+    size_t          getRewriteDefeatCount   () const;
     size_t          getSegLength            () const;
 };
 
@@ -98,7 +98,7 @@ public:
                                             BlockTreeNode           ();
                                             ~BlockTreeNode          ();
     bool                                    checkStatus             ( Status status ) const;
-    static int                              compare                 ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode, time_t window );
+    static int                              compare                 ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode );
     shared_ptr < const BlockTreeNode >      findFirstIncomplete     () const;
     shared_ptr < const BlockTreeNode >      findInsertion           ( string minerID, const Digest& visage ) const;
     static BlockTreeRoot                    findRoot                ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
@@ -116,6 +116,15 @@ public:
 //================================================================//
 class BlockTree :
     public enable_shared_from_this < BlockTree > {
+public:
+
+    enum CanAppend {
+        APPEND_OK,
+        ALREADY_EXISTS,
+        MISSING_PARENT,
+        TOO_SOON,
+    };
+
 private:
 
     friend class BlockTreeNode;
@@ -136,6 +145,7 @@ public:
     BlockTreeNode::ConstPtr             affirmBlock             ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block );
                                         BlockTree               ();
                                         ~BlockTree              ();
+    CanAppend                           checkAppend             ( const BlockHeader& header ) const;
     BlockTreeNode::ConstPtr             findNodeForHash         ( string hash ) const;
     void                                logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
     void                                mark                    ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status status );

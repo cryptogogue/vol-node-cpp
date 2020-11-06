@@ -20,17 +20,18 @@ namespace Volition {
 //================================================================//
 // BlockTreeSegment
 //================================================================//
-    
-//----------------------------------------------------------------//
-size_t BlockTreeSegment::getDefeatCount ( time_t window ) const {
-
-    return ( size_t )ceil ( difftime (( **this->mTop ).getTime (), ( **this->mHead ).getTime ()) / window );
-}
 
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getFullLength () const {
 
     return (( **this->mTop ).getHeight () - ( **this->mHead ).getHeight ());
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getRewriteDefeatCount () const {
+
+    time_t window = ( **this->mHead ).getRewriteWindow (); // TODO: account for different rewrite windows in segment
+    return ( size_t )ceil ( difftime (( **this->mTop ).getTime (), ( **this->mHead ).getTime ()) / window );
 }
 
 //----------------------------------------------------------------//
@@ -42,7 +43,7 @@ size_t BlockTreeSegment::getSegLength () const {
 //================================================================//
 // BlockTreeRoot
 //================================================================//
-    
+
 //----------------------------------------------------------------//
 size_t BlockTreeRoot::getSegLength () const {
 
@@ -78,7 +79,7 @@ bool BlockTreeNode::checkStatus ( Status status ) const {
 }
 
 //----------------------------------------------------------------//
-int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode, time_t window ) {
+int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode ) {
 
     assert ( node0 && node1 );
 
@@ -92,8 +93,8 @@ int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_pt
         size_t segLength    = root.getSegLength (); // length of the shorter segment (if different lengths)
 
         // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
-        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getDefeatCount ( window ))) return -1;
-        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getDefeatCount ( window ))) return 1;
+        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getRewriteDefeatCount ())) return -1;
+        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getRewriteDefeatCount ())) return 1;
     }
 
     int score = 0;
@@ -350,11 +351,11 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
         assert ( hash == block->getDigest ().toHex ());
     }
 
-    BlockTreeNode::Ptr node = this->findNodeForHash ( hash );;
+    BlockTreeNode::Ptr node = this->findNodeForHash ( hash );
 
     if ( !node ) {
 
-        string prevHash = header->getPrevHash ();
+        string prevHash = header->getPrevDigest ();
         BlockTreeNode::Ptr prevNode = this->findNodeForHash ( prevHash );
 
         if ( !prevNode && this->mRoot ) return NULL;
@@ -394,6 +395,25 @@ BlockTree::~BlockTree () {
     for ( ; nodeIt != this->mNodes.end (); ++nodeIt ) {
         nodeIt->second->mTree = NULL;
     }
+}
+
+//----------------------------------------------------------------//
+BlockTree::CanAppend BlockTree::checkAppend ( const BlockHeader& header ) const {
+
+    string hash = header.getDigest ().toHex ();
+
+    BlockTreeNode::ConstPtr node = this->findNodeForHash ( hash );
+    if ( node ) return ALREADY_EXISTS;
+
+    if ( !node ) {
+
+        string prevHash = header.getPrevDigest ();
+        BlockTreeNode::ConstPtr prevNode = this->findNodeForHash ( prevHash );
+
+        if ( !prevNode ) return MISSING_PARENT;
+        if ( header.getTime () < ( **prevNode ).getNextTime ()) return TOO_SOON;
+    }
+    return APPEND_OK;
 }
 
 //----------------------------------------------------------------//

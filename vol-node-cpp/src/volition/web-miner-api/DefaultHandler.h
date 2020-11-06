@@ -35,7 +35,7 @@ public:
         
         jsonOut.set ( "type",           "VOL_MINING_NODE" );
         jsonOut.set ( "minerID",        this->mWebMiner->getMinerID ().c_str ());
-        jsonOut.set ( "started",        ( string )this->mWebMiner->getStartTime ());
+        jsonOut.set ( "started",        ( string )( SerializableTime ( this->mWebMiner->getStartTime ())));
         jsonOut.set ( "genesis",        ledger.getGenesisHash ());
         jsonOut.set ( "identity",       ledger.getIdentity ());
         jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schemaVersion ));

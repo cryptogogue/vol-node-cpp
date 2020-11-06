@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 
+#include <volition/Accessors.h>
 #include <volition/CryptoKey.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/Signature.h>
@@ -25,7 +26,11 @@ protected:
 
     string              mMinerID;
     u64                 mHeight;
+    
     SerializableTime    mTime;
+    SerializableTime    mBlockDelay;
+    SerializableTime    mRewriteWindow;
+    
     Digest              mDigest;
     Digest              mPrevDigest;
     Signature           mPose;
@@ -44,6 +49,19 @@ protected:
 
 public:
     
+    GET ( const Digest&,        Digest,                 mDigest )
+    GET ( size_t,               Height,                 mHeight )
+    GET ( time_t,               NextTime,               ( mTime + mBlockDelay ))
+    GET ( const Digest&,        Pose,                   mPose )
+    GET ( const Digest&,        PrevDigest,             mPrevDigest )
+    GET ( const Signature&,     Signature,              mSignature )
+    GET ( time_t,               Time,                   mTime )
+
+    GET_SET ( time_t,           BlockDelayInSeconds,    mBlockDelay )
+    GET_SET ( const Digest&,    Charm,                  mCharm )
+    GET_SET ( string,           MinerID,                mMinerID )
+    GET_SET ( time_t,           RewriteWindow,          mRewriteWindow )
+    
     //----------------------------------------------------------------//
     bool operator == ( const BlockHeader& rhs ) const {
         return (( this->mHeight == rhs.mHeight ) && ( this->mSignature == rhs.mSignature ));
@@ -60,20 +78,10 @@ public:
                         BlockHeader                         ();
                         BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKeyPair& key );
                         ~BlockHeader                        ();
-    const Digest&       getCharm                            () const;
-    const Digest&       getDigest                           () const;
-    size_t              getHeight                           () const;
-    string              getMinerID                          () const;
     Digest              getNextCharm                        ( const Digest& visage ) const;
-    const Digest&       getPose                             () const;
-    string              getPrevHash                         () const;
-    const Signature&    getSignature                        () const;
-    time_t              getTime                             () const;
     bool                isGenesis                           () const;
-    bool                isInRewriteWindow                   ( time_t window, time_t now ) const;
+    bool                isInRewriteWindow                   ( time_t now ) const;
     bool                isParent                            ( const BlockHeader& block ) const;
-    void                setMinerID                          ( string minerID );
-    void                setCharm                            ( const Digest& charm );
 };
 
 } // namespace Volition

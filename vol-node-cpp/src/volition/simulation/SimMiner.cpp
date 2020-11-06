@@ -41,7 +41,7 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
     
     assert ( oldBlock );
     
-    BlockTreeNode::ConstPtr prevNode = (( const BlockTree& )this->mBlockTree ).findNodeForHash ( oldBlock->getPrevHash ());
+    BlockTreeNode::ConstPtr prevNode = (( const BlockTree& )this->mBlockTree ).findNodeForHash ( oldBlock->getPrevDigest ());
     assert ( prevNode );
     
     shared_ptr < const Block > prevBlock = prevNode->getBlock ();
