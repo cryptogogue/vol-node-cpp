@@ -22,7 +22,7 @@ SimpleChainRecorder::SimpleChainRecorder ( const Miner& miner, string path ) {
     
     mkdir ( this->mBasePath.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
     
-    const Ledger& ledger = miner.getLedger ();
+    const Ledger& ledger = miner.getWorkingLedger ();
 
     shared_ptr < const Block > genesisBlock = ledger.getBlock ( 0 );
     assert ( genesisBlock );
@@ -45,7 +45,7 @@ SimpleChainRecorder::~SimpleChainRecorder () {
 //----------------------------------------------------------------//
 void SimpleChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) {
     
-    const Ledger& ledger = miner.getLedger ();
+    const Ledger& ledger = miner.getWorkingLedger ();
     assert ( ledger.countBlocks () == 1 );
     
     for ( size_t i = 1; true; ++i ) {
@@ -86,7 +86,7 @@ void SimpleChainRecorder::AbstractChainRecorder_reset () {
 //----------------------------------------------------------------//
 void SimpleChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner ) {
 
-    const Ledger& ledger = miner.getLedger ();
+    const Ledger& ledger = miner.getWorkingLedger ();
 
     size_t length = ledger.countBlocks ();
     for ( size_t i = 0; i < length; ++i ) {

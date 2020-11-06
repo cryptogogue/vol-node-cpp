@@ -116,11 +116,11 @@ DONE: schema - mining reward definition and schedule
 DONE: node - import accounts
 DONE: node - set minimal time between blocks
 DONE: node - set block size (protocol param setup)
+DONE: node - high-confidence chain (based on consensus)
 
 ----------------------------------------------------------------
 LAUNCH
 
-node - high-confidence chain (based on consensus)
 node - implement rake
 node - implement tax
 node - fixed gratuity requirement

@@ -15,7 +15,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 SQLiteChainRecorder::SQLiteChainRecorder ( const Miner& miner, string path ) {
     
-    const Ledger& ledger = miner.getLedger ();
+    const Ledger& ledger = miner.getWorkingLedger ();
 
     shared_ptr < const Block > genesisBlock = ledger.getBlock ( 0 );
     assert ( genesisBlock );
@@ -41,7 +41,7 @@ SQLiteChainRecorder::~SQLiteChainRecorder () {
 void SQLiteChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) {
     UNUSED ( miner );
     
-    const Ledger& ledger = miner.getLedger ();
+    const Ledger& ledger = miner.getWorkingLedger ();
     assert ( ledger.countBlocks () == 1 );
 
     this->mDB.exec (
@@ -55,7 +55,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_loadChain ( Miner& miner ) {
             
             assert ( height == row );
             if ( row == 0 ) {
-                const Ledger& ledger = miner.getLedger ();
+                const Ledger& ledger = miner.getWorkingLedger ();
                 shared_ptr < const Block > genesisBlock = ledger.getBlock ( 0 );
                 assert ( genesisBlock );
                 assert ( genesisBlock->getDigest ().toHex () == hash );

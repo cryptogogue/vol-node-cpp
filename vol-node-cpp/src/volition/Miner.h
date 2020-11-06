@@ -200,12 +200,12 @@ public:
     GET ( BlockTreeNode::ConstPtr,                  BestBranch,                 mBestBranch )
     GET ( const BlockTree&,                         BlockTree,                  mBlockTree )
     GET ( BlockTreeNode::ConstPtr,                  ChainTag,                   mChainTag )
-    GET ( const Ledger&,                            HighConfidenceLedger,       mHighConfidenceLedger )
-    GET ( const Ledger&,                            Ledger,                     *mChain )
+    GET ( const Ledger&,                            Ledger,                     mHighConfidenceLedger )
     GET ( u64,                                      MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                   Reward,                     mConfig.mReward )
     GET ( time_t,                                   StartTime,                  mStartTime )
     GET ( const Signature&,                         Visage,                     mVisage )
+    GET ( const Ledger&,                            WorkingLedger,              *mChain )
     
     SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  mMessenger )
     
@@ -233,6 +233,7 @@ public:
     const set < string >&               getActiveMinerURLs          () const;
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
+    Ledger&                             getWorkingLedger            ();
     bool                                isLazy                      () const;
     void                                loadGenesisBlock            ( string path );
     void                                loadGenesisLedger           ( string path );

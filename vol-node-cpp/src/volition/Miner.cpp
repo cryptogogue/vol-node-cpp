@@ -152,8 +152,8 @@ bool Miner::checkBestBranch ( string miners ) const {
 //----------------------------------------------------------------//
 double Miner::checkConsensus ( BlockTreeNode::ConstPtr tag ) const {
 
-    double count = 0;
-    double current = 0;
+    double count = 1;
+    double current = 1;
 
     set < shared_ptr < RemoteMiner >>::const_iterator minerIt = this->mOnlineMiners.cbegin ();
     for ( ; minerIt != this->mOnlineMiners.cend (); ++minerIt ) {
@@ -162,7 +162,6 @@ double Miner::checkConsensus ( BlockTreeNode::ConstPtr tag ) const {
         if ( tag->isAncestorOf ( remoteMiner->mTag )) count += 1;
         current += 1;
     }
-    if (( current == 0 ) || ( count == current )) return 1;
     return ( count / current );
 }
 
@@ -199,7 +198,7 @@ void Miner::composeChain () {
 //----------------------------------------------------------------//
 void Miner::discoverMiners () {
 
-    set < string > miners = this->getLedger ().getMiners ();
+    set < string > miners = this->getWorkingLedger ().getMiners ();
     set < string >::iterator minerIt = miners.begin ();
     for ( ; minerIt != miners.end (); ++minerIt ) {
         
@@ -208,7 +207,7 @@ void Miner::discoverMiners () {
         if ( minerID != this->mMinerID ) {
             
             if ( this->mRemoteMinersByID.find ( minerID ) == this->mRemoteMinersByID.cend ()) {
-                AccountODBM minerODBM ( this->getLedger (), *minerIt );
+                AccountODBM minerODBM ( this->getWorkingLedger (), *minerIt );
                 string url = minerODBM.mMinerInfo.get ()->getURL ();
                 this->affirmRemoteMiner ( url );
             }
@@ -255,6 +254,12 @@ size_t Miner::getChainSize () const {
 
 //----------------------------------------------------------------//
 Ledger& Miner::getLedger () {
+
+    return this->mHighConfidenceLedger;
+}
+
+//----------------------------------------------------------------//
+Ledger& Miner::getWorkingLedger () {
 
     assert ( this->mChain );
     return *this->mChain;

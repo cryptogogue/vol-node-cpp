@@ -213,8 +213,10 @@ void Simulator::report () {
         
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "STEP: %d", ( int )this->mStepCount );
             for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
+            
                 shared_ptr < Miner > miner = this->mMiners [ i ];
                 BlockTreeNode::ConstPtr tail = miner->getBestBranch ();
+                
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
             }
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
@@ -315,7 +317,7 @@ void Simulator::step () {
         }
         
         ScopedMinerLock minerLock ( miner );
-        tree.addChain ( this->mMiners [ i ]->getLedger ());
+        tree.addChain ( this->mMiners [ i ]->getWorkingLedger ());
     }
     
     this->mMessenger->updateAndDispatch ();
