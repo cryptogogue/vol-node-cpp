@@ -48,7 +48,6 @@
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
-		CD20002A254660F300DEB809 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000442548CC9200DEB809 /* UnsecureRandom.h */; };
 		CD2000592548DAF100DEB809 /* SimTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000572548DAF100DEB809 /* SimTransaction.h */; };
 		CD200074254A42E900DEB809 /* MiningReward.h in Headers */ = {isa = PBXBuildFile; fileRef = CD200073254A42E900DEB809 /* MiningReward.h */; };
@@ -322,6 +321,12 @@
 		CDDA74902552D423007AAA07 /* LoadLedger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA748E2552D423007AAA07 /* LoadLedger.cpp */; };
 		CDDA74912552D423007AAA07 /* LoadLedger.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA748F2552D423007AAA07 /* LoadLedger.h */; };
 		CDDA74C5255568F4007AAA07 /* BlockODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74C3255568F4007AAA07 /* BlockODBM.h */; };
+		CDDA74D92556B180007AAA07 /* FeeSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74D82556B180007AAA07 /* FeeSchedule.h */; };
+		CDDA74E32556BA3A007AAA07 /* SetFeeSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74E22556BA3A007AAA07 /* SetFeeSchedule.h */; };
+		CDDA74FD2556D997007AAA07 /* FeeDistributionTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74FC2556D997007AAA07 /* FeeDistributionTable.h */; };
+		CDDA75072556E724007AAA07 /* TestFeeDistributionTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */; };
+		CDDA75282556F174007AAA07 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
+		CDDA75322556F5ED007AAA07 /* SetFeeDistributionTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */; };
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
@@ -973,6 +978,11 @@
 		CDDA748E2552D423007AAA07 /* LoadLedger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LoadLedger.cpp; path = src/volition/transactions/LoadLedger.cpp; sourceTree = "<group>"; };
 		CDDA748F2552D423007AAA07 /* LoadLedger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadLedger.h; path = src/volition/transactions/LoadLedger.h; sourceTree = "<group>"; };
 		CDDA74C3255568F4007AAA07 /* BlockODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockODBM.h; path = src/volition/BlockODBM.h; sourceTree = "<group>"; };
+		CDDA74D82556B180007AAA07 /* FeeSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeeSchedule.h; path = src/volition/FeeSchedule.h; sourceTree = "<group>"; };
+		CDDA74E22556BA3A007AAA07 /* SetFeeSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetFeeSchedule.h; path = src/volition/transactions/SetFeeSchedule.h; sourceTree = "<group>"; };
+		CDDA74FC2556D997007AAA07 /* FeeDistributionTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeeDistributionTable.h; path = src/volition/FeeDistributionTable.h; sourceTree = "<group>"; };
+		CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFeeDistributionTable.cpp; path = src/volition/gtest/TestFeeDistributionTable.cpp; sourceTree = "<group>"; };
+		CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetFeeDistributionTable.h; path = src/volition/transactions/SetFeeDistributionTable.h; sourceTree = "<group>"; };
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
@@ -1267,6 +1277,8 @@
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CDD11D8922ED6E070051F04E /* AssetFieldValue.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
+				CDDA74FC2556D997007AAA07 /* FeeDistributionTable.h */,
+				CDDA74D82556B180007AAA07 /* FeeSchedule.h */,
 				CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */,
 				CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */,
 				CDA1573623FA59FE00DFACCF /* KeyAndPolicy.h */,
@@ -1337,6 +1349,7 @@
 				CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */,
 				CDFA2382245188DF00B4CECF /* TestCrafting.cpp */,
 				CDFA2385245189E700B4CECF /* TestCrafting.json.h */,
+				CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */,
 				CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
 				CD762ADB23284438005AC85D /* TestEntitlements.cpp */,
@@ -1410,12 +1423,12 @@
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransactionBody.h */,
 				CD0C3E1420C14E8A006E3B1C /* TheTransactionBodyFactory.cpp */,
 				CD0C3E1520C14E8A006E3B1C /* TheTransactionBodyFactory.h */,
-				CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */,
-				CD2AB81A230E7D1E00805F70 /* TransactionMaker.h */,
 				CD2AB814230E79D400805F70 /* Transaction.cpp */,
 				CD2AB815230E79D400805F70 /* Transaction.h */,
 				CD7751B02527093900A53765 /* TransactionContext.cpp */,
 				CDA1573823FA7B8800DFACCF /* TransactionContext.h */,
+				CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */,
+				CD2AB81A230E7D1E00805F70 /* TransactionMaker.h */,
 				CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */,
 				CD964FA223C48EAB009010C3 /* TransactionQueue.h */,
 				CDFA239A24601DA100B4CECF /* TransactionResult.cpp */,
@@ -1636,6 +1649,8 @@
 				CDBFD543218B8999002AB0C3 /* SendAssets.h */,
 				CDBFD544218B8999002AB0C3 /* SendVOL.h */,
 				CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */,
+				CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */,
+				CDDA74E22556BA3A007AAA07 /* SetFeeSchedule.h */,
 				CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */,
 			);
 			name = transactions;
@@ -1790,6 +1805,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDBFD546218B8999002AB0C3 /* RestrictAccount.h in Headers */,
+				CDDA74D92556B180007AAA07 /* FeeSchedule.h in Headers */,
 				CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */,
 				CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */,
 				CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */,
@@ -1859,6 +1875,7 @@
 				CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */,
 				CDBFD54A218B8999002AB0C3 /* RestrictKey.h in Headers */,
 				CDAF1AC0254FECB400CF1010 /* SQLite.h in Headers */,
+				CDDA74E32556BA3A007AAA07 /* SetFeeSchedule.h in Headers */,
 				CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */,
 				CD7751D2252A790400A53765 /* SimMiner.h in Headers */,
 				CD20FF86253D870800DEB809 /* ControlCommands.h in Headers */,
@@ -1917,6 +1934,7 @@
 				CD039C7123F7D7A90012CE4F /* LedgerFieldODBM.h in Headers */,
 				CD4E81A4210593BD007DA585 /* Ledger.h in Headers */,
 				CDBFD54F218B8999002AB0C3 /* SendAssets.h in Headers */,
+				CDDA75322556F5ED007AAA07 /* SetFeeDistributionTable.h in Headers */,
 				CDF8AD5621F2D106000E285F /* Transactions.h in Headers */,
 				CDB8B40221ACC874004EE816 /* AccountKeyListHandler.h in Headers */,
 				CD7C747B23B6EC6700FBE468 /* UpgradeAssets.h in Headers */,
@@ -1951,6 +1969,7 @@
 				CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
 				CD775257253535FA00A53765 /* LedgerObjectFieldODBM.h in Headers */,
+				CDDA74FD2556D997007AAA07 /* FeeDistributionTable.h in Headers */,
 				CD4E8191210593A4007DA585 /* AbstractCryptoKey.h in Headers */,
 				CD762AE12328D109005AC85D /* Entitlements.h in Headers */,
 				CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */,
@@ -2442,10 +2461,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
+				CDDA75282556F174007AAA07 /* TestWebMiner.cpp in Sources */,
 				CD20FFFE254545FA00DEB809 /* TestAssetID.cpp in Sources */,
 				CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */,
 				CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */,
-				CD20002A254660F300DEB809 /* TestWebMiner.cpp in Sources */,
+				CDDA75072556E724007AAA07 /* TestFeeDistributionTable.cpp in Sources */,
 				CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

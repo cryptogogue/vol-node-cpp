@@ -57,7 +57,12 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::
         
         TransactionContext context ( ledger, accountODBM, keyAndPolicy, time );
         
-        u64 cost = this->mBody->cost ();
+        const FeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getFeeName ());
+        
+        if ( !feeProfile.checkProfitShare ( maker->getGratuity (), maker->getProfitShare ())) return "Incorrect profit share.";
+        if ( !feeProfile.checkTransferTax ( this->getSendVOL (), maker->getTransferTax ())) return "Incorrect transfer tax.";
+        
+        u64 cost = this->getCost ();
         if ( context.mAccount.mBalance < cost ) return "Insufficient funds.";
         
         result = this->mBody->apply ( context );
@@ -68,6 +73,8 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::
                 accountODBM.incAccountTransactionNonce ( this->getNonce (), this->getUUID ());
                 
                 if ( cost > 0 ) {
+                
+                    // deduct the total cost from maker
                     Account accountUpdated = context.mAccount;
                     accountUpdated.mBalance -= cost;
                     accountODBM.mBody.set ( accountUpdated );
@@ -121,36 +128,6 @@ TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, Ac
 }
 
 //----------------------------------------------------------------//
-u64 Transaction::getGratuity () const {
-
-    return this->mBody ? this->mBody->gratuity () : 0;
-}
-
-//----------------------------------------------------------------//
-const TransactionMaker* Transaction::getMaker () const {
-
-    return ( this->mBody && this->mBody->mMaker ) ? this->mBody->mMaker.get () : NULL;
-}
-
-//----------------------------------------------------------------//
-u64 Transaction::getNonce () const {
-
-    return this->mBody ? this->mBody->nonce () : 0;
-}
-
-//----------------------------------------------------------------//
-string Transaction::getUUID () const {
-
-    return this->mBody ? this->mBody->uuid () : "";
-}
-
-//----------------------------------------------------------------//
-u64 Transaction::maturity () const {
-
-    return this->mBody->maturity ();
-}
-
-//----------------------------------------------------------------//
 void Transaction::setBody ( shared_ptr < AbstractTransactionBody > body ) {
 
     this->mBody = body;
@@ -170,17 +147,6 @@ Transaction::Transaction () {
 
 //----------------------------------------------------------------//
 Transaction::~Transaction () {
-}
-
-//----------------------------------------------------------------//
-string Transaction::typeString () const {
-
-    return this->mBody ? this->mBody->typeString () : "";
-}
-
-//----------------------------------------------------------------//
-u64 Transaction::weight () const {
-    return this->mBody->weight ();
 }
 
 //================================================================//

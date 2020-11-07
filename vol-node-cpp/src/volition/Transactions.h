@@ -22,6 +22,8 @@
 #include <volition/transactions/SendAssets.h>
 #include <volition/transactions/SendVOL.h>
 #include <volition/transactions/SetEntitlements.h>
+#include <volition/transactions/SetFeeDistributionTable.h>
+#include <volition/transactions/SetFeeSchedule.h>
 #include <volition/transactions/UpgradeAssets.h>
 
 #endif

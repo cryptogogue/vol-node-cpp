@@ -58,30 +58,38 @@ protected:
 
     //----------------------------------------------------------------//
     virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
-    virtual u64                     AbstractTransactionBody_cost            () const;
+    virtual string                  AbstractTransactionBody_feeName         () const;
     virtual TransactionResult       AbstractTransactionBody_genesis         ( Ledger& ledger ) const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
+    virtual u64                     AbstractTransactionBody_sendVOL         () const;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;
     virtual u64                     AbstractTransactionBody_weight          () const = 0;
 
 public:
 
+    GET_COMPOSED ( u64,         Gratuity,           this->mMaker,      0 )
+    GET_COMPOSED ( u64,         Nonce,              this->mMaker,      0 )
+    GET_COMPOSED ( u64,         ProfitShare,        this->mMaker,      0 )
+    GET_COMPOSED ( u64,         TransferTax,        this->mMaker,      0 )
+
+    GET ( u64,                  Cost,               ( this->getGratuity () + this->getSendVOL ()))
+    GET ( string,               FeeName,            this->AbstractTransactionBody_feeName ())
+    GET ( u64,                  Maturity,           this->AbstractTransactionBody_maturity ())
+    GET ( u64,                  SendVOL,            this->AbstractTransactionBody_sendVOL ())
+    GET ( string,               TypeString,         this->AbstractTransactionBody_typeString ())
+    GET ( u64,                  Weight,             this->AbstractTransactionBody_weight ())
+    
+    GET_SET ( u64,              MaxHeight,          this->mMaxHeight )
+    GET_SET ( time_t,           RecordBy,           this->mRecordBy )
+    GET_SET ( string,           UUID,               this->mUUID )
+
     //----------------------------------------------------------------//
-                            AbstractTransactionBody                 ();
-                            ~AbstractTransactionBody                ();
-    TransactionResult       apply                                   ( TransactionContext& context ) const;
-    u64                     cost                                    () const;
-    TransactionResult       genesis                                 ( Ledger& ledger );
-    u64                     gratuity                                () const;
-    u64                     maturity                                () const;
-    u64                     nonce                                   () const;
-    void                    setMaker                                ( const TransactionMaker& maker );
-    void                    setMaxHeight                            ( u64 maxHeight );
-    void                    setRecordBy                             ( time_t recordBy );
-    void                    setUUID                                 ( string uuid );
-    string                  typeString                              () const;
-    string                  uuid                                    () const;
-    u64                     weight                                  () const;
+                                AbstractTransactionBody                 ();
+                                ~AbstractTransactionBody                ();
+    TransactionResult           apply                                   ( TransactionContext& context ) const;
+    const TransactionMaker*     getMaker                                () const;
+    TransactionResult           genesis                                 ( Ledger& ledger );
+    void                        setMaker                                ( const TransactionMaker& maker );
 };
 
 } // namespace Volition

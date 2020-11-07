@@ -28,6 +28,8 @@ TransactionContext::TransactionContext ( Ledger& ledger, AccountODBM& accountODB
         this->mAccountEntitlements = ledger.getEntitlements < AccountEntitlements >( *accountODBM.mBody.get ());
         this->mKeyEntitlements = ledger.getEntitlements < KeyEntitlements >( keyAndPolicy );
     }
+    
+    this->mFeeSchedule = ledger.getFeeSchedule ();
 }
 
 } // namespace Volition

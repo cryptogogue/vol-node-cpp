@@ -731,9 +731,6 @@ void Miner::step ( time_t now ) {
         // BUILD the current chain
         this->composeChain ();
         
-        // UPDATE the high confidence tag
-        this->updateHighConfidenceTag ();
-        
         // EXTEND chain if complete and has consensus
         if ( this->canExtend ( now )) {
             this->extend ( now );
@@ -748,6 +745,9 @@ void Miner::step ( time_t now ) {
     else {
         this->extend ( now );
     }
+    
+    // UPDATE the high confidence tag
+    this->updateHighConfidenceTag ();
     
     if ( this->mChainTag != prevChain ) {
         this->saveChain ();

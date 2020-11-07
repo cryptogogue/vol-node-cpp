@@ -7,6 +7,8 @@
 #include <volition/AssetMethodInvocation.h>
 #include <volition/AssetODBM.h>
 #include <volition/BlockODBM.h>
+#include <volition/FeeDistributionTable.h>
+#include <volition/FeeSchedule.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
@@ -101,6 +103,18 @@ u64 Ledger::createVOL ( u64 amount ) {
 }
 
 //----------------------------------------------------------------//
+void Ledger::distribute ( u64 amount ) {
+
+    if ( amount == 0 ) return;
+    this->setFeeDistributionPool ( this->getFeeDistributionPool () + amount );
+    
+    shared_ptr < FeeDistributionTable > distributionTable = this->getObjectOrNull < FeeDistributionTable >( this->keyFor_feeDistributionTable ());
+    if ( distributionTable ) {
+        distributionTable->distribute ( *this );
+    }
+}
+
+//----------------------------------------------------------------//
 shared_ptr < const Block > Ledger::getBlock () const {
 
     u64 totalBlocks = this->countBlocks ();
@@ -144,6 +158,18 @@ Entropy Ledger::getEntropy () const {
 string Ledger::getEntropyString () const {
 
     return this->getValueOrFallback < string >( keyFor_entropy (), "" );
+}
+
+//----------------------------------------------------------------//
+u64 Ledger::getFeeDistributionPool () const {
+
+    return this->getValueOrFallback < u64 >( keyFor_feeDistributionPool (), 0 );
+}
+
+//----------------------------------------------------------------//
+FeeSchedule Ledger::getFeeSchedule () const {
+    
+    return *this->getObjectOrNull < FeeSchedule >( keyFor_feeSchedule ());
 }
 
 //----------------------------------------------------------------//
@@ -242,6 +268,7 @@ void Ledger::init () {
     this->setValue < AssetID::Index >( keyFor_globalAccountCount (), 0 );
     this->setValue < AssetID::Index >( keyFor_globalAssetCount (), 0 );
     this->setValue < string >( keyFor_schema (), "{}" );
+    this->setObject < FeeSchedule >( keyFor_feeSchedule (), FeeSchedule ());
 }
 
 //----------------------------------------------------------------//
@@ -377,6 +404,28 @@ void Ledger::setEntitlements ( string name, const Entitlements& entitlements ) {
 void Ledger::setEntropyString ( string entropy ) {
 
     this->setValue < string >( keyFor_entropy (), entropy );
+}
+
+//----------------------------------------------------------------//
+void Ledger::setFeeDistributionPool ( u64 amount ) {
+
+    this->setValue < u64 >( keyFor_feeDistributionPool (), amount );
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger::setFeeDistributionTable ( const FeeDistributionTable& distributionTable ) {
+
+    if ( !distributionTable.isBalanced ()) return "Distribution table does not balance.";
+    if ( !distributionTable.hasAccounts ( *this )) return "Distribution table names unknown accounts.";
+
+    this->setObject < FeeDistributionTable >( keyFor_feeDistributionTable (), distributionTable );
+    return true;
+}
+
+//----------------------------------------------------------------//
+void Ledger::setFeeSchedule ( const FeeSchedule& feeSchedule ) {
+
+    this->setObject < FeeSchedule >( keyFor_feeSchedule (), feeSchedule );
 }
 
 //----------------------------------------------------------------//

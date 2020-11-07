@@ -42,16 +42,16 @@ TEST ( Crafting, crafting ) {
     AccountID accountID = ledger.getAccountID ( "test" );
     ASSERT_TRUE ( accountID != AccountID::NULL_INDEX );
     
-    result = ledger.awardAssets ( schema, accountID, "pack", 1, t );
+    result = ledger.awardAssets ( accountID, "pack", 1, t );
     ASSERT_TRUE ( result );
     
     AssetMethodInvocation invocation;
     invocation.setMethod ( "openPack" );
     invocation.setAssetParam ( "pack", 0 );
-    result = ledger.invoke ( schema, "test", invocation, t );
+    result = ledger.invoke ( "test", invocation, t );
     ASSERT_TRUE ( result );
     
-    map < string, size_t > histogram = ledger.getInventoryHistogram ( schema, accountID );
+    map < string, size_t > histogram = ledger.getInventoryHistogram ( accountID );
     
     ASSERT_TRUE ( histogram [ "common" ] == 3 );
     ASSERT_TRUE ( histogram [ "rare" ] == 2 );
@@ -91,11 +91,11 @@ TEST ( Rewards, rewards ) {
 
     // boosterBox has a limit of 3 rewards
     for ( size_t i = 0; i < 5; ++i ) {
-        result = ledger.invokeReward ( schema, "test", "boosterBox", t );
+        result = ledger.invokeReward ( "test", "boosterBox", t );
         ASSERT_TRUE ( result );
     }
 
-    map < string, size_t > histogram = ledger.getInventoryHistogram ( schema, accountID );
+    map < string, size_t > histogram = ledger.getInventoryHistogram ( accountID );
     ASSERT_TRUE ( histogram [ "pack" ] == 36 );
 }
 

@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/AccountEntitlements.h>
 #include <volition/AccountODBM.h>
+#include <volition/FeeSchedule.h>
 #include <volition/KeyEntitlements.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/TransactionMaker.h>
@@ -23,14 +24,15 @@ class Ledger;
 class TransactionContext {
 public:
 
-    Ledger&                 mLedger;
-    AccountID               mIndex;
-    AccountODBM&            mAccountODBM;
     const Account           mAccount;
-    const KeyAndPolicy&     mKeyAndPolicy;
-    time_t                  mTime;
     Entitlements            mAccountEntitlements;
+    AccountODBM&            mAccountODBM;
+    FeeSchedule             mFeeSchedule;
+    AccountID               mIndex;
+    const KeyAndPolicy&     mKeyAndPolicy;
     Entitlements            mKeyEntitlements;
+    Ledger&                 mLedger;
+    time_t                  mTime;
 
     //----------------------------------------------------------------//
     TransactionContext      ( Ledger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time );

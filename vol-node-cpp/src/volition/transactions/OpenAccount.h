@@ -85,7 +85,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    u64 AbstractTransactionBody_cost () const override {
+    u64 AbstractTransactionBody_sendVOL () const override {
     
         return this->mGrant;
     }

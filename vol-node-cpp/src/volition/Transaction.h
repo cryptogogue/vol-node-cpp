@@ -42,21 +42,27 @@ protected:
 
 public:
 
+    GET_COMPOSED ( u64,                          Cost,                   this->mBody,       0 )
+    GET_COMPOSED ( string,                       FeeName,                this->mBody,       "" )
+    GET_COMPOSED ( u64,                          Gratuity,               this->mBody,       0 )
+    GET_COMPOSED ( const TransactionMaker*,      Maker,                  this->mBody,       NULL )
+    GET_COMPOSED ( u64,                          Maturity,               this->mBody,       0 )
+    GET_COMPOSED ( u64,                          Nonce,                  this->mBody,       0 )
+    GET_COMPOSED ( u64,                          ProfitShare,            this->mBody,       0 )
+    GET_COMPOSED ( u64,                          SendVOL,                this->mBody,       0 )
+    GET_COMPOSED ( u64,                          TransferTax,            this->mBody,       0 )
+    GET_COMPOSED ( string,                       TypeString,             this->mBody,       "" )
+    GET_COMPOSED ( string,                       UUID,                   this->mBody,       "" )
+    GET_COMPOSED ( u64,                          Weight,                 this->mBody,       0 )
+
     //----------------------------------------------------------------//
     TransactionResult           apply                   ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker              ( string accountName, string uuid ) const;
     TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
-    u64                         getGratuity             () const;
-    const TransactionMaker*     getMaker                () const;
-    u64                         getNonce                () const;
-    string                      getUUID                 () const;
-    u64                         maturity                () const;
     void                        setBody                 ( shared_ptr < AbstractTransactionBody > body );
     void                        sign                    ( const CryptoKeyPair& keyPair );
                                 Transaction             ();
                                 ~Transaction            ();
-    string                      typeString              () const;
-    u64                         weight                  () const;
 };
 
 } // namespace Volition

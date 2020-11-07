@@ -156,7 +156,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             shared_ptr < const Transaction > transaction = makerQueue.nextTransaction ( info.mNonce );
             if ( !transaction ) continue; // skip if no transaction
             
-            u64 transactionSize = transaction->weight ();
+            u64 transactionSize = transaction->getWeight ();
             if ( maxBlockSize < transactionSize ) {
                 makerQueue.setError ( Format::write ( "Transaction weight of %d exceeds maximum block size of %d.", transactionSize, maxBlockSize ));
                 continue;

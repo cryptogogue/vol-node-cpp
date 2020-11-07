@@ -17,6 +17,8 @@ class TransactionMaker :
 protected:
 
     u64                     mGratuity;
+    u64                     mProfitShare;
+    u64                     mTransferTax;
     string                  mAccountName;   // account of signer; account being modified; sender account
     string                  mKeyName;
     u64                     mNonce;
@@ -31,6 +33,8 @@ public:
     GET_SET ( u64,          Gratuity,           mGratuity )
     GET_SET ( string,       KeyName,            mKeyName )
     GET_SET ( u64,          Nonce,              mNonce )
+    GET_SET ( u64,          ProfitShare,        mProfitShare )
+    GET_SET ( u64,          TransferTax,        mTransferTax )
 
     //----------------------------------------------------------------//
                             TransactionMaker                    ();

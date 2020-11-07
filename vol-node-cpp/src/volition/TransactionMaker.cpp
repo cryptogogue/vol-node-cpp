@@ -13,6 +13,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 TransactionMaker::TransactionMaker () :
     mGratuity ( 0 ),
+    mProfitShare ( 0 ),
+    mTransferTax ( 0 ),
     mKeyName ( Ledger::MASTER_KEY_NAME ),
     mNonce ( 0 ) {
 }
@@ -30,6 +32,8 @@ void TransactionMaker::AbstractSerializable_serializeFrom ( const AbstractSerial
 
     serializer.serialize ( "accountName",   this->mAccountName );
     serializer.serialize ( "gratuity",      this->mGratuity );
+    serializer.serialize ( "profitShare",   this->mProfitShare );
+    serializer.serialize ( "transferTax",   this->mTransferTax );
     serializer.serialize ( "keyName",       this->mKeyName );
     serializer.serialize ( "nonce",         this->mNonce );
 }
@@ -39,6 +43,8 @@ void TransactionMaker::AbstractSerializable_serializeTo ( AbstractSerializerTo& 
 
     serializer.serialize ( "accountName",   this->mAccountName );
     serializer.serialize ( "gratuity",      this->mGratuity );
+    serializer.serialize ( "profitShare",   this->mProfitShare );
+    serializer.serialize ( "transferTax",   this->mTransferTax );
     serializer.serialize ( "keyName",       this->mKeyName );
     serializer.serialize ( "nonce",         this->mNonce );
 }

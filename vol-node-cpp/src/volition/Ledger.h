@@ -28,6 +28,8 @@ class AssetFieldValue;
 class AssetMethod;
 class AssetMethodInvocation;
 class Block;
+class FeeDistributionTable;
+class FeeSchedule;
 class KeyEntitlements;
 class Policy;
 class Schema;
@@ -142,6 +144,21 @@ public:
     static LedgerKey keyFor_entropy () {
         return "entropy";
     }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_feeDistributionPool () {
+        return "feeDistributionPool";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_feeDistributionTable () {
+        return "feeDistributionTable";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_feeSchedule () {
+        return "feeSchedule";
+    }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_globalAccountCount () {
@@ -212,12 +229,15 @@ public:
     size_t                              countBlocks                     () const;
     u64                                 countVOL                        () const;
     u64                                 createVOL                       ( u64 amount );
+    void                                distribute                      ( u64 amount );
     shared_ptr < const Block >          getBlock                        () const;
     shared_ptr < const Block >          getBlock                        ( u64 height ) const;
     time_t                              getBlockDelayInSeconds          () const;
     u64                                 getBlockSizeInPoints            () const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
+    u64                                 getFeeDistributionPool          () const;
+    FeeSchedule                         getFeeSchedule                  () const;
     string                              getGenesisHash                  () const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
@@ -240,6 +260,9 @@ public:
     void                                serializeEntitlements           ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
+    void                                setFeeDistributionPool          ( u64 pool );
+    LedgerResult                        setFeeDistributionTable         ( const FeeDistributionTable& distributionTable );
+    void                                setFeeSchedule                  ( const FeeSchedule& feeSchedule );
     bool                                setIdentity                     ( string identity );
     void                                setSchema                       ( const Schema& schema );
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
