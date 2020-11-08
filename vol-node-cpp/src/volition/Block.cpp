@@ -117,9 +117,8 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
     size_t nextMaturity = this->mHeight;
     size_t height = ledger.getVersion ();
 
-    AccountODBM minerODBM ( ledger, this->mMinerID );
-    shared_ptr < const Account > miner = minerODBM.mBody.get ();
-    assert ( miner || ledger.isGenesis ());
+    AccountODBM accountODBM ( ledger, this->mMinerID );
+    assert ( accountODBM || ledger.isGenesis ());
 
     size_t gratuity         = 0;
     size_t profitShare      = 0;
@@ -146,15 +145,15 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
         }
     }
     
-    if ( miner && ( gratuity > 0 )) {
-        Account minerUpdated = *miner;
-        minerUpdated.mBalance += gratuity - profitShare;
-        minerODBM.mBody.set ( minerUpdated );
+    ledger.invokeReward ( this->mMinerID, this->mReward, this->mTime );
+    
+    if ( accountODBM && ( gratuity > 0 )) {
+        Account accountUpdated = *accountODBM.mBody.get ();
+        accountUpdated.mBalance += gratuity - profitShare;
+        accountODBM.mBody.set ( accountUpdated );
     }
     
-    // TODO: distribute tax
-    
-    ledger.invokeReward ( this->mMinerID, this->mReward, this->mTime );
+    ledger.distribute ( transferTax );
     
     return nextMaturity;
 }

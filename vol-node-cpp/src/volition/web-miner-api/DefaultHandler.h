@@ -6,6 +6,7 @@
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
+#include <volition/FeeDistributionTable.h>
 #include <volition/FeeSchedule.h>
 #include <volition/Format.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -44,9 +45,13 @@ public:
         jsonOut.set ( "build",          Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
         jsonOut.set ( "commit",         Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
         jsonOut.set ( "vol",            ledger.countVOL ());
+        jsonOut.set ( "pool",           ledger.getFeeDistributionPool ());
 
         FeeSchedule feeSchedule = ledger.getFeeSchedule ();
         jsonOut.set ( "feeSchedule",    ToJSONSerializer::toJSON ( feeSchedule ));
+
+        FeeDistributionTable feeDistributionTable = ledger.getFeeDistributionTable ();
+        jsonOut.set ( "feeDistributionTable",   ToJSONSerializer::toJSON ( feeDistributionTable ));
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

@@ -237,6 +237,7 @@ public:
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
     u64                                 getFeeDistributionPool          () const;
+    FeeDistributionTable                getFeeDistributionTable         () const;
     FeeSchedule                         getFeeSchedule                  () const;
     string                              getGenesisHash                  () const;
     u64                                 getHeight                       () const;

@@ -47,6 +47,9 @@ public:
         ToJSONSerializer entitlements;
         ledger.serializeEntitlements ( *account, entitlements );
         jsonOut.set ( "entitlements", entitlements );
+        
+        FeeSchedule feeSchedule = ledger.getFeeSchedule ();
+        jsonOut.set ( "feeSchedule", ToJSONSerializer::toJSON ( feeSchedule ));
     }
 
     //----------------------------------------------------------------//

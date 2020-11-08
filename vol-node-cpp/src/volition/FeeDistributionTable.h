@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AccountODBM.h>
+#include <volition/FeeSchedule.h>
 #include <volition/Ledger.h>
 #include <volition/serialization/Serialization.h>
 
@@ -18,19 +19,24 @@ class FeeDistributionTable :
     public AbstractSerializable {
 private:
 
-    SerializableMap < string, double >      mShares;
+    static const u64 DEFAULT_SCALE          = 100;
+
+    u64                                     mScale;
+    SerializableMap < string, u64 >         mShares;
 
 public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
+        serializer.serialize ( "scale",         this->mScale );
         serializer.serialize ( "shares",        this->mShares );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
+        serializer.serialize ( "scale",         this->mScale );
         serializer.serialize ( "shares",        this->mShares );
     }
 
@@ -54,18 +60,17 @@ public:
         if ( !this->isBalanced ()) return;
         if ( !this->hasAccounts ( ledger )) return;
         
-        u64 decimals = this->findDecimals ();
-        u64 dist = ( u64 )floor ( pool / decimals );
+        u64 dist = ( u64 )floor ( pool / this->mScale );
 
         if ( dist > 0 ) {
             
             u64 totalDistributed = 0;
 
-            SerializableMap < string, double >::const_iterator shareIt = this->mShares.cbegin ();
+            SerializableMap < string, u64 >::const_iterator shareIt = this->mShares.cbegin ();
             for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
             
                 string accountName  = shareIt->first;
-                u64 distribution    = ( u64 )( shareIt->second * decimals * dist );
+                u64 distribution    = ( u64 )( shareIt->second * dist );
                 
                 AccountODBM accountODBM ( ledger, accountName );
                 assert ( accountODBM );
@@ -81,23 +86,14 @@ public:
     }
 
     //----------------------------------------------------------------//
-    u64 findDecimals () const {
-        
-        if ( !this->mShares.size ()) return 0;
-        
-        u64 max = 0;
-        SerializableMap < string, double >::const_iterator shareIt = this->mShares.cbegin ();
-        for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
-            u64 decimals = countDecimals ( shareIt->second );
-            max = max < decimals ? decimals : max;
-        }
-        return max;
+    FeeDistributionTable () :
+        mScale ( DEFAULT_SCALE ) {
     }
     
     //----------------------------------------------------------------//
     bool hasAccounts ( const Ledger& ledger ) const {
     
-        SerializableMap < string, double >::const_iterator shareIt = this->mShares.cbegin ();
+        SerializableMap < string, u64 >::const_iterator shareIt = this->mShares.cbegin ();
         for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
             string accountName  = shareIt->first;
             AccountODBM accountODBM ( ledger, accountName );
@@ -110,15 +106,15 @@ public:
     bool isBalanced () const {
     
         double balance = 0;
-        SerializableMap < string, double >::const_iterator shareIt = this->mShares.cbegin ();
+        SerializableMap < string, u64 >::const_iterator shareIt = this->mShares.cbegin ();
         for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
             balance += shareIt->second;
         }
-        return ( balance == 1 );
+        return ( balance == this->mScale );
     }
     
     //----------------------------------------------------------------//
-    void setShare ( string name, double share ) {
+    void setShare ( string name, u64 share ) {
         this->mShares [ name ] = share;
     }
 };

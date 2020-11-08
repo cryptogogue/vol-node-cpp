@@ -167,6 +167,12 @@ u64 Ledger::getFeeDistributionPool () const {
 }
 
 //----------------------------------------------------------------//
+FeeDistributionTable Ledger::getFeeDistributionTable () const {
+    
+    return *this->getObjectOrNull < FeeDistributionTable >( keyFor_feeDistributionTable ());
+}
+
+//----------------------------------------------------------------//
 FeeSchedule Ledger::getFeeSchedule () const {
     
     return *this->getObjectOrNull < FeeSchedule >( keyFor_feeSchedule ());

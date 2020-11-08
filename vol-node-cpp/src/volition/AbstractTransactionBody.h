@@ -72,7 +72,7 @@ public:
     GET_COMPOSED ( u64,         ProfitShare,        this->mMaker,      0 )
     GET_COMPOSED ( u64,         TransferTax,        this->mMaker,      0 )
 
-    GET ( u64,                  Cost,               ( this->getGratuity () + this->getSendVOL ()))
+    GET ( u64,                  Cost,               ( this->getGratuity () + this->getTransferTax () + this->getSendVOL ()))
     GET ( string,               FeeName,            this->AbstractTransactionBody_feeName ())
     GET ( u64,                  Maturity,           this->AbstractTransactionBody_maturity ())
     GET ( u64,                  SendVOL,            this->AbstractTransactionBody_sendVOL ())
