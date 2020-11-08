@@ -16,7 +16,7 @@ Makefile
 *.pbxuser
 *.perspectivev3
 valgrind.out
-genesis
+genesis.json
 sim-miner-keys.json
 /volition
 Pods/

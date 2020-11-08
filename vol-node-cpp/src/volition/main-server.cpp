@@ -55,14 +55,14 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "genesis", "g", "path to the genesis block" )
-                .required ( true )
+            Poco::Util::Option ( "genesis", "g", "path to the genesis file" )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "genesis" )
         );
         
         options.addOption (
-            Poco::Util::Option ( "genesis-format", "gen-fmt", "genesis block format ('block', 'ledger')" )
+            Poco::Util::Option ( "genesis-format", "gen-fmt", "genesis format ('block', 'ledger')" )
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "genesis-format" )
@@ -76,8 +76,8 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "keyfile", "k", "path to key file" )
-                .required ( false )
+            Poco::Util::Option ( "keyfile", "k", "path to public miner key file" )
+                .required ( true )
                 .argument ( "value", true )
                 .binding ( "keyfile" )
         );
@@ -97,14 +97,7 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "nodelist", "n", "path to nodelist file" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "nodelist" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "persist-mode", "", "persist mode ('simple', 'sqlite')" )
+            Poco::Util::Option ( "persist-mode", "", "persist mode ('none', 'simple', 'sqlite')" )
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "persist-mode" )
@@ -125,13 +118,6 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "redis-host", "rh", "redis hostname" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "redis-host" )
-        );
-        
-        options.addOption (
             Poco::Util::Option ( "redis-folder", "rf", "path to the redis folder" )
                 .required ( false )
                 .argument ( "value", true )
@@ -139,17 +125,17 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "redis-host", "rh", "redis hostname" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "redis-host" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "redis-port", "rp", "redis port" )
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "redis-port" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "simple-recorder-folder", "srf", "path to simple recorder folder" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "simple-recorder-folder" )
         );
         
         options.addOption (
@@ -177,26 +163,26 @@ protected:
         }
 //      this->printProperties ();
         
-        string controlKeyfile           = configuration.getString   ( "control-key", "" );
-        string controlLevel             = configuration.getString   ( "control-level", "" );
-        string dump                     = configuration.getString   ( "dump", "" );
-        string genesis                  = configuration.getString   ( "genesis" );
-        string genesisFormat            = configuration.getString   ( "genesis-format", "json" );
-        int interval                    = configuration.getInt      ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
-        string keyfile                  = configuration.getString   ( "keyfile", "" );
-        string logpath                  = configuration.getString   ( "logpath", "" );
-        string minerID                  = configuration.getString   ( "miner", "" );
-        string nodelist                 = configuration.getString   ( "nodelist", "" );
-        string persistMode              = configuration.getString   ( "persist-mode", "" );
-        string persistFolder            = configuration.getString   ( "persist-folder", "persist-chain" );
-        int port                        = configuration.getInt      ( "port", 9090 );
-        string redisConf                = configuration.getString   ( "redis-conf", "./redis.conf" );
-        string redisHost                = configuration.getString   ( "redis-conf", "127.0.0.1" );
-        string redisFolder              = configuration.getString   ( "redis-folder", "./redis" );
-        int redisPort                   = configuration.getInt      ( "redis-port", 0 );
-        string sqliteDBFile             = configuration.getString   ( "sqlite-db-file", "" );
+        string controlKeyfile           = configuration.getString       ( "control-key", "" );
+        string controlLevel             = configuration.getString       ( "control-level", "" );
+        string dump                     = configuration.getString       ( "dump", "" );
+        string genesis                  = configuration.getString       ( "genesis", "genesis.json" );
+        string genesisFormat            = configuration.getString       ( "genesis-format", "block" );
+        int interval                    = configuration.getInt          ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
+        string keyfile                  = configuration.getString       ( "keyfile" );
+        string logpath                  = configuration.getString       ( "logpath", "" );
+        string minerID                  = configuration.getString       ( "miner", "" );
+        string nodelist                 = configuration.getString       ( "nodelist", "" );
+        string persistMode              = configuration.getString       ( "persist-mode", "sqlite" );
+        string persistFolder            = configuration.getString       ( "persist-folder", "persist-chain" );
+        int port                        = configuration.getInt          ( "port", 9090 );
+        string redisConf                = configuration.getString       ( "redis-conf", "./redis.conf" );
+        string redisHost                = configuration.getString       ( "redis-host", "127.0.0.1" );
+        string redisFolder              = configuration.getString       ( "redis-folder", "./redis" );
+        int redisPort                   = configuration.getInt          ( "redis-port", 0 );
+        string sqliteDBFile             = configuration.getString       ( "sqlite-db-file", "" );
         
-        string sslCertFile              = configuration.getString   ( "openSSL.server.certificateFile", "" );
+        string sslCertFile              = configuration.getString       ( "openSSL.server.certificateFile", "" );
         
         if ( logpath.size () > 0 ) {
             freopen ( Format::write ( "%s/%s.log", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stdout );
@@ -253,9 +239,14 @@ protected:
         if ( genesisFormat == "block" ) {
             minerActivity->loadGenesisBlock ( genesis );
         }
-        
+
         if ( genesisFormat == "ledger" ) {
             minerActivity->loadGenesisLedger ( genesis );
+        }
+        
+        if ( !minerActivity->getBestBranch ()) {
+            LOG_F ( INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
+            return Application::EXIT_CONFIG;
         }
         
         if ( persistMode == "simple" ) {
@@ -273,15 +264,12 @@ protected:
             return Application::EXIT_OK;
         }
         
-        if ( keyfile.size () > 0 ) {
-
-            LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
-            if ( !FileSys::exists ( keyfile )) {
-                LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
-                return Application::EXIT_CONFIG;
-            }
-            minerActivity->loadKey ( keyfile );
+        LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
+        if ( !FileSys::exists ( keyfile )) {
+            LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+            return Application::EXIT_CONFIG;
         }
+        minerActivity->loadKey ( keyfile );
         minerActivity->affirmKey ();
         minerActivity->affirmVisage ();
         
