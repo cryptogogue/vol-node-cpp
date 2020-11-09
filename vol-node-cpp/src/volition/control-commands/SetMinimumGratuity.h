@@ -27,10 +27,8 @@ public:
 
     //----------------------------------------------------------------//
     LedgerResult AbstractControlCommandBody_execute ( Miner& miner  ) const override {
-        UNUSED ( miner );
         
-        printf ( "SET MINIMUM: %d\n", ( int )this->mMinimum );
-        
+        miner.setMinimumGratuity ( this->mMinimum );
         return true;
     }
 

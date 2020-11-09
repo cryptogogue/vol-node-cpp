@@ -10,6 +10,7 @@
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
 #include <volition/TransactionResult.h>
+#include <volition/TransactionStatus.h>
 
 namespace Volition {
 
@@ -23,6 +24,14 @@ class Transaction;
 // MakerQueue
 //================================================================//
 class MakerQueue {
+public:
+
+    enum Status {
+        STATUS_OK,
+        BLOCKED_ON_ERROR,
+        BLOCKED_ON_IGNORE,
+    };
+
 protected:
 
     friend class TransactionQueue;
@@ -36,20 +45,23 @@ protected:
     
     Queue                               mQueue;
     Lookup                              mLookup;
-    TransactionResult                   mLastResult;
+
+    Status                              mQueueStatus;
+    TransactionStatus                   mTransactionStatus;
 
 public:
 
     //----------------------------------------------------------------//
     shared_ptr < const Transaction >    getTransaction          ( string uuid ) const;
-    bool                                hasError                () const;
     bool                                hasTransaction          ( u64 nonce ) const;
     bool                                hasTransactions         () const;
+    void                                ignoreTransaction       ( string message, string uuid );
+    bool                                isBlocked               () const;
                                         MakerQueue              ();
     shared_ptr < const Transaction >    nextTransaction         ( u64 nonce ) const;
     void                                pushTransaction         ( shared_ptr < const Transaction > transaction );
     void                                prune                   ( u64 nonce );
-    void                                setError                ( TransactionResult error );
+    void                                setTransactionResult    ( TransactionResult result );
 };
 
 //================================================================//
@@ -73,13 +85,12 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    void                    fillBlock               ( Ledger& chain, Block& block, Block::VerificationPolicy policy );
-    TransactionResult       getLastResult           ( string accountName ) const;
-    bool                    hasError                ( string accountName );
+    void                    fillBlock               ( Ledger& chain, Block& block, Block::VerificationPolicy policy, u64 minimumGratuity = 0 );
+    TransactionStatus       getLastStatus           ( string accountName ) const;
     bool                    hasTransaction          ( string accountName, string uuid ) const;
+    bool                    isBlocked               ( string accountName ) const;
     void                    pruneTransactions       ( const Ledger& chain );
     void                    pushTransaction         ( shared_ptr < const Transaction > transaction );
-    void                    setError                ( shared_ptr < const Transaction > transaction, TransactionResult error );
                             TransactionQueue        ();
     virtual                 ~TransactionQueue       ();
 };

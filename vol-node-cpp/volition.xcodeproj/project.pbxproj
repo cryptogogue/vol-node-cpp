@@ -327,6 +327,7 @@
 		CDDA75072556E724007AAA07 /* TestFeeDistributionTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */; };
 		CDDA75282556F174007AAA07 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CDDA75322556F5ED007AAA07 /* SetFeeDistributionTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */; };
+		CDDA75482559949C007AAA07 /* TransactionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA75462559949C007AAA07 /* TransactionStatus.h */; };
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
@@ -983,6 +984,7 @@
 		CDDA74FC2556D997007AAA07 /* FeeDistributionTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeeDistributionTable.h; path = src/volition/FeeDistributionTable.h; sourceTree = "<group>"; };
 		CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFeeDistributionTable.cpp; path = src/volition/gtest/TestFeeDistributionTable.cpp; sourceTree = "<group>"; };
 		CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetFeeDistributionTable.h; path = src/volition/transactions/SetFeeDistributionTable.h; sourceTree = "<group>"; };
+		CDDA75462559949C007AAA07 /* TransactionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionStatus.h; path = src/volition/TransactionStatus.h; sourceTree = "<group>"; };
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
@@ -1434,6 +1436,7 @@
 				CDFA239A24601DA100B4CECF /* TransactionResult.cpp */,
 				CDFA239824601D6F00B4CECF /* TransactionResult.h */,
 				CDF8AD5521F2D106000E285F /* Transactions.h */,
+				CDDA75462559949C007AAA07 /* TransactionStatus.h */,
 			);
 			name = transaction;
 			sourceTree = "<group>";
@@ -1973,6 +1976,7 @@
 				CD4E8191210593A4007DA585 /* AbstractCryptoKey.h in Headers */,
 				CD762AE12328D109005AC85D /* Entitlements.h in Headers */,
 				CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */,
+				CDDA75482559949C007AAA07 /* TransactionStatus.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

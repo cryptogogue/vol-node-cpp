@@ -27,10 +27,8 @@ public:
 
     //----------------------------------------------------------------//
     LedgerResult AbstractControlCommandBody_execute ( Miner& miner  ) const override {
-        UNUSED ( miner );
         
-        printf ( "SELECT REWARD: %s\n", this->mReward.c_str ());
-        
+        miner.setReward ( this->mReward );
         return true;
     }
 

@@ -46,6 +46,8 @@ public:
         jsonOut.set ( "commit",         Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
         jsonOut.set ( "vol",            ledger.countVOL ());
         jsonOut.set ( "pool",           ledger.getFeeDistributionPool ());
+        jsonOut.set ( "minGratuity",    this->mWebMiner->getMinimumGratuity ());
+        jsonOut.set ( "reward",         this->mWebMiner->getReward ());
 
         FeeSchedule feeSchedule = ledger.getFeeSchedule ();
         jsonOut.set ( "feeSchedule",    ToJSONSerializer::toJSON ( feeSchedule ));

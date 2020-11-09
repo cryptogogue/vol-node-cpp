@@ -9,6 +9,7 @@
 #include <volition/MinerAPIFactory.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/Transaction.h>
+#include <volition/TransactionStatus.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -34,29 +35,11 @@ public:
     
             case HTTP::GET: {
 
-                if ( this->mWebMiner->hasError ( accountName )) {
-                    TransactionResult lastResult = this->mWebMiner->getLastResult ( accountName );
-                    jsonOut.set ( "status", "REJECTED" );
-                    jsonOut.set ( "message", lastResult.getMessage ());
-                    jsonOut.set ( "uuid", lastResult.getUUID ());
-                    return Poco::Net::HTTPResponse::HTTP_OK;
-                }
-
-                const Ledger& ledger = this->mWebMiner->getLedger ();
-
-                if ( ledger.hasTransaction ( accountName, uuid )) {
-                    jsonOut.set ( "status", "ACCEPTED" );
-                    jsonOut.set ( "uuid", uuid );
-                    return Poco::Net::HTTPResponse::HTTP_OK;
-                }
-
-                if ( this->mWebMiner->hasTransaction ( accountName, uuid )) {
-                    jsonOut.set ( "status", "PENDING" );
-                    jsonOut.set ( "uuid", uuid );
-                    return Poco::Net::HTTPResponse::HTTP_OK;
-                }
+                TransactionStatus status = this->mWebMiner->getTransactionStatus ( accountName, uuid );
                 
-                jsonOut.set ( "status", "UNKNOWN" );
+                jsonOut.set ( "status", status.getStatusCodeString ());
+                jsonOut.set ( "message", status.mMessage );
+                jsonOut.set ( "uuid", status.mUUID );
                 return Poco::Net::HTTPResponse::HTTP_OK;
             }
             
@@ -67,7 +50,7 @@ public:
 
                 if ( transaction && transaction->checkMaker ( accountName, uuid )) {
                     this->mWebMiner->pushTransaction ( move ( transaction ));
-                    jsonOut.set ( "status", "RETRY" );
+                    jsonOut.set ( "status", "OK" );
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }
                 return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

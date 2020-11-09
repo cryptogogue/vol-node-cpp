@@ -36,17 +36,10 @@ shared_ptr < const Transaction > MakerQueue::getTransaction ( string uuid ) cons
 }
 
 //----------------------------------------------------------------//
-bool MakerQueue::hasError () const {
-
-    return ( !this->mLastResult );
-}
-
-//----------------------------------------------------------------//
 bool MakerQueue::hasTransaction ( u64 nonce ) const {
 
     return ( this->mQueue.find ( nonce ) != this->mQueue.end ());
 }
-
 
 //----------------------------------------------------------------//
 bool MakerQueue::hasTransactions () const {
@@ -55,8 +48,22 @@ bool MakerQueue::hasTransactions () const {
 }
 
 //----------------------------------------------------------------//
-MakerQueue::MakerQueue () :
-    mLastResult ( true ) {
+void MakerQueue::ignoreTransaction ( string message, string uuid ) {
+
+    this->mQueueStatus = BLOCKED_ON_IGNORE;
+    this->mTransactionStatus = TransactionStatus ( TransactionStatus::IGNORED, message, uuid );
+}
+
+//----------------------------------------------------------------//
+bool MakerQueue::isBlocked () const {
+
+    return ( this->mQueueStatus != STATUS_OK );
+}
+
+//----------------------------------------------------------------//
+MakerQueue::MakerQueue () {
+    
+    this->setTransactionResult ( true );
 }
 
 //----------------------------------------------------------------//
@@ -72,7 +79,7 @@ void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction 
     this->mQueue [ transaction->getNonce ()] = transaction;
     this->mLookup [ transaction->getUUID ()] = transaction;
 
-    this->mLastResult = true;
+    this->setTransactionResult ( true );
 }
 
 //----------------------------------------------------------------//
@@ -91,10 +98,19 @@ void MakerQueue::prune ( u64 nonce ) {
 }
 
 //----------------------------------------------------------------//
-void MakerQueue::setError ( TransactionResult error ) {
+void MakerQueue::setTransactionResult ( TransactionResult result ) {
 
-    this->mLastResult = error;
-    if ( !error ) {
+    if ( result ) {
+        this->mQueueStatus = STATUS_OK;
+        this->mTransactionStatus = TransactionStatus ();
+    }
+    else {
+        this->mQueueStatus = BLOCKED_ON_ERROR;
+        this->mTransactionStatus = TransactionStatus (
+            TransactionStatus::REJECTED,
+            result.getMessage (),
+            result.getUUID ()
+        );
         this->mQueue.clear ();
     }
 }
@@ -113,7 +129,7 @@ void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > tran
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::VerificationPolicy policy ) {
+void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::VerificationPolicy policy, u64 minimumGratuity ) {
 
     Ledger ledger;
     ledger.takeSnapshot ( chain );
@@ -136,7 +152,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             MakerQueue& makerQueue = makerQueueIt->second;
           
             // skip if there's a cached error or if there aren't any transactions
-            if ( makerQueue.hasError ()) continue;
+            if ( makerQueue.isBlocked ()) continue;
             if ( !makerQueue.hasTransactions ()) continue;
           
             MakerQueueInfo info = infoCache [ accountName ];
@@ -156,9 +172,18 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             shared_ptr < const Transaction > transaction = makerQueue.nextTransaction ( info.mNonce );
             if ( !transaction ) continue; // skip if no transaction
             
+            u64 gratuity = transaction->getGratuity ();
+            u64 expectedGratuity = transaction->getWeight () * minimumGratuity;
+            if ( gratuity < expectedGratuity ) {
+                makerQueue.ignoreTransaction ( Format::write ( "Transaction gratuity of %d less than minimum gratuity of %d.", gratuity, expectedGratuity ), transaction->getUUID ());
+                continue;
+            }
+            
             u64 transactionSize = transaction->getWeight ();
             if ( maxBlockSize < transactionSize ) {
-                makerQueue.setError ( Format::write ( "Transaction weight of %d exceeds maximum block size of %d.", transactionSize, maxBlockSize ));
+                TransactionResult result ( Format::write ( "Transaction weight of %d exceeds maximum block size of %d.", transactionSize, maxBlockSize ));
+                result.setTransactionDetails ( *transaction );
+                makerQueue.setTransactionResult ( result );
                 continue;
             }
             
@@ -178,11 +203,21 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
                 more = ( more || makerQueue.hasTransaction ( info.mNonce ));
             }
             else {
-                makerQueue.setError ( result );
+                makerQueue.setTransactionResult ( result );
                 ledger.popVersion ();
             }
         }
     }
+}
+
+//----------------------------------------------------------------//
+TransactionStatus TransactionQueue::getLastStatus ( string accountName ) const {
+
+    const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
+    if ( makerQueue ) {
+        return makerQueue->mTransactionStatus;
+    }
+    return TransactionStatus ();
 }
 
 //----------------------------------------------------------------//
@@ -195,27 +230,6 @@ const MakerQueue* TransactionQueue::getMakerQueueOrNull ( string accountName ) c
     return NULL;
 }
 
-
-//----------------------------------------------------------------//
-TransactionResult TransactionQueue::getLastResult ( string accountName ) const {
-
-    const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
-    if ( makerQueue ) {
-        return makerQueue->mLastResult;
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
-bool TransactionQueue::hasError ( string accountName ) {
-
-    const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
-    if ( makerQueue ) {
-        return makerQueue->hasError ();
-    }
-    return false;
-}
-
 //----------------------------------------------------------------//
 bool TransactionQueue::hasTransaction ( string accountName, string uuid ) const {
 
@@ -223,6 +237,16 @@ bool TransactionQueue::hasTransaction ( string accountName, string uuid ) const 
     if ( makerQueue ) {
         shared_ptr < const Transaction > transaction = makerQueue->getTransaction ( uuid );
         if ( transaction ) return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------//
+bool TransactionQueue::isBlocked ( string accountName ) const {
+
+    const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
+    if ( makerQueue ) {
+        return makerQueue->isBlocked ();
     }
     return false;
 }
@@ -255,8 +279,8 @@ void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
         if ( accountID != AccountID::NULL_INDEX ) {
             
             makerQueue.prune ( AccountODBM ( ledger, accountID ).mTransactionNonce.get ());
-        
-            if ( makerQueue.hasError ()) continue;
+            
+            if ( makerQueue.isBlocked ()) continue;
             if ( makerQueue.hasTransactions ()) continue;
         }
         this->mDatabase.erase ( makerQueueIt );
@@ -274,15 +298,6 @@ void TransactionQueue::reset () {
 
     this->mDatabase.clear ();
     this->mIncoming.clear ();
-}
-
-//----------------------------------------------------------------//
-void TransactionQueue::setError ( shared_ptr < const Transaction > transaction, TransactionResult error ) {
-
-    const TransactionMaker* maker = transaction->getMaker ();
-    if ( !maker ) return;
-
-    return this->mDatabase [ maker->getAccountName ()].setError ( error );
 }
 
 //----------------------------------------------------------------//

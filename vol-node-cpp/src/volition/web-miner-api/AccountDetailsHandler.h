@@ -65,6 +65,7 @@ public:
         AccountODBM accountODBM ( ledger, accountName );
         if ( accountODBM ) {
             AccountDetailsHandler::formatJSON ( ledger, accountODBM, jsonOut );
+            jsonOut.set ( "minGratuity",    this->mWebMiner->getMinimumGratuity ());
             return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;

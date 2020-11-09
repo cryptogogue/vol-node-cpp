@@ -13,6 +13,7 @@
 #include <volition/TransactionQueue.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
+#include <volition/TransactionStatus.h>
 
 namespace Volition {
 
@@ -233,6 +234,7 @@ public:
     const set < string >&               getActiveMinerURLs          () const;
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
+    TransactionStatus                   getTransactionStatus        ( string accountName, string uuid ) const;
     Ledger&                             getWorkingLedger            ();
     bool                                isLazy                      () const;
     void                                loadGenesisBlock            ( string path );

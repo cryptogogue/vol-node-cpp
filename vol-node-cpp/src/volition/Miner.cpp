@@ -259,6 +259,26 @@ Ledger& Miner::getLedger () {
 }
 
 //----------------------------------------------------------------//
+TransactionStatus Miner::getTransactionStatus ( string accountName, string uuid ) const {
+
+    if ( this->isBlocked ( accountName )) {
+        return this->getLastStatus ( accountName );
+    }
+
+    const Ledger& ledger = this->getLedger ();
+
+    if ( ledger.hasTransaction ( accountName, uuid )) {
+        return TransactionStatus ( TransactionStatus::ACCEPTED, "Transaction was accepte and applied.", uuid );
+    }
+
+    if ( this->hasTransaction ( accountName, uuid )) {
+        return TransactionStatus ( TransactionStatus::PENDING, "Transaction is pending in queue.", uuid );
+    }
+    
+    return TransactionStatus ( TransactionStatus::UNKNOWN, "Transaction is unknown.", uuid );
+}
+
+//----------------------------------------------------------------//
 Ledger& Miner::getWorkingLedger () {
 
     assert ( this->mChain );
@@ -338,7 +358,7 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
     block->setBlockDelayInSeconds( this->mChain->getBlockDelayInSeconds ());
     block->setRewriteWindow ( this->mChain->getRewriteWindowInSeconds ());
     
-    this->fillBlock ( *this->mChain, *block, this->mBlockVerificationPolicy );
+    this->fillBlock ( *this->mChain, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
         block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
