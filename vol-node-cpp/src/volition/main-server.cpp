@@ -77,7 +77,7 @@ protected:
         
         options.addOption (
             Poco::Util::Option ( "keyfile", "k", "path to public miner key file" )
-                .required ( true )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "keyfile" )
         );
@@ -91,7 +91,7 @@ protected:
         
         options.addOption (
             Poco::Util::Option ( "miner", "m", "miner name" )
-                .required ( true )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "miner" )
         );
@@ -156,6 +156,7 @@ protected:
         string configfile = configuration.getString ( "config", "" );
         
         if ( configfile.size () > 0 ) {
+            printf ( "LOADING CONFIG FILE: %s\n", configfile.c_str ());
             this->loadConfiguration ( configfile, PRIO_APPLICATION - 1 );
         }
         else {
@@ -209,7 +210,8 @@ protected:
         if ( controlKeyfile.size ()) {
         
             CryptoPublicKey controlKey;
-            FromJSONSerializer::fromJSONFile ( controlKey, controlKeyfile );
+            controlKey.load ( controlKeyfile );
+            
             if ( !controlKey ) {
                 LOG_F ( INFO, "CONTROL KEY NOT FOUND: %s", controlKeyfile.c_str ());
                 return Application::EXIT_CONFIG;
@@ -272,6 +274,7 @@ protected:
         minerActivity->loadKey ( keyfile );
         minerActivity->affirmKey ();
         minerActivity->affirmVisage ();
+        minerActivity->setVerbose ();
         
         LOG_F ( INFO, "MINER ID: %s", minerActivity->getMinerID ().c_str ());
 

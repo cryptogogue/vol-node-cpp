@@ -1,35 +1,33 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_COMMANDS_SELECT_REWARD_H
-#define VOLITION_COMMANDS_SELECT_REWARD_H
+#ifndef VOLITION_COMMANDS_EXTEND_NETWORK_H
+#define VOLITION_COMMANDS_EXTEND_NETWORK_H
 
 #include <volition/common.h>
 #include <volition/AbstractControlCommandBody.h>
-#include <volition/Digest.h>
 #include <volition/Miner.h>
-#include <volition/Schema.h>
 
 namespace Volition {
 namespace Commands {
 
 //================================================================//
-// SelectReward
+// ExtendNetwork
 //================================================================//
-class SelectReward :
+class ExtendNetwork :
     public AbstractControlCommandBody {
 public:
 
-    COMMAND_TYPE ( "SELECT_REWARD" )
+    COMMAND_TYPE ( "EXTEND_NETWORK" )
     COMMAND_CONTROL_LEVEL ( Miner::CONTROL_CONFIG )
 
-    string      mReward;
+    string      mURL;
 
     //----------------------------------------------------------------//
     LedgerResult AbstractControlCommandBody_execute ( Miner& miner  ) const override {
-        UNUSED ( miner );
-        
-        printf ( "SELECT REWARD: %s\n", this->mReward.c_str ());
+    
+        printf ( "Extend Newtork: %s\n", this->mURL.c_str ());
+        miner.affirmRemoteMiner ( this->mURL );
         
         return true;
     }
@@ -38,14 +36,14 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractControlCommandBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "reward",    this->mReward );
+        serializer.serialize ( "url",       this->mURL );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractControlCommandBody::AbstractSerializable_serializeTo ( serializer );
     
-        serializer.serialize ( "reward",    this->mReward );
+        serializer.serialize ( "url",       this->mURL );
     }
 };
 

@@ -36,6 +36,7 @@ public:
     void                    elliptic                ( int nid = DEFAULT_EC_GROUP_NID );
     void                    elliptic                ( string groupName );
     CryptoPublicKey         getPublicKey            () const;
+    void                    load                    ( string filename );
     void                    rsa                     ( uint keyLength = RSA_1024, unsigned long exp = RSA_EXP_65537 );
     void                    rsaFromPEM              ( string publicKey, string privateKey );
     Signature               sign                    ( const Digest& digest, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM ) const;

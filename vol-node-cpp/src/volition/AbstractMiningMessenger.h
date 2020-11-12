@@ -42,9 +42,10 @@ public:
     
     //----------------------------------------------------------------//
     MiningMessengerRequest ( AbstractMiningMessengerClient& client, string minerURL, MiningMessengerRequest::Type requestType ) :
+        mRequestType ( requestType ),
         mClient ( &client ),
         mMinerURL ( minerURL ),
-        mRequestType ( requestType ) {
+        mHeight ( 0 ) {
     }
 };
 
@@ -55,6 +56,7 @@ class AbstractMiningMessenger {
 protected:
     
     //----------------------------------------------------------------//
+    virtual bool        AbstractMiningMessenger_isBlocked           () const = 0;
     virtual void        AbstractMiningMessenger_request             ( const MiningMessengerRequest& request ) = 0;
 
 public:
@@ -65,6 +67,12 @@ public:
     
     //----------------------------------------------------------------//
     virtual ~AbstractMiningMessenger () {
+    }
+
+    //----------------------------------------------------------------//
+    bool isBlocked () const {
+    
+        return this->AbstractMiningMessenger_isBlocked ();
     }
 
     //----------------------------------------------------------------//

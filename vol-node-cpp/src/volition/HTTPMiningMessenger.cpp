@@ -30,15 +30,15 @@ private:
         
             Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
             Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
-            Poco::Net::HTTPResponse response;
-            //session.setKeepAlive ( true );
-            session.setTimeout ( Poco::Timespan ( 1, 0 ));
+//            session.setKeepAlive ( true );
+//            session.setTimeout ( Poco::Timespan ( 1, 0 ));
             session.sendRequest ( request );
             
+            Poco::Net::HTTPResponse response;
+            std::istream& jsonStream = session.receiveResponse ( response );
+            
             if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
-            
-                std::istream& jsonStream = session.receiveResponse ( response );
-            
+                
                 Poco::JSON::Parser parser;
                 Poco::Dynamic::Var result = parser.parse ( jsonStream );
                 this->mJSON = result.extract < Poco::JSON::Object::Ptr >();
@@ -57,9 +57,9 @@ public:
 
     //----------------------------------------------------------------//
     HTTPGetJSONTask ( TYPE userData, string url ) :
+        Task ( "HTTP GET JSON" ),
         mUserData ( userData ),
-        mURL ( url ),
-        Task ( "HTTP GET JSON" ) {
+        mURL ( url ) {
     }
     
     //----------------------------------------------------------------//
@@ -72,11 +72,63 @@ public:
 //================================================================//
 
 //----------------------------------------------------------------//
+void HTTPMiningMessenger::dispatch () {
+
+    Poco::ScopedLock < Poco::Mutex > lock ( this->mMutex );
+
+    while ( this->mQueue.size () && this->mThreadPool.available ()) {
+    
+        const MiningMessengerRequest& request = this->mQueue.front ();
+    
+        string url;
+
+        switch ( request.mRequestType ) {
+            
+            case MiningMessengerRequest::REQUEST_BLOCK:
+                Format::write ( url, "%s/consensus/blocks/%s", request.mMinerURL.c_str (), request.mBlockDigest.toHex ().c_str ());
+                break;
+        
+            case MiningMessengerRequest::REQUEST_HEADERS:
+                Format::write ( url, "%s/consensus/headers", request.mMinerURL.c_str ());
+                break;
+            
+            case MiningMessengerRequest::REQUEST_PREV_HEADERS:
+                Format::write ( url, "%s/consensus/headers?height=%llu", request.mMinerURL.c_str (), request.mHeight );
+                break;
+            
+            case MiningMessengerRequest::REQUEST_MINER:
+                Format::write ( url, "%s/node", request.mMinerURL.c_str ());
+                break;
+            
+            case MiningMessengerRequest::REQUEST_MINER_URLS:
+                Format::write ( url, "%s/miners?sample=random", request.mMinerURL.c_str ());
+                break;
+            
+            default:
+                assert ( false );
+                break;
+        }
+
+        HTTPGetJSONTask < MiningMessengerRequest >* task = new HTTPGetJSONTask < MiningMessengerRequest >( request, url );
+        this->mTaskManager.start ( task );
+        this->mQueue.pop_front ();
+    }
+}
+
+//----------------------------------------------------------------//
 HTTPMiningMessenger::HTTPMiningMessenger () :
-    mTaskManager ( this->mTaskManagerThreadPool ) {
+    mTaskManager ( this->mThreadPool ) {
     
     this->mTaskManager.addObserver (
         Poco::Observer < HTTPMiningMessenger, Poco::TaskFinishedNotification > ( *this, &HTTPMiningMessenger::onTaskFinishedNotification )
+    );
+    
+    this->mTaskManager.addObserver (
+        Poco::Observer < HTTPMiningMessenger, Poco::TaskCancelledNotification > ( *this, &HTTPMiningMessenger::onTaskCancelledNotification )
+    );
+
+    this->mTaskManager.addObserver (
+        Poco::Observer < HTTPMiningMessenger, Poco::TaskFailedNotification > ( *this, &HTTPMiningMessenger::onTaskFailedNotification )
     );
 }
 
@@ -89,24 +141,26 @@ HTTPMiningMessenger::~HTTPMiningMessenger () {
 
 //----------------------------------------------------------------//
 void HTTPMiningMessenger::onTaskCancelledNotification ( Poco::TaskCancelledNotification* pNf ) {
-    UNUSED ( pNf );
     
     HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( pNf->task ());
+    
     if ( task ) {
         const MiningMessengerRequest& request = task->mUserData;
         request.mClient->receiveError ( request );
     }
+    this->dispatch ();
 }
 
 //----------------------------------------------------------------//
 void HTTPMiningMessenger::onTaskFailedNotification ( Poco::TaskFailedNotification* pNf ) {
-    UNUSED ( pNf );
-    
+        
     HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( pNf->task ());
+    
     if ( task ) {
         const MiningMessengerRequest& request = task->mUserData;
         request.mClient->receiveError ( request );
     }
+    this->dispatch ();
 }
 
 //----------------------------------------------------------------//
@@ -133,10 +187,11 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
                     }
                     break;
                 }
+                
                 case MiningMessengerRequest::REQUEST_HEADERS:
                 case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
                 
-                    Poco::JSON::Object::Ptr headersJSON = json ? json->getObject ( "headers" ) : NULL;
+                    Poco::JSON::Array::Ptr headersJSON = json ? json->getArray ( "headers" ) : NULL;
                     if ( headersJSON ) {
                 
                         SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
@@ -149,12 +204,20 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
                     }
                     break;
                 }
+                
                 case MiningMessengerRequest::REQUEST_MINER: {
+                
+                    Poco::JSON::Object::Ptr nodeJSON = json ? json->getObject ( "node" ) : NULL;
+                    if ( nodeJSON ) {
+                        string minerID  = nodeJSON->optValue < string >( "minerID", "" );
+                        request.mClient->receiveMiner ( request, minerID, request.mMinerURL );
+                    }
                     break;
                 }
+                
                 case MiningMessengerRequest::REQUEST_MINER_URLS: {
                 
-                    Poco::JSON::Object::Ptr minerListJSON = json ? json->getObject ( "miners" ) : NULL;
+                    Poco::JSON::Array::Ptr minerListJSON = json ? json->getArray ( "miners" ) : NULL;
                     if ( minerListJSON ) {
                         
                         SerializableList < string > minerList;
@@ -176,7 +239,7 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
             request.mClient->receiveError ( request );
         }
     }
-    pNf->release ();
+    this->dispatch ();
 }
 
 //================================================================//
@@ -184,38 +247,18 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
 //================================================================//
 
 //----------------------------------------------------------------//
+bool HTTPMiningMessenger::AbstractMiningMessenger_isBlocked () const {
+
+    return ( this->mThreadPool.available () == 0 );
+}
+
+//----------------------------------------------------------------//
 void HTTPMiningMessenger::AbstractMiningMessenger_request ( const MiningMessengerRequest& request ) {
 
-    string url;
+    Poco::ScopedLock < Poco::Mutex > lock ( this->mMutex );
 
-    switch ( request.mRequestType ) {
-        
-        case MiningMessengerRequest::REQUEST_BLOCK:
-            Format::write ( url, "%sconsensus/blocks/%s", request.mMinerURL.c_str (), request.mBlockDigest.toHex ().c_str ());
-            break;
-    
-        case MiningMessengerRequest::REQUEST_HEADERS:
-            Format::write ( url, "%sconsensus/headers", request.mMinerURL.c_str ());
-            break;
-        
-        case MiningMessengerRequest::REQUEST_PREV_HEADERS:
-            Format::write ( url, "%sconsensus/headers?height=%llu", request.mMinerURL.c_str (), request.mHeight );
-            break;
-        
-        case MiningMessengerRequest::REQUEST_MINER:
-            Format::write ( url, "%snode", request.mMinerURL.c_str ());
-            break;
-        
-        case MiningMessengerRequest::REQUEST_MINER_URLS:
-            Format::write ( url, "%sminers?sample=random", request.mMinerURL.c_str ());
-            break;
-        
-        default:
-            assert ( false );
-            break;
-    }
-
-    this->mTaskManager.start ( new HTTPGetJSONTask < MiningMessengerRequest >( request, url ));
+    this->mQueue.push_back ( request );
+    this->dispatch ();
 }
 
 } // namespace Volition

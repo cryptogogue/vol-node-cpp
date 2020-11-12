@@ -139,7 +139,7 @@ bool Miner::canExtend ( time_t now ) const {
         if ( this->mBestBranch->isAncestorOf ( remoteMiner->mTag )) count++;
         current++;
     }
-    return ( this->checkConsensus ( this->mBestBranch ) >= 0.5 );
+    return ( this->checkConsensus ( this->mBestBranch ) > 0.5 );
 }
 
 //----------------------------------------------------------------//
@@ -228,12 +228,12 @@ void Miner::extend ( time_t now ) {
     
         this->pushBlock ( block );
         
-        if ( this->mFlags & MINER_VERBOSE ) {
-            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: MinerActivity::runSolo () - step" );
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )this->mChain->countBlocks ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain->printChain ().c_str ());
-        }
-        this->saveChain ();
+//        if ( this->mFlags & MINER_VERBOSE ) {
+//            LGN_LOG_SCOPE ( VOL_FILTER_ROOT, INFO, "WEB: MinerActivity::runSolo () - step" );
+//            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB: height: %d", ( int )this->mChain->countBlocks ());
+//            LGN_LOG ( VOL_FILTER_ROOT, INFO, "WEB.CHAIN: %s", this->mChain->printChain ().c_str ());
+//        }
+//        this->saveChain ();
         
         // TODO: can only prune once we're sure we won't roll back
 //        this->pruneTransactions ( *this->mChain );
@@ -319,11 +319,7 @@ void Miner::loadKey ( string keyfile, string password ) {
 
     // TODO: password
 
-    fstream inStream;
-    inStream.open ( keyfile, ios_base::in );
-    assert ( inStream.is_open ());
-    
-    Volition::FromJSONSerializer::fromJSON ( this->mKeyPair, inStream );
+    this->mKeyPair.load ( keyfile );
     assert ( this->mKeyPair );
 }
 
@@ -383,7 +379,7 @@ void Miner::processResponses ( time_t now ) {
             case MiningMessengerResponse::RESPONSE_BLOCK: {
                 
                 assert ( remoteMiner );
-                
+                                
                 // in this case, we don't care about which miner the block came from since (presumably)
                 // the block is already in our tree somewhere.
                 
@@ -407,7 +403,7 @@ void Miner::processResponses ( time_t now ) {
             }
             
             case MiningMessengerResponse::RESPONSE_ERROR: {
-            
+                        
                 // TODO: how to recover from error?
                 if ( remoteMiner ) {
                 
@@ -431,12 +427,12 @@ void Miner::processResponses ( time_t now ) {
             }
             
             case MiningMessengerResponse::RESPONSE_HEADER: {
-                
+                                
                 assert ( remoteMiner );
                 if ( response.mHeader ) {
                     
                     shared_ptr < const BlockHeader > header = response.mHeader;
-                    
+                                        
                     if ( header->getHeight () == 0 ) {
                         BlockTreeNode::ConstPtr root = this->mBlockTree.getRoot ();
                         if (( **root ).getDigest () != response.mHeader->getDigest ()) {
@@ -483,7 +479,7 @@ void Miner::processResponses ( time_t now ) {
             }
             
             case MiningMessengerResponse::RESPONSE_URL: {
-                
+                                
                 this->affirmRemoteMiner ( response.mURL );
                 break;
             }
@@ -578,8 +574,6 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
 //----------------------------------------------------------------//
 void Miner::requestHeaders () {
-
-    this->affirmMessenger ();
     
     set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.cbegin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.cend (); ++remoteMinerIt ) {
@@ -733,44 +727,49 @@ void Miner::step ( time_t now ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
+    this->affirmMessenger ();
+    if ( this->mMessenger->isBlocked ()) {
+        printf ( ".\n" );
+        return;
+    }
+
     this->processTransactions ();
     
+    BlockTreeNode::ConstPtr prevBest = this->mBestBranch;
     BlockTreeNode::ConstPtr prevChain = this->mChainTag;
+        
+    // APPLY incoming blocks
+    this->processResponses ( now );
     
-    if ( this->mMessenger ) {
+    // CHOOSE new branch
+    this->selectBestBranch ( now );
     
-        // APPLY incoming blocks
-        this->processResponses ( now );
-        
-        // CHOOSE new branch
-        this->selectBestBranch ( now );
-        
-        // SEARCH for missing blocks
-        this->updateSearches ( now );
-        
-        // BUILD the current chain
-        this->composeChain ();
-        
-        // EXTEND chain if complete and has consensus
-        if ( this->canExtend ( now )) {
-            this->extend ( now );
-        }
-
-        // SCAN the ledger for miners
-        this->discoverMiners ();
-        
-        // QUERY the network for headers
-        this->requestHeaders ();
-    }
-    else {
+    // SEARCH for missing blocks
+    this->updateSearches ( now );
+    
+    // BUILD the current chain
+    this->composeChain ();
+    
+    // EXTEND chain if complete and has consensus
+    if ( this->canExtend ( now )) {
         this->extend ( now );
     }
+
+    // SCAN the ledger for miners
+    this->discoverMiners ();
+    
+    // QUERY the network for headers
+    this->requestHeaders ();
     
     // UPDATE the high confidence tag
     this->updateHighConfidenceTag ();
     
     if ( this->mChainTag != prevChain ) {
         this->saveChain ();
+    }
+    
+    if (( this->mFlags & MINER_VERBOSE ) && ( prevChain != this->mChainTag )) {
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )( **this->mChainTag ).getHeight (), this->mChainTag->writeBranch ().c_str ());
     }
 }
 

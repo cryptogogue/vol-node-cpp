@@ -65,7 +65,6 @@ public:
             FromJSONSerializer::fromJSON ( cryptoKey, inStream );
         }
         else {
-            //cryptoKey.elliptic ( Volition::CryptoPrivateKey::DEFAULT_EC_GROUP_NAME );
             cryptoKey.rsa ( Volition::CryptoKeyPair::RSA_4096 );
         }
 
@@ -151,13 +150,13 @@ public:
         
         shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
             url,
-            miner->getPublicKey (),
+            miner->getKeyPair ().getPublicKey (),
             miner->getMotto (),
             miner->getVisage ()
         );
         
         genesisAccount.mName            = miner->getMinerID ();
-        genesisAccount.mKey             = miner->getPublicKey ();
+        genesisAccount.mKey             = miner->getKeyPair ().getPublicKey ();
         genesisAccount.mGrant           = 0;
         genesisAccount.mMinerInfo       = minerInfo;
 

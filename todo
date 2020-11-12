@@ -119,18 +119,17 @@ DONE: node - set block size (protocol param setup)
 DONE: node - high-confidence chain (based on consensus)
 DONE: node - implement rake
 DONE: node - implement tax
+DONE: node - fixed gratuity requirement
+DONE: node - make sure transactions can be resubmitted with new gratuity
+DONE: node - alert users when their transactions are declined for insufficient gratuity
 
 ----------------------------------------------------------------
 LAUNCH
 
-node - fixed gratuity requirement
-node - make sure transactions can be resubmitted with new gratuity
-node - alert users when their transactions are declined for insufficient gratuity
-
-node - capture transactions when rewinding chain
 node - implement TOS (user and miner)
 node - setup guide
 
+node - capture transactions when rewinding chain
 node - implement pluggable transaction database (mysql and in-memory drivers)
 
 wallet - RSA key support

@@ -255,7 +255,7 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
             break;
     }
     
-    string charm = header.getCharm ().toHex ().substr ( 0, 6 );
+    string charm = this->writeCharmTag ();
     cc8* format = this->mBlock ? "%s[%s:%s:%s]" : "%s<%s:%s:%s>";
     Format::write ( str, format, header.isGenesis () ? "" : ", ", ( header.getHeight () > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
 }
@@ -329,6 +329,12 @@ string BlockTreeNode::writeBranch () const {
     string str;
     this->logBranchRecurse ( str );
     return str;
+}
+
+//----------------------------------------------------------------//
+string BlockTreeNode::writeCharmTag () const {
+
+    return this->mHeader ? this->mHeader->getCharm ().toHex ().substr ( 0, 6 ) : "";
 }
 
 //================================================================//

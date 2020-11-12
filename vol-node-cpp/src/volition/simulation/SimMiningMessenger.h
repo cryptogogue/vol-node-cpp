@@ -68,7 +68,8 @@ protected:
     void                        pushConstraint              ( SimMiningMessengerConstraint::Mode mode, double probability, size_t base, size_t top );
 
     //----------------------------------------------------------------//
-    void        AbstractMiningMessenger_request         ( const MiningMessengerRequest& request ) override;
+    bool        AbstractMiningMessenger_isBlocked           () const override;
+    void        AbstractMiningMessenger_request             ( const MiningMessengerRequest& request ) override;
 
 public:
 

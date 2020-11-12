@@ -19,7 +19,29 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
-#define THE_SCENARO SimpleScenario
+#define THE_SCENARO MinimalScenario
+
+//================================================================//
+// MinimalScenario
+//================================================================//
+class MinimalScenario :
+    public AbstractScenario {
+protected:
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+        UNUSED ( simulator );
+        UNUSED ( messenger );
+        UNUSED ( step );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initialize ( 2, 0, BASE_PORT );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
+    }
+};
 
 //================================================================//
 // SimpleScenario

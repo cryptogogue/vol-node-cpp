@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/http.h>
+#include <volition/HTTP.h>
 
 #include <volition/web-miner-api/AccountDetailsHandler.h>
 #include <volition/web-miner-api/AccountKeyListHandler.h>
@@ -12,6 +12,7 @@
 #include <volition/web-miner-api/ConsensusBlockDetailsHandler.h>
 #include <volition/web-miner-api/ConsensusBlockHeaderListHandler.h>
 #include <volition/web-miner-api/ControlCommandHandler.h>
+#include <volition/web-miner-api/DebugKeyGenHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
 #include <volition/web-miner-api/InventoryAssetsHandler.h>
 #include <volition/web-miner-api/InventoryHandler.h>
@@ -63,6 +64,10 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >                     ( HTTP::POST,       Format::write ( "%s/test/keyid/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >                 ( HTTP::POST,       Format::write ( "%s/test/signature/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ResetChainHandler >                    ( HTTP::DELETE,     Format::write ( "%s/?", prefix ));
+    
+    this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
+    
     this->mRouteTable.setDefault < WebMinerAPI::DefaultHandler >                        ();
 }
 

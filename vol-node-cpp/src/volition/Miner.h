@@ -251,7 +251,7 @@ public:
     void                                setMute                     ( bool paused );
     void                                setReward                   ( string reward );
     void                                setRewriteWindow            ();
-    void                                setVerbose                  ( bool verbose );
+    void                                setVerbose                  ( bool verbose = true );
     void                                shutdown                    ( bool kill = false );
     void                                step                        ( time_t now );
 };

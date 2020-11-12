@@ -13,11 +13,11 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 TransactionContext::TransactionContext ( Ledger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time ) :
-    mLedger ( ledger ),
-    mIndex ( accountODBM.mAccountID ),
-    mAccountODBM ( accountODBM ),
     mAccount ( *accountODBM.mBody.get ()),
+    mAccountODBM ( accountODBM ),
+    mIndex ( accountODBM.mAccountID ),
     mKeyAndPolicy ( keyAndPolicy ),
+    mLedger ( ledger ),
     mTime ( time ) {
     
     if ( ledger.isGenesis ()) {

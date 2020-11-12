@@ -33,7 +33,7 @@ private:
 
 public:
 
-    static const u32    DEFAULT_UPDATE_INTERVAL = 60;
+    static const u32    DEFAULT_UPDATE_INTERVAL = 1;
 
     //----------------------------------------------------------------//
     void                setUpdateInterval           ( u32 updateIntervalInSeconds );

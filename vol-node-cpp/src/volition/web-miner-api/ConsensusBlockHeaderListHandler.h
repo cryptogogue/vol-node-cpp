@@ -35,16 +35,16 @@ public:
                         
             size_t top = this->optQuery ( "height", ( **node ).getHeight ()) + 1; // this handles "forward" and "backward" cases alike
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
-            
+                        
             SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
             while ( node && ( base <= ( **node ).getHeight ())) {
                 if (( **node ).getHeight () < top ) {
-                    SerializableSharedConstPtr < BlockHeader > header = node->getBlockHeader ();
+                    shared_ptr < const BlockHeader > header = make_shared < BlockHeader >( *node->getBlockHeader ());
                     headers.push_front ( header );
                 }
                 node = node->getParent ();
             }
-
+            
             jsonOut.set ( "headers", ToJSONSerializer::toJSON ( headers ));
             return Poco::Net::HTTPResponse::HTTP_OK;
         }

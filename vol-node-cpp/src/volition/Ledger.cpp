@@ -169,13 +169,15 @@ u64 Ledger::getFeeDistributionPool () const {
 //----------------------------------------------------------------//
 FeeDistributionTable Ledger::getFeeDistributionTable () const {
     
-    return *this->getObjectOrNull < FeeDistributionTable >( keyFor_feeDistributionTable ());
+    shared_ptr < FeeDistributionTable > feeDistributionTable = this->getObjectOrNull < FeeDistributionTable >( keyFor_feeDistributionTable ());
+    return feeDistributionTable ? *feeDistributionTable : FeeDistributionTable ();
 }
 
 //----------------------------------------------------------------//
 FeeSchedule Ledger::getFeeSchedule () const {
-    
-    return *this->getObjectOrNull < FeeSchedule >( keyFor_feeSchedule ());
+        
+    shared_ptr < FeeSchedule > feeSchedule = this->getObjectOrNull < FeeSchedule >( keyFor_feeSchedule ());
+    return feeSchedule ? *feeSchedule : FeeSchedule ();
 }
 
 //----------------------------------------------------------------//

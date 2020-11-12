@@ -1,0 +1,17 @@
+openssl
+
+- provision 4096-bit mining key
+- provision elliptic mining node control key
+- provision mining account key
+- open mining account with minerID
+- launch mining node with both keys, minerID and control mode
+- send existing miner URLs to new node
+- send register miner transaction (for minerID account)
+
+openssl genrsa -out mining.priv.pem 4096
+openssl rsa -in mining.priv.pem -outform PEM -pubout -out mining.pub.pem
+
+openssl ecparam -genkey -name secp256k1 -conv_form compressed -noout -out control.priv.pem.tmp &&
+openssl pkcs8 -in control.priv.pem.tmp -topk8 -nocrypt -out control.priv.pem &&
+openssl ec -in control.priv.pem -outform PEM -pubout -out control.pub.pem &&
+rm control.priv.pem.tmp

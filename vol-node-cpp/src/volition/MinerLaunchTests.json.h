@@ -3,13 +3,13 @@
 
 #define JSON_STR(...) #__VA_ARGS__
 
-static const char* test_block_json = JSON_STR (
-    {
-        "height" : 0,
-        "time" : "1970-01-01T00:00:00-0000",
-        "transactions" : []
-    }
-);
+//static const char* test_block_json = JSON_STR (
+//    {
+//        "height" : 0,
+//        "time" : "1970-01-01T00:00:00-0000",
+//        "transactions" : []
+//    }
+//);
 
 //static const char* test_block_json = JSON_STR (
 //    {

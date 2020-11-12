@@ -369,7 +369,7 @@ void CryptoKeyInfo::AbstractSerializable_serializeFrom ( const AbstractSerialize
         
     string type = serializer.serializeIn < string >( "type", "" );
     this->mFormat = CryptoKeyInfo::getFormatFromString ( type );
-        
+    
     serializer.serialize ( "groupName", this->mGroupName );
     serializer.serialize ( "publicKey", this->mPublicKey );
     serializer.serialize ( "privateKey", this->mPrivateKey );

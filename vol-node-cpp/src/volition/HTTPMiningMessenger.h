@@ -16,15 +16,20 @@ class HTTPMiningMessenger :
     public virtual AbstractMiningMessenger {
 protected:
     
-    Poco::ThreadPool        mTaskManagerThreadPool;
-    Poco::TaskManager       mTaskManager;
+    Poco::Mutex                         mMutex;
+    
+    list < MiningMessengerRequest >     mQueue;
+    Poco::TaskManager                   mTaskManager;
+    Poco::ThreadPool                    mThreadPool;
 
     //----------------------------------------------------------------//
+    void        dispatch                                    ();
     void        onTaskCancelledNotification                 ( Poco::TaskCancelledNotification* pNf );
     void        onTaskFailedNotification                    ( Poco::TaskFailedNotification* pNf );
     void        onTaskFinishedNotification                  ( Poco::TaskFinishedNotification* pNf );
 
     //----------------------------------------------------------------//
+    bool        AbstractMiningMessenger_isBlocked           () const override;
     void        AbstractMiningMessenger_request             ( const MiningMessengerRequest& request ) override;
 
 public:

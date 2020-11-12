@@ -53,15 +53,54 @@ CryptoPublicKey CryptoKeyPair::getPublicKey () const {
 }
 
 //----------------------------------------------------------------//
+void CryptoKeyPair::load ( string filename ) {
+
+    fstream inStream;
+    std::istream* dummy = NULL;
+    
+    // try JSON
+    try {
+        inStream.open ( filename, ios_base::in );
+        FromJSONSerializer::fromJSONFile ( *this, filename );
+        return;
+    }
+    catch ( ... ) {
+        inStream.close ();
+    }
+
+    // try EC
+    try {
+        inStream.open ( filename, ios_base::in );
+        this->mKeyPair = make_shared < Poco::Crypto::ECKey >( dummy, &inStream );
+        return;
+    }
+    catch ( ... ) {
+        inStream.close ();
+    }
+
+    // try RSA
+    try {
+        inStream.open ( filename, ios_base::in );
+        this->mKeyPair = make_shared < Poco::Crypto::RSAKey >( dummy, &inStream );
+        return;
+    }
+    catch ( ... ) {
+    }
+    
+    inStream.close ();
+    this->mKeyPair = NULL;
+}
+
+//----------------------------------------------------------------//
 void CryptoKeyPair::rsa ( uint keyLength, unsigned long exp ) {
     
     RSA* rsaKey = RSA_new ();
-    int ret = 0;
     BIGNUM* bn = 0;
+    
     try {
         bn = BN_new ();
         BN_set_word ( bn, exp );
-        ret = RSA_generate_key_ex ( rsaKey, ( int )keyLength, bn, 0 );
+        RSA_generate_key_ex ( rsaKey, ( int )keyLength, bn, 0 );
         BN_free ( bn );
     }
     catch ( ... ) {

@@ -19,6 +19,7 @@ unique_ptr < AbstractControlCommandBody > TheControlCommandBodyFactory::create (
 //----------------------------------------------------------------//
 TheControlCommandBodyFactory::TheControlCommandBodyFactory () {
 
+    this->registerTransaction < Volition::Commands::ExtendNetwork >();
     this->registerTransaction < Volition::Commands::HardReset >();
     this->registerTransaction < Volition::Commands::SelectReward >();
     this->registerTransaction < Volition::Commands::SetMinimumGratuity >();

@@ -33,6 +33,7 @@ public:
                         CryptoPublicKey         ();
                         CryptoPublicKey         ( CryptoKeyInfo keyInfo );
                         ~CryptoPublicKey        ();
+    void                load                    ( string filename );
     void                rsaFromPEM              ( string publicKey );
     string              toPEM                   () const;
 };

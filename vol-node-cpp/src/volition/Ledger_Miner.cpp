@@ -45,6 +45,8 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
     Ledger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
+    if ( !accountODBM ) return "Miner account not found.";
+    
     accountODBM.mMinerInfo.set ( minerInfo );
     
     // TODO: find an efficient way to do all this

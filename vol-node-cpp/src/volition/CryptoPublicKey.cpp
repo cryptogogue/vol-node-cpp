@@ -31,6 +31,45 @@ CryptoPublicKey::~CryptoPublicKey () {
 }
 
 //----------------------------------------------------------------//
+void CryptoPublicKey::load ( string filename ) {
+
+    fstream inStream;
+    std::istream* dummy = NULL;
+    
+    // try JSON
+    try {
+        inStream.open ( filename, ios_base::in );
+        FromJSONSerializer::fromJSONFile ( *this, filename );
+        return;
+    }
+    catch ( ... ) {
+        inStream.close ();
+    }
+
+    // try EC
+    try {
+        inStream.open ( filename, ios_base::in );
+        this->mKeyPair = make_shared < Poco::Crypto::ECKey >( &inStream , dummy );
+        return;
+    }
+    catch ( ... ) {
+        inStream.close ();
+    }
+
+    // try RSA
+    try {
+        inStream.open ( filename, ios_base::in );
+        this->mKeyPair = make_shared < Poco::Crypto::RSAKey >( &inStream , dummy );
+        return;
+    }
+    catch ( ... ) {
+    }
+    
+    inStream.close ();
+    this->mKeyPair = NULL;
+}
+
+//----------------------------------------------------------------//
 void CryptoPublicKey::rsaFromPEM ( string publicKey ) {
     
     CryptoKeyInfo info;

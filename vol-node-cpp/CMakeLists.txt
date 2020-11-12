@@ -42,48 +42,57 @@ target_include_directories ( volition-lib PRIVATE ${VOLITION_INCLUDES} )
 target_sources ( volition-lib
     PRIVATE
         src/volition/AbstractAPIRequestHandler.cpp
+        src/volition/AbstractControlCommandBody.cpp
+        src/volition/AbstractCryptoKey.cpp
         src/volition/AbstractEntitlement.cpp
         src/volition/AbstractRequestHandler.cpp
         src/volition/AbstractTransactionBody.cpp
         src/volition/AssetID.cpp
         src/volition/AssetMethod.cpp
         src/volition/Block.cpp
-        src/volition/Chain.cpp
-        src/volition/ChainMetadata.cpp
-        src/volition/CryptoKey.cpp
+        src/volition/BlockHeader.cpp
+        src/volition/BlockTree.cpp
+        src/volition/ControlCommand.cpp
         src/volition/CryptoKeyInfo.cpp
+        src/volition/CryptoKeyPair.cpp
+        src/volition/CryptoPublicKey.cpp
         src/volition/EntitlementFactory.cpp
         src/volition/FileSys.cpp
         src/volition/Format.cpp
+        src/volition/HTTPMiningMessenger.cpp
         src/volition/InventoryLogEntry.cpp
-        src/volition/Ledger.cpp
         src/volition/Ledger_Account.cpp
+        src/volition/Ledger_Dump.cpp
         src/volition/Ledger_Inventory.cpp
         src/volition/Ledger_Miner.cpp
+        src/volition/Ledger.cpp
         src/volition/LuaContext.cpp
         src/volition/Miner.cpp
+        src/volition/MinerActivity.cpp
+        src/volition/MinerAPIFactory.cpp
         src/volition/MinerInfo.cpp
+        src/volition/MinerLaunchTests.cpp
         src/volition/Munge.cpp
         src/volition/PathEntitlement.cpp
-        src/volition/RouteTable.cpp
         src/volition/Schema.cpp
         src/volition/Signature.cpp
         src/volition/SimpleChainRecorder.cpp
+        src/volition/SQLite.cpp
+        src/volition/SQLiteChainRecorder.cpp
         src/volition/SquapFactory.cpp
-        src/volition/SyncChainTask.cpp
-        src/volition/TheContext.cpp
+        src/volition/TheControlCommandBodyFactory.cpp
         src/volition/TheTransactionBodyFactory.cpp
-        src/volition/TheWebMiner.cpp
         src/volition/Transaction.cpp
+        src/volition/TransactionContext.cpp
         src/volition/TransactionMaker.cpp
         src/volition/TransactionQueue.cpp
         src/volition/TransactionResult.cpp
-        src/volition/WebMiner.cpp
         src/volition/simulation/Analysis.cpp
-        src/volition/simulation/Cohort.cpp
         src/volition/simulation/SimMiner.cpp
-        src/volition/simulation/Simulation.cpp
-        src/volition/web-miner-api/HTTPRequestHandlerFactory.cpp
+        src/volition/simulation/SimMiningMessenger.cpp
+        src/volition/simulation/Simulator.cpp
+        src/volition/simulation/SimulatorActivity.cpp
+        src/volition/transactions/LoadLedger.cpp
 )
 
 #install ( TARGETS volition-lib EXPORT libvolition ARCHIVE DESTINATION lib)
@@ -129,6 +138,7 @@ target_link_libraries ( volition
     PocoXML
     PocoZip
     PocoFoundation
+    sqlite3
     ${OPENSSL_LIBRARIES}
     ${CMAKE_DL_LIBS}
 )

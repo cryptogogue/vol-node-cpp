@@ -17,20 +17,27 @@ void MinerActivity::runActivity () {
 
     while ( !this->isStopped ()) {
     
-        Poco::Timestamp timestamp;
+//        Poco::Timestamp timestamp;
         
         time_t now;
         time ( &now );
         
-        this->step ( now );
-        
-        u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
-        u32 updateMillis = this->mUpdateIntervalInSeconds * 1000;
-        
-        if ( elapsedMillis < updateMillis ) {
-            Poco::Thread::sleep ( updateMillis - elapsedMillis );
+        try {
+            this->step ( now );
         }
-        Poco::Thread::sleep ( 5000 );
+        catch ( Poco::Exception& exc ) {
+        
+            printf ( "an exception\n" );
+        }
+        
+//        u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
+//        u32 updateMillis = this->mUpdateIntervalInSeconds * 1000;
+//
+//        if ( elapsedMillis < updateMillis ) {
+//            Poco::Thread::sleep ( updateMillis - elapsedMillis );
+//        }
+//        Poco::Thread::sleep ( 5000 );
+        Poco::Thread::sleep ( 100 );
     }
 }
 

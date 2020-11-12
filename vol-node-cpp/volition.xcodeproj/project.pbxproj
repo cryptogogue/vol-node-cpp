@@ -328,6 +328,8 @@
 		CDDA75282556F174007AAA07 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CDDA75322556F5ED007AAA07 /* SetFeeDistributionTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */; };
 		CDDA75482559949C007AAA07 /* TransactionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA75462559949C007AAA07 /* TransactionStatus.h */; };
+		CDDA7552255A0B07007AAA07 /* TestCryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA7551255A0B07007AAA07 /* TestCryptoKey.cpp */; };
+		CDDA755C255B490C007AAA07 /* DebugKeyGenHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA755B255B490C007AAA07 /* DebugKeyGenHandler.h */; };
 		CDDB4BA6232B5EE400EEAA60 /* AccountEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */; };
 		CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */; };
 		CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */; };
@@ -985,6 +987,8 @@
 		CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFeeDistributionTable.cpp; path = src/volition/gtest/TestFeeDistributionTable.cpp; sourceTree = "<group>"; };
 		CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetFeeDistributionTable.h; path = src/volition/transactions/SetFeeDistributionTable.h; sourceTree = "<group>"; };
 		CDDA75462559949C007AAA07 /* TransactionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionStatus.h; path = src/volition/TransactionStatus.h; sourceTree = "<group>"; };
+		CDDA7551255A0B07007AAA07 /* TestCryptoKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestCryptoKey.cpp; path = src/volition/gtest/TestCryptoKey.cpp; sourceTree = "<group>"; };
+		CDDA755B255B490C007AAA07 /* DebugKeyGenHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugKeyGenHandler.h; path = "src/volition/web-miner-api/DebugKeyGenHandler.h"; sourceTree = "<group>"; };
 		CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountEntitlements.h; path = src/volition/AccountEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA5232B5EE400EEAA60 /* KeyEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEntitlements.h; path = src/volition/KeyEntitlements.h; sourceTree = "<group>"; };
 		CDDB4BA9232F0E4D00EEAA60 /* PathEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathEntitlement.cpp; path = src/volition/PathEntitlement.cpp; sourceTree = "<group>"; };
@@ -1351,6 +1355,7 @@
 				CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */,
 				CDFA2382245188DF00B4CECF /* TestCrafting.cpp */,
 				CDFA2385245189E700B4CECF /* TestCrafting.json.h */,
+				CDDA7551255A0B07007AAA07 /* TestCryptoKey.cpp */,
 				CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */,
 				CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */,
 				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
@@ -1549,6 +1554,7 @@
 				CD7751E4252FE41C00A53765 /* ConsensusBlockDetailsHandler.h */,
 				CD7751E5252FE41C00A53765 /* ConsensusBlockHeaderListHandler.h */,
 				CD20FFC2253D978600DEB809 /* ControlCommandHandler.h */,
+				CDDA755B255B490C007AAA07 /* DebugKeyGenHandler.h */,
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
 				CD51E51D24A60A3E00A0033B /* InventoryAssetsHandler.h */,
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
@@ -1973,6 +1979,7 @@
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
 				CD775257253535FA00A53765 /* LedgerObjectFieldODBM.h in Headers */,
 				CDDA74FD2556D997007AAA07 /* FeeDistributionTable.h in Headers */,
+				CDDA755C255B490C007AAA07 /* DebugKeyGenHandler.h in Headers */,
 				CD4E8191210593A4007DA585 /* AbstractCryptoKey.h in Headers */,
 				CD762AE12328D109005AC85D /* Entitlements.h in Headers */,
 				CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */,
@@ -2468,6 +2475,7 @@
 				CDDA75282556F174007AAA07 /* TestWebMiner.cpp in Sources */,
 				CD20FFFE254545FA00DEB809 /* TestAssetID.cpp in Sources */,
 				CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */,
+				CDDA7552255A0B07007AAA07 /* TestCryptoKey.cpp in Sources */,
 				CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */,
 				CDDA75072556E724007AAA07 /* TestFeeDistributionTable.cpp in Sources */,
 				CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */,

@@ -29,6 +29,7 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
+        serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
     
@@ -36,6 +37,7 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
+        serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
 
@@ -44,6 +46,8 @@ public:
     
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
         if ( !this->mMinerInfo ) return "Missing miner info.";
+        if ( !this->mMinerInfo->getPublicKey ()) return "Missing miner public key.";
+        if ( !this->mMinerInfo->getVisage ()) return "Missing miner visage.";
         
         return context.mLedger.registerMiner ( context.mLedger.getAccountID ( this->mAccountName ), *this->mMinerInfo );
     }

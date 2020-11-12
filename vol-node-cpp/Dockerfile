@@ -12,6 +12,8 @@ RUN apt-get update          \
         git                 \
         make                \
         openssl             \
+        sqlite3             \
+        libsqlite3-dev      \
         valgrind
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7 \
@@ -67,4 +69,4 @@ RUN cmake .                 \
     && cd ..
 
 ENTRYPOINT [ "volition" ]
-CMD [ "-p", "9090", "-s", "true", "-k", "/var/lib/volition/keys/pkey0.priv.json", "-g", "/var/lib/volition/genesis.signed" ]
+CMD [ "-c", "/var/lib/volition/volition.ini" ]

@@ -226,6 +226,12 @@ void SimMiningMessenger::updateAndDispatch () {
 //================================================================//
 
 //----------------------------------------------------------------//
+bool SimMiningMessenger::AbstractMiningMessenger_isBlocked () const {
+
+    return false;
+}
+
+//----------------------------------------------------------------//
 void SimMiningMessenger::AbstractMiningMessenger_request ( const MiningMessengerRequest& request ) {
 
     this->mTasks.push_back ( make_shared < MiningMessengerRequest >( request ));

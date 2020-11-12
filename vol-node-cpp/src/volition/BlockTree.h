@@ -109,6 +109,7 @@ public:
     bool                                    isAncestorOf            ( ConstPtr tail ) const;
     BlockTreeNode::ConstPtr                 trim                    ( Status status ) const;
     string                                  writeBranch             () const;
+    string                                  writeCharmTag           () const;
 };
 
 //================================================================//

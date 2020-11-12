@@ -142,10 +142,16 @@ bool BlockHeader::isParent ( const BlockHeader& block ) const {
 //----------------------------------------------------------------//
 void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     
+    u64 blockDelay      = ( u64 )this->mBlockDelay;
+    u64 rewriteWindow   = ( u64 )this->mRewriteWindow;
+    
     serializer.serialize ( "height",            this->mHeight );
     serializer.serialize ( "time",              this->mTime );
-    serializer.serialize ( "blockDelay",        this->mBlockDelay );
-    serializer.serialize ( "rewriteWindow",     this->mRewriteWindow );
+    serializer.serialize ( "blockDelay",        blockDelay );
+    serializer.serialize ( "rewriteWindow",     rewriteWindow );
+    
+    this->mBlockDelay       = ( time_t )blockDelay;
+    this->mRewriteWindow    = ( time_t )rewriteWindow;
     
     if ( !this->isGenesis ()) {
     
@@ -162,10 +168,13 @@ void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerF
 //----------------------------------------------------------------//
 void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
     
+    u64 blockDelay      = ( u64 )this->mBlockDelay;
+    u64 rewriteWindow   = ( u64 )this->mRewriteWindow;
+    
     serializer.serialize ( "height",            this->mHeight );
     serializer.serialize ( "time",              this->mTime );
-    serializer.serialize ( "blockDelay",        this->mBlockDelay );
-    serializer.serialize ( "rewriteWindow",     this->mRewriteWindow );
+    serializer.serialize ( "blockDelay",        blockDelay );
+    serializer.serialize ( "rewriteWindow",     rewriteWindow );
     
     if ( !this->isGenesis ()) {
         
