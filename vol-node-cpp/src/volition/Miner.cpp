@@ -194,7 +194,7 @@ void Miner::discoverMiners () {
     }
     
     while ( this->mNewMinerURLs.size ()) {
-        this->mMessenger->enqueueMinerRequest ( *this->mNewMinerURLs.begin ());
+        this->mMessenger->enqueueMinerInfoRequest ( *this->mNewMinerURLs.begin ());
         this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
     }
 }
@@ -709,14 +709,15 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
 
     this->scheduleReport ();
 
+    const MiningMessengerRequest& request = response.mRequest;
     string url = response.mRequest.mMinerURL;
     
     map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.find ( url );
     shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt != this->mRemoteMinersByURL.cend () ? remoteMinerIt->second : NULL;
     
-    switch ( response.mType ) {
+    switch ( request.mRequestType ) {
         
-        case MiningMessengerResponse::RESPONSE_BLOCK: {
+        case MiningMessengerRequest::REQUEST_BLOCK: {
             
             assert ( remoteMiner );
                             
@@ -742,40 +743,51 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             break;
         }
         
-        case MiningMessengerResponse::RESPONSE_ERROR: {
-                    
-            // TODO: how to recover from error?
-            if ( remoteMiner ) {
+//        case MiningMessengerResponse::RESPONSE_ERROR: {
+//
+//            // TODO: how to recover from error?
+//            if ( remoteMiner ) {
+//
+//                remoteMiner->setError ();
+//
+//                if ( response.mRequest.mRequestType == MiningMessengerRequest::REQUEST_BLOCK ) {
+//
+//                    string hash = response.mRequest.mBlockDigest.toHex ();
+//                    assert ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ());
+//                    MinerSearchEntry& search = this->mBlockSearches [ hash ];
+//
+//                    if ( search.mSearchLimit <= 1 ) {
+//                        this->mBlockSearches.erase ( hash );
+//                    }
+//                    else {
+//                        search.mSearchLimit--;
+//                    }
+//                }
+//            }
+//            break;
+//        }
+        
+        case MiningMessengerRequest::REQUEST_EXTEND_NETWORK: {
             
-                remoteMiner->setError ();
-
-                if ( response.mRequest.mRequestType == MiningMessengerRequest::REQUEST_BLOCK ) {
-
-                    string hash = response.mRequest.mBlockDigest.toHex ();
-                    assert ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ());
-                    MinerSearchEntry& search = this->mBlockSearches [ hash ];
-
-                    if ( search.mSearchLimit <= 1 ) {
-                        this->mBlockSearches.erase ( hash );
-                    }
-                    else {
-                        search.mSearchLimit--;
-                    }
-                }
+            set < string >::const_iterator urlIt = response.mMinerURLs.cbegin ();
+            for ( ; urlIt != response.mMinerURLs.cend (); ++urlIt ) {
+                this->affirmRemoteMiner ( *urlIt );
             }
             break;
         }
         
-        case MiningMessengerResponse::RESPONSE_HEADER: {
+        case MiningMessengerRequest::REQUEST_HEADERS: {
                             
             assert ( remoteMiner );
-            if ( response.mHeader ) {
+            list < shared_ptr < const BlockHeader >>::const_iterator headerIt = response.mHeaders.cbegin ();
+            for ( ; headerIt != response.mHeaders.cend (); ++headerIt ) {
                 
-                shared_ptr < const BlockHeader > header = response.mHeader;
+                shared_ptr < const BlockHeader > header = *headerIt;
+                if ( !header ) continue;
                                     
                 if ( header->getHeight () == 0 ) {
                     BlockTreeNode::ConstPtr root = this->mBlockTree.getRoot ();
-                    if (( **root ).getDigest () != response.mHeader->getDigest ()) {
+                    if (( **root ).getDigest () != header->getDigest ()) {
                         remoteMiner->setError ( "Unrecoverable error: genesis block mismatch." );
                     }
                 }
@@ -796,7 +808,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             break;
         }
         
-        case MiningMessengerResponse::RESPONSE_MINER: {
+        case MiningMessengerRequest::REQUEST_MINER_INFO: {
 
             if ( !remoteMiner ) {
             
@@ -815,12 +827,6 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
 
             remoteMiner->mState = RemoteMiner::STATE_ONLINE;
             
-            break;
-        }
-        
-        case MiningMessengerResponse::RESPONSE_URL: {
-                            
-            this->affirmRemoteMiner ( response.mURL );
             break;
         }
         

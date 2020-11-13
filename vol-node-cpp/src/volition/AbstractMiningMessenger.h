@@ -19,9 +19,9 @@ public:
     enum Type {
         UNKNOWN,
         REQUEST_BLOCK,
+        REQUEST_EXTEND_NETWORK,
         REQUEST_HEADERS,
-        REQUEST_MINER,
-        REQUEST_MINER_URLS,
+        REQUEST_MINER_INFO,
         REQUEST_PREV_HEADERS,
     };
 
@@ -51,21 +51,19 @@ public:
 class MiningMessengerResponse {
 public:
 
-    enum Type {
-        RESPONSE_BLOCK,
-        RESPONSE_ERROR,
-        RESPONSE_HEADER,
-        RESPONSE_MINER,
-        RESPONSE_URL,
+    enum Status {
+        STATUS_OK,
+        STATUS_ERROR,
     };
 
-    MiningMessengerRequest              mRequest;
-    Type                                mType;
+    MiningMessengerRequest                      mRequest;
+    Status                                      mStatus;
 
-    string                              mMinerID;
-    shared_ptr < const Block >          mBlock;
-    shared_ptr < const BlockHeader >    mHeader;
-    string                              mURL;
+    string                                      mMinerID;
+    shared_ptr < const Block >                  mBlock;
+    list < shared_ptr < const BlockHeader >>    mHeaders;
+    string                                      mURL;
+    set < string >                              mMinerURLs;
 };
 
 //================================================================//
@@ -146,7 +144,7 @@ public:
     
         MiningMessengerResponse response;
         response.mRequest = request;
-        response.mType      = MiningMessengerResponse::RESPONSE_BLOCK;
+        response.mStatus    = MiningMessengerResponse::STATUS_OK;
         response.mBlock     = block;
         this->enqueueResponse ( response );
     }
@@ -155,8 +153,25 @@ public:
     void enqueueErrorResponse ( const MiningMessengerRequest& request ) {
     
         MiningMessengerResponse response;
-        response.mType      = MiningMessengerResponse::RESPONSE_ERROR;
+        response.mStatus    = MiningMessengerResponse::STATUS_ERROR;
         response.mRequest   = request;
+        this->enqueueResponse ( response );
+    }
+
+    //----------------------------------------------------------------//
+    void enqueueExtendNetworkRequest ( string minerURL ) {
+        
+        MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_EXTEND_NETWORK );
+        this->enqueueRequest ( request );
+    }
+    
+    //----------------------------------------------------------------//
+    void enqueueExtendNetworkResponse ( const MiningMessengerRequest& request, const set < string > urls ) {
+    
+        MiningMessengerResponse response;
+        response.mStatus    = MiningMessengerResponse::STATUS_OK;
+        response.mRequest   = request;
+        response.mMinerURLs = urls;
         this->enqueueResponse ( response );
     }
 
@@ -169,46 +184,29 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void enqueueHeaderResponse ( const MiningMessengerRequest& request, shared_ptr < const BlockHeader > header ) {
+    void enqueueHeaderResponse ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
     
         MiningMessengerResponse response;
-        response.mType      = MiningMessengerResponse::RESPONSE_HEADER;
+        response.mStatus    = MiningMessengerResponse::STATUS_OK;
         response.mRequest   = request;
-        response.mHeader    = header;
+        response.mHeaders   = headers;
         this->enqueueResponse ( response );
     }
     
     //----------------------------------------------------------------//
-    void enqueueMinerRequest ( string minerURL ) {
+    void enqueueMinerInfoRequest ( string minerURL ) {
         
-        MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_MINER );
+        MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_MINER_INFO );
         this->enqueueRequest ( request );
     }
     
     //----------------------------------------------------------------//
-    void enqueueMinerResponse ( const MiningMessengerRequest& request, string minerID, string url ) {
+    void enqueueMinerInfoResponse ( const MiningMessengerRequest& request, string minerID, string url ) {
     
         MiningMessengerResponse response;
-        response.mType      = MiningMessengerResponse::RESPONSE_MINER;
+        response.mStatus    = MiningMessengerResponse::STATUS_OK;
         response.mRequest   = request;
         response.mMinerID   = minerID;
-        response.mURL       = url;
-        this->enqueueResponse ( response );
-    }
-    
-    //----------------------------------------------------------------//
-    void enqueueMinerURLsRequest ( string minerURL ) {
-        
-        MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_MINER_URLS );
-        this->enqueueRequest ( request );
-    }
-    
-    //----------------------------------------------------------------//
-    void enqueueMinerURLResponse ( const MiningMessengerRequest& request, string url ) {
-    
-        MiningMessengerResponse response;
-        response.mType      = MiningMessengerResponse::RESPONSE_URL;
-        response.mRequest   = request;
         response.mURL       = url;
         this->enqueueResponse ( response );
     }

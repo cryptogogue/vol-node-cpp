@@ -52,7 +52,7 @@ protected:
     time_t                              mNow;
     time_t                              mTimeStep;
 
-    shared_ptr < SimMiningNetwork > mNetwork;
+    shared_ptr < SimMiningNetwork >     mNetwork;
 
     //----------------------------------------------------------------//
     void                                extendOptimal           ( size_t height );

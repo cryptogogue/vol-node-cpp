@@ -107,15 +107,23 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             break;
         }
         
+        case MiningMessengerRequest::REQUEST_EXTEND_NETWORK: {
+        
+            set < string > miners = miner->sampleActiveMinerURLs ( MINER_URL_BATCH_SIZE );
+            client->enqueueExtendNetworkResponse ( request, miners );
+            break;
+        }
+        
         case MiningMessengerRequest::REQUEST_HEADERS: {
         
             BlockTreeNode::ConstPtr node = miner->getBestBranch ();
             
             list < shared_ptr < const BlockHeader >> headers;
             while ( node && ( headers.size () < HEADER_BATCH_SIZE )) {
-                client->enqueueHeaderResponse ( request, node->getBlockHeader ());
+                headers.push_back ( make_shared < BlockHeader >( *node->getBlockHeader ()));
                 node = node->getParent ();
             }
+            client->enqueueHeaderResponse ( request, headers );
             break;
         }
         
@@ -129,26 +137,16 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             list < shared_ptr < const BlockHeader >> headers;
             while ( node && ( base <= ( **node ).getHeight ())) {
                 if (( **node ).getHeight () < top ) {
-                    client->enqueueHeaderResponse ( request, node->getBlockHeader ());
+                    headers.push_back ( make_shared < BlockHeader >( *node->getBlockHeader ()));
                 }
             }
+            client->enqueueHeaderResponse ( request, headers );
             break;
         }
         
-        case MiningMessengerRequest::REQUEST_MINER: {
+        case MiningMessengerRequest::REQUEST_MINER_INFO: {
         
-            client->enqueueMinerResponse ( request, minerID, miner->getURL ());
-            break;
-        }
-        
-        case MiningMessengerRequest::REQUEST_MINER_URLS: {
-        
-            // no miners to discover in sim (for now)
-            set < string > miners = miner->sampleActiveMinerURLs ( MINER_URL_BATCH_SIZE );
-            set < string >::const_iterator urlIt = miners.cbegin ();
-            for ( ; urlIt != miners.cend (); ++urlIt ) {
-                client->enqueueMinerURLResponse ( request, *urlIt );
-            }
+            client->enqueueMinerInfoResponse ( request, minerID, miner->getURL ());
             break;
         }
         
