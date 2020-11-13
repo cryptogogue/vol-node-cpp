@@ -18,7 +18,7 @@ protected:
     
     friend class AbstractScenario;
     friend class Simulator;
-    friend class SimMiningMessenger;
+    friend class SimMiningNetwork;
     
     bool            mActive;
     size_t          mInterval;

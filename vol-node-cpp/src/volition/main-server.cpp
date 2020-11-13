@@ -275,6 +275,7 @@ protected:
         minerActivity->affirmKey ();
         minerActivity->affirmVisage ();
         minerActivity->setVerbose ();
+        minerActivity->setReportMode ( Miner::REPORT_ALL_BRANCHES );
         
         LOG_F ( INFO, "MINER ID: %s", minerActivity->getMinerID ().c_str ());
 

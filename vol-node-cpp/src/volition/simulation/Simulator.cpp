@@ -52,11 +52,11 @@ void Simulator::extendOptimal ( size_t height ) {
 }
 
 //----------------------------------------------------------------//
-SimMiningMessenger& Simulator::getMessenger () {
-
-    assert ( this->mMessenger );
-    return *this->mMessenger;
-}
+//SimMiningMessenger& Simulator::getMessenger () {
+//
+//    assert ( this->mMessenger );
+//    return *this->mMessenger;
+//}
 
 //----------------------------------------------------------------//
 const Simulator::Miners& Simulator::getMiners () {
@@ -76,7 +76,7 @@ void Simulator::initialize ( size_t totalMiners, size_t deferredMiners, size_t b
     this->mBasePort = basePort;
 
     this->mMiners.resize ( totalMiners );
-    this->mMessenger = make_shared < SimMiningMessenger >();
+    this->mNetwork = make_shared < SimMiningNetwork >();
 
     size_t genesisMiners = totalMiners - deferredMiners;
 
@@ -87,10 +87,10 @@ void Simulator::initialize ( size_t totalMiners, size_t deferredMiners, size_t b
 
         miner->setMinerID ( Format::write ( "%d", ( int )( basePort + i )));
         miner->setURL ( Format::write ( "http://127.0.0.1:%d/%s/", ( int )this->mBasePort, miner->getMinerID ().c_str ()));
-        miner->setMessenger ( this->mMessenger );
+        miner->setMessenger ( make_shared < SimMiningMessenger >( this->mNetwork ));
     }
     
-    this->mMessenger->setMiners ( this->mMiners );
+    this->mNetwork->setMiners ( this->mMiners );
 }
 
 //----------------------------------------------------------------//
@@ -295,7 +295,7 @@ void Simulator::step () {
     }
 
     if ( this->mScenario ) {
-        this->mScenario->AbstractScenario_control ( *this, *this->mMessenger, this->mStepCount );
+        this->mScenario->AbstractScenario_control ( *this, *this->mNetwork, this->mStepCount );
     }
 
     if (( this->mTimeStep == 0 ) || ( this->mStepCount == 0 )) {
@@ -320,7 +320,7 @@ void Simulator::step () {
         tree.addChain ( this->mMiners [ i ]->getWorkingLedger ());
     }
     
-    this->mMessenger->updateAndDispatch ();
+    this->mNetwork->updateAndDispatch ();
     
     this->mAnalysis.update ( tree );
     

@@ -5,7 +5,7 @@
 #define VOLITION_HTTPMININGMESSENGER_H
 
 #include <volition/common.h>
-#include <volition/AbstractMiningMessengerClient.h>
+#include <volition/AbstractMiningMessenger.h>
 
 namespace Volition {
 
@@ -16,21 +16,17 @@ class HTTPMiningMessenger :
     public virtual AbstractMiningMessenger {
 protected:
     
-    Poco::Mutex                         mMutex;
-    
-    list < MiningMessengerRequest >     mQueue;
     Poco::TaskManager                   mTaskManager;
     Poco::ThreadPool                    mThreadPool;
 
     //----------------------------------------------------------------//
-    void        dispatch                                    ();
     void        onTaskCancelledNotification                 ( Poco::TaskCancelledNotification* pNf );
     void        onTaskFailedNotification                    ( Poco::TaskFailedNotification* pNf );
     void        onTaskFinishedNotification                  ( Poco::TaskFinishedNotification* pNf );
 
     //----------------------------------------------------------------//
     bool        AbstractMiningMessenger_isBlocked           () const override;
-    void        AbstractMiningMessenger_request             ( const MiningMessengerRequest& request ) override;
+    void        AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) override;
 
 public:
 

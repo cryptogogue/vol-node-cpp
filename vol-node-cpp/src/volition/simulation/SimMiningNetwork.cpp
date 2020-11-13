@@ -10,11 +10,11 @@ namespace Volition {
 namespace Simulation {
 
 //================================================================//
-// SimMiningMessenger
+// SimMiningNetwork
 //================================================================//
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::clearConstraint ( size_t base, size_t top ) {
+void SimMiningNetwork::clearConstraint ( size_t base, size_t top ) {
 
     top = top < base ? base : top;
     for ( size_t i = base; i < top; ++i ) {
@@ -25,14 +25,14 @@ void SimMiningMessenger::clearConstraint ( size_t base, size_t top ) {
 // TODO: restore constraint functionality
 
 ////----------------------------------------------------------------//
-//void SimMiningMessenger::dispatchBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
+//void SimMiningNetwork::dispatchBlock ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
 //
 //    const ConstraintList& constraintList = this->getMinerConstraints ( request );
 //
 //    for ( ConstraintList::const_iterator constraintIt = constraintList.cbegin (); constraintIt != constraintList.cend (); ++constraintIt ) {
-//        const SimMiningMessengerConstraint& constraint = *constraintIt;
+//        const SimMiningNetworkConstraint& constraint = *constraintIt;
 //
-//        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK ) && ( UnsecureRandom::get ().random () <= constraint.mProbability )) {
+//        if (( constraint.mMode == SimMiningNetworkConstraint::CONSTRAINT_DROP_BLOCK ) && ( UnsecureRandom::get ().random () <= constraint.mProbability )) {
 //            block = NULL;
 //        }
 //    }
@@ -40,14 +40,14 @@ void SimMiningMessenger::clearConstraint ( size_t base, size_t top ) {
 //}
 
 ////----------------------------------------------------------------//
-//void SimMiningMessenger::dispatchHeaders ( const MiningMessengerRequest& request, list < shared_ptr < const BlockHeader >> headers ) {
+//void SimMiningNetwork::dispatchHeaders ( const MiningMessengerRequest& request, list < shared_ptr < const BlockHeader >> headers ) {
 //
 //    const ConstraintList& constraintList = this->getMinerConstraints ( request );
 //
 //    for ( ConstraintList::const_iterator constraintIt = constraintList.cbegin (); constraintIt != constraintList.cend (); ++constraintIt ) {
-//        const SimMiningMessengerConstraint& constraint = *constraintIt;
+//        const SimMiningNetworkConstraint& constraint = *constraintIt;
 //
-//        if (( constraint.mMode == SimMiningMessengerConstraint::CONSTRAINT_DROP_HEADER ) && (  UnsecureRandom::get ().random () <= constraint.mProbability )) {
+//        if (( constraint.mMode == SimMiningNetworkConstraint::CONSTRAINT_DROP_HEADER ) && (  UnsecureRandom::get ().random () <= constraint.mProbability )) {
 //            headers.clear ();
 //        }
 //    }
@@ -59,13 +59,19 @@ void SimMiningMessenger::clearConstraint ( size_t base, size_t top ) {
 //}
 
 //----------------------------------------------------------------//
-shared_ptr < SimMiner > SimMiningMessenger::getMiner ( const MiningMessengerRequest& request ) {
+void SimMiningNetwork::enqueueRequest ( AbstractMiningMessenger* messenger, const MiningMessengerRequest& request ) {
+
+    this->mQueue.push_back ( pair < AbstractMiningMessenger*, MiningMessengerRequest >( messenger, request ));
+}
+
+//----------------------------------------------------------------//
+shared_ptr < SimMiner > SimMiningNetwork::getMiner ( const MiningMessengerRequest& request ) {
 
     return this->mMinersByURL [ request.mMinerURL ];
 }
 
 //----------------------------------------------------------------//
-const SimMiningMessenger::ConstraintList& SimMiningMessenger::getMinerConstraints ( const MiningMessengerRequest& request ) {
+const SimMiningNetwork::ConstraintList& SimMiningNetwork::getMinerConstraints ( const MiningMessengerRequest& request ) {
 
     shared_ptr < SimMiner > miner = this->getMiner ( request );
     assert ( miner );
@@ -77,7 +83,7 @@ const SimMiningMessenger::ConstraintList& SimMiningMessenger::getMinerConstraint
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
+void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const MiningMessengerRequest& request ) {
 
     shared_ptr < SimMiner > miner = this->getMiner ( request );
     assert ( miner );
@@ -86,7 +92,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
     string minerID = miner->getMinerID ();
     
     if ( !miner->mActive ) {
-        request.mClient->receiveError ( request );
+        client->enqueueErrorResponse ( request );
         return;
     }
     
@@ -97,7 +103,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             const BlockTree& blockTree = miner->getBlockTree ();
             BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( request.mBlockDigest.toHex ());
             shared_ptr < const Block > block = node ? node->getBlock () : NULL;
-            request.mClient->receiveBlock ( request, block );
+            client->enqueueBlockResponse ( request, block );
             break;
         }
         
@@ -107,7 +113,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             
             list < shared_ptr < const BlockHeader >> headers;
             while ( node && ( headers.size () < HEADER_BATCH_SIZE )) {
-                request.mClient->receiveHeader ( request, node->getBlockHeader ());
+                client->enqueueHeaderResponse ( request, node->getBlockHeader ());
                 node = node->getParent ();
             }
             break;
@@ -123,7 +129,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             list < shared_ptr < const BlockHeader >> headers;
             while ( node && ( base <= ( **node ).getHeight ())) {
                 if (( **node ).getHeight () < top ) {
-                    request.mClient->receiveHeader ( request, node->getBlockHeader ());
+                    client->enqueueHeaderResponse ( request, node->getBlockHeader ());
                 }
             }
             break;
@@ -131,7 +137,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
         
         case MiningMessengerRequest::REQUEST_MINER: {
         
-            request.mClient->receiveMiner ( request, minerID, miner->getURL ());
+            client->enqueueMinerResponse ( request, minerID, miner->getURL ());
             break;
         }
         
@@ -141,7 +147,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
             set < string > miners = miner->sampleActiveMinerURLs ( MINER_URL_BATCH_SIZE );
             set < string >::const_iterator urlIt = miners.cbegin ();
             for ( ; urlIt != miners.cend (); ++urlIt ) {
-                request.mClient->receiveMinerURL ( request, *urlIt );
+                client->enqueueMinerURLResponse ( request, *urlIt );
             }
             break;
         }
@@ -153,7 +159,7 @@ void SimMiningMessenger::handleTask ( const MiningMessengerRequest& request ) {
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::pushConstraint ( const SimMiningMessengerConstraint& constraint, size_t base, size_t top ) {
+void SimMiningNetwork::pushConstraint ( const SimMiningNetworkConstraint& constraint, size_t base, size_t top ) {
 
     top = top < base ? base : top;
     for ( size_t i = base; i < top; ++i ) {
@@ -162,9 +168,9 @@ void SimMiningMessenger::pushConstraint ( const SimMiningMessengerConstraint& co
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::pushConstraint ( SimMiningMessengerConstraint::Mode mode, double probability, size_t base, size_t top ) {
+void SimMiningNetwork::pushConstraint ( SimMiningNetworkConstraint::Mode mode, double probability, size_t base, size_t top ) {
 
-    SimMiningMessengerConstraint constraint;
+    SimMiningNetworkConstraint constraint;
     constraint.mMode            = mode;
     constraint.mProbability     = probability;
         
@@ -172,27 +178,27 @@ void SimMiningMessenger::pushConstraint ( SimMiningMessengerConstraint::Mode mod
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::pushConstraintDropBlock ( double probability, size_t base, size_t top ) {
+void SimMiningNetwork::pushConstraintDropBlock ( double probability, size_t base, size_t top ) {
 
-    this->pushConstraint ( SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK, probability, base, top );
+    this->pushConstraint ( SimMiningNetworkConstraint::CONSTRAINT_DROP_BLOCK, probability, base, top );
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::pushConstraintDropHeader ( double probability, size_t base, size_t top ) {
+void SimMiningNetwork::pushConstraintDropHeader ( double probability, size_t base, size_t top ) {
 
-    this->pushConstraint ( SimMiningMessengerConstraint::CONSTRAINT_DROP_BLOCK, probability, base, top );
+    this->pushConstraint ( SimMiningNetworkConstraint::CONSTRAINT_DROP_BLOCK, probability, base, top );
 }
 
 //----------------------------------------------------------------//
-SimMiningMessenger::SimMiningMessenger () {
+SimMiningNetwork::SimMiningNetwork () {
 }
 
 //----------------------------------------------------------------//
-SimMiningMessenger::~SimMiningMessenger () {
+SimMiningNetwork::~SimMiningNetwork () {
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::setMiners ( vector < shared_ptr < Miner >> miners ) {
+void SimMiningNetwork::setMiners ( vector < shared_ptr < Miner >> miners ) {
 
     this->mConstraintListsByIndex.resize ( miners.size ());
 
@@ -210,31 +216,12 @@ void SimMiningMessenger::setMiners ( vector < shared_ptr < Miner >> miners ) {
 }
 
 //----------------------------------------------------------------//
-void SimMiningMessenger::updateAndDispatch () {
+void SimMiningNetwork::updateAndDispatch () {
 
-    for ( list < shared_ptr < MiningMessengerRequest >>::iterator cursor = this->mTasks.begin (); cursor != this->mTasks.end (); ) {
-        list < shared_ptr < MiningMessengerRequest >>::iterator taskIt = cursor++;
-    
-        shared_ptr < MiningMessengerRequest > task = *taskIt;
-        this->handleTask ( *task );
-        this->mTasks.erase ( taskIt );
+    for ( ; this->mQueue.size (); this->mQueue.pop_front ()) {
+        pair < AbstractMiningMessenger*, MiningMessengerRequest > entry = this->mQueue.front ();
+        this->handleRequest ( entry.first, entry.second );
     }
-}
-
-//================================================================//
-// virtual
-//================================================================//
-
-//----------------------------------------------------------------//
-bool SimMiningMessenger::AbstractMiningMessenger_isBlocked () const {
-
-    return false;
-}
-
-//----------------------------------------------------------------//
-void SimMiningMessenger::AbstractMiningMessenger_request ( const MiningMessengerRequest& request ) {
-
-    this->mTasks.push_back ( make_shared < MiningMessengerRequest >( request ));
 }
 
 } // namespace Simulation

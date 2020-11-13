@@ -29,9 +29,9 @@ class MinimalScenario :
 protected:
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
     }
     
@@ -51,9 +51,9 @@ class SimpleScenario :
 protected:
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
     }
     
@@ -73,9 +73,9 @@ class MinerScenario :
 protected:
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
         
         switch ( step ) {
@@ -193,9 +193,9 @@ class MixedScenario :
 protected:
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
         
         switch ( step ) {
@@ -231,14 +231,14 @@ class RandomDropScenario :
 protected:
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
         
         switch ( step ) {
             case 0:
-                messenger.pushConstraintDropBlock ( 0.875, 0, 16 );
+                network.pushConstraintDropBlock ( 0.875, 0, 16 );
                 break;
             
             case 64:
@@ -266,9 +266,9 @@ protected:
     int     mCounter;
     
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
         
         if ( step == 0 ) {
@@ -308,9 +308,9 @@ class ScrambleScenario :
 protected:
         
     //----------------------------------------------------------------//
-    void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) override {
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
         
 //        if ( this->random () < 0.0625 ) {

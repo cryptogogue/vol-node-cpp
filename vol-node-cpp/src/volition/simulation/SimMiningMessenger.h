@@ -5,42 +5,10 @@
 #define VOLITION_SIMULATION_SIMMININGMESSENGER_H
 
 #include <volition/common.h>
-#include <volition/AbstractMiningMessengerClient.h>
-#include <volition/Miner.h>
-#include <volition/simulation/SimMiner.h>
+#include <volition/simulation/SimMiningNetwork.h>
 
 namespace Volition {
 namespace Simulation {
-
-//================================================================//
-// SimMiningMessengerConstraint
-//================================================================//
-class SimMiningMessengerConstraint {
-public:
-
-    friend class SimMiningMessenger;
-
-    enum Mode {
-        CONSTRAINT_NONE,
-        CONSTRAINT_DELAY,
-        CONSTRAINT_DROP_BLOCK,
-        CONSTRAINT_DROP_HEADER,
-        CONSTRAINT_DELAY_AND_DROP,
-    };
-
-private:
-
-    Mode        mMode;
-    double      mProbability;
-
-public:
-
-    //----------------------------------------------------------------//
-    SimMiningMessengerConstraint () :
-        mMode ( CONSTRAINT_NONE ),
-        mProbability ( 0 ) {
-    }
-};
 
 //================================================================//
 // SimMiningMessenger
@@ -49,38 +17,32 @@ class SimMiningMessenger :
     public virtual AbstractMiningMessenger {
 protected:
 
-    typedef list < SimMiningMessengerConstraint> ConstraintList;
+    shared_ptr < SimMiningNetwork >    mNetwork;
 
-    static const size_t HEADER_BATCH_SIZE       = 4;
-    static const size_t MINER_URL_BATCH_SIZE    = 2;
-
-    map < string, shared_ptr < SimMiner >>              mMinersByURL;
-    map < string, ConstraintList >                      mConstraintLists;
-    vector < ConstraintList* >                          mConstraintListsByIndex;
+    //----------------------------------------------------------------//
+    bool AbstractMiningMessenger_isBlocked () const override {
+        return false;
+    }
     
-    list < shared_ptr < MiningMessengerRequest >>       mTasks;
-
     //----------------------------------------------------------------//
-    shared_ptr < SimMiner >     getMiner                    ( const MiningMessengerRequest& request );
-    const ConstraintList&       getMinerConstraints         ( const MiningMessengerRequest& request );
-    void                        handleTask                  ( const MiningMessengerRequest& task );
-    void                        pushConstraint              ( const SimMiningMessengerConstraint& constraint, size_t base, size_t top );
-    void                        pushConstraint              ( SimMiningMessengerConstraint::Mode mode, double probability, size_t base, size_t top );
-
-    //----------------------------------------------------------------//
-    bool        AbstractMiningMessenger_isBlocked           () const override;
-    void        AbstractMiningMessenger_request             ( const MiningMessengerRequest& request ) override;
+    void AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) override {
+    
+        assert ( this->mNetwork );
+        this->mNetwork->enqueueRequest ( this, request );
+    }
 
 public:
 
+    SET ( shared_ptr < SimMiningNetwork >,      Network,        mNetwork )
+
     //----------------------------------------------------------------//
-    void        clearConstraint             ( size_t base, size_t top = 0 );
-    void        pushConstraintDropBlock     ( double probability, size_t base, size_t top = 0 );
-    void        pushConstraintDropHeader    ( double probability, size_t base, size_t top = 0 );
-                SimMiningMessenger          ();
-                ~SimMiningMessenger         ();
-    void        setMiners                   ( vector < shared_ptr < Miner >> miners );
-    void        updateAndDispatch           ();
+    SimMiningMessenger ( shared_ptr < SimMiningNetwork > network ) :
+        mNetwork ( network ) {
+    }
+    
+    //----------------------------------------------------------------//
+    ~SimMiningMessenger () {
+    }
 };
 
 } // namespace Simulation

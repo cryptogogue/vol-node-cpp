@@ -26,9 +26,9 @@ protected:
     friend class Simulator;
 
     //----------------------------------------------------------------//
-    virtual void AbstractScenario_control ( Simulator& simulator, SimMiningMessenger& messenger, size_t step ) {
+    virtual void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) {
         UNUSED ( simulator );
-        UNUSED ( messenger );
+        UNUSED ( network );
         UNUSED ( step );
     }
     

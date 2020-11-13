@@ -5,11 +5,12 @@
 #define VOLITION_MINER_H
 
 #include <volition/common.h>
-#include <volition/AbstractMiningMessengerClient.h>
+#include <volition/AbstractMiningMessenger.h>
 #include <volition/Accessors.h>
 #include <volition/BlockTree.h>
 #include <volition/CryptoKey.h>
 #include <volition/Ledger.h>
+#include <volition/RemoteMiner.h>
 #include <volition/TransactionQueue.h>
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
@@ -31,35 +32,6 @@ protected:
     BlockTreeNode::ConstPtr     mSearchTarget;
     size_t                      mSearchCount;
     size_t                      mSearchLimit;
-};
-
-//================================================================//
-// RemoteMiner
-//================================================================//
-class RemoteMiner {
-public:
-
-    enum MinerState {
-        STATE_NEW,
-        STATE_TIMEOUT,
-        STATE_ONLINE,
-        STATE_ERROR,
-    };
-
-    string                      mMinerID;
-    string                      mURL;
-    BlockTreeNode::ConstPtr     mTag;
-    MinerState                  mState;
-    string                      mMessage;
-
-    size_t                                              mHeight;
-    bool                                                mForward;
-    map < size_t, shared_ptr < const BlockHeader >>     mHeaderQueue;
-
-    //----------------------------------------------------------------//
-                    RemoteMiner             ();
-                    ~RemoteMiner            ();
-    void            setError                ( string message = "" );
 };
 
 //================================================================//
@@ -107,6 +79,12 @@ public:
         CONTROL_ADMIN,
     };
 
+    enum ReportMode {
+        REPORT_NONE,
+        REPORT_BEST_BRANCH,
+        REPORT_ALL_BRANCHES,
+    };
+
     enum : int {
         MINER_VERBOSE               = 0x02,
         MINER_MUTE                  = 0x08,
@@ -129,6 +107,8 @@ protected:
     Signature                                       mVisage;
 
     int                                             mFlags;
+    bool                                            mNeedsReport;
+    ReportMode                                      mReportMode;
     BlockTreeNode::RewriteMode                      mRewriteMode;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
@@ -163,7 +143,6 @@ protected:
     Poco::Mutex                                     mMutex;
 
     shared_ptr < AbstractMiningMessenger >          mMessenger;
-    list < MiningMessengerResponse >                mResponseQueue;
     
     //----------------------------------------------------------------//
     void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
@@ -173,19 +152,21 @@ protected:
     double                              checkConsensus              ( BlockTreeNode::ConstPtr tag ) const;
     void                                composeChain                ();
     void                                discoverMiners              ();
-    void                                processResponses            ( time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
+    void                                report                      () const;
     void                                requestHeaders              ();
     void                                saveChain                   ();
     void                                saveConfig                  ();
+    void                                scheduleReport              ();
     void                                selectBestBranch            ( time_t now );
     BlockTreeNode::ConstPtr             truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
     void                                updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
     void                                updateHighConfidenceTag     ();
+    void                                updateRemoteMiners          ();
     void                                updateSearches              ( time_t now );    
 
     //----------------------------------------------------------------//
-    void                                AbstractMiningMessengerClient_receiveResponse   ( const MiningMessengerResponse& response ) override;
+    void                                AbstractMiningMessengerClient_receiveResponse   ( const MiningMessengerResponse& response, time_t now ) override;
     void                                AbstractSerializable_serializeFrom              ( const AbstractSerializerFrom& serializer ) override;
     void                                AbstractSerializable_serializeTo                ( AbstractSerializerTo& serializer ) const override;
     virtual void                        Miner_reset                                     ();
@@ -215,6 +196,7 @@ public:
     GET_SET ( const CryptoKeyPair&,                 KeyPair,                    mKeyPair )
     GET_SET ( string,                               MinerID,                    mMinerID )
     GET_SET ( string,                               Motto,                      mMotto )
+    GET_SET ( ReportMode,                           ReportMode,                 mReportMode )
     GET_SET ( BlockTreeNode::RewriteMode,           RewriteMode,                mRewriteMode)
     GET_SET ( string,                               URL,                        mURL )
     

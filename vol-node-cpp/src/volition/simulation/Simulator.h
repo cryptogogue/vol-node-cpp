@@ -42,7 +42,6 @@ protected:
     
     size_t                              mBasePort;
     Miners                              mMiners;
-    shared_ptr < SimMiningMessenger >   mMessenger;
     Poco::Event                         mShutdownEvent;
     
     BlockTree                           mOptimal;
@@ -53,6 +52,8 @@ protected:
     time_t                              mNow;
     time_t                              mTimeStep;
 
+    shared_ptr < SimMiningNetwork > mNetwork;
+
     //----------------------------------------------------------------//
     void                                extendOptimal           ( size_t height );
     void                                prepare                 ();
@@ -61,7 +62,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    SimMiningMessenger&                 getMessenger            ();
+//    SimMiningMessenger&                 getMessenger            ();
     const Miners&                       getMiners               ();
     shared_ptr < SimMiner >             getSimMiner             ( size_t idx );
     void                                initialize              ( size_t totalMiners, size_t deferredMiners = 0, size_t basePort = 9090 );
