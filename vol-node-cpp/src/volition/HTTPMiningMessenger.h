@@ -25,7 +25,7 @@ protected:
     void        onTaskFinishedNotification                  ( Poco::TaskFinishedNotification* pNf );
 
     //----------------------------------------------------------------//
-    bool        AbstractMiningMessenger_isBlocked           () const override;
+    void        AbstractMiningMessenger_await               () override;
     void        AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) override;
 
 public:

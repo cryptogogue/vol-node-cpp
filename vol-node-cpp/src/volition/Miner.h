@@ -20,18 +20,23 @@ namespace Volition {
 
 class AbstractChainRecorder;
 class AbstractHashable;
+class Miner;
 
 //================================================================//
-// MinerSearchEntry
+// BlockSearch
 //================================================================//
-class MinerSearchEntry {
+class BlockSearch {
 protected:
 
     friend class Miner;
 
-    BlockTreeNode::ConstPtr     mSearchTarget;
-    size_t                      mSearchCount;
-    size_t                      mSearchLimit;
+    BlockTreeNode::ConstPtr         mSearchTarget;
+    set < string >                  mCompletedMiners;
+    shared_ptr < RemoteMiner >      mCurrentSearch;
+    
+    //----------------------------------------------------------------//
+    void            step            ( Miner& miner );
+    void            step            ( shared_ptr < RemoteMiner > remoteMiner );
 };
 
 //================================================================//
@@ -95,6 +100,7 @@ public:
 protected:
 
     friend class AbstractChainRecorder;
+    friend class BlockSearch;
 
     static constexpr const char* MASTER_BRANCH      = "master";
 
@@ -127,7 +133,7 @@ protected:
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByID;
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByURL;
     set < shared_ptr < RemoteMiner >>               mOnlineMiners;
-    map < string, MinerSearchEntry >                mBlockSearches;
+    map < string, BlockSearch >                     mBlockSearches;
     set < string >                                  mHeaderSearches;
     
     BlockTree                                       mBlockTree;
@@ -145,25 +151,26 @@ protected:
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     
     //----------------------------------------------------------------//
+    void                                affirmBlockSearch           ( BlockTreeNode::ConstPtr node );
     void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
     void                                affirmMessenger             ();
-    void                                affirmNodeSearch            ( BlockTreeNode::ConstPtr node );
     bool                                canExtend                   ( time_t now ) const;
     double                              checkConsensus              ( BlockTreeNode::ConstPtr tag ) const;
     void                                composeChain                ();
     void                                discoverMiners              ();
+    BlockSearch*                        findBlockSearch             ( const Digest& digest );
     void                                pushBlock                   ( shared_ptr < const Block > block );
     void                                report                      () const;
-    void                                requestHeaders              ();
     void                                saveChain                   ();
     void                                saveConfig                  ();
     void                                scheduleReport              ();
     void                                selectBestBranch            ( time_t now );
     BlockTreeNode::ConstPtr             truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
     void                                updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
+    void                                updateBlockSearches         ( time_t now );
+    void                                updateHeaderSearches        ();
     void                                updateHighConfidenceTag     ();
     void                                updateRemoteMiners          ();
-    void                                updateSearches              ( time_t now );    
 
     //----------------------------------------------------------------//
     void                                AbstractMiningMessengerClient_receiveResponse   ( const MiningMessengerResponse& response, time_t now ) override;

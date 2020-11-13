@@ -105,7 +105,7 @@ protected:
     list < MiningMessengerResponse >    mResponseQueue;
     
     //----------------------------------------------------------------//
-    virtual bool        AbstractMiningMessenger_isBlocked           () const = 0;
+    virtual void        AbstractMiningMessenger_await               () = 0;
     virtual void        AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) = 0;
 
     //----------------------------------------------------------------//
@@ -129,6 +129,12 @@ public:
     
     //----------------------------------------------------------------//
     virtual ~AbstractMiningMessenger () {
+    }
+
+    //----------------------------------------------------------------//
+    void await () {
+    
+        this->AbstractMiningMessenger_await ();
     }
 
     //----------------------------------------------------------------//
@@ -212,18 +218,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool isBlocked () const {
-    
-        return this->AbstractMiningMessenger_isBlocked ();
-    }
-
-    //----------------------------------------------------------------//
     void sendRequests () {
     
         list < MiningMessengerRequest > requests;
         {
             Poco::ScopedLock < Poco::Mutex > lock ( this->mRequestMutex );
             requests = this->mRequestQueue;
+            this->mRequestQueue.clear ();
         }
         
         for ( ; requests.size (); requests.pop_front ()) {
@@ -239,6 +240,7 @@ public:
         {
             Poco::ScopedLock < Poco::Mutex > lock ( this->mResponseMutex );
             responses = this->mResponseQueue;
+            this->mResponseQueue.clear ();
         }
         
         for ( ; responses.size (); responses.pop_front ()) {

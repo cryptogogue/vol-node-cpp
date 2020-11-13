@@ -20,8 +20,7 @@ protected:
     shared_ptr < SimMiningNetwork >    mNetwork;
 
     //----------------------------------------------------------------//
-    bool AbstractMiningMessenger_isBlocked () const override {
-        return false;
+    void AbstractMiningMessenger_await () override {
     }
     
     //----------------------------------------------------------------//

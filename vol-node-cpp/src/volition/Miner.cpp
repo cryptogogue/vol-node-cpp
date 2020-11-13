@@ -14,14 +14,62 @@
 namespace Volition {
 
 //================================================================//
+// BlockSearch
+//================================================================//
+    
+//----------------------------------------------------------------//
+void BlockSearch::step ( Miner& miner ) {
+
+    if ( this->mCurrentSearch ) return; // search already in progress
+
+    if ( this->mSearchTarget->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_NEW | BlockTreeNode::STATUS_MISSING ))) {
+
+        set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = miner.mOnlineMiners.begin ();
+        for ( ; remoteMinerIt != miner.mOnlineMiners.end (); ++remoteMinerIt ) {
+        
+            shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+            
+            if ( this->mCompletedMiners.find ( remoteMiner->mMinerID ) == this->mCompletedMiners.end ()) {
+                
+                this->mCompletedMiners.insert ( remoteMiner->mMinerID );
+                this->mCurrentSearch = remoteMiner;
+                
+                miner.mMessenger->enqueueBlockRequest ( remoteMiner->mURL, ( **this->mSearchTarget ).getDigest ());
+                return;
+            }
+        }
+        miner.mBlockTree.mark ( this->mSearchTarget, BlockTreeNode::STATUS_MISSING );
+    }
+}
+
+//----------------------------------------------------------------//
+void BlockSearch::step ( shared_ptr < RemoteMiner > remoteMiner ) {
+
+    assert ( this->mCurrentSearch == remoteMiner );
+    this->mCurrentSearch = NULL;
+}
+
+//================================================================//
 // Miner
 //================================================================//
+
+//----------------------------------------------------------------//
+void Miner::affirmBlockSearch ( BlockTreeNode::ConstPtr node ) {
+
+    if ( node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_COMPLETE | BlockTreeNode::STATUS_INVALID ))) return;
+
+    string hash = ( **node ).getDigest ();
+    if ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ()) return; // already searching
+
+    BlockSearch& search = this->mBlockSearches [ hash ];
+    search.mSearchTarget = node;
+}
 
 //----------------------------------------------------------------//
 void Miner::affirmBranchSearch ( BlockTreeNode::ConstPtr node ) {
 
     while ( node && node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_NEW | BlockTreeNode::STATUS_MISSING ))) {
-        this->affirmNodeSearch ( node );
+        this->affirmBlockSearch ( node );
         node = node->getParent ();
     }
 }
@@ -42,37 +90,6 @@ void Miner::affirmMessenger () {
 
     if ( !this->mMessenger ) {
         this->mMessenger = make_shared < HTTPMiningMessenger >();
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::affirmNodeSearch ( BlockTreeNode::ConstPtr node ) {
-
-    if ( node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_COMPLETE | BlockTreeNode::STATUS_INVALID ))) return;
-
-    string hash = ( **node ).getDigest ();
-    
-    if ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ()) return; // already searching
-
-    MinerSearchEntry search;
-    search.mSearchTarget = node;
-    search.mSearchCount = 0;
-    search.mSearchLimit = 0;
-    
-    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
-        
-        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        
-        this->mMessenger->enqueueBlockRequest ( remoteMiner->mURL, ( **search.mSearchTarget ).getDigest ());
-        search.mSearchLimit++;
-    }
-    
-    if ( search.mSearchLimit ) {
-        this->mBlockSearches [ hash ] = search;
-    }
-    else {
-        this->mBlockTree.mark ( node, BlockTreeNode::STATUS_MISSING );
     }
 }
 
@@ -213,6 +230,15 @@ void Miner::extend ( time_t now ) {
         // TODO: can only prune once we're sure we won't roll back
 //        this->pruneTransactions ( *this->mChain );
     }
+}
+
+//----------------------------------------------------------------//
+BlockSearch* Miner::findBlockSearch ( const Digest& digest ) {
+
+    map < string, BlockSearch >::iterator searchIt = this->mBlockSearches.find ( digest.toHex ());
+    if ( searchIt == this->mBlockSearches.cend ()) return NULL; // no search; bail.
+    
+    return &searchIt->second;
 }
 
 //----------------------------------------------------------------//
@@ -395,23 +421,6 @@ void Miner::report () const {
 }
 
 //----------------------------------------------------------------//
-void Miner::requestHeaders () {
-    
-    set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.cbegin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.cend (); ++remoteMinerIt ) {
-    
-        shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
-        string url = remoteMiner->mURL;
-        
-        // constantly refill active set
-        if ( this->mHeaderSearches.find ( url ) == this->mHeaderSearches.end ()) {
-            this->mMessenger->enqueueHeaderRequest ( url, remoteMiner->mHeight, remoteMiner->mForward );
-            this->mHeaderSearches.insert ( url );
-        }
-    }
-}
-
-//----------------------------------------------------------------//
 void Miner::reset () {
 
     this->TransactionQueue::reset ();
@@ -558,25 +567,21 @@ void Miner::step ( time_t now ) {
 //    BlockTreeNode::ConstPtr prevBest = this->mBestBranch;
 
     this->affirmMessenger ();
-    if ( this->mMessenger->isBlocked ()) {
-        printf ( ".\n" );
-        return;
-    }
+    this->mMessenger->await ();
     this->mMessenger->receiveResponses ( *this, now );
-
-    this->updateRemoteMiners ();
-    this->selectBestBranch ( now );         // CHOOSE new branch
-    this->updateSearches ( now );           // SEARCH for missing blocks
-    this->composeChain ();                  // BUILD the current chain
     
-    // EXTEND chain if complete and has consensus
+    this->updateRemoteMiners ();
+    this->selectBestBranch ( now );
+    this->composeChain ();
+    
     if ( this->canExtend ( now )) {
         this->extend ( now );
     }
     
-    this->discoverMiners ();                // SCAN the ledger for miners
-    this->requestHeaders ();                // QUERY the network for headers
-    this->updateHighConfidenceTag ();       // UPDATE the high confidence tag
+    this->discoverMiners ();
+    this->updateBlockSearches ( now );
+    this->updateHeaderSearches ();
+    this->updateHighConfidenceTag ();
     
     if ( this->mChainTag != prevChain ) {
         this->saveChain ();
@@ -623,6 +628,41 @@ BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail, time_t n
 }
 
 //----------------------------------------------------------------//
+void Miner::updateBlockSearches ( time_t now ) {
+
+    set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.begin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+        
+        shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
+
+        // we only care about missing branches; ignore new/complete/invalid branches.
+        if ( remoteMiner->mTag && remoteMiner->mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
+            
+            BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner->mTag, now );
+            
+            // only affirm a search if the other chain could beat our current.
+            if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode ) < 0 ) {
+                this->affirmBranchSearch ( truncated );
+            }
+        }
+    }
+    // always affirm a search for the current branch
+    this->affirmBranchSearch ( this->mBestBranch );
+    
+    map < string, BlockSearch >::iterator blockSearchIt = this->mBlockSearches.begin ();
+    while ( blockSearchIt != this->mBlockSearches.end ()) {
+    
+        map < string, BlockSearch >::iterator cursor = blockSearchIt++;
+    
+        BlockSearch& blockSearch = cursor->second;
+        blockSearch.step ( *this );
+        if ( !blockSearch.mCurrentSearch ) {
+            this->mBlockSearches.erase ( cursor );
+        }
+    }
+}
+
+//----------------------------------------------------------------//
 void Miner::updateChainRecurse ( BlockTreeNode::ConstPtr branch ) {
 
     if ( this->mChainTag == branch ) return; // nothing to do
@@ -635,6 +675,23 @@ void Miner::updateChainRecurse ( BlockTreeNode::ConstPtr branch ) {
     if ( branch->checkStatus ( BlockTreeNode::STATUS_COMPLETE )) {
         this->pushBlock ( branch->getBlock ());
         assert ( this->mChainTag == branch );
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::updateHeaderSearches () {
+    
+    set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.cbegin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.cend (); ++remoteMinerIt ) {
+    
+        shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
+        string url = remoteMiner->mURL;
+        
+        // constantly refill active set
+        if ( this->mHeaderSearches.find ( url ) == this->mHeaderSearches.end ()) {
+            this->mMessenger->enqueueHeaderRequest ( url, remoteMiner->mHeight, remoteMiner->mForward );
+            this->mHeaderSearches.insert ( url );
+        }
     }
 }
 
@@ -677,29 +734,6 @@ void Miner::updateRemoteMiners () {
     }
 }
 
-//----------------------------------------------------------------//
-void Miner::updateSearches ( time_t now ) {
-
-    set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
-        
-        shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
-
-        // we only care about missing branches; ignore new/complete/invalid branches.
-        if ( remoteMiner->mTag && remoteMiner->mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
-            
-            BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner->mTag, now );
-            
-            // only affirm a search if the other chain could beat our current.
-            if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode ) < 0 ) {
-                this->affirmBranchSearch ( truncated );
-            }
-        }
-    }
-    // always affirm a search for the current branch
-    this->affirmBranchSearch ( this->mBestBranch );
-}
-
 //================================================================//
 // overrides
 //================================================================//
@@ -711,6 +745,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
 
     const MiningMessengerRequest& request = response.mRequest;
     string url = response.mRequest.mMinerURL;
+    MiningMessengerResponse::Status status = response.mStatus;
     
     map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.find ( url );
     shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt != this->mRemoteMinersByURL.cend () ? remoteMinerIt->second : NULL;
@@ -720,52 +755,11 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
         case MiningMessengerRequest::REQUEST_BLOCK: {
             
             assert ( remoteMiner );
-                            
-            // in this case, we don't care about which miner the block came from since (presumably)
-            // the block is already in our tree somewhere.
-            
-            this->mBlockTree.update ( response.mBlock ); // update no matter what (will do nothing if node is missing).
-            
-            string hash = response.mRequest.mBlockDigest;
-            map < string, MinerSearchEntry >::iterator searchIt = this->mBlockSearches.find ( hash );
-            if ( searchIt == this->mBlockSearches.end ()) break;
-            
-            MinerSearchEntry& search = searchIt->second;
-            search.mSearchCount++;
-
-            if (( search.mSearchCount >= search.mSearchLimit ) && search.mSearchTarget->checkStatus ( BlockTreeNode::STATUS_NEW )) {
-                this->mBlockTree.mark ( search.mSearchTarget, BlockTreeNode::STATUS_MISSING );
-            }
-
-            if ( !search.mSearchTarget->checkStatus ( BlockTreeNode::STATUS_NEW )) {
-                this->mBlockSearches.erase ( hash );
-            }
+            this->mBlockTree.update ( response.mBlock );
+            assert ( this->mBlockSearches.find ( request.mBlockDigest.toHex ()) != this->mBlockSearches.end ());
+            this->mBlockSearches [ request.mBlockDigest.toHex ()].step ( remoteMiner );
             break;
         }
-        
-//        case MiningMessengerResponse::RESPONSE_ERROR: {
-//
-//            // TODO: how to recover from error?
-//            if ( remoteMiner ) {
-//
-//                remoteMiner->setError ();
-//
-//                if ( response.mRequest.mRequestType == MiningMessengerRequest::REQUEST_BLOCK ) {
-//
-//                    string hash = response.mRequest.mBlockDigest.toHex ();
-//                    assert ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ());
-//                    MinerSearchEntry& search = this->mBlockSearches [ hash ];
-//
-//                    if ( search.mSearchLimit <= 1 ) {
-//                        this->mBlockSearches.erase ( hash );
-//                    }
-//                    else {
-//                        search.mSearchLimit--;
-//                    }
-//                }
-//            }
-//            break;
-//        }
         
         case MiningMessengerRequest::REQUEST_EXTEND_NETWORK: {
             
@@ -779,54 +773,47 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
         case MiningMessengerRequest::REQUEST_HEADERS: {
                             
             assert ( remoteMiner );
+            
             list < shared_ptr < const BlockHeader >>::const_iterator headerIt = response.mHeaders.cbegin ();
             for ( ; headerIt != response.mHeaders.cend (); ++headerIt ) {
                 
                 shared_ptr < const BlockHeader > header = *headerIt;
                 if ( !header ) continue;
-                                    
+                if ( header->getTime () > now ) continue; // ignore headers from the future
+                
                 if ( header->getHeight () == 0 ) {
                     BlockTreeNode::ConstPtr root = this->mBlockTree.getRoot ();
                     if (( **root ).getDigest () != header->getDigest ()) {
                         remoteMiner->setError ( "Unrecoverable error: genesis block mismatch." );
+                        break;
                     }
                 }
-                
-                if ( remoteMiner->mState != RemoteMiner::STATE_ERROR ) {
-                
-                    // ignore headers from the future
-                    if ( header->getTime () <= now ) {
-                        remoteMiner->mHeaderQueue [ header->getHeight ()] = header;
-                    }
-                    
-                    // TODO: why isn't this always done? double check.
-                    if ( this->mHeaderSearches.find ( response.mRequest.mMinerURL ) != this->mHeaderSearches.end ()) {
-                        this->mHeaderSearches.erase ( response.mRequest.mMinerURL );
-                    }
-                }
+                remoteMiner->mHeaderQueue [ header->getHeight ()] = header;
             }
+            
+            this->mHeaderSearches.erase ( response.mRequest.mMinerURL );
             break;
         }
         
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
 
-            if ( !remoteMiner ) {
-            
-                remoteMiner                 = make_shared < RemoteMiner >();
-                remoteMiner->mURL           = url;
-                remoteMiner->mMinerID       = response.mMinerID;
-                
-                this->mRemoteMinersByURL [ url ]                    = remoteMiner;
-                this->mRemoteMinersByID [ remoteMiner->mMinerID ]   = remoteMiner;
-            }
+            if ( status == MiningMessengerResponse::STATUS_OK ) {
 
-            if ( remoteMiner->mMinerID != response.mMinerID ) {
-                this->mRemoteMinersByID.erase ( remoteMiner->mMinerID );
-                this->mRemoteMinersByID [ remoteMiner->mMinerID ] = remoteMiner;
-            }
+                if ( !remoteMiner ) {
+                    
+                    remoteMiner                 = make_shared < RemoteMiner >();
+                    remoteMiner->mURL           = url;
+                    remoteMiner->mMinerID       = response.mMinerID;
+                    
+                    this->mRemoteMinersByURL [ url ]                    = remoteMiner;
+                    this->mRemoteMinersByID [ remoteMiner->mMinerID ]   = remoteMiner;
+                }
 
-            remoteMiner->mState = RemoteMiner::STATE_ONLINE;
-            
+                if ( remoteMiner->mMinerID != response.mMinerID ) {
+                    this->mRemoteMinersByID.erase ( remoteMiner->mMinerID );
+                    this->mRemoteMinersByID [ remoteMiner->mMinerID ] = remoteMiner;
+                }
+            }
             break;
         }
         
@@ -834,26 +821,30 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             assert ( false );
             break;
     }
+    
+    if ( remoteMiner ) {
+        if ( status == MiningMessengerResponse::STATUS_OK ) {
+            remoteMiner->mState = RemoteMiner::STATE_ONLINE;
+        }
+        else {
+            remoteMiner->setError ();
+        }
+    }
 }
 
 //----------------------------------------------------------------//
 void Miner::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     UNUSED ( serializer );
-    
-//    serializer.serialize ( "chain", this->mChain );
 }
 
 //----------------------------------------------------------------//
 void Miner::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
     UNUSED ( serializer );
-
-//    serializer.serialize ( "chain", this->mChain );
 }
 
 //----------------------------------------------------------------//
 void Miner::Miner_reset () {
 }
-
 
 //----------------------------------------------------------------//
 void Miner::Miner_shutdown ( bool kill ) {

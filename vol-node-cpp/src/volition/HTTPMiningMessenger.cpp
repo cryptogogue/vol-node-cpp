@@ -199,9 +199,9 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
 //================================================================//
 
 //----------------------------------------------------------------//
-bool HTTPMiningMessenger::AbstractMiningMessenger_isBlocked () const {
+void HTTPMiningMessenger::AbstractMiningMessenger_await () {
 
-    return ( this->mThreadPool.available () == 0 );
+    this->mThreadPool.joinAll ();
 }
 
 //----------------------------------------------------------------//
