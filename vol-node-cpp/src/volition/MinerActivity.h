@@ -21,7 +21,8 @@ class MinerActivity :
     public Poco::Activity < MinerActivity > {
 private:
 
-    u32                 mUpdateIntervalInSeconds;
+    u32                 mFixedUpdateDelayInMillis;
+    u32                 mVariableUpdateDelayInMillis;
     Poco::Event         mShutdownEvent;
 
     //----------------------------------------------------------------//
@@ -33,10 +34,13 @@ private:
 
 public:
 
-    static const u32    DEFAULT_UPDATE_INTERVAL = 1;
+    static const u32    DEFAULT_FIXED_UPDATE_MILLIS         = 500;
+    static const u32    DEFAULT_VARIABLE_UPDATE_MILLIS      = 1000;
+
+    GET_SET ( u32,      FixedUpdateDelayInMillis,       mFixedUpdateDelayInMillis )
+    GET_SET ( u32,      VariableUpdateDelayInMillis,    mVariableUpdateDelayInMillis )
 
     //----------------------------------------------------------------//
-    void                setUpdateInterval           ( u32 updateIntervalInSeconds );
     void                waitForShutdown             ();
                         MinerActivity               ();
                         ~MinerActivity              ();

@@ -188,6 +188,7 @@ void Miner::composeChain () {
 //----------------------------------------------------------------//
 void Miner::discoverMiners () {
 
+    // get miner list from ledger
     set < string > miners = this->getWorkingLedger ().getMiners ();
     set < string >::iterator minerIt = miners.begin ();
     for ( ; minerIt != miners.end (); ++minerIt ) {
@@ -214,6 +215,15 @@ void Miner::discoverMiners () {
         this->mMessenger->enqueueMinerInfoRequest ( *this->mNewMinerURLs.begin ());
         this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
     }
+    
+    // poll network for miner URLs
+    if ( !this->mNetworkSearch ) {
+        set < string > urls = this->sampleActiveMinerURLs ( 1 );
+        if ( urls.size ()) {
+            this->mMessenger->enqueueExtendNetworkRequest ( *urls.cbegin ());
+            this->mNetworkSearch = true;
+        }
+    }
 }
 
 //----------------------------------------------------------------//
@@ -224,11 +234,6 @@ void Miner::extend ( time_t now ) {
     
         this->pushBlock ( block );
         this->scheduleReport ();
-        
-//        this->saveChain ();
-        
-        // TODO: can only prune once we're sure we won't roll back
-//        this->pruneTransactions ( *this->mChain );
     }
 }
 
@@ -364,6 +369,12 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
         return block;
     }
     return NULL;
+}
+
+//----------------------------------------------------------------//
+void Miner::pruneTransactions () {
+
+    this->TransactionQueue::pruneTransactions ( this->mHighConfidenceLedger );
 }
 
 //----------------------------------------------------------------//
@@ -564,7 +575,6 @@ void Miner::step ( time_t now ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
     BlockTreeNode::ConstPtr prevChain = this->mChainTag;
-//    BlockTreeNode::ConstPtr prevBest = this->mBestBranch;
 
     this->affirmMessenger ();
     this->mMessenger->await ();
@@ -582,6 +592,7 @@ void Miner::step ( time_t now ) {
     this->updateBlockSearches ( now );
     this->updateHeaderSearches ();
     this->updateHighConfidenceTag ();
+    this->pruneTransactions ();
     
     if ( this->mChainTag != prevChain ) {
         this->saveChain ();
@@ -601,15 +612,13 @@ BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail, time_t n
     // earliest insertion point for a local block. if we find a block from
     // self, abort: to truncate, our local block must *beat* any other block.
 
-    // TODO: this should take into account the lookback window.
-
     BlockTreeNode::ConstPtr cursor = tail;
     
     while ( cursor ) {
     
         const BlockHeader& header = **cursor;
-    
-        if (( this->mRewriteMode == BlockTreeNode::REWRITE_WINDOW ) && !header.isInRewriteWindow ( now )) return tail;
+        
+        if (( this->mRewriteMode == BlockTreeNode::REWRITE_WINDOW ) && !header.isInRewriteWindow ( now )) break;
     
         BlockTreeNode::ConstPtr parent = cursor->getParent ();
         if ( !parent ) break;
@@ -767,6 +776,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             for ( ; urlIt != response.mMinerURLs.cend (); ++urlIt ) {
                 this->affirmRemoteMiner ( *urlIt );
             }
+            this->mNetworkSearch = false;
             break;
         }
         

@@ -135,6 +135,7 @@ protected:
     set < shared_ptr < RemoteMiner >>               mOnlineMiners;
     map < string, BlockSearch >                     mBlockSearches;
     set < string >                                  mHeaderSearches;
+    bool                                            mNetworkSearch;
     
     BlockTree                                       mBlockTree;
     
@@ -232,6 +233,7 @@ public:
                                         Miner                       ();
     virtual                             ~Miner                      ();
     shared_ptr < Block >                prepareBlock                ( time_t now );
+    void                                pruneTransactions           ();
     void                                reset                       ();
     set < string >                      sampleActiveMinerURLs       ( size_t sampleSize ) const;
     void                                setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );

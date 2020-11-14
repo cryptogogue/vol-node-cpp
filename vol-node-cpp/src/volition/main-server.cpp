@@ -48,6 +48,20 @@ protected:
         );
         
         options.addOption (
+            Poco::Util::Option ( "delay-fixed", "df", "set update interval (in milliseconds)" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "delay-fixed" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "delay-variable", "dv", "set update interval (in milliseconds)" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "delay-variable" )
+        );
+        
+        options.addOption (
             Poco::Util::Option ( "dump", "dmp", "dump ledger to sqlite file" )
                 .required ( false )
                 .argument ( "value", true )
@@ -66,13 +80,6 @@ protected:
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "genesis-format" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "interval", "i", "set update interval (in seconds)" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "interval" )
         );
         
         options.addOption (
@@ -169,7 +176,8 @@ protected:
         string dump                     = configuration.getString       ( "dump", "" );
         string genesis                  = configuration.getString       ( "genesis", "genesis.json" );
         string genesisFormat            = configuration.getString       ( "genesis-format", "block" );
-        int interval                    = configuration.getInt          ( "interval", MinerActivity::DEFAULT_UPDATE_INTERVAL );
+        int fixedDelay                  = configuration.getInt          ( "delay-fixed", MinerActivity::DEFAULT_FIXED_UPDATE_MILLIS );
+        int variableDelay               = configuration.getInt          ( "delay-variable", MinerActivity::DEFAULT_VARIABLE_UPDATE_MILLIS );
         string keyfile                  = configuration.getString       ( "keyfile" );
         string logpath                  = configuration.getString       ( "logpath", "" );
         string minerID                  = configuration.getString       ( "miner", "" );
@@ -229,8 +237,6 @@ protected:
             LOG_F ( INFO, "CONTROL LEVEL: ADMIN" );
             minerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
         }
-
-        minerActivity->setUpdateInterval (( u32 )interval );
         
         LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
         if ( !FileSys::exists ( genesis )) {
@@ -276,6 +282,8 @@ protected:
         minerActivity->affirmVisage ();
         minerActivity->setVerbose ();
         minerActivity->setReportMode ( Miner::REPORT_ALL_BRANCHES );
+        minerActivity->setFixedUpdateDelayInMillis (( u32 )fixedDelay );
+        minerActivity->setVariableUpdateDelayInMillis (( u32 )variableDelay );
         
         LOG_F ( INFO, "MINER ID: %s", minerActivity->getMinerID ().c_str ());
 

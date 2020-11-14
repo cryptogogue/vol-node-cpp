@@ -17,7 +17,7 @@ void MinerActivity::runActivity () {
 
     while ( !this->isStopped ()) {
     
-//        Poco::Timestamp timestamp;
+        Poco::Timestamp timestamp;
         
         time_t now;
         time ( &now );
@@ -26,25 +26,17 @@ void MinerActivity::runActivity () {
             this->step ( now );
         }
         catch ( Poco::Exception& exc ) {
-        
-            printf ( "an exception\n" );
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "Caught exception in MinerActivity::runActivity ()" );
         }
         
-//        u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
-//        u32 updateMillis = this->mUpdateIntervalInSeconds * 1000;
-//
-//        if ( elapsedMillis < updateMillis ) {
-//            Poco::Thread::sleep ( updateMillis - elapsedMillis );
-//        }
-//        Poco::Thread::sleep ( 5000 );
-        Poco::Thread::sleep ( 100 );
+        u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
+        u32 updateMillis = this->mVariableUpdateDelayInMillis;
+
+        if ( elapsedMillis < updateMillis ) {
+            Poco::Thread::sleep ( updateMillis - elapsedMillis );
+        }
+        Poco::Thread::sleep ( this->mFixedUpdateDelayInMillis );
     }
-}
-
-//----------------------------------------------------------------//
-void MinerActivity::setUpdateInterval ( u32 updateIntervalInSeconds ) {
-
-    this->mUpdateIntervalInSeconds = updateIntervalInSeconds;
 }
 
 //----------------------------------------------------------------//
@@ -56,7 +48,8 @@ void MinerActivity::waitForShutdown () {
 //----------------------------------------------------------------//
 MinerActivity::MinerActivity () :
     Poco::Activity < MinerActivity >( this, &MinerActivity::runActivity ),
-    mUpdateIntervalInSeconds ( DEFAULT_UPDATE_INTERVAL ) {
+    mFixedUpdateDelayInMillis ( DEFAULT_FIXED_UPDATE_MILLIS ),
+    mVariableUpdateDelayInMillis ( DEFAULT_VARIABLE_UPDATE_MILLIS ) {
 }
 
 //----------------------------------------------------------------//

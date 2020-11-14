@@ -19,7 +19,7 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
-#define THE_SCENARO MinimalScenario
+#define THE_SCENARO SimpleScenario
 
 //================================================================//
 // MinimalScenario
