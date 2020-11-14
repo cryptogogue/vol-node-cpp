@@ -580,17 +580,23 @@ void Miner::step ( time_t now ) {
     this->mMessenger->await ();
     this->mMessenger->receiveResponses ( *this, now );
     
+    // this applies any new headers and updates connectivity status
     this->updateRemoteMiners ();
+    
+    // this evaluates each branch and picks the best candidate
+    // TODO: ignore branches that would re-root earlier than high confidence node
+    // TODO: start mining only once mining is approved in high confidence ledger
+    // TODO: formalize branch truncation (append provisional header for each branch?)
     this->selectBestBranch ( now );
+    
+    // using the best branch, build or rebuild chain
     this->composeChain ();
     
+    // TODO: rethink this using provisional header?
     if ( this->canExtend ( now )) {
         this->extend ( now );
     }
     
-    this->discoverMiners ();
-    this->updateBlockSearches ( now );
-    this->updateHeaderSearches ();
     this->updateHighConfidenceTag ();
     this->pruneTransactions ();
     
@@ -598,6 +604,9 @@ void Miner::step ( time_t now ) {
         this->saveChain ();
     }
     
+    this->updateBlockSearches ( now );
+    this->updateHeaderSearches ();
+    this->discoverMiners ();
     this->mMessenger->sendRequests ();
     this->report ();
 }
