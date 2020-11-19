@@ -53,6 +53,12 @@ public:
     typedef shared_ptr < BlockTreeNode >            Ptr;
     typedef shared_ptr < const BlockTreeNode >      ConstPtr;
 
+    enum Meta {
+        META_NONE,
+        META_PROVISIONAL,
+        META_HIGH_CONFIDENCE,
+    };
+
     enum Status {
         STATUS_NEW          = 0x01,
         STATUS_COMPLETE     = 0x02,
@@ -79,11 +85,13 @@ private:
     set < BlockTreeNode* >                  mChildren;
 
     Status                                  mStatus;
+    Meta                                    mMeta;
 
     //----------------------------------------------------------------//
     shared_ptr < const BlockTreeNode >      findInsertionRecurse    ( shared_ptr < const BlockTreeNode > tail, string minerID, const Digest& visage ) const;
     void                                    logBranchRecurse        ( string& str ) const;
     void                                    mark                    ( BlockTreeNode::Status status );
+    void                                    markHighConfidence      ();
     void                                    markComplete            ();
 
 public:
@@ -142,6 +150,7 @@ private:
     map < string, BlockTreeNode* >      mNodes;
 
     //----------------------------------------------------------------//
+    BlockTreeNode::ConstPtr             affirm                  ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
     BlockTreeNode::Ptr                  findNodeForHash         ( string hash );
     void                                logTreeRecurse          ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const;
 
@@ -151,13 +160,15 @@ public:
 
     //----------------------------------------------------------------//
     BlockTreeNode::ConstPtr             affirmBlock             ( shared_ptr < const Block > block );
-    BlockTreeNode::ConstPtr             affirmBlock             ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block );
+    BlockTreeNode::ConstPtr             affirmHeader            ( shared_ptr < const BlockHeader > header );
+    BlockTreeNode::ConstPtr             affirmProvisional       ( shared_ptr < const BlockHeader > header );
                                         BlockTree               ();
                                         ~BlockTree              ();
     CanAppend                           checkAppend             ( const BlockHeader& header ) const;
     BlockTreeNode::ConstPtr             findNodeForHash         ( string hash ) const;
     void                                logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
     void                                mark                    ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status status );
+    void                                markHighConfidence      ( BlockTreeNode::ConstPtr node );
     BlockTreeNode::ConstPtr             update                  ( shared_ptr < const Block > block );
 };
 

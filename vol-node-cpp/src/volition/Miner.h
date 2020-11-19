@@ -156,9 +156,7 @@ protected:
     // to complete by gathering (or building) the missing blocks. the provisional
     // branch is not published to other miners.
     BlockTreeNode::ConstPtr                         mBestProvisional;
-    
-//    list < BlockTreeNode::ConstPtr >                mNodeQueue;
-    
+        
     Poco::Mutex                                     mMutex;
 
     shared_ptr < AbstractMiningMessenger >          mMessenger;
@@ -178,7 +176,6 @@ protected:
     void                                saveChain                   ();
     void                                saveConfig                  ();
     void                                scheduleReport              ();
-    BlockTreeNode::ConstPtr             truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
     void                                updateBestBranch            ( time_t now );
     void                                updateBlockSearches         ();
     void                                updateHeaderSearches        ();

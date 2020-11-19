@@ -57,7 +57,8 @@ size_t BlockTreeRoot::getSegLength () const {
 //----------------------------------------------------------------//
 BlockTreeNode::BlockTreeNode () :
     mTree ( NULL ),
-    mStatus ( STATUS_INVALID ) {
+    mStatus ( STATUS_INVALID ),
+    mMeta ( META_NONE ) {
 }
 
 //----------------------------------------------------------------//
@@ -280,23 +281,43 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
     const BlockHeader& header = *this->mHeader;
     
     cc8* status = "";
-    switch ( this->mStatus ) {
-        
-        case STATUS_NEW:
-            status = "N";
-            break;
+    
+    if ( this->mMeta != META_NONE ) {
+    
+        switch ( this->mMeta ) {
             
-        case STATUS_COMPLETE:
-            status = "C";
-            break;
-        
-        case STATUS_MISSING:
-            status = "-";
-            break;
+            case META_PROVISIONAL:
+                status = "*";
+                break;
+                
+            case META_HIGH_CONFIDENCE:
+                status = "-";
+                break;
             
-        case STATUS_INVALID:
-            status = "X";
-            break;
+            default:
+                break;
+        }
+    }
+    else {
+    
+        switch ( this->mStatus ) {
+            
+            case STATUS_NEW:
+                status = "N";
+                break;
+                
+            case STATUS_COMPLETE:
+                status = "C";
+                break;
+            
+            case STATUS_MISSING:
+                status = "?";
+                break;
+                
+            case STATUS_INVALID:
+                status = "X";
+                break;
+        }
     }
     
     string charm = this->writeCharmTag ();
@@ -339,6 +360,18 @@ void BlockTreeNode::mark ( BlockTreeNode::Status status ) {
     set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
     for ( ; childIt != this->mChildren.end (); ++childIt ) {
         ( *childIt )->mark ( status );
+    }
+}
+
+//----------------------------------------------------------------//
+void BlockTreeNode::markHighConfidence () {
+
+    if ( this->mMeta != META_HIGH_CONFIDENCE ) {
+        assert ( this->mStatus & STATUS_COMPLETE );
+        this->mMeta = META_HIGH_CONFIDENCE;
+        if ( this->mParent ) {
+            this->mParent->markHighConfidence ();
+        }
     }
 }
 
@@ -404,13 +437,7 @@ string BlockTreeNode::writeCharmTag () const {
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const Block > block ) {
-
-    return this->affirmBlock ( block, block );
-}
-
-//----------------------------------------------------------------//
-BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block ) {
+BlockTreeNode::ConstPtr BlockTree::affirm ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
 
     if ( !header ) return NULL;
 
@@ -430,9 +457,10 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
 
         node = make_shared < BlockTreeNode >();
 
-        node->mTree     = this;
-        node->mHeader   = header;
-        node->mStatus   = BlockTreeNode::STATUS_NEW;
+        node->mTree         = this;
+        node->mHeader       = header;
+        node->mStatus       = BlockTreeNode::STATUS_NEW;
+        node->mMeta         = isProvisional ? BlockTreeNode::META_PROVISIONAL : BlockTreeNode::META_NONE;
 
         if ( prevNode ) {
             node->mParent = prevNode;
@@ -450,6 +478,24 @@ BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const BlockHeader 
     
     this->update ( block );
     return node;
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTree::affirmBlock ( shared_ptr < const Block > block ) {
+
+    return this->affirm ( block, block );
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTree::affirmHeader ( shared_ptr < const BlockHeader > header ) {
+
+    return this->affirm ( header, NULL );
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTree::affirmProvisional ( shared_ptr < const BlockHeader > header ) {
+
+    return this->affirm ( header, NULL, true );
 }
 
 //----------------------------------------------------------------//
@@ -542,6 +588,17 @@ void BlockTree::mark ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status statu
     BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getDigest ());
     if ( cursor ) {
         cursor->mark ( status );
+    }
+}
+
+//----------------------------------------------------------------//
+void BlockTree::markHighConfidence ( BlockTreeNode::ConstPtr node ) {
+
+    if ( !node ) return;
+    
+    BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getDigest ());
+    if ( cursor ) {
+        cursor->markHighConfidence ();
     }
 }
 

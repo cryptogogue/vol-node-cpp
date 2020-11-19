@@ -62,7 +62,6 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-//    SimMiningMessenger&                 getMessenger            ();
     const Miners&                       getMiners               ();
     shared_ptr < SimMiner >             getSimMiner             ( size_t idx );
     void                                initialize              ( size_t totalMiners, size_t deferredMiners = 0, size_t basePort = 9090 );

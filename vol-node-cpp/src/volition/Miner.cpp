@@ -362,7 +362,7 @@ BlockTreeNode::ConstPtr Miner::improveBranch ( BlockTreeNode::ConstPtr tail, tim
     }
 
     if ( extendFrom ) {
-        return this->mBlockTree.affirmBlock ( this->prepareProvisional ( **extendFrom, now ), NULL );
+        return this->mBlockTree.affirmProvisional ( this->prepareProvisional ( **extendFrom, now ));
     }
     return tail; // use the chain as-is.
 }
@@ -677,40 +677,6 @@ void Miner::step ( time_t now ) {
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail, time_t now ) const {
-
-    if ( this->mRewriteMode == BlockTreeNode::REWRITE_NONE ) return tail;
-
-    // if a block from self would be more charming at any point along the chain,
-    // truncate the chain to the parent of that block. in other words: seek the
-    // earliest insertion point for a local block. if we find a block from
-    // self, abort: to truncate, our local block must *beat* any other block.
-
-    BlockTreeNode::ConstPtr cursor = tail;
-    
-    while ( cursor ) {
-    
-        const BlockHeader& header = **cursor;
-        
-        if (( this->mRewriteMode == BlockTreeNode::REWRITE_WINDOW ) && !header.isInRewriteWindow ( now )) break;
-    
-        BlockTreeNode::ConstPtr parent = cursor->getParent ();
-        if ( !parent ) break;
-        
-        const BlockHeader& parentHeader = **parent;
-        
-        if ( header.getMinerID () == this->mMinerID ) break;
-        
-        Digest charm = parentHeader.getNextCharm ( this->mVisage );
-        if ( BlockHeader::compare ( charm, header.getCharm ()) < 0 ) return parent;
-        
-        cursor = parent;
-    }
-
-    return tail;
-}
-
-//----------------------------------------------------------------//
 void Miner::updateBestBranch ( time_t now ) {
 
     // update the current best branch, excluding missing or invalid blocks.
@@ -801,10 +767,12 @@ void Miner::updateHighConfidenceTag () {
     assert ( tag );
     assert ( tag->getBlock ());
     assert ( tag->isAncestorOf ( this->mBestProvisional ));
-    
+        
     this->mHighConfidenceLedgerTag = tag;
     this->mHighConfidenceLedger = *this->mWorkingLedger;
     this->mHighConfidenceLedger.revert (( **this->mHighConfidenceLedgerTag ).getHeight ());
+    
+    this->mBlockTree.markHighConfidence ( this->mHighConfidenceLedgerTag );
 }
 
 //----------------------------------------------------------------//

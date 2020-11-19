@@ -60,7 +60,7 @@ void RemoteMiner::updateHeaders ( BlockTree& blockTree ) {
             
                 case BlockTree::APPEND_OK:
                 case BlockTree::ALREADY_EXISTS:
-                    this->mTag = blockTree.affirmBlock ( header, NULL );
+                    this->mTag = blockTree.affirmHeader ( header );
                     this->mHeaderQueue.erase ( this->mHeaderQueue.begin ());
                     accepted++;
                     break;
