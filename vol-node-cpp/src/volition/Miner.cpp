@@ -234,13 +234,16 @@ void Miner::extend ( time_t now ) {
     if ( !( parent && parent->isComplete ())) return;
     if ( this->checkConsensus ( parent ) < 0.5 ) return;
 
+    assert ( this->mWorkingLedgerTag == parent );
+    assert ( this->mHighConfidenceLedgerTag != provisional );
+    assert ( this->mHighConfidenceLedgerTag->isAncestorOf ( provisional ));
+
     shared_ptr < Block > block = this->prepareBlock ( now );
     if ( block ) {
         
         assert ( block->getCharm () == ( **provisional ).getCharm ());
         
         this->mBestProvisional = parent;
-        this->mWorkingLedgerTag = parent;
         this->pushBlock ( block );
         this->scheduleReport ();
     }
