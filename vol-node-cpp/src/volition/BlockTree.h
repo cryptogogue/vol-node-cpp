@@ -107,7 +107,15 @@ public:
     shared_ptr < const BlockTreeNode >      getParent               () const;
     Status                                  getStatus               () const;
     bool                                    isAncestorOf            ( ConstPtr tail ) const;
+    bool                                    isComplete              () const;
+    bool                                    isInvalid               () const;
+    bool                                    isMissing               () const;
+    bool                                    isMissingOrInvalid      () const;
+    bool                                    isNew                   () const;
     BlockTreeNode::ConstPtr                 trim                    ( Status status ) const;
+    BlockTreeNode::ConstPtr                 trimInvalid             () const;
+    BlockTreeNode::ConstPtr                 trimMissing             () const;
+    BlockTreeNode::ConstPtr                 trimMissingOrInvalid    () const;
     string                                  writeBranch             () const;
     string                                  writeCharmTag           () const;
 };

@@ -31,7 +31,7 @@ public:
         try {
         
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            BlockTreeNode::ConstPtr node = this->mWebMiner->getBestBranch ();
+            BlockTreeNode::ConstPtr node = this->mWebMiner->getWorkingLedgerTag ();
                         
             size_t top = this->optQuery ( "height", ( **node ).getHeight ()) + 1; // this handles "forward" and "backward" cases alike
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;

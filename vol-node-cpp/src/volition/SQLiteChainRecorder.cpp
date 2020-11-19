@@ -93,7 +93,7 @@ void SQLiteChainRecorder::AbstractChainRecorder_reset () {
 void SQLiteChainRecorder::AbstractChainRecorder_saveChain ( const Miner& miner ) {
     UNUSED ( miner );
 
-    BlockTreeNode::ConstPtr cursor = miner.getChainTag ();
+    BlockTreeNode::ConstPtr cursor = miner.getWorkingLedgerTag ();
 
     for ( ; cursor; cursor = cursor->getParent ()) {
     

@@ -18,7 +18,7 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 RemoteMiner::RemoteMiner () :
-    mState ( STATE_NEW ),
+    mNetworkState ( STATE_NEW ),
     mHeight ( 0 ),
     mForward ( true ) {
 }
@@ -30,7 +30,7 @@ RemoteMiner::~RemoteMiner () {
 //----------------------------------------------------------------//
 void RemoteMiner::setError ( string message ) {
 
-    this->mState        = STATE_ERROR;
+    this->mNetworkState        = STATE_ERROR;
     this->mMessage      = message;
     this->mHeight       = 0;
     this->mTag          = NULL;

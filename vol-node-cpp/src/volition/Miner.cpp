@@ -56,7 +56,7 @@ void BlockSearch::step ( shared_ptr < RemoteMiner > remoteMiner ) {
 //----------------------------------------------------------------//
 void Miner::affirmBlockSearch ( BlockTreeNode::ConstPtr node ) {
 
-    if ( node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_COMPLETE | BlockTreeNode::STATUS_INVALID ))) return;
+    if ( node->getBlock ()) return;
 
     string hash = ( **node ).getDigest ();
     if ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ()) return; // already searching
@@ -68,8 +68,10 @@ void Miner::affirmBlockSearch ( BlockTreeNode::ConstPtr node ) {
 //----------------------------------------------------------------//
 void Miner::affirmBranchSearch ( BlockTreeNode::ConstPtr node ) {
 
-    while ( node && node->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_NEW | BlockTreeNode::STATUS_MISSING ))) {
-        this->affirmBlockSearch ( node );
+    while ( node && ( node->getBlock () == NULL )) {
+        if (( **node ).getMinerID () != this->mMinerID ) {
+            this->affirmBlockSearch ( node );
+        }
         node = node->getParent ();
     }
 }
@@ -109,34 +111,10 @@ void Miner::affirmVisage () {
 }
 
 //----------------------------------------------------------------//
-bool Miner::canExtend ( time_t now ) const {
-
-    AccountODBM accountODBM ( *this->mChain, this->mMinerID );
-    if ( !accountODBM.mMinerInfo.exists ()) return false;
-
-    if ( this->mFlags & MINER_MUTE ) return false;
-    if ( !( this->mBestBranch && this->mBestBranch->checkStatus ( BlockTreeNode::STATUS_COMPLETE ))) return false;
-
-    if ( now < ( **this->mBestBranch ).getNextTime ()) return false;
-
-    size_t count = 0;
-    size_t current = 0;
-    
-    set < shared_ptr < RemoteMiner >>::const_iterator minerIt = this->mOnlineMiners.cbegin ();
-    for ( ; minerIt != this->mOnlineMiners.cend (); ++minerIt ) {
-        shared_ptr < RemoteMiner > remoteMiner = *minerIt;
-        if ( !remoteMiner->mTag ) continue;
-        if ( this->mBestBranch->isAncestorOf ( remoteMiner->mTag )) count++;
-        current++;
-    }
-    return ( this->checkConsensus ( this->mBestBranch ) > 0.5 );
-}
-
-//----------------------------------------------------------------//
 bool Miner::checkBestBranch ( string miners ) const {
 
-    assert ( this->mChain );
-    return this->mChain->checkMiners ( miners );
+    assert ( this->mWorkingLedger );
+    return this->mWorkingLedger->checkMiners ( miners );
 }
 
 //----------------------------------------------------------------//
@@ -148,8 +126,8 @@ double Miner::checkConsensus ( BlockTreeNode::ConstPtr tag ) const {
     set < shared_ptr < RemoteMiner >>::const_iterator minerIt = this->mOnlineMiners.cbegin ();
     for ( ; minerIt != this->mOnlineMiners.cend (); ++minerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *minerIt;
-        if ( !remoteMiner->mTag ) continue;
-        if ( tag->isAncestorOf ( remoteMiner->mTag )) count += 1;
+        if ( !remoteMiner->mImproved ) continue;
+        if ( tag->isAncestorOf ( remoteMiner->mImproved )) count += 1;
         current += 1;
     }
     return ( count / current );
@@ -160,29 +138,45 @@ void Miner::composeChain () {
 
     // TODO: gather transactions if rewinding chain
 
-    if ( this->mChainTag == this->mBestBranch ) return;
+    if ( this->mWorkingLedgerTag == this->mBestProvisional ) return;
 
     // check to see if chain tag is *behind* best branch
-    if ( this->mBestBranch->isAncestorOf ( this->mChainTag )) {
-        this->mChain->reset (( **this->mBestBranch ).getHeight () + 1 );
-        this->mChainTag = this->mBestBranch;
+    if ( this->mBestProvisional->isAncestorOf ( this->mWorkingLedgerTag )) {
+        this->mWorkingLedger->reset (( **this->mBestProvisional ).getHeight () + 1 );
+        this->mWorkingLedgerTag = this->mBestProvisional;
         return;
     }
 
     // if chain is divergent from best branch, re-root it
-    if ( !this->mChainTag->isAncestorOf ( this->mBestBranch )) {
+    if ( !this->mWorkingLedgerTag->isAncestorOf ( this->mBestProvisional )) {
         
         // REWIND chain to point of divergence
-        BlockTreeNode::ConstPtr root = BlockTreeNode::findRoot ( this->mChainTag, this->mBestBranch ).mRoot;
+        BlockTreeNode::ConstPtr root = BlockTreeNode::findRoot ( this->mWorkingLedgerTag, this->mBestProvisional ).mRoot;
         assert ( root ); // guaranteed -> common genesis
         assert ( root->checkStatus ( BlockTreeNode::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
-        this->mChain->reset (( **root ).getHeight () + 1 );
-        this->mChainTag = root;
+        this->mWorkingLedger->reset (( **root ).getHeight () + 1 );
+        this->mWorkingLedgerTag = root;
     }
-    assert ( this->mChainTag->isAncestorOf ( this->mBestBranch ));
+    assert ( this->mWorkingLedgerTag->isAncestorOf ( this->mBestProvisional ));
     
-    this->updateChainRecurse ( this->mBestBranch );
+    this->composeChainRecurse ( this->mBestProvisional );
+}
+
+//----------------------------------------------------------------//
+void Miner::composeChainRecurse ( BlockTreeNode::ConstPtr branch ) {
+
+    if ( this->mWorkingLedgerTag == branch ) return; // nothing to do
+    
+    BlockTreeNode::ConstPtr parent = branch->getParent ();
+    if ( parent != this->mWorkingLedgerTag ) {
+        this->composeChainRecurse ( parent );
+    }
+    
+    if ( branch->isComplete ()) {
+        this->pushBlock ( branch->getBlock ()); // TODO: handle invalid blocks
+        assert ( this->mWorkingLedgerTag == branch );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -204,7 +198,7 @@ void Miner::discoverMiners () {
             }
             else {
                 shared_ptr < RemoteMiner > remoteMiner = this->mRemoteMinersByID [ minerID ];
-                if ( remoteMiner && ( remoteMiner->mState != RemoteMiner::STATE_ONLINE )) {
+                if ( remoteMiner && ( remoteMiner->mNetworkState != RemoteMiner::STATE_ONLINE )) {
                     this->mNewMinerURLs.insert ( remoteMiner->mURL );
                 }
             }
@@ -212,7 +206,10 @@ void Miner::discoverMiners () {
     }
     
     while ( this->mNewMinerURLs.size ()) {
-        this->mMessenger->enqueueMinerInfoRequest ( *this->mNewMinerURLs.begin ());
+        string url = *this->mNewMinerURLs.begin ();
+        if ( url != this->mURL ) {
+            this->mMessenger->enqueueMinerInfoRequest ( *this->mNewMinerURLs.begin ());
+        }
         this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
     }
     
@@ -228,10 +225,22 @@ void Miner::discoverMiners () {
 
 //----------------------------------------------------------------//
 void Miner::extend ( time_t now ) {
+    
+    BlockTreeNode::ConstPtr provisional = this->mBestProvisional;
+    if ( !provisional || provisional->isComplete ()) return;
+    if (( **provisional ).getMinerID () != this->mMinerID ) return;
+    
+    BlockTreeNode::ConstPtr parent = provisional->getParent ();
+    if ( !( parent && parent->isComplete ())) return;
+    if ( this->checkConsensus ( parent ) < 0.5 ) return;
 
     shared_ptr < Block > block = this->prepareBlock ( now );
     if ( block ) {
-    
+        
+        assert ( block->getCharm () == ( **provisional ).getCharm ());
+        
+        this->mBestProvisional = parent;
+        this->mWorkingLedgerTag = parent;
         this->pushBlock ( block );
         this->scheduleReport ();
     }
@@ -255,11 +264,11 @@ const set < string >& Miner::getActiveMinerURLs () const {
 //----------------------------------------------------------------//
 size_t Miner::getChainSize () const {
 
-    return this->mChainTag ? (( **this->mChainTag ).getHeight () + 1 ) : 0;
+    return this->mWorkingLedgerTag ? (( **this->mWorkingLedgerTag ).getHeight () + 1 ) : 0;
 }
 
 //----------------------------------------------------------------//
-Ledger& Miner::getLedger () {
+Ledger& Miner::getHighConfidenceLedger () {
 
     return this->mHighConfidenceLedger;
 }
@@ -271,10 +280,10 @@ TransactionStatus Miner::getTransactionStatus ( string accountName, string uuid 
         return this->getLastStatus ( accountName );
     }
 
-    const Ledger& ledger = this->getLedger ();
+    const Ledger& ledger = this->getHighConfidenceLedger ();
 
     if ( ledger.hasTransaction ( accountName, uuid )) {
-        return TransactionStatus ( TransactionStatus::ACCEPTED, "Transaction was accepte and applied.", uuid );
+        return TransactionStatus ( TransactionStatus::ACCEPTED, "Transaction was accepted and applied.", uuid );
     }
 
     if ( this->hasTransaction ( accountName, uuid )) {
@@ -287,8 +296,72 @@ TransactionStatus Miner::getTransactionStatus ( string accountName, string uuid 
 //----------------------------------------------------------------//
 Ledger& Miner::getWorkingLedger () {
 
-    assert ( this->mChain );
-    return *this->mChain;
+    assert ( this->mWorkingLedger );
+    return *this->mWorkingLedger;
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr Miner::improveBranch ( BlockTreeNode::ConstPtr tail, time_t now ) {
+
+    // if muted, no change is possible
+    if ( this->mFlags & MINER_MUTE ) return tail;
+
+    // first, check to see if we're authorized to mine. if we're not, then we can't change the branch, so return.
+    AccountODBM accountODBM ( *this->mWorkingLedger, this->mMinerID );
+    if ( !accountODBM.isMiner ()) return tail;
+
+    // we *are* authorized to mine, so find the height common root of the incoming branch and the working ledger branch. if the
+    // root is earlier than the height at which we became a miner, then we can't know if we're a miner in the incoming branch.
+    // rather than risk mining an invalid block, we'll leave the branch unaltered.
+    
+    BlockTreeRoot root = BlockTreeNode::findRoot ( this->mWorkingLedgerTag, tail );
+    if (( **root.mRoot ).getHeight () < accountODBM.mMinerHeight.get ()) return tail;
+    
+    // at this stage, we're allowed to mine and we know that we're authorized on this branch. so see if we can improve
+    // the branch. we can only improve it if we find a place were we can legally append (or replace) a block with a
+    // more charming block than what's there. we'll need to consider the rewrite window (i.e. don't replace blocks older
+    // than the rewrite limit). we'll also need to consider the block delay (i.e. don't append a block before its time).
+    // if we can't find an improvement, return the branch as-is. but if we *can* find an improvement, go ahead and
+    // append (or replace) with a "provisional" node (i.e. a node with a header but no block).
+    
+    // there is also a special case when appending after one of our own blocks: the block node must be complete (i.e. not
+    // be provisional).
+
+    BlockTreeNode::ConstPtr parent = tail;
+    BlockTreeNode::ConstPtr child;
+    BlockTreeNode::ConstPtr extendFrom; // this is the *parent* of the block to append (if any).
+    
+    while ( parent ) {
+    
+        const BlockHeader& parentHeader = **parent;
+        
+        // if parent is one of ours, but it isn't yet complete, stop the search.
+        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent->checkStatus ( BlockTreeNode::STATUS_COMPLETE ))) break;
+        
+        // if enough time has elapsed since the parent was declared, we can consider replacing the child
+        // with our own block (or appending a new block).
+        if ( parentHeader.getNextTime () <= now ) {
+            
+            // check to see if our block would be more charming. if so, extend from the parent.
+            if ( !child || BlockHeader::compare ( parentHeader.getNextCharm ( this->mVisage ), ( **child ).getCharm ()) < 0 ) {
+                extendFrom = parent;
+            }
+        }
+        
+        // we can only replace blocks within the rewrite window. if parent is outside of that, no point in continuing.
+        if (( this->mRewriteMode == BlockTreeNode::REWRITE_WINDOW ) && !parentHeader.isInRewriteWindow ( now )) break;
+        
+        // don't replace our own block; that would be silly.
+        if ( parentHeader.getMinerID () == this->mMinerID ) break;
+        
+        child = parent;
+        parent = parent->getParent ();
+    }
+
+    if ( extendFrom ) {
+        return this->mBlockTree.affirmBlock ( this->prepareProvisional ( **extendFrom, now ), NULL );
+    }
+    return tail; // use the chain as-is.
 }
 
 //----------------------------------------------------------------//
@@ -348,7 +421,7 @@ Miner::~Miner () {
 //----------------------------------------------------------------//
 shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
         
-    shared_ptr < const Block > prevBlock = this->mChain->getBlock ();
+    shared_ptr < const Block > prevBlock = this->mWorkingLedger->getBlock ();
     assert ( prevBlock );
     
     shared_ptr < Block > block = make_shared < Block >(
@@ -359,16 +432,34 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
         this->mKeyPair
     );
     
-    block->setBlockDelayInSeconds( this->mChain->getBlockDelayInSeconds ());
-    block->setRewriteWindow ( this->mChain->getRewriteWindowInSeconds ());
+    block->setBlockDelayInSeconds( this->mWorkingLedger->getBlockDelayInSeconds ());
+    block->setRewriteWindow ( this->mWorkingLedger->getRewriteWindowInSeconds ());
     
-    this->fillBlock ( *this->mChain, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
+    this->fillBlock ( *this->mWorkingLedger, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
         block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
         return block;
     }
     return NULL;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < BlockHeader > Miner::prepareProvisional ( const BlockHeader& parent, time_t now ) const {
+    
+    shared_ptr < BlockHeader > provisional = make_shared < BlockHeader >(
+        this->mMinerID,
+        this->mVisage,
+        now,
+        &parent,
+        this->mKeyPair
+    );
+    
+    provisional->setBlockDelayInSeconds ( this->mWorkingLedger->getBlockDelayInSeconds ());
+    provisional->setRewriteWindow ( this->mWorkingLedger->getRewriteWindowInSeconds ());
+    provisional->setDigest ( Digest ( *provisional ));
+    
+    return provisional;
 }
 
 //----------------------------------------------------------------//
@@ -380,16 +471,16 @@ void Miner::pruneTransactions () {
 //----------------------------------------------------------------//
 void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
-    bool result = this->mChain->pushBlock ( *block, this->mBlockVerificationPolicy );
+    bool result = this->mWorkingLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
     BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( block );
     assert ( node );
     
-    if ( this->mChainTag == this->mBestBranch ) {
-        this->mBestBranch = node;
+    if ( this->mWorkingLedgerTag == this->mBestProvisional ) {
+        this->mBestProvisional = node;
     }
-    this->mChainTag = node;
+    this->mWorkingLedgerTag = node;
 }
 
 //----------------------------------------------------------------//
@@ -398,7 +489,7 @@ void Miner::report () const {
     switch ( this->mReportMode ) {
     
         case REPORT_BEST_BRANCH: {
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )( **this->mChainTag ).getHeight (), this->mChainTag->writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )( **this->mWorkingLedgerTag ).getHeight (), this->mWorkingLedgerTag->writeBranch ().c_str ());
             break;
         }
         
@@ -420,7 +511,7 @@ void Miner::report () const {
                     LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: MISSING TAG", remoteMiner.mMinerID.c_str ());
                 }
             }
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )( **this->mChainTag ).getHeight (), this->mChainTag->writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )( **this->mWorkingLedgerTag ).getHeight (), this->mWorkingLedgerTag->writeBranch ().c_str ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
             break;
         }
@@ -435,8 +526,8 @@ void Miner::report () const {
 void Miner::reset () {
 
     this->TransactionQueue::reset ();
-    this->mChain->reset ( 1 );
-    this->mChain->clearSchemaCache ();
+    this->mWorkingLedger->reset ( 1 );
+    this->mWorkingLedger->clearSchemaCache ();
     if ( this->mChainRecorder ) {
         this->mChainRecorder->reset ();
     }
@@ -484,30 +575,6 @@ void Miner::scheduleReport () {
 }
 
 //----------------------------------------------------------------//
-void Miner::selectBestBranch ( time_t now ) {
-
-    BlockTreeNode::ConstPtr bestBranch = this->mBestBranch->trim (( BlockTreeNode::Status )( BlockTreeNode::STATUS_MISSING )); // best branch cannot be missing.
-
-    set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
-    
-        shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
-        if ( !remoteMiner->mTag ) continue;
-
-        BlockTreeNode::ConstPtr truncated = this->truncate (
-            remoteMiner->mTag->trim (( BlockTreeNode::Status )( BlockTreeNode::STATUS_MISSING )),
-            now
-        );
-        
-        if ( BlockTreeNode::compare ( truncated, bestBranch, this->mRewriteMode ) < 0 ) {
-            bestBranch = truncated;
-        }
-    }
-    assert ( bestBranch );
-    this->mBestBranch = bestBranch;
-}
-
-//----------------------------------------------------------------//
 void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorder ) {
 
     this->mChainRecorder = chainRecorder;
@@ -520,13 +587,13 @@ void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorde
 //----------------------------------------------------------------//
 void Miner::setGenesis ( shared_ptr < const Block > block ) {
     
-    this->mChainTag = NULL;
-    this->mBestBranch = NULL;
+    this->mWorkingLedgerTag = NULL;
+    this->mBestProvisional = NULL;
     
     assert ( block );
     
     shared_ptr < Ledger > chain = make_shared < Ledger >();
-    this->mChain = chain;
+    this->mWorkingLedger = chain;
     
     this->pushBlock ( block );
     this->updateHighConfidenceTag ();
@@ -574,7 +641,7 @@ void Miner::shutdown ( bool kill ) {
 void Miner::step ( time_t now ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-    BlockTreeNode::ConstPtr prevChain = this->mChainTag;
+    BlockTreeNode::ConstPtr prevChain = this->mWorkingLedgerTag;
 
     this->affirmMessenger ();
     this->mMessenger->await ();
@@ -584,27 +651,22 @@ void Miner::step ( time_t now ) {
     this->updateRemoteMiners ();
     
     // this evaluates each branch and picks the best candidate
-    // TODO: ignore branches that would re-root earlier than high confidence node
-    // TODO: start mining only once mining is approved in high confidence ledger
-    // TODO: formalize branch truncation (append provisional header for each branch?)
-    this->selectBestBranch ( now );
+    this->updateBestBranch ( now );
     
     // using the best branch, build or rebuild chain
     this->composeChain ();
     
-    // TODO: rethink this using provisional header?
-    if ( this->canExtend ( now )) {
-        this->extend ( now );
-    }
+    // fill the provisional block (if any)
+    this->extend ( now );
     
     this->updateHighConfidenceTag ();
     this->pruneTransactions ();
     
-    if ( this->mChainTag != prevChain ) {
+    if ( this->mWorkingLedgerTag != prevChain ) {
         this->saveChain ();
     }
     
-    this->updateBlockSearches ( now );
+    this->updateBlockSearches ();
     this->updateHeaderSearches ();
     this->discoverMiners ();
     this->mMessenger->sendRequests ();
@@ -646,7 +708,35 @@ BlockTreeNode::ConstPtr Miner::truncate ( BlockTreeNode::ConstPtr tail, time_t n
 }
 
 //----------------------------------------------------------------//
-void Miner::updateBlockSearches ( time_t now ) {
+void Miner::updateBestBranch ( time_t now ) {
+
+    // update the current best branch, excluding missing or invalid blocks.
+    // this may append an additional provisional header if branch is complete.
+    BlockTreeNode::ConstPtr bestBranch = this->improveBranch ( this->mBestProvisional->trimMissingOrInvalid (), now );
+
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+        
+        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+        if ( !remoteMiner->mTag ) continue;
+        
+        remoteMiner->mImproved = this->improveBranch ( remoteMiner->mTag->trimInvalid (), now );
+        if ( remoteMiner->mImproved->isMissing ()) continue;
+        
+        assert ( !remoteMiner->mImproved->isMissingOrInvalid ());
+        
+        if ( BlockTreeNode::compare ( remoteMiner->mImproved, bestBranch, this->mRewriteMode ) < 0 ) {
+            bestBranch = remoteMiner->mImproved;
+        }
+    }
+    
+    assert ( bestBranch );
+    assert ( !bestBranch->isMissingOrInvalid ());
+    this->mBestProvisional = bestBranch;
+}
+
+//----------------------------------------------------------------//
+void Miner::updateBlockSearches () {
 
     set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.begin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
@@ -654,19 +744,19 @@ void Miner::updateBlockSearches ( time_t now ) {
         shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
 
         // we only care about missing branches; ignore new/complete/invalid branches.
-        if ( remoteMiner->mTag && remoteMiner->mTag->checkStatus ( BlockTreeNode::STATUS_MISSING )) {
-            
-            BlockTreeNode::ConstPtr truncated = this->truncate ( remoteMiner->mTag, now );
-            
+        if ( remoteMiner->mImproved && remoteMiner->mImproved->isMissing ()) {
+                        
             // only affirm a search if the other chain could beat our current.
-            if ( BlockTreeNode::compare ( truncated, this->mBestBranch, this->mRewriteMode ) < 0 ) {
-                this->affirmBranchSearch ( truncated );
+            if ( BlockTreeNode::compare ( remoteMiner->mImproved, this->mBestProvisional, this->mRewriteMode ) < 0 ) {
+                this->affirmBranchSearch ( remoteMiner->mImproved );
             }
         }
     }
-    // always affirm a search for the current branch
-    this->affirmBranchSearch ( this->mBestBranch );
     
+    // always affirm a search for the current branch
+    this->affirmBranchSearch ( this->mBestProvisional );
+    
+    // step the currently active block searches
     map < string, BlockSearch >::iterator blockSearchIt = this->mBlockSearches.begin ();
     while ( blockSearchIt != this->mBlockSearches.end ()) {
     
@@ -677,22 +767,6 @@ void Miner::updateBlockSearches ( time_t now ) {
         if ( !blockSearch.mCurrentSearch ) {
             this->mBlockSearches.erase ( cursor );
         }
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::updateChainRecurse ( BlockTreeNode::ConstPtr branch ) {
-
-    if ( this->mChainTag == branch ) return; // nothing to do
-    
-    BlockTreeNode::ConstPtr parent = branch->getParent ();
-    if ( parent != this->mChainTag ) {
-        this->updateChainRecurse ( parent );
-    }
-    
-    if ( branch->checkStatus ( BlockTreeNode::STATUS_COMPLETE )) {
-        this->pushBlock ( branch->getBlock ());
-        assert ( this->mChainTag == branch );
     }
 }
 
@@ -716,18 +790,18 @@ void Miner::updateHeaderSearches () {
 //----------------------------------------------------------------//
 void Miner::updateHighConfidenceTag () {
 
-    assert ( this->mChain );
+    assert ( this->mWorkingLedger );
 
-    BlockTreeNode::ConstPtr tag = this->mBestBranch;
+    BlockTreeNode::ConstPtr tag = this->mBestProvisional;
     while ( tag->getParent () && (( this->checkConsensus ( tag ) < 1 ) || ( !tag->getBlock ()))) tag = tag->getParent ();
     
     assert ( tag );
     assert ( tag->getBlock ());
-    assert ( tag->isAncestorOf ( this->mBestBranch ));
+    assert ( tag->isAncestorOf ( this->mBestProvisional ));
     
-    this->mHighConfidenceTag = tag;
-    this->mHighConfidenceLedger = *this->mChain;
-    this->mHighConfidenceLedger.revert (( **this->mHighConfidenceTag ).getHeight ());
+    this->mHighConfidenceLedgerTag = tag;
+    this->mHighConfidenceLedger = *this->mWorkingLedger;
+    this->mHighConfidenceLedger.revert (( **this->mHighConfidenceLedgerTag ).getHeight ());
 }
 
 //----------------------------------------------------------------//
@@ -740,7 +814,7 @@ void Miner::updateRemoteMiners () {
     for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
     
         shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt->second;
-        if ( remoteMiner->mState != RemoteMiner::STATE_ONLINE ) continue;
+        if ( remoteMiner->mNetworkState != RemoteMiner::STATE_ONLINE ) continue;
         
         this->mOnlineMiners.insert ( remoteMiner );;
         
@@ -764,6 +838,10 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
     const MiningMessengerRequest& request = response.mRequest;
     string url = response.mRequest.mMinerURL;
     MiningMessengerResponse::Status status = response.mStatus;
+    
+    // TODO: these could be set deliberately as an attack; fix by sending up a nonce
+    if ( url == this->mURL ) return;
+    if ( response.mMinerID == this->mMinerID ) return;
     
     map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.find ( url );
     shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt != this->mRemoteMinersByURL.cend () ? remoteMinerIt->second : NULL;
@@ -843,7 +921,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
     
     if ( remoteMiner ) {
         if ( status == MiningMessengerResponse::STATUS_OK ) {
-            remoteMiner->mState = RemoteMiner::STATE_ONLINE;
+            remoteMiner->mNetworkState = RemoteMiner::STATE_ONLINE;
         }
         else {
             remoteMiner->setError ();

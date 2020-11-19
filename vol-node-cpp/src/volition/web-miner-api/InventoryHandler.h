@@ -32,7 +32,7 @@ public:
             string accountName = this->getMatchString ( "accountName" );
         
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
+            Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
         
             AccountID accountID = ledger.getAccountID ( accountName );
             

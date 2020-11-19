@@ -48,6 +48,11 @@ private:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_minerHeight ( AssetID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.minerHeight", index ); });
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_minerInfo ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.miner", index ); });
     }
@@ -72,12 +77,13 @@ private:
     
         this->mLedger       = ledger;
         this->mAccountID    = index;
-    
+        
         mAssetCount         = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
         mInventoryNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
         mTransactionNonce   = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
         mName               = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
         mBody               = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
+        mMinerHeight        = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerHeight ( this->mAccountID ),            0 );
         mMinerInfo          = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mAccountID ));
     }
 
@@ -92,6 +98,7 @@ public:
     LedgerFieldODBM < string >              mName;
 
     LedgerObjectFieldODBM < Account >       mBody;
+    LedgerFieldODBM < u64 >                 mMinerHeight;
     LedgerObjectFieldODBM < MinerInfo >     mMinerInfo;
 
     //----------------------------------------------------------------//
@@ -152,6 +159,12 @@ public:
         
         this->getTransactionLookupField ( uuid ).set ( nonce );
         this->mTransactionNonce.set ( nonce + 1 );
+    }
+    
+    //----------------------------------------------------------------//
+    bool isMiner () {
+    
+        return this->mMinerInfo.exists ();
     }
 };
 

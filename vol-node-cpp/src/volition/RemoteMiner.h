@@ -22,7 +22,7 @@ namespace Volition {
 class RemoteMiner {
 public:
 
-    enum MinerState {
+    enum NetworkState {
         STATE_NEW,
         STATE_TIMEOUT,
         STATE_ONLINE,
@@ -32,7 +32,8 @@ public:
     string                      mMinerID;
     string                      mURL;
     BlockTreeNode::ConstPtr     mTag;
-    MinerState                  mState;
+    BlockTreeNode::ConstPtr     mImproved;
+    NetworkState                mNetworkState;
     string                      mMessage;
 
     size_t                                              mHeight;

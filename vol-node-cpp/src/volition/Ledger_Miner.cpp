@@ -48,6 +48,7 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
     if ( !accountODBM ) return "Miner account not found.";
     
     accountODBM.mMinerInfo.set ( minerInfo );
+    accountODBM.mMinerHeight.set ( ledger.countBlocks ());
     
     // TODO: find an efficient way to do all this
     string accountName = accountODBM.mName.get ();

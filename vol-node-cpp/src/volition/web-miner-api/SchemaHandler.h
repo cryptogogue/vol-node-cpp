@@ -29,7 +29,7 @@ public:
     
         try {
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
+            Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
             const Schema& schema = ledger.getSchema ();
 
             jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schema ));

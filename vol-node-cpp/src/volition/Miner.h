@@ -139,13 +139,25 @@ protected:
     
     BlockTree                                       mBlockTree;
     
-    shared_ptr < Ledger >                           mChain;                 // may run behind block tree tag
-    Ledger                                          mHighConfidenceLedger;  // may run behind main ledger
+    // the "working" legder is a "complete" chain (in that all blocks are accounted for),
+    // but still likely to revert if a superior branch is discovered.
+    shared_ptr < Ledger >                           mWorkingLedger;
+    BlockTreeNode::ConstPtr                         mWorkingLedgerTag;
     
-    BlockTreeNode::ConstPtr                         mChainTag;              // node corresponding to top of chain
-    BlockTreeNode::ConstPtr                         mHighConfidenceTag;     // node corresponding to top of chain
-    BlockTreeNode::ConstPtr                         mBestBranch;            // "leaf" of the current chain
-    list < BlockTreeNode::ConstPtr >                mNodeQueue;
+    // the "high confidence" ledger is (right now) a bit of a hack. it is a coplete
+    // chain, but a heuristic is used to prevent reversion. eventually, reversion
+    // will need to be formally prevented using information about the mining network
+    // recorded in the ledger itself (i.e. total active miners).
+    Ledger                                          mHighConfidenceLedger;
+    BlockTreeNode::ConstPtr                         mHighConfidenceLedgerTag;
+    
+    // the "provisional" branch may not be complete and may end with a "provisional"
+    // block header. the "best" provisional branch is the branch the miner is working
+    // to complete by gathering (or building) the missing blocks. the provisional
+    // branch is not published to other miners.
+    BlockTreeNode::ConstPtr                         mBestProvisional;
+    
+//    list < BlockTreeNode::ConstPtr >                mNodeQueue;
     
     Poco::Mutex                                     mMutex;
 
@@ -155,20 +167,20 @@ protected:
     void                                affirmBlockSearch           ( BlockTreeNode::ConstPtr node );
     void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
     void                                affirmMessenger             ();
-    bool                                canExtend                   ( time_t now ) const;
     double                              checkConsensus              ( BlockTreeNode::ConstPtr tag ) const;
     void                                composeChain                ();
+    void                                composeChainRecurse         ( BlockTreeNode::ConstPtr branch );
     void                                discoverMiners              ();
     BlockSearch*                        findBlockSearch             ( const Digest& digest );
+    BlockTreeNode::ConstPtr             improveBranch               ( BlockTreeNode::ConstPtr tail, time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
     void                                report                      () const;
     void                                saveChain                   ();
     void                                saveConfig                  ();
     void                                scheduleReport              ();
-    void                                selectBestBranch            ( time_t now );
     BlockTreeNode::ConstPtr             truncate                    ( BlockTreeNode::ConstPtr tail, time_t now ) const;
-    void                                updateChainRecurse          ( BlockTreeNode::ConstPtr branch );
-    void                                updateBlockSearches         ( time_t now );
+    void                                updateBestBranch            ( time_t now );
+    void                                updateBlockSearches         ();
     void                                updateHeaderSearches        ();
     void                                updateHighConfidenceTag     ();
     void                                updateRemoteMiners          ();
@@ -187,15 +199,15 @@ public:
         RESUBMIT_EARLIER,
     };
     
-    GET ( BlockTreeNode::ConstPtr,                  BestBranch,                 mBestBranch )
+    GET ( BlockTreeNode::ConstPtr,                  BestProvisional,            mBestProvisional )
     GET ( const BlockTree&,                         BlockTree,                  mBlockTree )
-    GET ( BlockTreeNode::ConstPtr,                  ChainTag,                   mChainTag )
-    GET ( const Ledger&,                            Ledger,                     mHighConfidenceLedger )
+    GET ( const Ledger&,                            HighConfidenceLedger,       mHighConfidenceLedger )
     GET ( u64,                                      MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                   Reward,                     mConfig.mReward )
     GET ( time_t,                                   StartTime,                  mStartTime )
     GET ( const Signature&,                         Visage,                     mVisage )
-    GET ( const Ledger&,                            WorkingLedger,              *mChain )
+    GET ( const Ledger&,                            WorkingLedger,              *mWorkingLedger )
+    GET ( BlockTreeNode::ConstPtr,                  WorkingLedgerTag,           mWorkingLedgerTag )
     
     SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  mMessenger )
     
@@ -223,7 +235,7 @@ public:
     void                                extend                      ( time_t now );
     const set < string >&               getActiveMinerURLs          () const;
     size_t                              getChainSize                () const;
-    Ledger&                             getLedger                   ();
+    Ledger&                             getHighConfidenceLedger     ();
     TransactionStatus                   getTransactionStatus        ( string accountName, string uuid ) const;
     Ledger&                             getWorkingLedger            ();
     bool                                isLazy                      () const;
@@ -233,6 +245,7 @@ public:
                                         Miner                       ();
     virtual                             ~Miner                      ();
     shared_ptr < Block >                prepareBlock                ( time_t now );
+    shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                pruneTransactions           ();
     void                                reset                       ();
     set < string >                      sampleActiveMinerURLs       ( size_t sampleSize ) const;

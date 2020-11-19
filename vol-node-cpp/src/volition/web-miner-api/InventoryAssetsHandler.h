@@ -31,7 +31,7 @@ public:
             string accountName = this->getMatchString ( "accountName" );
         
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
+            Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
             
             SerializableList < SerializableSharedConstPtr < Asset >> inventory;
             ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, 0, true );

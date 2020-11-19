@@ -27,7 +27,7 @@ public:
         UNUSED ( jsonIn );
 
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Ledger& ledger = this->mWebMiner->getLedger ();
+        const Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
         Poco::Dynamic::Var blocks = ToJSONSerializer::toJSON ( ledger );
         
         jsonOut.set ( "blocks", blocks );

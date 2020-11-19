@@ -190,7 +190,7 @@ void Simulator::report () {
         case REPORT_SINGLE_MINER: {
         
             shared_ptr < Miner > miner = this->mMiners [ 0 ];
-            BlockTreeNode::ConstPtr tail = miner->getBestBranch ();
+            BlockTreeNode::ConstPtr tail = miner->getBestProvisional ();
                 
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
             
@@ -200,7 +200,7 @@ void Simulator::report () {
         case REPORT_SINGLE_MINER_VS_OPTIMAL: {
             
             shared_ptr < Miner > miner = this->mMiners [ 0 ];
-            BlockTreeNode::ConstPtr tail = miner->getBestBranch ();
+            BlockTreeNode::ConstPtr tail = miner->getBestProvisional ();
                 
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "GOAL: %s", this->mOptimalTag->writeBranch ().c_str ());
@@ -215,7 +215,7 @@ void Simulator::report () {
             for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
             
                 shared_ptr < Miner > miner = this->mMiners [ i ];
-                BlockTreeNode::ConstPtr tail = miner->getBestBranch ();
+                BlockTreeNode::ConstPtr tail = miner->getBestProvisional ();
                 
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
             }
@@ -324,7 +324,7 @@ void Simulator::step () {
     
     this->mAnalysis.update ( tree );
     
-    BlockTreeNode::ConstPtr tail = this->mMiners [ 0 ]->getBestBranch ();
+    BlockTreeNode::ConstPtr tail = this->mMiners [ 0 ]->getBestProvisional ();
     this->extendOptimal (( **tail ).getHeight ());
     
     this->report ();

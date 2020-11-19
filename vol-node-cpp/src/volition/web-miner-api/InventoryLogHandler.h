@@ -34,7 +34,7 @@ public:
             u64 count           = this->optQuery ( "count", 1 );
             
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
+            Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
             
             SerializableSet < AssetID::Index > additions;
             SerializableSet < AssetID::Index > deletions;

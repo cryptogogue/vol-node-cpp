@@ -116,7 +116,7 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_HEADERS: {
         
-            BlockTreeNode::ConstPtr node = miner->getBestBranch ();
+            BlockTreeNode::ConstPtr node = miner->getWorkingLedgerTag ();
             
             list < shared_ptr < const BlockHeader >> headers;
             while ( node && ( headers.size () < HEADER_BATCH_SIZE )) {
@@ -129,7 +129,7 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
             
-            BlockTreeNode::ConstPtr node = miner->getBestBranch ();
+            BlockTreeNode::ConstPtr node = miner->getWorkingLedgerTag ();
             
             size_t top = request.mHeight;
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;

@@ -14,7 +14,7 @@ namespace Simulation {
 //----------------------------------------------------------------//
 void SimMiner::extendChain ( string charmHex, time_t time ) {
 
-    shared_ptr < const Block > prevBlock = this->mChain->getBlock ();
+    shared_ptr < const Block > prevBlock = this->mWorkingLedger->getBlock ();
 
     shared_ptr < Block > block = make_shared < Block >(
         this->mMinerID,
@@ -34,8 +34,8 @@ void SimMiner::extendChain ( string charmHex, time_t time ) {
     block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
     
     this->pushBlock ( block );
-    this->mHighConfidenceTag = this->mChainTag;
-    this->mHighConfidenceLedger = *this->mChain;
+    this->mHighConfidenceLedgerTag = this->mWorkingLedgerTag;
+    this->mHighConfidenceLedger = *this->mWorkingLedger;
 }
 
 //----------------------------------------------------------------//
@@ -71,8 +71,8 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
 //----------------------------------------------------------------//
 void SimMiner::rewindChain ( size_t height ) {
 
-    while (( **this->mBestBranch ).getHeight () > height ) {
-        this->mBestBranch = this->mBestBranch->getParent ();
+    while (( **this->mBestProvisional ).getHeight () > height ) {
+        this->mBestProvisional = this->mBestProvisional->getParent ();
     }
     this->composeChain ();
 }
@@ -86,13 +86,13 @@ void SimMiner::setActive ( bool active ) {
 //----------------------------------------------------------------//
 void SimMiner::setCharm ( size_t height, string charmHex ) {
 
-    BlockTreeNode::ConstPtr cursor = this->mBestBranch;
+    BlockTreeNode::ConstPtr cursor = this->mBestProvisional;
     while ( cursor ) {
         size_t cursorHeight = ( **cursor ).getHeight ();
         if ( cursorHeight == height ) {
 
             shared_ptr < Block > block = this->replaceBlock ( cursor->getBlock (), charmHex );
-            this->mBestBranch = this->mBlockTree.affirmBlock ( block );
+            this->mBestProvisional = this->mBlockTree.affirmBlock ( block );
             this->composeChain ();
             return;
         }

@@ -32,7 +32,7 @@ public:
         
         ScopedMinerLock scopedLock ( this->mWebMiner );
         
-        const Ledger& ledger = this->mWebMiner->getLedger ();
+        const Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
         SchemaVersion schemaVersion = ledger.getSchemaVersion ();
         
         jsonOut.set ( "type",           "VOL_MINING_NODE" );

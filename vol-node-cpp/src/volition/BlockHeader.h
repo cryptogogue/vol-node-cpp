@@ -49,7 +49,6 @@ protected:
 
 public:
     
-    GET ( const Digest&,        Digest,                 mDigest )
     GET ( size_t,               Height,                 mHeight )
     GET ( time_t,               NextTime,               ( mTime + mBlockDelay ))
     GET ( const Digest&,        Pose,                   mPose )
@@ -59,6 +58,7 @@ public:
 
     GET_SET ( time_t,           BlockDelayInSeconds,    mBlockDelay )
     GET_SET ( const Digest&,    Charm,                  mCharm )
+    GET_SET ( const Digest&,    Digest,                 mDigest )
     GET_SET ( string,           MinerID,                mMinerID )
     GET_SET ( time_t,           RewriteWindow,          mRewriteWindow )
     

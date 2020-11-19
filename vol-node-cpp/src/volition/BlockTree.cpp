@@ -24,7 +24,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getFullLength () const {
 
-    return (( **this->mTop ).getHeight () - ( **this->mHead ).getHeight ());
+    return this->mHead ? (( **this->mTop ).getHeight () - ( **this->mHead ).getHeight ()) : 0;
 }
 
 //----------------------------------------------------------------//
@@ -37,7 +37,7 @@ size_t BlockTreeSegment::getRewriteDefeatCount () const {
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getSegLength () const {
 
-    return (( **this->mTail ).getHeight () - ( **this->mHead ).getHeight ());
+    return this->mHead ? (( **this->mTail ).getHeight () - ( **this->mHead ).getHeight ()) : 0;
 }
 
 //================================================================//
@@ -90,8 +90,8 @@ int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_pt
 
     if ( rewriteMode == REWRITE_WINDOW ) {
         
-        size_t segLength    = root.getSegLength (); // length of the shorter segment (if different lengths)
-
+        size_t segLength = root.getSegLength (); // length of the shorter segment (if different lengths)
+        
         // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
         if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getRewriteDefeatCount ())) return -1;
         if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getRewriteDefeatCount ())) return 1;
@@ -157,8 +157,11 @@ BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0
 
     if ( node0->mTree && ( node0->mTree == node1->mTree )) {
     
-        root.mSeg0.mTop = node0;
-        root.mSeg1.mTop = node1;
+        BlockTreeSegment seg0;
+        BlockTreeSegment seg1;
+    
+        seg0.mTop = node0;
+        seg1.mTop = node1;
     
         size_t height0 = node0->mHeader->getHeight ();
         size_t height1 = node1->mHeader->getHeight ();
@@ -173,18 +176,29 @@ BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0
             node1 = node1->mParent;
         }
         
-        root.mSeg0.mTail = node0;
-        root.mSeg1.mTail = node1;
+        seg0.mTail = node0;
+        seg1.mTail = node1;
 
-        while ( node0->mParent != node1->mParent ) {
+        while ( node0 != node1 ) {
+        
+            seg0.mHead = node0;
+            seg1.mHead = node1;
+            
             node0 = node0->mParent;
             node1 = node1->mParent;
         }
         
-        root.mSeg0.mHead = node0;
-        root.mSeg1.mHead = node1;
+        assert ( node0 && node1 );
         
-        root.mRoot = node0->mParent;
+        if ( seg0.mHead ) {
+            root.mSeg0 = seg0;
+        }
+        
+        if ( seg1.mHead ) {
+            root.mSeg1 = seg1;
+        }
+        
+        root.mRoot = node0;
         
         assert ( root.mSeg0.getSegLength () == root.mSeg1.getSegLength ());
     }
@@ -225,6 +239,36 @@ bool BlockTreeNode::isAncestorOf ( ConstPtr tail ) const {
         tail = tail->getParent ();
     }
     return ( **this == **tail );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNode::isComplete () const {
+
+    return ( this->mStatus & STATUS_COMPLETE );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNode::isInvalid () const {
+
+    return ( this->mStatus & STATUS_INVALID );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNode::isMissing () const {
+
+    return ( this->mStatus & STATUS_MISSING );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNode::isMissingOrInvalid () const {
+
+    return ( this->mStatus & ( STATUS_MISSING | STATUS_INVALID ));
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNode::isNew () const {
+
+    return ( this->mStatus & STATUS_NEW );
 }
 
 //----------------------------------------------------------------//
@@ -321,6 +365,24 @@ BlockTreeNode::ConstPtr BlockTreeNode::trim ( Status status ) const {
         cursor = cursor->getParent ();
     }
     return cursor;
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTreeNode::trimInvalid () const {
+
+    return this->trim ( STATUS_INVALID );
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTreeNode::trimMissing () const {
+
+    return this->trim ( STATUS_MISSING );
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode::ConstPtr BlockTreeNode::trimMissingOrInvalid () const {
+
+    return this->trim (( Status )( STATUS_MISSING | STATUS_INVALID ));
 }
 
 //----------------------------------------------------------------//
