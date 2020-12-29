@@ -1,9 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractChainRecorder.h>
 #include <volition/AccountODBM.h>
 #include <volition/Block.h>
+#include <volition/Transaction.h>
 #include <volition/TransactionQueue.h>
 
 namespace Volition {
@@ -254,12 +254,12 @@ bool TransactionQueue::isBlocked ( string accountName ) const {
 //----------------------------------------------------------------//
 void TransactionQueue::processTransactions () {
 
-    while ( this->mIncoming.size ()) {
-    
-        shared_ptr < const Transaction > transaction = this->mIncoming.front ();
-        this->mIncoming.pop_front ();
-        this->acceptTransaction ( transaction );
-    }
+//    while ( this->mIncoming.size ()) {
+//
+//        shared_ptr < const Transaction > transaction = this->mIncoming.front ();
+//        this->mIncoming.pop_front ();
+//        this->acceptTransaction ( transaction );
+//    }
 }
 
 //----------------------------------------------------------------//
@@ -290,14 +290,17 @@ void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
 //----------------------------------------------------------------//
 void TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
-    this->mIncoming.push_back ( transaction );
+    if ( transaction ) {
+//        this->mIncoming.push_back ( transaction );
+        this->acceptTransaction ( transaction );
+    }
 }
 
 //----------------------------------------------------------------//
 void TransactionQueue::reset () {
 
     this->mDatabase.clear ();
-    this->mIncoming.clear ();
+//    this->mIncoming.clear ();
 }
 
 //----------------------------------------------------------------//

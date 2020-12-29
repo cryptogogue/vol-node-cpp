@@ -5,8 +5,6 @@
 #include <volition/Block.h>
 #include <volition/FileSys.h>
 #include <volition/RouteTable.h>
-#include <volition/SimpleChainRecorder.h>
-#include <volition/SQLiteChainRecorder.h>
 #include <volition/Singleton.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
@@ -104,10 +102,10 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "persist-mode", "", "persist mode ('none', 'simple', 'sqlite')" )
+            Poco::Util::Option ( "persist", "", "path to folder for persist files." )
                 .required ( false )
                 .argument ( "value", true )
-                .binding ( "persist-mode" )
+                .binding ( "persist" )
         );
         
         options.addOption (
@@ -115,41 +113,6 @@ protected:
                 .required ( false )
                 .argument ( "value", true )
                 .binding ( "port" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "redis-conf", "rc", "path to the redis conf" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "redis-conf" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "redis-folder", "rf", "path to the redis folder" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "redis-folder" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "redis-host", "rh", "redis hostname" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "redis-host" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "redis-port", "rp", "redis port" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "redis-port" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "sqlite-db-file", "", "sqlite db filename" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "sqlite-db-file" )
         );
     }
 
@@ -182,15 +145,8 @@ protected:
         string logpath                  = configuration.getString       ( "logpath", "" );
         string minerID                  = configuration.getString       ( "miner", "" );
         string nodelist                 = configuration.getString       ( "nodelist", "" );
-        string persistMode              = configuration.getString       ( "persist-mode", "sqlite" );
-        string persistFolder            = configuration.getString       ( "persist-folder", "persist-chain" );
+        string persist                  = configuration.getString       ( "persist", "persist-chain" );
         int port                        = configuration.getInt          ( "port", 9090 );
-        string redisConf                = configuration.getString       ( "redis-conf", "./redis.conf" );
-        string redisHost                = configuration.getString       ( "redis-host", "127.0.0.1" );
-        string redisFolder              = configuration.getString       ( "redis-folder", "./redis" );
-        int redisPort                   = configuration.getInt          ( "redis-port", 0 );
-        string sqliteDBFile             = configuration.getString       ( "sqlite-db-file", "" );
-        
         string sslCertFile              = configuration.getString       ( "openSSL.server.certificateFile", "" );
         
         if ( logpath.size () > 0 ) {
@@ -198,21 +154,7 @@ protected:
             freopen ( Format::write ( "%s/%s.err", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stderr );
         }
         
-        Padamose::RedisServerProc redisServerProc;
-        shared_ptr < StringStorePersistenceProvider > persistenceProvider;
-        
-        if ( redisPort != 0 ) {
-            redisServerProc.start ( redisFolder, redisConf, redisHost, redisPort );
-            assert ( redisServerProc.getStatus () != RedisServerProc::NOT_RUNNING );
-            
-            shared_ptr < RedisStringStore > stringStore = redisServerProc.makeStringStore ();
-            assert ( stringStore );
-            
-            persistenceProvider = make_shared < StringStorePersistenceProvider >( stringStore );
-        }
-        
         shared_ptr < MinerActivity > minerActivity = make_shared < MinerActivity >();
-        
         minerActivity->setMinerID ( minerID );
         
         if ( controlKeyfile.size ()) {
@@ -228,14 +170,17 @@ protected:
             minerActivity->setControlKey ( controlKey );
         }
         
-        if ( controlLevel == "config" ) {
-            LOG_F ( INFO, "CONTROL LEVEL: CONFIG" );
-            minerActivity->setControlLevel ( Miner::CONTROL_CONFIG );
-        }
+        switch ( FNV1a::hash_64 ( controlLevel )) {
         
-        if ( controlLevel == "admin" ) {
-            LOG_F ( INFO, "CONTROL LEVEL: ADMIN" );
-            minerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
+            case FNV1a::const_hash_64 ( "config" ):
+                LOG_F ( INFO, "CONTROL LEVEL: CONFIG" );
+                minerActivity->setControlLevel ( Miner::CONTROL_CONFIG );
+                break;
+            
+            case FNV1a::const_hash_64 ( "admin" ):
+               LOG_F ( INFO, "CONTROL LEVEL: ADMIN" );
+                minerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
+                break;
         }
         
         LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
@@ -244,31 +189,38 @@ protected:
             return Application::EXIT_CONFIG;
         }
         
-        if ( genesisFormat == "block" ) {
-            minerActivity->loadGenesisBlock ( genesis );
-        }
-
-        if ( genesisFormat == "ledger" ) {
-            minerActivity->loadGenesisLedger ( genesis );
+        shared_ptr < Block > genesisBlock;
+        
+        switch ( FNV1a::hash_64 ( genesisFormat )) {
+        
+            case FNV1a::const_hash_64 ( "block" ):
+                genesisBlock = Miner::loadGenesisBlock ( genesis );
+                break;
+            
+            case FNV1a::const_hash_64 ( "ledger" ):
+                genesisBlock = Miner::loadGenesisLedger ( genesis );
+                break;
         }
         
-        if ( !minerActivity->getBestBranch ()) {
+        if ( !genesisBlock ) {
             LOG_F ( INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
             return Application::EXIT_CONFIG;
         }
         
-        if ( persistMode == "simple" ) {
-            shared_ptr < AbstractChainRecorder > chainRecorder = make_shared < SimpleChainRecorder >( *minerActivity, persistFolder );
-            minerActivity->setChainRecorder ( chainRecorder );
+        if ( persist.size ()) {
+            minerActivity->persist ( persist, genesisBlock );
+        }
+        else {
+            minerActivity->setGenesis ( genesisBlock );
         }
         
-        if ( persistMode == "sqlite" ) {
-            shared_ptr < AbstractChainRecorder > chainRecorder = make_shared < SQLiteChainRecorder >( *minerActivity, persistFolder );
-            minerActivity->setChainRecorder ( chainRecorder );
+        if ( minerActivity->getHighConfidenceLedger ().countBlocks () == 0 ) {
+            LOG_F ( INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
+            return Application::EXIT_CONFIG;
         }
         
         if ( dump.size ()) {
-            minerActivity->getLedger ().dump ( dump );
+            minerActivity->getHighConfidenceLedger ().dump ( dump );
             return Application::EXIT_OK;
         }
         
@@ -277,6 +229,7 @@ protected:
             LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
             return Application::EXIT_CONFIG;
         }
+        
         minerActivity->loadKey ( keyfile );
         minerActivity->affirmKey ();
         minerActivity->affirmVisage ();

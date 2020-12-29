@@ -48,6 +48,10 @@
 		CD0CF460255EDC5D008C67F0 /* RemoteMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0CF45D255EDC5D008C67F0 /* RemoteMiner.h */; };
 		CD0CF461255EDC5D008C67F0 /* RemoteMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0CF45F255EDC5D008C67F0 /* RemoteMiner.cpp */; };
 		CD0CF483255EFD9D008C67F0 /* SimMiningMessenger.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0CF482255EFD9D008C67F0 /* SimMiningMessenger.h */; };
+		CD19DF12259572B80007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
+		CD19DF13259572C30007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
+		CD19DF14259572CF0007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
+		CD19DF15259572DE0007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
@@ -56,8 +60,6 @@
 		CD200074254A42E900DEB809 /* MiningReward.h in Headers */ = {isa = PBXBuildFile; fileRef = CD200073254A42E900DEB809 /* MiningReward.h */; };
 		CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF052536A2ED00DEB809 /* CryptoKey.h */; };
 		CD20FF182536D03900DEB809 /* NodeDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */; };
-		CD20FF3525381BDB00DEB809 /* SQLiteChainRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */; };
-		CD20FF3625381BDB00DEB809 /* SQLiteChainRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF3425381BDB00DEB809 /* SQLiteChainRecorder.h */; };
 		CD20FF77253D86FE00DEB809 /* TheControlCommandBodyFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF75253D86FE00DEB809 /* TheControlCommandBodyFactory.h */; };
 		CD20FF78253D86FE00DEB809 /* TheControlCommandBodyFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD20FF76253D86FE00DEB809 /* TheControlCommandBodyFactory.cpp */; };
 		CD20FF84253D870800DEB809 /* ControlCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FF81253D870800DEB809 /* ControlCommand.h */; };
@@ -225,8 +227,6 @@
 		CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAB334E2479293500901558 /* AssetMethod.cpp */; };
 		CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD94332470A8A0003FD2CC /* SerializableTime.h */; };
 		CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD9436247138B0003FD2CC /* ReserveAccountName.h */; };
-		CDAF1ABF254FECB400CF1010 /* SQLite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1ABC254FECB400CF1010 /* SQLite.cpp */; };
-		CDAF1AC0254FECB400CF1010 /* SQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAF1ABE254FECB400CF1010 /* SQLite.h */; };
 		CDAF1AE2254FEF1E00CF1010 /* Ledger_Dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */; };
 		CDAF1AE3254FEF1E00CF1010 /* Ledger_Dump.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAF1AE1254FEF1E00CF1010 /* Ledger_Dump.h */; };
 		CDB8B3C721AC7DB8004EE816 /* Asset.h in Headers */ = {isa = PBXBuildFile; fileRef = CDB8B3C521AC7DB8004EE816 /* Asset.h */; };
@@ -339,9 +339,6 @@
 		CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */; };
 		CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */; };
 		CDDB4BBC233374B100EEAA60 /* HTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BBB233374B100EEAA60 /* HTTP.h */; };
-		CDE9F7782375380600DB62EF /* AbstractChainRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE9F7742375380600DB62EF /* AbstractChainRecorder.h */; };
-		CDE9F7792375380600DB62EF /* SimpleChainRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDE9F7752375380600DB62EF /* SimpleChainRecorder.cpp */; };
-		CDE9F77A2375380600DB62EF /* SimpleChainRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = CDE9F7762375380600DB62EF /* SimpleChainRecorder.h */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -413,6 +410,41 @@
 			proxyType = 1;
 			remoteGlobalIDString = CDED582C20BA1FCE003A2969;
 			remoteInfo = "lib-simple-cpp-router";
+		};
+		CD19DEDD25930C3F0007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CD19DEB92592DE330007ACF0;
+			remoteInfo = "lib-sqlite";
+		};
+		CD19DF08259572530007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD19DEA02592DE330007ACF0;
+			remoteInfo = "lib-sqlite";
+		};
+		CD19DF0C259572640007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD19DEA02592DE330007ACF0;
+			remoteInfo = "lib-sqlite";
+		};
+		CD19DF0E2595726F0007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD19DEA02592DE330007ACF0;
+			remoteInfo = "lib-sqlite";
+		};
+		CD19DF10259572790007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD19DEA02592DE330007ACF0;
+			remoteInfo = "lib-sqlite";
 		};
 		CD4E8133210579C8007DA585 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -748,8 +780,6 @@
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
 		CD20FF052536A2ED00DEB809 /* CryptoKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKey.h; path = src/volition/CryptoKey.h; sourceTree = "<group>"; };
 		CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NodeDetailsHandler.h; path = "src/volition/web-miner-api/NodeDetailsHandler.h"; sourceTree = "<group>"; };
-		CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteChainRecorder.cpp; path = src/volition/SQLiteChainRecorder.cpp; sourceTree = "<group>"; };
-		CD20FF3425381BDB00DEB809 /* SQLiteChainRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLiteChainRecorder.h; path = src/volition/SQLiteChainRecorder.h; sourceTree = "<group>"; };
 		CD20FF75253D86FE00DEB809 /* TheControlCommandBodyFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TheControlCommandBodyFactory.h; path = src/volition/TheControlCommandBodyFactory.h; sourceTree = "<group>"; };
 		CD20FF76253D86FE00DEB809 /* TheControlCommandBodyFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TheControlCommandBodyFactory.cpp; path = src/volition/TheControlCommandBodyFactory.cpp; sourceTree = "<group>"; };
 		CD20FF81253D870800DEB809 /* ControlCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlCommand.h; path = src/volition/ControlCommand.h; sourceTree = "<group>"; };
@@ -891,8 +921,6 @@
 		CDAB334E2479293500901558 /* AssetMethod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetMethod.cpp; path = src/volition/AssetMethod.cpp; sourceTree = "<group>"; };
 		CDAD94332470A8A0003FD2CC /* SerializableTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableTime.h; path = src/volition/serialization/SerializableTime.h; sourceTree = "<group>"; };
 		CDAD9436247138B0003FD2CC /* ReserveAccountName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReserveAccountName.h; path = src/volition/transactions/ReserveAccountName.h; sourceTree = "<group>"; };
-		CDAF1ABC254FECB400CF1010 /* SQLite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLite.cpp; path = src/volition/SQLite.cpp; sourceTree = "<group>"; };
-		CDAF1ABE254FECB400CF1010 /* SQLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLite.h; path = src/volition/SQLite.h; sourceTree = "<group>"; };
 		CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Dump.cpp; path = src/volition/Ledger_Dump.cpp; sourceTree = "<group>"; };
 		CDAF1AE1254FEF1E00CF1010 /* Ledger_Dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger_Dump.h; path = src/volition/Ledger_Dump.h; sourceTree = "<group>"; };
 		CDB8B3C521AC7DB8004EE816 /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asset.h; path = src/volition/Asset.h; sourceTree = "<group>"; };
@@ -1000,9 +1028,6 @@
 		CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKeyInfo.h; path = src/volition/CryptoKeyInfo.h; sourceTree = "<group>"; };
 		CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResetChainHandler.h; path = "src/volition/web-miner-api/ResetChainHandler.h"; sourceTree = "<group>"; };
 		CDDB4BBB233374B100EEAA60 /* HTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTP.h; path = src/volition/HTTP.h; sourceTree = "<group>"; };
-		CDE9F7742375380600DB62EF /* AbstractChainRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractChainRecorder.h; path = src/volition/AbstractChainRecorder.h; sourceTree = "<group>"; };
-		CDE9F7752375380600DB62EF /* SimpleChainRecorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleChainRecorder.cpp; path = src/volition/SimpleChainRecorder.cpp; sourceTree = "<group>"; };
-		CDE9F7762375380600DB62EF /* SimpleChainRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimpleChainRecorder.h; path = src/volition/SimpleChainRecorder.h; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -1074,6 +1099,7 @@
 				CDD36CE9215DA454004FC222 /* libpadamose.a in Frameworks */,
 				CD9FE6BA22699D69009B4144 /* libreproc.a in Frameworks */,
 				CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */,
+				CD19DF14259572CF0007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */,
 				CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */,
 				CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */,
@@ -1099,6 +1125,7 @@
 				CDD36CE4215DA429004FC222 /* libpadamose.a in Frameworks */,
 				CD9FE6C022699D82009B4144 /* libreproc.a in Frameworks */,
 				CD4E817221057E91007DA585 /* libsimplecpprouter.a in Frameworks */,
+				CD19DF15259572DE0007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81D421059435007DA585 /* libvolition.a in Frameworks */,
 				CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */,
 				CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */,
@@ -1130,6 +1157,7 @@
 				CDD36CE8215DA44C004FC222 /* libpadamose.a in Frameworks */,
 				CD9FE6B422699D51009B4144 /* libreproc.a in Frameworks */,
 				CDED584120BA2008003A2969 /* libsimplecpprouter.a in Frameworks */,
+				CD19DF13259572C30007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */,
 				CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */,
 				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
@@ -1168,6 +1196,7 @@
 				CDD36CE7215DA444004FC222 /* libpadamose.a in Frameworks */,
 				CD9FE6AE22699CCF009B4144 /* libreproc.a in Frameworks */,
 				CDED588220BD1C5F003A2969 /* libsimplecpprouter.a in Frameworks */,
+				CD19DF12259572B80007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81D721059447007DA585 /* libvolition.a in Frameworks */,
 				CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */,
 				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
@@ -1328,8 +1357,6 @@
 				CDA1573E23FAA92300DFACCF /* Munge.cpp */,
 				CDA1573F23FAA92300DFACCF /* Munge.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
-				CDAF1ABC254FECB400CF1010 /* SQLite.cpp */,
-				CDAF1ABE254FECB400CF1010 /* SQLite.h */,
 				CD2000442548CC9200DEB809 /* UnsecureRandom.h */,
 			);
 			name = util;
@@ -1398,7 +1425,6 @@
 				CD762ACC2328256D005AC85D /* entitlements */,
 				CD4665AA20BFE49000A02D55 /* ledger */,
 				CD0C3E0F20C14410006E3B1C /* miner */,
-				CDE9F771237537E600DB62EF /* recorder */,
 				CDED587020BCDBD7003A2969 /* router */,
 				CD059BDD24C797720049C97E /* schema */,
 				CD36664720F72F94000E0B43 /* serialization */,
@@ -1696,6 +1722,7 @@
 				CD9FE6AA22699CC0009B4144 /* libhiredis.a */,
 				CDD36CD6215DA35E004FC222 /* libpadamose.a */,
 				CD9FE6AC22699CC0009B4144 /* libreproc.a */,
+				CD19DEDE25930C3F0007ACF0 /* libsqlite.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1710,18 +1737,6 @@
 				CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */,
 			);
 			name = odbm;
-			sourceTree = "<group>";
-		};
-		CDE9F771237537E600DB62EF /* recorder */ = {
-			isa = PBXGroup;
-			children = (
-				CDE9F7742375380600DB62EF /* AbstractChainRecorder.h */,
-				CDE9F7752375380600DB62EF /* SimpleChainRecorder.cpp */,
-				CDE9F7762375380600DB62EF /* SimpleChainRecorder.h */,
-				CD20FF3225381BDB00DEB809 /* SQLiteChainRecorder.cpp */,
-				CD20FF3425381BDB00DEB809 /* SQLiteChainRecorder.h */,
-			);
-			name = recorder;
 			sourceTree = "<group>";
 		};
 		CDED581320BA1EF7003A2969 /* 3rd-party */ = {
@@ -1830,7 +1845,6 @@
 				CD4E81CE2105941A007DA585 /* TheTransactionBodyFactory.h in Headers */,
 				CD9E7BBD250B941F0065C5FC /* AbstractMiningMessenger.h in Headers */,
 				CD0CF483255EFD9D008C67F0 /* SimMiningMessenger.h in Headers */,
-				CDE9F7782375380600DB62EF /* AbstractChainRecorder.h in Headers */,
 				CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */,
 				CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */,
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
@@ -1856,7 +1870,6 @@
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
 				CDDA74C5255568F4007AAA07 /* BlockODBM.h in Headers */,
 				CD2000592548DAF100DEB809 /* SimTransaction.h in Headers */,
-				CD20FF3625381BDB00DEB809 /* SQLiteChainRecorder.h in Headers */,
 				CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */,
 				CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */,
 				CDFA23A7246065AF00B4CECF /* InventoryLogEntry.h in Headers */,
@@ -1891,7 +1904,6 @@
 				CD63A1D322AF892800D5C801 /* AssetMethodInvocation.h in Headers */,
 				CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */,
 				CDBFD54A218B8999002AB0C3 /* RestrictKey.h in Headers */,
-				CDAF1AC0254FECB400CF1010 /* SQLite.h in Headers */,
 				CDDA74E32556BA3A007AAA07 /* SetFeeSchedule.h in Headers */,
 				CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */,
 				CD7751D2252A790400A53765 /* SimMiner.h in Headers */,
@@ -1955,7 +1967,6 @@
 				CDF8AD5621F2D106000E285F /* Transactions.h in Headers */,
 				CDB8B40221ACC874004EE816 /* AccountKeyListHandler.h in Headers */,
 				CD7C747B23B6EC6700FBE468 /* UpgradeAssets.h in Headers */,
-				CDE9F77A2375380600DB62EF /* SimpleChainRecorder.h in Headers */,
 				CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */,
 				CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
@@ -2062,6 +2073,7 @@
 				CDD36CE2215DA417004FC222 /* PBXTargetDependency */,
 				CD9FE6B822699D64009B4144 /* PBXTargetDependency */,
 				CD0C3E4020C86D88006E3B1C /* PBXTargetDependency */,
+				CD19DF0D259572640007ACF0 /* PBXTargetDependency */,
 				CD4E81DC21059463007DA585 /* PBXTargetDependency */,
 			);
 			name = util;
@@ -2088,6 +2100,7 @@
 				CDD36CDC215DA3FD004FC222 /* PBXTargetDependency */,
 				CD9FE6BE22699D7C009B4144 /* PBXTargetDependency */,
 				CD4E8132210579C8007DA585 /* PBXTargetDependency */,
+				CD19DF09259572530007ACF0 /* PBXTargetDependency */,
 				CD4E81D32105942B007DA585 /* PBXTargetDependency */,
 			);
 			name = "volition-gtest";
@@ -2131,6 +2144,7 @@
 				CDD36CE0215DA410004FC222 /* PBXTargetDependency */,
 				CD9FE6B222699D3B009B4144 /* PBXTargetDependency */,
 				CDED583F20BA2001003A2969 /* PBXTargetDependency */,
+				CD19DF0F2595726F0007ACF0 /* PBXTargetDependency */,
 				CD4E81D921059450007DA585 /* PBXTargetDependency */,
 			);
 			name = simulator;
@@ -2190,6 +2204,7 @@
 				CDD36CDE215DA409004FC222 /* PBXTargetDependency */,
 				CD9FE6A522699CC0009B4144 /* PBXTargetDependency */,
 				CDED587520BD1C5F003A2969 /* PBXTargetDependency */,
+				CD19DF11259572790007ACF0 /* PBXTargetDependency */,
 				CD4E81D62105943F007DA585 /* PBXTargetDependency */,
 			);
 			name = server;
@@ -2271,6 +2286,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		CD19DEDE25930C3F0007ACF0 /* libsqlite.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libsqlite.a;
+			remoteRef = CD19DEDD25930C3F0007ACF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		CD6C9AD521C48725009A3801 /* liblognosis.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -2499,7 +2521,6 @@
 				CDDB4BAA232F0E4D00EEAA60 /* PathEntitlement.cpp in Sources */,
 				CD7751D3252A790400A53765 /* SimMiner.cpp in Sources */,
 				CDAA38E2251AA09200FEAFB5 /* Simulator.cpp in Sources */,
-				CDAF1ABF254FECB400CF1010 /* SQLite.cpp in Sources */,
 				CDD36D032162A496004FC222 /* Format.cpp in Sources */,
 				CD0CF461255EDC5D008C67F0 /* RemoteMiner.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
@@ -2522,9 +2543,7 @@
 				CD4E81CB2105941A007DA585 /* AbstractTransactionBody.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
-				CDE9F7792375380600DB62EF /* SimpleChainRecorder.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */,
-				CD20FF3525381BDB00DEB809 /* SQLiteChainRecorder.cpp in Sources */,
 				CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */,
 				CDAA38E6251AA13900FEAFB5 /* SimMiningNetwork.cpp in Sources */,
 				CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */,
@@ -2625,6 +2644,26 @@
 			isa = PBXTargetDependency;
 			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
 			targetProxy = CD0C3E4120C86D88006E3B1C /* PBXContainerItemProxy */;
+		};
+		CD19DF09259572530007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-sqlite";
+			targetProxy = CD19DF08259572530007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF0D259572640007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-sqlite";
+			targetProxy = CD19DF0C259572640007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF0F2595726F0007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-sqlite";
+			targetProxy = CD19DF0E2595726F0007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF11259572790007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-sqlite";
+			targetProxy = CD19DF10259572790007ACF0 /* PBXContainerItemProxy */;
 		};
 		CD4E8132210579C8007DA585 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

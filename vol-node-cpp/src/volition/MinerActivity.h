@@ -41,9 +41,9 @@ public:
     GET_SET ( u32,      VariableUpdateDelayInMillis,    mVariableUpdateDelayInMillis )
 
     //----------------------------------------------------------------//
-    void                waitForShutdown             ();
                         MinerActivity               ();
                         ~MinerActivity              ();
+    void                waitForShutdown             ();
 };
 
 } // namespace Volition

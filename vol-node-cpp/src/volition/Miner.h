@@ -125,8 +125,6 @@ protected:
     Control                                         mControlLevel;
 
     MinerConfig                                     mConfig;
-
-    shared_ptr < AbstractChainRecorder >            mChainRecorder;
     
     set < string >                                  mNewMinerURLs;
     set < string >                                  mActiveMinerURLs;
@@ -144,7 +142,7 @@ protected:
     shared_ptr < Ledger >                           mWorkingLedger;
     BlockTreeNode::ConstPtr                         mWorkingLedgerTag;
     
-    // the "high confidence" ledger is (right now) a bit of a hack. it is a coplete
+    // the "high confidence" ledger is (right now) a bit of a hack. it is a complete
     // chain, but a heuristic is used to prevent reversion. eventually, reversion
     // will need to be formally prevented using information about the mining network
     // recorded in the ledger itself (i.e. total active miners).
@@ -156,9 +154,15 @@ protected:
     // to complete by gathering (or building) the missing blocks. the provisional
     // branch is not published to other miners.
     BlockTreeNode::ConstPtr                         mBestProvisional;
-        
+    
+    // this is the persistence provider for the ledger. it serves two purposes:
+    // to offload the RAM burder required to persist the ledger database and to speed
+    // up rebuilding the database when restarting the node.
+    shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
+    string                                          mLedgerFilename;
+    string                                          mConfigFilename;
+    
     Poco::Mutex                                     mMutex;
-
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     
     //----------------------------------------------------------------//
@@ -196,26 +200,27 @@ public:
         RESUBMIT_EARLIER,
     };
     
-    GET ( BlockTreeNode::ConstPtr,                  BestProvisional,            mBestProvisional )
-    GET ( const BlockTree&,                         BlockTree,                  mBlockTree )
-    GET ( const Ledger&,                            HighConfidenceLedger,       mHighConfidenceLedger )
-    GET ( u64,                                      MinimumGratuity,            mConfig.mMinimumGratuity )
-    GET ( string,                                   Reward,                     mConfig.mReward )
-    GET ( time_t,                                   StartTime,                  mStartTime )
-    GET ( const Signature&,                         Visage,                     mVisage )
-    GET ( const Ledger&,                            WorkingLedger,              *mWorkingLedger )
-    GET ( BlockTreeNode::ConstPtr,                  WorkingLedgerTag,           mWorkingLedgerTag )
+    GET ( BlockTreeNode::ConstPtr,                          BestProvisional,            mBestProvisional )
+    GET ( const BlockTree&,                                 BlockTree,                  mBlockTree )
+    GET ( const Ledger&,                                    HighConfidenceLedger,       mHighConfidenceLedger )
+    GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
+    GET ( string,                                           Reward,                     mConfig.mReward )
+    GET ( time_t,                                           StartTime,                  mStartTime )
+    GET ( const Signature&,                                 Visage,                     mVisage )
+    GET ( const Ledger&,                                    WorkingLedger,              *mWorkingLedger )
+    GET ( BlockTreeNode::ConstPtr,                          WorkingLedgerTag,           mWorkingLedgerTag )
     
-    SET ( shared_ptr < AbstractMiningMessenger >,   Messenger,                  mMessenger )
+    SET ( shared_ptr < AbstractMiningMessenger >,           Messenger,                  mMessenger )
     
-    GET_SET ( const CryptoPublicKey&,               ControlKey,                 mControlKey )
-    GET_SET ( Control,                              ControlLevel,               mControlLevel )
-    GET_SET ( const CryptoKeyPair&,                 KeyPair,                    mKeyPair )
-    GET_SET ( string,                               MinerID,                    mMinerID )
-    GET_SET ( string,                               Motto,                      mMotto )
-    GET_SET ( ReportMode,                           ReportMode,                 mReportMode )
-    GET_SET ( BlockTreeNode::RewriteMode,           RewriteMode,                mRewriteMode)
-    GET_SET ( string,                               URL,                        mURL )
+    GET_SET ( const CryptoPublicKey&,                       ControlKey,                 mControlKey )
+    GET_SET ( Control,                                      ControlLevel,               mControlLevel )
+    GET_SET ( const CryptoKeyPair&,                         KeyPair,                    mKeyPair )
+    GET_SET ( string,                                       MinerID,                    mMinerID )
+    GET_SET ( string,                                       Motto,                      mMotto )
+    GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
+    GET_SET ( BlockTreeNode::RewriteMode,                   RewriteMode,                mRewriteMode)
+    GET_SET ( string,                                       URL,                        mURL )
+    GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     
     //----------------------------------------------------------------//
     operator Poco::Mutex& () {
@@ -236,17 +241,17 @@ public:
     TransactionStatus                   getTransactionStatus        ( string accountName, string uuid ) const;
     Ledger&                             getWorkingLedger            ();
     bool                                isLazy                      () const;
-    void                                loadGenesisBlock            ( string path );
-    void                                loadGenesisLedger           ( string path );
+    static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
+    static shared_ptr < Block >         loadGenesisLedger           ( string genesisFile );
     void                                loadKey                     ( string keyfile, string password = "" );
                                         Miner                       ();
     virtual                             ~Miner                      ();
+    void                                persist                     ( string path, shared_ptr < const Block > block );
     shared_ptr < Block >                prepareBlock                ( time_t now );
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                pruneTransactions           ();
     void                                reset                       ();
     set < string >                      sampleActiveMinerURLs       ( size_t sampleSize ) const;
-    void                                setChainRecorder            ( shared_ptr < AbstractChainRecorder > chainRecorder );
     void                                setGenesis                  ( shared_ptr < const Block > block );
     void                                setMinimumGratuity          ( u64 minimumGratuity );
     void                                setMute                     ( bool paused );

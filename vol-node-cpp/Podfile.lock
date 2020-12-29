@@ -2,23 +2,17 @@ PODS:
   - OpenSSL-Universal (1.0.2.20):
     - OpenSSL-Universal/Static (= 1.0.2.20)
   - OpenSSL-Universal/Static (1.0.2.20)
-  - sqlite3 (3.33.0):
-    - sqlite3/common (= 3.33.0)
-  - sqlite3/common (3.33.0)
 
 DEPENDENCIES:
   - OpenSSL-Universal (~> 1.0)
-  - sqlite3
 
 SPEC REPOS:
   trunk:
     - OpenSSL-Universal
-    - sqlite3
 
 SPEC CHECKSUMS:
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
-  sqlite3: cd6cd1a4ee50b8b5fdad2940bd05b1c1d2659efc
 
-PODFILE CHECKSUM: 0786623b44fd70f34918394e0429daafc98b8ac0
+PODFILE CHECKSUM: 62c3e4ba5bade4d0175cb855fdd85d086b3f0014
 
 COCOAPODS: 1.9.3

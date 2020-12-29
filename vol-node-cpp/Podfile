@@ -3,7 +3,6 @@ inhibit_all_warnings!
 
 def shared_pods
 	pod 'OpenSSL-Universal', '~> 1.0'
-	pod 'sqlite3'
 end
 
 target 'server' do

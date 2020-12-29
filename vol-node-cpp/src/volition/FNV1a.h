@@ -39,6 +39,12 @@ inline uint32_t hash_32 ( const char* str ) noexcept {
 }
 
 //----------------------------------------------------------------//
+inline uint64_t hash_32 ( string str ) noexcept {
+
+    return hash_32 ( str.c_str ());
+}
+
+//----------------------------------------------------------------//
 inline uint64_t hash_64 ( const char* str ) noexcept {
 
     uint64_t hash = FNV1A_VAL_64;
@@ -46,6 +52,12 @@ inline uint64_t hash_64 ( const char* str ) noexcept {
         hash = ( hash ^ ( uint64_t )*str ) * FNV1A_PRIME_64;
     }
     return hash;
+}
+
+//----------------------------------------------------------------//
+inline uint64_t hash_64 ( string str ) noexcept {
+
+    return hash_64 ( str.c_str ());
 }
 
 } // namespace FNV1a

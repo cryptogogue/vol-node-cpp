@@ -74,7 +74,7 @@ protected:
     typedef map < string, MakerQueue >::const_iterator MakerQueueConstIt;
 
     map < string, MakerQueue > mDatabase;
-    list < shared_ptr < const Transaction >> mIncoming;
+//    list < shared_ptr < const Transaction >> mIncoming;
     
     //----------------------------------------------------------------//
     void                    acceptTransaction       ( shared_ptr < const Transaction > transaction );

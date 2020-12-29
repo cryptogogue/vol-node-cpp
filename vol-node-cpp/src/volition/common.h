@@ -76,6 +76,8 @@
 #include <Routing/Exceptions.h>
 #include <Routing/Router.h>
 
+#include <padamose/SQLite.h>
+#include <padamose/SQLiteStringStore.h>
 #include <padamose/VersionedCollectionIterator.h>
 #include <padamose/VersionedMap.h>
 #include <padamose/VersionedList.h>

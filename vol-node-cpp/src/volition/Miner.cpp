@@ -1,9 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
 #include <volition/Digest.h>
+#include <volition/FileSys.h>
 #include <volition/HTTPMiningMessenger.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
@@ -374,15 +374,15 @@ bool Miner::isLazy () const {
 }
 
 //----------------------------------------------------------------//
-void Miner::loadGenesisBlock ( string path ) {
+shared_ptr < Block > Miner::loadGenesisBlock ( string path ) {
 
     shared_ptr < Block > block = make_shared < Block >();
     FromJSONSerializer::fromJSONFile ( *block, path );
-    this->setGenesis ( block );
+    return block;
 }
 
 //----------------------------------------------------------------//
-void Miner::loadGenesisLedger ( string path ) {
+shared_ptr < Block > Miner::loadGenesisLedger ( string path ) {
 
     shared_ptr < Transactions::LoadLedger > loadLedger = make_shared < Transactions::LoadLedger >();
     FromJSONSerializer::fromJSONFile ( *loadLedger, path );
@@ -392,7 +392,7 @@ void Miner::loadGenesisLedger ( string path ) {
     
     shared_ptr < Block > block = make_shared < Block >();
     block->pushTransaction ( transaction );
-    this->setGenesis ( block );
+    return block;
 }
 
 //----------------------------------------------------------------//
@@ -419,6 +419,44 @@ Miner::Miner () :
 
 //----------------------------------------------------------------//
 Miner::~Miner () {
+}
+
+//----------------------------------------------------------------//
+void Miner::persist ( string path, shared_ptr < const Block > block ) {
+    
+    assert ( block );
+    assert ( this->mWorkingLedger == NULL );
+    
+    Poco::Path basePath ( path );
+    basePath.makeAbsolute ();
+    path = basePath.toString ();
+    mkdir ( path.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
+
+    string hash = block->getDigest ().toHex ();
+    this->mLedgerFilename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
+    this->mConfigFilename = Format::write ( "%s/%s-config.json", path.c_str (), hash.c_str ());
+    
+    this->mPersistenceProvider = make_shared < SQLiteStringStore >( this->mLedgerFilename );
+    
+    shared_ptr < Ledger > ledger = make_shared < Ledger >();
+    ledger->takeSnapshot ( this->mPersistenceProvider, "master" );
+        
+    shared_ptr < const Block > topBlock = ledger->getBlock ();
+    
+    if ( topBlock ) {
+
+        this->mWorkingLedger = ledger;
+
+        BlockTreeNode::ConstPtr tag = this->mBlockTree.affirmBlock ( topBlock );
+        this->mWorkingLedgerTag = tag;
+        this->mBestProvisional = tag;
+    }
+    
+    this->setGenesis ( block );
+    
+    if ( FileSys::exists ( this->mConfigFilename )) {
+        FromJSONSerializer::fromJSONFile ( this->mConfig, this->mConfigFilename );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -531,9 +569,6 @@ void Miner::reset () {
     this->TransactionQueue::reset ();
     this->mWorkingLedger->reset ( 1 );
     this->mWorkingLedger->clearSchemaCache ();
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->reset ();
-    }
     this->Miner_reset ();
 }
 
@@ -558,16 +593,16 @@ set < string > Miner::sampleActiveMinerURLs ( size_t sampleSize ) const {
 //----------------------------------------------------------------//
 void Miner::saveChain () {
 
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->saveChain ( *this );
+    if ( this->mPersistenceProvider ) {
+        this->mHighConfidenceLedger.persist ( this->mPersistenceProvider, "master" );
     }
 }
 
 //----------------------------------------------------------------//
 void Miner::saveConfig () {
 
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->saveConfig ( this->mConfig );
+    if ( this->mConfigFilename.size () > 0 ) {
+        ToJSONSerializer::toJSONFile ( this->mConfig, this->mConfigFilename );
     }
 }
 
@@ -578,27 +613,22 @@ void Miner::scheduleReport () {
 }
 
 //----------------------------------------------------------------//
-void Miner::setChainRecorder ( shared_ptr < AbstractChainRecorder > chainRecorder ) {
-
-    this->mChainRecorder = chainRecorder;
-    if ( this->mChainRecorder ) {
-        this->mChainRecorder->loadChain ( *this );
-        this->mChainRecorder->loadConfig ( this->mConfig );
-    }
-}
-
-//----------------------------------------------------------------//
 void Miner::setGenesis ( shared_ptr < const Block > block ) {
-    
-    this->mWorkingLedgerTag = NULL;
-    this->mBestProvisional = NULL;
-    
+
     assert ( block );
-    
-    shared_ptr < Ledger > chain = make_shared < Ledger >();
-    this->mWorkingLedger = chain;
-    
-    this->pushBlock ( block );
+
+    if ( this->mWorkingLedger ) {
+        assert ( this->mWorkingLedgerTag );
+        assert ( this->mBestProvisional );
+        assert ( this->mWorkingLedger->countBlocks ());
+        assert ( this->mWorkingLedger->getGenesisHash () == block->getDigest ().toHex ());
+    }
+    else {
+        this->mWorkingLedger = make_shared < Ledger >();
+        this->mWorkingLedgerTag = NULL;
+        this->mBestProvisional = NULL;
+        this->pushBlock ( block );
+    }
     this->updateHighConfidenceTag ();
 }
 
@@ -644,7 +674,6 @@ void Miner::shutdown ( bool kill ) {
 void Miner::step ( time_t now ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-    BlockTreeNode::ConstPtr prevChain = this->mWorkingLedgerTag;
 
     this->affirmMessenger ();
     this->mMessenger->await ();
@@ -664,10 +693,6 @@ void Miner::step ( time_t now ) {
     
     this->updateHighConfidenceTag ();
     this->pruneTransactions ();
-    
-    if ( this->mWorkingLedgerTag != prevChain ) {
-        this->saveChain ();
-    }
     
     this->updateBlockSearches ();
     this->updateHeaderSearches ();
@@ -761,6 +786,8 @@ void Miner::updateHighConfidenceTag () {
 
     assert ( this->mWorkingLedger );
 
+    BlockTreeNode::ConstPtr prevTag = this->mHighConfidenceLedgerTag;
+
     BlockTreeNode::ConstPtr tag = this->mBestProvisional;
     while ( tag->getParent () && (( this->checkConsensus ( tag ) < 1 ) || ( !tag->getBlock ()))) tag = tag->getParent ();
     
@@ -773,6 +800,10 @@ void Miner::updateHighConfidenceTag () {
     this->mHighConfidenceLedger.revert (( **this->mHighConfidenceLedgerTag ).getHeight ());
     
     this->mBlockTree.markHighConfidence ( this->mHighConfidenceLedgerTag );
+    
+    if ( this->mHighConfidenceLedgerTag != prevTag ) {
+        this->saveChain ();
+    }
 }
 
 //----------------------------------------------------------------//

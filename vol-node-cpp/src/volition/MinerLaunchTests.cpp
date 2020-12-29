@@ -1,7 +1,6 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractChainRecorder.h>
 #include <volition/Block.h>
 #include <volition/CryptoKey.h>
 #include <volition/Digest.h>
