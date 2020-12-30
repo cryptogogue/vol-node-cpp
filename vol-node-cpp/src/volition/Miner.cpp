@@ -235,8 +235,8 @@ void Miner::extend ( time_t now ) {
     if ( this->checkConsensus ( parent ) < 0.5 ) return;
 
     assert ( this->mWorkingLedgerTag == parent );
-    assert ( this->mHighConfidenceLedgerTag != provisional );
-    assert ( this->mHighConfidenceLedgerTag->isAncestorOf ( provisional ));
+    assert ( this->mPermanentLedgerTag != provisional );
+    assert ( this->mPermanentLedgerTag->isAncestorOf ( provisional ));
 
     shared_ptr < Block > block = this->prepareBlock ( now );
     if ( block ) {
@@ -273,7 +273,7 @@ size_t Miner::getChainSize () const {
 //----------------------------------------------------------------//
 Ledger& Miner::getHighConfidenceLedger () {
 
-    return this->mHighConfidenceLedger;
+    return this->mPermanentLedger;
 }
 
 //----------------------------------------------------------------//
@@ -447,9 +447,10 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
 
         this->mWorkingLedger = ledger;
 
-        BlockTreeNode::ConstPtr tag = this->mBlockTree.affirmBlock ( topBlock );
-        this->mWorkingLedgerTag = tag;
-        this->mBestProvisional = tag;
+        this->mWorkingLedgerTag         = this->mBlockTree.affirmBlock ( topBlock );
+        this->mPermanentLedger          = *this->mWorkingLedger;
+        this->mPermanentLedgerTag       = this->mWorkingLedgerTag;
+        this->mBestProvisional          = this->mWorkingLedgerTag;
     }
     
     this->setGenesis ( block );
@@ -506,7 +507,7 @@ shared_ptr < BlockHeader > Miner::prepareProvisional ( const BlockHeader& parent
 //----------------------------------------------------------------//
 void Miner::pruneTransactions () {
 
-    this->TransactionQueue::pruneTransactions ( this->mHighConfidenceLedger );
+    this->TransactionQueue::pruneTransactions ( this->mPermanentLedger );
 }
 
 //----------------------------------------------------------------//
@@ -594,7 +595,7 @@ set < string > Miner::sampleActiveMinerURLs ( size_t sampleSize ) const {
 void Miner::saveChain () {
 
     if ( this->mPersistenceProvider ) {
-        this->mHighConfidenceLedger.persist ( this->mPersistenceProvider, "master" );
+        this->mPermanentLedger.persist ( this->mPersistenceProvider, "master" );
     }
 }
 
@@ -618,18 +619,23 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
     assert ( block );
 
     if ( this->mWorkingLedger ) {
+    
         assert ( this->mWorkingLedgerTag );
-        assert ( this->mBestProvisional );
         assert ( this->mWorkingLedger->countBlocks ());
         assert ( this->mWorkingLedger->getGenesisHash () == block->getDigest ().toHex ());
+        assert ( this->mPermanentLedgerTag );
     }
     else {
-        this->mWorkingLedger = make_shared < Ledger >();
-        this->mWorkingLedgerTag = NULL;
-        this->mBestProvisional = NULL;
+    
+        this->mWorkingLedger        = make_shared < Ledger >();
+        this->mWorkingLedgerTag     = NULL;
+        this->mBestProvisional      = NULL;
+        this->mPermanentLedgerTag   = NULL;
+        
         this->pushBlock ( block );
+        
+        this->updatePermanentTag ();
     }
-    this->updateHighConfidenceTag ();
 }
 
 //----------------------------------------------------------------//
@@ -691,7 +697,7 @@ void Miner::step ( time_t now ) {
     // fill the provisional block (if any)
     this->extend ( now );
     
-    this->updateHighConfidenceTag ();
+    this->updatePermanentTag ();
     this->pruneTransactions ();
     
     this->updateBlockSearches ();
@@ -739,7 +745,7 @@ void Miner::updateBlockSearches () {
 
         // we only care about missing branches; ignore new/complete/invalid branches.
         if ( remoteMiner->mImproved && remoteMiner->mImproved->isMissing ()) {
-                        
+            
             // only affirm a search if the other chain could beat our current.
             if ( BlockTreeNode::compare ( remoteMiner->mImproved, this->mBestProvisional, this->mRewriteMode ) < 0 ) {
                 this->affirmBranchSearch ( remoteMiner->mImproved );
@@ -782,27 +788,38 @@ void Miner::updateHeaderSearches () {
 }
 
 //----------------------------------------------------------------//
-void Miner::updateHighConfidenceTag () {
+void Miner::updatePermanentTag () {
 
     assert ( this->mWorkingLedger );
 
-    BlockTreeNode::ConstPtr prevTag = this->mHighConfidenceLedgerTag;
-
+    // start with the current best provisional branch and walk back to a point where general consensus (among responding
+    // miners) is greater than quorum (right now hardcoded at 60%) and/or where we hit the root (or the current permanent tag).
     BlockTreeNode::ConstPtr tag = this->mBestProvisional;
-    while ( tag->getParent () && (( this->checkConsensus ( tag ) < 1 ) || ( !tag->getBlock ()))) tag = tag->getParent ();
+    while ( tag->getParent () && (( this->checkConsensus ( tag ) < 0.6 ) || ( !tag->getBlock ()))) tag = tag->getParent ();
     
     assert ( tag );
     assert ( tag->getBlock ());
     assert ( tag->isAncestorOf ( this->mBestProvisional ));
+    
+    if ( this->mPermanentLedgerTag != tag ) {
+    
+        this->mPermanentLedgerTag = tag;
+        this->mPermanentLedger = *this->mWorkingLedger;
+        this->mPermanentLedger.revert (( **this->mPermanentLedgerTag ).getHeight ());
         
-    this->mHighConfidenceLedgerTag = tag;
-    this->mHighConfidenceLedger = *this->mWorkingLedger;
-    this->mHighConfidenceLedger.revert (( **this->mHighConfidenceLedgerTag ).getHeight ());
-    
-    this->mBlockTree.markHighConfidence ( this->mHighConfidenceLedgerTag );
-    
-    if ( this->mHighConfidenceLedgerTag != prevTag ) {
+        this->mBlockTree.setRoot ( this->mPermanentLedgerTag );
+        
         this->saveChain ();
+        
+        set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
+        for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+        
+            shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+            
+            if ( remoteMiner->mTag && remoteMiner->mTag->isRefused ()) {
+                remoteMiner->reset ();
+            }
+        }
     }
 }
 

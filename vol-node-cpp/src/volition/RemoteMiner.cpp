@@ -27,13 +27,25 @@ RemoteMiner::~RemoteMiner () {
 }
 
 //----------------------------------------------------------------//
+void RemoteMiner::reset () {
+
+    this->mHeight           = 0;
+    this->mTag              = NULL;
+    this->mImproved         = NULL;
+    this->mForward          = true;
+    
+    this->mHeaderQueue.clear ();
+}
+
+//----------------------------------------------------------------//
 void RemoteMiner::setError ( string message ) {
 
-    this->mNetworkState        = STATE_ERROR;
-    this->mMessage      = message;
-    this->mHeight       = 0;
-    this->mTag          = NULL;
-    this->mForward      = true;
+    this->mNetworkState     = STATE_ERROR;
+    this->mMessage          = message;
+    this->mHeight           = 0;
+    this->mTag              = NULL;
+    this->mImproved         = NULL;
+    this->mForward          = true;
     
     this->mHeaderQueue.clear ();
 }
@@ -68,8 +80,9 @@ void RemoteMiner::updateHeaders ( BlockTree& blockTree ) {
                     if ( accepted == 0 ) break;
                     // FALL THROUGH ->
                 
+                case BlockTree::REFUSED:
                 case BlockTree::TOO_SOON:
-                    this->mHeaderQueue.clear ();
+                    this->reset ();
                     break;
             }
         }
@@ -83,11 +96,6 @@ void RemoteMiner::updateHeaders ( BlockTree& blockTree ) {
     else if ( this->mTag ) {
         // nothing in the queue, so get the next batch of blocks.
         this->mHeight = ( **this->mTag ).getHeight () + 1; // this doesn't really matter.
-        this->mForward = true;
-    }
-    else {
-        // nothing at all, so get the first batch of blocks.
-        this->mHeight = 0; // doesn't matter.
         this->mForward = true;
     }
 }

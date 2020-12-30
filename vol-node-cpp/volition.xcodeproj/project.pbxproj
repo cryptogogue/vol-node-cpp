@@ -52,6 +52,28 @@
 		CD19DF13259572C30007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
 		CD19DF14259572CF0007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
 		CD19DF15259572DE0007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
+		CD19DF56259B3F190007ACF0 /* BlockTreeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19DF54259B3F190007ACF0 /* BlockTreeNode.cpp */; };
+		CD19DF57259B3F190007ACF0 /* BlockTreeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19DF55259B3F190007ACF0 /* BlockTreeNode.h */; };
+		CD19DF75259C18D50007ACF0 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
+		CD19DF76259C18D50007ACF0 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
+		CD19DF77259C18D50007ACF0 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBFD470218B77E5002AB0C3 /* liblua.a */; };
+		CD19DF78259C18D50007ACF0 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
+		CD19DF79259C18D50007ACF0 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
+		CD19DF7A259C18D50007ACF0 /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
+		CD19DF7B259C18D50007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
+		CD19DF7C259C18D50007ACF0 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
+		CD19DF7D259C18D50007ACF0 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
+		CD19DF7E259C18D50007ACF0 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
+		CD19DF7F259C18D50007ACF0 /* libPocoFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585B20BA3981003A2969 /* libPocoFoundation.a */; };
+		CD19DF80259C18D50007ACF0 /* libPocoNetSSL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585E20BA3981003A2969 /* libPocoNetSSL.a */; };
+		CD19DF81259C18D50007ACF0 /* libPocoEncodings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585A20BA3981003A2969 /* libPocoEncodings.a */; };
+		CD19DF82259C18D50007ACF0 /* libPocoNet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585D20BA3981003A2969 /* libPocoNet.a */; };
+		CD19DF83259C18D50007ACF0 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
+		CD19DF84259C18D50007ACF0 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
+		CD19DF85259C18D50007ACF0 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
+		CD19DF86259C18D50007ACF0 /* libPods-simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F16AC04619F5F5A7A17758B1 /* libPods-simulator.a */; };
+		CD19DF9F259C19600007ACF0 /* main-leaks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19DF9E259C19600007ACF0 /* main-leaks.cpp */; };
+		CD19DFB2259C19760007ACF0 /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */; };
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
@@ -196,7 +218,6 @@
 		CD9E7BA724FF69D00065C5FC /* BlockHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BA524FF69D00065C5FC /* BlockHeader.h */; };
 		CD9E7BAD250099010065C5FC /* MinerAPIFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BAC250099010065C5FC /* MinerAPIFactory.h */; };
 		CD9E7BAF2500999C0065C5FC /* MinerAPIFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BAE2500999C0065C5FC /* MinerAPIFactory.cpp */; };
-		CD9E7BB42500D71E0065C5FC /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */; };
 		CD9E7BB72505A8550065C5FC /* MinerLaunchTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BB52505A8550065C5FC /* MinerLaunchTests.cpp */; };
 		CD9E7BB82505A8550065C5FC /* MinerLaunchTests.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BB62505A8550065C5FC /* MinerLaunchTests.h */; };
 		CD9E7BBD250B941F0065C5FC /* AbstractMiningMessenger.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BBB250B941F0065C5FC /* AbstractMiningMessenger.h */; };
@@ -445,6 +466,62 @@
 			proxyType = 1;
 			remoteGlobalIDString = CD19DEA02592DE330007ACF0;
 			remoteInfo = "lib-sqlite";
+		};
+		CD19DF62259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
+			remoteInfo = "lib-hiredis";
+		};
+		CD19DF64259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-lognosis";
+		};
+		CD19DF66259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDBFD45C218B77E5002AB0C3;
+			remoteInfo = "lib-lua";
+		};
+		CD19DF68259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-padamose";
+		};
+		CD19DF6A259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD9FE62222669323009B4144;
+			remoteInfo = "lib-reproc";
+		};
+		CD19DF6C259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDED582C20BA1FCE003A2969;
+			remoteInfo = "lib-simple-cpp-router";
+		};
+		CD19DF6E259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD19DEA02592DE330007ACF0;
+			remoteInfo = "lib-sqlite";
+		};
+		CD19DF70259C18D50007ACF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD4E817521059316007DA585;
+			remoteInfo = "lib-volition";
 		};
 		CD4E8133210579C8007DA585 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -736,6 +813,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		CD19DF87259C18D50007ACF0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = usr/share/man/man1;
+			dstSubfolderSpec = 6;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		CD9345C02093EB140077BAD4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -775,6 +861,10 @@
 		CD0CF45D255EDC5D008C67F0 /* RemoteMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RemoteMiner.h; path = src/volition/RemoteMiner.h; sourceTree = "<group>"; };
 		CD0CF45F255EDC5D008C67F0 /* RemoteMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RemoteMiner.cpp; path = src/volition/RemoteMiner.cpp; sourceTree = "<group>"; };
 		CD0CF482255EFD9D008C67F0 /* SimMiningMessenger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimMiningMessenger.h; path = src/volition/simulation/SimMiningMessenger.h; sourceTree = "<group>"; };
+		CD19DF54259B3F190007ACF0 /* BlockTreeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockTreeNode.cpp; path = src/volition/BlockTreeNode.cpp; sourceTree = "<group>"; };
+		CD19DF55259B3F190007ACF0 /* BlockTreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeNode.h; path = src/volition/BlockTreeNode.h; sourceTree = "<group>"; };
+		CD19DF8B259C18D50007ACF0 /* leaks */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = leaks; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD19DF9E259C19600007ACF0 /* main-leaks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-leaks.cpp"; path = "src/volition/main-leaks.cpp"; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
@@ -1111,6 +1201,31 @@
 				CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */,
 				CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */,
 				534E4B7D035AC51F8531461D /* libPods-util.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CD19DF74259C18D50007ACF0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD19DF75259C18D50007ACF0 /* libhiredis.a in Frameworks */,
+				CD19DF76259C18D50007ACF0 /* liblognosis.a in Frameworks */,
+				CD19DF77259C18D50007ACF0 /* liblua.a in Frameworks */,
+				CD19DF78259C18D50007ACF0 /* libpadamose.a in Frameworks */,
+				CD19DF79259C18D50007ACF0 /* libreproc.a in Frameworks */,
+				CD19DF7A259C18D50007ACF0 /* libsimplecpprouter.a in Frameworks */,
+				CD19DF7B259C18D50007ACF0 /* libsqlite.a in Frameworks */,
+				CD19DF7C259C18D50007ACF0 /* libvolition.a in Frameworks */,
+				CD19DF7D259C18D50007ACF0 /* libPocoUtil.a in Frameworks */,
+				CD19DF7E259C18D50007ACF0 /* libPocoJSON.a in Frameworks */,
+				CD19DF7F259C18D50007ACF0 /* libPocoFoundation.a in Frameworks */,
+				CD19DF80259C18D50007ACF0 /* libPocoNetSSL.a in Frameworks */,
+				CD19DF81259C18D50007ACF0 /* libPocoEncodings.a in Frameworks */,
+				CD19DF82259C18D50007ACF0 /* libPocoNet.a in Frameworks */,
+				CD19DF83259C18D50007ACF0 /* libPocoZip.a in Frameworks */,
+				CD19DF84259C18D50007ACF0 /* libPocoXML.a in Frameworks */,
+				CD19DF85259C18D50007ACF0 /* libPocoCrypto.a in Frameworks */,
+				CD19DF86259C18D50007ACF0 /* libPods-simulator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1544,6 +1659,7 @@
 				CD4E8161210579C8007DA585 /* volition-gtest */,
 				CD4E818F21059316007DA585 /* libvolition.a */,
 				CDBFD470218B77E5002AB0C3 /* liblua.a */,
+				CD19DF8B259C18D50007ACF0 /* leaks */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1557,6 +1673,8 @@
 				CD9E7BA524FF69D00065C5FC /* BlockHeader.h */,
 				CD9E7B9F24FF67C30065C5FC /* BlockTree.cpp */,
 				CD9E7BA024FF67C30065C5FC /* BlockTree.h */,
+				CD19DF54259B3F190007ACF0 /* BlockTreeNode.cpp */,
+				CD19DF55259B3F190007ACF0 /* BlockTreeNode.h */,
 			);
 			name = block;
 			sourceTree = "<group>";
@@ -1805,6 +1923,7 @@
 		CDED589120BD1CAC003A2969 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				CD19DF9E259C19600007ACF0 /* main-leaks.cpp */,
 				CD5C632420B524A30038EE98 /* main-server.cpp */,
 				CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */,
 				CD0C3E6820C86FBA006E3B1C /* main-util.cpp */,
@@ -1898,6 +2017,7 @@
 				CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */,
 				CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */,
 				CD8BAE3D21EBC81900B5040E /* SerializableUniquePtr.h in Headers */,
+				CD19DF57259B3F190007ACF0 /* BlockTreeNode.h in Headers */,
 				CDA1573423FA59EC00DFACCF /* AccountKeyLookup.h in Headers */,
 				CD762AD6232826D7005AC85D /* NumericEntitlement.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransactionBody.h in Headers */,
@@ -2081,6 +2201,32 @@
 			productReference = CD0C3E6720C86D88006E3B1C /* util */;
 			productType = "com.apple.product-type.tool";
 		};
+		CD19DF60259C18D50007ACF0 /* leaks */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CD19DF88259C18D50007ACF0 /* Build configuration list for PBXNativeTarget "leaks" */;
+			buildPhases = (
+				CD19DF71259C18D50007ACF0 /* [CP] Check Pods Manifest.lock */,
+				CD19DF72259C18D50007ACF0 /* Sources */,
+				CD19DF74259C18D50007ACF0 /* Frameworks */,
+				CD19DF87259C18D50007ACF0 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CD19DF61259C18D50007ACF0 /* PBXTargetDependency */,
+				CD19DF63259C18D50007ACF0 /* PBXTargetDependency */,
+				CD19DF65259C18D50007ACF0 /* PBXTargetDependency */,
+				CD19DF67259C18D50007ACF0 /* PBXTargetDependency */,
+				CD19DF69259C18D50007ACF0 /* PBXTargetDependency */,
+				CD19DF6B259C18D50007ACF0 /* PBXTargetDependency */,
+				CD19DF6D259C18D50007ACF0 /* PBXTargetDependency */,
+				CD19DF6F259C18D50007ACF0 /* PBXTargetDependency */,
+			);
+			name = leaks;
+			productName = consensus;
+			productReference = CD19DF8B259C18D50007ACF0 /* leaks */;
+			productType = "com.apple.product-type.tool";
+		};
 		CD4E8131210579C8007DA585 /* volition-gtest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD4E815E210579C8007DA585 /* Build configuration list for PBXNativeTarget "volition-gtest" */;
@@ -2224,6 +2370,9 @@
 					CD0C3E3F20C86D88006E3B1C = {
 						ProvisioningStyle = Manual;
 					};
+					CD19DF60259C18D50007ACF0 = {
+						ProvisioningStyle = Manual;
+					};
 					CD4E8131210579C8007DA585 = {
 						ProvisioningStyle = Manual;
 					};
@@ -2273,6 +2422,7 @@
 			);
 			projectRoot = "";
 			targets = (
+				CD19DF60259C18D50007ACF0 /* leaks */,
 				CDED587420BD1C5F003A2969 /* server */,
 				CD9345C12093EB140077BAD4 /* simulator */,
 				CD0C3E3F20C86D88006E3B1C /* util */,
@@ -2440,6 +2590,28 @@
 			shellPath = /bin/sh;
 			shellScript = "OSX_BIN=bin\nmkdir -p $OSX_BIN\ncp -a \"${TARGET_BUILD_DIR}/${TARGET_NAME}\" $OSX_BIN\n";
 		};
+		CD19DF71259C18D50007ACF0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-simulator-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		CD4E815D210579C8007DA585 /* Copy Binaries */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2493,6 +2665,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDD36CFF215DA77D004FC222 /* main-util.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CD19DF72259C18D50007ACF0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD19DF9F259C19600007ACF0 /* main-leaks.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2554,6 +2734,7 @@
 				CD20FF85253D870800DEB809 /* ControlCommand.cpp in Sources */,
 				CD4E81A3210593BD007DA585 /* Ledger.cpp in Sources */,
 				CD20FF92253D873300DEB809 /* AbstractControlCommandBody.cpp in Sources */,
+				CD19DF56259B3F190007ACF0 /* BlockTreeNode.cpp in Sources */,
 				CD9E7BAF2500999C0065C5FC /* MinerAPIFactory.cpp in Sources */,
 				CD4E81CD2105941A007DA585 /* TheTransactionBodyFactory.cpp in Sources */,
 				CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */,
@@ -2572,7 +2753,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD9E7BB42500D71E0065C5FC /* main-simulator.cpp in Sources */,
+				CD19DFB2259C19760007ACF0 /* main-simulator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2664,6 +2845,46 @@
 			isa = PBXTargetDependency;
 			name = "lib-sqlite";
 			targetProxy = CD19DF10259572790007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF61259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-hiredis";
+			targetProxy = CD19DF62259C18D50007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF63259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-lognosis";
+			targetProxy = CD19DF64259C18D50007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF65259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDBFD45C218B77E5002AB0C3 /* lib-lua */;
+			targetProxy = CD19DF66259C18D50007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF67259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-padamose";
+			targetProxy = CD19DF68259C18D50007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF69259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-reproc";
+			targetProxy = CD19DF6A259C18D50007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF6B259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
+			targetProxy = CD19DF6C259C18D50007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF6D259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lib-sqlite";
+			targetProxy = CD19DF6E259C18D50007ACF0 /* PBXContainerItemProxy */;
+		};
+		CD19DF6F259C18D50007ACF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD4E817521059316007DA585 /* lib-volition */;
+			targetProxy = CD19DF70259C18D50007ACF0 /* PBXContainerItemProxy */;
 		};
 		CD4E8132210579C8007DA585 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2857,6 +3078,28 @@
 		CD0C3E6620C86D88006E3B1C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 78C7F1AD9B344058FC31F693 /* Pods-util.release.xcconfig */;
+			buildSettings = {
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Release;
+		};
+		CD19DF89259C18D50007ACF0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE0EF6D88A7B8572FD595407 /* Pods-simulator.debug.xcconfig */;
+			buildSettings = {
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+			};
+			name = Debug;
+		};
+		CD19DF8A259C18D50007ACF0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 17BF70C7842C5B8FC27B5A50 /* Pods-simulator.release.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -3243,6 +3486,15 @@
 			buildConfigurations = (
 				CD0C3E6520C86D88006E3B1C /* Debug */,
 				CD0C3E6620C86D88006E3B1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD19DF88259C18D50007ACF0 /* Build configuration list for PBXNativeTarget "leaks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD19DF89259C18D50007ACF0 /* Debug */,
+				CD19DF8A259C18D50007ACF0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -43,6 +43,7 @@ public:
     //----------------------------------------------------------------//
                     RemoteMiner             ();
                     ~RemoteMiner            ();
+    void            reset                   ();
     void            setError                ( string message = "" );
     void            updateHeaders           ( BlockTree& blockTree );
 };

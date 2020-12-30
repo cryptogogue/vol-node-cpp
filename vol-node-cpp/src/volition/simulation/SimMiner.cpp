@@ -34,8 +34,8 @@ void SimMiner::extendChain ( string charmHex, time_t time ) {
     block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
     
     this->pushBlock ( block );
-    this->mHighConfidenceLedgerTag = this->mWorkingLedgerTag;
-    this->mHighConfidenceLedger = *this->mWorkingLedger;
+    this->mPermanentLedgerTag = this->mWorkingLedgerTag;
+    this->mPermanentLedger = *this->mWorkingLedger;
 }
 
 //----------------------------------------------------------------//

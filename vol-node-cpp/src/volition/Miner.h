@@ -142,12 +142,15 @@ protected:
     shared_ptr < Ledger >                           mWorkingLedger;
     BlockTreeNode::ConstPtr                         mWorkingLedgerTag;
     
-    // the "high confidence" ledger is (right now) a bit of a hack. it is a complete
-    // chain, but a heuristic is used to prevent reversion. eventually, reversion
-    // will need to be formally prevented using information about the mining network
-    // recorded in the ledger itself (i.e. total active miners).
-    Ledger                                          mHighConfidenceLedger;
-    BlockTreeNode::ConstPtr                         mHighConfidenceLedgerTag;
+    // the "permanent" ledger and is chosen by heurestic and represents a minimum reversion
+    // point, i.e. the earliest block the miner will revert to, even if presented a superior
+    // chain. the idea is that if at some point in time a majority of responding nodes
+    // agree on a chain, those nodes should not later "change their minds" and favor some
+    // other chain. of course, until a majority of the miners agrees, the usual chain
+    // selection heuristic is used. also, a "permanent" ledger should only be selected
+    // once all responding miners have been identified and polled.
+    Ledger                                          mPermanentLedger;
+    BlockTreeNode::ConstPtr                         mPermanentLedgerTag;
     
     // the "provisional" branch may not be complete and may end with a "provisional"
     // block header. the "best" provisional branch is the branch the miner is working
@@ -183,7 +186,7 @@ protected:
     void                                updateBestBranch            ( time_t now );
     void                                updateBlockSearches         ();
     void                                updateHeaderSearches        ();
-    void                                updateHighConfidenceTag     ();
+    void                                updatePermanentTag          ();
     void                                updateRemoteMiners          ();
 
     //----------------------------------------------------------------//
@@ -202,7 +205,7 @@ public:
     
     GET ( BlockTreeNode::ConstPtr,                          BestProvisional,            mBestProvisional )
     GET ( const BlockTree&,                                 BlockTree,                  mBlockTree )
-    GET ( const Ledger&,                                    HighConfidenceLedger,       mHighConfidenceLedger )
+    GET ( const Ledger&,                                    HighConfidenceLedger,       mPermanentLedger )
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                           Reward,                     mConfig.mReward )
     GET ( time_t,                                           StartTime,                  mStartTime )
