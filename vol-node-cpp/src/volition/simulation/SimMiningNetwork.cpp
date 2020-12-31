@@ -100,15 +100,31 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_BLOCK: {
             
+            string hash = request.mBlockDigest.toHex ();
+            shared_ptr < const Block > block = NULL;
+            
             const BlockTree& blockTree = miner->getBlockTree ();
-            BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( request.mBlockDigest.toHex ());
-            shared_ptr < const Block > block = node ? node->getBlock () : NULL;
+            BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( hash );
+            if ( node ) {
+                block = node->getBlock ();
+            }
+            
+            if ( !block ) {
+            
+                shared_ptr < const Block > check = miner->getWorkingLedger ().getBlock ( request.mHeight );
+                if ( check ) {
+                    printf ( "%s %s\n", check->getDigest ().toHex ().c_str (), check->getCharmTag ().c_str ());
+                }
+            
+                block = miner->getWorkingLedger ().getBlock ( hash );
+            }
+            
             client->enqueueBlockResponse ( request, block );
             break;
         }
         
         case MiningMessengerRequest::REQUEST_EXTEND_NETWORK: {
-        
+            
             set < string > miners = miner->sampleActiveMinerURLs ( MINER_URL_BATCH_SIZE );
             client->enqueueExtendNetworkResponse ( request, miners );
             break;
@@ -188,14 +204,6 @@ void SimMiningNetwork::pushConstraintDropHeader ( double probability, size_t bas
 }
 
 //----------------------------------------------------------------//
-SimMiningNetwork::SimMiningNetwork () {
-}
-
-//----------------------------------------------------------------//
-SimMiningNetwork::~SimMiningNetwork () {
-}
-
-//----------------------------------------------------------------//
 void SimMiningNetwork::setMiners ( vector < shared_ptr < Miner >> miners ) {
 
     this->mConstraintListsByIndex.resize ( miners.size ());
@@ -211,6 +219,14 @@ void SimMiningNetwork::setMiners ( vector < shared_ptr < Miner >> miners ) {
         this->mMinersByURL [ url ]              = miner;
         this->mConstraintListsByIndex [ i ]     = &this->mConstraintLists [ minerID ];
     }
+}
+
+//----------------------------------------------------------------//
+SimMiningNetwork::SimMiningNetwork () {
+}
+
+//----------------------------------------------------------------//
+SimMiningNetwork::~SimMiningNetwork () {
 }
 
 //----------------------------------------------------------------//

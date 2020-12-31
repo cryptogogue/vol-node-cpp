@@ -31,6 +31,8 @@ public:
     Digest                              mBlockDigest;
     size_t                              mHeight;
     
+    string                              mDebug;
+    
     //----------------------------------------------------------------//
     MiningMessengerRequest () :
         mRequestType ( UNKNOWN ),
@@ -138,10 +140,12 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void enqueueBlockRequest ( string minerURL, const Digest& digest ) {
+    void enqueueBlockRequest ( string minerURL, const Digest& digest, u64 height, string debug = "" ) {
         
         MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_BLOCK );
-        request.mBlockDigest = digest;
+        request.mBlockDigest    = digest;
+        request.mHeight         = height;
+        request.mDebug          = debug;
         this->enqueueRequest ( request );
     }
 
@@ -149,7 +153,7 @@ public:
     void enqueueBlockResponse ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
     
         MiningMessengerResponse response;
-        response.mRequest = request;
+        response.mRequest   = request;
         response.mStatus    = MiningMessengerResponse::STATUS_OK;
         response.mBlock     = block;
         this->enqueueResponse ( response );
@@ -185,7 +189,7 @@ public:
     void enqueueHeaderRequest ( string minerURL, size_t height, bool forward = true ) {
         
         MiningMessengerRequest request ( minerURL, forward ? MiningMessengerRequest::REQUEST_HEADERS : MiningMessengerRequest::REQUEST_PREV_HEADERS );
-        request.mHeight = height;
+        request.mHeight     = height;
         this->enqueueRequest ( request );
     }
 

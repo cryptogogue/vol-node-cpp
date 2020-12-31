@@ -78,6 +78,7 @@ public:
                         BlockHeader                         ();
                         BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKeyPair& key );
                         ~BlockHeader                        ();
+    string              getCharmTag                         () const;
     Digest              getNextCharm                        ( const Digest& visage ) const;
     bool                isGenesis                           () const;
     bool                isInRewriteWindow                   ( time_t now ) const;

@@ -47,7 +47,6 @@ BlockTreeNode::ConstPtr BlockTree::affirm ( shared_ptr < const BlockHeader > hea
         }
         else {
             this->mRoot = node;
-            node->mMeta = BlockTreeNode::META_ROOT;
         }
         this->mNodes [ hash ] = node.get ();
     }
@@ -175,14 +174,11 @@ void BlockTree::setRoot ( BlockTreeNode::ConstPtr node ) {
 
     if ( this->mRoot == node ) return;
     if ( !node ) return;
-    if ( node->mMeta == BlockTreeNode::META_ROOT ) return;
     assert ( node->mStatus & BlockTreeNode::STATUS_COMPLETE );
 
     BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getDigest ());
     assert ( cursor );
-    
-    cursor->mMeta = BlockTreeNode::META_ROOT;
-    
+        
     shared_ptr < BlockTreeNode > prevRoot = this->mRoot;
     this->mRoot = cursor;
     cursor->clearParent ();

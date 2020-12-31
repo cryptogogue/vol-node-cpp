@@ -105,6 +105,12 @@ string BlockHeader::formatPoseString ( string prevPose ) const {
 }
 
 //----------------------------------------------------------------//
+string BlockHeader::getCharmTag () const {
+
+    return this->getCharm ().toHex ().substr ( 0, 6 );
+}
+
+//----------------------------------------------------------------//
 Digest BlockHeader::getNextCharm ( const Digest& visage ) const {
 
     return BlockHeader::calculateCharm ( this->mPose, visage );

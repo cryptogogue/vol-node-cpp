@@ -219,6 +219,7 @@ void Simulator::report () {
                 
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail->writeBranch ().c_str ());
             }
+            
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
         
             break;
@@ -278,7 +279,7 @@ Simulator::Simulator () :
     mBasePort ( 0 ),
     mIsPaused ( false ),
     mStepCount ( 0 ),
-    mTimeStep ( 0 ) {
+    mTimeStep ( 1 ) {
 }
 
 //----------------------------------------------------------------//

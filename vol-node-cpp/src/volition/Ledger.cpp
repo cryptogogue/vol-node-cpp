@@ -131,16 +131,22 @@ shared_ptr < const Block > Ledger::getBlock ( u64 height ) const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < const Block > Ledger::getBlock ( string hash ) const {
+
+    LedgerKey KEY_FOR_BLOCK_HEIGHT_BY_HASH = keyFor_blockHeightByHash ( hash );
+
+    if ( this->hasKey ( KEY_FOR_BLOCK_HEIGHT_BY_HASH )) {
+        u64 height = this->getValue < u64 >( KEY_FOR_BLOCK_HEIGHT_BY_HASH );
+        return this->getBlock ( height );
+    }
+    return NULL;
+}
+
+//----------------------------------------------------------------//
 time_t Ledger::getBlockDelayInSeconds () const {
 
     return ( time_t )this->getValue < u64 >( keyFor_blockDelay ());
 }
-
-//----------------------------------------------------------------//
-//string Ledger::getBlockHash () const {
-//
-//    return this->getValue < string >( keyFor_blockHash ());
-//}
 
 //----------------------------------------------------------------//
 u64 Ledger::getBlockSizeInPoints () const {
@@ -363,7 +369,10 @@ bool Ledger::pushBlock ( const Block& block, Block::VerificationPolicy policy ) 
     bool result = block.apply ( fork, policy );
 
     if ( result ) {
+    
+        fork.setValue < u64 >( keyFor_blockHeightByHash ( block.getDigest ().toHex ()), block.getHeight ());
         fork.pushVersion ();
+        
         this->takeSnapshot ( fork );
     }
     return result;

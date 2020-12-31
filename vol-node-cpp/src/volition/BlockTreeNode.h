@@ -57,7 +57,6 @@ public:
         META_NONE,
         META_PROVISIONAL,
         META_REFUSED,
-        META_ROOT,
     };
 
     enum Status {

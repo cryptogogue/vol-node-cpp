@@ -18,35 +18,58 @@ namespace Volition {
 //================================================================//
     
 //----------------------------------------------------------------//
-void BlockSearch::step ( Miner& miner ) {
+bool BlockSearch::step ( Miner& miner ) {
 
-    if ( this->mCurrentSearch ) return; // search already in progress
+    if ( SEARCH_SIZE <= this->mActiveMiners.size ()) return true;
 
     if ( this->mSearchTarget->checkStatus (( BlockTreeNode::Status )( BlockTreeNode::STATUS_NEW | BlockTreeNode::STATUS_MISSING ))) {
 
+        set < shared_ptr < RemoteMiner >> remoteMiners;
         set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = miner.mOnlineMiners.begin ();
         for ( ; remoteMinerIt != miner.mOnlineMiners.end (); ++remoteMinerIt ) {
         
             shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+            string minerID = remoteMiner->mMinerID;
             
-            if ( this->mCompletedMiners.find ( remoteMiner->mMinerID ) == this->mCompletedMiners.end ()) {
-                
-                this->mCompletedMiners.insert ( remoteMiner->mMinerID );
-                this->mCurrentSearch = remoteMiner;
-                
-                miner.mMessenger->enqueueBlockRequest ( remoteMiner->mURL, ( **this->mSearchTarget ).getDigest ());
-                return;
-            }
+            if ( this->mCompletedMiners.find ( minerID ) != this->mCompletedMiners.end ()) continue;
+            if ( this->mActiveMiners.find ( minerID ) != this->mActiveMiners.end ()) continue;
+            
+            remoteMiners.insert ( remoteMiner );
         }
-        miner.mBlockTree.mark ( this->mSearchTarget, BlockTreeNode::STATUS_MISSING );
+                
+        size_t sampleSize = ( SEARCH_SIZE - this->mActiveMiners.size ());
+        
+        for ( size_t i = 0; (( i < sampleSize ) && ( remoteMiners.size () > 0 )); ++i ) {
+        
+            remoteMinerIt = remoteMiners.begin ();
+            advance ( remoteMinerIt, ( long )( UnsecureRandom::get ().random ( 0, remoteMiners.size () - 1 )));
+            remoteMiners.erase ( remoteMinerIt );
+            
+            shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+            this->mActiveMiners.insert ( remoteMiner->mMinerID );
+            miner.mMessenger->enqueueBlockRequest (
+                remoteMiner->mURL,
+                ( **this->mSearchTarget ).getDigest (),
+                ( **this->mSearchTarget ).getHeight (),
+                Format::write ( "%s:%s", miner.mMinerID.c_str (), this->mSearchTarget->writeCharmTag ().c_str ())
+            );
+        }
+        
+        if ( this->mActiveMiners.size () == 0 ) {
+            miner.mBlockTree.mark ( this->mSearchTarget, BlockTreeNode::STATUS_MISSING );
+            return false;
+        }
     }
+    return true;
 }
 
 //----------------------------------------------------------------//
 void BlockSearch::step ( shared_ptr < RemoteMiner > remoteMiner ) {
 
-    assert ( this->mCurrentSearch == remoteMiner );
-    this->mCurrentSearch = NULL;
+    string minerID = remoteMiner->mMinerID;
+    assert ( this->mActiveMiners.find ( minerID ) != this->mActiveMiners.cend ());
+    this->mCompletedMiners.insert ( minerID );
+    this->mActiveMiners.erase ( minerID );
 }
 
 //================================================================//
@@ -126,8 +149,9 @@ double Miner::checkConsensus ( BlockTreeNode::ConstPtr tag ) const {
     set < shared_ptr < RemoteMiner >>::const_iterator minerIt = this->mOnlineMiners.cbegin ();
     for ( ; minerIt != this->mOnlineMiners.cend (); ++minerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *minerIt;
-        if ( !remoteMiner->mImproved ) continue;
-        if ( tag->isAncestorOf ( remoteMiner->mImproved )) count += 1;
+        if ( remoteMiner->mImproved && tag->isAncestorOf ( remoteMiner->mImproved )) {
+            count += 1;
+        }
         current += 1;
     }
     return ( count / current );
@@ -232,7 +256,7 @@ void Miner::extend ( time_t now ) {
     
     BlockTreeNode::ConstPtr parent = provisional->getParent ();
     if ( !( parent && parent->isComplete ())) return;
-    if ( this->checkConsensus ( parent ) < 0.5 ) return;
+    if ( this->checkConsensus ( parent ) <= 0.5 ) return;
 
     assert ( this->mWorkingLedgerTag == parent );
     assert ( this->mPermanentLedgerTag != provisional );
@@ -243,7 +267,7 @@ void Miner::extend ( time_t now ) {
         
         assert ( block->getCharm () == ( **provisional ).getCharm ());
         
-        this->mBestProvisional = parent;
+//        this->mBestProvisional = parent;
         this->pushBlock ( block );
         this->scheduleReport ();
     }
@@ -313,12 +337,15 @@ BlockTreeNode::ConstPtr Miner::improveBranch ( BlockTreeNode::ConstPtr tail, tim
     AccountODBM accountODBM ( *this->mWorkingLedger, this->mMinerID );
     if ( !accountODBM.isMiner ()) return tail;
 
-    // we *are* authorized to mine, so find the height common root of the incoming branch and the working ledger branch. if the
-    // root is earlier than the height at which we became a miner, then we can't know if we're a miner in the incoming branch.
+    // height at which we became a miner (according to current working ledger).
+    u64 minerHeight = accountODBM.mMinerHeight.get ();
+
+    // we *are* authorized to mine, so find the height of the common root of the incoming branch and the working ledger branch.
+    // if then root is earlier than the height at which we became a miner, then we can't know if we're a miner in the incoming branch.
     // rather than risk mining an invalid block, we'll leave the branch unaltered.
     
     BlockTreeRoot root = BlockTreeNode::findRoot ( this->mWorkingLedgerTag, tail );
-    if (( **root.mRoot ).getHeight () < accountODBM.mMinerHeight.get ()) return tail;
+    if (( **root.mRoot ).getHeight () < minerHeight ) return tail;
     
     // at this stage, we're allowed to mine and we know that we're authorized on this branch. so see if we can improve
     // the branch. we can only improve it if we find a place were we can legally append (or replace) a block with a
@@ -356,6 +383,9 @@ BlockTreeNode::ConstPtr Miner::improveBranch ( BlockTreeNode::ConstPtr tail, tim
         
         // don't replace our own block; that would be silly.
         if ( parentHeader.getMinerID () == this->mMinerID ) break;
+        
+        // don't replace the block in which we became a miner.
+        if (( **parent ).getHeight () < minerHeight ) break;
         
         child = parent;
         parent = parent->getParent ();
@@ -513,15 +543,15 @@ void Miner::pruneTransactions () {
 //----------------------------------------------------------------//
 void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
+    this->mWorkingLedger->revert ( block->getHeight ());
+
     bool result = this->mWorkingLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
     BlockTreeNode::ConstPtr node = this->mBlockTree.affirmBlock ( block );
     assert ( node );
     
-    if ( this->mWorkingLedgerTag == this->mBestProvisional ) {
-        this->mBestProvisional = node;
-    }
+    this->mBestProvisional = node;
     this->mWorkingLedgerTag = node;
 }
 
@@ -763,8 +793,7 @@ void Miner::updateBlockSearches () {
         map < string, BlockSearch >::iterator cursor = blockSearchIt++;
     
         BlockSearch& blockSearch = cursor->second;
-        blockSearch.step ( *this );
-        if ( !blockSearch.mCurrentSearch ) {
+        if ( !blockSearch.step ( *this )) {
             this->mBlockSearches.erase ( cursor );
         }
     }
@@ -793,9 +822,12 @@ void Miner::updatePermanentTag () {
     assert ( this->mWorkingLedger );
 
     // start with the current best provisional branch and walk back to a point where general consensus (among responding
-    // miners) is greater than quorum (right now hardcoded at 60%) and/or where we hit the root (or the current permanent tag).
+    // miners) is greater than quorum (right now hardcoded at 100%) and/or where we hit the root (or the current permanent tag).
     BlockTreeNode::ConstPtr tag = this->mBestProvisional;
-    while ( tag->getParent () && (( this->checkConsensus ( tag ) < 0.6 ) || ( !tag->getBlock ()))) tag = tag->getParent ();
+    while (( this->checkConsensus ( tag ) <= 0.5 ) || ( !tag->getBlock ())) {
+        tag = tag->getParent ();
+        if ( !tag ) return;
+    }
     
     assert ( tag );
     assert ( tag->getBlock ());
@@ -805,17 +837,17 @@ void Miner::updatePermanentTag () {
     
         this->mPermanentLedgerTag = tag;
         this->mPermanentLedger = *this->mWorkingLedger;
-        this->mPermanentLedger.revert (( **this->mPermanentLedgerTag ).getHeight ());
+        this->mPermanentLedger.reset (( **this->mPermanentLedgerTag ).getHeight () + 1 );
         
-        this->mBlockTree.setRoot ( this->mPermanentLedgerTag );
+//        this->mBlockTree.setRoot ( this->mPermanentLedgerTag );
         
         this->saveChain ();
         
         set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
         for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
-        
+
             shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-            
+
             if ( remoteMiner->mTag && remoteMiner->mTag->isRefused ()) {
                 remoteMiner->reset ();
             }
@@ -854,9 +886,9 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
 
     this->scheduleReport ();
 
-    const MiningMessengerRequest& request = response.mRequest;
-    string url = response.mRequest.mMinerURL;
-    MiningMessengerResponse::Status status = response.mStatus;
+    const MiningMessengerRequest& request   = response.mRequest;
+    string url                              = response.mRequest.mMinerURL;
+    MiningMessengerResponse::Status status  = response.mStatus;
     
     // TODO: these could be set deliberately as an attack; fix by sending up a nonce
     if ( url == this->mURL ) return;

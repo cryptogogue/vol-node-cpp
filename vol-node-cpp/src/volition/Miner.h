@@ -28,14 +28,16 @@ class Miner;
 class BlockSearch {
 protected:
 
+    static const size_t SEARCH_SIZE = 7;
+
     friend class Miner;
 
     BlockTreeNode::ConstPtr         mSearchTarget;
+    set < string >                  mActiveMiners;
     set < string >                  mCompletedMiners;
-    shared_ptr < RemoteMiner >      mCurrentSearch;
     
     //----------------------------------------------------------------//
-    void            step            ( Miner& miner );
+    bool            step            ( Miner& miner );
     void            step            ( shared_ptr < RemoteMiner > remoteMiner );
 };
 

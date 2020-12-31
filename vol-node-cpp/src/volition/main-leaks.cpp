@@ -28,6 +28,9 @@ int main ( int argc, char** argv ) {
     Lognosis::init ( argc, argv );
     LOG_F ( INFO, "Hello from main-leaks.cpp!" );
 
+    Poco::Net::initializeSSL ();
+    Poco::Crypto::OpenSSLInitializer::initialize ();
+
     CryptoKeyPair key;
 
     while ( true ) {

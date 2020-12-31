@@ -51,7 +51,7 @@ protected:
     typedef list < SimMiningNetworkConstraint> ConstraintList;
 
     static const size_t HEADER_BATCH_SIZE       = 4;
-    static const size_t MINER_URL_BATCH_SIZE    = 2;
+    static const size_t MINER_URL_BATCH_SIZE    = 16;
 
     map < string, shared_ptr < SimMiner >>              mMinersByURL;
     map < string, ConstraintList >                      mConstraintLists;
@@ -73,9 +73,9 @@ public:
     void            enqueueRequest                  ( AbstractMiningMessenger* messenger, const MiningMessengerRequest& request );
     void            pushConstraintDropBlock         ( double probability, size_t base, size_t top = 0 );
     void            pushConstraintDropHeader        ( double probability, size_t base, size_t top = 0 );
-                    SimMiningNetwork       ();
-                    ~SimMiningNetwork      ();
     void            setMiners                       ( vector < shared_ptr < Miner >> miners );
+                    SimMiningNetwork                ();
+                    ~SimMiningNetwork               ();
     void            updateAndDispatch               ();
 };
 

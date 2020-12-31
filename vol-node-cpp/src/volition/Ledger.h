@@ -179,6 +179,11 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_blockHeightByHash ( string hash ) {
+        return Format::write ( "blockHeightByHash.%s", hash.c_str ());
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_identity () {
         return "identity";
     }
@@ -235,6 +240,7 @@ public:
     void                                distribute                      ( u64 amount );
     shared_ptr < const Block >          getBlock                        () const;
     shared_ptr < const Block >          getBlock                        ( u64 height ) const;
+    shared_ptr < const Block >          getBlock                        ( string hash ) const;
     time_t                              getBlockDelayInSeconds          () const;
     u64                                 getBlockSizeInPoints            () const;
     Entropy                             getEntropy                      () const;

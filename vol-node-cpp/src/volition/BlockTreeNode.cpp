@@ -25,7 +25,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getFullLength () const {
 
-    return this->mHead ? (( **this->mTop ).getHeight () - ( **this->mHead ).getHeight ()) : 0;
+    return ( **this->mTop ).getHeight () - ( **this->mHead ).getHeight ();
 }
 
 //----------------------------------------------------------------//
@@ -38,7 +38,7 @@ size_t BlockTreeSegment::getRewriteDefeatCount () const {
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getSegLength () const {
 
-    return this->mHead ? (( **this->mTail ).getHeight () - ( **this->mHead ).getHeight ()) : 0;
+    return ( **this->mTail ).getHeight () - ( **this->mHead ).getHeight ();
 }
 
 //================================================================//
@@ -176,14 +176,17 @@ BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0
 
         size_t height = height0 < height1 ? height0 : height1;
         
-        while ( height < node0->mHeader->getHeight ()) {
+        while ( node0->mParent && ( height < node0->mHeader->getHeight ())) {
             node0 = node0->mParent;
         }
         
-        while ( height < node1->mHeader->getHeight ()) {
+        while ( node1->mParent && ( height < node1->mHeader->getHeight ())) {
             node1 = node1->mParent;
         }
-        
+
+        seg0.mHead = node0;
+        seg1.mHead = node1;
+
         seg0.mTail = node0;
         seg1.mTail = node1;
 
@@ -198,14 +201,8 @@ BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0
         
         assert ( node0 && node1 );
         
-        if ( seg0.mHead ) {
-            root.mSeg0 = seg0;
-        }
-        
-        if ( seg1.mHead ) {
-            root.mSeg1 = seg1;
-        }
-        
+        root.mSeg0 = seg0;
+        root.mSeg1 = seg1;
         root.mRoot = node0;
         
         assert ( root.mSeg0.getSegLength () == root.mSeg1.getSegLength ());
@@ -305,10 +302,6 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
             
             case META_REFUSED:
                 status = "#";
-                break;
-            
-            case META_ROOT:
-                status = "-";
                 break;
             
             default:
@@ -450,7 +443,7 @@ string BlockTreeNode::writeBranch () const {
 //----------------------------------------------------------------//
 string BlockTreeNode::writeCharmTag () const {
 
-    return this->mHeader ? this->mHeader->getCharm ().toHex ().substr ( 0, 6 ) : "";
+    return this->mHeader ? this->mHeader->getCharmTag () : "";
 }
 
 } // namespace Volition

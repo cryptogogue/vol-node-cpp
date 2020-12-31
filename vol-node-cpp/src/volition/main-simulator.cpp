@@ -19,7 +19,7 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
-#define THE_SCENARO SimpleScenario
+#define THE_SCENARO MixedScenario
 
 //================================================================//
 // MinimalScenario
@@ -93,19 +93,20 @@ protected:
                 );
                 break;
             
-            case 4:
-            
+            case 2:
+
                 // 9092 and 9093 wake up
                 simulator.setActive ( 2, 4, true );
-                simulator.setActive ( 1, 2, true );
+                simulator.getSimMiner ( 2 )->affirmRemoteMiner ( simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 3 )->affirmRemoteMiner ( simulator.getSimMiner ( 1 )->getURL ());
                 break;
-            
-            case 8:
-            
+
+            case 4:
+
                 // 9090 goes away
                 simulator.setActive ( 0, 1, false );
-            
-            case 12:
+
+            case 6:
 
                 // add 9092, 9093 as miners
                 simulator.getSimMiner ( 1 )->pushTransaction (
@@ -125,20 +126,20 @@ protected:
                 );
                 break;
 
-            case 16:
+            case 8:
 
                 // wake up 9094 - 9097
                 simulator.setActive ( 4, 8, true );
 
-                simulator.getSimMiner ( 4 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
-                simulator.getSimMiner ( 5 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
-                simulator.getSimMiner ( 6 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
-                simulator.getSimMiner ( 7 )->affirmRemoteMiner (  simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 4 )->affirmRemoteMiner ( simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 5 )->affirmRemoteMiner ( simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 6 )->affirmRemoteMiner ( simulator.getSimMiner ( 1 )->getURL ());
+                simulator.getSimMiner ( 7 )->affirmRemoteMiner ( simulator.getSimMiner ( 1 )->getURL ());
 
                 break;
-            
-            case 24:
-            
+
+            case 10:
+
                 // add 9094 - 9097 as miners
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
@@ -147,7 +148,7 @@ protected:
                         "9094"
                     )
                 );
-                
+
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 5 )),
@@ -155,7 +156,7 @@ protected:
                         "9095"
                     )
                 );
-                
+
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 6 )),
@@ -163,7 +164,7 @@ protected:
                         "9096"
                     )
                 );
-                
+
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 7 )),
@@ -171,7 +172,7 @@ protected:
                         "9097"
                     )
                 );
-                
+
                 break;
         }
     }

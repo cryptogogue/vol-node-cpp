@@ -77,8 +77,13 @@ void RemoteMiner::updateHeaders ( BlockTree& blockTree ) {
                     break;
                 
                 case BlockTree::MISSING_PARENT:
-                    if ( accepted == 0 ) break;
-                    // FALL THROUGH ->
+                    if ( accepted == 0 ) {
+                        // if there's anything left in the queue, back up and get an earlier batch of blocks.
+                        this->mHeight = this->mHeaderQueue.begin ()->second->getHeight ();
+                        this->mForward = false;
+                    }
+                    this->reset ();
+                    return;
                 
                 case BlockTree::REFUSED:
                 case BlockTree::TOO_SOON:
@@ -88,12 +93,7 @@ void RemoteMiner::updateHeaders ( BlockTree& blockTree ) {
         }
     }
     
-    if ( this->mHeaderQueue.size ()) {
-        // if there's anything left in the queue, back up and get an earlier batch of blocks.
-        this->mHeight = this->mHeaderQueue.begin ()->second->getHeight ();
-        this->mForward = false;
-    }
-    else if ( this->mTag ) {
+    if ( this->mTag ) {
         // nothing in the queue, so get the next batch of blocks.
         this->mHeight = ( **this->mTag ).getHeight () + 1; // this doesn't really matter.
         this->mForward = true;
