@@ -30,8 +30,8 @@ RemoteMiner::~RemoteMiner () {
 void RemoteMiner::reset () {
 
     this->mHeight           = 0;
-    this->mTag              = NULL;
-    this->mImproved         = NULL;
+    this->mTag              = BlockTreeNodeTag ();
+    this->mImproved         = BlockTreeNodeTag ();
     this->mForward          = true;
     
     this->mHeaderQueue.clear ();
@@ -43,8 +43,8 @@ void RemoteMiner::setError ( string message ) {
     this->mNetworkState     = STATE_ERROR;
     this->mMessage          = message;
     this->mHeight           = 0;
-    this->mTag              = NULL;
-    this->mImproved         = NULL;
+    this->mTag              = BlockTreeNodeTag ();
+    this->mImproved         = BlockTreeNodeTag ();
     this->mForward          = true;
     
     this->mHeaderQueue.clear ();

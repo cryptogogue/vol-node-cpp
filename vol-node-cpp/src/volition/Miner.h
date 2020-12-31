@@ -32,9 +32,9 @@ protected:
 
     friend class Miner;
 
-    BlockTreeNode::ConstPtr         mSearchTarget;
-    set < string >                  mActiveMiners;
-    set < string >                  mCompletedMiners;
+    string              mHash;
+    set < string >      mActiveMiners;
+    set < string >      mCompletedMiners;
 
 public:
 
@@ -174,15 +174,15 @@ protected:
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     
     //----------------------------------------------------------------//
-    void                                affirmBlockSearch           ( BlockTreeNode::ConstPtr node );
-    void                                affirmBranchSearch          ( BlockTreeNode::ConstPtr node );
+    void                                affirmBlockSearch           ( BlockTreeCursor cursor );
+    void                                affirmBranchSearch          ( BlockTreeCursor cursor );
     void                                affirmMessenger             ();
-    double                              checkConsensus              ( BlockTreeNode::ConstPtr tag ) const;
+    double                              checkConsensus              ( BlockTreeCursor tag ) const;
     void                                composeChain                ();
-    void                                composeChainRecurse         ( BlockTreeNode::ConstPtr branch );
+    void                                composeChainRecurse         ( BlockTreeCursor branch );
     void                                discoverMiners              ();
     BlockSearch*                        findBlockSearch             ( const Digest& digest );
-    BlockTreeNode::ConstPtr             improveBranch               ( BlockTreeNodeTag& tag, BlockTreeNode::ConstPtr tail, time_t now );
+    BlockTreeCursor                     improveBranch               ( BlockTreeNodeTag& tag, BlockTreeCursor tail, time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
     void                                report                      () const;
     void                                saveChain                   ();
@@ -208,7 +208,7 @@ public:
         RESUBMIT_EARLIER,
     };
     
-    GET ( BlockTreeNode::ConstPtr,                          BestProvisional,            mBestProvisional )
+    GET ( BlockTreeCursor,                                  BestProvisional,            *mBestProvisional )
     GET ( const BlockTree&,                                 BlockTree,                  mBlockTree )
     GET ( const Ledger&,                                    HighConfidenceLedger,       mPermanentLedger )
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
@@ -216,7 +216,7 @@ public:
     GET ( time_t,                                           StartTime,                  mStartTime )
     GET ( const Signature&,                                 Visage,                     mVisage )
     GET ( const Ledger&,                                    WorkingLedger,              *mWorkingLedger )
-    GET ( BlockTreeNode::ConstPtr,                          WorkingLedgerTag,           mWorkingLedgerTag )
+    GET ( BlockTreeCursor,                                  WorkingLedgerTag,           *mWorkingLedgerTag )
     
     SET ( shared_ptr < AbstractMiningMessenger >,           Messenger,                  mMessenger )
     

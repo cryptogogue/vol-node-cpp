@@ -5,6 +5,7 @@
 #define VOLITION_BLOCKTREENODETAG_H
 
 #include <volition/common.h>
+#include <volition/BlockTreeCursor.h>
 
 namespace Volition {
 
@@ -25,17 +26,15 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    BlockTreeNodeTag&           operator =                          ( const BlockTreeNode* other );
+    BlockTreeNodeTag&           operator =                          ( BlockTreeCursor other );
     BlockTreeNodeTag&           operator =                          ( const BlockTreeNodeTag& other );
     bool                        operator ==                         ( const BlockTreeNodeTag& other ) const;
-    const BlockTreeNode&        operator *                          () const;
-    const BlockTreeNode*        operator ->                         () const;
+    BlockTreeCursor             operator *                          () const;
                                 operator bool                       () const;
-                                operator const BlockTreeNode*       () const;
                                 BlockTreeNodeTag                    ();
                                 BlockTreeNodeTag                    ( BlockTreeNodeTag& other );
                                 ~BlockTreeNodeTag                   ();
-    const BlockTreeNode*        get                                 () const;
+    BlockTreeCursor             get                                 () const;
     void                        setTagName                          ( string tagName );
 };
 

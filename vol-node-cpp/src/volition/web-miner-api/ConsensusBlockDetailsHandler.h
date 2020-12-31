@@ -33,8 +33,8 @@ public:
             ScopedMinerLock scopedLock ( this->mWebMiner );
 
             const BlockTree& blockTree = this->mWebMiner->getBlockTree ();
-            BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( hash );
-            shared_ptr < const Block > block = node ? node->getBlock () : NULL;
+            BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
+            shared_ptr < const Block > block = cursor.getBlock ();
 
             if ( block ) {
                 jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));

@@ -7,11 +7,44 @@
 namespace Volition {
 
 //================================================================//
+// BlockTreeSegment
+//================================================================//
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getFullLength () const {
+
+    return ( **this->mTop ).getHeight () - ( **this->mHead ).getHeight ();
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getRewriteDefeatCount () const {
+
+    time_t window = ( **this->mHead ).getRewriteWindow (); // TODO: account for different rewrite windows in segment
+    return ( size_t )ceil ( difftime (( **this->mTop ).getTime (), ( **this->mHead ).getTime ()) / window );
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getSegLength () const {
+
+    return ( **this->mTail ).getHeight () - ( **this->mHead ).getHeight ();
+}
+
+//================================================================//
+// BlockTreeRoot
+//================================================================//
+
+//----------------------------------------------------------------//
+size_t BlockTreeFork::getSegLength () const {
+
+    return this->mSeg0.getSegLength ();
+}
+
+//================================================================//
 // BlockTree
 //================================================================//
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTree::affirm ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
+BlockTreeCursor BlockTree::affirm ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
 
     string tagName = tag.mTagName;
     assert ( tagName.size ());
@@ -19,7 +52,7 @@ const BlockTreeNode* BlockTree::affirm ( BlockTreeNodeTag& tag, shared_ptr < con
     
     tag.mBlockTree = this;
 
-    if ( !header ) return NULL;
+    if ( !header ) return BlockTreeCursor ();
 
     string hash = header->getDigest ().toHex ();
     if ( block ) {
@@ -36,7 +69,7 @@ const BlockTreeNode* BlockTree::affirm ( BlockTreeNodeTag& tag, shared_ptr < con
         string prevHash = header->getPrevDigest ();
         BlockTreeNode* prevNode = this->findNodeForHash ( prevHash );
 
-        if ( !prevNode && this->mRoot ) return NULL;
+        if ( !prevNode && this->mRoot ) return BlockTreeCursor ();
 
         shared_ptr < BlockTreeNode > shared = make_shared < BlockTreeNode >();
         node = shared.get ();
@@ -63,23 +96,23 @@ const BlockTreeNode* BlockTree::affirm ( BlockTreeNodeTag& tag, shared_ptr < con
     }
     
     this->update ( block );
-    return node;
+    return *node;
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTree::affirmBlock ( BlockTreeNodeTag& tag, shared_ptr < const Block > block ) {
+BlockTreeCursor BlockTree::affirmBlock ( BlockTreeNodeTag& tag, shared_ptr < const Block > block ) {
 
     return this->affirm ( tag, block, block );
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTree::affirmHeader ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header ) {
+BlockTreeCursor BlockTree::affirmHeader ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header ) {
 
     return this->affirm ( tag, header, NULL );
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTree::affirmProvisional ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header ) {
+BlockTreeCursor BlockTree::affirmProvisional ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header ) {
 
     return this->affirm ( tag, header, NULL, true );
 }
@@ -121,7 +154,114 @@ BlockTree::CanAppend BlockTree::checkAppend ( const BlockHeader& header ) const 
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode::Ptr BlockTree::findNodeForHash ( string hash ) {
+int BlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const {
+
+    BlockTreeFork root = this->findFork ( cursor0, cursor1);
+
+    size_t fullLength0  = root.mSeg0.getFullLength ();
+    size_t fullLength1  = root.mSeg1.getFullLength ();
+
+    if ( rewriteMode == BlockTreeCursor::REWRITE_WINDOW ) {
+        
+        size_t segLength = root.getSegLength (); // length of the shorter segment (if different lengths)
+        
+        // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
+        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getRewriteDefeatCount ())) return -1;
+        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getRewriteDefeatCount ())) return 1;
+    }
+
+    int score = 0;
+
+    const BlockTreeNode* node0 = root.mSeg0.mTail;
+    const BlockTreeNode* node1 = root.mSeg1.mTail;
+
+    while ( node0 != node1 ) {
+    
+        score += BlockHeader::compare ( *node0->mHeader, *node1->mHeader );
+        
+        node0 = node0->mParent.get ();
+        node1 = node1->mParent.get ();
+    }
+
+    if (( score == 0 ) && ( fullLength0 != fullLength1 )) {
+        return ( fullLength0 < fullLength1 ) ? 1 : -1;
+    }
+    return score < 0 ? -1 : score > 0 ? 1 : 0;
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTree::findCursorForHash ( string hash ) const {
+
+    map < string, BlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );
+    if ( nodeIt != this->mNodes.cend ()) return *nodeIt->second;
+    return BlockTreeCursor ();
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTree::findCursorForTagName ( string tagName ) const {
+
+    map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tagName );
+    if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
+    return BlockTreeCursor ();
+}
+
+//----------------------------------------------------------------//
+BlockTreeFork BlockTree::findFork ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
+
+    const BlockTreeNode* node0 = this->findNodeForHash ( cursor0 );
+    const BlockTreeNode* node1 = this->findNodeForHash ( cursor1 );
+
+    BlockTreeFork root;
+
+    if ( node0->mTree && ( node0->mTree == node1->mTree )) {
+    
+        BlockTreeSegment seg0;
+        BlockTreeSegment seg1;
+    
+        seg0.mTop = node0;
+        seg1.mTop = node1;
+    
+        size_t height0 = node0->mHeader->getHeight ();
+        size_t height1 = node1->mHeader->getHeight ();
+
+        size_t height = height0 < height1 ? height0 : height1;
+        
+        while ( node0->mParent && ( height < node0->mHeader->getHeight ())) {
+            node0 = node0->mParent.get ();
+        }
+        
+        while ( node1->mParent && ( height < node1->mHeader->getHeight ())) {
+            node1 = node1->mParent.get ();
+        }
+
+        seg0.mHead = node0;
+        seg1.mHead = node1;
+
+        seg0.mTail = node0;
+        seg1.mTail = node1;
+
+        while ( node0 != node1 ) {
+        
+            seg0.mHead = node0;
+            seg1.mHead = node1;
+            
+            node0 = node0->mParent.get ();
+            node1 = node1->mParent.get ();
+        }
+        
+        assert ( node0 && node1 );
+        
+        root.mSeg0 = seg0;
+        root.mSeg1 = seg1;
+        root.mRoot = node0;
+        
+        assert ( root.mSeg0.getSegLength () == root.mSeg1.getSegLength ());
+    }
+    return root;
+}
+
+//----------------------------------------------------------------//
+BlockTreeNode* BlockTree::findNodeForHash ( string hash ) {
 
     map < string, BlockTreeNode* >::iterator nodeIt = this->mNodes.find ( hash );
     if ( nodeIt != this->mNodes.end ()) return nodeIt->second;
@@ -129,7 +269,7 @@ BlockTreeNode::Ptr BlockTree::findNodeForHash ( string hash ) {
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode::ConstPtr BlockTree::findNodeForHash ( string hash ) const {
+const BlockTreeNode* BlockTree::findNodeForHash ( string hash ) const {
 
     map < string, BlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );
     if ( nodeIt != this->mNodes.cend ()) return nodeIt->second;
@@ -137,11 +277,22 @@ BlockTreeNode::ConstPtr BlockTree::findNodeForHash ( string hash ) const {
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTree::findNodeForTagName ( string tagName ) const {
+BlockTreeCursor BlockTree::findRoot ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
-    map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tagName );
-    if ( nodeIt != this->mTags.cend ()) return nodeIt->second.get ();
-    return NULL;
+    BlockTreeFork fork = this->findFork ( cursor0, cursor1 );
+    return *fork.mRoot;
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTree::getParent ( const BlockTreeCursor& cursor ) const {
+
+    string hash = cursor;
+    const BlockTreeNode* node = this->findNodeForHash ( hash );
+
+    if ( node && node->mParent ) {
+        return *node->mParent;
+    }
+    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
@@ -179,18 +330,17 @@ void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTree
 }
 
 //----------------------------------------------------------------//
-void BlockTree::mark ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status status ) {
+void BlockTree::mark ( const BlockTreeCursor& cursor, BlockTreeNode::Status status ) {
 
-    if ( !node ) return;
-    
-    BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getDigest ());
-    if ( cursor ) {
-        cursor->mark ( status );
+    BlockTreeNode* node = this->findNodeForHash ( cursor );
+
+    if ( node ) {
+        node->mark ( status );
     }
 }
 
 //----------------------------------------------------------------//
-void BlockTree::tag ( string tagName, string otherTagName ) {
+BlockTreeCursor BlockTree::tag ( string tagName, string otherTagName ) {
 
     assert ( tagName.size ());
     assert ( otherTagName.size ());
@@ -198,11 +348,13 @@ void BlockTree::tag ( string tagName, string otherTagName ) {
     map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTagName );
     if ( nodeIt != this->mTags.cend ()) {
         this->mTags [ tagName ] = nodeIt->second;
+        return *nodeIt->second;
     }
+    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTree::tag ( BlockTreeNodeTag& tag, BlockTreeNode::ConstPtr node ) {
+BlockTreeCursor BlockTree::tag ( BlockTreeNodeTag& tag, const BlockTreeCursor& cursor ) {
 
     string tagName = tag.mTagName;
     assert ( tagName.size ());
@@ -210,21 +362,21 @@ const BlockTreeNode* BlockTree::tag ( BlockTreeNodeTag& tag, BlockTreeNode::Cons
     
     tag.mBlockTree = this;
     
-    BlockTreeNode::Ptr cursor = this->findNodeForHash (( **node ).getDigest ());
-    assert ( cursor );
-    this->mTags [ tagName ] = cursor->shared_from_this ();
+    BlockTreeNode::Ptr node = this->findNodeForHash ( cursor );
+    assert ( node );
+    this->mTags [ tagName ] = node->shared_from_this ();
     
-    return node;
+    return *node;
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode::ConstPtr BlockTree::update ( shared_ptr < const Block > block ) {
+BlockTreeCursor BlockTree::update ( shared_ptr < const Block > block ) {
 
-    if ( !block ) return NULL;
+    if ( !block ) return BlockTreeCursor ();
     string hash = block->getDigest ();
 
     BlockTreeNode::Ptr node = this->findNodeForHash ( hash );
-    if ( !node ) return NULL;
+    if ( !node ) return BlockTreeCursor ();
     
     assert ( node->mHeader );
     assert ( node->mHeader->getDigest ().toHex () == hash );
@@ -232,7 +384,7 @@ BlockTreeNode::ConstPtr BlockTree::update ( shared_ptr < const Block > block ) {
     node->mBlock = block;
     node->markComplete ();
     
-    return node;
+    return *node;
 }
 
 } // namespace Volition

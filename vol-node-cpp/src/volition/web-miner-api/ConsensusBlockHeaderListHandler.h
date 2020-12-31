@@ -31,18 +31,18 @@ public:
         try {
         
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            BlockTreeNode::ConstPtr node = this->mWebMiner->getWorkingLedgerTag ();
+            BlockTreeCursor cursor = this->mWebMiner->getWorkingLedgerTag ();
                         
-            size_t top = this->optQuery ( "height", ( **node ).getHeight ()) + 1; // this handles "forward" and "backward" cases alike
+            size_t top = this->optQuery ( "height", ( *cursor ).getHeight ()) + 1; // this handles "forward" and "backward" cases alike
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
                         
             SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
-            while ( node && ( base <= ( **node ).getHeight ())) {
-                if (( **node ).getHeight () < top ) {
-                    shared_ptr < const BlockHeader > header = make_shared < BlockHeader >( *node->getBlockHeader ());
+            while ( cursor && ( base <= ( *cursor ).getHeight ())) {
+                if (( *cursor ).getHeight () < top ) {
+                    shared_ptr < const BlockHeader > header = make_shared < BlockHeader >( *cursor.getBlockHeader ());
                     headers.push_front ( header );
                 }
-                node = node->getParent ();
+                cursor = cursor.getParent ();
             }
             
             jsonOut.set ( "headers", ToJSONSerializer::toJSON ( headers ));

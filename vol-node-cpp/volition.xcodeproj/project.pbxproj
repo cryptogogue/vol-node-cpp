@@ -76,6 +76,8 @@
 		CD19DFB2259C19760007ACF0 /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */; };
 		CD19E004259E20A60007ACF0 /* BlockTreeNodeTag.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E002259E20A60007ACF0 /* BlockTreeNodeTag.h */; };
 		CD19E019259E23680007ACF0 /* BlockTreeNodeTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E018259E23680007ACF0 /* BlockTreeNodeTag.cpp */; };
+		CD19E025259E4FAA0007ACF0 /* BlockTreeCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E023259E4FAA0007ACF0 /* BlockTreeCursor.cpp */; };
+		CD19E026259E4FAA0007ACF0 /* BlockTreeCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E024259E4FAA0007ACF0 /* BlockTreeCursor.h */; };
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
@@ -873,6 +875,8 @@
 		CD19DFD9259E139D0007ACF0 /* AbstractBlockTreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractBlockTreeNode.h; path = src/volition/AbstractBlockTreeNode.h; sourceTree = "<group>"; };
 		CD19E002259E20A60007ACF0 /* BlockTreeNodeTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeNodeTag.h; path = src/volition/BlockTreeNodeTag.h; sourceTree = "<group>"; };
 		CD19E018259E23680007ACF0 /* BlockTreeNodeTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockTreeNodeTag.cpp; path = src/volition/BlockTreeNodeTag.cpp; sourceTree = "<group>"; };
+		CD19E023259E4FAA0007ACF0 /* BlockTreeCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockTreeCursor.cpp; path = src/volition/BlockTreeCursor.cpp; sourceTree = "<group>"; };
+		CD19E024259E4FAA0007ACF0 /* BlockTreeCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeCursor.h; path = src/volition/BlockTreeCursor.h; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
@@ -1685,6 +1689,8 @@
 				CD9E7BA524FF69D00065C5FC /* BlockHeader.h */,
 				CD9E7B9F24FF67C30065C5FC /* BlockTree.cpp */,
 				CD9E7BA024FF67C30065C5FC /* BlockTree.h */,
+				CD19E023259E4FAA0007ACF0 /* BlockTreeCursor.cpp */,
+				CD19E024259E4FAA0007ACF0 /* BlockTreeCursor.h */,
 				CD19DF54259B3F190007ACF0 /* BlockTreeNode.cpp */,
 				CD19DF55259B3F190007ACF0 /* BlockTreeNode.h */,
 				CD19E018259E23680007ACF0 /* BlockTreeNodeTag.cpp */,
@@ -2042,6 +2048,7 @@
 				CDDA74E32556BA3A007AAA07 /* SetFeeSchedule.h in Headers */,
 				CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */,
 				CD7751D2252A790400A53765 /* SimMiner.h in Headers */,
+				CD19E026259E4FAA0007ACF0 /* BlockTreeCursor.h in Headers */,
 				CD20FF86253D870800DEB809 /* ControlCommands.h in Headers */,
 				CD9E7BB82505A8550065C5FC /* MinerLaunchTests.h in Headers */,
 				CDD36D012162A415004FC222 /* Format.h in Headers */,
@@ -2757,6 +2764,7 @@
 				CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */,
 				CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */,
+				CD19E025259E4FAA0007ACF0 /* BlockTreeCursor.cpp in Sources */,
 				CDA1574023FAA92300DFACCF /* Munge.cpp in Sources */,
 				CD4E819D210593BD007DA585 /* MinerInfo.cpp in Sources */,
 				CD4E8190210593A4007DA585 /* AbstractCryptoKey.cpp in Sources */,

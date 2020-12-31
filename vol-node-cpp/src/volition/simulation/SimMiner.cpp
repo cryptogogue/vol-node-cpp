@@ -43,10 +43,10 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
     
     assert ( oldBlock );
     
-    BlockTreeNode::ConstPtr prevNode = (( const BlockTree& )this->mBlockTree ).findNodeForHash ( oldBlock->getPrevDigest ());
+    BlockTreeCursor prevNode = (( const BlockTree& )this->mBlockTree ).findCursorForHash ( oldBlock->getPrevDigest ());
     assert ( prevNode );
     
-    shared_ptr < const Block > prevBlock = prevNode->getBlock ();
+    shared_ptr < const Block > prevBlock = prevNode.getBlock ();
     assert ( prevBlock );
     
     shared_ptr < Block > block = make_shared < Block >(
@@ -72,7 +72,7 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
 void SimMiner::rewindChain ( size_t height ) {
 
     while (( **this->mBestProvisional ).getHeight () > height ) {
-        this->mBestProvisional = this->mBestProvisional->getParent ();
+        this->mBestProvisional = ( *this->mBestProvisional ).getParent ();
     }
     this->composeChain ();
 }
@@ -86,18 +86,18 @@ void SimMiner::setActive ( bool active ) {
 //----------------------------------------------------------------//
 void SimMiner::setCharm ( size_t height, string charmHex ) {
 
-    BlockTreeNode::ConstPtr cursor = this->mBestProvisional;
+    BlockTreeCursor cursor = *this->mBestProvisional;
     while ( cursor ) {
-        size_t cursorHeight = ( **cursor ).getHeight ();
+        size_t cursorHeight = ( *cursor ).getHeight ();
         if ( cursorHeight == height ) {
 
-            shared_ptr < Block > block = this->replaceBlock ( cursor->getBlock (), charmHex );
+            shared_ptr < Block > block = this->replaceBlock ( cursor.getBlock (), charmHex );
             this->mBlockTree.affirmBlock ( this->mBestProvisional, block );
             this->composeChain ();
             return;
         }
         assert ( cursorHeight > height );
-        cursor = cursor->getParent ();
+        cursor = cursor.getParent ();
     }
 }
 
@@ -111,9 +111,9 @@ void SimMiner::scrambleRemotes () {
         size_t height = ( **remoteMiner->mTag ).getHeight ();
         height = ( size_t )floor ( height * UnsecureRandom::get ().random ());
         
-        BlockTreeNode::ConstPtr cursor = remoteMiner->mTag;
-        while (( **cursor ).getHeight () > height ) {
-            cursor = cursor->getParent ();
+        BlockTreeCursor cursor = *remoteMiner->mTag;
+        while (( *cursor ).getHeight () > height ) {
+            cursor = cursor.getParent ();
         }
         
         remoteMiner->mTag = cursor;

@@ -1,0 +1,231 @@
+// Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
+// http://cryptogogue.com
+
+#include <volition/Block.h>
+#include <volition/BlockTree.h>
+#include <volition/BlockTreeCursor.h>
+
+// To compare chains:
+// 1. Find the common root.
+// 2. Get the interval between the timestamp of the end of the longest branch and its first block (excluding the root).
+//      a. From the interval, divide by the lookback window to calculate COMPARE_COUNT.
+// 3. From the common root, up to the COMPARE_COUNT, compare each block and tally the score for each chain.
+//      a. +1 for the winner, -1 to the loser; 0 if tied.
+// 4. Select the winner.
+//      a. The chain with the highest score wins.
+//      b. If chains are tied and the same length, pick the chain with the best ending block.
+//      c. If chains are tied and different length, extend the shorter chain by one as a tie-breaker.
+
+namespace Volition {
+
+//================================================================//
+// BlockTreeCursor
+//================================================================//
+
+//----------------------------------------------------------------//
+BlockTreeCursor::BlockTreeCursor () :
+    mTree ( NULL ),
+    mStatus ( STATUS_INVALID ),
+    mMeta ( META_NONE ) {
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor::~BlockTreeCursor () {
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::checkStatus ( Status status ) const {
+
+    return ( this->mStatus & status );
+}
+
+//----------------------------------------------------------------//
+int BlockTreeCursor::compare ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, RewriteMode rewriteMode ) {
+
+    assert ( node0.mTree == node1.mTree );
+    assert ( node0.mTree );
+    
+    return node0.mTree->compare ( node0, node1, rewriteMode );
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTreeCursor::findRoot ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 ) {
+
+    assert ( node0.mTree == node1.mTree );
+    assert ( node0.mTree );
+
+    return node0.mTree->findRoot ( node0, node1 );
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const Block > BlockTreeCursor::getBlock () const {
+
+    return this->mBlock;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const BlockHeader > BlockTreeCursor::getBlockHeader () const {
+
+    return this->mHeader;
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTreeCursor::getParent () const {
+
+    return this->mTree ? this->mTree->getParent ( *this ) : BlockTreeCursor ();
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor::Status BlockTreeCursor::getStatus () const {
+    
+    return this->mStatus;
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::hasParent () const {
+
+    return this->mTree ? ( bool )( this->mTree->getParent ( *this )) : false;
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::isAncestorOf ( BlockTreeCursor tail ) const {
+
+    assert ( this->mHeader );
+    assert ( tail.mHeader );
+    
+    while (( *tail ).getHeight () > ( **this ).getHeight ()) {
+        tail = tail.getParent ();
+    }
+    return ( **this == *tail );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::isComplete () const {
+
+    return ( this->mStatus & STATUS_COMPLETE );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::isInvalid () const {
+
+    return ( this->mStatus & STATUS_INVALID );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::isMissing () const {
+
+    return ( this->mStatus & STATUS_MISSING );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::isMissingOrInvalid () const {
+
+    return ( this->mStatus & ( STATUS_MISSING | STATUS_INVALID ));
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::isNew () const {
+
+    return ( this->mStatus & STATUS_NEW );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::isRefused () const {
+
+    return ( this->mMeta == META_REFUSED );
+}
+
+//----------------------------------------------------------------//
+void BlockTreeCursor::logBranchRecurse ( string& str ) const {
+
+    BlockTreeCursor parent = this->getParent ();
+    if ( parent ) {
+        parent.logBranchRecurse ( str );
+    }
+    const BlockHeader& header = *this->mHeader;
+    
+    cc8* status = "";
+    
+    if ( this->mMeta != META_NONE ) {
+    
+        switch ( this->mMeta ) {
+            
+            case META_PROVISIONAL:
+                status = "*";
+                break;
+            
+            case META_REFUSED:
+                status = "#";
+                break;
+            
+            default:
+                break;
+        }
+    }
+    else {
+    
+        switch ( this->mStatus ) {
+            
+            case STATUS_NEW:
+                status = "N";
+                break;
+                
+            case STATUS_COMPLETE:
+                status = "C";
+                break;
+            
+            case STATUS_MISSING:
+                status = "?";
+                break;
+                
+            case STATUS_INVALID:
+                status = "X";
+                break;
+        }
+    }
+    
+    string charm = ( **this ).getCharmTag ();
+    cc8* format = this->mBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
+    
+    size_t height = header.getHeight ();
+    Format::write ( str, format, parent ? ", " : "", ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTreeCursor::trim ( Status status ) const {
+
+    BlockTreeCursor cursor = *this;
+
+    while ( cursor && ( cursor.mStatus & status )) {
+        cursor = cursor.getParent ();
+    }
+    return cursor;
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTreeCursor::trimInvalid () const {
+
+    return this->trim ( STATUS_INVALID );
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTreeCursor::trimMissing () const {
+
+    return this->trim ( STATUS_MISSING );
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor BlockTreeCursor::trimMissingOrInvalid () const {
+
+    return this->trim (( Status )( STATUS_MISSING | STATUS_INVALID ));
+}
+
+//----------------------------------------------------------------//
+string BlockTreeCursor::writeBranch () const {
+
+    string str;
+    this->logBranchRecurse ( str );
+    return str;
+}
+
+} // namespace Volition

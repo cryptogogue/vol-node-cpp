@@ -7,10 +7,41 @@
 #include <volition/common.h>
 #include <volition/Accessors.h>
 #include <volition/Block.h>
+#include <volition/BlockTreeCursor.h>
 #include <volition/BlockTreeNode.h>
 #include <volition/BlockTreeNodeTag.h>
 
 namespace Volition {
+
+//================================================================//
+// BlockTreeSegment
+//================================================================//
+class BlockTreeSegment {
+public:
+
+    const BlockTreeNode*    mHead;
+    const BlockTreeNode*    mTail;
+    const BlockTreeNode*    mTop;
+    
+    //----------------------------------------------------------------//
+    size_t          getFullLength           () const;
+    size_t          getRewriteDefeatCount   () const;
+    size_t          getSegLength            () const;
+};
+
+//================================================================//
+// BlockTreeRoot
+//================================================================//
+class BlockTreeFork {
+public:
+
+    const BlockTreeNode*    mRoot;
+    BlockTreeSegment        mSeg0;
+    BlockTreeSegment        mSeg1;
+    
+    //----------------------------------------------------------------//
+    size_t          getSegLength            () const;
+};
 
 //================================================================//
 // BlockTree
@@ -28,6 +59,7 @@ public:
 
 private:
 
+    friend class BlockTreeCursor;
     friend class BlockTreeNode;
     friend class BlockTreeNodeTag;
 
@@ -36,28 +68,33 @@ private:
     map < string, shared_ptr < BlockTreeNode >>     mTags;
 
     //----------------------------------------------------------------//
-    const BlockTreeNode*                affirm                  ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
-    BlockTreeNode::Ptr                  findNodeForHash         ( string hash );
-    const BlockTreeNode*                findNodeForTagName      ( string tagName ) const;
-    void                                logTreeRecurse          ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const;
-    void                                tag                     ( string tagName, string otherTagName );
+    BlockTreeCursor             affirm                  ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
+    int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const;
+    BlockTreeFork               findFork                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
+    BlockTreeCursor             findCursorForTagName    ( string tagName ) const;
+    BlockTreeNode*              findNodeForHash         ( string hash );
+    const BlockTreeNode*        findNodeForHash         ( string hash ) const;
+    BlockTreeCursor             findRoot                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
+    BlockTreeCursor             getParent               ( const BlockTreeCursor& cursor ) const;
+    void                        logTreeRecurse          ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const;
+    BlockTreeCursor             tag                     ( string tagName, string otherTagName );
 
 public:
 
     GET ( BlockTreeNode::ConstPtr, Root, mRoot )
 
     //----------------------------------------------------------------//
-    const BlockTreeNode*                affirmBlock             ( BlockTreeNodeTag& tag, shared_ptr < const Block > block );
-    const BlockTreeNode*                affirmHeader            ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
-    const BlockTreeNode*                affirmProvisional       ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
-                                        BlockTree               ();
-                                        ~BlockTree              ();
-    CanAppend                           checkAppend             ( const BlockHeader& header ) const;
-    BlockTreeNode::ConstPtr             findNodeForHash         ( string hash ) const;
-    void                                logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
-    void                                mark                    ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status status );
-    const BlockTreeNode*                tag                     ( BlockTreeNodeTag& tag, BlockTreeNode::ConstPtr node );
-    BlockTreeNode::ConstPtr             update                  ( shared_ptr < const Block > block );
+    BlockTreeCursor             affirmBlock             ( BlockTreeNodeTag& tag, shared_ptr < const Block > block );
+    BlockTreeCursor             affirmHeader            ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
+    BlockTreeCursor             affirmProvisional       ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
+                                BlockTree               ();
+                                ~BlockTree              ();
+    CanAppend                   checkAppend             ( const BlockHeader& header ) const;
+    BlockTreeCursor             findCursorForHash       ( string hash ) const;
+    void                        logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
+    void                        mark                    ( const BlockTreeCursor& cursor, BlockTreeNode::Status status );
+    BlockTreeCursor             tag                     ( BlockTreeNodeTag& tag, const BlockTreeCursor& cursor );
+    BlockTreeCursor             update                  ( shared_ptr < const Block > block );
 };
 
 } // namespace Volition

@@ -12,12 +12,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTreeNodeTag& BlockTreeNodeTag::operator = ( const BlockTreeNode* other ) {
+BlockTreeNodeTag& BlockTreeNodeTag::operator = ( BlockTreeCursor other ) {
 
     if ( other ) {
-        assert ( other->mTree );
-        assert ( !this->mBlockTree || ( this->mBlockTree == other->mTree ));
-        other->mTree->tag ( *this, other );
+        assert ( other.mTree );
+        assert ( !this->mBlockTree || ( this->mBlockTree == other.mTree ));
+        other.mTree->tag ( *this, other );
     }
     else {
         this->mBlockTree = NULL;
@@ -42,15 +42,7 @@ bool BlockTreeNodeTag::operator == ( const BlockTreeNodeTag& other ) const {
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode& BlockTreeNodeTag::operator * () const {
-
-    const BlockTreeNode* node = this->get ();
-    assert ( node );
-    return *node;
-}
-
-//----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNodeTag::operator -> () const {
+BlockTreeCursor BlockTreeNodeTag::operator * () const {
 
     return this->get ();
 }
@@ -58,13 +50,7 @@ const BlockTreeNode* BlockTreeNodeTag::operator -> () const {
 //----------------------------------------------------------------//
 BlockTreeNodeTag::operator bool () const {
 
-    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findNodeForTagName ( this->mTagName ) != NULL );
-}
-
-//----------------------------------------------------------------//
-BlockTreeNodeTag::operator const BlockTreeNode* () const {
-
-    return this->get ();
+    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTagName ( this->mTagName ));
 }
 
 //----------------------------------------------------------------//
@@ -83,10 +69,9 @@ BlockTreeNodeTag::~BlockTreeNodeTag () {
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNodeTag::get () const {
+BlockTreeCursor BlockTreeNodeTag::get () const {
 
-    const BlockTreeNode* node = this->mBlockTree ? this->mBlockTree->findNodeForTagName ( this->mTagName ) : NULL;
-    return node;
+    return this->mBlockTree ? this->mBlockTree->findCursorForTagName ( this->mTagName ) : BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//

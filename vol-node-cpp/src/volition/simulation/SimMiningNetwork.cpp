@@ -104,9 +104,9 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             shared_ptr < const Block > block = NULL;
             
             const BlockTree& blockTree = miner->getBlockTree ();
-            BlockTreeNode::ConstPtr node = blockTree.findNodeForHash ( hash );
-            if ( node ) {
-                block = node->getBlock ();
+            BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
+            if ( cursor ) {
+                block = cursor.getBlock ();
             }
             
             if ( !block ) {
@@ -132,12 +132,12 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_HEADERS: {
         
-            BlockTreeNode::ConstPtr node = miner->getWorkingLedgerTag ();
+            BlockTreeCursor cursor = miner->getWorkingLedgerTag ();
             
             list < shared_ptr < const BlockHeader >> headers;
-            while ( node && ( headers.size () < HEADER_BATCH_SIZE )) {
-                headers.push_back ( make_shared < BlockHeader >( *node->getBlockHeader ()));
-                node = node->getParent ();
+            while ( cursor && ( headers.size () < HEADER_BATCH_SIZE )) {
+                headers.push_back ( make_shared < BlockHeader >( *cursor ));
+                cursor = cursor.getParent ();
             }
             client->enqueueHeaderResponse ( request, headers );
             break;
@@ -145,15 +145,15 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
             
-            BlockTreeNode::ConstPtr node = miner->getWorkingLedgerTag ();
+            BlockTreeCursor cursor = miner->getWorkingLedgerTag ();
             
             size_t top = request.mHeight;
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
             
             list < shared_ptr < const BlockHeader >> headers;
-            while ( node && ( base <= ( **node ).getHeight ())) {
-                if (( **node ).getHeight () < top ) {
-                    headers.push_back ( make_shared < BlockHeader >( *node->getBlockHeader ()));
+            while ( cursor && ( base <= ( *cursor ).getHeight ())) {
+                if (( *cursor ).getHeight () < top ) {
+                    headers.push_back ( make_shared < BlockHeader >( *cursor ));
                 }
             }
             client->enqueueHeaderResponse ( request, headers );
