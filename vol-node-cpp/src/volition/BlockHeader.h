@@ -61,23 +61,14 @@ public:
     GET_SET ( const Digest&,    Digest,                 mDigest )
     GET_SET ( string,           MinerID,                mMinerID )
     GET_SET ( time_t,           RewriteWindow,          mRewriteWindow )
-    
-    //----------------------------------------------------------------//
-    bool operator == ( const BlockHeader& rhs ) const {
-        return (( this->mHeight == rhs.mHeight ) && ( this->mSignature == rhs.mSignature ));
-    }
-    
-    //----------------------------------------------------------------//
-    bool operator != ( const BlockHeader& rhs ) const {
-        return !( *this == rhs );
-    }
 
     //----------------------------------------------------------------//
-    static int          compare                             ( const BlockHeader& block0, const BlockHeader& block1 );
-    static int          compare                             ( const Digest& charm0, const Digest& charm1 );
                         BlockHeader                         ();
                         BlockHeader                         ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKeyPair& key );
                         ~BlockHeader                        ();
+    static int          compare                             ( const BlockHeader& block0, const BlockHeader& block1 );
+    static int          compare                             ( const Digest& charm0, const Digest& charm1 );
+    bool                equals                              ( const BlockHeader& rhs ) const;
     string              getCharmTag                         () const;
     Digest              getNextCharm                        ( const Digest& visage ) const;
     bool                isGenesis                           () const;

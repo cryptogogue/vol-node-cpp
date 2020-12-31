@@ -80,7 +80,7 @@ int BlockHeader::compare ( const BlockHeader& block0, const BlockHeader& block1 
 
     assert ( block0.mHeight == block1.mHeight );
 
-    if ( block0 == block1 ) return 0;
+    if ( block0.equals ( block1 )) return 0;
                 
     return BlockHeader::compare ( block0.mCharm, block1.mCharm );
 }
@@ -96,6 +96,11 @@ int BlockHeader::compare ( const Digest& charm0, const Digest& charm1 ) {
         
     int result = hex0.compare ( hex1 );
     return result < 0 ? -1 : result > 0 ? 1 : 0;
+}
+
+//----------------------------------------------------------------//
+bool BlockHeader::equals ( const BlockHeader& rhs ) const {
+    return (( this->mHeight == rhs.mHeight ) && ( this->mSignature == rhs.mSignature ));
 }
 
 //----------------------------------------------------------------//

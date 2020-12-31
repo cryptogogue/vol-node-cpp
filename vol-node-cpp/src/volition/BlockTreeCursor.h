@@ -55,37 +55,19 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    bool operator == ( const BlockTreeCursor& rhs ) const {
-        
-        return ( this->mHeader && rhs.mHeader ) ? ( *this->mHeader == *rhs.mHeader ) : ( this->mHeader == rhs.mHeader );
-    }
-    
-    //----------------------------------------------------------------//
-    bool operator != ( const BlockTreeCursor& rhs ) const {
-        return !( *this == rhs );
-    }
-
-    //----------------------------------------------------------------//
-    operator bool () const {
-        return ( this->mHeader || this->mBlock );
-    }
-    
-    //----------------------------------------------------------------//
-    operator string () const {
-        return this->mHeader ? this->mHeader->getDigest ().toHex () : "";
-    }
-
-    //----------------------------------------------------------------//
     const BlockHeader& operator * () const {
         assert ( this->mHeader );
         return *this->mHeader;
     }
 
     //----------------------------------------------------------------//
+    bool                                asBool                      () const;
+    string                              asHash                      () const;
                                         BlockTreeCursor             ();
                                         ~BlockTreeCursor            ();
     bool                                checkStatus                 ( Status status ) const;
     static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, RewriteMode rewriteMode );
+    bool                                equals                      ( const BlockTreeCursor& rhs ) const;
     static BlockTreeCursor              findRoot                    ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 );
     shared_ptr < const Block >          getBlock                    () const;
     shared_ptr < const BlockHeader >    getBlockHeader              () const;

@@ -14,7 +14,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 BlockTreeNodeTag& BlockTreeNodeTag::operator = ( BlockTreeCursor other ) {
 
-    if ( other ) {
+    if ( other.asBool ()) {
         assert ( other.mTree );
         assert ( !this->mBlockTree || ( this->mBlockTree == other.mTree ));
         other.mTree->tag ( *this, other );
@@ -37,20 +37,15 @@ BlockTreeNodeTag& BlockTreeNodeTag::operator = ( const BlockTreeNodeTag& other )
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeNodeTag::operator == ( const BlockTreeNodeTag& other ) const {
-    return ( this->get () == other.get ());
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor BlockTreeNodeTag::operator * () const {
 
     return this->get ();
 }
 
 //----------------------------------------------------------------//
-BlockTreeNodeTag::operator bool () const {
+bool BlockTreeNodeTag::asBool () const {
 
-    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTagName ( this->mTagName ));
+    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTagName ( this->mTagName ).asBool ());
 }
 
 //----------------------------------------------------------------//
@@ -66,6 +61,11 @@ BlockTreeNodeTag::BlockTreeNodeTag ( BlockTreeNodeTag& other ) :
 
 //----------------------------------------------------------------//
 BlockTreeNodeTag::~BlockTreeNodeTag () {
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNodeTag::equals ( const BlockTreeNodeTag& rhs ) const {
+    return ( this->get ().equals ( rhs.get ()));
 }
 
 //----------------------------------------------------------------//

@@ -23,6 +23,16 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+bool BlockTreeCursor::asBool () const {
+    return ( this->mHeader || this->mBlock );
+}
+
+//----------------------------------------------------------------//
+string BlockTreeCursor::asHash () const {
+    return this->mHeader ? this->mHeader->getDigest ().toHex () : "";
+}
+
+//----------------------------------------------------------------//
 BlockTreeCursor::BlockTreeCursor () :
     mTree ( NULL ),
     mStatus ( STATUS_INVALID ),
@@ -46,6 +56,12 @@ int BlockTreeCursor::compare ( const BlockTreeCursor& node0, const BlockTreeCurs
     assert ( node0.mTree );
     
     return node0.mTree->compare ( node0, node1, rewriteMode );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::equals ( const BlockTreeCursor& rhs ) const {
+    
+    return ( this->mHeader && rhs.mHeader ) ? ( this->mHeader->equals ( *rhs.mHeader )) : ( this->mHeader == rhs.mHeader );
 }
 
 //----------------------------------------------------------------//
@@ -84,7 +100,7 @@ BlockTreeCursor::Status BlockTreeCursor::getStatus () const {
 //----------------------------------------------------------------//
 bool BlockTreeCursor::hasParent () const {
 
-    return this->mTree ? ( bool )( this->mTree->getParent ( *this )) : false;
+    return this->mTree ? this->mTree->getParent ( *this ).asBool () : false;
 }
 
 //----------------------------------------------------------------//
@@ -96,7 +112,7 @@ bool BlockTreeCursor::isAncestorOf ( BlockTreeCursor tail ) const {
     while (( *tail ).getHeight () > ( **this ).getHeight ()) {
         tail = tail.getParent ();
     }
-    return ( **this == *tail );
+    return ( this->mHeader->equals ( *tail.mHeader ));
 }
 
 //----------------------------------------------------------------//
@@ -139,7 +155,7 @@ bool BlockTreeCursor::isRefused () const {
 void BlockTreeCursor::logBranchRecurse ( string& str ) const {
 
     BlockTreeCursor parent = this->getParent ();
-    if ( parent ) {
+    if ( parent.asBool ()) {
         parent.logBranchRecurse ( str );
     }
     const BlockHeader& header = *this->mHeader;
@@ -188,7 +204,7 @@ void BlockTreeCursor::logBranchRecurse ( string& str ) const {
     cc8* format = this->mBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
     
     size_t height = header.getHeight ();
-    Format::write ( str, format, parent ? ", " : "", ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
+    Format::write ( str, format, parent.asBool () ? ", " : "", ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
 }
 
 //----------------------------------------------------------------//
@@ -196,7 +212,7 @@ BlockTreeCursor BlockTreeCursor::trim ( Status status ) const {
 
     BlockTreeCursor cursor = *this;
 
-    while ( cursor && ( cursor.mStatus & status )) {
+    while ( cursor.asBool () && ( cursor.mStatus & status )) {
         cursor = cursor.getParent ();
     }
     return cursor;

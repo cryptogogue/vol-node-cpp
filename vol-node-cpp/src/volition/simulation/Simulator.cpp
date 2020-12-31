@@ -18,7 +18,7 @@ namespace Simulation {
 void Simulator::extendOptimal ( size_t height ) {
 
     BlockTreeCursor tail = *this->mOptimalTag;
-    assert ( tail );
+    assert ( tail.asBool ());
     
     while (( *tail ).getHeight () < height ) {
                 
