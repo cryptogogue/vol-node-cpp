@@ -8,14 +8,14 @@
 #include <volition/Accessors.h>
 #include <volition/Block.h>
 #include <volition/BlockTreeNode.h>
+#include <volition/BlockTreeNodeTag.h>
 
 namespace Volition {
 
 //================================================================//
 // BlockTree
 //================================================================//
-class BlockTree :
-    public enable_shared_from_this < BlockTree > {
+class BlockTree {
 public:
 
     enum CanAppend {
@@ -29,31 +29,34 @@ public:
 private:
 
     friend class BlockTreeNode;
+    friend class BlockTreeNodeTag;
 
-    shared_ptr < BlockTreeNode >        mRoot;
-    map < string, BlockTreeNode* >      mNodes;
+    BlockTreeNode*                                  mRoot;
+    map < string, BlockTreeNode* >                  mNodes;
+    map < string, shared_ptr < BlockTreeNode >>     mTags;
 
     //----------------------------------------------------------------//
-    BlockTreeNode::ConstPtr             affirm                  ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
-    void                                erase                   ( string hash );
+    const BlockTreeNode*                affirm                  ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
     BlockTreeNode::Ptr                  findNodeForHash         ( string hash );
+    const BlockTreeNode*                findNodeForTagName      ( string tagName ) const;
     void                                logTreeRecurse          ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const;
+    void                                tag                     ( string tagName, string otherTagName );
 
 public:
 
     GET ( BlockTreeNode::ConstPtr, Root, mRoot )
 
     //----------------------------------------------------------------//
-    BlockTreeNode::ConstPtr             affirmBlock             ( shared_ptr < const Block > block );
-    BlockTreeNode::ConstPtr             affirmHeader            ( shared_ptr < const BlockHeader > header );
-    BlockTreeNode::ConstPtr             affirmProvisional       ( shared_ptr < const BlockHeader > header );
+    const BlockTreeNode*                affirmBlock             ( BlockTreeNodeTag& tag, shared_ptr < const Block > block );
+    const BlockTreeNode*                affirmHeader            ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
+    const BlockTreeNode*                affirmProvisional       ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
                                         BlockTree               ();
                                         ~BlockTree              ();
     CanAppend                           checkAppend             ( const BlockHeader& header ) const;
     BlockTreeNode::ConstPtr             findNodeForHash         ( string hash ) const;
     void                                logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
     void                                mark                    ( BlockTreeNode::ConstPtr node, BlockTreeNode::Status status );
-    void                                setRoot                 ( BlockTreeNode::ConstPtr node );
+    const BlockTreeNode*                tag                     ( BlockTreeNodeTag& tag, BlockTreeNode::ConstPtr node );
     BlockTreeNode::ConstPtr             update                  ( shared_ptr < const Block > block );
 };
 

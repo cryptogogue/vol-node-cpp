@@ -74,6 +74,8 @@
 		CD19DF86259C18D50007ACF0 /* libPods-simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F16AC04619F5F5A7A17758B1 /* libPods-simulator.a */; };
 		CD19DF9F259C19600007ACF0 /* main-leaks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19DF9E259C19600007ACF0 /* main-leaks.cpp */; };
 		CD19DFB2259C19760007ACF0 /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */; };
+		CD19E004259E20A60007ACF0 /* BlockTreeNodeTag.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E002259E20A60007ACF0 /* BlockTreeNodeTag.h */; };
+		CD19E019259E23680007ACF0 /* BlockTreeNodeTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E018259E23680007ACF0 /* BlockTreeNodeTag.cpp */; };
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
@@ -865,6 +867,12 @@
 		CD19DF55259B3F190007ACF0 /* BlockTreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeNode.h; path = src/volition/BlockTreeNode.h; sourceTree = "<group>"; };
 		CD19DF8B259C18D50007ACF0 /* leaks */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = leaks; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD19DF9E259C19600007ACF0 /* main-leaks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "main-leaks.cpp"; path = "src/volition/main-leaks.cpp"; sourceTree = "<group>"; };
+		CD19DFC8259E13430007ACF0 /* AbstractBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractBlockTree.cpp; path = src/volition/AbstractBlockTree.cpp; sourceTree = "<group>"; };
+		CD19DFCA259E13440007ACF0 /* AbstractBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractBlockTree.h; path = src/volition/AbstractBlockTree.h; sourceTree = "<group>"; };
+		CD19DFD6259E139D0007ACF0 /* AbstractBlockTreeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractBlockTreeNode.cpp; path = src/volition/AbstractBlockTreeNode.cpp; sourceTree = "<group>"; };
+		CD19DFD9259E139D0007ACF0 /* AbstractBlockTreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractBlockTreeNode.h; path = src/volition/AbstractBlockTreeNode.h; sourceTree = "<group>"; };
+		CD19E002259E20A60007ACF0 /* BlockTreeNodeTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeNodeTag.h; path = src/volition/BlockTreeNodeTag.h; sourceTree = "<group>"; };
+		CD19E018259E23680007ACF0 /* BlockTreeNodeTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockTreeNodeTag.cpp; path = src/volition/BlockTreeNodeTag.cpp; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
@@ -1667,6 +1675,10 @@
 		CD9E7BB9250B4F0B0065C5FC /* block */ = {
 			isa = PBXGroup;
 			children = (
+				CD19DFC8259E13430007ACF0 /* AbstractBlockTree.cpp */,
+				CD19DFCA259E13440007ACF0 /* AbstractBlockTree.h */,
+				CD19DFD6259E139D0007ACF0 /* AbstractBlockTreeNode.cpp */,
+				CD19DFD9259E139D0007ACF0 /* AbstractBlockTreeNode.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
 				CD46659D20BE908300A02D55 /* Block.h */,
 				CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */,
@@ -1675,6 +1687,8 @@
 				CD9E7BA024FF67C30065C5FC /* BlockTree.h */,
 				CD19DF54259B3F190007ACF0 /* BlockTreeNode.cpp */,
 				CD19DF55259B3F190007ACF0 /* BlockTreeNode.h */,
+				CD19E018259E23680007ACF0 /* BlockTreeNodeTag.cpp */,
+				CD19E002259E20A60007ACF0 /* BlockTreeNodeTag.h */,
 			);
 			name = block;
 			sourceTree = "<group>";
@@ -2002,6 +2016,7 @@
 				CD5ECAF0246B2945009146FB /* version.h in Headers */,
 				CD5ECAEE246B2938009146FB /* version.h in Headers */,
 				CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */,
+				CD19E004259E20A60007ACF0 /* BlockTreeNodeTag.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
 				CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */,
@@ -2705,6 +2720,7 @@
 				CD0CF461255EDC5D008C67F0 /* RemoteMiner.cpp in Sources */,
 				CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */,
 				CDDB4BB023319E5E00EEAA60 /* CryptoKeyInfo.cpp in Sources */,
+				CD19E019259E23680007ACF0 /* BlockTreeNodeTag.cpp in Sources */,
 				CD059BE324CAB1150049C97E /* InventoryLogEntry.cpp in Sources */,
 				CDFA23A4246051CD00B4CECF /* Ledger_Miner.cpp in Sources */,
 				CDAA38EA251AA72400FEAFB5 /* SimulatorActivity.cpp in Sources */,

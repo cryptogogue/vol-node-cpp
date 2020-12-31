@@ -19,9 +19,9 @@ class BlockTreeNode;
 class BlockTreeSegment {
 public:
 
-    shared_ptr < const BlockTreeNode >  mHead;
-    shared_ptr < const BlockTreeNode >  mTail;
-    shared_ptr < const BlockTreeNode >  mTop;
+    const BlockTreeNode*    mHead;
+    const BlockTreeNode*    mTail;
+    const BlockTreeNode*    mTop;
     
     //----------------------------------------------------------------//
     size_t          getFullLength           () const;
@@ -32,12 +32,12 @@ public:
 //================================================================//
 // BlockTreeRoot
 //================================================================//
-class BlockTreeRoot {
+class BlockTreeFork {
 public:
 
-    shared_ptr < const BlockTreeNode >  mRoot;
-    BlockTreeSegment                    mSeg0;
-    BlockTreeSegment                    mSeg1;
+    const BlockTreeNode*    mRoot;
+    BlockTreeSegment        mSeg0;
+    BlockTreeSegment        mSeg1;
     
     //----------------------------------------------------------------//
     size_t          getSegLength            () const;
@@ -50,8 +50,8 @@ class BlockTreeNode :
     public enable_shared_from_this < BlockTreeNode > {
 public:
 
-    typedef shared_ptr < BlockTreeNode >            Ptr;
-    typedef shared_ptr < const BlockTreeNode >      ConstPtr;
+    typedef BlockTreeNode*              Ptr;
+    typedef const BlockTreeNode*        ConstPtr;
 
     enum Meta {
         META_NONE,
@@ -75,25 +75,26 @@ public:
 private:
 
     friend class BlockTree;
-    friend class BlockTreeTag;
+    friend class BlockTreeNode;
+    friend class BlockTreeNodeTag;
 
-    BlockTree*                              mTree;
+    BlockTree*                          mTree;
 
-    shared_ptr < const BlockHeader >        mHeader;
-    shared_ptr < const Block >              mBlock;
-    shared_ptr < BlockTreeNode >            mParent;
-    set < BlockTreeNode* >                  mChildren;
+    shared_ptr < const BlockHeader >    mHeader;
+    shared_ptr < const Block >          mBlock;
+    shared_ptr < BlockTreeNode >        mParent;
+    set < BlockTreeNode* >              mChildren;
 
-    Status                                  mStatus;
-    Meta                                    mMeta;
+    Status                              mStatus;
+    Meta                                mMeta;
 
     //----------------------------------------------------------------//
-    void                                    clearParent             ();
-    shared_ptr < const BlockTreeNode >      findInsertionRecurse    ( shared_ptr < const BlockTreeNode > tail, string minerID, const Digest& visage ) const;
-    void                                    logBranchRecurse        ( string& str ) const;
-    void                                    mark                    ( BlockTreeNode::Status status );
-    void                                    markComplete            ();
-    void                                    markRefused             ();
+    void                                clearParent             ();
+    static BlockTreeFork                findFork                ( const BlockTreeNode* node0, const BlockTreeNode* node1 );
+    void                                logBranchRecurse        ( string& str ) const;
+    void                                mark                    ( BlockTreeNode::Status status );
+    void                                markComplete            ();
+    void                                markRefused             ();
 
 public:
 
@@ -104,30 +105,27 @@ public:
     }
 
     //----------------------------------------------------------------//
-                                            BlockTreeNode           ();
-                                            ~BlockTreeNode          ();
-    bool                                    checkStatus             ( Status status ) const;
-    static int                              compare                 ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode );
-    shared_ptr < const BlockTreeNode >      findFirstIncomplete     () const;
-    shared_ptr < const BlockTreeNode >      findInsertion           ( string minerID, const Digest& visage ) const;
-    static BlockTreeRoot                    findRoot                ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 );
-    shared_ptr < const Block >              getBlock                () const;
-    shared_ptr < const BlockHeader >        getBlockHeader          () const;
-    shared_ptr < const BlockTreeNode >      getParent               () const;
-    Status                                  getStatus               () const;
-    bool                                    isAncestorOf            ( ConstPtr tail ) const;
-    bool                                    isComplete              () const;
-    bool                                    isInvalid               () const;
-    bool                                    isMissing               () const;
-    bool                                    isMissingOrInvalid      () const;
-    bool                                    isNew                   () const;
-    bool                                    isRefused               () const;
-    BlockTreeNode::ConstPtr                 trim                    ( Status status ) const;
-    BlockTreeNode::ConstPtr                 trimInvalid             () const;
-    BlockTreeNode::ConstPtr                 trimMissing             () const;
-    BlockTreeNode::ConstPtr                 trimMissingOrInvalid    () const;
-    string                                  writeBranch             () const;
-    string                                  writeCharmTag           () const;
+                                        BlockTreeNode               ();
+                                        ~BlockTreeNode              ();
+    bool                                checkStatus                 ( Status status ) const;
+    static int                          compare                     ( const BlockTreeNode* node0, const BlockTreeNode* node1, RewriteMode rewriteMode );
+    static const BlockTreeNode*         findRoot                    ( const BlockTreeNode* node0, const BlockTreeNode* node1 );
+    shared_ptr < const Block >          getBlock                    () const;
+    shared_ptr < const BlockHeader >    getBlockHeader              () const;
+    const BlockTreeNode*                getParent                   () const;
+    BlockTreeNode::Status               getStatus                   () const;
+    bool                                isAncestorOf                ( const BlockTreeNode* tail ) const;
+    bool                                isComplete                  () const;
+    bool                                isInvalid                   () const;
+    bool                                isMissing                   () const;
+    bool                                isMissingOrInvalid          () const;
+    bool                                isNew                       () const;
+    bool                                isRefused                   () const;
+    const BlockTreeNode*                trim                        ( Status status ) const;
+    const BlockTreeNode*                trimInvalid                 () const;
+    const BlockTreeNode*                trimMissing                 () const;
+    const BlockTreeNode*                trimMissingOrInvalid        () const;
+    string                              writeBranch                 () const;
 };
 
 } // namespace Volition

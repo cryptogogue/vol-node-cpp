@@ -19,7 +19,7 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
-#define THE_SCENARO MixedScenario
+#define THE_SCENARO MinimalScenario
 
 //================================================================//
 // MinimalScenario
@@ -279,7 +279,7 @@ protected:
         shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( 0 );
         if (( **simMiner->getWorkingLedgerTag ()).getHeight () >= 16 ) {
         
-            BlockTreeNode::ConstPtr prevBranch = simMiner->getWorkingLedgerTag ();
+//            BlockTreeNode::ConstPtr prevBranch = simMiner->getWorkingLedgerTag ();
         
             simMiner->setCharm ( 8, Format::write ( "%06x", this->mCounter ));
             this->mCounter--;

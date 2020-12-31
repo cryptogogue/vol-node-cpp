@@ -46,8 +46,7 @@ void Simulator::extendOptimal ( size_t height ) {
         );
         child->sign ( bestMiner->getKeyPair ());
 
-        tail = this->mOptimal.affirmBlock ( child );
-        this->mOptimalTag = tail;
+        tail = this->mOptimal.affirmBlock ( this->mOptimalTag, child );
     }
 }
 
@@ -172,7 +171,7 @@ void Simulator::prepare () {
     for ( size_t i = 0; i < totalMiners; ++i ) {
         this->mMiners [ i ]->setGenesis ( genesisBlock );
     }
-    this->mOptimalTag = this->mOptimal.affirmBlock ( genesisBlock );
+    this->mOptimal.affirmBlock ( this->mOptimalTag, genesisBlock );
 }
 
 //----------------------------------------------------------------//
@@ -280,6 +279,8 @@ Simulator::Simulator () :
     mIsPaused ( false ),
     mStepCount ( 0 ),
     mTimeStep ( 1 ) {
+    
+    this->mOptimalTag.setTagName ( "optimal" );
 }
 
 //----------------------------------------------------------------//

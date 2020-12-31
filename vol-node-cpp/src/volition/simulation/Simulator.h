@@ -45,7 +45,7 @@ protected:
     Poco::Event                         mShutdownEvent;
     
     BlockTree                           mOptimal;
-    BlockTreeNode::ConstPtr             mOptimalTag;
+    BlockTreeNodeTag                    mOptimalTag;
 
     bool                                mIsPaused;
     size_t                              mStepCount;

@@ -20,6 +20,10 @@ namespace Volition {
 // RemoteMiner
 //================================================================//
 class RemoteMiner {
+private:
+
+    string                      mMinerID;
+
 public:
 
     enum NetworkState {
@@ -29,10 +33,9 @@ public:
         STATE_ERROR,
     };
 
-    string                      mMinerID;
     string                      mURL;
-    BlockTreeNode::ConstPtr     mTag;
-    BlockTreeNode::ConstPtr     mImproved;
+    BlockTreeNodeTag            mTag;
+    BlockTreeNodeTag            mImproved;
     NetworkState                mNetworkState;
     string                      mMessage;
 
@@ -40,11 +43,14 @@ public:
     bool                                                mForward;
     map < size_t, shared_ptr < const BlockHeader >>     mHeaderQueue;
 
+    GET ( string,       MinerID,        mMinerID )
+
     //----------------------------------------------------------------//
                     RemoteMiner             ();
                     ~RemoteMiner            ();
     void            reset                   ();
     void            setError                ( string message = "" );
+    void            setMinerID              ( string minerID );
     void            updateHeaders           ( BlockTree& blockTree );
 };
 

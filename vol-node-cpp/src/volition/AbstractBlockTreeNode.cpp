@@ -46,7 +46,7 @@ size_t BlockTreeSegment::getSegLength () const {
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t BlockTreeFork::getSegLength () const {
+size_t BlockTreeRoot::getSegLength () const {
 
     return this->mSeg0.getSegLength ();
 }
@@ -87,11 +87,11 @@ void BlockTreeNode::clearParent () {
 }
 
 //----------------------------------------------------------------//
-int BlockTreeNode::compare ( const BlockTreeNode* node0, const BlockTreeNode* node1, RewriteMode rewriteMode ) {
+int BlockTreeNode::compare ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1, RewriteMode rewriteMode ) {
 
     assert ( node0 && node1 );
 
-    BlockTreeFork root = BlockTreeNode::findFork ( node0, node1);
+    BlockTreeRoot root = BlockTreeNode::findRoot ( node0, node1);
 
     size_t fullLength0  = root.mSeg0.getFullLength ();
     size_t fullLength1  = root.mSeg1.getFullLength ();
@@ -107,15 +107,15 @@ int BlockTreeNode::compare ( const BlockTreeNode* node0, const BlockTreeNode* no
 
     int score = 0;
 
-    const BlockTreeNode* cursor0 = root.mSeg0.mTail;
-    const BlockTreeNode* cursor1 = root.mSeg1.mTail;
+    shared_ptr < const BlockTreeNode > cursor0 = root.mSeg0.mTail;
+    shared_ptr < const BlockTreeNode > cursor1 = root.mSeg1.mTail;
 
     while ( cursor0 != cursor1 ) {
     
         score += BlockHeader::compare ( *cursor0->mHeader, *cursor1->mHeader );
         
-        cursor0 = cursor0->mParent.get ();
-        cursor1 = cursor1->mParent.get ();
+        cursor0 = cursor0->mParent;
+        cursor1 = cursor1->mParent;
     }
 
     if (( score == 0 ) && ( fullLength0 != fullLength1 )) {
@@ -125,9 +125,43 @@ int BlockTreeNode::compare ( const BlockTreeNode* node0, const BlockTreeNode* no
 }
 
 //----------------------------------------------------------------//
-BlockTreeFork BlockTreeNode::findFork ( const BlockTreeNode* node0, const BlockTreeNode* node1 ) {
+BlockTreeNode::ConstPtr BlockTreeNode::findFirstIncomplete () const {
 
-    BlockTreeFork root;
+    if ( this->mStatus & ( STATUS_INVALID | STATUS_COMPLETE )) return NULL;
+    if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return this->mParent->findFirstIncomplete ();
+    
+    assert ( this->mStatus & ( STATUS_NEW | STATUS_MISSING ));
+    return this->shared_from_this ();
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const BlockTreeNode > BlockTreeNode::findInsertion ( string minerID, const Digest& visage ) const {
+
+    return this->mParent->findInsertionRecurse ( this->shared_from_this (), minerID, visage );
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const BlockTreeNode > BlockTreeNode::findInsertionRecurse ( shared_ptr < const BlockTreeNode > tail, string minerID, const Digest& visage ) const {
+
+    if ( this->mHeader->getMinerID () == minerID ) return tail;
+
+    shared_ptr < const BlockHeader > parent = this->mParent ? this->mParent->mHeader : NULL;
+    if ( !parent ) return tail;
+
+    Digest charm = parent->getNextCharm ( visage );
+
+    if ( BlockHeader::compare ( charm, this->mHeader->getCharm ()) < 0 ) {
+        printf ( "BACKUP!\n" );
+        return this->mParent;
+    }
+
+    return this->mParent->findInsertionRecurse ( tail, minerID, visage );
+}
+
+//----------------------------------------------------------------//
+BlockTreeRoot BlockTreeNode::findRoot ( shared_ptr < const BlockTreeNode > node0, shared_ptr < const BlockTreeNode > node1 ) {
+
+    BlockTreeRoot root;
 
     if ( node0->mTree && ( node0->mTree == node1->mTree )) {
     
@@ -143,11 +177,11 @@ BlockTreeFork BlockTreeNode::findFork ( const BlockTreeNode* node0, const BlockT
         size_t height = height0 < height1 ? height0 : height1;
         
         while ( node0->mParent && ( height < node0->mHeader->getHeight ())) {
-            node0 = node0->mParent.get ();
+            node0 = node0->mParent;
         }
         
         while ( node1->mParent && ( height < node1->mHeader->getHeight ())) {
-            node1 = node1->mParent.get ();
+            node1 = node1->mParent;
         }
 
         seg0.mHead = node0;
@@ -161,8 +195,8 @@ BlockTreeFork BlockTreeNode::findFork ( const BlockTreeNode* node0, const BlockT
             seg0.mHead = node0;
             seg1.mHead = node1;
             
-            node0 = node0->mParent.get ();
-            node1 = node1->mParent.get ();
+            node0 = node0->mParent;
+            node1 = node1->mParent;
         }
         
         assert ( node0 && node1 );
@@ -174,13 +208,6 @@ BlockTreeFork BlockTreeNode::findFork ( const BlockTreeNode* node0, const BlockT
         assert ( root.mSeg0.getSegLength () == root.mSeg1.getSegLength ());
     }
     return root;
-}
-
-//----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNode::findRoot ( const BlockTreeNode* node0, const BlockTreeNode* node1 ) {
-
-    BlockTreeFork fork = BlockTreeNode::findFork ( node0, node1 );
-    return fork.mRoot;
 }
 
 //----------------------------------------------------------------//
@@ -196,9 +223,9 @@ shared_ptr < const BlockHeader > BlockTreeNode::getBlockHeader () const {
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNode::getParent () const {
+shared_ptr < const BlockTreeNode > BlockTreeNode::getParent () const {
 
-    return this->mParent.get ();
+    return this->mParent;
 }
 
 //----------------------------------------------------------------//
@@ -303,7 +330,7 @@ void BlockTreeNode::logBranchRecurse ( string& str ) const {
         }
     }
     
-    string charm = ( **this ).getCharmTag ();
+    string charm = this->writeCharmTag ();
     cc8* format = this->mBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
     
     size_t height = header.getHeight ();
@@ -377,30 +404,30 @@ void BlockTreeNode::markRefused () {
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNode::trim ( Status status ) const {
+BlockTreeNode::ConstPtr BlockTreeNode::trim ( Status status ) const {
 
-    const BlockTreeNode* cursor = this;
+    BlockTreeNode::ConstPtr cursor = this->shared_from_this ();
 
     while ( cursor && ( cursor->mStatus & status )) {
-        cursor = cursor->mParent.get ();
+        cursor = cursor->getParent ();
     }
     return cursor;
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNode::trimInvalid () const {
+BlockTreeNode::ConstPtr BlockTreeNode::trimInvalid () const {
 
     return this->trim ( STATUS_INVALID );
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNode::trimMissing () const {
+BlockTreeNode::ConstPtr BlockTreeNode::trimMissing () const {
 
     return this->trim ( STATUS_MISSING );
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTreeNode::trimMissingOrInvalid () const {
+BlockTreeNode::ConstPtr BlockTreeNode::trimMissingOrInvalid () const {
 
     return this->trim (( Status )( STATUS_MISSING | STATUS_INVALID ));
 }
@@ -411,6 +438,12 @@ string BlockTreeNode::writeBranch () const {
     string str;
     this->logBranchRecurse ( str );
     return str;
+}
+
+//----------------------------------------------------------------//
+string BlockTreeNode::writeCharmTag () const {
+
+    return this->mHeader ? this->mHeader->getCharmTag () : "";
 }
 
 } // namespace Volition

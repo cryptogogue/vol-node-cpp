@@ -35,8 +35,11 @@ protected:
     BlockTreeNode::ConstPtr         mSearchTarget;
     set < string >                  mActiveMiners;
     set < string >                  mCompletedMiners;
-    
+
+public:
+
     //----------------------------------------------------------------//
+                    BlockSearch     ();
     bool            step            ( Miner& miner );
     void            step            ( shared_ptr < RemoteMiner > remoteMiner );
 };
@@ -142,7 +145,7 @@ protected:
     // the "working" legder is a "complete" chain (in that all blocks are accounted for),
     // but still likely to revert if a superior branch is discovered.
     shared_ptr < Ledger >                           mWorkingLedger;
-    BlockTreeNode::ConstPtr                         mWorkingLedgerTag;
+    BlockTreeNodeTag                                mWorkingLedgerTag;
     
     // the "permanent" ledger and is chosen by heurestic and represents a minimum reversion
     // point, i.e. the earliest block the miner will revert to, even if presented a superior
@@ -152,13 +155,13 @@ protected:
     // selection heuristic is used. also, a "permanent" ledger should only be selected
     // once all responding miners have been identified and polled.
     Ledger                                          mPermanentLedger;
-    BlockTreeNode::ConstPtr                         mPermanentLedgerTag;
+    BlockTreeNodeTag                                mPermanentLedgerTag;
     
     // the "provisional" branch may not be complete and may end with a "provisional"
     // block header. the "best" provisional branch is the branch the miner is working
     // to complete by gathering (or building) the missing blocks. the provisional
     // branch is not published to other miners.
-    BlockTreeNode::ConstPtr                         mBestProvisional;
+    BlockTreeNodeTag                                mBestProvisional;
     
     // this is the persistence provider for the ledger. it serves two purposes:
     // to offload the RAM burder required to persist the ledger database and to speed
@@ -179,7 +182,7 @@ protected:
     void                                composeChainRecurse         ( BlockTreeNode::ConstPtr branch );
     void                                discoverMiners              ();
     BlockSearch*                        findBlockSearch             ( const Digest& digest );
-    BlockTreeNode::ConstPtr             improveBranch               ( BlockTreeNode::ConstPtr tail, time_t now );
+    BlockTreeNode::ConstPtr             improveBranch               ( BlockTreeNodeTag& tag, BlockTreeNode::ConstPtr tail, time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
     void                                report                      () const;
     void                                saveChain                   ();
