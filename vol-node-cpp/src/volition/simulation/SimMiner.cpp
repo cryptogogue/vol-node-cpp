@@ -44,7 +44,7 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
     assert ( oldBlock );
     
     BlockTreeCursor prevNode = (( const BlockTree& )this->mBlockTree ).findCursorForHash ( oldBlock->getPrevDigest ());
-    assert ( prevNode.asBool ());
+    assert ( prevNode.exists ());
     
     shared_ptr < const Block > prevBlock = prevNode.getBlock ();
     assert ( prevBlock );
@@ -87,7 +87,7 @@ void SimMiner::setActive ( bool active ) {
 void SimMiner::setCharm ( size_t height, string charmHex ) {
 
     BlockTreeCursor cursor = *this->mBestProvisional;
-    while ( cursor.asBool ()) {
+    while ( cursor.exists ()) {
         size_t cursorHeight = ( *cursor ).getHeight ();
         if ( cursorHeight == height ) {
 

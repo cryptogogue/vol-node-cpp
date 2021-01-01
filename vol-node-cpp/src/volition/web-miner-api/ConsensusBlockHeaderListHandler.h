@@ -37,7 +37,7 @@ public:
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
                         
             SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
-            while ( cursor.asBool () && ( base <= ( *cursor ).getHeight ())) {
+            while ( cursor.exists () && ( base <= ( *cursor ).getHeight ())) {
                 if (( *cursor ).getHeight () < top ) {
                     shared_ptr < const BlockHeader > header = make_shared < BlockHeader >( *cursor.getBlockHeader ());
                     headers.push_front ( header );

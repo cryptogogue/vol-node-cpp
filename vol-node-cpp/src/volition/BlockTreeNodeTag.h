@@ -29,11 +29,11 @@ public:
     BlockTreeNodeTag&           operator =                          ( BlockTreeCursor other );
     BlockTreeNodeTag&           operator =                          ( const BlockTreeNodeTag& other );
     BlockTreeCursor             operator *                          () const;
-    bool                        asBool                              () const;
                                 BlockTreeNodeTag                    ();
                                 BlockTreeNodeTag                    ( BlockTreeNodeTag& other );
                                 ~BlockTreeNodeTag                   ();
     bool                        equals                              ( const BlockTreeNodeTag& rhs ) const;
+    bool                        exists                              () const;
     BlockTreeCursor             get                                 () const;
     void                        setTagName                          ( string tagName );
 };

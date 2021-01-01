@@ -208,8 +208,8 @@ BlockTreeCursor BlockTree::findCursorForTagName ( string tagName ) const {
 //----------------------------------------------------------------//
 BlockTreeFork BlockTree::findFork ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
-    const BlockTreeNode* node0 = this->findNodeForHash ( cursor0.asHash ());
-    const BlockTreeNode* node1 = this->findNodeForHash ( cursor1.asHash ());
+    const BlockTreeNode* node0 = this->findNodeForHash ( cursor0.getHash ());
+    const BlockTreeNode* node1 = this->findNodeForHash ( cursor1.getHash ());
 
     BlockTreeFork root;
 
@@ -286,7 +286,7 @@ BlockTreeCursor BlockTree::findRoot ( const BlockTreeCursor& cursor0, const Bloc
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTree::getParent ( const BlockTreeCursor& cursor ) const {
 
-    string hash = cursor.asHash ();
+    string hash = cursor.getHash ();
     const BlockTreeNode* node = this->findNodeForHash ( hash );
 
     if ( node && node->mParent ) {
@@ -332,7 +332,7 @@ void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTree
 //----------------------------------------------------------------//
 void BlockTree::mark ( const BlockTreeCursor& cursor, BlockTreeNode::Status status ) {
 
-    BlockTreeNode* node = this->findNodeForHash ( cursor.asHash ());
+    BlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
 
     if ( node ) {
         node->mark ( status );
@@ -362,7 +362,7 @@ BlockTreeCursor BlockTree::tag ( BlockTreeNodeTag& tag, const BlockTreeCursor& c
     
     tag.mBlockTree = this;
     
-    BlockTreeNode::Ptr node = this->findNodeForHash ( cursor.asHash ());
+    BlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
     assert ( node );
     this->mTags [ tagName ] = node->shared_from_this ();
     

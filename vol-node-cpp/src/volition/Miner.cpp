@@ -27,7 +27,7 @@ bool BlockSearch::step ( Miner& miner ) {
     if ( SEARCH_SIZE <= this->mActiveMiners.size ()) return true;
 
     BlockTreeCursor cursor = miner.mBlockTree.findCursorForHash ( this->mHash );
-    if ( !( cursor.asBool () && cursor.checkStatus (( BlockTreeCursor::Status )( BlockTreeCursor::STATUS_NEW | BlockTreeCursor::STATUS_MISSING )))) return false;
+    if ( !( cursor.exists () && cursor.checkStatus (( BlockTreeCursor::Status )( BlockTreeCursor::STATUS_NEW | BlockTreeCursor::STATUS_MISSING )))) return false;
 
     set < shared_ptr < RemoteMiner >> remoteMiners;
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = miner.mOnlineMiners.begin ();
@@ -89,13 +89,13 @@ void Miner::affirmBlockSearch ( BlockTreeCursor cursor ) {
     if ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ()) return; // already searching
 
     BlockSearch& search = this->mBlockSearches [ hash ];
-    search.mHash = cursor.asHash ();
+    search.mHash = cursor.getHash ();
 }
 
 //----------------------------------------------------------------//
 void Miner::affirmBranchSearch ( BlockTreeCursor cursor ) {
 
-    while ( cursor.asBool () && ( cursor.getBlock () == NULL )) {
+    while ( cursor.exists () && ( cursor.getBlock () == NULL )) {
         if (( *cursor ).getMinerID () != this->mMinerID ) {
             this->affirmBlockSearch ( cursor );
         }
@@ -153,7 +153,7 @@ double Miner::checkConsensus ( BlockTreeCursor tag ) const {
     set < shared_ptr < RemoteMiner >>::const_iterator minerIt = this->mOnlineMiners.cbegin ();
     for ( ; minerIt != this->mOnlineMiners.cend (); ++minerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *minerIt;
-        if ( remoteMiner->mImproved.asBool () && tag.isAncestorOf ( *remoteMiner->mImproved )) {
+        if ( remoteMiner->mImproved.exists () && tag.isAncestorOf ( *remoteMiner->mImproved )) {
             count += 1;
         }
         current += 1;
@@ -180,7 +180,7 @@ void Miner::composeChain () {
         
         // REWIND chain to point of divergence
         BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mWorkingLedgerTag, *this->mBestProvisional );
-        assert ( root.asBool ()); // guaranteed -> common genesis
+        assert ( root.exists ()); // guaranteed -> common genesis
         assert ( root.checkStatus ( BlockTreeNode::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
         this->mWorkingLedger->reset (( *root ).getHeight () + 1 );
@@ -255,11 +255,11 @@ void Miner::discoverMiners () {
 void Miner::extend ( time_t now ) {
     
     BlockTreeCursor provisional = *this->mBestProvisional;
-    if ( !provisional.asBool () || provisional.isComplete ()) return;
+    if ( !provisional.exists () || provisional.isComplete ()) return;
     if (( *provisional ).getMinerID () != this->mMinerID ) return;
     
     BlockTreeCursor parent = provisional.getParent ();
-    if ( !( parent.asBool () && parent.isComplete ())) return;
+    if ( !( parent.exists () && parent.isComplete ())) return;
     if ( this->checkConsensus ( parent ) <= 0.5 ) return;
 
     assert (( *this->mWorkingLedgerTag ).equals ( parent ));
@@ -295,7 +295,7 @@ const set < string >& Miner::getActiveMinerURLs () const {
 //----------------------------------------------------------------//
 size_t Miner::getChainSize () const {
 
-    return this->mWorkingLedgerTag.asBool () ? (( **this->mWorkingLedgerTag ).getHeight () + 1 ) : 0;
+    return this->mWorkingLedgerTag.exists () ? (( **this->mWorkingLedgerTag ).getHeight () + 1 ) : 0;
 }
 
 //----------------------------------------------------------------//
@@ -365,7 +365,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeNodeTag& tag, BlockTreeCursor ta
     BlockTreeCursor child;
     BlockTreeCursor extendFrom; // this is the *parent* of the block to append (if any).
     
-    while ( parent.asBool ()) {
+    while ( parent.exists ()) {
     
         const BlockHeader& parentHeader = *parent;
         
@@ -377,7 +377,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeNodeTag& tag, BlockTreeCursor ta
         if ( parentHeader.getNextTime () <= now ) {
             
             // check to see if our block would be more charming. if so, extend from the parent.
-            if ( !child.asBool () || BlockHeader::compare ( parentHeader.getNextCharm ( this->mVisage ), ( *child ).getCharm ()) < 0 ) {
+            if ( !child.exists () || BlockHeader::compare ( parentHeader.getNextCharm ( this->mVisage ), ( *child ).getCharm ()) < 0 ) {
                 extendFrom = parent;
             }
         }
@@ -395,7 +395,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeNodeTag& tag, BlockTreeCursor ta
         parent = parent.getParent ();
     }
 
-    if ( extendFrom.asBool ()) {
+    if ( extendFrom.exists ()) {
         return this->mBlockTree.affirmProvisional ( tag, this->prepareProvisional ( *extendFrom, now ));
     }
     return tail; // use the chain as-is.
@@ -558,7 +558,7 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     assert ( result );
     
     BlockTreeCursor node = this->mBlockTree.affirmBlock ( this->mBestProvisional, block );
-    assert ( node.asBool ());
+    assert ( node.exists ());
         
     if ( this->mWorkingLedgerTag.equals ( this->mBestProvisional )) {
         this->mBestProvisional = node;
@@ -582,7 +582,7 @@ void Miner::report () const {
             for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
             
                 const RemoteMiner& remoteMiner = *remoteMinerIt->second;
-                if ( remoteMiner.mTag.asBool ()) {
+                if ( remoteMiner.mTag.exists ()) {
                     LGN_LOG ( VOL_FILTER_ROOT, INFO,
                         "%s - %d: %s",
                         remoteMiner.getMinerID ().c_str (),
@@ -661,10 +661,10 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
 
     if ( this->mWorkingLedger ) {
     
-        assert ( this->mWorkingLedgerTag.asBool ());
+        assert ( this->mWorkingLedgerTag.exists ());
         assert ( this->mWorkingLedger->countBlocks ());
         assert ( this->mWorkingLedger->getGenesisHash () == block->getDigest ().toHex ());
-        assert ( this->mPermanentLedgerTag.asBool ());
+        assert ( this->mPermanentLedgerTag.exists ());
     }
     else {
     
@@ -760,7 +760,7 @@ void Miner::updateBestBranch ( time_t now ) {
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
         
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        if ( !remoteMiner->mTag.asBool ()) continue;
+        if ( !remoteMiner->mTag.exists ()) continue;
         
         remoteMiner->mImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalid (), now );
         if (( *remoteMiner->mImproved ).isMissing ()) continue;
@@ -772,7 +772,7 @@ void Miner::updateBestBranch ( time_t now ) {
         }
     }
     
-    assert ( this->mBestProvisional.asBool ());
+    assert ( this->mBestProvisional.exists ());
     assert ( !( *this->mBestProvisional ).isMissingOrInvalid ());
 }
 
@@ -785,7 +785,7 @@ void Miner::updateBlockSearches () {
         shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
 
         // we only care about missing branches; ignore new/complete/invalid branches.
-        if ( remoteMiner->mImproved.asBool () && ( *remoteMiner->mImproved ).isMissing ()) {
+        if ( remoteMiner->mImproved.exists () && ( *remoteMiner->mImproved ).isMissing ()) {
             
             // only affirm a search if the other chain could beat our current.
             if ( BlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestProvisional, this->mRewriteMode ) < 0 ) {
@@ -837,10 +837,10 @@ void Miner::updatePermanentTag () {
     BlockTreeCursor tag = *this->mBestProvisional;
     while (( this->checkConsensus ( tag ) <= 0.5 ) || ( !tag.getBlock ())) {
         tag = tag.getParent ();
-        if ( !tag.asBool ()) return;
+        if ( !tag.exists ()) return;
     }
     
-    assert ( tag.asBool ());
+    assert ( tag.exists ());
     assert ( tag.getBlock ());
     assert ( tag.isAncestorOf ( *this->mBestProvisional ));
     
@@ -870,7 +870,7 @@ void Miner::updateRemoteMiners () {
         
         remoteMiner->updateHeaders ( this->mBlockTree );
         
-        if ( remoteMiner->mTag.asBool ()) {
+        if ( remoteMiner->mTag.exists ()) {
             this->mActiveMinerURLs.insert ( remoteMiner->mURL );
         }
     }

@@ -61,16 +61,16 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool                                asBool                      () const;
-    string                              asHash                      () const;
                                         BlockTreeCursor             ();
                                         ~BlockTreeCursor            ();
     bool                                checkStatus                 ( Status status ) const;
     static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, RewriteMode rewriteMode );
     bool                                equals                      ( const BlockTreeCursor& rhs ) const;
+    bool                                exists                      () const;
     static BlockTreeCursor              findRoot                    ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 );
     shared_ptr < const Block >          getBlock                    () const;
     shared_ptr < const BlockHeader >    getBlockHeader              () const;
+    string                              getHash                     () const;
     BlockTreeCursor                     getParent                   () const;
     Status                              getStatus                   () const;
     bool                                hasParent                   () const;
