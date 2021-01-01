@@ -15,13 +15,17 @@ class BlockTreeNode;
 //================================================================//
 // BlockTreeNodeTag
 //================================================================//
-class BlockTreeNodeTag {
+class BlockTreeNodeTag :
+    public HasBlockHeaderFields {
 private:
 
     friend class BlockTree;
 
     string                      mTagName;
     BlockTree*                  mBlockTree;
+
+    //----------------------------------------------------------------//
+    const BlockHeaderFields&    HasBlockHeader_getFields            () const override;
 
 public:
 
@@ -33,8 +37,8 @@ public:
                                 BlockTreeNodeTag                    ( BlockTreeNodeTag& other );
                                 ~BlockTreeNodeTag                   ();
     bool                        equals                              ( const BlockTreeNodeTag& rhs ) const;
-    bool                        exists                              () const;
-    BlockTreeCursor             get                                 () const;
+    BlockTreeCursor             getCursor                           () const;
+    bool                        hasCursor                           () const;
     void                        setTagName                          ( string tagName );
 };
 

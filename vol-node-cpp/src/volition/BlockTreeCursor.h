@@ -15,7 +15,8 @@ class BlockTree;
 //================================================================//
 // BlockTreeCursor
 //================================================================//
-class BlockTreeCursor {
+class BlockTreeCursor :
+    public HasBlockHeaderFields {
 public:
 
     enum Meta {
@@ -52,13 +53,10 @@ protected:
     //----------------------------------------------------------------//
     void                                logBranchRecurse            ( string& str ) const;
 
-public:
-
     //----------------------------------------------------------------//
-    const BlockHeader& operator * () const {
-        assert ( this->mHeader );
-        return *this->mHeader;
-    }
+    const BlockHeaderFields&            HasBlockHeader_getFields    () const override;
+
+public:
 
     //----------------------------------------------------------------//
                                         BlockTreeCursor             ();
@@ -66,13 +64,13 @@ public:
     bool                                checkStatus                 ( Status status ) const;
     static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, RewriteMode rewriteMode );
     bool                                equals                      ( const BlockTreeCursor& rhs ) const;
-    bool                                exists                      () const;
     static BlockTreeCursor              findRoot                    ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 );
     shared_ptr < const Block >          getBlock                    () const;
-    shared_ptr < const BlockHeader >    getBlockHeader              () const;
     string                              getHash                     () const;
+    const BlockHeader&                  getHeader                   () const;
     BlockTreeCursor                     getParent                   () const;
     Status                              getStatus                   () const;
+    bool                                hasHeader                   () const;
     bool                                hasParent                   () const;
     bool                                isAncestorOf                ( BlockTreeCursor tail ) const;
     bool                                isComplete                  () const;

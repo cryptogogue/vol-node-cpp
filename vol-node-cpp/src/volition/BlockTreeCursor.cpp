@@ -55,11 +55,6 @@ bool BlockTreeCursor::equals ( const BlockTreeCursor& rhs ) const {
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeCursor::exists () const {
-    return ( this->mHeader || this->mBlock );
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor BlockTreeCursor::findRoot ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 ) {
 
     assert ( node0.mTree == node1.mTree );
@@ -75,14 +70,15 @@ shared_ptr < const Block > BlockTreeCursor::getBlock () const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < const BlockHeader > BlockTreeCursor::getBlockHeader () const {
-
-    return this->mHeader;
+string BlockTreeCursor::getHash () const {
+    return this->mHeader ? this->mHeader->getDigest ().toHex () : "";
 }
 
 //----------------------------------------------------------------//
-string BlockTreeCursor::getHash () const {
-    return this->mHeader ? this->mHeader->getDigest ().toHex () : "";
+const BlockHeader& BlockTreeCursor::getHeader () const {
+
+    assert ( this->mHeader );
+    return *this->mHeader;
 }
 
 //----------------------------------------------------------------//
@@ -98,9 +94,14 @@ BlockTreeCursor::Status BlockTreeCursor::getStatus () const {
 }
 
 //----------------------------------------------------------------//
+bool BlockTreeCursor::hasHeader () const {
+    return ( this->mHeader || this->mBlock );
+}
+
+//----------------------------------------------------------------//
 bool BlockTreeCursor::hasParent () const {
 
-    return this->mTree ? this->mTree->getParent ( *this ).exists () : false;
+    return this->mTree ? this->mTree->getParent ( *this ).hasHeader () : false;
 }
 
 //----------------------------------------------------------------//
@@ -109,7 +110,7 @@ bool BlockTreeCursor::isAncestorOf ( BlockTreeCursor tail ) const {
     assert ( this->mHeader );
     assert ( tail.mHeader );
     
-    while (( *tail ).getHeight () > ( **this ).getHeight ()) {
+    while ( tail.getHeight () > this->getHeight ()) {
         tail = tail.getParent ();
     }
     return ( this->mHeader->equals ( *tail.mHeader ));
@@ -155,7 +156,7 @@ bool BlockTreeCursor::isRefused () const {
 void BlockTreeCursor::logBranchRecurse ( string& str ) const {
 
     BlockTreeCursor parent = this->getParent ();
-    if ( parent.exists ()) {
+    if ( parent.hasHeader ()) {
         parent.logBranchRecurse ( str );
     }
     const BlockHeader& header = *this->mHeader;
@@ -200,11 +201,11 @@ void BlockTreeCursor::logBranchRecurse ( string& str ) const {
         }
     }
     
-    string charm = ( **this ).getCharmTag ();
+    string charm = this->getCharmTag ();
     cc8* format = this->mBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
     
     size_t height = header.getHeight ();
-    Format::write ( str, format, parent.exists () ? ", " : "", ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
+    Format::write ( str, format, parent.hasHeader () ? ", " : "", ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
 }
 
 //----------------------------------------------------------------//
@@ -212,7 +213,7 @@ BlockTreeCursor BlockTreeCursor::trim ( Status status ) const {
 
     BlockTreeCursor cursor = *this;
 
-    while ( cursor.exists () && ( cursor.mStatus & status )) {
+    while ( cursor.hasHeader () && ( cursor.mStatus & status )) {
         cursor = cursor.getParent ();
     }
     return cursor;
@@ -242,6 +243,16 @@ string BlockTreeCursor::writeBranch () const {
     string str;
     this->logBranchRecurse ( str );
     return str;
+}
+
+//================================================================//
+// virtual
+//================================================================//
+
+//----------------------------------------------------------------//
+const BlockHeaderFields& BlockTreeCursor::HasBlockHeader_getFields () const {
+
+    return this->getHeader ().getFields ();
 }
 
 } // namespace Volition

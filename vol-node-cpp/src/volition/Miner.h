@@ -28,7 +28,7 @@ class Miner;
 class BlockSearch {
 protected:
 
-    static const size_t SEARCH_SIZE = 7;
+    static const size_t SEARCH_SIZE = 16;
 
     friend class Miner;
 
@@ -208,7 +208,7 @@ public:
         RESUBMIT_EARLIER,
     };
     
-    GET ( BlockTreeCursor,                                  BestProvisional,            *mBestProvisional )
+    GET ( BlockTreeCursor,                                  BestProvisional,            mBestProvisional.getCursor ())
     GET ( const BlockTree&,                                 BlockTree,                  mBlockTree )
     GET ( const Ledger&,                                    HighConfidenceLedger,       mPermanentLedger )
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
@@ -216,7 +216,7 @@ public:
     GET ( time_t,                                           StartTime,                  mStartTime )
     GET ( const Signature&,                                 Visage,                     mVisage )
     GET ( const Ledger&,                                    WorkingLedger,              *mWorkingLedger )
-    GET ( BlockTreeCursor,                                  WorkingLedgerTag,           *mWorkingLedgerTag )
+    GET ( BlockTreeCursor,                                  WorkingLedgerTag,           mWorkingLedgerTag.getCursor ())
     
     SET ( shared_ptr < AbstractMiningMessenger >,           Messenger,                  mMessenger )
     

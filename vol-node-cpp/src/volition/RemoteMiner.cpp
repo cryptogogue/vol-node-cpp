@@ -101,9 +101,9 @@ void RemoteMiner::updateHeaders ( BlockTree& blockTree ) {
         }
     }
     
-    if ( this->mTag.exists ()) {
+    if ( this->mTag.hasCursor ()) {
         // nothing in the queue, so get the next batch of blocks.
-        this->mHeight = ( **this->mTag ).getHeight () + 1; // this doesn't really matter.
+        this->mHeight = this->mTag.getHeight () + 1; // this doesn't really matter.
         this->mForward = true;
     }
 }

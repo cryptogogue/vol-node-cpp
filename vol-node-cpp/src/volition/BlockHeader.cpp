@@ -9,17 +9,11 @@
 namespace Volition {
 
 //================================================================//
-// BlockHeader
+// BlockHeaderFields
 //================================================================//
 
 //----------------------------------------------------------------//
-void BlockHeader::applyEntropy ( Ledger& ledger ) const {
-
-    ledger.setEntropyString ( this->mPose.toString ());
-}
-
-//----------------------------------------------------------------//
-BlockHeader::BlockHeader () :
+BlockHeaderFields::BlockHeaderFields () :
     mHeight ( 0 ),
     mTime ( 0 ),
     mBlockDelay ( Ledger::DEFAULT_BLOCK_DELAY_IN_SECONDS ),
@@ -27,29 +21,15 @@ BlockHeader::BlockHeader () :
 }
 
 //----------------------------------------------------------------//
-BlockHeader::BlockHeader ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKeyPair& key ) :
-    mMinerID ( minerID ),
-    mHeight ( 0 ),
-    mTime ( now ),
-    mBlockDelay ( Ledger::DEFAULT_BLOCK_DELAY_IN_SECONDS ),
-    mRewriteWindow ( Ledger::DEFAULT_REWRITE_WINDOW_IN_SECONDS ) {
-        
-    if ( prevBlockHeader ) {
-        
-        this->mHeight       = prevBlockHeader->mHeight + 1;
-        this->mPrevDigest   = prevBlockHeader->mDigest;
-        
-        this->mPose         = key.sign ( this->hashPose ( prevBlockHeader->mPose.toHex ()), Digest::HASH_ALGORITHM_SHA256 );
-        this->mCharm        = prevBlockHeader->getNextCharm ( visage );
-    }
+BlockHeaderFields::~BlockHeaderFields () {
 }
 
-//----------------------------------------------------------------//
-BlockHeader::~BlockHeader () {
-}
+//================================================================//
+// HasBlockHeaderFields
+//================================================================//
 
 //----------------------------------------------------------------//
-Digest BlockHeader::calculateCharm ( const Digest& pose, const Digest& visage ) {
+Digest HasBlockHeaderFields::calculateCharm ( const Digest& pose, const Digest& visage ) {
 
     // CHARM = POSE ^ VISAGE
 
@@ -73,6 +53,92 @@ Digest BlockHeader::calculateCharm ( const Digest& pose, const Digest& visage ) 
 //    printf ( "CHARM:  %s\n", charm.toHex ().c_str ());
     
     return charm;
+}
+
+//----------------------------------------------------------------//
+string HasBlockHeaderFields::formatPoseString ( string prevPose ) const {
+
+    const BlockHeaderFields& fields = this->getFields ();
+    
+    return Format::write ( "%s:%zu:%s", fields.mMinerID.c_str (), fields.mHeight, prevPose.c_str ());
+}
+
+//----------------------------------------------------------------//
+string HasBlockHeaderFields::getCharmTag () const {
+
+    return this->getCharm ().toHex ().substr ( 0, 6 );
+}
+
+//----------------------------------------------------------------//
+const BlockHeaderFields& HasBlockHeaderFields::getFields () const {
+    return HasBlockHeader_getFields ();
+}
+
+//----------------------------------------------------------------//
+Digest HasBlockHeaderFields::getNextCharm ( const Digest& visage ) const {
+
+    return HasBlockHeaderFields::calculateCharm ( this->getPose (), visage );
+}
+
+//----------------------------------------------------------------//
+time_t HasBlockHeaderFields::getNextTime () const {
+
+    const BlockHeaderFields& fields = this->getFields ();
+    
+    return fields.mTime + fields.mBlockDelay;
+}
+
+//----------------------------------------------------------------//
+HasBlockHeaderFields::HasBlockHeaderFields () {
+}
+
+//----------------------------------------------------------------//
+HasBlockHeaderFields::~HasBlockHeaderFields () {
+}
+
+//----------------------------------------------------------------//
+Digest HasBlockHeaderFields::hashPose ( string prevPose ) const {
+
+    return Digest ( this->formatPoseString ( prevPose ));
+}
+
+//----------------------------------------------------------------//
+bool HasBlockHeaderFields::isGenesis () const {
+
+    return ( this->getHeight () == 0 );
+}
+
+//----------------------------------------------------------------//
+bool HasBlockHeaderFields::isInRewriteWindow ( time_t now ) const {
+
+    const BlockHeaderFields& fields = this->getFields ();
+    
+    double diff = difftime ( now, fields.mTime );
+    return diff < fields.mRewriteWindow;
+}
+
+//----------------------------------------------------------------//
+bool HasBlockHeaderFields::isParent ( const BlockHeader& block ) const {
+
+    return ( this->getDigest () == block.mPrevDigest ); // TODO: does not need to be constant time
+}
+
+//================================================================//
+// BlockHeader
+//================================================================//
+
+//----------------------------------------------------------------//
+void BlockHeader::applyEntropy ( Ledger& ledger ) const {
+
+    ledger.setEntropyString ( this->mPose.toString ());
+}
+
+//----------------------------------------------------------------//
+BlockHeader::BlockHeader () {
+}
+
+//----------------------------------------------------------------//
+BlockHeader::~BlockHeader () {
 }
 
 //----------------------------------------------------------------//
@@ -104,46 +170,19 @@ bool BlockHeader::equals ( const BlockHeader& rhs ) const {
 }
 
 //----------------------------------------------------------------//
-string BlockHeader::formatPoseString ( string prevPose ) const {
-
-    return Format::write ( "%s:%zu:%s", this->mMinerID.c_str (), this->mHeight, prevPose.c_str ());
-}
-
-//----------------------------------------------------------------//
-string BlockHeader::getCharmTag () const {
-
-    return this->getCharm ().toHex ().substr ( 0, 6 );
-}
-
-//----------------------------------------------------------------//
-Digest BlockHeader::getNextCharm ( const Digest& visage ) const {
-
-    return BlockHeader::calculateCharm ( this->mPose, visage );
-}
-
-//----------------------------------------------------------------//
-Digest BlockHeader::hashPose ( string prevPose ) const {
-
-    return Digest ( this->formatPoseString ( prevPose ));
-}
-
-//----------------------------------------------------------------//
-bool BlockHeader::isGenesis () const {
-
-    return ( this->mHeight == 0 );
-}
-
-//----------------------------------------------------------------//
-bool BlockHeader::isInRewriteWindow ( time_t now ) const {
-
-    double diff = difftime ( now, this->mTime );
-    return diff < this->mRewriteWindow;
-}
-
-//----------------------------------------------------------------//
-bool BlockHeader::isParent ( const BlockHeader& block ) const {
-
-    return ( this->mDigest == block.mPrevDigest ); // TODO: does not need to be constant time
+void BlockHeader::initialize ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKeyPair& key ) {
+        
+    this->mMinerID      = minerID;
+    this->mTime         = now;
+    
+    if ( prevBlockHeader ) {
+        
+        this->mHeight       = prevBlockHeader->mHeight + 1;
+        this->mPrevDigest   = prevBlockHeader->mDigest;
+        
+        this->mPose         = key.sign ( this->hashPose ( prevBlockHeader->mPose.toHex ()), Digest::HASH_ALGORITHM_SHA256 );
+        this->mCharm        = prevBlockHeader->getNextCharm ( visage );
+    }
 }
 
 //================================================================//
@@ -199,6 +238,12 @@ void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& seria
         serializer.serialize ( "digest",        this->mDigest );
         serializer.serialize ( "signature",     this->mSignature );
     }
+}
+
+//----------------------------------------------------------------//
+const BlockHeaderFields& BlockHeader::HasBlockHeader_getFields () const {
+
+    return *this;
 }
 
 } // namespace Volition

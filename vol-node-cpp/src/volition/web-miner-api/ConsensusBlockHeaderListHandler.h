@@ -33,13 +33,13 @@ public:
             ScopedMinerLock scopedLock ( this->mWebMiner );
             BlockTreeCursor cursor = this->mWebMiner->getWorkingLedgerTag ();
                         
-            size_t top = this->optQuery ( "height", ( *cursor ).getHeight ()) + 1; // this handles "forward" and "backward" cases alike
+            size_t top = this->optQuery ( "height", cursor.getHeight ()) + 1; // this handles "forward" and "backward" cases alike
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
                         
             SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
-            while ( cursor.exists () && ( base <= ( *cursor ).getHeight ())) {
-                if (( *cursor ).getHeight () < top ) {
-                    shared_ptr < const BlockHeader > header = make_shared < BlockHeader >( *cursor.getBlockHeader ());
+            while ( cursor.hasHeader () && ( base <= cursor.getHeight ())) {
+                if ( cursor.getHeight () < top ) {
+                    shared_ptr < const BlockHeader > header = make_shared < BlockHeader >( cursor.getHeader ());
                     headers.push_front ( header );
                 }
                 cursor = cursor.getParent ();

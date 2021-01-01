@@ -18,9 +18,9 @@ namespace Simulation {
 void Simulator::extendOptimal ( size_t height ) {
 
     BlockTreeCursor tail = *this->mOptimalTag;
-    assert ( tail.exists ());
+    assert ( tail.hasHeader ());
     
-    while (( *tail ).getHeight () < height ) {
+    while ( tail.getHeight () < height ) {
                 
         shared_ptr < const Block > parent = tail.getBlock ();
         
@@ -37,7 +37,8 @@ void Simulator::extendOptimal ( size_t height ) {
             }
         }
         
-        shared_ptr < Block > child = make_shared < Block >(
+        shared_ptr < Block > child = make_shared < Block >();
+        child->initialize (
             bestMiner->getMinerID (),
             bestMiner->getVisage (),
             0,
@@ -327,7 +328,7 @@ void Simulator::step () {
     this->mAnalysis.update ( tree );
     
     BlockTreeCursor tail = this->mMiners [ 0 ]->getBestProvisional ();
-    this->extendOptimal (( *tail ).getHeight ());
+    this->extendOptimal ( tail.getHeight ());
     
     this->report ();
     

@@ -16,6 +16,7 @@ class Transaction;
 // Block
 //================================================================//
 class Block :
+    public virtual AbstractSerializable,
     public BlockHeader {
 public:
 
@@ -51,7 +52,6 @@ public:
     void                affirmHash                          ();
     bool                apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
                         Block                               ();
-                        Block                               ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKeyPair& key );
                         ~Block                              ();
     size_t              countTransactions                   () const;
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );

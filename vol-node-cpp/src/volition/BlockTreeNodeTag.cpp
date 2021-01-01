@@ -14,7 +14,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 BlockTreeNodeTag& BlockTreeNodeTag::operator = ( BlockTreeCursor other ) {
 
-    if ( other.exists ()) {
+    if ( other.hasHeader ()) {
         assert ( other.mTree );
         assert ( !this->mBlockTree || ( this->mBlockTree == other.mTree ));
         other.mTree->tag ( *this, other );
@@ -39,7 +39,7 @@ BlockTreeNodeTag& BlockTreeNodeTag::operator = ( const BlockTreeNodeTag& other )
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTreeNodeTag::operator * () const {
 
-    return this->get ();
+    return this->getCursor ();
 }
 
 //----------------------------------------------------------------//
@@ -60,25 +60,35 @@ BlockTreeNodeTag::~BlockTreeNodeTag () {
 //----------------------------------------------------------------//
 bool BlockTreeNodeTag::equals ( const BlockTreeNodeTag& rhs ) const {
 
-    return ( this->get ().equals ( rhs.get ()));
+    return ( this->getCursor ().equals ( rhs.getCursor ()));
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeNodeTag::exists () const {
-
-    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTagName ( this->mTagName ).exists ());
-}
-
-//----------------------------------------------------------------//
-BlockTreeCursor BlockTreeNodeTag::get () const {
+BlockTreeCursor BlockTreeNodeTag::getCursor () const {
 
     return this->mBlockTree ? this->mBlockTree->findCursorForTagName ( this->mTagName ) : BlockTreeCursor ();
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeNodeTag::hasCursor () const {
+
+    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTagName ( this->mTagName ).hasHeader ());
 }
 
 //----------------------------------------------------------------//
 void BlockTreeNodeTag::setTagName ( string tagName ) {
 
     this->mTagName = tagName;
+}
+
+//================================================================//
+// virtual
+//================================================================//
+
+//----------------------------------------------------------------//
+const BlockHeaderFields& BlockTreeNodeTag::HasBlockHeader_getFields () const {
+
+    return this->getCursor ().getFields ();
 }
 
 } // namespace Volition

@@ -13,20 +13,20 @@ namespace Volition {
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getFullLength () const {
 
-    return ( **this->mTop ).getHeight () - ( **this->mHead ).getHeight ();
+    return ( this->mTop->getHeight () - this->mHead->getHeight ());
 }
 
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getRewriteDefeatCount () const {
 
-    time_t window = ( **this->mHead ).getRewriteWindow (); // TODO: account for different rewrite windows in segment
-    return ( size_t )ceil ( difftime (( **this->mTop ).getTime (), ( **this->mHead ).getTime ()) / window );
+    time_t window = this->mHead->getRewriteWindow (); // TODO: account for different rewrite windows in segment
+    return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window );
 }
 
 //----------------------------------------------------------------//
 size_t BlockTreeSegment::getSegLength () const {
 
-    return ( **this->mTail ).getHeight () - ( **this->mHead ).getHeight ();
+    return this->mTail->getHeight () - this->mHead->getHeight ();
 }
 
 //================================================================//
@@ -134,7 +134,7 @@ BlockTree::~BlockTree () {
 //----------------------------------------------------------------//
 BlockTree::CanAppend BlockTree::checkAppend ( const BlockHeader& header ) const {
 
-    if ( header.getHeight () < ( **this->mRoot ).getHeight ()) return REFUSED;
+    if ( header.getHeight () < this->mRoot->getHeight ()) return REFUSED;
 
     string hash = header.getDigest ().toHex ();
 
@@ -148,7 +148,7 @@ BlockTree::CanAppend BlockTree::checkAppend ( const BlockHeader& header ) const 
 
         if ( !prevNode ) return MISSING_PARENT;
         if ( prevNode->mMeta == BlockTreeNode::META_REFUSED ) return REFUSED;
-        if ( header.getTime () < ( **prevNode ).getNextTime ()) return TOO_SOON;
+        if ( header.getTime () < prevNode->getNextTime ()) return TOO_SOON;
     }
     return APPEND_OK;
 }

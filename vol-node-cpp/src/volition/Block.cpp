@@ -163,11 +163,6 @@ Block::Block () {
 }
 
 //----------------------------------------------------------------//
-Block::Block ( string minerID, const Digest& visage, time_t now, const Block* prevBlock, const CryptoKeyPair& key ) :
-    BlockHeader ( minerID, visage, now, prevBlock, key ) {
-}
-
-//----------------------------------------------------------------//
 Block::~Block () {
 }
 

@@ -16,7 +16,8 @@ void SimMiner::extendChain ( string charmHex, time_t time ) {
 
     shared_ptr < const Block > prevBlock = this->mWorkingLedger->getBlock ();
 
-    shared_ptr < Block > block = make_shared < Block >(
+    shared_ptr < Block > block = make_shared < Block >();
+    block->initialize (
         this->mMinerID,
         this->mVisage,
         time,
@@ -44,12 +45,13 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
     assert ( oldBlock );
     
     BlockTreeCursor prevNode = (( const BlockTree& )this->mBlockTree ).findCursorForHash ( oldBlock->getPrevDigest ());
-    assert ( prevNode.exists ());
+    assert ( prevNode.hasHeader ());
     
     shared_ptr < const Block > prevBlock = prevNode.getBlock ();
     assert ( prevBlock );
     
-    shared_ptr < Block > block = make_shared < Block >(
+    shared_ptr < Block > block = make_shared < Block >();
+    block->initialize (
         this->mMinerID,
         this->mVisage,
         oldBlock->getTime (),
@@ -71,7 +73,7 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
 //----------------------------------------------------------------//
 void SimMiner::rewindChain ( size_t height ) {
 
-    while (( **this->mBestProvisional ).getHeight () > height ) {
+    while ( this->mBestProvisional.getHeight () > height ) {
         this->mBestProvisional = ( *this->mBestProvisional ).getParent ();
     }
     this->composeChain ();
@@ -87,8 +89,8 @@ void SimMiner::setActive ( bool active ) {
 void SimMiner::setCharm ( size_t height, string charmHex ) {
 
     BlockTreeCursor cursor = *this->mBestProvisional;
-    while ( cursor.exists ()) {
-        size_t cursorHeight = ( *cursor ).getHeight ();
+    while ( cursor.hasHeader ()) {
+        size_t cursorHeight = cursor.getHeight ();
         if ( cursorHeight == height ) {
 
             shared_ptr < Block > block = this->replaceBlock ( cursor.getBlock (), charmHex );
@@ -108,11 +110,11 @@ void SimMiner::scrambleRemotes () {
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
                 
-        size_t height = ( **remoteMiner->mTag ).getHeight ();
+        size_t height = remoteMiner->mTag.getHeight ();
         height = ( size_t )floor ( height * UnsecureRandom::get ().random ());
         
         BlockTreeCursor cursor = *remoteMiner->mTag;
-        while (( *cursor ).getHeight () > height ) {
+        while ( cursor.getHeight () > height ) {
             cursor = cursor.getParent ();
         }
         

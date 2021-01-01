@@ -105,17 +105,11 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             
             const BlockTree& blockTree = miner->getBlockTree ();
             BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
-            if ( cursor.exists ()) {
+            if ( cursor.hasHeader ()) {
                 block = cursor.getBlock ();
             }
             
             if ( !block ) {
-            
-                shared_ptr < const Block > check = miner->getWorkingLedger ().getBlock ( request.mHeight );
-                if ( check ) {
-                    printf ( "%s %s\n", check->getDigest ().toHex ().c_str (), check->getCharmTag ().c_str ());
-                }
-            
                 block = miner->getWorkingLedger ().getBlock ( hash );
             }
             
@@ -135,8 +129,8 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             BlockTreeCursor cursor = miner->getWorkingLedgerTag ();
             
             list < shared_ptr < const BlockHeader >> headers;
-            while ( cursor.exists () && ( headers.size () < HEADER_BATCH_SIZE )) {
-                headers.push_back ( make_shared < BlockHeader >( *cursor ));
+            while ( cursor.hasHeader () && ( headers.size () < HEADER_BATCH_SIZE )) {
+                headers.push_back ( make_shared < BlockHeader >( cursor.getHeader ()));
                 cursor = cursor.getParent ();
             }
             client->enqueueHeaderResponse ( request, headers );
@@ -151,9 +145,9 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
             
             list < shared_ptr < const BlockHeader >> headers;
-            while ( cursor.exists () && ( base <= ( *cursor ).getHeight ())) {
-                if (( *cursor ).getHeight () < top ) {
-                    headers.push_back ( make_shared < BlockHeader >( *cursor ));
+            while ( cursor.hasHeader () && ( base <= cursor.getHeight ())) {
+                if ( cursor.getHeight () < top ) {
+                    headers.push_back ( make_shared < BlockHeader >( cursor.getHeader ()));
                 }
             }
             client->enqueueHeaderResponse ( request, headers );
