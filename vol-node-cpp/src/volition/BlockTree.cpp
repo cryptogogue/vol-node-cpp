@@ -169,11 +169,11 @@ void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTree
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
 
-    string tagName = tag.mTagName;
+    string tagName = tag.mName;
     assert ( tagName.size ());
-    assert (( tag.mBlockTree == NULL ) || ( tag.mBlockTree == this ));
+    assert (( tag.mTree == NULL ) || ( tag.mTree == this ));
     
-    tag.mBlockTree = this;
+    tag.mTree = this;
 
     if ( !header ) return BlockTreeCursor ();
 
@@ -291,13 +291,13 @@ BlockTreeCursor BlockTree::AbstractBlockTree_findCursorForHash ( string hash ) c
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTree::AbstractBlockTree_findCursorForTag ( const BlockTreeTag& tag ) const {
 
-    assert ( tag.mTagName.size () > 0 );
+    assert ( tag.mName.size () > 0 );
 
-    if ( tag.mBlockTree ) {
+    if ( tag.mTree ) {
 
-        assert ( tag.mBlockTree == this );
+        assert ( tag.mTree == this );
 
-        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.mTagName );
+        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.mName );
         if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
     }
     return BlockTreeCursor ();
@@ -335,15 +335,15 @@ void BlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, BlockTre
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
 
-    string tagName = tag.mTagName;
+    string tagName = tag.mName;
     assert ( tagName.size ());
     
-    assert (( tag.mBlockTree == NULL ) || ( tag.mBlockTree == this ));
+    assert (( tag.mTree == NULL ) || ( tag.mTree == this ));
     
     if ( cursor.mTree ) {
     
         assert ( cursor.mTree == this );
-        tag.mBlockTree = this;
+        tag.mTree = this;
         
         BlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
         assert ( node );
@@ -357,19 +357,19 @@ BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const Bloc
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) {
 
-    assert ( tag.mTagName.size ());
-    assert ( otherTag.mTagName.size ());
+    assert ( tag.mName.size ());
+    assert ( otherTag.mName.size ());
 
-    assert (( tag.mBlockTree == NULL ) || ( tag.mBlockTree == this ));
+    assert (( tag.mTree == NULL ) || ( tag.mTree == this ));
         
-    if ( otherTag.mBlockTree ) {
+    if ( otherTag.mTree ) {
     
-        assert ( otherTag.mBlockTree == this );
-        tag.mBlockTree = this;
+        assert ( otherTag.mTree == this );
+        tag.mTree = this;
         
-        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTag.mTagName );
+        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTag.mName );
         assert ( nodeIt != this->mTags.cend ());
-        this->mTags [ tag.mTagName ] = nodeIt->second;
+        this->mTags [ tag.mName ] = nodeIt->second;
         
         return *nodeIt->second;
     }

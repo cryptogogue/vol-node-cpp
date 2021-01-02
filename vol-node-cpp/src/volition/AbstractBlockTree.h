@@ -35,11 +35,6 @@ private:
 
     //----------------------------------------------------------------//
     BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
-    int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const;
-    BlockTreeCursor             findCursorForTag        ( const BlockTreeTag& tag ) const;
-    BlockTreeCursor             findRoot                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
-    BlockTreeCursor             getParent               ( const BlockTreeCursor& cursor ) const;
-    BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeTag& otherTag );
 
     //----------------------------------------------------------------//
     virtual BlockTreeCursor         AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) = 0;
@@ -63,9 +58,14 @@ public:
                                 AbstractBlockTree       ();
     virtual                     ~AbstractBlockTree      ();
     CanAppend                   checkAppend             ( const BlockHeader& header ) const;
+    int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const;
     BlockTreeCursor             findCursorForHash       ( string hash ) const;
+    BlockTreeCursor             findCursorForTag        ( const BlockTreeTag& tag ) const;
+    BlockTreeCursor             findRoot                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
+    BlockTreeCursor             getParent               ( const BlockTreeCursor& cursor ) const;
     void                        mark                    ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status );
     BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeCursor& cursor );
+    BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeTag& otherTag );
     BlockTreeCursor             update                  ( shared_ptr < const Block > block );
 };
 

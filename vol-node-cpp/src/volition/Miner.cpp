@@ -26,7 +26,7 @@ bool BlockSearch::step ( Miner& miner ) {
 
     if ( SEARCH_SIZE <= this->mActiveMiners.size ()) return true;
 
-    BlockTreeCursor cursor = miner.mBlockTree.findCursorForHash ( this->mHash );
+    BlockTreeCursor cursor = miner.mBlockTree->findCursorForHash ( this->mHash );
     if ( !( cursor.hasHeader () && cursor.checkStatus (( BlockTreeCursor::Status )( BlockTreeCursor::STATUS_NEW | BlockTreeCursor::STATUS_MISSING )))) return false;
 
     set < shared_ptr < RemoteMiner >> remoteMiners;
@@ -61,7 +61,7 @@ bool BlockSearch::step ( Miner& miner ) {
     }
     
     if ( this->mActiveMiners.size () == 0 ) {
-        miner.mBlockTree.mark ( cursor, BlockTreeCursor::STATUS_MISSING );
+        miner.mBlockTree->mark ( cursor, BlockTreeCursor::STATUS_MISSING );
         return false;
     }
     return true;
@@ -396,7 +396,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
     }
 
     if ( extendFrom.hasHeader ()) {
-        return this->mBlockTree.affirmProvisional ( tag, this->prepareProvisional ( extendFrom.getHeader (), now ));
+        return this->mBlockTree->affirmProvisional ( tag, this->prepareProvisional ( extendFrom.getHeader (), now ));
     }
     return tail; // use the chain as-is.
 }
@@ -453,6 +453,8 @@ Miner::Miner () :
     this->mBestBranchTag.setTagName ( "best" );
     
     MinerLaunchTests::checkEnvironment ();
+    
+    this->mBlockTree = make_shared < BlockTree >();
 }
 
 //----------------------------------------------------------------//
@@ -486,10 +488,10 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
         this->mWorkingLedger = ledger;
         this->mPermanentLedger = *this->mWorkingLedger;
 
-        this->mBlockTree.affirmBlock ( this->mWorkingLedgerTag, topBlock );
+        this->mBlockTree->affirmBlock ( this->mWorkingLedgerTag, topBlock );
         
-        this->mPermanentLedgerTag       = this->mWorkingLedgerTag;
-        this->mBestBranchTag          = this->mWorkingLedgerTag;
+        this->mPermanentLedgerTag   = this->mWorkingLedgerTag;
+        this->mBestBranchTag        = this->mWorkingLedgerTag;
     }
     
     this->setGenesis ( block );
@@ -559,7 +561,7 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     bool result = this->mWorkingLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
-    BlockTreeCursor node = this->mBlockTree.affirmBlock ( this->mBestBranchTag, block );
+    BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
     assert ( node.hasHeader ());
         
     if ( this->mWorkingLedgerTag.equals ( this->mBestBranchTag )) {
@@ -770,7 +772,7 @@ void Miner::updateBestBranch ( time_t now ) {
         assert ( !( *remoteMiner->mImproved ).isMissingOrInvalid ());
         
         if ( BlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
-            this->mBlockTree.tag ( this->mBestBranchTag, *remoteMiner->mImproved );
+            this->mBlockTree->tag ( this->mBestBranchTag, *remoteMiner->mImproved );
         }
     }
     
@@ -870,7 +872,7 @@ void Miner::updateRemoteMiners () {
         
         this->mOnlineMiners.insert ( remoteMiner );;
         
-        remoteMiner->updateHeaders ( this->mBlockTree );
+        remoteMiner->updateHeaders ( *this->mBlockTree );
         
         if ( remoteMiner->mTag.hasCursor ()) {
             this->mActiveMinerURLs.insert ( remoteMiner->mURL );
@@ -903,7 +905,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
         case MiningMessengerRequest::REQUEST_BLOCK: {
             
             assert ( remoteMiner );
-            this->mBlockTree.update ( response.mBlock );
+            this->mBlockTree->update ( response.mBlock );
             assert ( this->mBlockSearches.find ( request.mBlockDigest.toHex ()) != this->mBlockSearches.end ());
             this->mBlockSearches [ request.mBlockDigest.toHex ()].step ( remoteMiner );
             break;
@@ -931,8 +933,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
                 if ( header->getTime () > now ) continue; // ignore headers from the future
                 
                 if ( header->getHeight () == 0 ) {
-                    BlockTreeNode::ConstPtr root = this->mBlockTree.getRoot ();
-                    if (( *root ).getDigest () != header->getDigest ()) {
+                    if ( header->getDigest ().toHex () != this->mWorkingLedger->getGenesisHash ()) {
                         remoteMiner->setError ( "Unrecoverable error: genesis block mismatch." );
                         break;
                     }

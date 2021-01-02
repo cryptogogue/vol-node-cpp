@@ -94,7 +94,7 @@ void SimMiner::setCharm ( size_t height, string charmHex ) {
         if ( cursorHeight == height ) {
 
             shared_ptr < Block > block = this->replaceBlock ( cursor.getBlock (), charmHex );
-            this->mBlockTree.affirmBlock ( this->mBestBranchTag, block );
+            this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
             this->composeChain ();
             return;
         }

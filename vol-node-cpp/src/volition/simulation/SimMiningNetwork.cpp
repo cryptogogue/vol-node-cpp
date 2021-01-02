@@ -103,16 +103,11 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             string hash = request.mBlockDigest.toHex ();
             shared_ptr < const Block > block = NULL;
             
-            const BlockTree& blockTree = miner->getBlockTree ();
+            const AbstractBlockTree& blockTree = miner->getBlockTree ();
             BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
             if ( cursor.hasHeader ()) {
                 block = cursor.getBlock ();
             }
-            
-            if ( !block ) {
-                block = miner->getWorkingLedger ().getBlock ( hash );
-            }
-            
             client->enqueueBlockResponse ( request, block );
             break;
         }

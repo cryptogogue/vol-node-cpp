@@ -140,12 +140,12 @@ protected:
     set < string >                                  mHeaderSearches;
     bool                                            mNetworkSearch;
     
-    BlockTree                                       mBlockTree;
+    shared_ptr < AbstractBlockTree >                mBlockTree;
     
     // the "working" legder is a "complete" chain (in that all blocks are accounted for),
     // but still likely to revert if a superior branch is discovered.
     shared_ptr < Ledger >                           mWorkingLedger;
-    BlockTreeTag                                mWorkingLedgerTag;
+    BlockTreeTag                                    mWorkingLedgerTag;
     
     // the "permanent" ledger and is chosen by heurestic and represents a minimum reversion
     // point, i.e. the earliest block the miner will revert to, even if presented a superior
@@ -209,7 +209,7 @@ public:
     };
     
     GET ( BlockTreeCursor,                                  BestProvisional,            mBestBranchTag.getCursor ())
-    GET ( const BlockTree&,                                 BlockTree,                  mBlockTree )
+    GET ( const AbstractBlockTree&,                         BlockTree,                  *mBlockTree )
     GET ( const Ledger&,                                    HighConfidenceLedger,       mPermanentLedger )
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                           Reward,                     mConfig.mReward )

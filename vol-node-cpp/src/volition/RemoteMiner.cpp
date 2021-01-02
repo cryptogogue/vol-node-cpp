@@ -59,7 +59,7 @@ void RemoteMiner::setMinerID ( string minerID ) {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::updateHeaders ( BlockTree& blockTree ) {
+void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
     
     // process the queue
     size_t accepted = 0;

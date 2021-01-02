@@ -23,9 +23,9 @@ BlockTreeTag& BlockTreeTag::operator = ( BlockTreeCursor other ) {
 //----------------------------------------------------------------//
 BlockTreeTag& BlockTreeTag::operator = ( const BlockTreeTag& other ) {
 
-    if ( other.mBlockTree ) {
-        this->mBlockTree = other.mBlockTree;
-        other.mBlockTree->tag ( *this, other );
+    if ( other.mTree ) {
+        this->mTree = other.mTree;
+        other.mTree->tag ( *this, other );
     }
     return *this;
 }
@@ -38,13 +38,13 @@ BlockTreeCursor BlockTreeTag::operator * () const {
 
 //----------------------------------------------------------------//
 BlockTreeTag::BlockTreeTag () :
-    mBlockTree ( NULL ) {
+    mTree ( NULL ) {
 }
 
 //----------------------------------------------------------------//
 BlockTreeTag::BlockTreeTag ( BlockTreeTag& other ) :
-    mTagName ( other.mTagName ),
-    mBlockTree ( other.mBlockTree ) {
+    mTree ( other.mTree ),
+    mName ( other.mName ) {
 }
 
 //----------------------------------------------------------------//
@@ -60,19 +60,19 @@ bool BlockTreeTag::equals ( const BlockTreeTag& rhs ) const {
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTreeTag::getCursor () const {
 
-    return this->mBlockTree ? this->mBlockTree->findCursorForTag ( *this ) : BlockTreeCursor ();
+    return this->mTree ? this->mTree->findCursorForTag ( *this ) : BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
 bool BlockTreeTag::hasCursor () const {
 
-    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTag ( *this ).hasHeader ());
+    return this->mTree && ( this->mName.size ()) && ( this->mTree->findCursorForTag ( *this ).hasHeader ());
 }
 
 //----------------------------------------------------------------//
 void BlockTreeTag::setTagName ( string tagName ) {
 
-    this->mTagName = tagName;
+    this->mName = tagName;
 }
 
 //================================================================//

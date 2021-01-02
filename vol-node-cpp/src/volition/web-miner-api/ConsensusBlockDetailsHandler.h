@@ -32,7 +32,7 @@ public:
 
             ScopedMinerLock scopedLock ( this->mWebMiner );
 
-            const BlockTree& blockTree = this->mWebMiner->getBlockTree ();
+            const AbstractBlockTree& blockTree = this->mWebMiner->getBlockTree ();
             BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
             shared_ptr < const Block > block = cursor.getBlock ();
 

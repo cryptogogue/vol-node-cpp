@@ -21,8 +21,8 @@ private:
 
     friend class BlockTree;
 
-    string                      mTagName;
-    BlockTree*                  mBlockTree;
+    BlockTree*                  mTree;
+    string                      mName;
 
     //----------------------------------------------------------------//
     const BlockHeaderFields&    HasBlockHeader_getFields        () const override;

@@ -34,8 +34,8 @@ public:
     };
 
     string                      mURL;
-    BlockTreeTag            mTag;
-    BlockTreeTag            mImproved;
+    BlockTreeTag                mTag;
+    BlockTreeTag                mImproved;
     NetworkState                mNetworkState;
     string                      mMessage;
 
@@ -51,7 +51,7 @@ public:
     void            reset                   ();
     void            setError                ( string message = "" );
     void            setMinerID              ( string minerID );
-    void            updateHeaders           ( BlockTree& blockTree );
+    void            updateHeaders           ( AbstractBlockTree& blockTree );
 };
 
 } // namespace Volition
