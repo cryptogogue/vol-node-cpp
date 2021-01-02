@@ -7,7 +7,7 @@
 #include <volition/common.h>
 #include <volition/AbstractMiningMessenger.h>
 #include <volition/Accessors.h>
-#include <volition/BlockTree.h>
+#include <volition/AbstractBlockTree.h>
 #include <volition/CryptoKey.h>
 #include <volition/Ledger.h>
 #include <volition/RemoteMiner.h>

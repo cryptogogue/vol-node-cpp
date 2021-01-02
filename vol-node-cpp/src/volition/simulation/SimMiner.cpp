@@ -44,7 +44,7 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
     
     assert ( oldBlock );
     
-    BlockTreeCursor prevNode = (( const BlockTree& )this->mBlockTree ).findCursorForHash ( oldBlock->getPrevDigest ());
+    BlockTreeCursor prevNode = this->mBlockTree->findCursorForHash ( oldBlock->getPrevDigest ());
     assert ( prevNode.hasHeader ());
     
     shared_ptr < const Block > prevBlock = prevNode.getBlock ();

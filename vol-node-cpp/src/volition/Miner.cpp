@@ -11,6 +11,8 @@
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
 
+#include <volition/BlockTree.h>
+
 namespace Volition {
 
 //================================================================//

@@ -5,11 +5,7 @@
 #define VOLITION_MINERACTIVITY_H
 
 #include <volition/common.h>
-#include <volition/Block.h>
-#include <volition/BlockTree.h>
-#include <volition/Ledger.h>
 #include <volition/Miner.h>
-#include <volition/Transaction.h>
 
 namespace Volition {
 
