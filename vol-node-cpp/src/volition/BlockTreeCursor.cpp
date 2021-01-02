@@ -2,7 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
-#include <volition/BlockTree.h>
+#include <volition/InMemoryBlockTree.h>
 #include <volition/BlockTreeCursor.h>
 
 // To compare chains:
@@ -37,6 +37,12 @@ BlockTreeCursor::~BlockTreeCursor () {
 bool BlockTreeCursor::checkStatus ( Status status ) const {
 
     return ( this->mStatus & status );
+}
+
+//----------------------------------------------------------------//
+bool BlockTreeCursor::checkTree ( const AbstractBlockTree* tree ) const {
+
+    return (( this->mTree == NULL) || ( this->mTree == tree ));
 }
 
 //----------------------------------------------------------------//

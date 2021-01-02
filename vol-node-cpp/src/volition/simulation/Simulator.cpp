@@ -281,7 +281,7 @@ Simulator::Simulator () :
     mStepCount ( 0 ),
     mTimeStep ( 1 ) {
     
-    this->mOptimalTag.setTagName ( "optimal" );
+    this->mOptimalTag.setName ( "optimal" );
 }
 
 //----------------------------------------------------------------//

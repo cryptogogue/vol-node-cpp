@@ -5,12 +5,12 @@
 #define VOLITION_BLOCKTREETAG_H
 
 #include <volition/common.h>
+#include <volition/Accessors.h>
 #include <volition/BlockTreeCursor.h>
 
 namespace Volition {
 
-class BlockTree;
-class BlockTreeNode;
+class AbstractBlockTree;
 
 //================================================================//
 // BlockTreeTag
@@ -19,15 +19,18 @@ class BlockTreeTag :
     public HasBlockHeaderFields {
 private:
 
-    friend class BlockTree;
+    friend class AbstractBlockTree;
 
-    BlockTree*                  mTree;
+    AbstractBlockTree*          mTree;
     string                      mName;
-
+    
     //----------------------------------------------------------------//
     const BlockHeaderFields&    HasBlockHeader_getFields        () const override;
 
 public:
+
+    GET_SET ( string,               Name,       mName )
+    GET_SET ( AbstractBlockTree*,   Tree,       mTree )
 
     //----------------------------------------------------------------//
     BlockTreeTag&               operator =                      ( BlockTreeCursor other );
@@ -36,10 +39,11 @@ public:
                                 BlockTreeTag                    ();
                                 BlockTreeTag                    ( BlockTreeTag& other );
                                 ~BlockTreeTag                   ();
+    bool                        checkTree                       ( const AbstractBlockTree* tree ) const;
     bool                        equals                          ( const BlockTreeTag& rhs ) const;
     BlockTreeCursor             getCursor                       () const;
     bool                        hasCursor                       () const;
-    void                        setTagName                      ( string tagName );
+    bool                        hasName                         () const;
 };
 
 } // namespace Volition

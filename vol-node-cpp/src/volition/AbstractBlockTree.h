@@ -9,7 +9,6 @@
 #include <volition/Accessors.h>
 #include <volition/Block.h>
 #include <volition/BlockTreeCursor.h>
-#include <volition/BlockTreeNode.h>
 #include <volition/BlockTreeTag.h>
 
 namespace Volition {
@@ -28,13 +27,14 @@ public:
         TOO_SOON,
     };
 
-private:
+protected:
 
     friend class BlockTreeCursor;
     friend class BlockTreeTag;
 
     //----------------------------------------------------------------//
     BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
+    void                        setTagTree              ( BlockTreeTag& tag );
 
     //----------------------------------------------------------------//
     virtual BlockTreeCursor         AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) = 0;

@@ -1,9 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/AbstractBlockTree.h>
 #include <volition/Block.h>
-#include <volition/BlockTree.h>
-#include <volition/BlockTreeNode.h>
 
 namespace Volition {
 
@@ -52,6 +51,12 @@ BlockTreeTag::~BlockTreeTag () {
 }
 
 //----------------------------------------------------------------//
+bool BlockTreeTag::checkTree ( const AbstractBlockTree* tree ) const {
+
+    return (( this->mTree == NULL) || ( this->mTree == tree ));
+}
+
+//----------------------------------------------------------------//
 bool BlockTreeTag::equals ( const BlockTreeTag& rhs ) const {
 
     return ( this->getCursor ().equals ( rhs.getCursor ()));
@@ -70,9 +75,9 @@ bool BlockTreeTag::hasCursor () const {
 }
 
 //----------------------------------------------------------------//
-void BlockTreeTag::setTagName ( string tagName ) {
+bool BlockTreeTag::hasName () const {
 
-    this->mName = tagName;
+    return ( this->mName.size () > 0 );
 }
 
 //================================================================//

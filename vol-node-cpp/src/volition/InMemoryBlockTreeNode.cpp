@@ -2,8 +2,8 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
-#include <volition/BlockTree.h>
-#include <volition/BlockTreeNode.h>
+#include <volition/InMemoryBlockTree.h>
+#include <volition/InMemoryBlockTreeNode.h>
 
 // To compare chains:
 // 1. Find the common root.
@@ -19,24 +19,26 @@
 namespace Volition {
 
 //================================================================//
-// BlockTreeNode
+// InMemoryBlockTreeNode
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTreeNode::BlockTreeNode () {
+InMemoryBlockTreeNode::InMemoryBlockTreeNode () {
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode::~BlockTreeNode () {
+InMemoryBlockTreeNode::~InMemoryBlockTreeNode () {
 
-    if ( this->mTree && this->mHeader ) {
-        this->mTree->mNodes.erase ( this->mHeader->getDigest ());
+    InMemoryBlockTree* tree = dynamic_cast < InMemoryBlockTree* >( this->mTree );
+
+    if ( tree && this->mHeader ) {
+        tree->mNodes.erase ( this->mHeader->getDigest ());
     }
     this->clearParent ();
 }
 
 //----------------------------------------------------------------//
-void BlockTreeNode::clearParent () {
+void InMemoryBlockTreeNode::clearParent () {
 
     if ( this->mParent ) {
         this->mParent->mChildren.erase ( this );
@@ -45,7 +47,7 @@ void BlockTreeNode::clearParent () {
 }
 
 //----------------------------------------------------------------//
-void BlockTreeNode::mark ( BlockTreeNode::Status status ) {
+void InMemoryBlockTreeNode::mark ( BlockTreeCursor::Status status ) {
 
     if ( status == this->mStatus ) return;
 
@@ -76,38 +78,42 @@ void BlockTreeNode::mark ( BlockTreeNode::Status status ) {
     
     this->mStatus = status;
     
-    set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
+    set < InMemoryBlockTreeNode* >::iterator childIt = this->mChildren.begin ();
     for ( ; childIt != this->mChildren.end (); ++childIt ) {
         ( *childIt )->mark ( status );
     }
 }
 
 //----------------------------------------------------------------//
-void BlockTreeNode::markComplete () {
+void InMemoryBlockTreeNode::markComplete () {
     
     if ( !this->mBlock ) return;
     if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return;
     
     this->mStatus = STATUS_COMPLETE;
     
-    set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
+    set < InMemoryBlockTreeNode* >::iterator childIt = this->mChildren.begin ();
     for ( ; childIt != this->mChildren.end (); ++childIt ) {
         ( *childIt )->markComplete ();
     }
 }
 
 //----------------------------------------------------------------//
-void BlockTreeNode::markRefused () {
+void InMemoryBlockTreeNode::markRefused () {
 
     this->mMeta = META_REFUSED;
     
     while ( this->mChildren.size ()) {
-        set < BlockTreeNode* >::iterator childIt = this->mChildren.begin ();
+        set < InMemoryBlockTreeNode* >::iterator childIt = this->mChildren.begin ();
         ( *childIt )->markRefused ();
     }
     
     this->clearParent ();
-    this->mTree->mNodes.erase ( this->mHeader->getDigest ());
+    
+    InMemoryBlockTree* tree = dynamic_cast < InMemoryBlockTree* >( this->mTree );
+    if ( tree ) {
+        tree->mNodes.erase ( this->mHeader->getDigest ());
+    }
 }
 
 } // namespace Volition

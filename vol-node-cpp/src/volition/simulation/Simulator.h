@@ -6,7 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/Block.h>
-#include <volition/BlockTree.h>
+#include <volition/InMemoryBlockTree.h>
 #include <volition/Ledger.h>
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/SimMiner.h>
@@ -44,7 +44,7 @@ protected:
     Miners                              mMiners;
     Poco::Event                         mShutdownEvent;
     
-    BlockTree                           mOptimal;
+    InMemoryBlockTree                           mOptimal;
     BlockTreeTag                        mOptimalTag;
 
     bool                                mIsPaused;

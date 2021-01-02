@@ -1,28 +1,28 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_BLOCKTREE_H
-#define VOLITION_BLOCKTREE_H
+#ifndef VOLITION_INMEMORYBLOCKTREE_H
+#define VOLITION_INMEMORYBLOCKTREE_H
 
 #include <volition/common.h>
 #include <volition/AbstractBlockTree.h>
 #include <volition/Accessors.h>
 #include <volition/Block.h>
 #include <volition/BlockTreeCursor.h>
-#include <volition/BlockTreeNode.h>
 #include <volition/BlockTreeTag.h>
+#include <volition/InMemoryBlockTreeNode.h>
 
 namespace Volition {
 
 //================================================================//
-// BlockTreeSegment
+// InMemoryBlockTreeSegment
 //================================================================//
-class BlockTreeSegment {
+class InMemoryBlockTreeSegment {
 public:
 
-    const BlockTreeNode*    mHead;
-    const BlockTreeNode*    mTail;
-    const BlockTreeNode*    mTop;
+    const InMemoryBlockTreeNode*    mHead;
+    const InMemoryBlockTreeNode*    mTail;
+    const InMemoryBlockTreeNode*    mTop;
     
     //----------------------------------------------------------------//
     size_t          getFullLength           () const;
@@ -31,39 +31,39 @@ public:
 };
 
 //================================================================//
-// BlockTreeRoot
+// InMemoryBlockTreeFork
 //================================================================//
-class BlockTreeFork {
+class InMemoryBlockTreeFork {
 public:
 
-    const BlockTreeNode*    mRoot;
-    BlockTreeSegment        mSeg0;
-    BlockTreeSegment        mSeg1;
+    const InMemoryBlockTreeNode*        mRoot;
+    InMemoryBlockTreeSegment    mSeg0;
+    InMemoryBlockTreeSegment    mSeg1;
     
     //----------------------------------------------------------------//
     size_t          getSegLength            () const;
 };
 
 //================================================================//
-// BlockTree
+// InMemoryBlockTree
 //================================================================//
-class BlockTree :
+class InMemoryBlockTree :
     public AbstractBlockTree {
 private:
 
     friend class BlockTreeCursor;
-    friend class BlockTreeNode;
+    friend class InMemoryBlockTreeNode;
     friend class BlockTreeTag;
 
-    BlockTreeNode*                                  mRoot;
-    map < string, BlockTreeNode* >                  mNodes;
-    map < string, shared_ptr < BlockTreeNode >>     mTags;
+    InMemoryBlockTreeNode*                                  mRoot;
+    map < string, InMemoryBlockTreeNode* >                  mNodes;
+    map < string, shared_ptr < InMemoryBlockTreeNode >>     mTags;
 
     //----------------------------------------------------------------//
-    BlockTreeFork               findFork                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
-    BlockTreeNode*              findNodeForHash         ( string hash );
-    const BlockTreeNode*        findNodeForHash         ( string hash ) const;
-    void                        logTreeRecurse          ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const;
+    InMemoryBlockTreeFork       findFork                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
+    InMemoryBlockTreeNode*              findNodeForHash         ( string hash );
+    const InMemoryBlockTreeNode*        findNodeForHash         ( string hash ) const;
+    void                        logTreeRecurse          ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const;
 
     //----------------------------------------------------------------//
     BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) override;
@@ -80,11 +80,11 @@ private:
 
 public:
 
-    GET ( BlockTreeNode::ConstPtr, Root, mRoot )
+    GET ( InMemoryBlockTreeNode::ConstPtr, Root, mRoot )
 
     //----------------------------------------------------------------//
-                                BlockTree               ();
-                                ~BlockTree              ();
+                                InMemoryBlockTree               ();
+                                ~InMemoryBlockTree              ();
     void                        logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
 };
 

@@ -54,8 +54,8 @@ void RemoteMiner::setError ( string message ) {
 void RemoteMiner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
-    this->mTag.setTagName ( Format::write ( "~%s'", minerID.c_str ()));
-    this->mImproved.setTagName ( Format::write ( "~%s'", minerID.c_str ()));
+    this->mTag.setName ( Format::write ( "~%s'", minerID.c_str ()));
+    this->mImproved.setName ( Format::write ( "~%s'", minerID.c_str ()));
 }
 
 //----------------------------------------------------------------//
@@ -66,7 +66,7 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
     if ( this->mHeaderQueue.size ()) {
         
         // if 'tag' gets overwritten, 'thumb' will hang on to any nodes we might need later.
-//        BlockTreeNode::ConstPtr thumb = this->mTag;
+//        InMemoryBlockTreeNode::ConstPtr thumb = this->mTag;
         
         // visit each header in the cache and try to apply it.
         while ( this->mHeaderQueue.size ()) {

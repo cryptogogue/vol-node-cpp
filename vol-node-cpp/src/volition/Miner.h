@@ -120,7 +120,7 @@ protected:
     int                                             mFlags;
     bool                                            mNeedsReport;
     ReportMode                                      mReportMode;
-    BlockTreeNode::RewriteMode                      mRewriteMode;
+    BlockTreeCursor::RewriteMode                    mRewriteMode;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
     string                                          mReward;
@@ -226,7 +226,7 @@ public:
     GET_SET ( string,                                       MinerID,                    mMinerID )
     GET_SET ( string,                                       Motto,                      mMotto )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
-    GET_SET ( BlockTreeNode::RewriteMode,                   RewriteMode,                mRewriteMode)
+    GET_SET ( BlockTreeCursor::RewriteMode,                 RewriteMode,                mRewriteMode)
     GET_SET ( string,                                       URL,                        mURL )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     

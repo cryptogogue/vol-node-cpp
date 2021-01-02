@@ -79,9 +79,15 @@ BlockTreeCursor AbstractBlockTree::getParent ( const BlockTreeCursor& cursor ) c
 }
 
 //----------------------------------------------------------------//
-void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, BlockTreeNode::Status status ) {
+void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) {
 
     this->AbstractBlockTree_mark ( cursor, status );
+}
+
+//----------------------------------------------------------------//
+void AbstractBlockTree::setTagTree ( BlockTreeTag& tag ) {
+
+    tag.mTree = this;
 }
 
 //----------------------------------------------------------------//

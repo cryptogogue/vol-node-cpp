@@ -2,29 +2,30 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
-#include <volition/BlockTree.h>
+#include <volition/InMemoryBlockTree.h>
+#include <volition/InMemoryBlockTreeNode.h>
 
 namespace Volition {
 
 //================================================================//
-// BlockTreeSegment
+// InMemoryBlockTreeSegment
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getFullLength () const {
+size_t InMemoryBlockTreeSegment::getFullLength () const {
 
     return ( this->mTop->getHeight () - this->mHead->getHeight ());
 }
 
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getRewriteDefeatCount () const {
+size_t InMemoryBlockTreeSegment::getRewriteDefeatCount () const {
 
     time_t window = this->mHead->getRewriteWindow (); // TODO: account for different rewrite windows in segment
     return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window );
 }
 
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getSegLength () const {
+size_t InMemoryBlockTreeSegment::getSegLength () const {
 
     return this->mTail->getHeight () - this->mHead->getHeight ();
 }
@@ -34,41 +35,41 @@ size_t BlockTreeSegment::getSegLength () const {
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t BlockTreeFork::getSegLength () const {
+size_t InMemoryBlockTreeFork::getSegLength () const {
 
     return this->mSeg0.getSegLength ();
 }
 
 //================================================================//
-// BlockTree
+// InMemoryBlockTree
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTree::BlockTree () :
+InMemoryBlockTree::InMemoryBlockTree () :
     mRoot ( NULL ) {
 }
 
 //----------------------------------------------------------------//
-BlockTree::~BlockTree () {
+InMemoryBlockTree::~InMemoryBlockTree () {
 
-    map < string, BlockTreeNode* >::iterator nodeIt = this->mNodes.begin ();
+    map < string, InMemoryBlockTreeNode* >::iterator nodeIt = this->mNodes.begin ();
     for ( ; nodeIt != this->mNodes.end (); ++nodeIt ) {
         nodeIt->second->mTree = NULL;
     }
 }
 
 //----------------------------------------------------------------//
-BlockTreeFork BlockTree::findFork ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
+InMemoryBlockTreeFork InMemoryBlockTree::findFork ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
-    const BlockTreeNode* node0 = this->findNodeForHash ( cursor0.getHash ());
-    const BlockTreeNode* node1 = this->findNodeForHash ( cursor1.getHash ());
+    const InMemoryBlockTreeNode* node0 = this->findNodeForHash ( cursor0.getHash ());
+    const InMemoryBlockTreeNode* node1 = this->findNodeForHash ( cursor1.getHash ());
 
-    BlockTreeFork root;
+    InMemoryBlockTreeFork root;
 
     if ( node0->mTree && ( node0->mTree == node1->mTree )) {
     
-        BlockTreeSegment seg0;
-        BlockTreeSegment seg1;
+        InMemoryBlockTreeSegment seg0;
+        InMemoryBlockTreeSegment seg1;
     
         seg0.mTop = node0;
         seg1.mTop = node1;
@@ -113,29 +114,29 @@ BlockTreeFork BlockTree::findFork ( const BlockTreeCursor& cursor0, const BlockT
 }
 
 //----------------------------------------------------------------//
-BlockTreeNode* BlockTree::findNodeForHash ( string hash ) {
+InMemoryBlockTreeNode* InMemoryBlockTree::findNodeForHash ( string hash ) {
 
-    map < string, BlockTreeNode* >::iterator nodeIt = this->mNodes.find ( hash );
+    map < string, InMemoryBlockTreeNode* >::iterator nodeIt = this->mNodes.find ( hash );
     if ( nodeIt != this->mNodes.end ()) return nodeIt->second;
     return NULL;
 }
 
 //----------------------------------------------------------------//
-const BlockTreeNode* BlockTree::findNodeForHash ( string hash ) const {
+const InMemoryBlockTreeNode* InMemoryBlockTree::findNodeForHash ( string hash ) const {
 
-    map < string, BlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );
+    map < string, InMemoryBlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );
     if ( nodeIt != this->mNodes.cend ()) return nodeIt->second;
     return NULL;
 }
 
 //----------------------------------------------------------------//
-void BlockTree::logTree ( string prefix, size_t maxDepth ) const {
+void InMemoryBlockTree::logTree ( string prefix, size_t maxDepth ) const {
 
     this->logTreeRecurse ( prefix, maxDepth, this->mRoot, 0 );
 }
 
 //----------------------------------------------------------------//
-void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTreeNode* node, size_t depth ) const {
+void InMemoryBlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const {
 
     if ( !node ) return;
     if (( maxDepth > 0 ) && ( depth >= maxDepth )) return;
@@ -155,7 +156,7 @@ void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTree
     
     if ( node ) {
         ++depth;
-        set < BlockTreeNode* >::const_iterator childIt = node->mChildren.begin ();
+        set < InMemoryBlockTreeNode* >::const_iterator childIt = node->mChildren.begin ();
         for ( ; childIt != node->mChildren.end (); ++ childIt ) {
             this->logTreeRecurse ( prefix, maxDepth, *childIt, depth );
         }
@@ -167,13 +168,13 @@ void BlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const BlockTree
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
 
-    string tagName = tag.mName;
+    string tagName = tag.getName ();
     assert ( tagName.size ());
-    assert (( tag.mTree == NULL ) || ( tag.mTree == this ));
+    assert (( tag.getTree () == NULL ) || ( tag.getTree () == this ));
     
-    tag.mTree = this;
+    this->setTagTree ( tag );
 
     if ( !header ) return BlockTreeCursor ();
 
@@ -182,7 +183,7 @@ BlockTreeCursor BlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, shared_
         assert ( hash == block->getDigest ().toHex ());
     }
     
-    BlockTreeNode::Ptr node = this->findNodeForHash ( hash );
+    InMemoryBlockTreeNode::Ptr node = this->findNodeForHash ( hash );
 
     if ( node ) {
         this->mTags [ tagName ] = node->shared_from_this ();
@@ -190,24 +191,24 @@ BlockTreeCursor BlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, shared_
     else {
 
         string prevHash = header->getPrevDigest ();
-        BlockTreeNode* prevNode = this->findNodeForHash ( prevHash );
+        InMemoryBlockTreeNode* prevNode = this->findNodeForHash ( prevHash );
 
         if ( !prevNode && this->mRoot ) return BlockTreeCursor ();
 
-        shared_ptr < BlockTreeNode > shared = make_shared < BlockTreeNode >();
+        shared_ptr < InMemoryBlockTreeNode > shared = make_shared < InMemoryBlockTreeNode >();
         node = shared.get ();
 
         node->mTree         = this;
         node->mHeader       = header;
-        node->mStatus       = BlockTreeNode::STATUS_NEW;
-        node->mMeta         = isProvisional ? BlockTreeNode::META_PROVISIONAL : BlockTreeNode::META_NONE;
+        node->mStatus       = InMemoryBlockTreeNode::STATUS_NEW;
+        node->mMeta         = isProvisional ? InMemoryBlockTreeNode::META_PROVISIONAL : InMemoryBlockTreeNode::META_NONE;
 
         if ( prevNode ) {
         
             node->mParent = prevNode->shared_from_this ();
             prevNode->mChildren.insert ( node );
             
-            if (( node->mParent->mStatus == BlockTreeNode::STATUS_MISSING ) || ( node->mParent->mStatus == BlockTreeNode::STATUS_INVALID )) {
+            if (( node->mParent->mStatus == InMemoryBlockTreeNode::STATUS_MISSING ) || ( node->mParent->mStatus == InMemoryBlockTreeNode::STATUS_INVALID )) {
                 node->mStatus = node->mParent->mStatus;
             }
         }
@@ -223,31 +224,31 @@ BlockTreeCursor BlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, shared_
 }
 
 //----------------------------------------------------------------//
-AbstractBlockTree::CanAppend BlockTree::AbstractBlockTree_checkAppend ( const BlockHeader& header ) const {
+AbstractBlockTree::CanAppend InMemoryBlockTree::AbstractBlockTree_checkAppend ( const BlockHeader& header ) const {
 
     if ( header.getHeight () < this->mRoot->getHeight ()) return REFUSED;
 
     string hash = header.getDigest ().toHex ();
 
-    BlockTreeNode::ConstPtr node = this->findNodeForHash ( hash );
+    InMemoryBlockTreeNode::ConstPtr node = this->findNodeForHash ( hash );
     if ( node ) return ALREADY_EXISTS;
 
     if ( !node ) {
 
         string prevHash = header.getPrevDigest ();
-        BlockTreeNode::ConstPtr prevNode = this->findNodeForHash ( prevHash );
+        InMemoryBlockTreeNode::ConstPtr prevNode = this->findNodeForHash ( prevHash );
 
         if ( !prevNode ) return MISSING_PARENT;
-        if ( prevNode->mMeta == BlockTreeNode::META_REFUSED ) return REFUSED;
+        if ( prevNode->mMeta == InMemoryBlockTreeNode::META_REFUSED ) return REFUSED;
         if ( header.getTime () < prevNode->getNextTime ()) return TOO_SOON;
     }
     return APPEND_OK;
 }
 
 //----------------------------------------------------------------//
-int BlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const {
+int InMemoryBlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const {
 
-    BlockTreeFork root = this->findFork ( cursor0, cursor1);
+    InMemoryBlockTreeFork root = this->findFork ( cursor0, cursor1);
 
     size_t fullLength0  = root.mSeg0.getFullLength ();
     size_t fullLength1  = root.mSeg1.getFullLength ();
@@ -263,8 +264,8 @@ int BlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const
 
     int score = 0;
 
-    const BlockTreeNode* node0 = root.mSeg0.mTail;
-    const BlockTreeNode* node1 = root.mSeg1.mTail;
+    const InMemoryBlockTreeNode* node0 = root.mSeg0.mTail;
+    const InMemoryBlockTreeNode* node1 = root.mSeg1.mTail;
 
     while ( node0 != node1 ) {
     
@@ -281,40 +282,40 @@ int BlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_findCursorForHash ( string hash ) const {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForHash ( string hash ) const {
 
-    map < string, BlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );
+    map < string, InMemoryBlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );
     if ( nodeIt != this->mNodes.cend ()) return *nodeIt->second;
     return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_findCursorForTag ( const BlockTreeTag& tag ) const {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForTag ( const BlockTreeTag& tag ) const {
 
-    assert ( tag.mName.size () > 0 );
+    assert ( tag.hasName ());
 
-    if ( tag.mTree ) {
+    if ( tag.getTree ()) {
 
-        assert ( tag.mTree == this );
+        assert ( tag.checkTree ( this ));
 
-        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.mName );
+        map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.getName ());
         if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
     }
     return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_findRoot ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findRoot ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
-    BlockTreeFork fork = this->findFork ( cursor0, cursor1 );
+    InMemoryBlockTreeFork fork = this->findFork ( cursor0, cursor1 );
     return *fork.mRoot;
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_getParent ( const BlockTreeCursor& cursor ) const {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_getParent ( const BlockTreeCursor& cursor ) const {
 
     string hash = cursor.getHash ();
-    const BlockTreeNode* node = this->findNodeForHash ( hash );
+    const InMemoryBlockTreeNode* node = this->findNodeForHash ( hash );
 
     if ( node && node->mParent ) {
         return *node->mParent;
@@ -323,9 +324,9 @@ BlockTreeCursor BlockTree::AbstractBlockTree_getParent ( const BlockTreeCursor& 
 }
 
 //----------------------------------------------------------------//
-void BlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) {
+void InMemoryBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) {
 
-    BlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
+    InMemoryBlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
 
     if ( node ) {
         node->mark ( status );
@@ -333,21 +334,19 @@ void BlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, BlockTre
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
 
-    string tagName = tag.mName;
-    assert ( tagName.size ());
-    
-    assert (( tag.mTree == NULL ) || ( tag.mTree == this ));
-    
-    if ( cursor.mTree ) {
-    
-        assert ( cursor.mTree == this );
-        tag.mTree = this;
+    assert ( tag.hasName ());
+    assert ( tag.checkTree ( this ));
         
-        BlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
+    if ( cursor.getTree ()) {
+    
+        assert ( cursor.checkTree ( this ));
+        this->setTagTree ( tag );
+        
+        InMemoryBlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
         assert ( node );
-        this->mTags [ tagName ] = node->shared_from_this ();
+        this->mTags [ tag.getName ()] = node->shared_from_this ();
         
         return *node;
     }
@@ -355,21 +354,21 @@ BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const Bloc
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) {
 
-    assert ( tag.mName.size ());
-    assert ( otherTag.mName.size ());
-
-    assert (( tag.mTree == NULL ) || ( tag.mTree == this ));
-        
-    if ( otherTag.mTree ) {
+    assert ( tag.hasName ());
+    assert ( tag.checkTree ( this ));
     
-        assert ( otherTag.mTree == this );
-        tag.mTree = this;
+    assert ( otherTag.hasName ());
+    
+    if ( otherTag.getTree ()) {
+    
+        assert ( otherTag.checkTree ( this ));
+        this->setTagTree ( tag );
         
-        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTag.mName );
+        map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTag.getName ());
         assert ( nodeIt != this->mTags.cend ());
-        this->mTags [ tag.mName ] = nodeIt->second;
+        this->mTags [ tag.getName ()] = nodeIt->second;
         
         return *nodeIt->second;
     }
@@ -377,12 +376,12 @@ BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const Bloc
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_update ( shared_ptr < const Block > block ) {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > block ) {
 
     if ( !block ) return BlockTreeCursor ();
     string hash = block->getDigest ();
 
-    BlockTreeNode::Ptr node = this->findNodeForHash ( hash );
+    InMemoryBlockTreeNode::Ptr node = this->findNodeForHash ( hash );
     if ( !node ) return BlockTreeCursor ();
     
     assert ( node->mHeader );

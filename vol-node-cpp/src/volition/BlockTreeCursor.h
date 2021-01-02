@@ -10,7 +10,7 @@
 
 namespace Volition {
 
-class BlockTree;
+class AbstractBlockTree;
 
 //================================================================//
 // BlockTreeCursor
@@ -40,10 +40,9 @@ public:
 
 protected:
 
-    friend class BlockTree;
     friend class BlockTreeTag;
 
-    BlockTree*                          mTree;
+    AbstractBlockTree*                  mTree;
 
     shared_ptr < const BlockHeader >    mHeader;
     shared_ptr < const Block >          mBlock;
@@ -58,10 +57,13 @@ protected:
 
 public:
 
+    GET_SET ( AbstractBlockTree*,   Tree,       mTree )
+
     //----------------------------------------------------------------//
                                         BlockTreeCursor             ();
                                         ~BlockTreeCursor            ();
     bool                                checkStatus                 ( Status status ) const;
+    bool                                checkTree                   ( const AbstractBlockTree* tree ) const;
     static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, RewriteMode rewriteMode );
     bool                                equals                      ( const BlockTreeCursor& rhs ) const;
     static BlockTreeCursor              findRoot                    ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 );
