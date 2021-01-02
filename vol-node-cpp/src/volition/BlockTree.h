@@ -9,7 +9,7 @@
 #include <volition/Block.h>
 #include <volition/BlockTreeCursor.h>
 #include <volition/BlockTreeNode.h>
-#include <volition/BlockTreeNodeTag.h>
+#include <volition/BlockTreeTag.h>
 
 namespace Volition {
 
@@ -61,14 +61,14 @@ private:
 
     friend class BlockTreeCursor;
     friend class BlockTreeNode;
-    friend class BlockTreeNodeTag;
+    friend class BlockTreeTag;
 
     BlockTreeNode*                                  mRoot;
     map < string, BlockTreeNode* >                  mNodes;
     map < string, shared_ptr < BlockTreeNode >>     mTags;
 
     //----------------------------------------------------------------//
-    BlockTreeCursor             affirm                  ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
+    BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
     int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const;
     BlockTreeFork               findFork                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
     BlockTreeCursor             findCursorForTagName    ( string tagName ) const;
@@ -84,16 +84,16 @@ public:
     GET ( BlockTreeNode::ConstPtr, Root, mRoot )
 
     //----------------------------------------------------------------//
-    BlockTreeCursor             affirmBlock             ( BlockTreeNodeTag& tag, shared_ptr < const Block > block );
-    BlockTreeCursor             affirmHeader            ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
-    BlockTreeCursor             affirmProvisional       ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header );
+    BlockTreeCursor             affirmBlock             ( BlockTreeTag& tag, shared_ptr < const Block > block );
+    BlockTreeCursor             affirmHeader            ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header );
+    BlockTreeCursor             affirmProvisional       ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header );
                                 BlockTree               ();
                                 ~BlockTree              ();
     CanAppend                   checkAppend             ( const BlockHeader& header ) const;
     BlockTreeCursor             findCursorForHash       ( string hash ) const;
     void                        logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
     void                        mark                    ( const BlockTreeCursor& cursor, BlockTreeNode::Status status );
-    BlockTreeCursor             tag                     ( BlockTreeNodeTag& tag, const BlockTreeCursor& cursor );
+    BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeCursor& cursor );
     BlockTreeCursor             update                  ( shared_ptr < const Block > block );
 };
 

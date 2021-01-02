@@ -8,11 +8,11 @@
 namespace Volition {
 
 //================================================================//
-// BlockTreeNodeTag
+// BlockTreeTag
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTreeNodeTag& BlockTreeNodeTag::operator = ( BlockTreeCursor other ) {
+BlockTreeTag& BlockTreeTag::operator = ( BlockTreeCursor other ) {
 
     if ( other.hasHeader ()) {
         assert ( other.mTree );
@@ -26,7 +26,7 @@ BlockTreeNodeTag& BlockTreeNodeTag::operator = ( BlockTreeCursor other ) {
 }
 
 //----------------------------------------------------------------//
-BlockTreeNodeTag& BlockTreeNodeTag::operator = ( const BlockTreeNodeTag& other ) {
+BlockTreeTag& BlockTreeTag::operator = ( const BlockTreeTag& other ) {
 
     assert ( this->mTagName.size () > 0 );
     if ( other.mBlockTree ) {
@@ -37,46 +37,46 @@ BlockTreeNodeTag& BlockTreeNodeTag::operator = ( const BlockTreeNodeTag& other )
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTreeNodeTag::operator * () const {
+BlockTreeCursor BlockTreeTag::operator * () const {
 
     return this->getCursor ();
 }
 
 //----------------------------------------------------------------//
-BlockTreeNodeTag::BlockTreeNodeTag () :
+BlockTreeTag::BlockTreeTag () :
     mBlockTree ( NULL ) {
 }
 
 //----------------------------------------------------------------//
-BlockTreeNodeTag::BlockTreeNodeTag ( BlockTreeNodeTag& other ) :
+BlockTreeTag::BlockTreeTag ( BlockTreeTag& other ) :
     mTagName ( other.mTagName ),
     mBlockTree ( other.mBlockTree ) {
 }
 
 //----------------------------------------------------------------//
-BlockTreeNodeTag::~BlockTreeNodeTag () {
+BlockTreeTag::~BlockTreeTag () {
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeNodeTag::equals ( const BlockTreeNodeTag& rhs ) const {
+bool BlockTreeTag::equals ( const BlockTreeTag& rhs ) const {
 
     return ( this->getCursor ().equals ( rhs.getCursor ()));
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTreeNodeTag::getCursor () const {
+BlockTreeCursor BlockTreeTag::getCursor () const {
 
     return this->mBlockTree ? this->mBlockTree->findCursorForTagName ( this->mTagName ) : BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeNodeTag::hasCursor () const {
+bool BlockTreeTag::hasCursor () const {
 
     return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTagName ( this->mTagName ).hasHeader ());
 }
 
 //----------------------------------------------------------------//
-void BlockTreeNodeTag::setTagName ( string tagName ) {
+void BlockTreeTag::setTagName ( string tagName ) {
 
     this->mTagName = tagName;
 }
@@ -86,7 +86,7 @@ void BlockTreeNodeTag::setTagName ( string tagName ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-const BlockHeaderFields& BlockTreeNodeTag::HasBlockHeader_getFields () const {
+const BlockHeaderFields& BlockTreeTag::HasBlockHeader_getFields () const {
 
     return this->getCursor ().getFields ();
 }

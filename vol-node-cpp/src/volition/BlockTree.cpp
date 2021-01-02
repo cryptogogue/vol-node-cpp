@@ -44,7 +44,7 @@ size_t BlockTreeFork::getSegLength () const {
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::affirm ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
+BlockTreeCursor BlockTree::affirm ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
 
     string tagName = tag.mTagName;
     assert ( tagName.size ());
@@ -100,19 +100,19 @@ BlockTreeCursor BlockTree::affirm ( BlockTreeNodeTag& tag, shared_ptr < const Bl
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::affirmBlock ( BlockTreeNodeTag& tag, shared_ptr < const Block > block ) {
+BlockTreeCursor BlockTree::affirmBlock ( BlockTreeTag& tag, shared_ptr < const Block > block ) {
 
     return this->affirm ( tag, block, block );
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::affirmHeader ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header ) {
+BlockTreeCursor BlockTree::affirmHeader ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header ) {
 
     return this->affirm ( tag, header, NULL );
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::affirmProvisional ( BlockTreeNodeTag& tag, shared_ptr < const BlockHeader > header ) {
+BlockTreeCursor BlockTree::affirmProvisional ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header ) {
 
     return this->affirm ( tag, header, NULL, true );
 }
@@ -354,7 +354,7 @@ BlockTreeCursor BlockTree::tag ( string tagName, string otherTagName ) {
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::tag ( BlockTreeNodeTag& tag, const BlockTreeCursor& cursor ) {
+BlockTreeCursor BlockTree::tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
 
     string tagName = tag.mTagName;
     assert ( tagName.size ());

@@ -29,7 +29,7 @@ private:
 
     friend class BlockTree;
     friend class BlockTreeNode;
-    friend class BlockTreeNodeTag;
+    friend class BlockTreeTag;
 
     shared_ptr < BlockTreeNode >        mParent;
     set < BlockTreeNode* >              mChildren;

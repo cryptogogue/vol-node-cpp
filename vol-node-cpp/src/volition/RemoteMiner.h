@@ -34,8 +34,8 @@ public:
     };
 
     string                      mURL;
-    BlockTreeNodeTag            mTag;
-    BlockTreeNodeTag            mImproved;
+    BlockTreeTag            mTag;
+    BlockTreeTag            mImproved;
     NetworkState                mNetworkState;
     string                      mMessage;
 

@@ -166,29 +166,29 @@ void Miner::composeChain () {
 
     // TODO: gather transactions if rewinding chain
 
-    if ( this->mWorkingLedgerTag.equals ( this->mBestProvisional )) return;
+    if ( this->mWorkingLedgerTag.equals ( this->mBestBranchTag )) return;
 
     // check to see if chain tag is *behind* best branch
-    if (( *this->mBestProvisional ).isAncestorOf ( *this->mWorkingLedgerTag )) {
-        this->mWorkingLedger->reset ( this->mBestProvisional.getHeight () + 1 );
-        this->mWorkingLedgerTag = this->mBestProvisional;
+    if (( *this->mBestBranchTag ).isAncestorOf ( *this->mWorkingLedgerTag )) {
+        this->mWorkingLedger->reset ( this->mBestBranchTag.getHeight () + 1 );
+        this->mWorkingLedgerTag = this->mBestBranchTag;
         return;
     }
 
     // if chain is divergent from best branch, re-root it
-    if ( !( *this->mWorkingLedgerTag ).isAncestorOf ( *this->mBestProvisional )) {
+    if ( !( *this->mWorkingLedgerTag ).isAncestorOf ( *this->mBestBranchTag )) {
         
         // REWIND chain to point of divergence
-        BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mWorkingLedgerTag, *this->mBestProvisional );
+        BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mWorkingLedgerTag, *this->mBestBranchTag );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
         assert ( root.checkStatus ( BlockTreeNode::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
         this->mWorkingLedger->reset ( root.getHeight () + 1 );
         this->mWorkingLedgerTag = root;
     }
-    assert (( *this->mWorkingLedgerTag ).isAncestorOf ( *this->mBestProvisional ));
+    assert (( *this->mWorkingLedgerTag ).isAncestorOf ( *this->mBestBranchTag ));
     
-    this->composeChainRecurse ( *this->mBestProvisional );
+    this->composeChainRecurse ( *this->mBestBranchTag );
 }
 
 //----------------------------------------------------------------//
@@ -254,7 +254,7 @@ void Miner::discoverMiners () {
 //----------------------------------------------------------------//
 void Miner::extend ( time_t now ) {
     
-    BlockTreeCursor provisional = *this->mBestProvisional;
+    BlockTreeCursor provisional = *this->mBestBranchTag;
     if ( !provisional.hasHeader () || provisional.isComplete ()) return;
     if ( provisional.getMinerID () != this->mMinerID ) return;
     
@@ -332,7 +332,7 @@ Ledger& Miner::getWorkingLedger () {
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor Miner::improveBranch ( BlockTreeNodeTag& tag, BlockTreeCursor tail, time_t now ) {
+BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now ) {
 
     // if muted, no change is possible
     if ( this->mFlags & MINER_MUTE ) return tail;
@@ -450,7 +450,7 @@ Miner::Miner () :
     
     this->mWorkingLedgerTag.setTagName ( "working" );
     this->mPermanentLedgerTag.setTagName ( "permanent" );
-    this->mBestProvisional.setTagName ( "best" );
+    this->mBestBranchTag.setTagName ( "best" );
     
     MinerLaunchTests::checkEnvironment ();
 }
@@ -489,7 +489,7 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
         this->mBlockTree.affirmBlock ( this->mWorkingLedgerTag, topBlock );
         
         this->mPermanentLedgerTag       = this->mWorkingLedgerTag;
-        this->mBestProvisional          = this->mWorkingLedgerTag;
+        this->mBestBranchTag          = this->mWorkingLedgerTag;
     }
     
     this->setGenesis ( block );
@@ -559,11 +559,11 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     bool result = this->mWorkingLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
-    BlockTreeCursor node = this->mBlockTree.affirmBlock ( this->mBestProvisional, block );
+    BlockTreeCursor node = this->mBlockTree.affirmBlock ( this->mBestBranchTag, block );
     assert ( node.hasHeader ());
         
-    if ( this->mWorkingLedgerTag.equals ( this->mBestProvisional )) {
-        this->mBestProvisional = node;
+    if ( this->mWorkingLedgerTag.equals ( this->mBestBranchTag )) {
+        this->mBestBranchTag = node;
     }
     this->mWorkingLedgerTag = node;
 }
@@ -672,7 +672,7 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
     
         this->mWorkingLedger        = make_shared < Ledger >();
         this->mWorkingLedgerTag     = BlockTreeCursor ();
-        this->mBestProvisional      = BlockTreeCursor ();
+        this->mBestBranchTag      = BlockTreeCursor ();
         this->mPermanentLedgerTag   = BlockTreeCursor ();
         
         this->pushBlock ( block );
@@ -756,7 +756,7 @@ void Miner::updateBestBranch ( time_t now ) {
     // update the current best branch, excluding missing or invalid blocks.
     // this may append an additional provisional header if branch is complete.
     
-    this->improveBranch ( this->mBestProvisional, ( *this->mBestProvisional ).trimMissingOrInvalid (), now );
+    this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalid (), now );
 
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
@@ -769,13 +769,13 @@ void Miner::updateBestBranch ( time_t now ) {
         
         assert ( !( *remoteMiner->mImproved ).isMissingOrInvalid ());
         
-        if ( BlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestProvisional, this->mRewriteMode ) < 0 ) {
-            this->mBlockTree.tag ( this->mBestProvisional, *remoteMiner->mImproved );
+        if ( BlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
+            this->mBlockTree.tag ( this->mBestBranchTag, *remoteMiner->mImproved );
         }
     }
     
-    assert ( this->mBestProvisional.hasCursor ());
-    assert ( !( *this->mBestProvisional ).isMissingOrInvalid ());
+    assert ( this->mBestBranchTag.hasCursor ());
+    assert ( !( *this->mBestBranchTag ).isMissingOrInvalid ());
 }
 
 //----------------------------------------------------------------//
@@ -790,14 +790,14 @@ void Miner::updateBlockSearches () {
         if ( remoteMiner->mImproved.hasCursor () && ( *remoteMiner->mImproved ).isMissing ()) {
             
             // only affirm a search if the other chain could beat our current.
-            if ( BlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestProvisional, this->mRewriteMode ) < 0 ) {
+            if ( BlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
                 this->affirmBranchSearch ( *remoteMiner->mImproved );
             }
         }
     }
     
     // always affirm a search for the current branch
-    this->affirmBranchSearch ( *this->mBestProvisional );
+    this->affirmBranchSearch ( *this->mBestBranchTag );
     
     // step the currently active block searches
     map < string, BlockSearch >::iterator blockSearchIt = this->mBlockSearches.begin ();
@@ -836,7 +836,7 @@ void Miner::updatePermanentTag () {
 
     // start with the current best provisional branch and walk back to a point where general consensus (among responding
     // miners) is greater than quorum (right now hardcoded at 100%) and/or where we hit the root (or the current permanent tag).
-    BlockTreeCursor tag = *this->mBestProvisional;
+    BlockTreeCursor tag = *this->mBestBranchTag;
     while (( this->checkConsensus ( tag ) <= 0.5 ) || ( !tag.getBlock ())) {
         tag = tag.getParent ();
         if ( !tag.hasHeader ()) return;
@@ -844,7 +844,7 @@ void Miner::updatePermanentTag () {
     
     assert ( tag.hasHeader ());
     assert ( tag.getBlock ());
-    assert ( tag.isAncestorOf ( *this->mBestProvisional ));
+    assert ( tag.isAncestorOf ( *this->mBestBranchTag ));
     
     if ( !( *this->mPermanentLedgerTag ).equals ( tag )) {
     

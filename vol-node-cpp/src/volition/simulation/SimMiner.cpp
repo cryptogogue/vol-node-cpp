@@ -73,8 +73,8 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
 //----------------------------------------------------------------//
 void SimMiner::rewindChain ( size_t height ) {
 
-    while ( this->mBestProvisional.getHeight () > height ) {
-        this->mBestProvisional = ( *this->mBestProvisional ).getParent ();
+    while ( this->mBestBranchTag.getHeight () > height ) {
+        this->mBestBranchTag = ( *this->mBestBranchTag ).getParent ();
     }
     this->composeChain ();
 }
@@ -88,13 +88,13 @@ void SimMiner::setActive ( bool active ) {
 //----------------------------------------------------------------//
 void SimMiner::setCharm ( size_t height, string charmHex ) {
 
-    BlockTreeCursor cursor = *this->mBestProvisional;
+    BlockTreeCursor cursor = *this->mBestBranchTag;
     while ( cursor.hasHeader ()) {
         size_t cursorHeight = cursor.getHeight ();
         if ( cursorHeight == height ) {
 
             shared_ptr < Block > block = this->replaceBlock ( cursor.getBlock (), charmHex );
-            this->mBlockTree.affirmBlock ( this->mBestProvisional, block );
+            this->mBlockTree.affirmBlock ( this->mBestBranchTag, block );
             this->composeChain ();
             return;
         }

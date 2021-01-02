@@ -41,7 +41,7 @@ public:
 protected:
 
     friend class BlockTree;
-    friend class BlockTreeNodeTag;
+    friend class BlockTreeTag;
 
     BlockTree*                          mTree;
 
