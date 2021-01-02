@@ -80,6 +80,10 @@
 		CD19E026259E4FAA0007ACF0 /* BlockTreeCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E024259E4FAA0007ACF0 /* BlockTreeCursor.h */; };
 		CD19E03025A030A00007ACF0 /* AbstractBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19DFC8259E13430007ACF0 /* AbstractBlockTree.cpp */; };
 		CD19E03225A0658E0007ACF0 /* BlockTreeEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03125A0658E0007ACF0 /* BlockTreeEnums.h */; };
+		CD19E03625A079E70007ACF0 /* BlockHeaderFields.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03425A079E70007ACF0 /* BlockHeaderFields.cpp */; };
+		CD19E03725A079E70007ACF0 /* BlockHeaderFields.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03525A079E70007ACF0 /* BlockHeaderFields.h */; };
+		CD19E03A25A07A0D0007ACF0 /* HasBlockHeaderFields.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03825A07A0D0007ACF0 /* HasBlockHeaderFields.h */; };
+		CD19E03B25A07A0D0007ACF0 /* HasBlockHeaderFields.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03925A07A0D0007ACF0 /* HasBlockHeaderFields.cpp */; };
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
@@ -878,6 +882,10 @@
 		CD19E023259E4FAA0007ACF0 /* BlockTreeCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockTreeCursor.cpp; path = src/volition/BlockTreeCursor.cpp; sourceTree = "<group>"; };
 		CD19E024259E4FAA0007ACF0 /* BlockTreeCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeCursor.h; path = src/volition/BlockTreeCursor.h; sourceTree = "<group>"; };
 		CD19E03125A0658E0007ACF0 /* BlockTreeEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeEnums.h; path = src/volition/BlockTreeEnums.h; sourceTree = "<group>"; };
+		CD19E03425A079E70007ACF0 /* BlockHeaderFields.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockHeaderFields.cpp; path = src/volition/BlockHeaderFields.cpp; sourceTree = "<group>"; };
+		CD19E03525A079E70007ACF0 /* BlockHeaderFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockHeaderFields.h; path = src/volition/BlockHeaderFields.h; sourceTree = "<group>"; };
+		CD19E03825A07A0D0007ACF0 /* HasBlockHeaderFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HasBlockHeaderFields.h; path = src/volition/HasBlockHeaderFields.h; sourceTree = "<group>"; };
+		CD19E03925A07A0D0007ACF0 /* HasBlockHeaderFields.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HasBlockHeaderFields.cpp; path = src/volition/HasBlockHeaderFields.cpp; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
@@ -1378,6 +1386,24 @@
 			name = miner;
 			sourceTree = "<group>";
 		};
+		CD19E03325A079750007ACF0 /* blockTree */ = {
+			isa = PBXGroup;
+			children = (
+				CD19DFC8259E13430007ACF0 /* AbstractBlockTree.cpp */,
+				CD19DFCA259E13440007ACF0 /* AbstractBlockTree.h */,
+				CD19E023259E4FAA0007ACF0 /* BlockTreeCursor.cpp */,
+				CD19E024259E4FAA0007ACF0 /* BlockTreeCursor.h */,
+				CD19E03125A0658E0007ACF0 /* BlockTreeEnums.h */,
+				CD19E018259E23680007ACF0 /* BlockTreeTag.cpp */,
+				CD19E002259E20A60007ACF0 /* BlockTreeTag.h */,
+				CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */,
+				CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */,
+				CD19DF54259B3F190007ACF0 /* InMemoryBlockTreeNode.cpp */,
+				CD19DF55259B3F190007ACF0 /* InMemoryBlockTreeNode.h */,
+			);
+			name = blockTree;
+			sourceTree = "<group>";
+		};
 		CD20FF65253D861700DEB809 /* control */ = {
 			isa = PBXGroup;
 			children = (
@@ -1547,6 +1573,7 @@
 			isa = PBXGroup;
 			children = (
 				CD9E7BB9250B4F0B0065C5FC /* block */,
+				CD19E03325A079750007ACF0 /* blockTree */,
 				CD5ECAE3246B26A1009146FB /* config */,
 				CD20FF65253D861700DEB809 /* control */,
 				CD4E80E021031D24007DA585 /* crypto */,
@@ -1680,21 +1707,14 @@
 		CD9E7BB9250B4F0B0065C5FC /* block */ = {
 			isa = PBXGroup;
 			children = (
-				CD19DFC8259E13430007ACF0 /* AbstractBlockTree.cpp */,
-				CD19DFCA259E13440007ACF0 /* AbstractBlockTree.h */,
 				CD46659C20BE908300A02D55 /* Block.cpp */,
 				CD46659D20BE908300A02D55 /* Block.h */,
 				CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */,
 				CD9E7BA524FF69D00065C5FC /* BlockHeader.h */,
-				CD19E023259E4FAA0007ACF0 /* BlockTreeCursor.cpp */,
-				CD19E024259E4FAA0007ACF0 /* BlockTreeCursor.h */,
-				CD19E03125A0658E0007ACF0 /* BlockTreeEnums.h */,
-				CD19E018259E23680007ACF0 /* BlockTreeTag.cpp */,
-				CD19E002259E20A60007ACF0 /* BlockTreeTag.h */,
-				CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */,
-				CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */,
-				CD19DF54259B3F190007ACF0 /* InMemoryBlockTreeNode.cpp */,
-				CD19DF55259B3F190007ACF0 /* InMemoryBlockTreeNode.h */,
+				CD19E03425A079E70007ACF0 /* BlockHeaderFields.cpp */,
+				CD19E03525A079E70007ACF0 /* BlockHeaderFields.h */,
+				CD19E03925A07A0D0007ACF0 /* HasBlockHeaderFields.cpp */,
+				CD19E03825A07A0D0007ACF0 /* HasBlockHeaderFields.h */,
 			);
 			name = block;
 			sourceTree = "<group>";
@@ -2002,6 +2022,7 @@
 				CD20FF84253D870800DEB809 /* ControlCommand.h in Headers */,
 				CD20FF77253D86FE00DEB809 /* TheControlCommandBodyFactory.h in Headers */,
 				CD4E81B1210593DD007DA585 /* AbstractRequestHandler.h in Headers */,
+				CD19E03A25A07A0D0007ACF0 /* HasBlockHeaderFields.h in Headers */,
 				CDFA23A124604CC700B4CECF /* Ledger_Account.h in Headers */,
 				CDDB4BBC233374B100EEAA60 /* HTTP.h in Headers */,
 				CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */,
@@ -2027,6 +2048,7 @@
 				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
 				CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */,
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
+				CD19E03725A079E70007ACF0 /* BlockHeaderFields.h in Headers */,
 				CDF8AD5D21F52B34000E285F /* LuaContext.h in Headers */,
 				CDAA38EB251AA72400FEAFB5 /* SimulatorActivity.h in Headers */,
 				CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */,
@@ -2750,9 +2772,11 @@
 				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */,
 				CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */,
+				CD19E03B25A07A0D0007ACF0 /* HasBlockHeaderFields.cpp in Sources */,
 				CDAA38E6251AA13900FEAFB5 /* SimMiningNetwork.cpp in Sources */,
 				CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */,
 				CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */,
+				CD19E03625A079E70007ACF0 /* BlockHeaderFields.cpp in Sources */,
 				CD20FF78253D86FE00DEB809 /* TheControlCommandBodyFactory.cpp in Sources */,
 				CD7752B72536966100A53765 /* CryptoPublicKey.cpp in Sources */,
 				CD9E7BC0250B976C0065C5FC /* HTTPMiningMessenger.cpp in Sources */,
