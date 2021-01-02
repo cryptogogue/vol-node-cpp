@@ -28,7 +28,7 @@ bool BlockSearch::step ( Miner& miner ) {
     if ( SEARCH_SIZE <= this->mActiveMiners.size ()) return true;
 
     BlockTreeCursor cursor = miner.mBlockTree->findCursorForHash ( this->mHash );
-    if ( !( cursor.hasHeader () && cursor.checkStatus (( BlockTreeCursor::Status )( BlockTreeCursor::STATUS_NEW | BlockTreeCursor::STATUS_MISSING )))) return false;
+    if ( !( cursor.hasHeader () && cursor.checkStatus (( kBlockTreeEntryStatus )( kBlockTreeEntryStatus::STATUS_NEW | kBlockTreeEntryStatus::STATUS_MISSING )))) return false;
 
     set < shared_ptr < RemoteMiner >> remoteMiners;
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = miner.mOnlineMiners.begin ();
@@ -62,7 +62,7 @@ bool BlockSearch::step ( Miner& miner ) {
     }
     
     if ( this->mActiveMiners.size () == 0 ) {
-        miner.mBlockTree->mark ( cursor, BlockTreeCursor::STATUS_MISSING );
+        miner.mBlockTree->mark ( cursor, kBlockTreeEntryStatus::STATUS_MISSING );
         return false;
     }
     return true;
@@ -182,7 +182,7 @@ void Miner::composeChain () {
         // REWIND chain to point of divergence
         BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mWorkingLedgerTag, *this->mBestBranchTag );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
-        assert ( root.checkStatus ( BlockTreeCursor::STATUS_COMPLETE ));  // guaranteed -> was in chain
+        assert ( root.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
         this->mWorkingLedger->reset ( root.getHeight () + 1 );
         this->mWorkingLedgerTag = root;
@@ -371,7 +371,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         const BlockHeader& parentHeader = parent.getHeader ();
         
         // if parent is one of ours, but it isn't yet complete, stop the search.
-        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.checkStatus ( BlockTreeCursor::STATUS_COMPLETE ))) break;
+        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ))) break;
         
         // if enough time has elapsed since the parent was declared, we can consider replacing the child
         // with our own block (or appending a new block).
@@ -384,7 +384,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         }
         
         // we can only replace blocks within the rewrite window. if parent is outside of that, no point in continuing.
-        if (( this->mRewriteMode == BlockTreeCursor::REWRITE_WINDOW ) && !parentHeader.isInRewriteWindow ( now )) break;
+        if (( this->mRewriteMode == kRewriteMode::REWRITE_WINDOW ) && !parentHeader.isInRewriteWindow ( now )) break;
         
         // don't replace our own block; that would be silly.
         if ( parentHeader.getMinerID () == this->mMinerID ) break;
@@ -445,7 +445,7 @@ Miner::Miner () :
     mFlags ( DEFAULT_FLAGS ),
     mNeedsReport ( true ),
     mReportMode ( REPORT_NONE ),
-    mRewriteMode ( BlockTreeCursor::REWRITE_NONE ),
+    mRewriteMode ( kRewriteMode::REWRITE_NONE ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ) {
     
@@ -707,7 +707,7 @@ void Miner::setReward ( string reward ) {
 //----------------------------------------------------------------//
 void Miner::setRewriteWindow () {
 
-    this->setRewriteMode ( BlockTreeCursor::REWRITE_WINDOW );
+    this->setRewriteMode ( kRewriteMode::REWRITE_WINDOW );
 }
 
 //----------------------------------------------------------------//

@@ -200,15 +200,15 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag,
 
         node->mTree         = this;
         node->mHeader       = header;
-        node->mStatus       = InMemoryBlockTreeNode::STATUS_NEW;
-        node->mMeta         = isProvisional ? InMemoryBlockTreeNode::META_PROVISIONAL : InMemoryBlockTreeNode::META_NONE;
+        node->mStatus       = kBlockTreeEntryStatus::STATUS_NEW;
+        node->mMeta         = isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE;
 
         if ( prevNode ) {
         
             node->mParent = prevNode->shared_from_this ();
             prevNode->mChildren.insert ( node );
             
-            if (( node->mParent->mStatus == InMemoryBlockTreeNode::STATUS_MISSING ) || ( node->mParent->mStatus == InMemoryBlockTreeNode::STATUS_INVALID )) {
+            if (( node->mParent->mStatus == kBlockTreeEntryStatus::STATUS_MISSING ) || ( node->mParent->mStatus == kBlockTreeEntryStatus::STATUS_INVALID )) {
                 node->mStatus = node->mParent->mStatus;
             }
         }
@@ -224,7 +224,7 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag,
 }
 
 //----------------------------------------------------------------//
-AbstractBlockTree::CanAppend InMemoryBlockTree::AbstractBlockTree_checkAppend ( const BlockHeader& header ) const {
+kBlockTreeAppendResult InMemoryBlockTree::AbstractBlockTree_checkAppend ( const BlockHeader& header ) const {
 
     if ( header.getHeight () < this->mRoot->getHeight ()) return REFUSED;
 
@@ -239,21 +239,21 @@ AbstractBlockTree::CanAppend InMemoryBlockTree::AbstractBlockTree_checkAppend ( 
         InMemoryBlockTreeNode::ConstPtr prevNode = this->findNodeForHash ( prevHash );
 
         if ( !prevNode ) return MISSING_PARENT;
-        if ( prevNode->mMeta == InMemoryBlockTreeNode::META_REFUSED ) return REFUSED;
+        if ( prevNode->mMeta == kBlockTreeEntryMeta::META_REFUSED ) return REFUSED;
         if ( header.getTime () < prevNode->getNextTime ()) return TOO_SOON;
     }
     return APPEND_OK;
 }
 
 //----------------------------------------------------------------//
-int InMemoryBlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const {
+int InMemoryBlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const {
 
     InMemoryBlockTreeFork root = this->findFork ( cursor0, cursor1);
 
     size_t fullLength0  = root.mSeg0.getFullLength ();
     size_t fullLength1  = root.mSeg1.getFullLength ();
 
-    if ( rewriteMode == BlockTreeCursor::REWRITE_WINDOW ) {
+    if ( rewriteMode == kRewriteMode::REWRITE_WINDOW ) {
         
         size_t segLength = root.getSegLength (); // length of the shorter segment (if different lengths)
         
@@ -324,7 +324,7 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_getParent ( const BlockTree
 }
 
 //----------------------------------------------------------------//
-void InMemoryBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) {
+void InMemoryBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) {
 
     InMemoryBlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
 

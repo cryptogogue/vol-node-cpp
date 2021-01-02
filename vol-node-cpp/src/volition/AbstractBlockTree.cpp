@@ -43,13 +43,13 @@ AbstractBlockTree::~AbstractBlockTree () {
 }
 
 //----------------------------------------------------------------//
-AbstractBlockTree::CanAppend AbstractBlockTree::checkAppend ( const BlockHeader& header ) const {
+kBlockTreeAppendResult AbstractBlockTree::checkAppend ( const BlockHeader& header ) const {
 
     return this->AbstractBlockTree_checkAppend ( header );
 }
 
 //----------------------------------------------------------------//
-int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const {
+int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const {
 
     return this->AbstractBlockTree_compare ( cursor0, cursor1, rewriteMode );
 }
@@ -79,7 +79,7 @@ BlockTreeCursor AbstractBlockTree::getParent ( const BlockTreeCursor& cursor ) c
 }
 
 //----------------------------------------------------------------//
-void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) {
+void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) {
 
     this->AbstractBlockTree_mark ( cursor, status );
 }

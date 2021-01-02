@@ -30,7 +30,7 @@ private:
 
     //----------------------------------------------------------------//
     void            clearParent                 ();
-    void            mark                        ( BlockTreeCursor::Status status );
+    void            mark                        ( kBlockTreeEntryStatus status );
     void            markComplete                ();
     void            markRefused                 ();
 

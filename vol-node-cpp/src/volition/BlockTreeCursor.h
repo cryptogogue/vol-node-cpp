@@ -7,6 +7,7 @@
 #include <volition/common.h>
 #include <volition/Accessors.h>
 #include <volition/Block.h>
+#include <volition/BlockTreeEnums.h>
 
 namespace Volition {
 
@@ -17,27 +18,6 @@ class AbstractBlockTree;
 //================================================================//
 class BlockTreeCursor :
     public HasBlockHeaderFields {
-public:
-
-    enum Meta {
-        META_NONE,
-        META_PROVISIONAL,
-        META_REFUSED,
-    };
-
-    enum Status {
-        STATUS_NEW          = 0x01,
-        STATUS_COMPLETE     = 0x02,
-        STATUS_MISSING      = 0x04,
-        STATUS_INVALID      = 0x08,
-    };
-    
-    enum RewriteMode {
-        REWRITE_NONE,
-        REWRITE_WINDOW,
-        REWRITE_ANY,
-    };
-
 protected:
 
     friend class BlockTreeTag;
@@ -46,8 +26,8 @@ protected:
 
     shared_ptr < const BlockHeader >    mHeader;
     shared_ptr < const Block >          mBlock;
-    Status                              mStatus;
-    Meta                                mMeta;
+    kBlockTreeEntryStatus               mStatus;
+    kBlockTreeEntryMeta                 mMeta;
 
     //----------------------------------------------------------------//
     void                                logBranchRecurse            ( string& str ) const;
@@ -62,16 +42,16 @@ public:
     //----------------------------------------------------------------//
                                         BlockTreeCursor             ();
                                         ~BlockTreeCursor            ();
-    bool                                checkStatus                 ( Status status ) const;
+    bool                                checkStatus                 ( kBlockTreeEntryStatus status ) const;
     bool                                checkTree                   ( const AbstractBlockTree* tree ) const;
-    static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, RewriteMode rewriteMode );
+    static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, kRewriteMode rewriteMode );
     bool                                equals                      ( const BlockTreeCursor& rhs ) const;
     static BlockTreeCursor              findRoot                    ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 );
     shared_ptr < const Block >          getBlock                    () const;
     string                              getHash                     () const;
     const BlockHeader&                  getHeader                   () const;
     BlockTreeCursor                     getParent                   () const;
-    Status                              getStatus                   () const;
+    kBlockTreeEntryStatus               getStatus                   () const;
     bool                                hasHeader                   () const;
     bool                                hasParent                   () const;
     bool                                isAncestorOf                ( BlockTreeCursor tail ) const;
@@ -81,7 +61,7 @@ public:
     bool                                isMissingOrInvalid          () const;
     bool                                isNew                       () const;
     bool                                isRefused                   () const;
-    BlockTreeCursor                     trim                        ( Status status ) const;
+    BlockTreeCursor                     trim                        ( kBlockTreeEntryStatus status ) const;
     BlockTreeCursor                     trimInvalid                 () const;
     BlockTreeCursor                     trimMissing                 () const;
     BlockTreeCursor                     trimMissingOrInvalid        () const;

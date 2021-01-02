@@ -34,7 +34,7 @@ BlockTreeCursor::~BlockTreeCursor () {
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeCursor::checkStatus ( Status status ) const {
+bool BlockTreeCursor::checkStatus ( kBlockTreeEntryStatus status ) const {
 
     return ( this->mStatus & status );
 }
@@ -46,7 +46,7 @@ bool BlockTreeCursor::checkTree ( const AbstractBlockTree* tree ) const {
 }
 
 //----------------------------------------------------------------//
-int BlockTreeCursor::compare ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, RewriteMode rewriteMode ) {
+int BlockTreeCursor::compare ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, kRewriteMode rewriteMode ) {
 
     assert ( node0.mTree == node1.mTree );
     assert ( node0.mTree );
@@ -94,7 +94,7 @@ BlockTreeCursor BlockTreeCursor::getParent () const {
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor::Status BlockTreeCursor::getStatus () const {
+kBlockTreeEntryStatus BlockTreeCursor::getStatus () const {
     
     return this->mStatus;
 }
@@ -215,7 +215,7 @@ void BlockTreeCursor::logBranchRecurse ( string& str ) const {
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTreeCursor::trim ( Status status ) const {
+BlockTreeCursor BlockTreeCursor::trim ( kBlockTreeEntryStatus status ) const {
 
     BlockTreeCursor cursor = *this;
 
@@ -240,7 +240,7 @@ BlockTreeCursor BlockTreeCursor::trimMissing () const {
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTreeCursor::trimMissingOrInvalid () const {
 
-    return this->trim (( Status )( STATUS_MISSING | STATUS_INVALID ));
+    return this->trim (( kBlockTreeEntryStatus )( STATUS_MISSING | STATUS_INVALID ));
 }
 
 //----------------------------------------------------------------//

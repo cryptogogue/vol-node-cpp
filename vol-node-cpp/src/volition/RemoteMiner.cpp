@@ -70,18 +70,18 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
 
             shared_ptr < const BlockHeader > header = this->mHeaderQueue.begin ()->second;
             
-            AbstractBlockTree::CanAppend canAppend = blockTree.checkAppend ( *header );
+            kBlockTreeAppendResult canAppend = blockTree.checkAppend ( *header );
             
             switch ( canAppend ) {
             
-                case AbstractBlockTree::APPEND_OK:
-                case AbstractBlockTree::ALREADY_EXISTS:
+                case kBlockTreeAppendResult::APPEND_OK:
+                case kBlockTreeAppendResult::ALREADY_EXISTS:
                     this->mTag = blockTree.affirmHeader ( this->mTag, header );
                     this->mHeaderQueue.erase ( this->mHeaderQueue.begin ());
                     accepted++;
                     break;
                 
-                case AbstractBlockTree::MISSING_PARENT:
+                case kBlockTreeAppendResult::MISSING_PARENT:
                     if ( accepted == 0 ) {
                         // if there's anything left in the queue, back up and get an earlier batch of blocks.
                         this->mHeight = this->mHeaderQueue.begin ()->second->getHeight ();
@@ -90,8 +90,8 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
                     this->reset ();
                     return;
                 
-                case AbstractBlockTree::REFUSED:
-                case AbstractBlockTree::TOO_SOON:
+                case kBlockTreeAppendResult::REFUSED:
+                case kBlockTreeAppendResult::TOO_SOON:
                     this->reset ();
                     break;
             }

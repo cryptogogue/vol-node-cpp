@@ -47,7 +47,7 @@ void InMemoryBlockTreeNode::clearParent () {
 }
 
 //----------------------------------------------------------------//
-void InMemoryBlockTreeNode::mark ( BlockTreeCursor::Status status ) {
+void InMemoryBlockTreeNode::mark ( kBlockTreeEntryStatus status ) {
 
     if ( status == this->mStatus ) return;
 
