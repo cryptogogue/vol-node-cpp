@@ -44,7 +44,7 @@ protected:
     Miners                              mMiners;
     Poco::Event                         mShutdownEvent;
     
-    InMemoryBlockTree                           mOptimal;
+    InMemoryBlockTree                   mOptimal;
     BlockTreeTag                        mOptimalTag;
 
     bool                                mIsPaused;

@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/AbstractBlockTree.h>
 #include <volition/Block.h>
-#include <volition/InMemoryBlockTree.h>
 #include <volition/BlockTreeCursor.h>
 
 // To compare chains:

@@ -6,7 +6,6 @@
 
 #include <volition/common.h>
 #include <volition/Block.h>
-#include <volition/InMemoryBlockTree.h>
 #include <volition/Ledger.h>
 #include <volition/Miner.h>
 #include <volition/simulation/Analysis.h>

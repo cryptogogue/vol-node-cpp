@@ -10,9 +10,10 @@
 #include <volition/Block.h>
 #include <volition/BlockTreeCursor.h>
 #include <volition/BlockTreeTag.h>
-#include <volition/InMemoryBlockTreeNode.h>
 
 namespace Volition {
+
+class InMemoryBlockTreeNode;
 
 //================================================================//
 // InMemoryBlockTreeSegment
@@ -51,19 +52,17 @@ class InMemoryBlockTree :
     public AbstractBlockTree {
 private:
 
-    friend class BlockTreeCursor;
     friend class InMemoryBlockTreeNode;
-    friend class BlockTreeTag;
 
     InMemoryBlockTreeNode*                                  mRoot;
     map < string, InMemoryBlockTreeNode* >                  mNodes;
     map < string, shared_ptr < InMemoryBlockTreeNode >>     mTags;
 
     //----------------------------------------------------------------//
-    InMemoryBlockTreeFork       findFork                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
+    InMemoryBlockTreeFork       findFork                        ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
     InMemoryBlockTreeNode*              findNodeForHash         ( string hash );
     const InMemoryBlockTreeNode*        findNodeForHash         ( string hash ) const;
-    void                        logTreeRecurse          ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const;
+    void                        logTreeRecurse                  ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const;
 
     //----------------------------------------------------------------//
     BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) override;
@@ -80,12 +79,10 @@ private:
 
 public:
 
-    GET ( InMemoryBlockTreeNode::ConstPtr, Root, mRoot )
-
     //----------------------------------------------------------------//
                                 InMemoryBlockTree               ();
                                 ~InMemoryBlockTree              ();
-    void                        logTree                 ( string prefix = "", size_t maxDepth = 0 ) const;
+    void                        logTree                         ( string prefix = "", size_t maxDepth = 0 ) const;
 };
 
 } // namespace Volition

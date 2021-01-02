@@ -65,9 +65,6 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
     size_t accepted = 0;
     if ( this->mHeaderQueue.size ()) {
         
-        // if 'tag' gets overwritten, 'thumb' will hang on to any nodes we might need later.
-//        InMemoryBlockTreeNode::ConstPtr thumb = this->mTag;
-        
         // visit each header in the cache and try to apply it.
         while ( this->mHeaderQueue.size ()) {
 

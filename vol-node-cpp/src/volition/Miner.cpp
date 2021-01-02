@@ -5,13 +5,12 @@
 #include <volition/Digest.h>
 #include <volition/FileSys.h>
 #include <volition/HTTPMiningMessenger.h>
+#include <volition/InMemoryBlockTree.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
-
-#include <volition/InMemoryBlockTree.h>
 
 namespace Volition {
 
@@ -183,7 +182,7 @@ void Miner::composeChain () {
         // REWIND chain to point of divergence
         BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mWorkingLedgerTag, *this->mBestBranchTag );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
-        assert ( root.checkStatus ( InMemoryBlockTreeNode::STATUS_COMPLETE ));  // guaranteed -> was in chain
+        assert ( root.checkStatus ( BlockTreeCursor::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
         this->mWorkingLedger->reset ( root.getHeight () + 1 );
         this->mWorkingLedgerTag = root;
@@ -372,7 +371,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         const BlockHeader& parentHeader = parent.getHeader ();
         
         // if parent is one of ours, but it isn't yet complete, stop the search.
-        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.checkStatus ( InMemoryBlockTreeNode::STATUS_COMPLETE ))) break;
+        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.checkStatus ( BlockTreeCursor::STATUS_COMPLETE ))) break;
         
         // if enough time has elapsed since the parent was declared, we can consider replacing the child
         // with our own block (or appending a new block).
@@ -385,7 +384,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         }
         
         // we can only replace blocks within the rewrite window. if parent is outside of that, no point in continuing.
-        if (( this->mRewriteMode == InMemoryBlockTreeNode::REWRITE_WINDOW ) && !parentHeader.isInRewriteWindow ( now )) break;
+        if (( this->mRewriteMode == BlockTreeCursor::REWRITE_WINDOW ) && !parentHeader.isInRewriteWindow ( now )) break;
         
         // don't replace our own block; that would be silly.
         if ( parentHeader.getMinerID () == this->mMinerID ) break;
@@ -446,7 +445,7 @@ Miner::Miner () :
     mFlags ( DEFAULT_FLAGS ),
     mNeedsReport ( true ),
     mReportMode ( REPORT_NONE ),
-    mRewriteMode ( InMemoryBlockTreeNode::REWRITE_NONE ),
+    mRewriteMode ( BlockTreeCursor::REWRITE_NONE ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ) {
     
@@ -708,7 +707,7 @@ void Miner::setReward ( string reward ) {
 //----------------------------------------------------------------//
 void Miner::setRewriteWindow () {
 
-    this->setRewriteMode ( InMemoryBlockTreeNode::REWRITE_WINDOW );
+    this->setRewriteMode ( BlockTreeCursor::REWRITE_WINDOW );
 }
 
 //----------------------------------------------------------------//
@@ -773,7 +772,7 @@ void Miner::updateBestBranch ( time_t now ) {
         
         assert ( !( *remoteMiner->mImproved ).isMissingOrInvalid ());
         
-        if ( InMemoryBlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
+        if ( BlockTreeCursor::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
             this->mBlockTree->tag ( this->mBestBranchTag, *remoteMiner->mImproved );
         }
     }
@@ -794,7 +793,7 @@ void Miner::updateBlockSearches () {
         if ( remoteMiner->mImproved.hasCursor () && ( *remoteMiner->mImproved ).isMissing ()) {
             
             // only affirm a search if the other chain could beat our current.
-            if ( InMemoryBlockTreeNode::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
+            if ( BlockTreeCursor::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
                 this->affirmBranchSearch ( *remoteMiner->mImproved );
             }
         }
