@@ -36,7 +36,7 @@ private:
     //----------------------------------------------------------------//
     BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
     int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const;
-    BlockTreeCursor             findCursorForTagName    ( string tagName ) const;
+    BlockTreeCursor             findCursorForTag        ( const BlockTreeTag& tag ) const;
     BlockTreeCursor             findRoot                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
     BlockTreeCursor             getParent               ( const BlockTreeCursor& cursor ) const;
     BlockTreeCursor             tag                     ( string tagName, string otherTagName );
@@ -46,7 +46,7 @@ private:
     virtual CanAppend               AbstractBlockTree_checkAppend               ( const BlockHeader& header ) const = 0;
     virtual int                     AbstractBlockTree_compare                   ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const = 0;
     virtual BlockTreeCursor         AbstractBlockTree_findCursorForHash         ( string hash ) const = 0;
-    virtual BlockTreeCursor         AbstractBlockTree_findCursorForTagName      ( string tagName ) const = 0;
+    virtual BlockTreeCursor         AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const = 0;
     virtual BlockTreeCursor         AbstractBlockTree_findRoot                  ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const = 0;
     virtual BlockTreeCursor         AbstractBlockTree_getParent                 ( const BlockTreeCursor& cursor ) const = 0;
     virtual void                    AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) = 0;

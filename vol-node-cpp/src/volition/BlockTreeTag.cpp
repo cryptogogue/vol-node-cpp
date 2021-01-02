@@ -66,13 +66,13 @@ bool BlockTreeTag::equals ( const BlockTreeTag& rhs ) const {
 //----------------------------------------------------------------//
 BlockTreeCursor BlockTreeTag::getCursor () const {
 
-    return this->mBlockTree ? this->mBlockTree->findCursorForTagName ( this->mTagName ) : BlockTreeCursor ();
+    return this->mBlockTree ? this->mBlockTree->findCursorForTag ( *this ) : BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
 bool BlockTreeTag::hasCursor () const {
 
-    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTagName ( this->mTagName ).hasHeader ());
+    return this->mBlockTree && ( this->mTagName.size ()) && ( this->mBlockTree->findCursorForTag ( *this ).hasHeader ());
 }
 
 //----------------------------------------------------------------//

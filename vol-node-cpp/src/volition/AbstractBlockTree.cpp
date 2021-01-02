@@ -61,9 +61,9 @@ BlockTreeCursor AbstractBlockTree::findCursorForHash ( string hash ) const {
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor AbstractBlockTree::findCursorForTagName ( string tagName ) const {
+BlockTreeCursor AbstractBlockTree::findCursorForTag ( const BlockTreeTag& tag ) const {
 
-    return this->AbstractBlockTree_findCursorForTagName ( tagName );
+    return this->AbstractBlockTree_findCursorForTag ( tag );
 }
 
 //----------------------------------------------------------------//

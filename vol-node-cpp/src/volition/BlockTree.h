@@ -70,7 +70,7 @@ private:
     CanAppend                   AbstractBlockTree_checkAppend               ( const BlockHeader& header ) const override;
     int                         AbstractBlockTree_compare                   ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, BlockTreeCursor::RewriteMode rewriteMode ) const override;
     BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const override;
-    BlockTreeCursor             AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
+    BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const override;
     BlockTreeCursor             AbstractBlockTree_findRoot                  ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const override;
     BlockTreeCursor             AbstractBlockTree_getParent                 ( const BlockTreeCursor& cursor ) const override;
     void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) override;

@@ -289,10 +289,17 @@ BlockTreeCursor BlockTree::AbstractBlockTree_findCursorForHash ( string hash ) c
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_findCursorForTagName ( string tagName ) const {
+BlockTreeCursor BlockTree::AbstractBlockTree_findCursorForTag ( const BlockTreeTag& tag ) const {
 
-    map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tagName );
-    if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
+    assert ( tag.mTagName.size () > 0 );
+
+    if ( tag.mBlockTree ) {
+
+        assert ( tag.mBlockTree == this );
+
+        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.mTagName );
+        if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
+    }
     return BlockTreeCursor ();
 }
 
