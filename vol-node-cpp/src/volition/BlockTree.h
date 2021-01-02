@@ -74,8 +74,8 @@ private:
     BlockTreeCursor             AbstractBlockTree_findRoot                  ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const override;
     BlockTreeCursor             AbstractBlockTree_getParent                 ( const BlockTreeCursor& cursor ) const override;
     void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) override;
-    BlockTreeCursor             AbstractBlockTree_tag                       ( string tagName, string otherTagName ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
+    BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;
     BlockTreeCursor             AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
 
 public:

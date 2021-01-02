@@ -14,13 +14,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 BlockTreeTag& BlockTreeTag::operator = ( BlockTreeCursor other ) {
 
-    if ( other.hasHeader ()) {
-        assert ( other.mTree );
-        assert ( !this->mBlockTree || ( this->mBlockTree == other.mTree ));
+    if ( other.mTree ) {
         other.mTree->tag ( *this, other );
-    }
-    else {
-        this->mBlockTree = NULL;
     }
     return *this;
 }
@@ -28,10 +23,9 @@ BlockTreeTag& BlockTreeTag::operator = ( BlockTreeCursor other ) {
 //----------------------------------------------------------------//
 BlockTreeTag& BlockTreeTag::operator = ( const BlockTreeTag& other ) {
 
-    assert ( this->mTagName.size () > 0 );
     if ( other.mBlockTree ) {
         this->mBlockTree = other.mBlockTree;
-        this->mBlockTree->tag ( this->mTagName, other.mTagName );
+        other.mBlockTree->tag ( *this, other );
     }
     return *this;
 }

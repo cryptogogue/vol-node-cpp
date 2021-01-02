@@ -333,33 +333,47 @@ void BlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, BlockTre
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_tag ( string tagName, string otherTagName ) {
+BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
 
+    string tagName = tag.mTagName;
     assert ( tagName.size ());
-    assert ( otherTagName.size ());
-
-    map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTagName );
-    if ( nodeIt != this->mTags.cend ()) {
-        this->mTags [ tagName ] = nodeIt->second;
-        return *nodeIt->second;
+    
+    assert (( tag.mBlockTree == NULL ) || ( tag.mBlockTree == this ));
+    
+    if ( cursor.mTree ) {
+    
+        assert ( cursor.mTree == this );
+        tag.mBlockTree = this;
+        
+        BlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
+        assert ( node );
+        this->mTags [ tagName ] = node->shared_from_this ();
+        
+        return *node;
     }
     return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
+BlockTreeCursor BlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) {
 
-    string tagName = tag.mTagName;
-    assert ( tagName.size ());
+    assert ( tag.mTagName.size ());
+    assert ( otherTag.mTagName.size ());
+
     assert (( tag.mBlockTree == NULL ) || ( tag.mBlockTree == this ));
+        
+    if ( otherTag.mBlockTree ) {
     
-    tag.mBlockTree = this;
-    
-    BlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
-    assert ( node );
-    this->mTags [ tagName ] = node->shared_from_this ();
-    
-    return *node;
+        assert ( otherTag.mBlockTree == this );
+        tag.mBlockTree = this;
+        
+        map < string, shared_ptr < BlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTag.mTagName );
+        assert ( nodeIt != this->mTags.cend ());
+        this->mTags [ tag.mTagName ] = nodeIt->second;
+        
+        return *nodeIt->second;
+    }
+    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//

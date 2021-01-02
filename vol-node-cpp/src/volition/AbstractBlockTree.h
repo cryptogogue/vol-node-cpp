@@ -39,7 +39,7 @@ private:
     BlockTreeCursor             findCursorForTag        ( const BlockTreeTag& tag ) const;
     BlockTreeCursor             findRoot                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
     BlockTreeCursor             getParent               ( const BlockTreeCursor& cursor ) const;
-    BlockTreeCursor             tag                     ( string tagName, string otherTagName );
+    BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeTag& otherTag );
 
     //----------------------------------------------------------------//
     virtual BlockTreeCursor         AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) = 0;
@@ -50,8 +50,8 @@ private:
     virtual BlockTreeCursor         AbstractBlockTree_findRoot                  ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const = 0;
     virtual BlockTreeCursor         AbstractBlockTree_getParent                 ( const BlockTreeCursor& cursor ) const = 0;
     virtual void                    AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, BlockTreeCursor::Status status ) = 0;
-    virtual BlockTreeCursor         AbstractBlockTree_tag                       ( string tagName, string otherTagName ) = 0;
     virtual BlockTreeCursor         AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) = 0;
+    virtual BlockTreeCursor         AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) = 0;
     virtual BlockTreeCursor         AbstractBlockTree_update                    ( shared_ptr < const Block > block ) = 0;
 
 public:

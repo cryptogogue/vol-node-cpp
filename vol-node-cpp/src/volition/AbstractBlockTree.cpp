@@ -85,15 +85,15 @@ void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, BlockTreeNode::Sta
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor AbstractBlockTree::tag ( string tagName, string otherTagName ) {
-
-   return this->AbstractBlockTree_tag ( tagName, otherTagName );
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
 
     return this->AbstractBlockTree_tag ( tag, cursor );
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor AbstractBlockTree::tag ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) {
+
+   return this->AbstractBlockTree_tag ( tag, otherTag );
 }
 
 //----------------------------------------------------------------//
