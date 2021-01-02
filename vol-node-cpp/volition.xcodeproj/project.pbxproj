@@ -84,6 +84,8 @@
 		CD19E03725A079E70007ACF0 /* BlockHeaderFields.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03525A079E70007ACF0 /* BlockHeaderFields.h */; };
 		CD19E03A25A07A0D0007ACF0 /* HasBlockHeaderFields.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03825A07A0D0007ACF0 /* HasBlockHeaderFields.h */; };
 		CD19E03B25A07A0D0007ACF0 /* HasBlockHeaderFields.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03925A07A0D0007ACF0 /* HasBlockHeaderFields.cpp */; };
+		CD19E03E25A07E510007ACF0 /* SQLiteBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */; };
+		CD19E03F25A07E510007ACF0 /* SQLiteBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */; };
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
@@ -886,6 +888,8 @@
 		CD19E03525A079E70007ACF0 /* BlockHeaderFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockHeaderFields.h; path = src/volition/BlockHeaderFields.h; sourceTree = "<group>"; };
 		CD19E03825A07A0D0007ACF0 /* HasBlockHeaderFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HasBlockHeaderFields.h; path = src/volition/HasBlockHeaderFields.h; sourceTree = "<group>"; };
 		CD19E03925A07A0D0007ACF0 /* HasBlockHeaderFields.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HasBlockHeaderFields.cpp; path = src/volition/HasBlockHeaderFields.cpp; sourceTree = "<group>"; };
+		CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLiteBlockTree.h; path = src/volition/SQLiteBlockTree.h; sourceTree = "<group>"; };
+		CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteBlockTree.cpp; path = src/volition/SQLiteBlockTree.cpp; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
@@ -1400,6 +1404,8 @@
 				CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */,
 				CD19DF54259B3F190007ACF0 /* InMemoryBlockTreeNode.cpp */,
 				CD19DF55259B3F190007ACF0 /* InMemoryBlockTreeNode.h */,
+				CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */,
+				CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */,
 			);
 			name = blockTree;
 			sourceTree = "<group>";
@@ -2142,6 +2148,7 @@
 				CD8BAE4521EBD46200B5040E /* BinarySquap.h in Headers */,
 				CDAA38E3251AA09200FEAFB5 /* Simulator.h in Headers */,
 				CD63A1C422AC6B4100D5C801 /* AssetDefinition.h in Headers */,
+				CD19E03E25A07E510007ACF0 /* SQLiteBlockTree.h in Headers */,
 				CD20FFC3253D978600DEB809 /* ControlCommandHandler.h in Headers */,
 				CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */,
 				CD200074254A42E900DEB809 /* MiningReward.h in Headers */,
@@ -2791,6 +2798,7 @@
 				CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */,
 				CD19E025259E4FAA0007ACF0 /* BlockTreeCursor.cpp in Sources */,
+				CD19E03F25A07E510007ACF0 /* SQLiteBlockTree.cpp in Sources */,
 				CDA1574023FAA92300DFACCF /* Munge.cpp in Sources */,
 				CD4E819D210593BD007DA585 /* MinerInfo.cpp in Sources */,
 				CD4E8190210593A4007DA585 /* AbstractCryptoKey.cpp in Sources */,

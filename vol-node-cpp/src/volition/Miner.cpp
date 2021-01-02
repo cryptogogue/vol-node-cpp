@@ -8,6 +8,7 @@
 #include <volition/InMemoryBlockTree.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
+#include <volition/SQLiteBlockTree.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
@@ -172,7 +173,7 @@ void Miner::composeChain () {
     // check to see if chain tag is *behind* best branch
     if (( *this->mBestBranchTag ).isAncestorOf ( *this->mWorkingLedgerTag )) {
         this->mWorkingLedger->reset ( this->mBestBranchTag.getHeight () + 1 );
-        this->mWorkingLedgerTag = this->mBestBranchTag;
+        this->mBlockTree->tag ( this->mWorkingLedgerTag, this->mBestBranchTag );
         return;
     }
 
@@ -185,7 +186,7 @@ void Miner::composeChain () {
         assert ( root.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
         this->mWorkingLedger->reset ( root.getHeight () + 1 );
-        this->mWorkingLedgerTag = root;
+        this->mBlockTree->tag ( this->mWorkingLedgerTag, root );
     }
     assert (( *this->mWorkingLedgerTag ).isAncestorOf ( *this->mBestBranchTag ));
     
@@ -476,6 +477,9 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     string hash = block->getDigest ().toHex ();
     this->mLedgerFilename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
     this->mConfigFilename = Format::write ( "%s/%s-config.json", path.c_str (), hash.c_str ());
+    this->mBlocksFilename = Format::write ( "%s/%s-blocks.db", path.c_str (), hash.c_str ());
+    
+    shared_ptr < SQLiteBlockTree > blockTree = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
     
     this->mPersistenceProvider = make_shared < SQLiteStringStore >( this->mLedgerFilename );
     
@@ -491,8 +495,8 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
 
         this->mBlockTree->affirmBlock ( this->mWorkingLedgerTag, topBlock );
         
-        this->mPermanentLedgerTag   = this->mWorkingLedgerTag;
-        this->mBestBranchTag        = this->mWorkingLedgerTag;
+        this->mBlockTree->tag ( this->mPermanentLedgerTag, this->mWorkingLedgerTag );
+        this->mBlockTree->tag ( this->mBestBranchTag, this->mWorkingLedgerTag );
     }
     
     this->setGenesis ( block );
@@ -566,9 +570,9 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     assert ( node.hasHeader ());
         
     if ( this->mWorkingLedgerTag.equals ( this->mBestBranchTag )) {
-        this->mBestBranchTag = node;
+        this->mBlockTree->tag ( this->mBestBranchTag, node );
     }
-    this->mWorkingLedgerTag = node;
+    this->mBlockTree->tag ( this->mWorkingLedgerTag, node );
 }
 
 //----------------------------------------------------------------//
@@ -673,13 +677,8 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
     }
     else {
     
-        this->mWorkingLedger        = make_shared < Ledger >();
-        this->mWorkingLedgerTag     = BlockTreeCursor ();
-        this->mBestBranchTag      = BlockTreeCursor ();
-        this->mPermanentLedgerTag   = BlockTreeCursor ();
-        
+        this->mWorkingLedger = make_shared < Ledger >();
         this->pushBlock ( block );
-        
         this->updatePermanentTag ();
     }
 }
@@ -767,7 +766,7 @@ void Miner::updateBestBranch ( time_t now ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         if ( !remoteMiner->mTag.hasCursor ()) continue;
         
-        remoteMiner->mImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalid (), now );
+        this->mBlockTree->tag ( remoteMiner->mImproved, this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalid (), now ));
         if (( *remoteMiner->mImproved ).isMissing ()) continue;
         
         assert ( !( *remoteMiner->mImproved ).isMissingOrInvalid ());
@@ -776,7 +775,6 @@ void Miner::updateBestBranch ( time_t now ) {
             this->mBlockTree->tag ( this->mBestBranchTag, *remoteMiner->mImproved );
         }
     }
-    
     assert ( this->mBestBranchTag.hasCursor ());
     assert ( !( *this->mBestBranchTag ).isMissingOrInvalid ());
 }
@@ -851,7 +849,7 @@ void Miner::updatePermanentTag () {
     
     if ( !( *this->mPermanentLedgerTag ).equals ( tag )) {
     
-        this->mPermanentLedgerTag = tag;
+        this->mBlockTree->tag ( this->mPermanentLedgerTag, tag );
         this->mPermanentLedger = *this->mWorkingLedger;
         this->mPermanentLedger.reset ( this->mPermanentLedgerTag.getHeight () + 1 );
         

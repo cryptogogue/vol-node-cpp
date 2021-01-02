@@ -25,6 +25,18 @@ private:
     string                      mName;
     
     //----------------------------------------------------------------//
+    BlockTreeTag& operator = ( BlockTreeCursor ) {
+        assert ( false );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
+    BlockTreeTag& operator = ( const BlockTreeTag& ) {
+        assert ( false );
+        return *this;
+    }
+    
+    //----------------------------------------------------------------//
     const BlockHeaderFields&    HasBlockHeader_getFields        () const override;
 
 public:
@@ -33,8 +45,6 @@ public:
     GET_SET ( AbstractBlockTree*,   Tree,       mTree )
 
     //----------------------------------------------------------------//
-    BlockTreeTag&               operator =                      ( BlockTreeCursor other );
-    BlockTreeTag&               operator =                      ( const BlockTreeTag& other );
     BlockTreeCursor             operator *                      () const;
                                 BlockTreeTag                    ();
                                 BlockTreeTag                    ( BlockTreeTag& other );
@@ -44,6 +54,7 @@ public:
     BlockTreeCursor             getCursor                       () const;
     bool                        hasCursor                       () const;
     bool                        hasName                         () const;
+    void                        reset                           ();
 };
 
 } // namespace Volition

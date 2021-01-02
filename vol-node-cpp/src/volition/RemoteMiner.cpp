@@ -29,25 +29,22 @@ RemoteMiner::~RemoteMiner () {
 //----------------------------------------------------------------//
 void RemoteMiner::reset () {
 
-    this->mHeight           = 0;
-    this->mTag              = BlockTreeTag ();
-    this->mImproved         = BlockTreeTag ();
-    this->mForward          = true;
-    
     this->mHeaderQueue.clear ();
+
+    this->mTag.reset ();
+    this->mImproved.reset ();
+
+    this->mHeight           = 0;
+    this->mForward          = true;
 }
 
 //----------------------------------------------------------------//
 void RemoteMiner::setError ( string message ) {
 
+    this->reset ();
+
     this->mNetworkState     = STATE_ERROR;
     this->mMessage          = message;
-    this->mHeight           = 0;
-    this->mTag              = BlockTreeTag ();
-    this->mImproved         = BlockTreeTag ();
-    this->mForward          = true;
-    
-    this->mHeaderQueue.clear ();
 }
 
 //----------------------------------------------------------------//
@@ -76,7 +73,7 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
             
                 case kBlockTreeAppendResult::APPEND_OK:
                 case kBlockTreeAppendResult::ALREADY_EXISTS:
-                    this->mTag = blockTree.affirmHeader ( this->mTag, header );
+                    blockTree.affirmHeader ( this->mTag, header );
                     this->mHeaderQueue.erase ( this->mHeaderQueue.begin ());
                     accepted++;
                     break;

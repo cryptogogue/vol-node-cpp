@@ -19,10 +19,11 @@ class AbstractBlockTree;
 class BlockTreeCursor :
     public HasBlockHeaderFields {
 protected:
-
+    
+    friend class AbstractBlockTree;
     friend class BlockTreeTag;
 
-    AbstractBlockTree*                  mTree;
+    const AbstractBlockTree*            mTree;
 
     shared_ptr < const BlockHeader >    mHeader;
     shared_ptr < const Block >          mBlock;
@@ -37,7 +38,7 @@ protected:
 
 public:
 
-    GET_SET ( AbstractBlockTree*,   Tree,       mTree )
+    GET ( const AbstractBlockTree*,     Tree,       mTree )
 
     //----------------------------------------------------------------//
                                         BlockTreeCursor             ();

@@ -37,9 +37,9 @@ public:
 class InMemoryBlockTreeFork {
 public:
 
-    const InMemoryBlockTreeNode*        mRoot;
-    InMemoryBlockTreeSegment    mSeg0;
-    InMemoryBlockTreeSegment    mSeg1;
+    const InMemoryBlockTreeNode*    mRoot;
+    InMemoryBlockTreeSegment        mSeg0;
+    InMemoryBlockTreeSegment        mSeg1;
     
     //----------------------------------------------------------------//
     size_t          getSegLength            () const;
@@ -59,19 +59,18 @@ private:
     map < string, shared_ptr < InMemoryBlockTreeNode >>     mTags;
 
     //----------------------------------------------------------------//
-    InMemoryBlockTreeFork       findFork                        ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
-    InMemoryBlockTreeNode*              findNodeForHash         ( string hash );
-    const InMemoryBlockTreeNode*        findNodeForHash         ( string hash ) const;
-    void                        logTreeRecurse                  ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const;
+    InMemoryBlockTreeFork           findFork                    ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
+    InMemoryBlockTreeNode*          findNodeForHash             ( string hash );
+    const InMemoryBlockTreeNode*    findNodeForHash             ( string hash ) const;
+    void                            logTreeRecurse              ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const;
 
     //----------------------------------------------------------------//
-    BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) override;
+    BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) override;
     kBlockTreeAppendResult      AbstractBlockTree_checkAppend               ( const BlockHeader& header ) const override;
     int                         AbstractBlockTree_compare                   ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const override;
     BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const override;
     BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const override;
     BlockTreeCursor             AbstractBlockTree_findRoot                  ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const override;
-    BlockTreeCursor             AbstractBlockTree_getParent                 ( const BlockTreeCursor& cursor ) const override;
     void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;

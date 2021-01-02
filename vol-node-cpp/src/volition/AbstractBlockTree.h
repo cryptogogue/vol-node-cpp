@@ -25,16 +25,16 @@ protected:
 
     //----------------------------------------------------------------//
     BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
+    BlockTreeCursor             makeCursor              ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, kBlockTreeEntryStatus status, kBlockTreeEntryMeta meta ) const;
     void                        setTagTree              ( BlockTreeTag& tag );
 
     //----------------------------------------------------------------//
-    virtual BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) = 0;
+    virtual BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) = 0;
     virtual kBlockTreeAppendResult      AbstractBlockTree_checkAppend               ( const BlockHeader& header ) const = 0;
     virtual int                         AbstractBlockTree_compare                   ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findRoot                  ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const = 0;
-    virtual BlockTreeCursor             AbstractBlockTree_getParent                 ( const BlockTreeCursor& cursor ) const = 0;
     virtual void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) = 0;

@@ -75,7 +75,24 @@ BlockTreeCursor AbstractBlockTree::findRoot ( const BlockTreeCursor& cursor0, co
 //----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::getParent ( const BlockTreeCursor& cursor ) const {
 
-    return this->AbstractBlockTree_getParent ( cursor );
+    if ( cursor.getHeight () > 0 ) {
+        return this->findCursorForHash ( cursor.getPrevDigest ().toHex ());
+    }
+    return BlockTreeCursor ();
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor AbstractBlockTree::makeCursor ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, kBlockTreeEntryStatus status, kBlockTreeEntryMeta meta ) const {
+
+    BlockTreeCursor cursor;
+    
+    cursor.mTree    = this;
+    cursor.mHeader  = header;
+    cursor.mBlock   = block;
+    cursor.mStatus  = status;
+    cursor.mMeta    = meta;
+    
+    return cursor;
 }
 
 //----------------------------------------------------------------//

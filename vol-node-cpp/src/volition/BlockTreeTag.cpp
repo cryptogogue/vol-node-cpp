@@ -11,25 +11,6 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockTreeTag& BlockTreeTag::operator = ( BlockTreeCursor other ) {
-
-    if ( other.mTree ) {
-        other.mTree->tag ( *this, other );
-    }
-    return *this;
-}
-
-//----------------------------------------------------------------//
-BlockTreeTag& BlockTreeTag::operator = ( const BlockTreeTag& other ) {
-
-    if ( other.mTree ) {
-        this->mTree = other.mTree;
-        other.mTree->tag ( *this, other );
-    }
-    return *this;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor BlockTreeTag::operator * () const {
 
     return this->getCursor ();
@@ -78,6 +59,12 @@ bool BlockTreeTag::hasCursor () const {
 bool BlockTreeTag::hasName () const {
 
     return ( this->mName.size () > 0 );
+}
+
+//----------------------------------------------------------------//
+void BlockTreeTag::reset () {
+
+    this->mTree = NULL;
 }
 
 //================================================================//

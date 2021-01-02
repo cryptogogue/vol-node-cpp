@@ -25,6 +25,7 @@ private:
 
     friend class InMemoryBlockTree;
 
+    InMemoryBlockTree*                          mInMemoryBlockTree;
     shared_ptr < InMemoryBlockTreeNode >        mParent;
     set < InMemoryBlockTreeNode* >              mChildren;
 
@@ -37,7 +38,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-                    InMemoryBlockTreeNode       ();
+                    InMemoryBlockTreeNode       ( InMemoryBlockTree& tree, shared_ptr < const BlockHeader > header, bool isProvisional );
                     ~InMemoryBlockTreeNode      ();
 };
 

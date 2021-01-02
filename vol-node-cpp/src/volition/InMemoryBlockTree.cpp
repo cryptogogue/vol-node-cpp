@@ -195,13 +195,8 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag,
 
         if ( !prevNode && this->mRoot ) return BlockTreeCursor ();
 
-        shared_ptr < InMemoryBlockTreeNode > shared = make_shared < InMemoryBlockTreeNode >();
+        shared_ptr < InMemoryBlockTreeNode > shared = make_shared < InMemoryBlockTreeNode >( *this, header, isProvisional );
         node = shared.get ();
-
-        node->mTree         = this;
-        node->mHeader       = header;
-        node->mStatus       = kBlockTreeEntryStatus::STATUS_NEW;
-        node->mMeta         = isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE;
 
         if ( prevNode ) {
         
@@ -309,18 +304,6 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findRoot ( const BlockTreeC
 
     InMemoryBlockTreeFork fork = this->findFork ( cursor0, cursor1 );
     return *fork.mRoot;
-}
-
-//----------------------------------------------------------------//
-BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_getParent ( const BlockTreeCursor& cursor ) const {
-
-    string hash = cursor.getHash ();
-    const InMemoryBlockTreeNode* node = this->findNodeForHash ( hash );
-
-    if ( node && node->mParent ) {
-        return *node->mParent;
-    }
-    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//

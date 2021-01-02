@@ -169,6 +169,7 @@ protected:
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
     string                                          mLedgerFilename;
     string                                          mConfigFilename;
+    string                                          mBlocksFilename;
     
     Poco::Mutex                                     mMutex;
     shared_ptr < AbstractMiningMessenger >          mMessenger;

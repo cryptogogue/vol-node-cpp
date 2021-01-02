@@ -23,27 +23,35 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-InMemoryBlockTreeNode::InMemoryBlockTreeNode () {
-}
-
-//----------------------------------------------------------------//
-InMemoryBlockTreeNode::~InMemoryBlockTreeNode () {
-
-    InMemoryBlockTree* tree = dynamic_cast < InMemoryBlockTree* >( this->mTree );
-
-    if ( tree && this->mHeader ) {
-        tree->mNodes.erase ( this->mHeader->getDigest ());
-    }
-    this->clearParent ();
-}
-
-//----------------------------------------------------------------//
 void InMemoryBlockTreeNode::clearParent () {
 
     if ( this->mParent ) {
         this->mParent->mChildren.erase ( this );
     }
     this->mParent = NULL;
+}
+
+//----------------------------------------------------------------//
+InMemoryBlockTreeNode::InMemoryBlockTreeNode ( InMemoryBlockTree& tree, shared_ptr < const BlockHeader > header, bool isProvisional ) :
+    mInMemoryBlockTree ( &tree ) {
+    
+    assert ( header );
+    this->mTree     = &tree;
+    this->mHeader   = header;
+    this->mStatus   =
+    this->mStatus   = kBlockTreeEntryStatus::STATUS_NEW;
+    this->mMeta     = isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE;
+}
+
+//----------------------------------------------------------------//
+InMemoryBlockTreeNode::~InMemoryBlockTreeNode () {
+
+    InMemoryBlockTree* tree = this->mInMemoryBlockTree;
+
+    assert ( tree );
+    assert ( this->mHeader );
+    tree->mNodes.erase ( this->mHeader->getDigest ());
+    this->clearParent ();
 }
 
 //----------------------------------------------------------------//
@@ -110,10 +118,9 @@ void InMemoryBlockTreeNode::markRefused () {
     
     this->clearParent ();
     
-    InMemoryBlockTree* tree = dynamic_cast < InMemoryBlockTree* >( this->mTree );
-    if ( tree ) {
-        tree->mNodes.erase ( this->mHeader->getDigest ());
-    }
+    InMemoryBlockTree* tree = this->mInMemoryBlockTree;
+    assert ( tree );
+    tree->mNodes.erase ( this->mHeader->getDigest ());
 }
 
 } // namespace Volition

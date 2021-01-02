@@ -35,7 +35,7 @@ void SimMiner::extendChain ( string charmHex, time_t time ) {
     block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
     
     this->pushBlock ( block );
-    this->mPermanentLedgerTag = this->mWorkingLedgerTag;
+    this->mBlockTree->tag ( this->mPermanentLedgerTag, this->mWorkingLedgerTag );
     this->mPermanentLedger = *this->mWorkingLedger;
 }
 
@@ -74,7 +74,7 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
 void SimMiner::rewindChain ( size_t height ) {
 
     while ( this->mBestBranchTag.getHeight () > height ) {
-        this->mBestBranchTag = ( *this->mBestBranchTag ).getParent ();
+        this->mBlockTree->tag ( this->mBestBranchTag, ( *this->mBestBranchTag ).getParent ());
     }
     this->composeChain ();
 }
@@ -118,7 +118,7 @@ void SimMiner::scrambleRemotes () {
             cursor = cursor.getParent ();
         }
         
-        remoteMiner->mTag = cursor;
+        this->mBlockTree->tag ( remoteMiner->mTag, cursor );
         remoteMiner->mHeight = height + 1;
         remoteMiner->mForward = true;
     }
