@@ -23,20 +23,17 @@ private:
     mutable SQLite              mDB;
 
     //----------------------------------------------------------------//
-    int                                 getNodeIDFromHash               ( string hash );
-    int                                 getNodeIDFromTagName            ( string tagName );
-    kBlockTreeEntryStatus               getNodeStatus                   ( int nodeID, kBlockTreeEntryStatus status = kBlockTreeEntryStatus::STATUS_INVALID );
-    void                                markRecurse                     ( int blockID, kBlockTreeEntryStatus status );
-    void                                releaseNode                     ( int nodeID );
-    void                                retainNode                      ( int nodeID );
+    int                                 getNodeIDFromHash               ( string hash ) const;
+    int                                 getNodeIDFromTagName            ( string tagName ) const;
+    kBlockTreeEntryStatus               getNodeStatus                   ( int nodeID, kBlockTreeEntryStatus status = kBlockTreeEntryStatus::STATUS_INVALID ) const;
+    void                                markRecurse                     ( int nodeID, kBlockTreeEntryStatus status );
+    void                                pruneUnreferencedNodes          ();
+    BlockTreeCursor                     readCursor                      ( const SQLiteStatement& stmt ) const;
     void                                setTag                          ( string tagName, int nodeID );
     static string                       stringFromMeta                  ( kBlockTreeEntryMeta meta );
     static string                       stringFromStatus                ( kBlockTreeEntryStatus status );
     static kBlockTreeEntryMeta          stringToMeta                    ( string str );
     static kBlockTreeEntryStatus        stringToStatus                  ( string str );
-
-    //----------------------------------------------------------------//
-    BlockTreeCursor             readCursor                                  ( const SQLiteStatement& stmt ) const;
 
     //----------------------------------------------------------------//
     BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) override;

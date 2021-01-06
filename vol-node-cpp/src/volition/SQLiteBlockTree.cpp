@@ -13,13 +13,13 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-int SQLiteBlockTree::getNodeIDFromHash ( string hash ) {
+int SQLiteBlockTree::getNodeIDFromHash ( string hash ) const {
 
     int nodeID = 0;
     
     SQLiteResult result = this->mDB.exec (
         
-        "SELECT rowid FROM nodes WHERE hash IS ?1",
+        "SELECT nodeID FROM nodes WHERE hash IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -37,7 +37,7 @@ int SQLiteBlockTree::getNodeIDFromHash ( string hash ) {
 }
 
 //----------------------------------------------------------------//
-int SQLiteBlockTree::getNodeIDFromTagName ( string tagName ) {
+int SQLiteBlockTree::getNodeIDFromTagName ( string tagName ) const {
 
     int nodeID = 0;
     
@@ -61,11 +61,11 @@ int SQLiteBlockTree::getNodeIDFromTagName ( string tagName ) {
 }
 
 //----------------------------------------------------------------//
-kBlockTreeEntryStatus SQLiteBlockTree::getNodeStatus ( int nodeID, kBlockTreeEntryStatus status ) {
+kBlockTreeEntryStatus SQLiteBlockTree::getNodeStatus ( int nodeID, kBlockTreeEntryStatus status ) const {
             
     SQLiteResult result = this->mDB.exec (
         
-        "SELECT status FROM nodes WHERE rowid IS ?1",
+        "SELECT status FROM nodes WHERE nodeID IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement stmt ) {
@@ -83,7 +83,7 @@ kBlockTreeEntryStatus SQLiteBlockTree::getNodeStatus ( int nodeID, kBlockTreeEnt
 }
 
 //----------------------------------------------------------------//
-void SQLiteBlockTree::markRecurse ( int blockID, kBlockTreeEntryStatus status ) {
+void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
 
     SQLiteResult result;
 
@@ -97,11 +97,11 @@ void SQLiteBlockTree::markRecurse ( int blockID, kBlockTreeEntryStatus status ) 
     // first, get some information about the node as it exists now.
     result = this->mDB.exec (
     
-        "SELECT height, status, parentStatus, hasBlock FROM nodes WHERE rowid IS ?1",
+        "SELECT height, status, parentStatus, hasBlock FROM nodes WHERE nodeID IS ?1",
     
         //--------------------------------//
         [ & ]( SQLiteStatement stmt ) {
-            stmt.bind ( 1, blockID );
+            stmt.bind ( 1, nodeID );
         },
         
         //--------------------------------//
@@ -130,12 +130,12 @@ void SQLiteBlockTree::markRecurse ( int blockID, kBlockTreeEntryStatus status ) 
     // go ahead and update the status.
     result = this->mDB.exec (
     
-        "UPDATE nodes SET status = ?1 WHERE rowid IS ?2",
+        "UPDATE nodes SET status = ?1 WHERE nodeID IS ?2",
     
         //--------------------------------//
         [ & ]( SQLiteStatement stmt ) {
             stmt.bind ( 1,  SQLiteBlockTree::stringFromStatus ( status ) );
-            stmt.bind ( 2,  blockID );
+            stmt.bind ( 2,  nodeID );
         }
     );
     assert ( result );
@@ -148,7 +148,7 @@ void SQLiteBlockTree::markRecurse ( int blockID, kBlockTreeEntryStatus status ) 
         //--------------------------------//
         [ & ]( SQLiteStatement stmt ) {
             stmt.bind ( 1, SQLiteBlockTree::stringFromStatus ( status ));
-            stmt.bind ( 2, blockID );
+            stmt.bind ( 2, nodeID );
         }
     );
     assert ( result );
@@ -156,11 +156,11 @@ void SQLiteBlockTree::markRecurse ( int blockID, kBlockTreeEntryStatus status ) 
     // recursively mark the child nodes.
     result = this->mDB.exec (
     
-        "SELECT rowid FROM nodes WHERE parentID IS ?1",
+        "SELECT nodeID FROM nodes WHERE parentID IS ?1",
     
         //--------------------------------//
         [ & ]( SQLiteStatement stmt ) {
-            stmt.bind ( 1, blockID );
+            stmt.bind ( 1, nodeID );
         },
         
         //--------------------------------//
@@ -169,6 +169,23 @@ void SQLiteBlockTree::markRecurse ( int blockID, kBlockTreeEntryStatus status ) 
             this->markRecurse ( childID, status );
         }
     );
+    assert ( result );
+}
+
+//----------------------------------------------------------------//
+void SQLiteBlockTree::pruneUnreferencedNodes () {
+    
+    // take a look at this gem! with a union including a self-join.
+    // should delete all nodes with no references (other nodes or tags).
+    
+    SQLiteResult result = this->mDB.exec ( SQL_STR (
+        DELETE FROM nodes
+        WHERE nodeID NOT IN (
+            SELECT nodeID FROM tags WHERE nodeID IS nodes.nodeID
+            UNION
+            SELECT a.nodeID FROM nodes a INNER JOIN nodes b ON a.nodeID IS b.parentID
+        )
+    ));
     assert ( result );
 }
 
@@ -208,52 +225,6 @@ BlockTreeCursor SQLiteBlockTree::readCursor ( const SQLiteStatement& stmt ) cons
 }
 
 //----------------------------------------------------------------//
-void SQLiteBlockTree::releaseNode ( int nodeID ) {
-
-    if ( nodeID == 0 ) return;
-
-    SQLiteResult result;
-
-    result = this->mDB.exec (
-            
-        "UPDATE nodes SET refCount = refCount - 1 WHERE rowid IS ?1",
-        
-        //--------------------------------//
-        [ & ]( SQLiteStatement& stmt ) {
-            stmt.bind ( 1, nodeID );
-        }
-    );
-    assert ( result );
-    
-    // SELECT rowid FROM nodes WHERE rowid NOT IN ( SELECT nodeID FROM tags WHERE nodeID IS nodes.rowID UNION SELECT rowID FROM nodes WHERE parentID IS nodes.rowID )
-
-    
-//    // and delete anything with a 0 refCount
-//    result = this->mDB.exec (
-//        "DELETE FROM nodes WHERE refCount = 0"
-//    );
-    assert ( result );
-}
-
-//----------------------------------------------------------------//
-void SQLiteBlockTree::retainNode ( int nodeID ) {
-
-    if ( nodeID == 0 ) return;
-
-    // *increment* the incoming target's refCount
-    SQLiteResult result = this->mDB.exec (
-    
-        "UPDATE nodes SET refCount = refCount + 1 WHERE rowid IS ?1",
-        
-        //--------------------------------//
-        [ & ]( SQLiteStatement& stmt ) {
-            stmt.bind ( 1, nodeID );
-        }
-    );
-    assert ( result );
-}
-
-//----------------------------------------------------------------//
 void SQLiteBlockTree::setTag ( string tagName, int nodeID ) {
 
     if ( !nodeID ) return;
@@ -261,9 +232,6 @@ void SQLiteBlockTree::setTag ( string tagName, int nodeID ) {
     int prevNodeID = this->getNodeIDFromTagName ( tagName );
     
     if ( prevNodeID == nodeID ) return;
-        
-    this->retainNode ( nodeID );
-    this->releaseNode ( prevNodeID );
 
     SQLiteResult result = this->mDB.exec (
         
@@ -276,6 +244,8 @@ void SQLiteBlockTree::setTag ( string tagName, int nodeID ) {
         }
     );
     assert ( result );
+    
+    this->pruneUnreferencedNodes ();
 }
 
 //----------------------------------------------------------------//
@@ -334,44 +304,44 @@ SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
     SQLiteResult result = this->mDB.open ( filename );
     assert ( result );
     
+    // nodes
     result = this->mDB.exec ( SQL_STR (
         CREATE TABLE IF NOT EXISTS nodes (
-            parentID        INT                                                     NOT NULL DEFAULT 0,
+            nodeID          INTEGER                                                 PRIMARY KEY,
+            parentID        INTEGER                                                 NOT NULL DEFAULT 0,
             hash            TEXT                                                    NOT NULL,
-            height          INT                                                     NOT NULL DEFAULT 0,
+            height          INTEGER                                                 NOT NULL DEFAULT 0,
             header          TEXT                                                    NOT NULL,
             block           TEXT,
             status          TEXT CHECK ( status IN ( 'N', 'C', '?', 'X' ))          NOT NULL DEFAULT 'N',
             parentStatus    TEXT CHECK ( parentStatus IN ( 'N', 'C', '?', 'X' ))    NOT NULL DEFAULT 'N',
             meta            TEXT CHECK ( meta IN ( '.', '*', '#' ))                 NOT NULL DEFAULT '.',
-            hasBlock        INT                                                     NOT NULL DEFAULT 0,
-            refcount        INT                                                     NOT NULL DEFAULT 0
+            hasBlock        INTEGER                                                 NOT NULL DEFAULT 0,
+            FOREIGN KEY ( parentID ) REFERENCES nodes ( nodeID )
         )
     ));
     assert ( result );
     
-    result = this->mDB.exec ( SQL_STR (
-        CREATE UNIQUE INDEX IF NOT EXISTS hash ON nodes ( hash )
-    ));
-    assert ( result );
-    
-    result = this->mDB.exec ( SQL_STR (
-        CREATE INDEX IF NOT EXISTS parentID ON nodes ( parentID )
-    ));
-    assert ( result );
-    
+    // tags
     result = this->mDB.exec ( SQL_STR (
         CREATE TABLE IF NOT EXISTS tags (
-            nodeID  INTEGER     NOT NULL,
-            name    TEXT        NOT NULL,
-            FOREIGN KEY ( nodeID )  REFERENCES nodes ( rowid )
+            tagID       INTEGER                 PRIMARY KEY,
+            nodeID      INTEGER                 NOT NULL,
+            name        TEXT                    NOT NULL,
+            FOREIGN KEY ( nodeID ) REFERENCES nodes ( nodeID )
         )
     ));
     assert ( result );
     
-    result = this->mDB.exec ( SQL_STR (
-        CREATE UNIQUE INDEX IF NOT EXISTS name ON tags ( name )
-    ));
+    // indices
+    
+    result = this->mDB.exec ( SQL_STR ( CREATE UNIQUE INDEX IF NOT EXISTS hash ON nodes ( hash )));
+    assert ( result );
+    
+    result = this->mDB.exec ( SQL_STR ( CREATE INDEX IF NOT EXISTS parentID ON nodes ( parentID )));
+    assert ( result );
+    
+    result = this->mDB.exec ( SQL_STR ( CREATE UNIQUE INDEX IF NOT EXISTS name ON tags ( name )));
     assert ( result );
 }
 
@@ -404,7 +374,6 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
 
         if ( parentID ) {
         
-            retainNode ( parentID );
             parentStatus = this->getNodeStatus ( parentID, kBlockTreeEntryStatus::STATUS_INVALID );
             
             if (( parentStatus == kBlockTreeEntryStatus::STATUS_MISSING ) || ( parentStatus == kBlockTreeEntryStatus::STATUS_INVALID )) {
@@ -415,7 +384,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
         // insert node
         SQLiteResult result = this->mDB.exec (
             
-            "INSERT INTO nodes ( parentID, hash, height, header, block, status, parentStatus, meta, refCount ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9 )",
+            "INSERT INTO nodes ( parentID, hash, height, header, block, status, parentStatus, meta ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8 )",
             
             //--------------------------------//
             [ & ]( SQLiteStatement stmt ) {
@@ -428,7 +397,6 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
                 stmt.bind ( 6,      SQLiteBlockTree::stringFromStatus ( status ));
                 stmt.bind ( 7,      SQLiteBlockTree::stringFromStatus ( parentStatus ));
                 stmt.bind ( 8,      SQLiteBlockTree::stringFromMeta ( isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE ));
-                stmt.bind ( 9,      0 );
             }
         );
         assert ( result );
@@ -490,7 +458,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTag ( const Bloc
 
     this->mDB.exec (
         
-        "SELECT * FROM nodes INNER JOIN tags ON tags.nodeID = nodes.rowid WHERE tags.name IS ?1",
+        "SELECT * FROM nodes INNER JOIN tags ON tags.nodeID = nodes.nodeID WHERE tags.name IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -523,7 +491,7 @@ void SQLiteBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, kB
     
     this->mDB.exec (
         
-        "SELECT rowid FROM nodes WHERE hash ID ?1",
+        "SELECT nodeID FROM nodes WHERE hash ID ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -567,39 +535,22 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
 
     if ( !block ) return;
     
-    string hash     = block->getDigest ().toHex ();
-    int blockID     = 0;
-    bool exists     = false;
-    
-    this->mDB.exec (
-        "SELECT rowid FROM padamose WHERE hash ID ?1",
-        
-        //--------------------------------//
-        [ & ]( SQLiteStatement& stmt ) {
-            stmt.bind ( 1, hash );
-        },
-        
-        //--------------------------------//
-        [ & ]( int, const SQLiteStatement& stmt ) {
-            blockID     = stmt.getValue < int >( 0 );
-            exists      = true;
-        }
-    );
-    
-    if ( !exists ) return;
+    // we'll use this for the recurse
+    int nodeID = this->getNodeIDFromHash ( block->getDigest ().toHex ());
+    if ( !nodeID ) return;
     
     this->mDB.exec (
     
-        "UPDATE nodes SET block = ?1, hasBlock = 1 WHERE rowid IS ?2",
+        "UPDATE nodes SET block = ?1, hasBlock = 1 WHERE nodeID IS ?2",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
             stmt.bind ( 1, ToJSONSerializer::toJSONString ( *block ));
-            stmt.bind ( 2, blockID );
+            stmt.bind ( 2, nodeID );
         }
     );
     
-    this->markRecurse ( blockID, STATUS_COMPLETE );
+    this->markRecurse ( nodeID, STATUS_COMPLETE );
 }
 
 } // namespace Volition
