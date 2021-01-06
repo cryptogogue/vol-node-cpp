@@ -22,6 +22,12 @@ BlockTreeTag::BlockTreeTag () :
 }
 
 //----------------------------------------------------------------//
+BlockTreeTag::BlockTreeTag ( string name ) :
+    mName ( name ),
+    mTree ( NULL ) {
+}
+
+//----------------------------------------------------------------//
 BlockTreeTag::BlockTreeTag ( BlockTreeTag& other ) :
     mTree ( other.mTree ),
     mName ( other.mName ) {
@@ -32,9 +38,9 @@ BlockTreeTag::~BlockTreeTag () {
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeTag::checkTree ( const AbstractBlockTree* tree ) const {
+bool BlockTreeTag::check ( const AbstractBlockTree* tree ) const {
 
-    return (( this->mTree == NULL) || ( this->mTree == tree ));
+    return (( this->mName.size () > 0 ) && (( this->mTree == NULL) || ( this->mTree == tree )));
 }
 
 //----------------------------------------------------------------//

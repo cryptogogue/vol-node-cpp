@@ -171,18 +171,7 @@ void InMemoryBlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const I
 BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
 
     string tagName = tag.getName ();
-    assert ( tagName.size ());
-    assert (( tag.getTree () == NULL ) || ( tag.getTree () == this ));
-    
-    this->setTagTree ( tag );
-
-    if ( !header ) return BlockTreeCursor ();
-
     string hash = header->getDigest ().toHex ();
-    if ( block ) {
-        assert ( hash == block->getDigest ().toHex ());
-    }
-    
     InMemoryBlockTreeNode::Ptr node = this->findNodeForHash ( hash );
 
     if ( node ) {
@@ -287,15 +276,9 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForHash ( string 
 //----------------------------------------------------------------//
 BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForTag ( const BlockTreeTag& tag ) const {
 
-    assert ( tag.hasName ());
+    map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.getName ());
+    if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
 
-    if ( tag.getTree ()) {
-
-        assert ( tag.checkTree ( this ));
-
-        map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.getName ());
-        if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
-    }
     return BlockTreeCursor ();
 }
 
@@ -318,62 +301,38 @@ void InMemoryBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, 
 
 //----------------------------------------------------------------//
 BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
-
-    assert ( tag.hasName ());
-    assert ( tag.checkTree ( this ));
         
-    if ( cursor.getTree ()) {
+    InMemoryBlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
+    assert ( node );
+    this->mTags [ tag.getName ()] = node->shared_from_this ();
     
-        assert ( cursor.checkTree ( this ));
-        this->setTagTree ( tag );
-        
-        InMemoryBlockTreeNode::Ptr node = this->findNodeForHash ( cursor.getHash ());
-        assert ( node );
-        this->mTags [ tag.getName ()] = node->shared_from_this ();
-        
-        return *node;
-    }
-    return BlockTreeCursor ();
+    return *node;
 }
 
 //----------------------------------------------------------------//
 BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_tag ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) {
-
-    assert ( tag.hasName ());
-    assert ( tag.checkTree ( this ));
-    
-    assert ( otherTag.hasName ());
-    
-    if ( otherTag.getTree ()) {
-    
-        assert ( otherTag.checkTree ( this ));
-        this->setTagTree ( tag );
         
-        map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTag.getName ());
-        assert ( nodeIt != this->mTags.cend ());
-        this->mTags [ tag.getName ()] = nodeIt->second;
-        
-        return *nodeIt->second;
-    }
-    return BlockTreeCursor ();
+    map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( otherTag.getName ());
+    assert ( nodeIt != this->mTags.cend ());
+    this->mTags [ tag.getName ()] = nodeIt->second;
+    
+    return *nodeIt->second;
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > block ) {
+void InMemoryBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > block ) {
 
-    if ( !block ) return BlockTreeCursor ();
+    if ( !block ) return;
     string hash = block->getDigest ();
 
     InMemoryBlockTreeNode::Ptr node = this->findNodeForHash ( hash );
-    if ( !node ) return BlockTreeCursor ();
+    if ( !node ) return;
     
     assert ( node->mHeader );
     assert ( node->mHeader->getDigest ().toHex () == hash );
     
     node->mBlock = block;
-    node->markComplete ();
-    
-    return *node;
+    node->mark ( STATUS_COMPLETE );
 }
 
 } // namespace Volition

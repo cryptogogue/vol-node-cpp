@@ -74,7 +74,7 @@ private:
     void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;
-    BlockTreeCursor             AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
+    void                        AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
 
 public:
 

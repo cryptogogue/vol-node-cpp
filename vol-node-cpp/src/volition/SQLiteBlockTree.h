@@ -23,8 +23,20 @@ private:
     mutable SQLite              mDB;
 
     //----------------------------------------------------------------//
+    int                                 getNodeIDFromHash               ( string hash );
+    int                                 getNodeIDFromTagName            ( string tagName );
+    kBlockTreeEntryStatus               getNodeStatus                   ( int nodeID, kBlockTreeEntryStatus status = kBlockTreeEntryStatus::STATUS_INVALID );
+    void                                markRecurse                     ( int blockID, kBlockTreeEntryStatus status );
+    void                                releaseNode                     ( int nodeID );
+    void                                retainNode                      ( int nodeID );
+    void                                setTag                          ( string tagName, int nodeID );
+    static string                       stringFromMeta                  ( kBlockTreeEntryMeta meta );
+    static string                       stringFromStatus                ( kBlockTreeEntryStatus status );
     static kBlockTreeEntryMeta          stringToMeta                    ( string str );
     static kBlockTreeEntryStatus        stringToStatus                  ( string str );
+
+    //----------------------------------------------------------------//
+    BlockTreeCursor             readCursor                                  ( const SQLiteStatement& stmt ) const;
 
     //----------------------------------------------------------------//
     BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) override;
@@ -36,7 +48,7 @@ private:
     void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;
-    BlockTreeCursor             AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
+    void                        AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
 
 public:
 

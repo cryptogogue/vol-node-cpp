@@ -120,7 +120,7 @@ protected:
     int                                             mFlags;
     bool                                            mNeedsReport;
     ReportMode                                      mReportMode;
-    kRewriteMode                    mRewriteMode;
+    kRewriteMode                                    mRewriteMode;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
     string                                          mReward;
@@ -241,6 +241,7 @@ public:
     void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
     void                                affirmRemoteMiner           ( string url );
     void                                affirmVisage                ();
+    static Signature                    calculateVisage             ( const CryptoKeyPair& keyPair, string motto = "" );
     bool                                checkBestBranch             ( string miners ) const;
     size_t                              countBranches               () const;
     void                                extend                      ( time_t now );

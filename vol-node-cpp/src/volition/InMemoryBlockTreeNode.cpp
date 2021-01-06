@@ -59,30 +59,12 @@ void InMemoryBlockTreeNode::mark ( kBlockTreeEntryStatus status ) {
 
     if ( status == this->mStatus ) return;
 
-    switch ( this->mStatus ) {
-        
-        case STATUS_NEW:
-            // --> missing
-            // --> complete
-            assert ( status != STATUS_INVALID );
-            break;
-        
-        case STATUS_COMPLETE:
-            // --> invalid
-            assert ( status != STATUS_NEW );
-            assert ( status != STATUS_MISSING );
-            break;
-        
-        case STATUS_MISSING:
-            // --> complete
-            assert ( status != STATUS_NEW );
-            assert ( status != STATUS_INVALID );
-            break;
-            
-        case STATUS_INVALID:
-            assert ( false ); // no valid transition
-            break;
+    if ( status == STATUS_COMPLETE ) {
+        if ( !this->mBlock ) return;
+        if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return;
     }
+
+    assert ( AbstractBlockTree::checkStatusTransition ( this->mStatus, status ));
     
     this->mStatus = status;
     
@@ -90,37 +72,6 @@ void InMemoryBlockTreeNode::mark ( kBlockTreeEntryStatus status ) {
     for ( ; childIt != this->mChildren.end (); ++childIt ) {
         ( *childIt )->mark ( status );
     }
-}
-
-//----------------------------------------------------------------//
-void InMemoryBlockTreeNode::markComplete () {
-    
-    if ( !this->mBlock ) return;
-    if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return;
-    
-    this->mStatus = STATUS_COMPLETE;
-    
-    set < InMemoryBlockTreeNode* >::iterator childIt = this->mChildren.begin ();
-    for ( ; childIt != this->mChildren.end (); ++childIt ) {
-        ( *childIt )->markComplete ();
-    }
-}
-
-//----------------------------------------------------------------//
-void InMemoryBlockTreeNode::markRefused () {
-
-    this->mMeta = META_REFUSED;
-    
-    while ( this->mChildren.size ()) {
-        set < InMemoryBlockTreeNode* >::iterator childIt = this->mChildren.begin ();
-        ( *childIt )->markRefused ();
-    }
-    
-    this->clearParent ();
-    
-    InMemoryBlockTree* tree = this->mInMemoryBlockTree;
-    assert ( tree );
-    tree->mNodes.erase ( this->mHeader->getDigest ());
 }
 
 } // namespace Volition

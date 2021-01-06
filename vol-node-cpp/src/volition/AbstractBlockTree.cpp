@@ -13,7 +13,19 @@ namespace Volition {
 //----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::affirm ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) {
 
-    return this->AbstractBlockTree_affirm ( tag, header, block, isProvisional );
+    tag.check ( this );
+    tag.mTree = this;
+
+    if ( !header ) return BlockTreeCursor ();
+
+    if ( block ) {
+        assert ( header->equals ( *block ));
+    }
+    
+    BlockTreeCursor cursor = this->AbstractBlockTree_affirm ( tag, header, block, isProvisional );
+    assert ( cursor.hasHeader ());
+    
+    return cursor;
 }
 
 //----------------------------------------------------------------//
@@ -49,6 +61,39 @@ kBlockTreeAppendResult AbstractBlockTree::checkAppend ( const BlockHeader& heade
 }
 
 //----------------------------------------------------------------//
+bool AbstractBlockTree::checkStatusTransition ( kBlockTreeEntryStatus from, kBlockTreeEntryStatus to ) {
+
+    if ( from != true ) {
+
+        switch ( from ) {
+            
+            case STATUS_NEW:
+                // --> missing
+                // --> complete
+                assert ( to != STATUS_INVALID );
+                break;
+            
+            case STATUS_COMPLETE:
+                // --> invalid
+                assert ( to != STATUS_NEW );
+                assert ( to != STATUS_MISSING );
+                break;
+            
+            case STATUS_MISSING:
+                // --> complete
+                assert ( to != STATUS_NEW );
+                assert ( to != STATUS_INVALID );
+                break;
+                
+            case STATUS_INVALID:
+                assert ( false ); // no valid transition
+                break;
+        }
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
 int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const {
 
     return this->AbstractBlockTree_compare ( cursor0, cursor1, rewriteMode );
@@ -63,7 +108,12 @@ BlockTreeCursor AbstractBlockTree::findCursorForHash ( string hash ) const {
 //----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::findCursorForTag ( const BlockTreeTag& tag ) const {
 
-    return this->AbstractBlockTree_findCursorForTag ( tag );
+    assert ( tag.check ( this ));
+
+    if ( tag.getTree ()) {
+        return this->AbstractBlockTree_findCursorForTag ( tag );
+    }
+    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
@@ -102,27 +152,39 @@ void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, kBlockTreeEntrySta
 }
 
 //----------------------------------------------------------------//
-void AbstractBlockTree::setTagTree ( BlockTreeTag& tag ) {
-
-    tag.mTree = this;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
 
-    return this->AbstractBlockTree_tag ( tag, cursor );
+    assert ( tag.check ( this ));
+    
+    if ( cursor.getTree ()) {
+    
+        assert ( cursor.getTree () == this );
+        tag.mTree = this;
+        
+        return this->AbstractBlockTree_tag ( tag, cursor );
+    }
+    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::tag ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) {
 
-   return this->AbstractBlockTree_tag ( tag, otherTag );
+    assert ( tag.check ( this ));
+    
+    if ( otherTag.getTree ()) {
+    
+        assert ( otherTag.check ( this ));
+        tag.mTree = this;
+        
+        return this->AbstractBlockTree_tag ( tag, otherTag );
+    }
+    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor AbstractBlockTree::update ( shared_ptr < const Block > block ) {
+void AbstractBlockTree::update ( shared_ptr < const Block > block ) {
 
-    return this->AbstractBlockTree_update ( block );
+    this->AbstractBlockTree_update ( block );
 }
 
 } // namespace Volition

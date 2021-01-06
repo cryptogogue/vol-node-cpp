@@ -26,7 +26,6 @@ protected:
     //----------------------------------------------------------------//
     BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
     BlockTreeCursor             makeCursor              ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, kBlockTreeEntryStatus status, kBlockTreeEntryMeta meta ) const;
-    void                        setTagTree              ( BlockTreeTag& tag );
 
     //----------------------------------------------------------------//
     virtual BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) = 0;
@@ -38,7 +37,7 @@ protected:
     virtual void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) = 0;
-    virtual BlockTreeCursor             AbstractBlockTree_update                    ( shared_ptr < const Block > block ) = 0;
+    virtual void                        AbstractBlockTree_update                    ( shared_ptr < const Block > block ) = 0;
 
 public:
 
@@ -49,6 +48,7 @@ public:
                                 AbstractBlockTree       ();
     virtual                     ~AbstractBlockTree      ();
     kBlockTreeAppendResult      checkAppend             ( const BlockHeader& header ) const;
+    static bool                 checkStatusTransition   ( kBlockTreeEntryStatus from, kBlockTreeEntryStatus to );
     int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const;
     BlockTreeCursor             findCursorForHash       ( string hash ) const;
     BlockTreeCursor             findCursorForTag        ( const BlockTreeTag& tag ) const;
@@ -57,7 +57,7 @@ public:
     void                        mark                    ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status );
     BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeCursor& cursor );
     BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeTag& otherTag );
-    BlockTreeCursor             update                  ( shared_ptr < const Block > block );
+    void                        update                  ( shared_ptr < const Block > block );
 };
 
 } // namespace Volition

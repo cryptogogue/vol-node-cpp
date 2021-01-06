@@ -47,9 +47,10 @@ public:
     //----------------------------------------------------------------//
     BlockTreeCursor             operator *                      () const;
                                 BlockTreeTag                    ();
+                                BlockTreeTag                    ( string name );
                                 BlockTreeTag                    ( BlockTreeTag& other );
                                 ~BlockTreeTag                   ();
-    bool                        checkTree                       ( const AbstractBlockTree* tree ) const;
+    bool                        check                           ( const AbstractBlockTree* tree ) const;
     bool                        equals                          ( const BlockTreeTag& rhs ) const;
     BlockTreeCursor             getCursor                       () const;
     bool                        hasCursor                       () const;

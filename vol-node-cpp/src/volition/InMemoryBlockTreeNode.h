@@ -33,7 +33,6 @@ private:
     void            clearParent                 ();
     void            mark                        ( kBlockTreeEntryStatus status );
     void            markComplete                ();
-    void            markRefused                 ();
 
 public:
 

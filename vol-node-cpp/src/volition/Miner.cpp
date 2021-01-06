@@ -135,8 +135,14 @@ void Miner::affirmRemoteMiner ( string url ) {
 //----------------------------------------------------------------//
 void Miner::affirmVisage () {
 
-    assert ( this->mKeyPair );
-    this->mVisage = this->mKeyPair.sign ( this->mMotto, Digest::HASH_ALGORITHM_SHA256 );
+    this->mVisage = Miner::calculateVisage ( this->mKeyPair, this->mMotto );
+}
+
+//----------------------------------------------------------------//
+Signature Miner::calculateVisage ( const CryptoKeyPair& keyPair, string motto ) {
+
+    assert ( keyPair );
+    return keyPair.sign ( motto, Digest::HASH_ALGORITHM_SHA256 );
 }
 
 //----------------------------------------------------------------//

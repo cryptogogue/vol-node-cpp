@@ -86,6 +86,7 @@
 		CD19E03B25A07A0D0007ACF0 /* HasBlockHeaderFields.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03925A07A0D0007ACF0 /* HasBlockHeaderFields.cpp */; };
 		CD19E03E25A07E510007ACF0 /* SQLiteBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */; };
 		CD19E03F25A07E510007ACF0 /* SQLiteBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */; };
+		CD19E04125A2AB4A0007ACF0 /* TestBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E04025A2AB4A0007ACF0 /* TestBlockTree.cpp */; };
 		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
@@ -360,7 +361,6 @@
 		CDDA74E32556BA3A007AAA07 /* SetFeeSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74E22556BA3A007AAA07 /* SetFeeSchedule.h */; };
 		CDDA74FD2556D997007AAA07 /* FeeDistributionTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA74FC2556D997007AAA07 /* FeeDistributionTable.h */; };
 		CDDA75072556E724007AAA07 /* TestFeeDistributionTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA75062556E724007AAA07 /* TestFeeDistributionTable.cpp */; };
-		CDDA75282556F174007AAA07 /* TestWebMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */; };
 		CDDA75322556F5ED007AAA07 /* SetFeeDistributionTable.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA75312556F5ED007AAA07 /* SetFeeDistributionTable.h */; };
 		CDDA75482559949C007AAA07 /* TransactionStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDA75462559949C007AAA07 /* TransactionStatus.h */; };
 		CDDA7552255A0B07007AAA07 /* TestCryptoKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDDA7551255A0B07007AAA07 /* TestCryptoKey.cpp */; };
@@ -890,6 +890,7 @@
 		CD19E03925A07A0D0007ACF0 /* HasBlockHeaderFields.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HasBlockHeaderFields.cpp; path = src/volition/HasBlockHeaderFields.cpp; sourceTree = "<group>"; };
 		CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLiteBlockTree.h; path = src/volition/SQLiteBlockTree.h; sourceTree = "<group>"; };
 		CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteBlockTree.cpp; path = src/volition/SQLiteBlockTree.cpp; sourceTree = "<group>"; };
+		CD19E04025A2AB4A0007ACF0 /* TestBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestBlockTree.cpp; path = src/volition/gtest/TestBlockTree.cpp; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
@@ -1546,6 +1547,7 @@
 			children = (
 				CD4E816B21057DD1007DA585 /* main-gtest.cpp */,
 				CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */,
+				CD19E04025A2AB4A0007ACF0 /* TestBlockTree.cpp */,
 				CDFA2382245188DF00B4CECF /* TestCrafting.cpp */,
 				CDFA2385245189E700B4CECF /* TestCrafting.json.h */,
 				CDDA7551255A0B07007AAA07 /* TestCryptoKey.cpp */,
@@ -2733,8 +2735,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
-				CDDA75282556F174007AAA07 /* TestWebMiner.cpp in Sources */,
 				CD20FFFE254545FA00DEB809 /* TestAssetID.cpp in Sources */,
+				CD19E04125A2AB4A0007ACF0 /* TestBlockTree.cpp in Sources */,
 				CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */,
 				CDDA7552255A0B07007AAA07 /* TestCryptoKey.cpp in Sources */,
 				CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */,
