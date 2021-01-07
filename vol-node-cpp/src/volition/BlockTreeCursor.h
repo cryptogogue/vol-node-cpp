@@ -26,9 +26,10 @@ protected:
     const AbstractBlockTree*            mTree;
 
     shared_ptr < const BlockHeader >    mHeader;
-    shared_ptr < const Block >          mBlock;
+    
     kBlockTreeEntryStatus               mStatus;
     kBlockTreeEntryMeta                 mMeta;
+    bool                                mHasBlock;
 
     //----------------------------------------------------------------//
     void                                logBranchRecurse            ( string& str ) const;
@@ -53,6 +54,7 @@ public:
     const BlockHeader&                  getHeader                   () const;
     BlockTreeCursor                     getParent                   () const;
     kBlockTreeEntryStatus               getStatus                   () const;
+    bool                                hasBlock                    () const;
     bool                                hasHeader                   () const;
     bool                                hasParent                   () const;
     bool                                isAncestorOf                ( BlockTreeCursor tail ) const;

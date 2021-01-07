@@ -28,6 +28,7 @@ private:
     InMemoryBlockTree*                          mInMemoryBlockTree;
     shared_ptr < InMemoryBlockTreeNode >        mParent;
     set < InMemoryBlockTreeNode* >              mChildren;
+    shared_ptr < const Block >                  mBlock;
 
     //----------------------------------------------------------------//
     void            clearParent                 ();

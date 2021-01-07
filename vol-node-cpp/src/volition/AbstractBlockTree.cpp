@@ -156,7 +156,7 @@ int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTree
     BlockTreeSegment::Iterator cursorIt0 = fork.mSeg0.mTail;
     BlockTreeSegment::Iterator cursorIt1 = fork.mSeg1.mTail;
 
-    while ( cursorIt0 != cursorIt1 ) {
+    while ( cursorIt0->hasHeader () && ( !cursorIt0->equals ( *cursorIt1 ))) {
     
         score += BlockHeader::compare ( *cursorIt0->mHeader, *cursorIt1->mHeader );
         
@@ -190,55 +190,52 @@ BlockTreeCursor AbstractBlockTree::findCursorForTag ( const BlockTreeTag& tag ) 
 //----------------------------------------------------------------//
 void AbstractBlockTree::findFork ( BlockTreeFork& fork, BlockTreeCursor cursor0, BlockTreeCursor cursor1 ) const {
 
-    if ( cursor0.mTree && ( cursor0.mTree == cursor1.mTree )) {
+    assert ( cursor0.mTree && ( cursor0.mTree == cursor1.mTree ));
     
-        BlockTreeSegment seg0;
-        BlockTreeSegment seg1;
-    
-        seg0.mTop = seg0.pushFront ( cursor0 );
-        seg1.mTop = seg1.pushFront ( cursor1 );
-    
-        size_t height0 = cursor0.getHeight ();
-        size_t height1 = cursor1.getHeight ();
+    BlockTreeSegment& seg0 = fork.mSeg0;
+    BlockTreeSegment& seg1 = fork.mSeg1;
 
-        size_t height = height0 < height1 ? height0 : height1;
-        
-        while ( cursor0.hasParent () && ( height < cursor0.getHeight ())) {
-            cursor0 = cursor0.getParent ();
-            seg0.pushFront ( cursor0 );
-        }
-        
-        while ( cursor1.hasParent () && ( height < cursor1.getHeight ())) {
-            cursor1 = cursor1.getParent ();
-            seg1.pushFront ( cursor1 );
-        }
+    seg0.mTop = seg0.pushFront ( cursor0 );
+    seg1.mTop = seg1.pushFront ( cursor1 );
 
+    size_t height0 = cursor0.getHeight ();
+    size_t height1 = cursor1.getHeight ();
+
+    size_t height = height0 < height1 ? height0 : height1;
+    
+    while ( cursor0.hasParent () && ( height < cursor0.getHeight ())) {
+        cursor0 = cursor0.getParent ();
+        seg0.pushFront ( cursor0 );
+    }
+    
+    while ( cursor1.hasParent () && ( height < cursor1.getHeight ())) {
+        cursor1 = cursor1.getParent ();
+        seg1.pushFront ( cursor1 );
+    }
+
+    seg0.mHead = seg0.begin ();
+    seg1.mHead = seg1.begin ();
+
+    seg0.mTail = seg0.begin ();
+    seg1.mTail = seg1.begin ();
+
+    while ( !cursor0.equals ( cursor1 )) {
+    
         seg0.mHead = seg0.begin ();
         seg1.mHead = seg1.begin ();
-
-        seg0.mTail = seg0.begin ();
-        seg1.mTail = seg1.begin ();
-
-        while ( !cursor0.equals ( cursor1 )) {
         
-            seg0.mHead = seg0.begin ();
-            seg1.mHead = seg1.begin ();
-            
-            cursor0 = cursor0.getParent ();
-            cursor1 = cursor1.getParent ();
-            
-            seg0.pushFront ( cursor0 );
-            seg1.pushFront ( cursor1 );
-        }
+        cursor0 = cursor0.getParent ();
+        cursor1 = cursor1.getParent ();
         
-        assert ( cursor0.hasHeader () && cursor1.hasHeader ());
-        
-        fork.mSeg0 = seg0;
-        fork.mSeg1 = seg1;
-        fork.mRoot = seg0.begin ();
-        
-        assert ( fork.mSeg0.getSegLength () == fork.mSeg1.getSegLength ());
+        seg0.pushFront ( cursor0 );
+        seg1.pushFront ( cursor1 );
     }
+    
+    assert ( cursor0.hasHeader () && cursor1.hasHeader ());
+    
+    fork.mRoot = seg0.begin ();
+    
+    assert ( fork.mSeg0.getSegLength () == fork.mSeg1.getSegLength ());
 }
 
 //----------------------------------------------------------------//
@@ -247,6 +244,12 @@ BlockTreeCursor AbstractBlockTree::findRoot ( const BlockTreeCursor& cursor0, co
     BlockTreeFork fork;
     this->findFork ( fork, cursor0, cursor1 );
     return *fork.mRoot;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const Block > AbstractBlockTree::getBlock ( const BlockTreeCursor& cursor ) const {
+
+    return this->AbstractBlockTree_getBlock ( cursor );
 }
 
 //----------------------------------------------------------------//
@@ -259,15 +262,15 @@ BlockTreeCursor AbstractBlockTree::getParent ( const BlockTreeCursor& cursor ) c
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor AbstractBlockTree::makeCursor ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, kBlockTreeEntryStatus status, kBlockTreeEntryMeta meta ) const {
+BlockTreeCursor AbstractBlockTree::makeCursor ( shared_ptr < const BlockHeader > header, kBlockTreeEntryStatus status, kBlockTreeEntryMeta meta, bool hasBlock ) const {
 
     BlockTreeCursor cursor;
     
-    cursor.mTree    = this;
-    cursor.mHeader  = header;
-    cursor.mBlock   = block;
-    cursor.mStatus  = status;
-    cursor.mMeta    = meta;
+    cursor.mTree        = this;
+    cursor.mHeader      = header;
+    cursor.mStatus      = status;
+    cursor.mMeta        = meta;
+    cursor.mHasBlock    = hasBlock;
     
     return cursor;
 }

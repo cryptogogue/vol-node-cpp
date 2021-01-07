@@ -26,7 +26,8 @@ namespace Volition {
 BlockTreeCursor::BlockTreeCursor () :
     mTree ( NULL ),
     mStatus ( STATUS_INVALID ),
-    mMeta ( META_NONE ) {
+    mMeta ( META_NONE ),
+    mHasBlock ( false ) {
 }
 
 //----------------------------------------------------------------//
@@ -72,7 +73,7 @@ BlockTreeCursor BlockTreeCursor::findRoot ( const BlockTreeCursor& node0, const 
 //----------------------------------------------------------------//
 shared_ptr < const Block > BlockTreeCursor::getBlock () const {
 
-    return this->mBlock;
+    return ( this->mHasBlock && this->mTree ) ? this->mTree->getBlock ( *this ) : NULL;
 }
 
 //----------------------------------------------------------------//
@@ -100,8 +101,13 @@ kBlockTreeEntryStatus BlockTreeCursor::getStatus () const {
 }
 
 //----------------------------------------------------------------//
+bool BlockTreeCursor::hasBlock () const {
+    return this->mHasBlock;
+}
+
+//----------------------------------------------------------------//
 bool BlockTreeCursor::hasHeader () const {
-    return ( this->mHeader || this->mBlock );
+    return ( bool )this->mHeader;
 }
 
 //----------------------------------------------------------------//
@@ -208,7 +214,7 @@ void BlockTreeCursor::logBranchRecurse ( string& str ) const {
     }
     
     string charm = this->getCharmTag ();
-    cc8* format = this->mBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
+    cc8* format = this->mHasBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
     
     size_t height = header.getHeight ();
     Format::write ( str, format, parent.hasHeader () ? ", " : "", ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );

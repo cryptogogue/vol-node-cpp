@@ -38,6 +38,7 @@ private:
     kBlockTreeAppendResult      AbstractBlockTree_checkAppend               ( const BlockHeader& header ) const override;
     BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const override;
     BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const override;
+    shared_ptr < const Block >  AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
     void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;

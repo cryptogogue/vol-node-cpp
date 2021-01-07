@@ -194,33 +194,21 @@ BlockTreeCursor SQLiteBlockTree::readCursor ( const SQLiteStatement& stmt ) cons
 
     string hash             = stmt.getValue < string >( "hash" );
     string headerJSON       = stmt.getValue < string >( "header" );
-    string blockJSON        = stmt.getValue < string >( "block" );
     string statusStr        = stmt.getValue < string >( "status" );
     string metaStr          = stmt.getValue < string >( "meta" );
+    bool hasBlock           = stmt.getValue < int >( "hasBlock" ) != 0;
 
     // header *must* exist.
     assert ( headerJSON.size ());
     
-    shared_ptr < BlockHeader >header;
-    shared_ptr < Block >block;
-    
-    // if there's a block, use that as the header, too.
-    if ( blockJSON.size ()) {
-        block = make_shared < Block >();
-        FromJSONSerializer::fromJSONString ( *block, headerJSON );
-        header = block;
-    }
-    else {
-        // no block, only header.
-        header = make_shared < BlockHeader >();
-        FromJSONSerializer::fromJSONString ( *header, headerJSON );
-    }
+    shared_ptr < BlockHeader >header = make_shared < BlockHeader >();
+    FromJSONSerializer::fromJSONString ( *header, headerJSON );
 
     return this->makeCursor (
         header,
-        block,
         stringToStatus ( statusStr ),
-        stringToMeta ( metaStr )
+        stringToMeta ( metaStr ),
+        hasBlock
     );
 }
 
@@ -402,7 +390,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
         assert ( result );
         
         // make the cursor
-        cursor = this->makeCursor ( header, block, status, kBlockTreeEntryMeta::META_NONE );
+        cursor = this->makeCursor ( header, status, kBlockTreeEntryMeta::META_NONE, ( bool )block );
     }
 
     // tag and return
@@ -424,7 +412,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string ha
 
     this->mDB.exec (
         
-        "SELECT * FROM nodes WHERE hash IS ?1",
+        "SELECT hash, header, status, meta, hasBlock FROM nodes WHERE hash IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -449,7 +437,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTag ( const Bloc
 
     this->mDB.exec (
         
-        "SELECT * FROM nodes INNER JOIN tags ON tags.nodeID = nodes.nodeID WHERE tags.name IS ?1",
+        "SELECT hash, header, status, meta, hasBlock FROM nodes INNER JOIN tags ON tags.nodeID = nodes.nodeID WHERE tags.name IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -463,6 +451,39 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTag ( const Bloc
     );
 
     return cursor;
+}
+
+//----------------------------------------------------------------//
+shared_ptr < const Block > SQLiteBlockTree::AbstractBlockTree_getBlock ( const BlockTreeCursor& cursor ) const {
+
+    assert ( cursor.getTree () == this );
+    if ( !cursor.hasBlock ()) return NULL;
+
+    shared_ptr < Block > block;
+
+    this->mDB.exec (
+        
+        "SELECT block FROM nodes WHERE hash IS ?1",
+        
+        //--------------------------------//
+        [ & ]( SQLiteStatement& stmt ) {
+            stmt.bind ( 1, cursor.getHash ());
+        },
+        
+        //--------------------------------//
+        [ & ]( int, const SQLiteStatement& stmt ) {
+        
+            string blockJSON = stmt.getValue < string >( "block" );
+
+            assert ( blockJSON.size ());
+        
+            block = make_shared < Block >();
+            FromJSONSerializer::fromJSONString ( *block, blockJSON );
+        }
+    );
+
+    assert ( block );
+    return block;
 }
 
 //----------------------------------------------------------------//

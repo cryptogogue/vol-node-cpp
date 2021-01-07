@@ -159,6 +159,18 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForTag ( const Bl
 }
 
 //----------------------------------------------------------------//
+shared_ptr < const Block > InMemoryBlockTree::AbstractBlockTree_getBlock ( const BlockTreeCursor& cursor ) const {
+
+    assert ( cursor.getTree () == this );
+    if ( !cursor.hasBlock ()) return NULL;
+
+    const InMemoryBlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
+    assert ( node && node->mBlock );
+    
+    return node->mBlock;
+}
+
+//----------------------------------------------------------------//
 void InMemoryBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) {
 
     InMemoryBlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
@@ -200,7 +212,8 @@ void InMemoryBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bl
     assert ( node->mHeader );
     assert ( node->mHeader->getDigest ().toHex () == hash );
     
-    node->mBlock = block;
+    node->mBlock        = block;
+    node->mHasBlock     = true;
     node->mark ( STATUS_COMPLETE );
 }
 

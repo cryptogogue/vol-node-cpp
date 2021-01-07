@@ -47,7 +47,7 @@ int HasBlockHeaderFields::compare ( const HasBlockHeaderFields& block0, const Ha
     assert ( fields0.mHeight == fields1.mHeight );
 
     if ( block0.equals ( block1 )) return 0;
-                
+
     return HasBlockHeaderFields::compare ( fields0.mCharm, fields1.mCharm );
 }
 
@@ -70,7 +70,7 @@ bool HasBlockHeaderFields::equals ( const HasBlockHeaderFields& rhs ) const {
     const BlockHeaderFields& fields = this->getFields ();
     const BlockHeaderFields& rhsFields = rhs.getFields ();
 
-    return (( fields.mHeight == rhsFields.mHeight ) && ( fields.mSignature == rhsFields.mSignature ));
+    return (( fields.mHeight == rhsFields.mHeight ) && ( fields.mDigest == rhsFields.mDigest ));
 }
 
 //----------------------------------------------------------------//
