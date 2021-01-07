@@ -7,6 +7,46 @@
 namespace Volition {
 
 //================================================================//
+// BlockTreeSegment
+//================================================================//
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getFullLength () const {
+
+    return ( this->mTop->getHeight () - this->mHead->getHeight ());
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getRewriteDefeatCount () const {
+
+    time_t window = this->mHead->getRewriteWindow (); // TODO: account for different rewrite windows in segment
+    return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window );
+}
+
+//----------------------------------------------------------------//
+size_t BlockTreeSegment::getSegLength () const {
+
+    return this->mTail->getHeight () - this->mHead->getHeight ();
+}
+
+//----------------------------------------------------------------//
+BlockTreeSegment::Iterator BlockTreeSegment::pushFront ( const BlockTreeCursor& cursor ) {
+
+    this->push_front ( cursor );
+    return this->cbegin ();
+}
+
+//================================================================//
+// BlockTreeFork
+//================================================================//
+
+//----------------------------------------------------------------//
+size_t BlockTreeFork::getSegLength () const {
+
+    return this->mSeg0.getSegLength ();
+}
+
+//================================================================//
 // AbstractBlockTree
 //================================================================//
 
@@ -96,7 +136,38 @@ bool AbstractBlockTree::checkStatusTransition ( kBlockTreeEntryStatus from, kBlo
 //----------------------------------------------------------------//
 int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const {
 
-    return this->AbstractBlockTree_compare ( cursor0, cursor1, rewriteMode );
+    BlockTreeFork fork;
+    this->findFork ( fork, cursor0, cursor1 );
+
+    size_t fullLength0  = fork.mSeg0.getFullLength ();
+    size_t fullLength1  = fork.mSeg1.getFullLength ();
+
+    if ( rewriteMode == kRewriteMode::REWRITE_WINDOW ) {
+        
+        size_t segLength = fork.getSegLength (); // length of the shorter segment (if different lengths)
+        
+        // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
+        if (( segLength < fullLength0 ) && ( segLength < fork.mSeg0.getRewriteDefeatCount ())) return -1;
+        if (( segLength < fullLength1 ) && ( segLength < fork.mSeg1.getRewriteDefeatCount ())) return 1;
+    }
+
+    int score = 0;
+
+    BlockTreeSegment::Iterator cursorIt0 = fork.mSeg0.mTail;
+    BlockTreeSegment::Iterator cursorIt1 = fork.mSeg1.mTail;
+
+    while ( cursorIt0 != cursorIt1 ) {
+    
+        score += BlockHeader::compare ( *cursorIt0->mHeader, *cursorIt1->mHeader );
+        
+        --cursorIt0;
+        --cursorIt1;
+    }
+
+    if (( score == 0 ) && ( fullLength0 != fullLength1 )) {
+        return ( fullLength0 < fullLength1 ) ? 1 : -1;
+    }
+    return score < 0 ? -1 : score > 0 ? 1 : 0;
 }
 
 //----------------------------------------------------------------//
@@ -117,9 +188,65 @@ BlockTreeCursor AbstractBlockTree::findCursorForTag ( const BlockTreeTag& tag ) 
 }
 
 //----------------------------------------------------------------//
+void AbstractBlockTree::findFork ( BlockTreeFork& fork, BlockTreeCursor cursor0, BlockTreeCursor cursor1 ) const {
+
+    if ( cursor0.mTree && ( cursor0.mTree == cursor1.mTree )) {
+    
+        BlockTreeSegment seg0;
+        BlockTreeSegment seg1;
+    
+        seg0.mTop = seg0.pushFront ( cursor0 );
+        seg1.mTop = seg1.pushFront ( cursor1 );
+    
+        size_t height0 = cursor0.getHeight ();
+        size_t height1 = cursor1.getHeight ();
+
+        size_t height = height0 < height1 ? height0 : height1;
+        
+        while ( cursor0.hasParent () && ( height < cursor0.getHeight ())) {
+            cursor0 = cursor0.getParent ();
+            seg0.pushFront ( cursor0 );
+        }
+        
+        while ( cursor1.hasParent () && ( height < cursor1.getHeight ())) {
+            cursor1 = cursor1.getParent ();
+            seg1.pushFront ( cursor1 );
+        }
+
+        seg0.mHead = seg0.begin ();
+        seg1.mHead = seg1.begin ();
+
+        seg0.mTail = seg0.begin ();
+        seg1.mTail = seg1.begin ();
+
+        while ( !cursor0.equals ( cursor1 )) {
+        
+            seg0.mHead = seg0.begin ();
+            seg1.mHead = seg1.begin ();
+            
+            cursor0 = cursor0.getParent ();
+            cursor1 = cursor1.getParent ();
+            
+            seg0.pushFront ( cursor0 );
+            seg1.pushFront ( cursor1 );
+        }
+        
+        assert ( cursor0.hasHeader () && cursor1.hasHeader ());
+        
+        fork.mSeg0 = seg0;
+        fork.mSeg1 = seg1;
+        fork.mRoot = seg0.begin ();
+        
+        assert ( fork.mSeg0.getSegLength () == fork.mSeg1.getSegLength ());
+    }
+}
+
+//----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::findRoot ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
-    return this->AbstractBlockTree_findRoot ( cursor0, cursor1 );
+    BlockTreeFork fork;
+    this->findFork ( fork, cursor0, cursor1 );
+    return *fork.mRoot;
 }
 
 //----------------------------------------------------------------//

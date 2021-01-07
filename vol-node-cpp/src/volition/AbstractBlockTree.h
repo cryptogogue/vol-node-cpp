@@ -15,6 +15,44 @@
 namespace Volition {
 
 //================================================================//
+// BlockTreeSegment
+//================================================================//
+class BlockTreeSegment :
+    list < BlockTreeCursor > {
+public:
+
+    friend class AbstractBlockTree;
+
+    typedef list < BlockTreeCursor >::const_iterator Iterator;
+
+    Iterator        mHead;
+    Iterator        mTail;
+    Iterator        mTop;
+    
+    //----------------------------------------------------------------//
+    size_t          getFullLength           () const;
+    size_t          getRewriteDefeatCount   () const;
+    size_t          getSegLength            () const;
+    Iterator        pushFront               ( const BlockTreeCursor& cursor );
+};
+
+//================================================================//
+// BlockTreeFork
+//================================================================//
+class BlockTreeFork {
+public:
+
+    friend class BlockTreeFork;
+
+    BlockTreeSegment::Iterator      mRoot;
+    BlockTreeSegment                mSeg0;
+    BlockTreeSegment                mSeg1;
+    
+    //----------------------------------------------------------------//
+    size_t          getSegLength            () const;
+};
+
+//================================================================//
 // AbstractBlockTree
 //================================================================//
 class AbstractBlockTree {
@@ -25,15 +63,14 @@ protected:
 
     //----------------------------------------------------------------//
     BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
+    void                        findFork                ( BlockTreeFork& fork, BlockTreeCursor cursor0, BlockTreeCursor cursor1 ) const;
     BlockTreeCursor             makeCursor              ( shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, kBlockTreeEntryStatus status, kBlockTreeEntryMeta meta ) const;
 
     //----------------------------------------------------------------//
     virtual BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) = 0;
     virtual kBlockTreeAppendResult      AbstractBlockTree_checkAppend               ( const BlockHeader& header ) const = 0;
-    virtual int                         AbstractBlockTree_compare                   ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const = 0;
-    virtual BlockTreeCursor             AbstractBlockTree_findRoot                  ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const = 0;
     virtual void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) = 0;

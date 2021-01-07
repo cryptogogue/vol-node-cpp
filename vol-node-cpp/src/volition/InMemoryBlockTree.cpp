@@ -8,39 +8,6 @@
 namespace Volition {
 
 //================================================================//
-// InMemoryBlockTreeSegment
-//================================================================//
-
-//----------------------------------------------------------------//
-size_t InMemoryBlockTreeSegment::getFullLength () const {
-
-    return ( this->mTop->getHeight () - this->mHead->getHeight ());
-}
-
-//----------------------------------------------------------------//
-size_t InMemoryBlockTreeSegment::getRewriteDefeatCount () const {
-
-    time_t window = this->mHead->getRewriteWindow (); // TODO: account for different rewrite windows in segment
-    return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window );
-}
-
-//----------------------------------------------------------------//
-size_t InMemoryBlockTreeSegment::getSegLength () const {
-
-    return this->mTail->getHeight () - this->mHead->getHeight ();
-}
-
-//================================================================//
-// BlockTreeRoot
-//================================================================//
-
-//----------------------------------------------------------------//
-size_t InMemoryBlockTreeFork::getSegLength () const {
-
-    return this->mSeg0.getSegLength ();
-}
-
-//================================================================//
 // InMemoryBlockTree
 //================================================================//
 
@@ -56,61 +23,6 @@ InMemoryBlockTree::~InMemoryBlockTree () {
     for ( ; nodeIt != this->mNodes.end (); ++nodeIt ) {
         nodeIt->second->mTree = NULL;
     }
-}
-
-//----------------------------------------------------------------//
-InMemoryBlockTreeFork InMemoryBlockTree::findFork ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
-
-    const InMemoryBlockTreeNode* node0 = this->findNodeForHash ( cursor0.getHash ());
-    const InMemoryBlockTreeNode* node1 = this->findNodeForHash ( cursor1.getHash ());
-
-    InMemoryBlockTreeFork root;
-
-    if ( node0->mTree && ( node0->mTree == node1->mTree )) {
-    
-        InMemoryBlockTreeSegment seg0;
-        InMemoryBlockTreeSegment seg1;
-    
-        seg0.mTop = node0;
-        seg1.mTop = node1;
-    
-        size_t height0 = node0->mHeader->getHeight ();
-        size_t height1 = node1->mHeader->getHeight ();
-
-        size_t height = height0 < height1 ? height0 : height1;
-        
-        while ( node0->mParent && ( height < node0->mHeader->getHeight ())) {
-            node0 = node0->mParent.get ();
-        }
-        
-        while ( node1->mParent && ( height < node1->mHeader->getHeight ())) {
-            node1 = node1->mParent.get ();
-        }
-
-        seg0.mHead = node0;
-        seg1.mHead = node1;
-
-        seg0.mTail = node0;
-        seg1.mTail = node1;
-
-        while ( node0 != node1 ) {
-        
-            seg0.mHead = node0;
-            seg1.mHead = node1;
-            
-            node0 = node0->mParent.get ();
-            node1 = node1->mParent.get ();
-        }
-        
-        assert ( node0 && node1 );
-        
-        root.mSeg0 = seg0;
-        root.mSeg1 = seg1;
-        root.mRoot = node0;
-        
-        assert ( root.mSeg0.getSegLength () == root.mSeg1.getSegLength ());
-    }
-    return root;
 }
 
 //----------------------------------------------------------------//
@@ -230,42 +142,6 @@ kBlockTreeAppendResult InMemoryBlockTree::AbstractBlockTree_checkAppend ( const 
 }
 
 //----------------------------------------------------------------//
-int InMemoryBlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const {
-
-    InMemoryBlockTreeFork root = this->findFork ( cursor0, cursor1);
-
-    size_t fullLength0  = root.mSeg0.getFullLength ();
-    size_t fullLength1  = root.mSeg1.getFullLength ();
-
-    if ( rewriteMode == kRewriteMode::REWRITE_WINDOW ) {
-        
-        size_t segLength = root.getSegLength (); // length of the shorter segment (if different lengths)
-        
-        // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
-        if (( segLength < fullLength0 ) && ( segLength < root.mSeg0.getRewriteDefeatCount ())) return -1;
-        if (( segLength < fullLength1 ) && ( segLength < root.mSeg1.getRewriteDefeatCount ())) return 1;
-    }
-
-    int score = 0;
-
-    const InMemoryBlockTreeNode* node0 = root.mSeg0.mTail;
-    const InMemoryBlockTreeNode* node1 = root.mSeg1.mTail;
-
-    while ( node0 != node1 ) {
-    
-        score += BlockHeader::compare ( *node0->mHeader, *node1->mHeader );
-        
-        node0 = node0->mParent.get ();
-        node1 = node1->mParent.get ();
-    }
-
-    if (( score == 0 ) && ( fullLength0 != fullLength1 )) {
-        return ( fullLength0 < fullLength1 ) ? 1 : -1;
-    }
-    return score < 0 ? -1 : score > 0 ? 1 : 0;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForHash ( string hash ) const {
 
     map < string, InMemoryBlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );
@@ -280,13 +156,6 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForTag ( const Bl
     if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
 
     return BlockTreeCursor ();
-}
-
-//----------------------------------------------------------------//
-BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findRoot ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
-
-    InMemoryBlockTreeFork fork = this->findFork ( cursor0, cursor1 );
-    return *fork.mRoot;
 }
 
 //----------------------------------------------------------------//

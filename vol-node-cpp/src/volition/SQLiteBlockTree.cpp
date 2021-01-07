@@ -417,15 +417,6 @@ kBlockTreeAppendResult SQLiteBlockTree::AbstractBlockTree_checkAppend ( const Bl
 }
 
 //----------------------------------------------------------------//
-int SQLiteBlockTree::AbstractBlockTree_compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const {
-    UNUSED ( cursor0 );
-    UNUSED ( cursor1 );
-    UNUSED ( rewriteMode );
-
-    return 0;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string hash ) const {
     UNUSED ( hash );
 
@@ -472,14 +463,6 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTag ( const Bloc
     );
 
     return cursor;
-}
-
-//----------------------------------------------------------------//
-BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findRoot ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
-    UNUSED ( cursor0 );
-    UNUSED ( cursor1 );
-
-    return BlockTreeCursor ();
 }
 
 //----------------------------------------------------------------//
