@@ -139,16 +139,13 @@ int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTree
 
     if ( rewriteMode == kRewriteMode::REWRITE_WINDOW ) {
         
-        // if one chain is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
+        // if the segment shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
         if (( segLength < fullLength0 ) && ( segLength < fork.mSeg0.getRewriteDefeatCount ())) return -1;
         if (( segLength < fullLength1 ) && ( segLength < fork.mSeg1.getRewriteDefeatCount ())) return 1;
     }
 
-    int score = 0;
-    int tieBreaker = 0;
-
-    BlockTreeSegment::Iterator cursorIt0 = fork.mSeg0.mTail;
-    BlockTreeSegment::Iterator cursorIt1 = fork.mSeg1.mTail;
+    BlockTreeSegment::Iterator cursorIt0 = fork.mSeg0.mHead;
+    BlockTreeSegment::Iterator cursorIt1 = fork.mSeg1.mHead;
 
     for ( size_t i = 0; i < segLength; ++i ) {
     
@@ -159,17 +156,14 @@ int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTree
         assert ( cusor1.getDigest ());
         assert ( cusor0.getDigest () != cusor1.getDigest ());
     
-        tieBreaker = BlockHeader::compare ( *cursorIt0->mHeader, *cursorIt1->mHeader );
-        score += tieBreaker;
+        int score = BlockHeader::compare ( *cursorIt0->mHeader, *cursorIt1->mHeader );
         
-        --cursorIt0;
-        --cursorIt1;
+        if ( score != 0 ) return score;
+        
+        ++cursorIt0;
+        ++cursorIt1;
     }
-
-    if (( tieBreaker == 0 ) && ( fullLength0 != fullLength1 )) {
-        return ( fullLength0 < fullLength1 ) ? 1 : -1;
-    }
-    return score < 0 ? -1 : score > 0 ? 1 : tieBreaker;
+    return 0;
 }
 
 //----------------------------------------------------------------//
