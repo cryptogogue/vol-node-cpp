@@ -277,9 +277,9 @@ protected:
         }
         
         shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( 0 );
-        if ( simMiner->getWorkingLedgerTag ().getHeight () >= 16 ) {
+        if ( simMiner->getLedgerTag ().getHeight () >= 16 ) {
         
-//            BlockTreeNode::ConstPtr prevBranch = simMiner->getWorkingLedgerTag ();
+//            BlockTreeNode::ConstPtr prevBranch = simMiner->getLedgerTag ();
         
             simMiner->setCharm ( 8, Format::write ( "%06x", this->mCounter ));
             this->mCounter--;
@@ -319,7 +319,7 @@ protected:
         
             shared_ptr < SimMiner > simMiner = simulator.getSimMiner ( UnsecureRandom::get ().random ( 0, 15 ));
             simMiner->scrambleRemotes ();
-            simMiner->rewindChain ( UnsecureRandom::get ().random ( 0, simMiner->getWorkingLedgerTag ().getHeight ()));
+            simMiner->rewindChain ( UnsecureRandom::get ().random ( 0, simMiner->getLedgerTag ().getHeight ()));
         }
     }
     

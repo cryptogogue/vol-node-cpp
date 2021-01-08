@@ -60,7 +60,7 @@ public:
         string accountName = this->getMatchString ( "accountName" );
         
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
+        const Ledger& ledger = this->mWebMiner->getLedger ();
 
         AccountODBM accountODBM ( ledger, accountName );
         if ( accountODBM ) {

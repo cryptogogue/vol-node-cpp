@@ -287,7 +287,7 @@ TEST ( WebMiner, consensus_api_get_headers ) {
         size_t base = (( ConsensusBlockHeaderListHandler::HEADER_BATCH_SIZE * 2 ) + 1 ) - ConsensusBlockHeaderListHandler::HEADER_BATCH_SIZE;
         for ( size_t i = 0; i < ConsensusBlockHeaderListHandler::HEADER_BATCH_SIZE; ++i ) {
             shared_ptr < const BlockHeader > header = headers [ i ];
-            shared_ptr < const Block > block = miner->getWorkingLedger ().getBlock ( base + i );
+            shared_ptr < const Block > block = miner->getLedger ().getBlock ( base + i );
             ASSERT_TRUE ( header->equals ( *block ));
             ASSERT_TRUE ( header->getCharm () == block->getCharm ());
         }
@@ -306,7 +306,7 @@ TEST ( WebMiner, consensus_api_get_headers ) {
         size_t base = 1;
         for ( size_t i = 0; i < ConsensusBlockHeaderListHandler::HEADER_BATCH_SIZE; ++i ) {
             shared_ptr < const BlockHeader > header = headers [ i ];
-            shared_ptr < const Block > block = miner->getWorkingLedger ().getBlock ( base + i );
+            shared_ptr < const Block > block = miner->getLedger ().getBlock ( base + i );
             ASSERT_TRUE ( header->equals ( *block ));
             ASSERT_TRUE ( header->getCharm () == block->getCharm ());
         }

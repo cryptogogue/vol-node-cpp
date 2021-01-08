@@ -30,7 +30,7 @@ public:
         string keyID = this->getMatchString ( "keyHash" );
         
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
+        const Ledger& ledger = this->mWebMiner->getLedger ();
 
         shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );
         if ( accountKeyLookup ) {

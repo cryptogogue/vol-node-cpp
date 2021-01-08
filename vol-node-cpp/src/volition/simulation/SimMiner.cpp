@@ -14,7 +14,7 @@ namespace Simulation {
 //----------------------------------------------------------------//
 void SimMiner::extendChain ( string charmHex, time_t time ) {
 
-    shared_ptr < const Block > prevBlock = this->mWorkingLedger->getBlock ();
+    shared_ptr < const Block > prevBlock = this->mLedger->getBlock ();
 
     shared_ptr < Block > block = make_shared < Block >();
     block->initialize (
@@ -35,8 +35,6 @@ void SimMiner::extendChain ( string charmHex, time_t time ) {
     block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
     
     this->pushBlock ( block );
-    this->mBlockTree->tag ( this->mPermanentLedgerTag, this->mWorkingLedgerTag );
-    this->mPermanentLedger = *this->mWorkingLedger;
 }
 
 //----------------------------------------------------------------//

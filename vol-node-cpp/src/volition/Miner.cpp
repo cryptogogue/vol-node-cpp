@@ -148,8 +148,8 @@ Signature Miner::calculateVisage ( const CryptoKeyPair& keyPair, string motto ) 
 //----------------------------------------------------------------//
 bool Miner::checkBestBranch ( string miners ) const {
 
-    assert ( this->mWorkingLedger );
-    return this->mWorkingLedger->checkMiners ( miners );
+    assert ( this->mLedger );
+    return this->mLedger->checkMiners ( miners );
 }
 
 //----------------------------------------------------------------//
@@ -174,27 +174,27 @@ void Miner::composeChain () {
 
     // TODO: gather transactions if rewinding chain
 
-    if ( this->mWorkingLedgerTag.equals ( this->mBestBranchTag )) return;
+    if ( this->mLedgerTag.equals ( this->mBestBranchTag )) return;
 
     // check to see if chain tag is *behind* best branch
-    if (( *this->mBestBranchTag ).isAncestorOf ( *this->mWorkingLedgerTag )) {
-        this->mWorkingLedger->reset ( this->mBestBranchTag.getHeight () + 1 );
-        this->mBlockTree->tag ( this->mWorkingLedgerTag, this->mBestBranchTag );
+    if (( *this->mBestBranchTag ).isAncestorOf ( *this->mLedgerTag )) {
+        this->mLedger->reset ( this->mBestBranchTag.getHeight () + 1 );
+        this->mBlockTree->tag ( this->mLedgerTag, this->mBestBranchTag );
         return;
     }
 
     // if chain is divergent from best branch, re-root it
-    if ( !( *this->mWorkingLedgerTag ).isAncestorOf ( *this->mBestBranchTag )) {
+    if ( !( *this->mLedgerTag ).isAncestorOf ( *this->mBestBranchTag )) {
         
         // REWIND chain to point of divergence
-        BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mWorkingLedgerTag, *this->mBestBranchTag );
+        BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mLedgerTag, *this->mBestBranchTag );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
         assert ( root.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
-        this->mWorkingLedger->reset ( root.getHeight () + 1 );
-        this->mBlockTree->tag ( this->mWorkingLedgerTag, root );
+        this->mLedger->reset ( root.getHeight () + 1 );
+        this->mBlockTree->tag ( this->mLedgerTag, root );
     }
-    assert (( *this->mWorkingLedgerTag ).isAncestorOf ( *this->mBestBranchTag ));
+    assert (( *this->mLedgerTag ).isAncestorOf ( *this->mBestBranchTag ));
     
     this->composeChainRecurse ( *this->mBestBranchTag );
 }
@@ -202,16 +202,16 @@ void Miner::composeChain () {
 //----------------------------------------------------------------//
 void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 
-    if (( *this->mWorkingLedgerTag ).equals ( branch )) return; // nothing to do
+    if (( *this->mLedgerTag ).equals ( branch )) return; // nothing to do
     
     BlockTreeCursor parent = branch.getParent ();
-    if ( !parent.equals ( *this->mWorkingLedgerTag )) {
+    if ( !parent.equals ( *this->mLedgerTag )) {
         this->composeChainRecurse ( parent );
     }
     
     if ( branch.isComplete ()) {
         this->pushBlock ( branch.getBlock ()); // TODO: handle invalid blocks
-        assert (( *this->mWorkingLedgerTag ).equals ( branch ));
+        assert (( *this->mLedgerTag ).equals ( branch ));
     }
 }
 
@@ -219,7 +219,7 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 void Miner::discoverMiners () {
 
     // get miner list from ledger
-    set < string > miners = this->getWorkingLedger ().getMiners ();
+    set < string > miners = this->getLedger ().getMiners ();
     set < string >::iterator minerIt = miners.begin ();
     for ( ; minerIt != miners.end (); ++minerIt ) {
         
@@ -228,7 +228,7 @@ void Miner::discoverMiners () {
         if ( minerID != this->mMinerID ) {
                         
             if ( this->mRemoteMinersByID.find ( minerID ) == this->mRemoteMinersByID.cend ()) {
-                AccountODBM minerODBM ( this->getWorkingLedger (), *minerIt );
+                AccountODBM minerODBM ( this->getLedger (), *minerIt );
                 string url = minerODBM.mMinerInfo.get ()->getURL ();
                 this->mNewMinerURLs.insert ( url );
             }
@@ -270,9 +270,7 @@ void Miner::extend ( time_t now ) {
     if ( !( parent.hasHeader () && parent.isComplete ())) return;
     if ( this->checkConsensus ( parent ) <= 0.5 ) return;
 
-    assert (( *this->mWorkingLedgerTag ).equals ( parent ));
-    assert ( !( *this->mPermanentLedgerTag ).equals ( provisional ));
-    assert (( *this->mPermanentLedgerTag ).isAncestorOf ( provisional ));
+    assert (( *this->mLedgerTag ).equals ( parent ));
 
     shared_ptr < Block > block = this->prepareBlock ( now );
     if ( block ) {
@@ -303,13 +301,14 @@ const set < string >& Miner::getActiveMinerURLs () const {
 //----------------------------------------------------------------//
 size_t Miner::getChainSize () const {
 
-    return this->mWorkingLedgerTag.hasCursor () ? ( this->mWorkingLedgerTag.getHeight () + 1 ) : 0;
+    return this->mLedgerTag.hasCursor () ? ( this->mLedgerTag.getHeight () + 1 ) : 0;
 }
 
 //----------------------------------------------------------------//
-Ledger& Miner::getHighConfidenceLedger () {
+Ledger& Miner::getLedger () {
 
-    return this->mPermanentLedger;
+    assert ( this->mLedger );
+    return *this->mLedger;
 }
 
 //----------------------------------------------------------------//
@@ -319,7 +318,7 @@ TransactionStatus Miner::getTransactionStatus ( string accountName, string uuid 
         return this->getLastStatus ( accountName );
     }
 
-    const Ledger& ledger = this->getHighConfidenceLedger ();
+    const Ledger& ledger = this->getLedger ();
 
     if ( ledger.hasTransaction ( accountName, uuid )) {
         return TransactionStatus ( TransactionStatus::ACCEPTED, "Transaction was accepted and applied.", uuid );
@@ -333,20 +332,13 @@ TransactionStatus Miner::getTransactionStatus ( string accountName, string uuid 
 }
 
 //----------------------------------------------------------------//
-Ledger& Miner::getWorkingLedger () {
-
-    assert ( this->mWorkingLedger );
-    return *this->mWorkingLedger;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now ) {
 
     // if muted, no change is possible
     if ( this->mFlags & MINER_MUTE ) return tail;
 
     // first, check to see if we're authorized to mine. if we're not, then we can't change the branch, so return.
-    AccountODBM accountODBM ( *this->mWorkingLedger, this->mMinerID );
+    AccountODBM accountODBM ( *this->mLedger, this->mMinerID );
     if ( !accountODBM.isMiner ()) return tail;
 
     // height at which we became a miner (according to current working ledger).
@@ -356,7 +348,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
     // if then root is earlier than the height at which we became a miner, then we can't know if we're a miner in the incoming branch.
     // rather than risk mining an invalid block, we'll leave the branch unaltered.
     
-    BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mWorkingLedgerTag, tail );
+    BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mLedgerTag, tail );
     if ( root.getHeight () < minerHeight ) return tail;
     
     // at this stage, we're allowed to mine and we know that we're authorized on this branch. so see if we can improve
@@ -456,8 +448,7 @@ Miner::Miner () :
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ) {
     
-    this->mWorkingLedgerTag.setName ( "working" );
-    this->mPermanentLedgerTag.setName ( "permanent" );
+    this->mLedgerTag.setName ( "working" );
     this->mBestBranchTag.setName ( "best" );
     
     MinerLaunchTests::checkEnvironment ();
@@ -473,7 +464,7 @@ Miner::~Miner () {
 void Miner::persist ( string path, shared_ptr < const Block > block ) {
     
     assert ( block );
-    assert ( this->mWorkingLedger == NULL );
+    assert ( this->mLedger == NULL );
     
     Poco::Path basePath ( path );
     basePath.makeAbsolute ();
@@ -495,14 +486,9 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     shared_ptr < const Block > topBlock = ledger->getBlock ();
     
     if ( topBlock ) {
-
-        this->mWorkingLedger = ledger;
-        this->mPermanentLedger = *this->mWorkingLedger;
-
-        this->mBlockTree->affirmBlock ( this->mWorkingLedgerTag, topBlock );
-        
-        this->mBlockTree->tag ( this->mPermanentLedgerTag, this->mWorkingLedgerTag );
-        this->mBlockTree->tag ( this->mBestBranchTag, this->mWorkingLedgerTag );
+        this->mLedger = ledger;
+        this->mBlockTree->affirmBlock ( this->mLedgerTag, topBlock );
+        this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
     }
     
     this->setGenesis ( block );
@@ -515,7 +501,7 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
 //----------------------------------------------------------------//
 shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
         
-    shared_ptr < const Block > prevBlock = this->mWorkingLedger->getBlock ();
+    shared_ptr < const Block > prevBlock = this->mLedger->getBlock ();
     assert ( prevBlock );
     
     shared_ptr < Block > block = make_shared < Block >();
@@ -527,10 +513,10 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
         this->mKeyPair
     );
     
-    block->setBlockDelayInSeconds( this->mWorkingLedger->getBlockDelayInSeconds ());
-    block->setRewriteWindow ( this->mWorkingLedger->getRewriteWindowInSeconds ());
+    block->setBlockDelayInSeconds( this->mLedger->getBlockDelayInSeconds ());
+    block->setRewriteWindow ( this->mLedger->getRewriteWindowInSeconds ());
     
-    this->fillBlock ( *this->mWorkingLedger, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
+    this->fillBlock ( *this->mLedger, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
         block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
@@ -551,8 +537,8 @@ shared_ptr < BlockHeader > Miner::prepareProvisional ( const BlockHeader& parent
         this->mKeyPair
     );
     
-    provisional->setBlockDelayInSeconds ( this->mWorkingLedger->getBlockDelayInSeconds ());
-    provisional->setRewriteWindow ( this->mWorkingLedger->getRewriteWindowInSeconds ());
+    provisional->setBlockDelayInSeconds ( this->mLedger->getBlockDelayInSeconds ());
+    provisional->setRewriteWindow ( this->mLedger->getRewriteWindowInSeconds ());
     provisional->setDigest ( Digest ( *provisional ));
     
     return provisional;
@@ -561,21 +547,21 @@ shared_ptr < BlockHeader > Miner::prepareProvisional ( const BlockHeader& parent
 //----------------------------------------------------------------//
 void Miner::pruneTransactions () {
 
-    this->TransactionQueue::pruneTransactions ( this->mPermanentLedger );
+    this->TransactionQueue::pruneTransactions ( *this->mLedger );
 }
 
 //----------------------------------------------------------------//
 void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
-    this->mWorkingLedger->revert ( block->getHeight ());
+    this->mLedger->revert ( block->getHeight ());
 
-    bool result = this->mWorkingLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
+    bool result = this->mLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
     BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
     assert ( node.hasHeader ());
     
-    this->mBlockTree->tag ( this->mWorkingLedgerTag, node );
+    this->mBlockTree->tag ( this->mLedgerTag, node );
 }
 
 //----------------------------------------------------------------//
@@ -584,7 +570,7 @@ void Miner::report () const {
     switch ( this->mReportMode ) {
     
         case REPORT_BEST_BRANCH: {
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )this->mWorkingLedgerTag.getHeight (), ( *this->mWorkingLedgerTag ).writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )this->mLedgerTag.getHeight (), ( *this->mLedgerTag ).writeBranch ().c_str ());
             break;
         }
         
@@ -606,7 +592,7 @@ void Miner::report () const {
                     LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: MISSING TAG", remoteMiner.getMinerID ().c_str ());
                 }
             }
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )( *this->mWorkingLedgerTag ).getHeight (), ( *this->mWorkingLedgerTag ).writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )( *this->mLedgerTag ).getHeight (), ( *this->mLedgerTag ).writeBranch ().c_str ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
             break;
         }
@@ -621,8 +607,8 @@ void Miner::report () const {
 void Miner::reset () {
 
     this->TransactionQueue::reset ();
-    this->mWorkingLedger->reset ( 1 );
-    this->mWorkingLedger->clearSchemaCache ();
+    this->mLedger->reset ( 1 );
+    this->mLedger->clearSchemaCache ();
     this->Miner_reset ();
 }
 
@@ -647,8 +633,8 @@ set < string > Miner::sampleActiveMinerURLs ( size_t sampleSize ) const {
 //----------------------------------------------------------------//
 void Miner::saveChain () {
 
-    if ( this->mPersistenceProvider ) {
-        this->mPermanentLedger.persist ( this->mPersistenceProvider, "master" );
+    if ( this->mLedger && this->mPersistenceProvider ) {
+        this->mLedger->persist ( this->mPersistenceProvider, "master" );
     }
 }
 
@@ -671,18 +657,16 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
 
     assert ( block );
 
-    if ( this->mWorkingLedger ) {
+    if ( this->mLedger ) {
     
-        assert ( this->mWorkingLedgerTag.hasCursor ());
-        assert ( this->mWorkingLedger->countBlocks ());
-        assert ( this->mWorkingLedger->getGenesisHash () == block->getDigest ().toHex ());
-        assert ( this->mPermanentLedgerTag.hasCursor ());
+        assert ( this->mLedgerTag.hasCursor ());
+        assert ( this->mLedger->countBlocks ());
+        assert ( this->mLedger->getGenesisHash () == block->getDigest ().toHex ());
     }
     else {
     
-        this->mWorkingLedger = make_shared < Ledger >();
+        this->mLedger = make_shared < Ledger >();
         this->pushBlock ( block );
-        this->updatePermanentTag ();
     }
 }
 
@@ -745,7 +729,6 @@ void Miner::step ( time_t now ) {
     // fill the provisional block (if any)
     this->extend ( now );
     
-    this->updatePermanentTag ();
     this->pruneTransactions ();
     
     this->updateBlockSearches ();
@@ -834,33 +817,6 @@ void Miner::updateHeaderSearches () {
 }
 
 //----------------------------------------------------------------//
-void Miner::updatePermanentTag () {
-
-    assert ( this->mWorkingLedger );
-
-    // start with the current best provisional branch and walk back to a point where general consensus (among responding
-    // miners) is greater than quorum (right now hardcoded at 100%) and/or where we hit the root (or the current permanent tag).
-    BlockTreeCursor tag = *this->mBestBranchTag;
-    while (( this->checkConsensus ( tag ) <= 0.5 ) || ( !tag.getBlock ())) {
-        tag = tag.getParent ();
-        if ( !tag.hasHeader ()) return;
-    }
-    
-    assert ( tag.hasHeader ());
-    assert ( tag.getBlock ());
-    assert ( tag.isAncestorOf ( *this->mBestBranchTag ));
-    
-    if ( !( *this->mPermanentLedgerTag ).equals ( tag )) {
-    
-        this->mBlockTree->tag ( this->mPermanentLedgerTag, tag );
-        this->mPermanentLedger = *this->mWorkingLedger;
-        this->mPermanentLedger.reset ( this->mPermanentLedgerTag.getHeight () + 1 );
-        
-        this->saveChain ();
-    }
-}
-
-//----------------------------------------------------------------//
 void Miner::updateRemoteMiners () {
 
     this->mOnlineMiners.clear ();
@@ -935,7 +891,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
                 if ( header->getTime () > now ) continue; // ignore headers from the future
                 
                 if ( header->getHeight () == 0 ) {
-                    if ( header->getDigest ().toHex () != this->mWorkingLedger->getGenesisHash ()) {
+                    if ( header->getDigest ().toHex () != this->mLedger->getGenesisHash ()) {
                         remoteMiner->setError ( "Unrecoverable error: genesis block mismatch." );
                         break;
                     }

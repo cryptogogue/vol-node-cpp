@@ -320,7 +320,7 @@ void Simulator::step () {
         }
         
         ScopedMinerLock minerLock ( miner );
-        tree.addChain ( this->mMiners [ i ]->getWorkingLedger ());
+        tree.addChain ( this->mMiners [ i ]->getLedger ());
     }
     
     this->mNetwork->updateAndDispatch ();

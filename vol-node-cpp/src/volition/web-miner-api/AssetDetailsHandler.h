@@ -37,7 +37,7 @@ public:
             if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
             
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
+            Ledger& ledger = this->mWebMiner->getLedger ();
         
             shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ();
             

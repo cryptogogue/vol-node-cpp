@@ -31,7 +31,7 @@ public:
             u64 height = this->getMatchU64 ( "blockID" );
 
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            const Ledger& ledger = this->mWebMiner->getHighConfidenceLedger ();
+            const Ledger& ledger = this->mWebMiner->getLedger ();
 
             shared_ptr < const Block > block = ledger.getBlock ( height );
             if ( block ) {

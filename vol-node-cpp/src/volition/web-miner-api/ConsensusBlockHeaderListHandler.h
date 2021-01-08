@@ -31,7 +31,7 @@ public:
         try {
         
             ScopedMinerLock scopedLock ( this->mWebMiner );
-            BlockTreeCursor cursor = this->mWebMiner->getWorkingLedgerTag ();
+            BlockTreeCursor cursor = this->mWebMiner->getLedgerTag ();
                         
             size_t top = this->optQuery ( "height", cursor.getHeight ()) + 1; // this handles "forward" and "backward" cases alike
             size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;

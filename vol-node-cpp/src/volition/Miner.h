@@ -144,18 +144,8 @@ protected:
     
     // the "working" legder is a "complete" chain (in that all blocks are accounted for),
     // but still likely to revert if a superior branch is discovered.
-    shared_ptr < Ledger >                           mWorkingLedger;
-    BlockTreeTag                                    mWorkingLedgerTag;
-    
-    // the "permanent" ledger and is chosen by heurestic and represents a minimum reversion
-    // point, i.e. the earliest block the miner will revert to, even if presented a superior
-    // chain. the idea is that if at some point in time a majority of responding nodes
-    // agree on a chain, those nodes should not later "change their minds" and favor some
-    // other chain. of course, until a majority of the miners agrees, the usual chain
-    // selection heuristic is used. also, a "permanent" ledger should only be selected
-    // once all responding miners have been identified and polled.
-    Ledger                                          mPermanentLedger;
-    BlockTreeTag                                    mPermanentLedgerTag;
+    shared_ptr < Ledger >                           mLedger;
+    BlockTreeTag                                    mLedgerTag;
     
     // the "provisional" branch may not be complete and may end with a "provisional"
     // block header. the "best" provisional branch is the branch the miner is working
@@ -192,7 +182,6 @@ protected:
     void                                updateBestBranch            ( time_t now );
     void                                updateBlockSearches         ();
     void                                updateHeaderSearches        ();
-    void                                updatePermanentTag          ();
     void                                updateRemoteMiners          ();
 
     //----------------------------------------------------------------//
@@ -211,13 +200,12 @@ public:
     
     GET ( BlockTreeCursor,                                  BestProvisional,            mBestBranchTag.getCursor ())
     GET ( const AbstractBlockTree&,                         BlockTree,                  *mBlockTree )
-    GET ( const Ledger&,                                    HighConfidenceLedger,       mPermanentLedger )
+    GET ( const Ledger&,                                    Ledger,                     *mLedger )
+    GET ( BlockTreeCursor,                                  LedgerTag,                  mLedgerTag.getCursor ())
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                           Reward,                     mConfig.mReward )
     GET ( time_t,                                           StartTime,                  mStartTime )
     GET ( const Signature&,                                 Visage,                     mVisage )
-    GET ( const Ledger&,                                    WorkingLedger,              *mWorkingLedger )
-    GET ( BlockTreeCursor,                                  WorkingLedgerTag,           mWorkingLedgerTag.getCursor ())
     
     SET ( shared_ptr < AbstractMiningMessenger >,           Messenger,                  mMessenger )
     
@@ -227,7 +215,7 @@ public:
     GET_SET ( string,                                       MinerID,                    mMinerID )
     GET_SET ( string,                                       Motto,                      mMotto )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
-    GET_SET ( kRewriteMode,                 RewriteMode,                mRewriteMode)
+    GET_SET ( kRewriteMode,                                 RewriteMode,                mRewriteMode)
     GET_SET ( string,                                       URL,                        mURL )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     
@@ -247,9 +235,8 @@ public:
     void                                extend                      ( time_t now );
     const set < string >&               getActiveMinerURLs          () const;
     size_t                              getChainSize                () const;
-    Ledger&                             getHighConfidenceLedger     ();
+    Ledger&                             getLedger                   ();
     TransactionStatus                   getTransactionStatus        ( string accountName, string uuid ) const;
-    Ledger&                             getWorkingLedger            ();
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
     static shared_ptr < Block >         loadGenesisLedger           ( string genesisFile );
