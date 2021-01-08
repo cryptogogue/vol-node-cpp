@@ -574,10 +574,7 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     
     BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
     assert ( node.hasHeader ());
-        
-    if ( this->mWorkingLedgerTag.equals ( this->mBestBranchTag )) {
-        this->mBlockTree->tag ( this->mBestBranchTag, node );
-    }
+    
     this->mBlockTree->tag ( this->mWorkingLedgerTag, node );
 }
 

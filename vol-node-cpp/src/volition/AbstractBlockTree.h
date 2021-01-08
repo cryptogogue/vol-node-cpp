@@ -32,7 +32,6 @@ public:
     //----------------------------------------------------------------//
     size_t          getFullLength           () const;
     size_t          getRewriteDefeatCount   () const;
-    size_t          getSegLength            () const;
     Iterator        pushFront               ( const BlockTreeCursor& cursor );
 };
 

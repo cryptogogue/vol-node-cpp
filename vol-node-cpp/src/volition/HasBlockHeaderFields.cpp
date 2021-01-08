@@ -46,8 +46,6 @@ int HasBlockHeaderFields::compare ( const HasBlockHeaderFields& block0, const Ha
 
     assert ( fields0.mHeight == fields1.mHeight );
 
-    if ( block0.equals ( block1 )) return 0;
-
     return HasBlockHeaderFields::compare ( fields0.mCharm, fields1.mCharm );
 }
 
