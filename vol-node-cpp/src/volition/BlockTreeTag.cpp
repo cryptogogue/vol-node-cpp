@@ -23,8 +23,8 @@ BlockTreeTag::BlockTreeTag () :
 
 //----------------------------------------------------------------//
 BlockTreeTag::BlockTreeTag ( string name ) :
-    mName ( name ),
-    mTree ( NULL ) {
+    mTree ( NULL ),
+    mName ( name ) {
 }
 
 //----------------------------------------------------------------//

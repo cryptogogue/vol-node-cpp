@@ -38,7 +38,6 @@ InMemoryBlockTreeNode::InMemoryBlockTreeNode ( InMemoryBlockTree& tree, shared_p
     assert ( header );
     this->mTree     = &tree;
     this->mHeader   = header;
-    this->mStatus   =
     this->mStatus   = kBlockTreeEntryStatus::STATUS_NEW;
     this->mMeta     = isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE;
 }

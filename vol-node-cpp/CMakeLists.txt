@@ -42,6 +42,7 @@ target_include_directories ( volition-lib PRIVATE ${VOLITION_INCLUDES} )
 target_sources ( volition-lib
     PRIVATE
         src/volition/AbstractAPIRequestHandler.cpp
+        src/volition/AbstractBlockTree.cpp
         src/volition/AbstractControlCommandBody.cpp
         src/volition/AbstractCryptoKey.cpp
         src/volition/AbstractEntitlement.cpp
@@ -51,7 +52,9 @@ target_sources ( volition-lib
         src/volition/AssetMethod.cpp
         src/volition/Block.cpp
         src/volition/BlockHeader.cpp
-        src/volition/BlockTree.cpp
+        src/volition/BlockHeaderFields.cpp
+        src/volition/BlockTreeCursor.cpp
+        src/volition/BlockTreeTag.cpp
         src/volition/ControlCommand.cpp
         src/volition/CryptoKeyInfo.cpp
         src/volition/CryptoKeyPair.cpp
@@ -59,7 +62,10 @@ target_sources ( volition-lib
         src/volition/EntitlementFactory.cpp
         src/volition/FileSys.cpp
         src/volition/Format.cpp
+        src/volition/HasBlockHeaderFields.cpp
         src/volition/HTTPMiningMessenger.cpp
+        src/volition/InMemoryBlockTree.cpp
+        src/volition/InMemoryBlockTreeNode.cpp
         src/volition/InventoryLogEntry.cpp
         src/volition/Ledger_Account.cpp
         src/volition/Ledger_Dump.cpp
@@ -74,11 +80,10 @@ target_sources ( volition-lib
         src/volition/MinerLaunchTests.cpp
         src/volition/Munge.cpp
         src/volition/PathEntitlement.cpp
+        src/volition/RemoteMiner.cpp
         src/volition/Schema.cpp
         src/volition/Signature.cpp
-        src/volition/SimpleChainRecorder.cpp
-        src/volition/SQLite.cpp
-        src/volition/SQLiteChainRecorder.cpp
+        src/volition/SQLiteBlockTree.cpp
         src/volition/SquapFactory.cpp
         src/volition/TheControlCommandBodyFactory.cpp
         src/volition/TheTransactionBodyFactory.cpp
@@ -89,7 +94,7 @@ target_sources ( volition-lib
         src/volition/TransactionResult.cpp
         src/volition/simulation/Analysis.cpp
         src/volition/simulation/SimMiner.cpp
-        src/volition/simulation/SimMiningMessenger.cpp
+        src/volition/simulation/SimMiningNetwork.cpp
         src/volition/simulation/Simulator.cpp
         src/volition/simulation/SimulatorActivity.cpp
         src/volition/transactions/LoadLedger.cpp

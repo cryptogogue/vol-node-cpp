@@ -41,8 +41,6 @@ public:
 class BlockTreeFork {
 public:
 
-    friend class BlockTreeFork;
-
     BlockTreeSegment::Iterator      mRoot;
     BlockTreeSegment                mSeg0;
     BlockTreeSegment                mSeg1;
