@@ -15,8 +15,7 @@ class AbstractBlockTree;
 //================================================================//
 // BlockTreeTag
 //================================================================//
-class BlockTreeTag :
-    public HasBlockHeaderFields {
+class BlockTreeTag {
 private:
 
     friend class AbstractBlockTree;
@@ -35,9 +34,6 @@ private:
         assert ( false );
         return *this;
     }
-    
-    //----------------------------------------------------------------//
-    const BlockHeaderFields&    HasBlockHeader_getFields        () const override;
 
 public:
 

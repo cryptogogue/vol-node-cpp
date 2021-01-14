@@ -169,6 +169,7 @@ protected:
     void                                affirmBranchSearch          ( BlockTreeCursor cursor );
     void                                affirmMessenger             ();
     double                              checkConsensus              ( BlockTreeCursor tag ) const;
+    bool                                checkTags                   () const;
     void                                composeChain                ();
     void                                composeChainRecurse         ( BlockTreeCursor branch );
     void                                discoverMiners              ();

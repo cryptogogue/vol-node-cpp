@@ -50,9 +50,9 @@ bool BlockSearch::step ( Miner& miner ) {
     
         remoteMinerIt = remoteMiners.begin ();
         advance ( remoteMinerIt, ( long )( UnsecureRandom::get ().random ( 0, remoteMiners.size () - 1 )));
+        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         remoteMiners.erase ( remoteMinerIt );
         
-        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         this->mActiveMiners.insert ( remoteMiner->getMinerID ());
         miner.mMessenger->enqueueBlockRequest (
             remoteMiner->mURL,
@@ -170,42 +170,65 @@ double Miner::checkConsensus ( BlockTreeCursor tag ) const {
 }
 
 //----------------------------------------------------------------//
+bool Miner::checkTags () const {
+
+    #ifdef DEBUG
+        BlockTreeCursor ledgerCursor = *this->mLedgerTag;
+        shared_ptr < const Block > ledgerBlock = this->mLedger->getBlock ();
+        return ledgerBlock->equals ( ledgerCursor );
+    #else
+        return true;
+    #endif
+}
+
+//----------------------------------------------------------------//
 void Miner::composeChain () {
+
+    assert ( this->checkTags ());
 
     // TODO: gather transactions if rewinding chain
 
     if ( this->mLedgerTag.equals ( this->mBestBranchTag )) return;
 
+    BlockTreeCursor bestCursor = this->mBestBranchTag.getCursor ();
+    BlockTreeCursor ledgerCursor = this->mLedgerTag.getCursor ();
+
     // check to see if chain tag is *behind* best branch
-    if (( *this->mBestBranchTag ).isAncestorOf ( *this->mLedgerTag )) {
-        this->mLedger->reset ( this->mBestBranchTag.getHeight () + 1 );
+    if ( bestCursor.isAncestorOf ( ledgerCursor )) {
+        this->mLedger->revertAndClear ( bestCursor.getHeight () + 1 );
         this->mBlockTree->tag ( this->mLedgerTag, this->mBestBranchTag );
         return;
     }
 
     // if chain is divergent from best branch, re-root it
-    if ( !( *this->mLedgerTag ).isAncestorOf ( *this->mBestBranchTag )) {
+    if ( !ledgerCursor.isAncestorOf ( bestCursor )) {
         
         // REWIND chain to point of divergence
-        BlockTreeCursor root = BlockTreeCursor::findRoot ( *this->mLedgerTag, *this->mBestBranchTag );
+        BlockTreeCursor root = BlockTreeCursor::findRoot ( ledgerCursor, bestCursor );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
         assert ( root.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ));  // guaranteed -> was in chain
         
-        this->mLedger->reset ( root.getHeight () + 1 );
+        this->mLedger->revertAndClear ( root.getHeight () + 1 );
         this->mBlockTree->tag ( this->mLedgerTag, root );
+        ledgerCursor = this->mLedgerTag.getCursor ();
     }
-    assert (( *this->mLedgerTag ).isAncestorOf ( *this->mBestBranchTag ));
     
-    this->composeChainRecurse ( *this->mBestBranchTag );
+    assert ( ledgerCursor.isAncestorOf ( bestCursor ));
+    
+    this->composeChainRecurse ( bestCursor );
+    
+    assert ( this->checkTags ());
 }
 
 //----------------------------------------------------------------//
 void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 
-    if (( *this->mLedgerTag ).equals ( branch )) return; // nothing to do
+    BlockTreeCursor ledgerCursor = this->mLedgerTag.getCursor ();
+
+    if ( ledgerCursor.equals ( branch )) return; // nothing to do
     
     BlockTreeCursor parent = branch.getParent ();
-    if ( !parent.equals ( *this->mLedgerTag )) {
+    if ( !parent.equals ( ledgerCursor )) {
         this->composeChainRecurse ( parent );
     }
     
@@ -262,19 +285,27 @@ void Miner::discoverMiners () {
 //----------------------------------------------------------------//
 void Miner::extend ( time_t now ) {
     
+    // we can only extend the chain if we've already appended a provisional block.
+    // the provisional block is just an empty header, but with a valid charm.
+    
     BlockTreeCursor provisional = *this->mBestBranchTag;
     if ( !provisional.hasHeader () || provisional.isComplete ()) return;
     if ( provisional.getMinerID () != this->mMinerID ) return;
+    
+    // parent must be complete. also, wait for 50% consensus (among
+    // visible miners) before extending so as to not waste effort racing ahead.
     
     BlockTreeCursor parent = provisional.getParent ();
     if ( !( parent.hasHeader () && parent.isComplete ())) return;
     if ( this->checkConsensus ( parent ) <= 0.5 ) return;
 
     assert (( *this->mLedgerTag ).equals ( parent ));
+    assert ( this->checkTags ());
 
     shared_ptr < Block > block = this->prepareBlock ( now );
     if ( block ) {
         
+        assert ( block->getHeight () == provisional.getHeight ());
         assert ( block->getCharm () == provisional.getCharm ());
         
 //        this->mBestProvisional = parent;
@@ -301,7 +332,8 @@ const set < string >& Miner::getActiveMinerURLs () const {
 //----------------------------------------------------------------//
 size_t Miner::getChainSize () const {
 
-    return this->mLedgerTag.hasCursor () ? ( this->mLedgerTag.getHeight () + 1 ) : 0;
+//    return this->mLedgerTag.hasCursor () ? ( this->mLedgerTag.getHeight () + 1 ) : 0;
+    return this->mLedger->countBlocks ();
 }
 
 //----------------------------------------------------------------//
@@ -469,16 +501,17 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     Poco::Path basePath ( path );
     basePath.makeAbsolute ();
     path = basePath.toString ();
-    mkdir ( path.c_str (), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
+
+    Poco::File directory ( path );
+    directory.createDirectories ();
 
     string hash = block->getDigest ().toHex ();
     this->mLedgerFilename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
     this->mConfigFilename = Format::write ( "%s/%s-config.json", path.c_str (), hash.c_str ());
     this->mBlocksFilename = Format::write ( "%s/%s-blocks.db", path.c_str (), hash.c_str ());
     
-    shared_ptr < SQLiteBlockTree > blockTree = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
-    
-    this->mPersistenceProvider = make_shared < SQLiteStringStore >( this->mLedgerFilename );
+    this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
+    this->mPersistenceProvider  = make_shared < SQLiteStringStore >( this->mLedgerFilename );
     
     shared_ptr < Ledger > ledger = make_shared < Ledger >();
     ledger->takeSnapshot ( this->mPersistenceProvider, "master" );
@@ -492,6 +525,7 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     }
     
     this->setGenesis ( block );
+    this->saveChain ();
     
     if ( FileSys::exists ( this->mConfigFilename )) {
         FromJSONSerializer::fromJSONFile ( this->mConfig, this->mConfigFilename );
@@ -558,19 +592,21 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     bool result = this->mLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
     
-    BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
+    BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mLedgerTag, block );
     assert ( node.hasHeader ());
     
-    this->mBlockTree->tag ( this->mLedgerTag, node );
+    this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
 }
 
 //----------------------------------------------------------------//
 void Miner::report () const {
 
+    BlockTreeCursor ledgerCursor = *this->mBestBranchTag;
+
     switch ( this->mReportMode ) {
     
         case REPORT_BEST_BRANCH: {
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )this->mLedgerTag.getHeight (), ( *this->mLedgerTag ).writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
             break;
         }
         
@@ -580,19 +616,21 @@ void Miner::report () const {
             for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
             
                 const RemoteMiner& remoteMiner = *remoteMinerIt->second;
+                BlockTreeCursor remoteCursor = *remoteMiner.mTag;
+                
                 if ( remoteMiner.mTag.hasCursor ()) {
                     LGN_LOG ( VOL_FILTER_ROOT, INFO,
                         "%s - %d: %s",
                         remoteMiner.getMinerID ().c_str (),
-                        ( int )remoteMiner.mTag.getHeight (),
-                        ( *remoteMiner.mTag ).writeBranch ().c_str ()
+                        ( int )remoteCursor.getHeight (),
+                        remoteCursor.writeBranch ().c_str ()
                     );
                 }
                 else {
                     LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: MISSING TAG", remoteMiner.getMinerID ().c_str ());
                 }
             }
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )( *this->mLedgerTag ).getHeight (), ( *this->mLedgerTag ).writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
             break;
         }
@@ -607,7 +645,7 @@ void Miner::report () const {
 void Miner::reset () {
 
     this->TransactionQueue::reset ();
-    this->mLedger->reset ( 1 );
+    this->mLedger->revertAndClear ( 1 );
     this->mLedger->clearSchemaCache ();
     this->Miner_reset ();
 }
@@ -634,7 +672,9 @@ set < string > Miner::sampleActiveMinerURLs ( size_t sampleSize ) const {
 void Miner::saveChain () {
 
     if ( this->mLedger && this->mPersistenceProvider ) {
+        assert ( this->checkTags ());
         this->mLedger->persist ( this->mPersistenceProvider, "master" );
+        assert ( this->checkTags ());
     }
 }
 
@@ -728,6 +768,7 @@ void Miner::step ( time_t now ) {
     
     // fill the provisional block (if any)
     this->extend ( now );
+    this->saveChain ();
     
     this->pruneTransactions ();
     
@@ -741,10 +782,12 @@ void Miner::step ( time_t now ) {
 //----------------------------------------------------------------//
 void Miner::updateBestBranch ( time_t now ) {
 
+    assert ( this->checkTags ());
+
     // update the current best branch, excluding missing or invalid blocks.
     // this may append an additional provisional header if branch is complete.
     
-    this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalid (), now );
+    BlockTreeCursor bestCursor = this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalid (), now );
 
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
@@ -752,17 +795,19 @@ void Miner::updateBestBranch ( time_t now ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         if ( !remoteMiner->mTag.hasCursor ()) continue;
         
-        this->mBlockTree->tag ( remoteMiner->mImproved, this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalid (), now ));
-        if (( *remoteMiner->mImproved ).isMissing ()) continue;
+        BlockTreeCursor remoteImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalid (), now );
+        if ( remoteImproved.isMissing ()) continue;
         
-        assert ( !( *remoteMiner->mImproved ).isMissingOrInvalid ());
+        assert ( !remoteImproved.isMissingOrInvalid ());
         
-        if ( BlockTreeCursor::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
-            this->mBlockTree->tag ( this->mBestBranchTag, *remoteMiner->mImproved );
+        if ( BlockTreeCursor::compare ( remoteImproved, bestCursor, this->mRewriteMode ) < 0 ) {
+            bestCursor = this->mBlockTree->tag ( this->mBestBranchTag, remoteImproved );
         }
     }
-    assert ( this->mBestBranchTag.hasCursor ());
-    assert ( !( *this->mBestBranchTag ).isMissingOrInvalid ());
+    assert ( bestCursor.hasHeader ());
+    assert ( !bestCursor.isMissingOrInvalid ());
+    
+    assert ( this->checkTags ());
 }
 
 //----------------------------------------------------------------//

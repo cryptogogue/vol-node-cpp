@@ -30,8 +30,8 @@ public:
     Iterator        mTop;
     
     //----------------------------------------------------------------//
-    size_t          getFullLength           () const;
-    size_t          getRewriteDefeatCount   () const;
+    size_t          getFullLength           ( const Iterator& root ) const;
+    size_t          getRewriteDefeatCount   ( const Iterator& root ) const;
     Iterator        pushFront               ( const BlockTreeCursor& cursor );
 };
 
@@ -59,6 +59,7 @@ protected:
 
     friend class BlockTreeCursor;
     friend class BlockTreeTag;
+    friend class DebugBlockTree;
 
     //----------------------------------------------------------------//
     BlockTreeCursor             affirm                  ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false );
@@ -67,7 +68,6 @@ protected:
 
     //----------------------------------------------------------------//
     virtual BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) = 0;
-    virtual kBlockTreeAppendResult      AbstractBlockTree_checkAppend               ( const BlockHeader& header ) const = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const = 0;
     virtual shared_ptr < const Block >  AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const = 0;

@@ -109,14 +109,14 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
             height              = ( size_t )stmt.getValue < int >( 0 );
             prevStatus          = SQLiteBlockTree::stringToStatus ( stmt.getValue < string >( 1 ));
             prevParentStatus    = SQLiteBlockTree::stringToStatus ( stmt.getValue < string >( 2 ));
-            hasBlock            = stmt.getValue < int >( 0 ) != 0;
+            hasBlock            = stmt.getValue < int >( 3 ) != 0;
             exists              = true;
         }
     );
     assert ( result );
 
-    // if we couldn't find it, or we did find it and the status matches what we want to set, we can bail.
-    if ( !exists || ( status == prevParentStatus )) return;
+    // if we couldn't find it, or we did find it and the status already matches what we want to set, we can bail.
+    if ( !exists || ( status == prevStatus )) return;
 
     // if we're setting the status to complete, then there has to be a block and the parent status also has to be complete.
     if ( status == STATUS_COMPLETE ) {
@@ -372,7 +372,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
         // insert node
         SQLiteResult result = this->mDB.exec (
             
-            "INSERT INTO nodes ( parentID, hash, height, header, block, status, parentStatus, meta ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8 )",
+            "INSERT INTO nodes ( parentID, hash, height, header, block, status, parentStatus, meta, hasBlock ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9 )",
             
             //--------------------------------//
             [ & ]( SQLiteStatement stmt ) {
@@ -385,6 +385,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
                 stmt.bind ( 6,      SQLiteBlockTree::stringFromStatus ( status ));
                 stmt.bind ( 7,      SQLiteBlockTree::stringFromStatus ( parentStatus ));
                 stmt.bind ( 8,      SQLiteBlockTree::stringFromMeta ( isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE ));
+                stmt.bind ( 9,      block ? 1 : 0 );
             }
         );
         assert ( result );
@@ -398,15 +399,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
 }
 
 //----------------------------------------------------------------//
-kBlockTreeAppendResult SQLiteBlockTree::AbstractBlockTree_checkAppend ( const BlockHeader& header ) const {
-     UNUSED ( header );
-
-    return APPEND_OK;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string hash ) const {
-    UNUSED ( hash );
 
     BlockTreeCursor cursor;
 

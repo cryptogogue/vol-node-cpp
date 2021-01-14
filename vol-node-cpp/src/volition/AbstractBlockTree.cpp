@@ -11,16 +11,19 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getFullLength () const {
+size_t BlockTreeSegment::getFullLength ( const Iterator& root ) const {
 
-    return ( this->mTop->getHeight () - this->mHead->getHeight ());
+    return ( this->mTop->getHeight () - root->getHeight ());
 }
 
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getRewriteDefeatCount () const {
+size_t BlockTreeSegment::getRewriteDefeatCount ( const Iterator& root ) const {
 
     time_t window = this->mHead->getRewriteWindow (); // TODO: account for different rewrite windows in segment
-    return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window );
+    size_t max = ( size_t )ceil ( difftime ( this->mTop->getTime (), root->getTime ()) / window );
+    size_t length = this->getFullLength ( root );
+    
+    return length < max ? length : max;
 }
 
 //----------------------------------------------------------------//
@@ -91,7 +94,17 @@ AbstractBlockTree::~AbstractBlockTree () {
 //----------------------------------------------------------------//
 kBlockTreeAppendResult AbstractBlockTree::checkAppend ( const BlockHeader& header ) const {
 
-    return this->AbstractBlockTree_checkAppend ( header );
+    string hash = header.getDigest ().toHex ();
+
+    BlockTreeCursor cursor = this->findCursorForHash ( hash );
+    if ( cursor.hasHeader ()) return ALREADY_EXISTS;
+
+    BlockTreeCursor prevCursor = this->findCursorForHash ( header.getPrevDigest ());
+
+    if ( !prevCursor.hasHeader ()) return MISSING_PARENT;
+    if ( header.getTime () < prevCursor.getNextTime ()) return TOO_SOON;
+
+    return APPEND_OK;
 }
 
 //----------------------------------------------------------------//
@@ -133,19 +146,22 @@ int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTree
     BlockTreeFork fork;
     this->findFork ( fork, cursor0, cursor1 );
 
-    size_t fullLength0  = fork.mSeg0.getFullLength ();
-    size_t fullLength1  = fork.mSeg1.getFullLength ();
+    size_t fullLength0  = fork.mSeg0.getFullLength ( fork.mRoot );
+    size_t fullLength1  = fork.mSeg1.getFullLength ( fork.mRoot );
     size_t segLength    = fork.getSegLength (); // length of the comparison segment
 
     if ( rewriteMode == kRewriteMode::REWRITE_WINDOW ) {
         
-        // if the segment shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
-        if (( segLength < fullLength0 ) && ( segLength < fork.mSeg0.getRewriteDefeatCount ())) return -1;
-        if (( segLength < fullLength1 ) && ( segLength < fork.mSeg1.getRewriteDefeatCount ())) return 1;
+        // if the segment is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
+        if (( segLength < fullLength0 ) && ( segLength < fork.mSeg0.getRewriteDefeatCount ( fork.mRoot ))) return -1;
+        if (( segLength < fullLength1 ) && ( segLength < fork.mSeg1.getRewriteDefeatCount ( fork.mRoot ))) return 1;
     }
 
-    BlockTreeSegment::Iterator cursorIt0 = fork.mSeg0.mHead;
-    BlockTreeSegment::Iterator cursorIt1 = fork.mSeg1.mHead;
+    BlockTreeSegment::Iterator cursorIt0 = fork.mSeg0.mTail;
+    BlockTreeSegment::Iterator cursorIt1 = fork.mSeg1.mTail;
+
+    int tieBreaker = 0;
+    int score = 0;
 
     for ( size_t i = 0; i < segLength; ++i ) {
     
@@ -156,14 +172,14 @@ int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTree
         assert ( cusor1.getDigest ());
         assert ( cusor0.getDigest () != cusor1.getDigest ());
     
-        int score = BlockHeader::compare ( *cursorIt0->mHeader, *cursorIt1->mHeader );
+        tieBreaker = BlockHeader::compare ( *cursorIt0->mHeader, *cursorIt1->mHeader );
+        score += tieBreaker;
         
-        if ( score != 0 ) return score;
-        
-        ++cursorIt0;
-        ++cursorIt1;
+        --cursorIt0;
+        --cursorIt1;
     }
-    return 0;
+    
+    return score == 0 ? tieBreaker : ( score < 0 ? -1 : 1 );
 }
 
 //----------------------------------------------------------------//

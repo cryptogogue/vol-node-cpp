@@ -109,10 +109,7 @@ private:
 public:
 
     static constexpr const u64 DEFAULT_BLOCK_SIZE_IN_POINTS             = 1024;     // not enforced for genesis block
-//    static constexpr const u64 DEFAULT_BLOCK_DELAY_IN_SECONDS           = 30;       // 0.5 min
-//    static constexpr const u64 DEFAULT_REWRITE_WINDOW_IN_SECONDS        = 600;      // 10 min
-
-    static constexpr const u64 DEFAULT_BLOCK_DELAY_IN_SECONDS           = 1;       // 0.5 min
+    static constexpr const u64 DEFAULT_BLOCK_DELAY_IN_SECONDS           = 30;       // 0.5 min
     static constexpr const u64 DEFAULT_REWRITE_WINDOW_IN_SECONDS        = 600;      // 10 min
 
     //----------------------------------------------------------------//

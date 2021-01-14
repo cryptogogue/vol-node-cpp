@@ -1,7 +1,7 @@
 {
     "height" : 0,
     "time" : "1970-01-01T00:00:00UTC",
-    "blockDelay": 3,
+    "blockDelay": 30,
     "rewriteWindow": 600,
     "transactions" : [
         {

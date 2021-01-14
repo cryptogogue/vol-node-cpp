@@ -214,13 +214,13 @@ protected:
             minerActivity->setGenesis ( genesisBlock );
         }
         
-        if ( minerActivity->getHighConfidenceLedger ().countBlocks () == 0 ) {
+        if ( minerActivity->getLedger ().countBlocks () == 0 ) {
             LOG_F ( INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
             return Application::EXIT_CONFIG;
         }
         
         if ( dump.size ()) {
-            minerActivity->getHighConfidenceLedger ().dump ( dump );
+            minerActivity->getLedger ().dump ( dump );
             return Application::EXIT_OK;
         }
         

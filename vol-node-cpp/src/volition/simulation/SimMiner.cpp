@@ -71,8 +71,12 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
 //----------------------------------------------------------------//
 void SimMiner::rewindChain ( size_t height ) {
 
-    while ( this->mBestBranchTag.getHeight () > height ) {
-        this->mBlockTree->tag ( this->mBestBranchTag, ( *this->mBestBranchTag ).getParent ());
+    BlockTreeCursor bestCursor = this->mBestBranchTag.getCursor ();
+    if ( !bestCursor.hasHeader ()) return;
+
+    while ( bestCursor.getHeight () > height ) {
+        bestCursor = bestCursor.getParent ();
+        this->mBlockTree->tag ( this->mBestBranchTag, bestCursor );
     }
     this->composeChain ();
 }
@@ -104,22 +108,22 @@ void SimMiner::setCharm ( size_t height, string charmHex ) {
 //----------------------------------------------------------------//
 void SimMiner::scrambleRemotes () {
 
-    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
-        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-                
-        size_t height = remoteMiner->mTag.getHeight ();
-        height = ( size_t )floor ( height * UnsecureRandom::get ().random ());
-        
-        BlockTreeCursor cursor = *remoteMiner->mTag;
-        while ( cursor.getHeight () > height ) {
-            cursor = cursor.getParent ();
-        }
-        
-        this->mBlockTree->tag ( remoteMiner->mTag, cursor );
-        remoteMiner->mHeight = height + 1;
-        remoteMiner->mForward = true;
-    }
+//    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
+//    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+//        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+//                
+//        size_t height = remoteMiner->mTag.getHeight ();
+//        height = ( size_t )floor ( height * UnsecureRandom::get ().random ());
+//        
+//        BlockTreeCursor cursor = *remoteMiner->mTag;
+//        while ( cursor.getHeight () > height ) {
+//            cursor = cursor.getParent ();
+//        }
+//        
+//        this->mBlockTree->tag ( remoteMiner->mTag, cursor );
+//        remoteMiner->mHeight = height + 1;
+//        remoteMiner->mForward = true;
+//    }
 }
 
 //----------------------------------------------------------------//

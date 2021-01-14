@@ -73,14 +73,4 @@ void BlockTreeTag::reset () {
     this->mTree = NULL;
 }
 
-//================================================================//
-// virtual
-//================================================================//
-
-//----------------------------------------------------------------//
-const BlockHeaderFields& BlockTreeTag::HasBlockHeader_getFields () const {
-
-    return this->getCursor ().getFields ();
-}
-
 } // namespace Volition

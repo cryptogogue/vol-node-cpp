@@ -120,28 +120,6 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag,
 }
 
 //----------------------------------------------------------------//
-kBlockTreeAppendResult InMemoryBlockTree::AbstractBlockTree_checkAppend ( const BlockHeader& header ) const {
-
-    if ( header.getHeight () < this->mRoot->getHeight ()) return REFUSED;
-
-    string hash = header.getDigest ().toHex ();
-
-    InMemoryBlockTreeNode::ConstPtr node = this->findNodeForHash ( hash );
-    if ( node ) return ALREADY_EXISTS;
-
-    if ( !node ) {
-
-        string prevHash = header.getPrevDigest ();
-        InMemoryBlockTreeNode::ConstPtr prevNode = this->findNodeForHash ( prevHash );
-
-        if ( !prevNode ) return MISSING_PARENT;
-        if ( prevNode->mMeta == kBlockTreeEntryMeta::META_REFUSED ) return REFUSED;
-        if ( header.getTime () < prevNode->getNextTime ()) return TOO_SOON;
-    }
-    return APPEND_OK;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForHash ( string hash ) const {
 
     map < string, InMemoryBlockTreeNode* >::const_iterator nodeIt = this->mNodes.find ( hash );

@@ -165,11 +165,13 @@ bool BlockTreeCursor::isRefused () const {
 }
 
 //----------------------------------------------------------------//
-void BlockTreeCursor::logBranchRecurse ( string& str ) const {
+void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
+
+    if ( !maxDepth ) return;
 
     BlockTreeCursor parent = this->getParent ();
     if ( parent.hasHeader ()) {
-        parent.logBranchRecurse ( str );
+        parent.logBranchRecurse ( str, maxDepth - 1 );
     }
     const BlockHeader& header = *this->mHeader;
     
@@ -250,10 +252,10 @@ BlockTreeCursor BlockTreeCursor::trimMissingOrInvalid () const {
 }
 
 //----------------------------------------------------------------//
-string BlockTreeCursor::writeBranch () const {
+string BlockTreeCursor::writeBranch ( size_t maxDepth ) const {
 
     string str;
-    this->logBranchRecurse ( str );
+    this->logBranchRecurse ( str, maxDepth );
     return str;
 }
 

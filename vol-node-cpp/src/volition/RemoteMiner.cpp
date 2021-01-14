@@ -51,7 +51,7 @@ void RemoteMiner::setError ( string message ) {
 void RemoteMiner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
-    this->mTag.setName ( Format::write ( "~%s'", minerID.c_str ()));
+    this->mTag.setName ( Format::write ( "%s'", minerID.c_str ()));
     this->mImproved.setName ( Format::write ( "~%s'", minerID.c_str ()));
 }
 
@@ -95,9 +95,10 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
         }
     }
     
-    if ( this->mTag.hasCursor ()) {
+    BlockTreeCursor bestCursor = this->mTag.getCursor ();
+    if ( bestCursor.hasHeader ()) {
         // nothing in the queue, so get the next batch of blocks.
-        this->mHeight = this->mTag.getHeight () + 1; // this doesn't really matter.
+        this->mHeight = bestCursor.getHeight () + 1; // this doesn't really matter.
         this->mForward = true;
     }
 }
