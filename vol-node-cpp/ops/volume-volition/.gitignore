@@ -1,0 +1,6 @@
+genesis.json
+/keys/
+/log/
+/persist-chain/
+valgrind.out
+volition.ini

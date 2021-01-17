@@ -1,0 +1,26 @@
+#!/bin/bash
+
+version: '3.5'
+
+services:
+
+    mysql:
+        container_name: ${VOLITION_CONTAINER_NAME}-valgrind
+        image: $VOLITION_IMAGE_NAME
+        entrypoint: [
+            "valgrind",
+            "--leak-check=yes",
+            "--log-file=/var/lib/volition/valgrind.out",
+            "volition",
+            "-c",
+            "/var/lib/volition/volition.ini"
+        ]
+        ports:
+            - 9090:9090
+        volumes:
+            - ../volume-volition:/var/lib/volition
+
+networks:
+    default:
+        name: fallguy
+        driver: bridge

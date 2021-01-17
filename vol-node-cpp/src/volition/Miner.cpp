@@ -241,35 +241,55 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 //----------------------------------------------------------------//
 void Miner::discoverMiners () {
 
-    // get miner list from ledger
+    // get miner URL list from ledger
     set < string > miners = this->getLedger ().getMiners ();
     set < string >::iterator minerIt = miners.begin ();
     for ( ; minerIt != miners.end (); ++minerIt ) {
         
         string minerID = *minerIt;
-        
-        if ( minerID != this->mMinerID ) {
-                        
-            if ( this->mRemoteMinersByID.find ( minerID ) == this->mRemoteMinersByID.cend ()) {
+        if ( minerID == this->mMinerID ) {
+            if ( this->mURL.size () == 0 ) {
                 AccountODBM minerODBM ( this->getLedger (), *minerIt );
-                string url = minerODBM.mMinerInfo.get ()->getURL ();
-                this->mNewMinerURLs.insert ( url );
+                this->mURL = minerODBM.mMinerInfo.get ()->getURL ();
             }
-            else {
-                shared_ptr < RemoteMiner > remoteMiner = this->mRemoteMinersByID [ minerID ];
-                if ( remoteMiner && ( remoteMiner->mNetworkState != RemoteMiner::STATE_ONLINE )) {
-                    this->mNewMinerURLs.insert ( remoteMiner->mURL );
-                }
+            continue;
+        }
+        
+        if ( this->mRemoteMinersByID.find ( minerID ) == this->mRemoteMinersByID.cend ()) {
+            
+            AccountODBM minerODBM ( this->getLedger (), *minerIt );
+            string url = minerODBM.mMinerInfo.get ()->getURL ();
+            
+            if ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ()) {
+                this->mNewMinerURLs.insert ( url );
             }
         }
     }
     
+    // affirm miners for pending URLs
     while ( this->mNewMinerURLs.size ()) {
+    
         string url = *this->mNewMinerURLs.begin ();
-        if ( url != this->mURL ) {
-            this->mMessenger->enqueueMinerInfoRequest ( *this->mNewMinerURLs.begin ());
+        
+        if (( this->mURL != url ) && ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ())) {
+        
+            shared_ptr < RemoteMiner > remoteMiner = make_shared < RemoteMiner >();
+            remoteMiner->mURL = url;
+            this->mRemoteMinersByURL [ url ] = remoteMiner;
         }
         this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
+    }
+    
+    // fetch miner info (if needed)
+    map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
+    
+        shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt->second;
+        
+        if ( remoteMiner->canFetchInfo ()) {
+            remoteMiner->mIsBusy = true;
+            this->mMessenger->enqueueMinerInfoRequest ( remoteMinerIt->first );
+        }
     }
     
     // poll network for miner URLs
@@ -478,7 +498,8 @@ Miner::Miner () :
     mReportMode ( REPORT_NONE ),
     mRewriteMode ( kRewriteMode::REWRITE_NONE ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
-    mControlLevel ( CONTROL_NONE ) {
+    mControlLevel ( CONTROL_NONE ),
+    mNetworkSearch ( false ) {
     
     this->mLedgerTag.setName ( "working" );
     this->mBestBranchTag.setName ( "best" );
@@ -497,13 +518,8 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     
     assert ( block );
     assert ( this->mLedger == NULL );
-    
-    Poco::Path basePath ( path );
-    basePath.makeAbsolute ();
-    path = basePath.toString ();
 
-    Poco::File directory ( path );
-    directory.createDirectories ();
+    FileSys::createDirectories ( path );
 
     string hash = block->getDigest ().toHex ();
     this->mLedgerFilename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
@@ -511,7 +527,7 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     this->mBlocksFilename = Format::write ( "%s/%s-blocks.db", path.c_str (), hash.c_str ());
     
     this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
-    this->mPersistenceProvider  = make_shared < SQLiteStringStore >( this->mLedgerFilename );
+    this->mPersistenceProvider  = SQLiteStringStore::make ( this->mLedgerFilename );
     
     shared_ptr < Ledger > ledger = make_shared < Ledger >();
     ledger->takeSnapshot ( this->mPersistenceProvider, "master" );
@@ -616,19 +632,25 @@ void Miner::report () const {
             for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
             
                 const RemoteMiner& remoteMiner = *remoteMinerIt->second;
-                BlockTreeCursor remoteCursor = *remoteMiner.mTag;
                 
-                if ( remoteMiner.mTag.hasCursor ()) {
-                    LGN_LOG ( VOL_FILTER_ROOT, INFO,
-                        "%s - %d: %s",
-                        remoteMiner.getMinerID ().c_str (),
-                        ( int )remoteCursor.getHeight (),
-                        remoteCursor.writeBranch ().c_str ()
-                    );
+                if ( remoteMiner.mNetworkState != RemoteMiner::STATE_ONLINE ) {
+                    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: OFFLINE (%s)", remoteMiner.getMinerID ().c_str (), remoteMiner.getURL ().c_str ());
+                    continue;
                 }
-                else {
+                
+                if ( !remoteMiner.mTag.hasCursor ()) {
                     LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: MISSING TAG", remoteMiner.getMinerID ().c_str ());
+                    continue;
                 }
+                
+                BlockTreeCursor remoteCursor = *remoteMiner.mTag;
+            
+                LGN_LOG ( VOL_FILTER_ROOT, INFO,
+                    "%s - %d: %s",
+                    remoteMiner.getMinerID ().c_str (),
+                    ( int )remoteCursor.getHeight (),
+                    remoteCursor.writeBranch ().c_str ()
+                );
             }
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
@@ -847,16 +869,14 @@ void Miner::updateBlockSearches () {
 //----------------------------------------------------------------//
 void Miner::updateHeaderSearches () {
     
-    set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.cbegin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.cend (); ++remoteMinerIt ) {
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
     
-        shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
-        string url = remoteMiner->mURL;
+        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         
-        // constantly refill active set
-        if ( this->mHeaderSearches.find ( url ) == this->mHeaderSearches.end ()) {
-            this->mMessenger->enqueueHeaderRequest ( url, remoteMiner->mHeight, remoteMiner->mForward );
-            this->mHeaderSearches.insert ( url );
+        if ( remoteMiner->canFetchHeaders ()) {
+            remoteMiner->mIsBusy = true;
+            this->mMessenger->enqueueHeaderRequest ( remoteMiner->mURL, remoteMiner->mHeight, remoteMiner->mForward );
         }
     }
 }
@@ -896,12 +916,15 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
     string url                              = response.mRequest.mMinerURL;
     MiningMessengerResponse::Status status  = response.mStatus;
     
-    // TODO: these could be set deliberately as an attack; fix by sending up a nonce
-    if ( url == this->mURL ) return;
-    if ( response.mMinerID == this->mMinerID ) return;
+    // TODO: these could be set deliberately as an attack
+    assert ( url != this->mURL );
+    assert ( response.mMinerID != this->mMinerID );
     
     map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.find ( url );
     shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt != this->mRemoteMinersByURL.cend () ? remoteMinerIt->second : NULL;
+    
+    // TODO: also could be tripped by an attack
+    assert ( remoteMiner );
     
     switch ( request.mRequestType ) {
         
@@ -944,26 +967,17 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
                 remoteMiner->mHeaderQueue [ header->getHeight ()] = header;
             }
             
-            this->mHeaderSearches.erase ( response.mRequest.mMinerURL );
+            remoteMiner->mIsBusy = false;
             break;
         }
         
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
 
             if ( status == MiningMessengerResponse::STATUS_OK ) {
-
-                if ( !remoteMiner ) {
-                    
-                    remoteMiner = make_shared < RemoteMiner >();
-                    remoteMiner->mURL = url;
-                    remoteMiner->setMinerID ( response.mMinerID );
-                    
-                    this->mRemoteMinersByURL [ url ]                    = remoteMiner;
-                    this->mRemoteMinersByID [ remoteMiner->getMinerID ()]   = remoteMiner;
-                }
-
-                assert ( remoteMiner->getMinerID () == response.mMinerID ); // TODO: handle this case
+                remoteMiner->setMinerID ( response.mMinerID );
+                this->mRemoteMinersByID [ remoteMiner->getMinerID ()] = remoteMiner;
             }
+            remoteMiner->mIsBusy = false;
             break;
         }
         
@@ -973,6 +987,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
     }
     
     if ( remoteMiner ) {
+    
         if ( status == MiningMessengerResponse::STATUS_OK ) {
             remoteMiner->mNetworkState = RemoteMiner::STATE_ONLINE;
         }

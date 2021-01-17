@@ -3,7 +3,7 @@ bin/
 bin-back/
 build/
 doxydocs/
-poco/
+/poco/
 ssl/
 persist-chain/
 xcuserdata/

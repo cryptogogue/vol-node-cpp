@@ -14,6 +14,7 @@ RUN apt-get update          \
         openssl             \
         sqlite3             \
         libsqlite3-dev      \
+        vim                 \
         valgrind
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7 \
@@ -63,7 +64,7 @@ RUN curl -s https://packagecloud.io/install/repositories/immortal/immortal/scrip
 COPY . /app
 
 RUN cmake .                 \
-    && make -j4 VERBOSE=1   \
+    && make volition -j4 VERBOSE=1   \
     && make install         \
     && /sbin/ldconfig -v    \
     && cd ..

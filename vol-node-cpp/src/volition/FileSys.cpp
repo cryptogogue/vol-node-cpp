@@ -11,6 +11,17 @@ namespace Volition {
 namespace FileSys {
 
 //----------------------------------------------------------------//
+void createDirectories ( string path ) {
+
+    Poco::Path basePath ( path );
+    basePath.makeAbsolute ();
+    path = basePath.toString ();
+
+    Poco::File directory ( path );
+    directory.createDirectories ();
+}
+
+//----------------------------------------------------------------//
 bool exists ( string path ) {
   struct stat buffer;
   return ( stat ( path.c_str(), &buffer ) == 0 );

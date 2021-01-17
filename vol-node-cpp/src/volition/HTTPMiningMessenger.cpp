@@ -30,8 +30,8 @@ private:
         
             Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
             Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
-//            session.setKeepAlive ( true );
-//            session.setTimeout ( Poco::Timespan ( 1, 0 ));
+            session.setKeepAlive ( true );
+            session.setTimeout ( Poco::Timespan ( 30, 0 ));
             session.sendRequest ( request );
             
             Poco::Net::HTTPResponse response;
@@ -98,7 +98,8 @@ HTTPMiningMessenger::~HTTPMiningMessenger () {
 //----------------------------------------------------------------//
 void HTTPMiningMessenger::onTaskCancelledNotification ( Poco::TaskCancelledNotification* pNf ) {
     
-    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( pNf->task ());
+    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
+    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
     
     if ( task ) {
         const MiningMessengerRequest& request = task->mUserData;
@@ -109,7 +110,8 @@ void HTTPMiningMessenger::onTaskCancelledNotification ( Poco::TaskCancelledNotif
 //----------------------------------------------------------------//
 void HTTPMiningMessenger::onTaskFailedNotification ( Poco::TaskFailedNotification* pNf ) {
         
-    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( pNf->task ());
+    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
+    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
     
     if ( task ) {
         const MiningMessengerRequest& request = task->mUserData;
@@ -120,7 +122,8 @@ void HTTPMiningMessenger::onTaskFailedNotification ( Poco::TaskFailedNotificatio
 //----------------------------------------------------------------//
 void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotification* pNf ) {
 
-    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( pNf->task ());
+    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
+    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
     
     if ( task ) {
         
@@ -206,7 +209,7 @@ void HTTPMiningMessenger::AbstractMiningMessenger_await () {
 
 //----------------------------------------------------------------//
 void HTTPMiningMessenger::AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) {
-    
+        
     string url;
 
     switch ( request.mRequestType ) {
@@ -236,8 +239,7 @@ void HTTPMiningMessenger::AbstractMiningMessenger_sendRequest ( const MiningMess
             break;
     }
 
-    HTTPGetJSONTask < MiningMessengerRequest >* task = new HTTPGetJSONTask < MiningMessengerRequest >( request, url );
-    this->mTaskManager.start ( task );
+    this->mTaskManager.start ( new HTTPGetJSONTask < MiningMessengerRequest >( request, url ));
 }
 
 } // namespace Volition

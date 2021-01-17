@@ -73,7 +73,7 @@ void MinerActivity::Miner_shutdown ( bool kill ) {
         this->stop ();
         
         if ( kill ) {
-            printf ( "REQUESTED WEB MINER SHUTDOWN\n" );
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "REQUESTED WEB MINER SHUTDOWN\n" );
             this->mShutdownEvent.set ();
             Poco::Util::ServerApplication::terminate ();
         }

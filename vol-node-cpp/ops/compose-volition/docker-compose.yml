@@ -1,0 +1,18 @@
+#!/bin/bash
+
+version: '3.5'
+
+services:
+
+    mysql:
+        container_name: $VOLITION_CONTAINER_NAME
+        image: $VOLITION_IMAGE_NAME
+        ports:
+            - 9090:9090
+        volumes:
+            - ../volume-volition:/var/lib/volition
+
+networks:
+    default:
+        name: fallguy
+        driver: bridge

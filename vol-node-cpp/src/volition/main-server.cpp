@@ -20,6 +20,8 @@ class ServerApp :
 public Poco::Util::ServerApplication {
 protected:
 
+    shared_ptr < MinerActivity > mMinerActivity;
+
     //----------------------------------------------------------------//
     void defineOptions ( Poco::Util::OptionSet& options ) override {
         Application::defineOptions ( options );
@@ -118,21 +120,17 @@ protected:
 
     //----------------------------------------------------------------//
     int main ( const vector < string >& ) override {
-        
-        printf ( "APPLICATION NAME: %s\n", this->name ());
-        
+                
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
         string configfile = configuration.getString ( "config", "" );
         
         if ( configfile.size () > 0 ) {
-            printf ( "LOADING CONFIG FILE: %s\n", configfile.c_str ());
             this->loadConfiguration ( configfile, PRIO_APPLICATION - 1 );
         }
         else {
             this->loadConfiguration ( PRIO_APPLICATION - 1 );
         }
-//      this->printProperties ();
         
         string controlKeyfile           = configuration.getString       ( "control-key", "" );
         string controlLevel             = configuration.getString       ( "control-level", "" );
@@ -150,12 +148,23 @@ protected:
         string sslCertFile              = configuration.getString       ( "openSSL.server.certificateFile", "" );
         
         if ( logpath.size () > 0 ) {
-            freopen ( Format::write ( "%s/%s.log", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stdout );
-            freopen ( Format::write ( "%s/%s.err", logpath.c_str (), minerID.c_str ()).c_str (), "w+", stderr );
+        
+            FileSys::createDirectories ( logpath );
+            
+            time_t t;
+            time ( &t );
+            string timeStr = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), "%Y-%m-%d-%H%M%S" );
+            
+            string logname = Format::write ( "%s/%s-%s.log", logpath.c_str (), minerID.c_str (), timeStr.c_str ());
+            freopen ( logname.c_str (), "w+", stderr );
         }
         
-        shared_ptr < MinerActivity > minerActivity = make_shared < MinerActivity >();
-        minerActivity->setMinerID ( minerID );
+        LOG_F ( INFO, "\nHello from VOLITION main.cpp!" );
+        LOG_F ( INFO, "commit: %s", VOLITION_GIT_COMMIT_STR );
+        LOG_F ( INFO, "build: %s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR );
+        
+        this->mMinerActivity = make_shared < MinerActivity >();
+        this->mMinerActivity->setMinerID ( minerID );
         
         if ( controlKeyfile.size ()) {
         
@@ -167,19 +176,19 @@ protected:
                 return Application::EXIT_CONFIG;
             }
             LOG_F ( INFO, "CONTROL KEY: %s", controlKeyfile.c_str ());
-            minerActivity->setControlKey ( controlKey );
+            this->mMinerActivity->setControlKey ( controlKey );
         }
         
         switch ( FNV1a::hash_64 ( controlLevel )) {
         
             case FNV1a::const_hash_64 ( "config" ):
                 LOG_F ( INFO, "CONTROL LEVEL: CONFIG" );
-                minerActivity->setControlLevel ( Miner::CONTROL_CONFIG );
+                this->mMinerActivity->setControlLevel ( Miner::CONTROL_CONFIG );
                 break;
             
             case FNV1a::const_hash_64 ( "admin" ):
                LOG_F ( INFO, "CONTROL LEVEL: ADMIN" );
-                minerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
+                this->mMinerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
                 break;
         }
         
@@ -208,19 +217,19 @@ protected:
         }
         
         if ( persist.size ()) {
-            minerActivity->persist ( persist, genesisBlock );
+            this->mMinerActivity->persist ( persist, genesisBlock );
         }
         else {
-            minerActivity->setGenesis ( genesisBlock );
+            this->mMinerActivity->setGenesis ( genesisBlock );
         }
         
-        if ( minerActivity->getLedger ().countBlocks () == 0 ) {
+        if ( this->mMinerActivity->getLedger ().countBlocks () == 0 ) {
             LOG_F ( INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
             return Application::EXIT_CONFIG;
         }
         
         if ( dump.size ()) {
-            minerActivity->getLedger ().dump ( dump );
+            this->mMinerActivity->getLedger ().dump ( dump );
             return Application::EXIT_OK;
         }
         
@@ -230,17 +239,19 @@ protected:
             return Application::EXIT_CONFIG;
         }
         
-        minerActivity->loadKey ( keyfile );
-        minerActivity->affirmKey ();
-        minerActivity->affirmVisage ();
-        minerActivity->setVerbose ();
-        minerActivity->setReportMode ( Miner::REPORT_ALL_BRANCHES );
-        minerActivity->setFixedUpdateDelayInMillis (( u32 )fixedDelay );
-        minerActivity->setVariableUpdateDelayInMillis (( u32 )variableDelay );
+        this->mMinerActivity->loadKey ( keyfile );
+        this->mMinerActivity->affirmKey ();
+        this->mMinerActivity->affirmVisage ();
+        this->mMinerActivity->setVerbose ();
+        this->mMinerActivity->setReportMode ( Miner::REPORT_ALL_BRANCHES );
+        this->mMinerActivity->setFixedUpdateDelayInMillis (( u32 )fixedDelay );
+        this->mMinerActivity->setVariableUpdateDelayInMillis (( u32 )variableDelay );
         
-        LOG_F ( INFO, "MINER ID: %s", minerActivity->getMinerID ().c_str ());
+        LOG_F ( INFO, "MINER ID: %s", this->mMinerActivity->getMinerID ().c_str ());
 
-        this->serve ( minerActivity, port, sslCertFile.length () > 0 );
+        this->serve ( port, sslCertFile.length () > 0 );
+        
+        LOG_F ( INFO, "SHUTDOWN: main" );
         
         return Application::EXIT_OK;
     }
@@ -278,37 +289,33 @@ protected:
     }
     
     //----------------------------------------------------------------//
-    void serve ( shared_ptr < MinerActivity > minerActivity, int port, bool ssl ) {
+    void serve ( int port, bool ssl ) {
 
         Poco::ThreadPool threadPool;
 
         Poco::Net::HTTPServer server (
-            new MinerAPIFactory ( minerActivity ),
+            new MinerAPIFactory ( this->mMinerActivity ),
             threadPool,
             ssl ? Poco::Net::SecureServerSocket (( Poco::UInt16 )port ) : Poco::Net::ServerSocket (( Poco::UInt16 )port ),
             new Poco::Net::HTTPServerParams ()
         );
         
         server.start ();
-        minerActivity->start ();
+        this->mMinerActivity->start ();
 
         LOG_F ( INFO, "\nSERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
-
-        // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
-        // need to find out how to stop POCO from doing this. in the meantime, this hack.
-        #ifdef _DEBUG
-            minerActivity->waitForShutdown ();
-        #else
-            this->waitForTerminationRequest ();  // wait for CTRL-C or kill
-        #endif
+        this->mMinerActivity->waitForShutdown ();
+        LOG_F ( INFO, "SHUTDOWN: this->mMinerActivity->waitForShutdown ()" );
 
         server.stop ();
         threadPool.stopAll ();
         
         {
-            ScopedMinerLock scopedLock ( minerActivity );
-            minerActivity->shutdown ( false );
+            // wait for miner activity to fully shut down
+            ScopedMinerLock scopedLock ( this->mMinerActivity );
+            this->mMinerActivity->shutdown ( false );
         }
+        LOG_F ( INFO, "SHUTDOWN: ~serve" );
     }
 
 public:
@@ -323,6 +330,13 @@ public:
     ~ServerApp () {
     
         Poco::Net::uninitializeSSL ();
+        LOG_F ( INFO, "SHUTDOWN: ~ServerApp" );
+    }
+    
+    //----------------------------------------------------------------//
+    void shutdown () {
+    
+        this->mMinerActivity->shutdown ( true );
     }
 };
 
@@ -330,8 +344,27 @@ public:
 // main
 //================================================================//
 
+static shared_ptr < ServerApp > sApp;
+
+//----------------------------------------------------------------//
+void onSignal ( int sig );
+void onSignal ( int sig ) {
+
+    signal ( sig, SIG_IGN );
+
+    LOG_F ( INFO, "CAUGHT A SIGNAL - SHUTTING DOWN." );
+
+    if ( sApp ) {
+        sApp->shutdown ();
+    }
+}
+
 //----------------------------------------------------------------//
 int main ( int argc, char** argv ) {
+
+    signal ( SIGINT, onSignal );
+    signal ( SIGTERM, onSignal );
+    signal ( SIGQUIT, onSignal );
 
     // force line buffering even when running as a spawned process
     setvbuf ( stdout, NULL, _IOLBF, 0 );
@@ -339,10 +372,9 @@ int main ( int argc, char** argv ) {
 
     Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
     Lognosis::init ( argc, argv );
-    LOG_F ( INFO, "\nHello from VOLITION main.cpp!" );
-    LOG_F ( INFO, "commit: %s", VOLITION_GIT_COMMIT_STR );
-    LOG_F ( INFO, "build: %s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR );
 
-    ServerApp app;
-    return app.run ( argc, argv );
+    sApp = make_shared < ServerApp >();
+    int result = sApp->run ( argc, argv );
+    sApp = NULL;
+    return result;
 }

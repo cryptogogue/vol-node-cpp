@@ -29,6 +29,7 @@ set ( VOLITION_INCLUDES
     3rd-party/padamose/3rd-party/lognosis/3rd-party
     3rd-party/padamose/3rd-party/reproc/reproc/include/
     3rd-party/padamose/3rd-party/reproc/reproc++/include/
+    3rd-party/padamose/3rd-party/sqlite-3.34.0/
     3rd-party/simple-cpp-router/src/
     /usr/local/opt/openssl/include/
 )
@@ -113,6 +114,7 @@ add_dependencies ( volition
     reproc
     reproc++
     routing
+    sqlite
     volition-lib
 )
 
@@ -134,6 +136,7 @@ target_link_libraries ( volition
     reproc
     reproc++
     routing
+    sqlite
     PocoCrypto
     PocoEncodings
     PocoNet
@@ -143,7 +146,6 @@ target_link_libraries ( volition
     PocoXML
     PocoZip
     PocoFoundation
-    sqlite3
     ${OPENSSL_LIBRARIES}
     ${CMAKE_DL_LIBS}
 )

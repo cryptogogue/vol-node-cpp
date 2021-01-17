@@ -16,9 +16,22 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+bool RemoteMiner::canFetchInfo () const {
+
+    return (( this->mIsBusy == false ) && (( this->mNetworkState != STATE_ONLINE )));
+}
+
+//----------------------------------------------------------------//
+bool RemoteMiner::canFetchHeaders () const {
+
+    return (( this->mIsBusy == false ) && ( this->mNetworkState == STATE_ONLINE ));
+}
+
+//----------------------------------------------------------------//
 RemoteMiner::RemoteMiner () :
     mNetworkState ( STATE_NEW ),
     mHeight ( 0 ),
+    mIsBusy ( false ),
     mForward ( true ) {
 }
 

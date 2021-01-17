@@ -137,7 +137,6 @@ protected:
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByURL;
     set < shared_ptr < RemoteMiner >>               mOnlineMiners;
     map < string, BlockSearch >                     mBlockSearches;
-    set < string >                                  mHeaderSearches;
     bool                                            mNetworkSearch;
     
     shared_ptr < AbstractBlockTree >                mBlockTree;

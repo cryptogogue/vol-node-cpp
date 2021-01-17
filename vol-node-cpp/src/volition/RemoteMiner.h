@@ -39,13 +39,18 @@ public:
     NetworkState                mNetworkState;
     string                      mMessage;
 
+    bool                        mIsBusy;
+
     size_t                                              mHeight;
     bool                                                mForward;
     map < size_t, shared_ptr < const BlockHeader >>     mHeaderQueue;
 
     GET ( string,       MinerID,        mMinerID )
+    GET ( string,       URL,            mURL )
 
     //----------------------------------------------------------------//
+    bool            canFetchInfo            () const;
+    bool            canFetchHeaders         () const;
                     RemoteMiner             ();
                     ~RemoteMiner            ();
     void            reset                   ();

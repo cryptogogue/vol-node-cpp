@@ -14,6 +14,7 @@ namespace Volition {
 namespace FileSys {
 
     //----------------------------------------------------------------//
+    void            createDirectories   ( string path );
     bool            exists              ( string path );
     void            getFilenames        ( string path, set < string > files );
     size_t          getDirSize          ( string path );
