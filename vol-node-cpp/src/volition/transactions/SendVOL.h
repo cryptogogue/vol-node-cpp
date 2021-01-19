@@ -65,6 +65,11 @@ public:
     
         return this->mAmount;
     }
+    
+    //----------------------------------------------------------------//
+    SendVOL () :
+        mAmount ( 0 ) {
+    }
 };
 
 } // namespace Transactions

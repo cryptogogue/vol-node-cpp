@@ -41,6 +41,7 @@ private:
 
     //----------------------------------------------------------------//
     size_t              applyTransactions                   ( Ledger& ledger, VerificationPolicy policy ) const;
+    size_t              getWeight                           () const;
     
     //----------------------------------------------------------------//
     void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;

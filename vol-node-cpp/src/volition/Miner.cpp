@@ -435,7 +435,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         }
         
         // we can only replace blocks within the rewrite window. if parent is outside of that, no point in continuing.
-        if (( this->mRewriteMode == kRewriteMode::REWRITE_WINDOW ) && !parentHeader.isInRewriteWindow ( now )) break;
+        if ( !parentHeader.isInRewriteWindow ( now )) break;
         
         // don't replace our own block; that would be silly.
         if ( parentHeader.getMinerID () == this->mMinerID ) break;
@@ -496,7 +496,6 @@ Miner::Miner () :
     mFlags ( DEFAULT_FLAGS ),
     mNeedsReport ( true ),
     mReportMode ( REPORT_NONE ),
-    mRewriteMode ( kRewriteMode::REWRITE_NONE ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ),
     mNetworkSearch ( false ) {
@@ -753,12 +752,6 @@ void Miner::setReward ( string reward ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::setRewriteWindow () {
-
-    this->setRewriteMode ( kRewriteMode::REWRITE_WINDOW );
-}
-
-//----------------------------------------------------------------//
 void Miner::setVerbose ( bool verbose ) {
 
     this->mFlags = SET_BITS ( this->mFlags, MINER_VERBOSE, verbose );
@@ -822,7 +815,7 @@ void Miner::updateBestBranch ( time_t now ) {
         
         assert ( !remoteImproved.isMissingOrInvalid ());
         
-        if ( BlockTreeCursor::compare ( remoteImproved, bestCursor, this->mRewriteMode ) < 0 ) {
+        if ( BlockTreeCursor::compare ( remoteImproved, bestCursor ) < 0 ) {
             bestCursor = this->mBlockTree->tag ( this->mBestBranchTag, remoteImproved );
         }
     }
@@ -844,7 +837,7 @@ void Miner::updateBlockSearches () {
         if ( remoteMiner->mImproved.hasCursor () && ( *remoteMiner->mImproved ).isMissing ()) {
             
             // only affirm a search if the other chain could beat our current.
-            if ( BlockTreeCursor::compare ( *remoteMiner->mImproved, *this->mBestBranchTag, this->mRewriteMode ) < 0 ) {
+            if ( BlockTreeCursor::compare ( *remoteMiner->mImproved, *this->mBestBranchTag ) < 0 ) {
                 this->affirmBranchSearch ( *remoteMiner->mImproved );
             }
         }
@@ -947,7 +940,8 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             break;
         }
         
-        case MiningMessengerRequest::REQUEST_HEADERS: {
+        case MiningMessengerRequest::REQUEST_HEADERS:
+        case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
                             
             assert ( remoteMiner );
             

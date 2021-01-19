@@ -14,8 +14,8 @@ namespace Volition {
 BlockHeaderFields::BlockHeaderFields () :
     mHeight ( 0 ),
     mTime ( 0 ),
-    mBlockDelay ( Ledger::DEFAULT_BLOCK_DELAY_IN_SECONDS ),
-    mRewriteWindow ( Ledger::DEFAULT_REWRITE_WINDOW_IN_SECONDS ) {
+    mBlockDelay ( 0 ),
+    mRewriteWindow ( 0 ) {
 }
 
 //----------------------------------------------------------------//

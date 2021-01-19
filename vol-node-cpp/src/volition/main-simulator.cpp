@@ -38,7 +38,8 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 2, 0, BASE_PORT );
+        simulator.initializeMiners ( 2, 0, BASE_PORT );
+        simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
@@ -60,7 +61,8 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.initializeMiners ( 16, 0, BASE_PORT );
+        simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
@@ -180,8 +182,9 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 8, 7, BASE_PORT );
+        simulator.initializeMiners ( 8, 7, BASE_PORT );
         simulator.setActive ( 1, 8, false );
+        simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
@@ -219,7 +222,8 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.initializeMiners ( 16, 0, BASE_PORT );
+        simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
@@ -252,7 +256,8 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.initializeMiners ( 16, 0, BASE_PORT );
+        simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };
@@ -289,7 +294,8 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.initializeMiners ( 16, 0, BASE_PORT );
+        simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 
@@ -327,7 +333,8 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initialize ( 16, 0, BASE_PORT );
+        simulator.initializeMiners ( 16, 0, BASE_PORT );
+        simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }
 };

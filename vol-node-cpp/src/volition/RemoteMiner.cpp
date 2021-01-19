@@ -96,8 +96,12 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
                         // if there's anything left in the queue, back up and get an earlier batch of blocks.
                         this->mHeight = this->mHeaderQueue.begin ()->second->getHeight ();
                         this->mForward = false;
+                        this->mTag.reset ();
+                        this->mImproved.reset ();
                     }
-                    this->reset ();
+                    else {
+                        this->reset ();
+                    }
                     return;
                 
                 case kBlockTreeAppendResult::REFUSED:

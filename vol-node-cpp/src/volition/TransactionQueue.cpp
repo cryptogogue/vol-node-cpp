@@ -134,8 +134,8 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
     Ledger ledger;
     ledger.takeSnapshot ( chain );
 
-    const u64 maxBlockSize = ledger.getBlockSizeInPoints ();
-    u64 blockSize = 0;
+    const u64 maxBlockWeight = ledger.getMaxBlockWeight ();
+    u64 blockWeight = 0;
 
     map < string, MakerQueueInfo > infoCache;
 
@@ -179,15 +179,15 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
                 continue;
             }
             
-            u64 transactionSize = transaction->getWeight ();
-            if ( maxBlockSize < transactionSize ) {
-                TransactionResult result ( Format::write ( "Transaction weight of %d exceeds maximum block size of %d.", transactionSize, maxBlockSize ));
+            u64 transactionWeight = transaction->getWeight ();
+            if ( maxBlockWeight < transactionWeight ) {
+                TransactionResult result ( Format::write ( "Transaction weight of %d exceeds maximum block size of %d.", transactionWeight, maxBlockWeight ));
                 result.setTransactionDetails ( *transaction );
                 makerQueue.setTransactionResult ( result );
                 continue;
             }
             
-            if (( blockSize + transactionSize ) > maxBlockSize ) continue;
+            if (( blockWeight + transactionWeight ) > maxBlockWeight ) continue;
             
             // push a version in case the transaction fails
             ledger.pushVersion ();
@@ -196,7 +196,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             if ( result ) {
                 // transaction succeeded!
                 block.pushTransaction ( transaction );
-                blockSize += transactionSize;
+                blockWeight += transactionWeight;
                 info.mNonce = transaction->getNonce () + 1;
                 infoCache [ accountName ] = info;
                 

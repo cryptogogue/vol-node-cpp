@@ -11,19 +11,16 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getFullLength ( const Iterator& root ) const {
+size_t BlockTreeSegment::getFullLength () const {
 
-    return ( this->mTop->getHeight () - root->getHeight ());
+    return ( this->mTop->getHeight () - this->mHead->getHeight ()) + 1;
 }
 
 //----------------------------------------------------------------//
-size_t BlockTreeSegment::getRewriteDefeatCount ( const Iterator& root ) const {
+size_t BlockTreeSegment::getRewriteDefeatCount () const {
 
     time_t window = this->mHead->getRewriteWindow (); // TODO: account for different rewrite windows in segment
-    size_t max = ( size_t )ceil ( difftime ( this->mTop->getTime (), root->getTime ()) / window );
-    size_t length = this->getFullLength ( root );
-    
-    return length < max ? length : max;
+    return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window );
 }
 
 //----------------------------------------------------------------//
@@ -141,21 +138,18 @@ bool AbstractBlockTree::checkStatusTransition ( kBlockTreeEntryStatus from, kBlo
 }
 
 //----------------------------------------------------------------//
-int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const {
+int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
     BlockTreeFork fork;
     this->findFork ( fork, cursor0, cursor1 );
 
-    size_t fullLength0  = fork.mSeg0.getFullLength ( fork.mRoot );
-    size_t fullLength1  = fork.mSeg1.getFullLength ( fork.mRoot );
+    size_t fullLength0  = fork.mSeg0.getFullLength ();
+    size_t fullLength1  = fork.mSeg1.getFullLength ();
     size_t segLength    = fork.getSegLength (); // length of the comparison segment
-
-    if ( rewriteMode == kRewriteMode::REWRITE_WINDOW ) {
-        
-        // if the segment is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
-        if (( segLength < fullLength0 ) && ( segLength < fork.mSeg0.getRewriteDefeatCount ( fork.mRoot ))) return -1;
-        if (( segLength < fullLength1 ) && ( segLength < fork.mSeg1.getRewriteDefeatCount ( fork.mRoot ))) return 1;
-    }
+    
+    // if the segment is shorter, it must have enough blocks to "defeat" the longer chain (as a function of time)
+    if (( segLength < fullLength0 ) && ( segLength < fork.mSeg0.getRewriteDefeatCount ())) return -1;
+    if (( segLength < fullLength1 ) && ( segLength < fork.mSeg1.getRewriteDefeatCount ())) return 1;
 
     BlockTreeSegment::Iterator cursorIt0 = fork.mSeg0.mTail;
     BlockTreeSegment::Iterator cursorIt1 = fork.mSeg1.mTail;

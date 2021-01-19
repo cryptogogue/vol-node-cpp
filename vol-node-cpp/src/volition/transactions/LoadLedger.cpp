@@ -110,18 +110,18 @@ void LoadLedger::init ( Ledger& ledger ) {
 
 //----------------------------------------------------------------//
 void LoadLedger::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+    ConsensusSettings::AbstractSerializable_serializeFrom ( serializer );
     AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
     
-    serializer.serialize ( "identity",      this->mIdentity );
     serializer.serialize ( "schema",        this->mSchema );
     serializer.serialize ( "accounts",      this->mAccounts );
 }
 
 //----------------------------------------------------------------//
 void LoadLedger::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+    ConsensusSettings::AbstractSerializable_serializeTo ( serializer );
     AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
     
-    serializer.serialize ( "identity",      this->mIdentity );
     serializer.serialize ( "schema",        this->mSchema );
     serializer.serialize ( "accounts",      this->mAccounts );
 }
@@ -136,7 +136,6 @@ TransactionResult LoadLedger::AbstractTransactionBody_apply ( TransactionContext
 TransactionResult LoadLedger::AbstractTransactionBody_genesis ( Ledger& ledger ) const {
     UNUSED ( ledger );
 
-    ledger.setIdentity ( this->mIdentity );
     ledger.setSchema ( this->mSchema );
 
     u64 vol = 0;
@@ -149,7 +148,8 @@ TransactionResult LoadLedger::AbstractTransactionBody_genesis ( Ledger& ledger )
         vol += account.mBalance;
     }
     ledger.setVOL ( vol );
-    return true;
+    
+    return this->ConsensusSettings::apply ( ledger );
 }
 
 } // namespace Transactions

@@ -27,11 +27,5 @@ enum kBlockTreeEntryStatus {
     STATUS_INVALID      = 0x08,
 };
 
-enum kRewriteMode {
-    REWRITE_NONE,
-    REWRITE_WINDOW,
-    REWRITE_ANY,
-};
-
 } // namespace Volition
 #endif

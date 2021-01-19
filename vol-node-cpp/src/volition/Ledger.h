@@ -108,10 +108,6 @@ private:
 
 public:
 
-    static constexpr const u64 DEFAULT_BLOCK_SIZE_IN_POINTS             = 1024;     // not enforced for genesis block
-    static constexpr const u64 DEFAULT_BLOCK_DELAY_IN_SECONDS           = 30;       // 0.5 min
-    static constexpr const u64 DEFAULT_REWRITE_WINDOW_IN_SECONDS        = 600;      // 10 min
-
     //----------------------------------------------------------------//
     static LedgerKey keyFor_accountAlias ( string accountName ) {
         assert ( accountName.size () > 0 );
@@ -127,10 +123,10 @@ public:
     static LedgerKey keyFor_blockDelay () {
         return "blockDelay";
     }
-    
+
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_blockSize () {
-        return "blockSize";
+    static LedgerKey keyFor_blockHeightByHash ( string hash ) {
+        return Format::write ( "blockHeightByHash.%s", hash.c_str ());
     }
 
     //----------------------------------------------------------------//
@@ -176,13 +172,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_blockHeightByHash ( string hash ) {
-        return Format::write ( "blockHeightByHash.%s", hash.c_str ());
+    static LedgerKey keyFor_identity () {
+        return "identity";
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_identity () {
-        return "identity";
+    static LedgerKey keyFor_maxBlockWeight () {
+        return "maxBlockWeight";
     }
 
     //----------------------------------------------------------------//
@@ -239,7 +235,6 @@ public:
     shared_ptr < const Block >          getBlock                        ( u64 height ) const;
     shared_ptr < const Block >          getBlock                        ( string hash ) const;
     time_t                              getBlockDelayInSeconds          () const;
-    u64                                 getBlockSizeInPoints            () const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
     u64                                 getFeeDistributionPool          () const;
@@ -248,6 +243,7 @@ public:
     string                              getGenesisHash                  () const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
+    u64                                 getMaxBlockWeight               () const;
     time_t                              getRewriteWindowInSeconds       () const;
     const Schema&                       getSchema                       ();
     SchemaVersion                       getSchemaVersion                () const;

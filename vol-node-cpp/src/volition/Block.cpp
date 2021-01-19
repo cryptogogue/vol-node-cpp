@@ -29,17 +29,6 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
     if ( ledger.getVersion () != this->mHeight ) return false;
     if ( !this->verify ( ledger, policy )) return false;
 
-    // TODO: move this out to a transaction
-    if ( this->mHeight == 0 ) {
-        ledger.setValue < u64 >( Ledger::keyFor_blockSize (), Ledger::DEFAULT_BLOCK_SIZE_IN_POINTS );
-        ledger.setValue < u64 >( Ledger::keyFor_blockDelay (), ( u64 )this->mBlockDelay );
-        ledger.setValue < u64 >( Ledger::keyFor_rewriteWindow (), ( u64 )this->mRewriteWindow );
-    }
-    else {
-        BlockODBM parentODBM ( ledger, this->mHeight - 1 );
-        if ( parentODBM.mHash.get ( "" ) != this->mPrevDigest.toHex ()) return false;
-    }
-
     // some transactions need to be applied later.
     // we need to evaluate if they are legal now.
     // then process them once we have the entropy.
@@ -173,6 +162,16 @@ size_t Block::countTransactions () const {
 }
 
 //----------------------------------------------------------------//
+size_t Block::getWeight () const {
+
+    size_t weight = 0;
+    for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
+        weight += this->mTransactions [ i ]->getWeight ();
+    }
+    return weight;
+}
+
+//----------------------------------------------------------------//
 void Block::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
     this->mTransactions.push_back ( transaction );
@@ -192,6 +191,15 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
     if ( this->mHeight == 0 ) {
         BlockODBM genesisODBM ( ledger, 0 );
         return genesisODBM ? ( genesisODBM.mHash.get () == this->mDigest.toHex ()) : true;
+    }
+    else {
+    
+        BlockODBM parentODBM ( ledger, this->mHeight - 1 );
+        if ( parentODBM.mHash.get ( "" ) != this->mPrevDigest.toHex ()) return false;
+
+        if ( this->mBlockDelay != ledger.getBlockDelayInSeconds ()) return false;
+        if ( this->mRewriteWindow != ledger.getRewriteWindowInSeconds ()) return false;
+        if ( this->getWeight () > ledger.getMaxBlockWeight ()) return false;
     }
 
     shared_ptr < const MinerInfo > minerInfo = AccountODBM ( ledger, this->mMinerID ).mMinerInfo.get ();

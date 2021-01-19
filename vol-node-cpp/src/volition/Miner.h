@@ -120,7 +120,6 @@ protected:
     int                                             mFlags;
     bool                                            mNeedsReport;
     ReportMode                                      mReportMode;
-    kRewriteMode                                    mRewriteMode;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
     string                                          mReward;
@@ -214,10 +213,9 @@ public:
     GET_SET ( const CryptoKeyPair&,                         KeyPair,                    mKeyPair )
     GET_SET ( string,                                       MinerID,                    mMinerID )
     GET_SET ( string,                                       Motto,                      mMotto )
-    GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
-    GET_SET ( kRewriteMode,                                 RewriteMode,                mRewriteMode)
-    GET_SET ( string,                                       URL,                        mURL )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
+    GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
+    GET_SET ( string,                                       URL,                        mURL )
     
     //----------------------------------------------------------------//
     operator Poco::Mutex& () {
@@ -253,7 +251,6 @@ public:
     void                                setMinimumGratuity          ( u64 minimumGratuity );
     void                                setMute                     ( bool paused );
     void                                setReward                   ( string reward );
-    void                                setRewriteWindow            ();
     void                                setVerbose                  ( bool verbose = true );
     void                                shutdown                    ( bool kill = false );
     void                                step                        ( time_t now );

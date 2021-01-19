@@ -46,7 +46,7 @@ public:
                                         ~BlockTreeCursor            ();
     bool                                checkStatus                 ( kBlockTreeEntryStatus status ) const;
     bool                                checkTree                   ( const AbstractBlockTree* tree ) const;
-    static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, kRewriteMode rewriteMode );
+    static int                          compare                     ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 );
     bool                                equals                      ( const BlockTreeCursor& rhs ) const;
     static BlockTreeCursor              findRoot                    ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 );
     shared_ptr < const Block >          getBlock                    () const;

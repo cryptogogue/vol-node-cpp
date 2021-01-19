@@ -149,12 +149,6 @@ time_t Ledger::getBlockDelayInSeconds () const {
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getBlockSizeInPoints () const {
-
-    return this->getValue < u64 >( keyFor_blockSize ());
-}
-
-//----------------------------------------------------------------//
 Entropy Ledger::getEntropy () const {
 
     return Entropy ( this->getEntropyString ());
@@ -203,6 +197,12 @@ u64 Ledger::getHeight () const {
 string Ledger::getIdentity () const {
 
     return this->getValueOrFallback < string >( keyFor_identity (), "" );
+}
+
+//----------------------------------------------------------------//
+u64 Ledger::getMaxBlockWeight () const {
+
+    return this->getValue < u64 >( keyFor_maxBlockWeight ());
 }
 
 //----------------------------------------------------------------//

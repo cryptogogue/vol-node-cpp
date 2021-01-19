@@ -71,29 +71,6 @@ shared_ptr < SimMiner > Simulator::getSimMiner ( size_t idx ) {
 }
 
 //----------------------------------------------------------------//
-void Simulator::initialize ( size_t totalMiners, size_t deferredMiners, size_t basePort ) {
-
-    this->mBasePort = basePort;
-
-    this->mMiners.resize ( totalMiners );
-    this->mNetwork = make_shared < SimMiningNetwork >();
-
-    size_t genesisMiners = totalMiners - deferredMiners;
-
-    for ( size_t i = 0; i < totalMiners; ++i ) {
-    
-        shared_ptr < SimMiner > miner = make_shared < SimMiner >( i < genesisMiners );
-        this->mMiners [ i ] = miner;
-
-        miner->setMinerID ( Format::write ( "%d", ( int )( basePort + i )));
-        miner->setURL ( Format::write ( "http://127.0.0.1:%d/%s/", ( int )this->mBasePort, miner->getMinerID ().c_str ()));
-        miner->setMessenger ( make_shared < SimMiningMessenger >( this->mNetwork ));
-    }
-    
-    this->mNetwork->setMiners ( this->mMiners );
-}
-
-//----------------------------------------------------------------//
 void Simulator::initialize ( shared_ptr < AbstractScenario > scenario ) {
 
     assert ( scenario );
@@ -104,13 +81,7 @@ void Simulator::initialize ( shared_ptr < AbstractScenario > scenario ) {
 }
 
 //----------------------------------------------------------------//
-void Simulator::pause ( bool pause ) {
-
-    this->mIsPaused = pause;
-}
-
-//----------------------------------------------------------------//
-void Simulator::prepare () {
+void Simulator::initializeGenesis ( time_t blockDelayInSeconds, time_t rewriteWindowInSeconds, size_t maxBlockWeight  ) {
 
     size_t totalMiners = this->mMiners.size ();
     assert ( totalMiners > 0 );
@@ -124,7 +95,11 @@ void Simulator::prepare () {
     }
 
     shared_ptr < Transactions::Genesis > genesisMinerTransactionBody = make_unique < Transactions::Genesis >();
+    
     genesisMinerTransactionBody->setIdentity ( "SIMULATION" );
+    genesisMinerTransactionBody->setBlockDelayInSeconds ( blockDelayInSeconds );
+    genesisMinerTransactionBody->setRewriteWindowInSeconds ( rewriteWindowInSeconds );
+    genesisMinerTransactionBody->setMaxBlockWeight ( maxBlockWeight );
 
     for ( size_t i = 0; i < totalMiners; ++i ) {
     
@@ -173,6 +148,35 @@ void Simulator::prepare () {
         this->mMiners [ i ]->setGenesis ( genesisBlock );
     }
     this->mOptimal.affirmBlock ( this->mOptimalTag, genesisBlock );
+}
+
+//----------------------------------------------------------------//
+void Simulator::initializeMiners ( size_t totalMiners, size_t deferredMiners, size_t basePort ) {
+
+    this->mBasePort = basePort;
+
+    this->mMiners.resize ( totalMiners );
+    this->mNetwork = make_shared < SimMiningNetwork >();
+
+    size_t genesisMiners = totalMiners - deferredMiners;
+
+    for ( size_t i = 0; i < totalMiners; ++i ) {
+    
+        shared_ptr < SimMiner > miner = make_shared < SimMiner >( i < genesisMiners );
+        this->mMiners [ i ] = miner;
+
+        miner->setMinerID ( Format::write ( "%d", ( int )( basePort + i )));
+        miner->setURL ( Format::write ( "http://127.0.0.1:%d/%s/", ( int )this->mBasePort, miner->getMinerID ().c_str ()));
+        miner->setMessenger ( make_shared < SimMiningMessenger >( this->mNetwork ));
+    }
+    
+    this->mNetwork->setMiners ( this->mMiners );
+}
+
+//----------------------------------------------------------------//
+void Simulator::pause ( bool pause ) {
+
+    this->mIsPaused = pause;
 }
 
 //----------------------------------------------------------------//
@@ -292,10 +296,6 @@ Simulator::~Simulator () {
 void Simulator::step () {
 
     if ( this->mIsPaused ) return;
-
-    if ( this->mStepCount == 0 ) {
-        this->prepare ();
-    }
 
     if ( this->mScenario ) {
         this->mScenario->AbstractScenario_control ( *this, *this->mNetwork, this->mStepCount );

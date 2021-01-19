@@ -42,7 +42,7 @@ class TransactionContext;
 // AbstractTransactionBody
 //================================================================//
 class AbstractTransactionBody :
-    public AbstractSerializable {
+    public virtual AbstractSerializable {
 protected:
 
     friend class Transaction;

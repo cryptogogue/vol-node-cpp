@@ -1,13 +1,17 @@
 {
     "height" : 0,
     "time" : "1970-01-01T00:00:00UTC",
-    "blockDelay": 1,
-    "rewriteWindow": 600,
     "transactions" : [
         {
             "bodyIn" : {
-                "type" :            "GENESIS",
-                "identity" :        "VOLITION_TEST_NET",
+
+                "type" : "GENESIS",
+
+                "identity" :                    "VOLITION_TEST_NET",
+                "maxBlockWeight" :              1024,
+                "blockDelayInSeconds" :         1,
+                "rewriteWindowInSeconds" :      30,
+
                 "accounts" : [
                     {
                         "name" :            "9090",

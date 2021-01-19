@@ -47,12 +47,12 @@ bool BlockTreeCursor::checkTree ( const AbstractBlockTree* tree ) const {
 }
 
 //----------------------------------------------------------------//
-int BlockTreeCursor::compare ( const BlockTreeCursor& node0, const BlockTreeCursor& node1, kRewriteMode rewriteMode ) {
+int BlockTreeCursor::compare ( const BlockTreeCursor& node0, const BlockTreeCursor& node1 ) {
 
     assert ( node0.mTree == node1.mTree );
     assert ( node0.mTree );
     
-    return node0.mTree->compare ( node0, node1, rewriteMode );
+    return node0.mTree->compare ( node0, node1 );
 }
 
 //----------------------------------------------------------------//

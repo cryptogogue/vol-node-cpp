@@ -8,6 +8,7 @@
 #include <volition/AbstractTransactionBody.h>
 #include <volition/MinerInfo.h>
 #include <volition/Policy.h>
+#include <volition/transactions/Genesis.h>
 
 namespace Volition {
 namespace Transactions {
@@ -40,6 +41,7 @@ public:
 // LoadLedger
 //================================================================//
 class LoadLedger :
+    public ConsensusSettings,
     public AbstractTransactionBody {
 public:
 
@@ -47,7 +49,6 @@ public:
     TRANSACTION_WEIGHT ( 0 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                                      mIdentity;
     Schema                                      mSchema;
     SerializableList < LoadLedgerAccount >      mAccounts;
 

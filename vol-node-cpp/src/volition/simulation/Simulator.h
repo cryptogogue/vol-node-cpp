@@ -64,8 +64,9 @@ public:
     //----------------------------------------------------------------//
     const Miners&                       getMiners               ();
     shared_ptr < SimMiner >             getSimMiner             ( size_t idx );
-    void                                initialize              ( size_t totalMiners, size_t deferredMiners = 0, size_t basePort = 9090 );
     void                                initialize              ( shared_ptr < AbstractScenario > scenario );
+    void                                initializeGenesis       ( time_t blockDelayInSeconds = 1, time_t rewriteWindowInSeconds = 600, size_t maxBlockWeight = 1024 );
+    void                                initializeMiners        ( size_t totalMiners, size_t deferredMiners = 0, size_t basePort = 9090 );
     void                                pause                   ( bool pause = true );
     void                                report                  ();
     void                                setActive               ( size_t base, size_t top, bool active );

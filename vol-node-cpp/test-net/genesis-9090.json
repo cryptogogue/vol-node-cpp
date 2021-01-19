@@ -6,8 +6,13 @@
     "transactions" : [
         {
             "bodyIn" : {
-                "type" :            "GENESIS",
-                "identity" :        "VOLITION_TEST_NET",
+                "type" : "GENESIS",
+
+                "identity" :                    "VOLITION_TEST_NET",
+                "maxBlockWeight" :              1024,
+                "blockDelayInSeconds" :         1,
+                "rewriteWindowInSeconds" :      600,
+
                 "accounts" : [
                     {
                         "name" :            "9090",

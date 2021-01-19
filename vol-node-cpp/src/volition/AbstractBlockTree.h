@@ -30,8 +30,8 @@ public:
     Iterator        mTop;
     
     //----------------------------------------------------------------//
-    size_t          getFullLength           ( const Iterator& root ) const;
-    size_t          getRewriteDefeatCount   ( const Iterator& root ) const;
+    size_t          getFullLength           () const;
+    size_t          getRewriteDefeatCount   () const;
     Iterator        pushFront               ( const BlockTreeCursor& cursor );
 };
 
@@ -84,7 +84,7 @@ public:
     virtual                     ~AbstractBlockTree      ();
     kBlockTreeAppendResult      checkAppend             ( const BlockHeader& header ) const;
     static bool                 checkStatusTransition   ( kBlockTreeEntryStatus from, kBlockTreeEntryStatus to );
-    int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1, kRewriteMode rewriteMode ) const;
+    int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
     BlockTreeCursor             findCursorForHash       ( string hash ) const;
     BlockTreeCursor             findCursorForTag        ( const BlockTreeTag& tag ) const;
     BlockTreeCursor             findRoot                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
