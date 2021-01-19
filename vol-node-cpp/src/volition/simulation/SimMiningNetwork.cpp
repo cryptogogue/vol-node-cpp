@@ -144,6 +144,7 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
                 if ( cursor.getHeight () < top ) {
                     headers.push_back ( make_shared < BlockHeader >( cursor.getHeader ()));
                 }
+                cursor = cursor.getParent ();
             }
             client->enqueueHeaderResponse ( request, headers );
             break;

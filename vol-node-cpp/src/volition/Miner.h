@@ -106,6 +106,7 @@ protected:
 
     friend class AbstractChainRecorder;
     friend class BlockSearch;
+    friend class RemoteMiner;
 
     static constexpr const char* MASTER_BRANCH      = "master";
 
@@ -180,7 +181,7 @@ protected:
     void                                scheduleReport              ();
     void                                updateBestBranch            ( time_t now );
     void                                updateBlockSearches         ();
-    void                                updateHeaderSearches        ();
+    void                                updateRemoteMinerGroups     ();
     void                                updateRemoteMiners          ();
 
     //----------------------------------------------------------------//

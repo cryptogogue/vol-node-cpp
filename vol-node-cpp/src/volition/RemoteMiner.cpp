@@ -28,6 +28,64 @@ bool RemoteMiner::canFetchHeaders () const {
 }
 
 //----------------------------------------------------------------//
+void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse& response, time_t now ) {
+
+    const MiningMessengerRequest& request   = response.mRequest;
+    string url                              = response.mRequest.mMinerURL;
+    MiningMessengerResponse::Status status  = response.mStatus;
+    
+    // TODO: these could be set deliberately as an attack
+    assert ( url == this->mURL );
+    
+    switch ( request.mRequestType ) {
+        
+        case MiningMessengerRequest::REQUEST_HEADERS:
+        case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
+                                        
+            list < shared_ptr < const BlockHeader >>::const_iterator headerIt = response.mHeaders.cbegin ();
+            for ( ; headerIt != response.mHeaders.cend (); ++headerIt ) {
+                
+                shared_ptr < const BlockHeader > header = *headerIt;
+                if ( !header ) continue;
+                if ( header->getTime () > now ) continue; // ignore headers from the future
+                
+                if ( header->getHeight () == 0 ) {
+                    if ( header->getDigest ().toHex () != miner.mLedger->getGenesisHash ()) {
+                        this->setError ( "Unrecoverable error: genesis block mismatch." );
+                        break;
+                    }
+                }
+                this->mHeaderQueue [ header->getHeight ()] = header;
+            }
+            
+            this->updateHeaders ( *miner.mBlockTree );
+            
+            this->mIsBusy = false;
+            break;
+        }
+        
+        case MiningMessengerRequest::REQUEST_MINER_INFO: {
+
+            if ( status == MiningMessengerResponse::STATUS_OK ) {
+                this->setMinerID ( response.mMinerID );
+                miner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
+            }
+            this->mIsBusy = false;
+            break;
+        }
+        
+        default: break;
+    }
+    
+    if ( status == MiningMessengerResponse::STATUS_OK ) {
+        this->mNetworkState = RemoteMiner::STATE_ONLINE;
+    }
+    else {
+        this->setError ();
+    }
+}
+
+//----------------------------------------------------------------//
 RemoteMiner::RemoteMiner () :
     mNetworkState ( STATE_NEW ),
     mHeight ( 0 ),
@@ -117,6 +175,15 @@ void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
         // nothing in the queue, so get the next batch of blocks.
         this->mHeight = bestCursor.getHeight () + 1; // this doesn't really matter.
         this->mForward = true;
+    }
+}
+
+//----------------------------------------------------------------//
+void RemoteMiner::update ( AbstractMiningMessenger& messenger ) {
+
+    if ( this->canFetchHeaders ()) {
+        this->mIsBusy = true;
+        messenger.enqueueHeaderRequest ( this->mURL, this->mHeight, this->mForward );
     }
 }
 

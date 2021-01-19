@@ -771,9 +771,7 @@ void Miner::step ( time_t now ) {
     this->affirmMessenger ();
     this->mMessenger->await ();
     this->mMessenger->receiveResponses ( *this, now );
-    
-    // this applies any new headers and updates connectivity status
-    this->updateRemoteMiners ();
+    this->updateRemoteMinerGroups ();
     
     // this evaluates each branch and picks the best candidate
     this->updateBestBranch ( now );
@@ -784,12 +782,10 @@ void Miner::step ( time_t now ) {
     // fill the provisional block (if any)
     this->extend ( now );
     this->saveChain ();
-    
     this->pruneTransactions ();
     
+    this->updateRemoteMiners ();
     this->updateBlockSearches ();
-    this->updateHeaderSearches ();
-    this->discoverMiners ();
     this->mMessenger->sendRequests ();
     this->report ();
 }
@@ -860,22 +856,7 @@ void Miner::updateBlockSearches () {
 }
 
 //----------------------------------------------------------------//
-void Miner::updateHeaderSearches () {
-    
-    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
-    
-        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        
-        if ( remoteMiner->canFetchHeaders ()) {
-            remoteMiner->mIsBusy = true;
-            this->mMessenger->enqueueHeaderRequest ( remoteMiner->mURL, remoteMiner->mHeight, remoteMiner->mForward );
-        }
-    }
-}
-
-//----------------------------------------------------------------//
-void Miner::updateRemoteMiners () {
+void Miner::updateRemoteMinerGroups () {
 
     this->mOnlineMiners.clear ();
     this->mActiveMinerURLs.clear ();
@@ -886,13 +867,23 @@ void Miner::updateRemoteMiners () {
         shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt->second;
         if ( remoteMiner->mNetworkState != RemoteMiner::STATE_ONLINE ) continue;
         
-        this->mOnlineMiners.insert ( remoteMiner );;
-        
-        remoteMiner->updateHeaders ( *this->mBlockTree );
+        this->mOnlineMiners.insert ( remoteMiner );
         
         if ( remoteMiner->mTag.hasCursor ()) {
             this->mActiveMinerURLs.insert ( remoteMiner->mURL );
         }
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::updateRemoteMiners () {
+    
+    this->discoverMiners ();
+    
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+        remoteMiner->update ( *this->mMessenger );
     }
 }
 
@@ -907,7 +898,6 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
 
     const MiningMessengerRequest& request   = response.mRequest;
     string url                              = response.mRequest.mMinerURL;
-    MiningMessengerResponse::Status status  = response.mStatus;
     
     // TODO: these could be set deliberately as an attack
     assert ( url != this->mURL );
@@ -915,7 +905,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
     
     map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.find ( url );
     shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt != this->mRemoteMinersByURL.cend () ? remoteMinerIt->second : NULL;
-    
+        
     // TODO: also could be tripped by an attack
     assert ( remoteMiner );
     
@@ -923,7 +913,6 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
         
         case MiningMessengerRequest::REQUEST_BLOCK: {
             
-            assert ( remoteMiner );
             this->mBlockTree->update ( response.mBlock );
             assert ( this->mBlockSearches.find ( request.mBlockDigest.toHex ()) != this->mBlockSearches.end ());
             this->mBlockSearches [ request.mBlockDigest.toHex ()].step ( remoteMiner );
@@ -940,55 +929,10 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             break;
         }
         
-        case MiningMessengerRequest::REQUEST_HEADERS:
-        case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
-                            
-            assert ( remoteMiner );
-            
-            list < shared_ptr < const BlockHeader >>::const_iterator headerIt = response.mHeaders.cbegin ();
-            for ( ; headerIt != response.mHeaders.cend (); ++headerIt ) {
-                
-                shared_ptr < const BlockHeader > header = *headerIt;
-                if ( !header ) continue;
-                if ( header->getTime () > now ) continue; // ignore headers from the future
-                
-                if ( header->getHeight () == 0 ) {
-                    if ( header->getDigest ().toHex () != this->mLedger->getGenesisHash ()) {
-                        remoteMiner->setError ( "Unrecoverable error: genesis block mismatch." );
-                        break;
-                    }
-                }
-                remoteMiner->mHeaderQueue [ header->getHeight ()] = header;
-            }
-            
-            remoteMiner->mIsBusy = false;
-            break;
-        }
-        
-        case MiningMessengerRequest::REQUEST_MINER_INFO: {
-
-            if ( status == MiningMessengerResponse::STATUS_OK ) {
-                remoteMiner->setMinerID ( response.mMinerID );
-                this->mRemoteMinersByID [ remoteMiner->getMinerID ()] = remoteMiner;
-            }
-            remoteMiner->mIsBusy = false;
-            break;
-        }
-        
-        default:
-            assert ( false );
-            break;
+        default: break;
     }
     
-    if ( remoteMiner ) {
-    
-        if ( status == MiningMessengerResponse::STATUS_OK ) {
-            remoteMiner->mNetworkState = RemoteMiner::STATE_ONLINE;
-        }
-        else {
-            remoteMiner->setError ();
-        }
-    }
+    remoteMiner->receiveResponse ( *this, response, now );
 }
 
 //----------------------------------------------------------------//

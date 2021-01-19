@@ -19,7 +19,35 @@ using namespace Simulation;
 
 const int BASE_PORT         = 9090;
 
-#define THE_SCENARO SimpleScenario
+#define THE_SCENARO CatchUpScenario
+
+//================================================================//
+// CatchUpScenario
+//================================================================//
+class CatchUpScenario :
+    public AbstractScenario {
+protected:
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_control ( Simulator& simulator, SimMiningNetwork& network, size_t step ) override {
+        UNUSED ( network );
+        
+        switch ( step ) {
+            case 64:
+                simulator.setActive ( 2, 3, true );
+                break;
+        }
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractScenario_setup ( Simulator& simulator ) override {
+        
+        simulator.initializeMiners ( 3, 0, BASE_PORT );
+        simulator.setActive ( 2, 3, false );
+        simulator.initializeGenesis ();
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
+    }
+};
 
 //================================================================//
 // MinimalScenario
