@@ -239,70 +239,6 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::discoverMiners () {
-
-    // get miner URL list from ledger
-    set < string > miners = this->getLedger ().getMiners ();
-    set < string >::iterator minerIt = miners.begin ();
-    for ( ; minerIt != miners.end (); ++minerIt ) {
-        
-        string minerID = *minerIt;
-        if ( minerID == this->mMinerID ) {
-            if ( this->mURL.size () == 0 ) {
-                AccountODBM minerODBM ( this->getLedger (), *minerIt );
-                this->mURL = minerODBM.mMinerInfo.get ()->getURL ();
-            }
-            continue;
-        }
-        
-        if ( this->mRemoteMinersByID.find ( minerID ) == this->mRemoteMinersByID.cend ()) {
-            
-            AccountODBM minerODBM ( this->getLedger (), *minerIt );
-            string url = minerODBM.mMinerInfo.get ()->getURL ();
-            
-            if ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ()) {
-                this->mNewMinerURLs.insert ( url );
-            }
-        }
-    }
-    
-    // affirm miners for pending URLs
-    while ( this->mNewMinerURLs.size ()) {
-    
-        string url = *this->mNewMinerURLs.begin ();
-        
-        if (( this->mURL != url ) && ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ())) {
-        
-            shared_ptr < RemoteMiner > remoteMiner = make_shared < RemoteMiner >();
-            remoteMiner->mURL = url;
-            this->mRemoteMinersByURL [ url ] = remoteMiner;
-        }
-        this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
-    }
-    
-    // fetch miner info (if needed)
-    map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
-    for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
-    
-        shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt->second;
-        
-        if ( remoteMiner->canFetchInfo ()) {
-            remoteMiner->mIsBusy = true;
-            this->mMessenger->enqueueMinerInfoRequest ( remoteMinerIt->first );
-        }
-    }
-    
-    // poll network for miner URLs
-    if ( !this->mNetworkSearch ) {
-        set < string > urls = this->sampleActiveMinerURLs ( 1 );
-        if ( urls.size ()) {
-            this->mMessenger->enqueueExtendNetworkRequest ( *urls.cbegin ());
-            this->mNetworkSearch = true;
-        }
-    }
-}
-
-//----------------------------------------------------------------//
 void Miner::extend ( time_t now ) {
     
     // we can only extend the chain if we've already appended a provisional block.
@@ -341,12 +277,6 @@ BlockSearch* Miner::findBlockSearch ( const Digest& digest ) {
     if ( searchIt == this->mBlockSearches.cend ()) return NULL; // no search; bail.
     
     return &searchIt->second;
-}
-
-//----------------------------------------------------------------//
-const set < string >& Miner::getActiveMinerURLs () const {
-
-    return this->mActiveMinerURLs;
 }
 
 //----------------------------------------------------------------//
@@ -456,7 +386,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
 //----------------------------------------------------------------//
 bool Miner::isLazy () const {
 
-    return ( this->mActiveMinerURLs.size () == 0 );
+    return ( this->mContributors.size () == 0 );
 }
 
 //----------------------------------------------------------------//
@@ -616,9 +546,15 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
 //----------------------------------------------------------------//
 void Miner::report () const {
 
+    this->report ( this->mReportMode );
+}
+
+//----------------------------------------------------------------//
+void Miner::report ( ReportMode reportMode ) const {
+
     BlockTreeCursor ledgerCursor = *this->mBestBranchTag;
 
-    switch ( this->mReportMode ) {
+    switch ( reportMode ) {
     
         case REPORT_BEST_BRANCH: {
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
@@ -627,30 +563,11 @@ void Miner::report () const {
         
         case REPORT_ALL_BRANCHES: {
         
-            map < string, shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
-            for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
-            
-                const RemoteMiner& remoteMiner = *remoteMinerIt->second;
-                
-                if ( remoteMiner.mNetworkState != RemoteMiner::STATE_ONLINE ) {
-                    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: OFFLINE (%s)", remoteMiner.getMinerID ().c_str (), remoteMiner.getURL ().c_str ());
-                    continue;
-                }
-                
-                if ( !remoteMiner.mTag.hasCursor ()) {
-                    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: MISSING TAG", remoteMiner.getMinerID ().c_str ());
-                    continue;
-                }
-                
-                BlockTreeCursor remoteCursor = *remoteMiner.mTag;
-            
-                LGN_LOG ( VOL_FILTER_ROOT, INFO,
-                    "%s - %d: %s",
-                    remoteMiner.getMinerID ().c_str (),
-                    ( int )remoteCursor.getHeight (),
-                    remoteCursor.writeBranch ().c_str ()
-                );
+            set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
+            for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
+                ( *remoteMinerIt )->report ();
             }
+            
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
             break;
@@ -672,21 +589,28 @@ void Miner::reset () {
 }
 
 //----------------------------------------------------------------//
-set < string > Miner::sampleActiveMinerURLs ( size_t sampleSize ) const {
+set < shared_ptr < RemoteMiner >> Miner::sampleContributors ( size_t sampleSize ) const {
 
-    set < string > miners = this->mActiveMinerURLs;
-        
-    if ( sampleSize < miners.size ()) {
-        set < string > subset;
-        for ( size_t i = 0; i < sampleSize; ++i ) {
-            set < string >::iterator minerIt = miners.begin ();
-            advance ( minerIt, ( long )( UnsecureRandom::get ().random ( 0, miners.size () - 1 ))); // this doesn't need to be cryptographically random; keep it simple
-            subset.insert ( *minerIt );
-            miners.erase ( minerIt );
-        }
-        miners = subset;
+    return UnsecureRandom::get ().sampleSet < shared_ptr < RemoteMiner >> ( this->mContributors, sampleSize );
+}
+
+//----------------------------------------------------------------//
+set < shared_ptr < RemoteMiner >> Miner::sampleOnlineMiners ( size_t sampleSize ) const {
+
+    return UnsecureRandom::get ().sampleSet < shared_ptr < RemoteMiner >> ( this->mOnlineMiners, sampleSize );
+}
+
+//----------------------------------------------------------------//
+set < string > Miner::sampleOnlineMinerURLs ( size_t sampleSize ) const {
+
+    set < shared_ptr < RemoteMiner >> miners = this->sampleOnlineMiners ( sampleSize );
+    set < string > urls;
+    
+    set < shared_ptr < RemoteMiner >>::iterator minerIt = miners.begin ();
+    for ( ; minerIt != miners.end (); ++minerIt ) {
+        urls.insert (( *minerIt )->getURL ());
     }
-    return miners;
+    return urls;;
 }
 
 //----------------------------------------------------------------//
@@ -786,8 +710,8 @@ void Miner::step ( time_t now ) {
     
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
+    this->updateNetworkSearches ();
     this->mMessenger->sendRequests ();
-    this->report ();
 }
 
 //----------------------------------------------------------------//
@@ -856,21 +780,35 @@ void Miner::updateBlockSearches () {
 }
 
 //----------------------------------------------------------------//
+void Miner::updateNetworkSearches () {
+
+    // poll network for miner URLs
+    if ( !this->mNetworkSearch ) {
+        set < shared_ptr < RemoteMiner >> miners = this->sampleOnlineMiners ( 1 );
+        if ( miners.size ()) {
+            this->mMessenger->enqueueExtendNetworkRequest (( *miners.cbegin ())->getURL ());
+            this->mNetworkSearch = true;
+        }
+    }
+}
+
+//----------------------------------------------------------------//
 void Miner::updateRemoteMinerGroups () {
 
     this->mOnlineMiners.clear ();
-    this->mActiveMinerURLs.clear ();
+    this->mContributors.clear ();
     
     map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
     for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
     
         shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt->second;
-        if ( remoteMiner->mNetworkState != RemoteMiner::STATE_ONLINE ) continue;
         
-        this->mOnlineMiners.insert ( remoteMiner );
+        if ( remoteMiner->isOnline ()) {
+            this->mOnlineMiners.insert ( remoteMiner );
+        }
         
-        if ( remoteMiner->mTag.hasCursor ()) {
-            this->mActiveMinerURLs.insert ( remoteMiner->mURL );
+        if ( remoteMiner->isContributor ()) {
+            this->mContributors.insert ( remoteMiner );
         }
     }
 }
@@ -878,10 +816,49 @@ void Miner::updateRemoteMinerGroups () {
 //----------------------------------------------------------------//
 void Miner::updateRemoteMiners () {
     
-    this->discoverMiners ();
+    // get miner URL list from ledger
+    set < string > miners = this->getLedger ().getMiners ();
+    set < string >::iterator minerIt = miners.begin ();
+    for ( ; minerIt != miners.end (); ++minerIt ) {
+        
+        string minerID = *minerIt;
+        if ( minerID == this->mMinerID ) {
+            if ( this->mURL.size () == 0 ) {
+                AccountODBM minerODBM ( this->getLedger (), *minerIt );
+                this->mURL = minerODBM.mMinerInfo.get ()->getURL ();
+            }
+            continue;
+        }
+        
+        if ( this->mRemoteMinersByID.find ( minerID ) == this->mRemoteMinersByID.cend ()) {
+            
+            AccountODBM minerODBM ( this->getLedger (), *minerIt );
+            string url = minerODBM.mMinerInfo.get ()->getURL ();
+            
+            if ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ()) {
+                this->mNewMinerURLs.insert ( url );
+            }
+        }
+    }
     
-    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+    // affirm miners for pending URLs
+    while ( this->mNewMinerURLs.size ()) {
+    
+        string url = *this->mNewMinerURLs.begin ();
+        
+        if (( this->mURL != url ) && ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ())) {
+        
+            shared_ptr < RemoteMiner > remoteMiner = make_shared < RemoteMiner >();
+            remoteMiner->mURL = url;
+            this->mRemoteMinersByURL [ url ] = remoteMiner;
+            this->mRemoteMiners.insert ( remoteMiner );
+        }
+        this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
+    }
+    
+    // update miner state
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         remoteMiner->update ( *this->mMessenger );
     }

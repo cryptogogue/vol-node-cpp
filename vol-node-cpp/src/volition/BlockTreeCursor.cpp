@@ -159,12 +159,6 @@ bool BlockTreeCursor::isNew () const {
 }
 
 //----------------------------------------------------------------//
-bool BlockTreeCursor::isRefused () const {
-
-    return ( this->mMeta == META_REFUSED );
-}
-
-//----------------------------------------------------------------//
 void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
 
     if ( !maxDepth ) return;
@@ -183,10 +177,6 @@ void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
             
             case META_PROVISIONAL:
                 status = "*";
-                break;
-            
-            case META_REFUSED:
-                status = "#";
                 break;
             
             default:

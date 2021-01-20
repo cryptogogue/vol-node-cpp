@@ -25,31 +25,27 @@ private:
 
     string                      mMinerID;
 
+    //----------------------------------------------------------------//
+    void            processHeaders          ( Miner& miner, time_t now );
+
+
 public:
 
-    enum NetworkState {
-        STATE_NEW,
-        STATE_TIMEOUT,
-        STATE_ONLINE,
-        STATE_ERROR,
-        
-//        STATE_OFFLINE,
-//        STATE_EXTEND_HEADERS,
-//        STATE_REWIND_HEADERS,
-//        STATE_RETRY,
+    enum MinerState {
+        STATE_OFFLINE,              // offline for any reason; will retry
+        STATE_WAITING_FOR_INFO,     // waiting for miner ID
+        STATE_ONLINE,               // active and up to date with a valid branch
+        STATE_WAITING_FOR_HEADERS,  // waiting for miner ID
+        STATE_ERROR,                // unrecoverable error
     };
 
     string                      mURL;
     BlockTreeTag                mTag;
     BlockTreeTag                mImproved;
-    NetworkState                mNetworkState;
+    MinerState                  mState;
     string                      mMessage;
 
-    bool                        mIsBusy;
-
-    size_t                                              mHeight;
-    bool                                                mForward;
-    map < size_t, shared_ptr < const BlockHeader >>     mHeaderQueue;
+    list < shared_ptr < const BlockHeader >>    mHeaderList;
 
     GET ( string,       MinerID,        mMinerID )
     GET ( string,       URL,            mURL )
@@ -57,13 +53,15 @@ public:
     //----------------------------------------------------------------//
     bool            canFetchInfo            () const;
     bool            canFetchHeaders         () const;
+    bool            isContributor           () const;
+    bool            isOnline                () const;
     void            receiveResponse         ( Miner& miner, const MiningMessengerResponse& response, time_t now );
                     RemoteMiner             ();
                     ~RemoteMiner            ();
+    void            report                  () const;
     void            reset                   ();
     void            setError                ( string message = "" );
     void            setMinerID              ( string minerID );
-    void            updateHeaders           ( AbstractBlockTree& blockTree );
     void            update                  ( AbstractMiningMessenger& messenger );
 };
 

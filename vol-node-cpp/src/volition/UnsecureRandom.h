@@ -50,6 +50,28 @@ public:
     }
 
     //----------------------------------------------------------------//
+    template < typename TYPE >
+    std::set < TYPE > sampleSet ( std::set < TYPE > remaining, size_t sampleSize ) {
+                
+        if ( sampleSize && ( sampleSize < remaining.size ())) {
+            
+            std::set < TYPE > subset;
+            
+            for ( size_t i = 0; i < sampleSize; ++i ) {
+            
+                typename std::set < TYPE >::iterator sampleIt = remaining.begin ();
+                
+                std::advance ( sampleIt, ( long )( this->random ( 0, remaining.size () - 1 )));
+                
+                subset.insert ( *sampleIt );
+                remaining.erase ( sampleIt );
+            }
+            return subset;
+        }
+        return remaining;
+    }
+
+    //----------------------------------------------------------------//
     UnsecureRandom () :
         mPRNG ( 0 ),
         mUniformDistribution ( 0, 1 ) {

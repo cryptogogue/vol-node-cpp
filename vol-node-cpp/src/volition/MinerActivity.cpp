@@ -24,6 +24,7 @@ void MinerActivity::runActivity () {
         
         try {
             this->step ( now );
+            this->report ();
         }
         catch ( Poco::Exception& exc ) {
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "Caught exception in MinerActivity::runActivity ()" );

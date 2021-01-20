@@ -132,10 +132,14 @@ protected:
     MinerConfig                                     mConfig;
     
     set < string >                                  mNewMinerURLs;
-    set < string >                                  mActiveMinerURLs;
+    
+    set < shared_ptr < RemoteMiner >>               mRemoteMiners;
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByID;
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByURL;
+    
     set < shared_ptr < RemoteMiner >>               mOnlineMiners;
+    set < shared_ptr < RemoteMiner >>               mContributors;
+    
     map < string, BlockSearch >                     mBlockSearches;
     bool                                            mNetworkSearch;
     
@@ -175,12 +179,14 @@ protected:
     BlockSearch*                        findBlockSearch             ( const Digest& digest );
     BlockTreeCursor                     improveBranch               ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
-    void                                report                      () const;
+    set < shared_ptr < RemoteMiner >>   sampleContributors          ( size_t sampleSize ) const;
+    set < shared_ptr < RemoteMiner >>   sampleOnlineMiners          ( size_t sampleSize ) const;
     void                                saveChain                   ();
     void                                saveConfig                  ();
     void                                scheduleReport              ();
     void                                updateBestBranch            ( time_t now );
     void                                updateBlockSearches         ();
+    void                                updateNetworkSearches       ();
     void                                updateRemoteMinerGroups     ();
     void                                updateRemoteMiners          ();
 
@@ -232,7 +238,6 @@ public:
     bool                                checkBestBranch             ( string miners ) const;
     size_t                              countBranches               () const;
     void                                extend                      ( time_t now );
-    const set < string >&               getActiveMinerURLs          () const;
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
     TransactionStatus                   getTransactionStatus        ( string accountName, string uuid ) const;
@@ -247,7 +252,7 @@ public:
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                pruneTransactions           ();
     void                                reset                       ();
-    set < string >                      sampleActiveMinerURLs       ( size_t sampleSize ) const;
+    set < string >                      sampleOnlineMinerURLs       ( size_t sampleSize = 0 ) const;
     void                                setGenesis                  ( shared_ptr < const Block > block );
     void                                setMinimumGratuity          ( u64 minimumGratuity );
     void                                setMute                     ( bool paused );
@@ -255,6 +260,8 @@ public:
     void                                setVerbose                  ( bool verbose = true );
     void                                shutdown                    ( bool kill = false );
     void                                step                        ( time_t now );
+    void                                report                      () const;
+    void                                report                      ( ReportMode reportMode ) const;
 };
 
 //================================================================//

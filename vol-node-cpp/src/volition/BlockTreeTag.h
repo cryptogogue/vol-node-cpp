@@ -50,6 +50,7 @@ public:
     bool                        equals                          ( const BlockTreeTag& rhs ) const;
     BlockTreeCursor             getCursor                       () const;
     bool                        hasCursor                       () const;
+    bool                        hasTree                         () const;
     bool                        hasName                         () const;
     void                        reset                           ();
 };

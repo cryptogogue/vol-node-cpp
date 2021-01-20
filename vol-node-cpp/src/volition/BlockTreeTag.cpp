@@ -62,6 +62,12 @@ bool BlockTreeTag::hasCursor () const {
 }
 
 //----------------------------------------------------------------//
+bool BlockTreeTag::hasTree () const {
+
+    return ( this->mTree != NULL );
+}
+
+//----------------------------------------------------------------//
 bool BlockTreeTag::hasName () const {
 
     return ( this->mName.size () > 0 );

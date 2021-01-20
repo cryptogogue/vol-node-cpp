@@ -20,19 +20,20 @@ protected:
     Poco::ThreadPool                    mThreadPool;
 
     //----------------------------------------------------------------//
-    void        onTaskCancelledNotification                 ( Poco::TaskCancelledNotification* pNf );
-    void        onTaskFailedNotification                    ( Poco::TaskFailedNotification* pNf );
-    void        onTaskFinishedNotification                  ( Poco::TaskFinishedNotification* pNf );
+    static void     deserailizeHeaderList                       ( const list < shared_ptr < const BlockHeader >>, Poco::JSON::Array::Ptr headersJSON );
+    void            onTaskCancelledNotification                 ( Poco::TaskCancelledNotification* pNf );
+    void            onTaskFailedNotification                    ( Poco::TaskFailedNotification* pNf );
+    void            onTaskFinishedNotification                  ( Poco::TaskFinishedNotification* pNf );
 
     //----------------------------------------------------------------//
-    void        AbstractMiningMessenger_await               () override;
-    void        AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) override;
+    void            AbstractMiningMessenger_await               () override;
+    void            AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) override;
 
 public:
 
     //----------------------------------------------------------------//
-                HTTPMiningMessenger         ();
-                ~HTTPMiningMessenger        ();
+                    HTTPMiningMessenger         ();
+                    ~HTTPMiningMessenger        ();
 
 };
 

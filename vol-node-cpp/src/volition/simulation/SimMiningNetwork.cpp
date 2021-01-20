@@ -114,25 +114,31 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_EXTEND_NETWORK: {
             
-            set < string > miners = miner->sampleActiveMinerURLs ( MINER_URL_BATCH_SIZE );
+            set < string > miners = miner->sampleOnlineMinerURLs ( MINER_URL_BATCH_SIZE );
             client->enqueueExtendNetworkResponse ( request, miners );
             break;
         }
         
-        case MiningMessengerRequest::REQUEST_HEADERS: {
+        case MiningMessengerRequest::REQUEST_LATEST_HEADERS: {
         
             BlockTreeCursor cursor = miner->getLedgerTag ();
             
             list < shared_ptr < const BlockHeader >> headers;
             while ( cursor.hasHeader () && ( headers.size () < HEADER_BATCH_SIZE )) {
-                headers.push_back ( make_shared < BlockHeader >( cursor.getHeader ()));
+                headers.push_front ( make_shared < BlockHeader >( cursor.getHeader ()));
                 cursor = cursor.getParent ();
             }
-            client->enqueueHeaderResponse ( request, headers );
+            client->enqueueLatestHeadersResponse ( request, headers );
             break;
         }
         
-        case MiningMessengerRequest::REQUEST_PREV_HEADERS: {
+        case MiningMessengerRequest::REQUEST_MINER_INFO: {
+        
+            client->enqueueMinerInfoResponse ( request, minerID, miner->getURL ());
+            break;
+        }
+        
+        case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS: {
             
             BlockTreeCursor cursor = miner->getLedgerTag ();
             
@@ -142,17 +148,11 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             list < shared_ptr < const BlockHeader >> headers;
             while ( cursor.hasHeader () && ( base <= cursor.getHeight ())) {
                 if ( cursor.getHeight () < top ) {
-                    headers.push_back ( make_shared < BlockHeader >( cursor.getHeader ()));
+                    headers.push_front ( make_shared < BlockHeader >( cursor.getHeader ()));
                 }
                 cursor = cursor.getParent ();
             }
-            client->enqueueHeaderResponse ( request, headers );
-            break;
-        }
-        
-        case MiningMessengerRequest::REQUEST_MINER_INFO: {
-        
-            client->enqueueMinerInfoResponse ( request, minerID, miner->getURL ());
+            client->enqueuePreviousHeadersResponse ( request, headers );
             break;
         }
         

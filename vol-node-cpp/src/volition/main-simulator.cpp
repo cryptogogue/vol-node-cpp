@@ -68,7 +68,7 @@ protected:
         
         simulator.initializeMiners ( 2, 0, BASE_PORT );
         simulator.initializeGenesis ();
-        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
+        simulator.setReportMode ( Simulator::REPORT_ALL_MINERS_VERBOSE );
     }
 };
 

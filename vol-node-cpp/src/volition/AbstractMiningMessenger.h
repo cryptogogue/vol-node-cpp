@@ -20,7 +20,8 @@ public:
         UNKNOWN,
         REQUEST_BLOCK,
         REQUEST_EXTEND_NETWORK,
-        REQUEST_HEADERS,
+        REQUEST_LATEST_HEADERS,
+        REQUEST_PREVIOUS_HEADERS,
         REQUEST_MINER_INFO,
         REQUEST_PREV_HEADERS,
     };
@@ -186,15 +187,14 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void enqueueHeaderRequest ( string minerURL, size_t height, bool forward = true ) {
+    void enqueueLatestHeadersRequest ( string minerURL ) {
         
-        MiningMessengerRequest request ( minerURL, forward ? MiningMessengerRequest::REQUEST_HEADERS : MiningMessengerRequest::REQUEST_PREV_HEADERS );
-        request.mHeight     = height;
+        MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_LATEST_HEADERS );
         this->enqueueRequest ( request );
     }
 
     //----------------------------------------------------------------//
-    void enqueueHeaderResponse ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+    void enqueueLatestHeadersResponse ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
     
         MiningMessengerResponse response;
         response.mStatus    = MiningMessengerResponse::STATUS_OK;
@@ -218,6 +218,24 @@ public:
         response.mRequest   = request;
         response.mMinerID   = minerID;
         response.mURL       = url;
+        this->enqueueResponse ( response );
+    }
+
+    //----------------------------------------------------------------//
+    void enqueuePreviousHeadersRequest ( string minerURL, size_t height ) {
+        
+        MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS );
+        request.mHeight     = height;
+        this->enqueueRequest ( request );
+    }
+
+    //----------------------------------------------------------------//
+    void enqueuePreviousHeadersResponse ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+    
+        MiningMessengerResponse response;
+        response.mStatus    = MiningMessengerResponse::STATUS_OK;
+        response.mRequest   = request;
+        response.mHeaders   = headers;
         this->enqueueResponse ( response );
     }
 

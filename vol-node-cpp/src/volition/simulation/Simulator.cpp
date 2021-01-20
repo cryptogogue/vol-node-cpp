@@ -195,9 +195,9 @@ void Simulator::report () {
         
             shared_ptr < Miner > miner = this->mMiners [ 0 ];
             BlockTreeCursor tail = miner->getBestProvisional ();
-                
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
             
+            miner->report ( Miner::REPORT_ALL_BRANCHES );
+                        
             break;
         }
             
@@ -226,6 +226,22 @@ void Simulator::report () {
             
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
         
+            break;
+        }
+        
+        case REPORT_ALL_MINERS_VERBOSE: {
+        
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "----------------------------------------------------------------" );
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "STEP: %d", ( int )this->mStepCount );
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
+            
+            for ( size_t i = 0; i < this->mMiners.size (); ++i ) {
+            
+                shared_ptr < Miner > miner = this->mMiners [ i ];
+                BlockTreeCursor tail = miner->getBestProvisional ();
+                
+                miner->report ( Miner::REPORT_ALL_BRANCHES );
+            }
             break;
         }
     }

@@ -10,14 +10,12 @@ enum kBlockTreeAppendResult {
     APPEND_OK,
     ALREADY_EXISTS,
     MISSING_PARENT,
-    REFUSED,
     TOO_SOON,
 };
 
 enum kBlockTreeEntryMeta {
     META_NONE,
     META_PROVISIONAL,
-    META_REFUSED,
 };
 
 enum kBlockTreeEntryStatus {

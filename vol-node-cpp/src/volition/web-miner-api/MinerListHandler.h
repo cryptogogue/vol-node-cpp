@@ -31,16 +31,16 @@ public:
         UNUSED ( jsonIn );
     
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        set < string > miners = ( this->optQuery ( "sample", "" ) == "random" ) ? this->mWebMiner->sampleActiveMinerURLs ( RANDOM_BATCH_SIZE ) : this->mWebMiner->getActiveMinerURLs ();
+        set < string > minerURLs = ( this->optQuery ( "sample", "" ) == "random" ) ? this->mWebMiner->sampleOnlineMinerURLs ( RANDOM_BATCH_SIZE ) : this->mWebMiner->sampleOnlineMinerURLs ();
         
-        SerializableList < string > minerList;
+        SerializableList < string > result;
         
-        set < string >::const_iterator minerIt = miners.cbegin ();
-        for ( ; minerIt != miners.cend (); ++minerIt ) {
-            minerList.push_back ( *minerIt );
+        set < string >::const_iterator urlIt = minerURLs.cbegin ();
+        for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
+            result.push_back ( *urlIt );
         }
         
-        jsonOut.set ( "miners", ToJSONSerializer::toJSON ( minerList ));
+        jsonOut.set ( "miners", ToJSONSerializer::toJSON ( result ));
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

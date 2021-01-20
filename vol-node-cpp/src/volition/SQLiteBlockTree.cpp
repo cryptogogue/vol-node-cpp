@@ -241,7 +241,6 @@ string SQLiteBlockTree::stringFromMeta ( kBlockTreeEntryMeta meta ) {
 
     switch ( meta ) {
         case kBlockTreeEntryMeta::META_PROVISIONAL:     return "*";
-        case kBlockTreeEntryMeta::META_REFUSED:         return "#";
         case kBlockTreeEntryMeta::META_NONE:            return ".";
     }
     return "";
@@ -266,7 +265,6 @@ kBlockTreeEntryMeta SQLiteBlockTree::stringToMeta ( string str ) {
 
     switch ( c ) {
         case '*':       return kBlockTreeEntryMeta::META_PROVISIONAL;
-        case '#':       return kBlockTreeEntryMeta::META_REFUSED;
         case '.':       return kBlockTreeEntryMeta::META_NONE;
     }
     return kBlockTreeEntryMeta::META_NONE;

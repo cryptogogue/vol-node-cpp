@@ -31,6 +31,7 @@ public:
         REPORT_SINGLE_MINER,
         REPORT_SINGLE_MINER_VS_OPTIMAL,
         REPORT_ALL_MINERS,
+        REPORT_ALL_MINERS_VERBOSE,
     };
 
 protected:
