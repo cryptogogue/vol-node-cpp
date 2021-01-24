@@ -85,7 +85,7 @@ void BlockSearch::step ( shared_ptr < RemoteMiner > remoteMiner ) {
 //----------------------------------------------------------------//
 void Miner::affirmBlockSearch ( BlockTreeCursor cursor ) {
 
-    if ( cursor.getBlock ()) return;
+    if ( cursor.hasBlock ()) return;
 
     string hash = cursor.getDigest ();
     if ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ()) return; // already searching
@@ -97,8 +97,8 @@ void Miner::affirmBlockSearch ( BlockTreeCursor cursor ) {
 //----------------------------------------------------------------//
 void Miner::affirmBranchSearch ( BlockTreeCursor cursor ) {
 
-    while ( cursor.hasHeader () && ( cursor.getBlock () == NULL )) {
-        if ( cursor.getMinerID () != this->mMinerID ) {
+    while ( !cursor.isComplete ()) {
+        if ( !cursor.hasBlock ()) {
             this->affirmBlockSearch ( cursor );
         }
         cursor = cursor.getParent ();
@@ -557,18 +557,21 @@ void Miner::report ( ReportMode reportMode ) const {
     switch ( reportMode ) {
     
         case REPORT_BEST_BRANCH: {
+        
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
             break;
         }
         
         case REPORT_ALL_BRANCHES: {
         
-            set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mRemoteMiners.begin ();
-            for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
-                ( *remoteMinerIt )->report ();
+            map < string, shared_ptr < RemoteMiner >> ::const_iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
+            for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
+                remoteMinerIt->second->report ();
             }
             
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearches.size ());
+            LGN_LOG ( VOL_FILTER_ROOT, INFO, "LEDGER TAG: %s", this->getLedgerTag ().write ().c_str ());
             LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
             break;
         }
@@ -896,9 +899,14 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
         
         case MiningMessengerRequest::REQUEST_BLOCK: {
             
-            this->mBlockTree->update ( response.mBlock );
-            assert ( this->mBlockSearches.find ( request.mBlockDigest.toHex ()) != this->mBlockSearches.end ());
-            this->mBlockSearches [ request.mBlockDigest.toHex ()].step ( remoteMiner );
+            if ( response.mBlock ) {
+                this->mBlockTree->update ( response.mBlock );
+            }
+            
+            map < string, BlockSearch >::iterator blockSearchIt = this->mBlockSearches.find ( request.mBlockDigest.toHex ());
+            if ( blockSearchIt != this->mBlockSearches.end ()) {
+                blockSearchIt->second.step ( remoteMiner );
+            }
             break;
         }
         

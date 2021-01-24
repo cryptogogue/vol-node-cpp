@@ -1,0 +1,114 @@
+{
+    "height" : 0,
+    "time" : "1970-01-01T00:00:00UTC",
+    "transactions" : [
+        {
+            "bodyIn" : {
+
+                "type" : "GENESIS",
+
+                "identity" :                    "VOLITION_TEST_NET",
+                "maxBlockWeight" :              1024,
+                "blockDelayInSeconds" :         1,
+                "rewriteWindowInSeconds" :      30,
+
+                "accounts" : [
+                    {
+                        "name" :            "9090",
+                        "grant" :           1000000,
+                        "key" : {
+                            "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEbeoS+2ToK5C92wKnkuSI4gKFfXDdqbQI\nkC507t01tdxyLoal4hSKOCcgapeMVT8d9BkEDDkYyu2iOffJ40K7kQ==\n-----END PUBLIC KEY-----\n",
+                            "type" : "EC_PEM"
+                        },
+                        "minerInfo": {
+                            "url" :             "http:\/\/127.0.0.1:9090",
+                            "key" : {
+                                "publicKey" : "-----BEGIN RSA PUBLIC KEY-----\nMIICCgKCAgEAuMpcfQ3yIVFB1qB+3K\/d5nNyJCT1xqz+05luZSdXr0MLqszP52v8\n1NsS+9VemmPwvyvMjE+00hLTiS1RqysjPQxY8+nndotFeWjg1IJEOylUPDLtAWPY\nBF2h3KfniI675mEzJqTMHM9BnPnnXKjhRdxG6bBWkRmtb9uVUevmg5Mgu07Ncg\/A\ndtJHDS3Djc+b5hfXGU5DcO8NCSzeBHvwuQyEPx9OFkF9q1In9cOrs4OR2yaaalLY\nc9F+nMZxnv2PTeY18iYV03WUgzU35eafYTyanTSZSPKDpx3\/6JcIwt6u5gmCuQHU\nhlASmDXr1znVG5vVW4n5HcyNX+jfV5QIjnNx0q3edR6ii59nmxsqf7WwMDpMzuKM\nvt42fwrVdjO3fEK3gXOBBc+i84lGx7SrL44NHuUHcWv72UfCKCKNr+t\/HNUVmWN+\nqx2kOUGHcrXWWZYIybjjgrt7I4CQiSr1logrHh8SVM\/9XTBJEOuKTwBdpAwLdvlk\n90kCwVX7nK2s9YGx7WytZ92n3bNXkC37fg9WIPxsKBzitgZzxdde4Mp9s9SoLWII\n3K0Eowg7Ov7z099BHxk\/CKI\/zbZwy9liGwkhAykR\/8iViijmsqGTqVTsH9bYD8br\nCkBNYuZrJYjvIT1mTGn1roUQxR4kZmIWX5jpWLxanK1DFmUnKJlUOn0CAwEAAQ==\n-----END RSA PUBLIC KEY-----\n",
+                                "type" : "RSA_PEM"
+                            },
+                            "motto" :           "",
+                            "visage" : {
+                                "hashAlgorithm" : "SHA256",
+                                "signature" : "28a20b79ea3893a73d0787db8753fc2877019905c5129a2ffee6ffbf361b39b8fccd3b32766942919d0b6e4225ce2496759df1d6ef8db11bebfeda9d20d620594e6b55a7ea81215aab6d844f71b3ab070e9cc5c91ce122650e970b29aa3237a21341ade0dd326eaa23b1d5fecdd234f5409f5039f04c040b8c542c9689abf01ebdc12bb7c6306e2bd2721f2936a8fbd1a5f3538065b17108de9cb7ffc15f5f09c8836cac2157ec8786fb4bf3f30a731476db81aa708aeee27b37bb7cd863c966953a65e54a5389a004083c93ae55cbc9f461b1200f800763426c58da149964d389beefb07eab5690e3890ea3207adbf6dad4ee794990192791b9dd8513c57a83292b8219b2cce6facd2488a2f662cd7dc0a6c198c8de756dac627b0b25d65c26430a8f1ea93c3b6e671ebc84657939842e53d41222df7c7839ee7cf2cfba1d46f3b35a2e649700023648e8fa9ffc156f55028975d611fa56a36628da9d73bbb5385977a5a869b331dccb45abf99f3f70cddd01c6e12f5b0d813bb049dbf2c6db509226f21f481f71281f109f38d3b05304731d8d1109c9ae4f016b7762e391775aa9cb034c1c6b67a262b1101553eea6fe8888206aadbc0cdec27e8805188e3ca48716aa1d1e7adc3663f972268e3643f6a9fe1a55af5a3bf39ff9c4be4bcaf3a7abd72ae2f55bea0b68acb95f5c0275f3b3e778df5c49298ad32c3b9faf1371"
+                            }
+                        }
+                    },
+                    {
+                        "name" :            "9091",
+                        "grant" :           1000000,
+                        "key" : {
+                            "type" : "EC_PEM",
+                            "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n"
+                        },
+                        "minerInfo": {
+                            "url" :             "http:\/\/127.0.0.1:9091",
+                            "key" : {
+                                "publicKey" : "-----BEGIN RSA PUBLIC KEY-----\nMIICCgKCAgEAvxAJvdSZLPUnkRnj7InUCFWuCUaLz7O604mONQtCUotvUmoAEZJo\nGSvjQ4nRNhPYWvKx3oOWEgrW1JkmAzd9V2dviVMQLGKYYqZ1nMabxBlzdC9ueNFI\n+wkNFemU5fUXc8VAMU0++ZyB1jCamPhp+\/Kw4v0xbl50BQE+i1qv8pGgj2wz\/toS\nuSbAb3GtyWUAxusxCeCFYvO7ho11AQ8hxKRJG2n+rCQ14JlMIs8saxcWBUCyZger\ni8xzwZcfkux8WxnMe\/n99KRXkVZY88si8\/0c9oZiRn5qwVl28O22\/Fyd4v9x6V5j\nw0oBL+Sv5GQ12RTmrqLknUviZT+v0PpQHlfG03SdsoK+OZ9\/Buwvms9UxzXjFfax\n+xnVUH63QvFubHGTp5DXfDbSmsGL+ANWegGtG0fAGSjeuUC8FerbMHSYQ4irmZCl\n9LxL6TkKoCOp2KQLzNVg2php\/h4Roq7r68SWORjZ1sAoSIF2sPCjlx8EXv9E93cE\ndZD25\/a2hfHTJbXPFUhLKrHb0IOo\/WJbRaT\/hXbyuvdgjTl\/r47DrGS9c9fPoAtk\nLMGAmiaNa0BG0LPmv7H4SuRDdFNIjtsRJBFMgnfS3QXYr81u44EtqOplPJhqVP1q\nC8884e5ST6X\/R3dKaWmgiYpIviL6xExiaH3FOL9DWI\/b2+Vd+QM2MMcCAwEAAQ==\n-----END RSA PUBLIC KEY-----\n",
+                                "type" : "RSA_PEM"
+                            },
+                            "motto" :           "",
+                            "visage" : {
+                                "hashAlgorithm" : "SHA256",
+                                "signature" : "147e53ca126f263ede8011b42cadabcd522218c871e14898da68f498e5b5144c82fe5b56e1a7a639b1f02622306400ff1452d7305f57e19b1bcf1892bac17be337b36e8f837661f0e26d049d6a2159e2b9b9436194f083dc7434eab89ffb67c9e4a3777d00c868de31990de45b33a1911f1fa2b908df85a8a7e56fd8fc437377b396674c9f25c2b00d5940a6f76dd63a7a22cff7a01dc57bad12229b9499f7ff42a8b2698692a6d574de1e8a8cc2e31b0a48c18bdf3973d335ab9e6fc3924436e65a57341a06a8a6e5fc1bdea3bcd987af9b783d443836cd99155530f9cd085de1bc1a3c0efb18e21f94ee2235b4728f9b72589309e5c1286a780283d7fc080aeb5a85d585a723525bc574af60bcfb5aae0ababe6099e489bee85350a07fd9eaa3a983cefe2c84b5381ef6f019d6dd38f919f33e1b358fb2871d159337291a24f18af7bc0ffdcce84e2575ae827c3c2e1fd073ef0868b75e556e62a971f7d5347186238fd96787abfc91bd4b9e5a3268520fbe77638a044af4a08faa4d0d77be3dcdf0e8d7cbcea97f816fe91f2c0ec39d9a64a8628db2d5b9a5cb124297021eb1929c655a369f58521a705d26939c216664f2d69f03163bad6fc99e26c17ce1b6b05f8b498928f613d5a6176af0265f2f64f8d3a050e4df36785190e5ac7ae24836897bd6f85250f67d0f83ac414244c4fefd2c304f322888cae795e3949a99"
+                            }
+                        }
+                    },
+                    {
+                        "name" :            "9092",
+                        "grant" :           1000000,
+                        "key" : {
+                            "type" : "EC_PEM",
+                            "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n"
+                        },
+                        "minerInfo": {
+                            "url" :             "http:\/\/127.0.0.1:9092",
+                            "key" : {
+                                "publicKey" : "-----BEGIN RSA PUBLIC KEY-----\nMIICCgKCAgEAwGP5yFColzJa6KL\/La0pusS+RgmJRumhJb00Cs3DPGauZUlvfhVs\nRoCPmK+RMPXI+JFtTnSXacTq11YN1SAMUomyVvsg5JDzIuwZUxHdCAwP37V5Xv7F\nss8\/hwW2HgQpOChooRHuXABeh7KJ\/yH13NcCs2DGhgInj\/bU3bmNVhQaLs1\/1MRF\nDg5DznvmezV8C\/cOeszdMTn2vH8Ug5eSJ\/wuVoE4YXSA9WT53ifByHdngkevDwjT\n8XEamXr57mjhRcL+aJ8VoFS0OSk\/3BGof1FyRj0xw050+P09VGyToPA31ILrmUim\nmmRXYiRPnn4Ve+Jwa4Lcn2E7lT24Z4+Asw67GSsuz0EtBQ8JkxhCIKKNWfbD\/lKf\nMwqHIc\/vsl2qwQWc2L659f\/7Lwaqje5npNC8g\/Sa6b8iSk4y6FxwM5mH2vyfetgO\n32E4AkrCLcqd\/Auo6\/ZQidqkDVwne4N7hqny6m5nyUl7iVZ8zE8s5ATFS+3wx6zU\nC588ZWPPkrqGHBh9D83xNXwplExjvzWNe1bvbfblz9Kq0GFPGQHfHvMAGBxXffE4\n7eUMdRGMghVxw+k59az\/Z3WhhPlIhOoUiKO+W7oAfxzCEItmaY+sIVVLv9XQpJLB\nH2fWIvDA8Lrwvj6XFRlnGZX4vM4g2u2tz1tlcaHz0EaCTx7Q2P\/MQvkCAwEAAQ==\n-----END RSA PUBLIC KEY-----\n",
+                                "type" : "RSA_PEM"
+                            },
+                            "motto" :           "",
+                            "visage" : {
+                                "hashAlgorithm" : "SHA256",
+                                "signature" : "0ca5a5b36ea7b6591f09c52df19698e38c1c69f157bc843c28538bfdb85d810ef9250872a162d9d8377db023780a091b377b9725492b99200520bfcd2f5d81fd81866d97e2c7c412f801dee7513fbafb188b64e545cfa6195a38568932d782cd0e39be7601ab800e14972fa180b8c057799e25a1158e0bbefcb9a49de5edf0409b0cc10424853288d44ae2a6c553d4d9c0357846eba4a9e1af8b3998b0f480e0179add46a5601f51cf66332fa7972812dc2583efdbdc9e42c86d135f9bd322a22d997272b014365782e274e0fd46da1e530894b7b544d13ac2f2f253696ad56d8d15999382424c7cf417263a375c68ffffe5f2efd64db5cdc1652baac3a8ba241e8f1f6cdeee2892914c969955c8efdb8af1319fffd14ae80de84f82ead67a52f722ab06b14fb3b94f662f83b3285f8261bba7ba11d02bd6d4d536ce5e62753fb2509148b9e4e9fa9a5d3845d68dbdd30e5e9e988126210e2a12e3da227e20d9ecc2a14cc1c00c8fdfc644d815d9b485b8bdf081ea391f0663c10a0e9bc624f3f5292b9e461d51587c03f7e2c7d0c24d05c5efcd8ecae0c6b19935054f2b82444688f7746572230914adbfbcdcefce0f3824554b7f3b861edf9aa0e38b37f9f82756609313060d3482c0d318497a0b842bbdea4b654abcb362ec3a1ccf223c95a055a005882eee49ead1941ce2ea4b0d9295b16ad0c5d12b8d539011136e6d9f"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "9090"
+                },
+                "type" :            "SET_FEE_SCHEDULE",
+                "feeSchedule" : {
+                    "defaultProfile" : {
+                        "profitShare" : { "percent" : 15 },
+                        "transferTax" : { "percent" : 5 }
+                    },
+                    "transactionProfiles" : {
+                        "RUN_SCRIPT" : {
+                            "profitShare" : { "percent" : 35 },
+                            "transferTax" : { "percent" : 5 }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "9090"
+                },
+                "type" :            "SET_FEE_DISTRIBUTION_TABLE",
+                "distributionTable" : {
+                    "shares" : {
+                        "9090" : 75,
+                        "9091" : 25
+                    }
+                }
+            }
+        }
+    ]
+}

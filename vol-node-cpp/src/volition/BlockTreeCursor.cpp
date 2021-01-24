@@ -159,15 +159,7 @@ bool BlockTreeCursor::isNew () const {
 }
 
 //----------------------------------------------------------------//
-void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
-
-    if ( !maxDepth ) return;
-
-    BlockTreeCursor parent = this->getParent ();
-    if ( parent.hasHeader ()) {
-        parent.logBranchRecurse ( str, maxDepth - 1 );
-    }
-    const BlockHeader& header = *this->mHeader;
+void BlockTreeCursor::log ( string& str, string prefix ) const {
     
     cc8* status = "";
     
@@ -208,8 +200,21 @@ void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
     string charm = this->getCharmTag ();
     cc8* format = this->mHasBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
     
+    const BlockHeader& header = *this->mHeader;
     size_t height = header.getHeight ();
-    Format::write ( str, format, parent.hasHeader () ? ", " : "", ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
+    Format::write ( str, format, prefix.c_str (), ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
+}
+
+//----------------------------------------------------------------//
+void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
+
+    if ( !maxDepth ) return;
+
+    BlockTreeCursor parent = this->getParent ();
+    if ( parent.hasHeader ()) {
+        parent.logBranchRecurse ( str, maxDepth - 1 );
+    }
+    this->log ( str, parent.hasHeader () ? ", " : "" );
 }
 
 //----------------------------------------------------------------//
@@ -239,6 +244,14 @@ BlockTreeCursor BlockTreeCursor::trimMissing () const {
 BlockTreeCursor BlockTreeCursor::trimMissingOrInvalid () const {
 
     return this->trim (( kBlockTreeEntryStatus )( STATUS_MISSING | STATUS_INVALID ));
+}
+
+//----------------------------------------------------------------//
+string BlockTreeCursor::write () const {
+
+    string str;
+    this->log ( str );
+    return str;
 }
 
 //----------------------------------------------------------------//

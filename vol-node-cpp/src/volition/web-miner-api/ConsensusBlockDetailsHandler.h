@@ -38,8 +38,8 @@ public:
 
             if ( block ) {
                 jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
-                return Poco::Net::HTTPResponse::HTTP_OK;
             }
+            return Poco::Net::HTTPResponse::HTTP_OK;
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

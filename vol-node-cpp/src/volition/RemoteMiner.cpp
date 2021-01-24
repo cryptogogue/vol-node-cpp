@@ -162,7 +162,15 @@ void RemoteMiner::report () const {
         case STATE_WAITING_FOR_HEADERS:
             
             if ( this->mHeaderList.size ()) {
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: REWINDING", minerID );
+            
+                LGN_LOG (
+                    VOL_FILTER_ROOT,
+                    INFO,
+                    "%s [%d ... %d]: REWINDING",
+                    minerID,
+                    ( int )this->mHeaderList.front ()->getHeight (),
+                    ( int )this->mHeaderList.back ()->getHeight ()
+                );
             }
             else {
             
@@ -215,57 +223,6 @@ void RemoteMiner::setMinerID ( string minerID ) {
     this->mImproved.setName ( Format::write ( "~%s'", minerID.c_str ()));
 }
 
-////----------------------------------------------------------------//
-//void RemoteMiner::updateHeaders ( AbstractBlockTree& blockTree ) {
-//
-//    // process the queue
-//    size_t accepted = 0;
-//    if ( this->mHeaderQueue.size ()) {
-//
-//        // visit each header in the cache and try to apply it.
-//        while ( this->mHeaderQueue.size ()) {
-//
-//            shared_ptr < const BlockHeader > header = this->mHeaderQueue.begin ()->second;
-//
-//            kBlockTreeAppendResult canAppend = blockTree.checkAppend ( *header );
-//
-//            switch ( canAppend ) {
-//
-//                case kBlockTreeAppendResult::APPEND_OK:
-//                case kBlockTreeAppendResult::ALREADY_EXISTS:
-//                    blockTree.affirmHeader ( this->mTag, header );
-//                    this->mHeaderQueue.erase ( this->mHeaderQueue.begin ());
-//                    accepted++;
-//                    break;
-//
-//                case kBlockTreeAppendResult::MISSING_PARENT:
-//                    if ( accepted == 0 ) {
-//                        // if there's anything left in the queue, back up and get an earlier batch of blocks.
-//                        this->mHeight = this->mHeaderQueue.begin ()->second->getHeight ();
-//                        this->mState = STATE_REWINDING;
-//                        this->mTag.reset ();
-//                        this->mImproved.reset ();
-//                    }
-//                    else {
-//                        this->reset ();
-//                    }
-//                    return;
-//
-//                case kBlockTreeAppendResult::TOO_SOON:
-//                    this->reset ();
-//                    break;
-//            }
-//        }
-//    }
-//
-//    BlockTreeCursor bestCursor = this->mTag.getCursor ();
-//    if ( bestCursor.hasHeader ()) {
-//        // nothing in the queue, so get the next batch of blocks.
-//        this->mHeight = bestCursor.getHeight () + 1; // this doesn't really matter.
-//        this->mState = STATE_ACTIVE;
-//    }
-//}
-
 //----------------------------------------------------------------//
 void RemoteMiner::update ( AbstractMiningMessenger& messenger ) {
     
@@ -279,7 +236,7 @@ void RemoteMiner::update ( AbstractMiningMessenger& messenger ) {
         case STATE_ONLINE:
         
             if ( this->mHeaderList.size ()) {
-                messenger.enqueuePreviousHeadersRequest ( this->mURL, ( *this->mHeaderList.begin ())->getHeight ());
+                messenger.enqueuePreviousHeadersRequest ( this->mURL, ( *this->mHeaderList.begin ())->getHeight () - 1 );
             }
             else {
                 messenger.enqueueLatestHeadersRequest ( this->mURL );

@@ -53,7 +53,7 @@ private:
             Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
             Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
             session.setKeepAlive ( true );
-            session.setTimeout ( Poco::Timespan ( 30, 0 ));
+//            session.setTimeout ( Poco::Timespan ( 30, 0 ));
             session.sendRequest ( request );
             
             Poco::Net::HTTPResponse response;
@@ -275,12 +275,15 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
             
             case MiningMessengerRequest::REQUEST_BLOCK: {
             
+                shared_ptr < Block > block;
+                
                 Poco::JSON::Object::Ptr blockJSON = json ? json->getObject ( "block" ) : NULL;
                 if ( blockJSON ) {
-                    shared_ptr < Block > block = make_shared < Block >();
+                    block = make_shared < Block >();
                     FromJSONSerializer::fromJSON ( *block, *blockJSON );
-                    this->enqueueBlockResponse ( request, block );
                 }
+                this->enqueueBlockResponse ( request, block );
+                
                 break;
             }
             

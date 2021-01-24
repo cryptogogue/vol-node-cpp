@@ -32,6 +32,7 @@ protected:
     bool                                mHasBlock;
 
     //----------------------------------------------------------------//
+    void                                log                         ( string& str, string prefix = "" ) const;
     void                                logBranchRecurse            ( string& str, size_t maxDepth ) const;
 
     //----------------------------------------------------------------//
@@ -67,6 +68,7 @@ public:
     BlockTreeCursor                     trimInvalid                 () const;
     BlockTreeCursor                     trimMissing                 () const;
     BlockTreeCursor                     trimMissingOrInvalid        () const;
+    string                              write                       () const;
     string                              writeBranch                 ( size_t maxDepth = 3 ) const;
 };
 
