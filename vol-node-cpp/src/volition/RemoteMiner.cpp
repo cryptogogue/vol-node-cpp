@@ -100,33 +100,37 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
         case MiningMessengerRequest::REQUEST_LATEST_HEADERS:
         case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS: {
                                         
-            assert ( this->mState == STATE_WAITING_FOR_HEADERS );
+            if ( this->mState == STATE_WAITING_FOR_HEADERS ) {
             
-            // sanity check.
-            if (( this->mHeaderList.size () && response.mHeaders.size ()) && ( this->mHeaderList.front ()->getHeight () != ( response.mHeaders.back ()->getHeight () + 1 ))) {
-                this->mHeaderList.clear ();
+                // sanity check.
+                if (( this->mHeaderList.size () && response.mHeaders.size ()) && ( this->mHeaderList.front ()->getHeight () != ( response.mHeaders.back ()->getHeight () + 1 ))) {
+                    this->mHeaderList.clear ();
+                }
+                
+                // prepend the new batch of headers and process it.
+                this->mHeaderList.insert ( this->mHeaderList.begin (), response.mHeaders.cbegin (), response.mHeaders.cend ());
+                this->processHeaders ( miner, now );
+                
+                this->mState = STATE_ONLINE;
             }
-            
-            // prepend the new batch of headers and process it.
-            this->mHeaderList.insert ( this->mHeaderList.begin (), response.mHeaders.cbegin (), response.mHeaders.cend ());
-            this->processHeaders ( miner, now );
             break;
         }
         
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
 
-            assert ( this->mState == STATE_WAITING_FOR_INFO );
+            if ( this->mState == STATE_WAITING_FOR_INFO ) {
 
-            this->setMinerID ( response.mMinerID );
-            miner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
+                this->setMinerID ( response.mMinerID );
+                miner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
+                
+                this->mState = STATE_ONLINE;
+            }
             break;
         }
         
         default:
             break;
     }
-    
-    this->mState = STATE_ONLINE;
 }
 
 //----------------------------------------------------------------//

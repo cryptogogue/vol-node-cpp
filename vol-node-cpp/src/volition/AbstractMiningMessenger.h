@@ -138,7 +138,7 @@ public:
     void await () {
     
         this->AbstractMiningMessenger_await ();
-    }
+    }  
 
     //----------------------------------------------------------------//
     void enqueueBlockRequest ( string minerURL, const Digest& digest, u64 height, string debug = "" ) {
@@ -248,7 +248,7 @@ public:
             requests = this->mRequestQueue;
             this->mRequestQueue.clear ();
         }
-        
+                
         for ( ; requests.size (); requests.pop_front ()) {
             const MiningMessengerRequest& request = requests.front ();
             this->AbstractMiningMessenger_sendRequest ( request );

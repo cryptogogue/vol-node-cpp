@@ -693,7 +693,7 @@ void Miner::step ( time_t now ) {
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
     this->affirmMessenger ();
-    this->mMessenger->await ();
+//    this->mMessenger->await ();
     this->mMessenger->receiveResponses ( *this, now );
     this->updateRemoteMinerGroups ();
     
@@ -711,7 +711,13 @@ void Miner::step ( time_t now ) {
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
     this->updateNetworkSearches ();
-    this->mMessenger->sendRequests ();
+    
+    try {
+        this->mMessenger->sendRequests ();
+    }
+    catch ( Poco::Exception& exc ) {
+        LGN_LOG ( VOL_FILTER_ROOT, INFO, "Caught exception in MinerActivity::runActivity ()" );
+    }
 }
 
 //----------------------------------------------------------------//

@@ -3,8 +3,30 @@
 
 #include <volition/Block.h>
 #include <volition/HTTPMiningMessenger.h>
+#include <volition/UnsecureRandom.h>
 
 namespace Volition {
+
+//================================================================//
+// HTTPMiningMessengerRequestQueue
+//================================================================//
+
+//----------------------------------------------------------------//
+HTTPMiningMessengerRequestQueue::HTTPMiningMessengerRequestQueue () :
+    mActiveCount ( 0 ),
+    mRawWeight ( 0 ),
+    mWeight ( 0.0 ) {
+}
+
+//----------------------------------------------------------------//
+HTTPMiningMessengerRequestQueue::~HTTPMiningMessengerRequestQueue () {
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessengerRequestQueue::pushRequest ( const MiningMessengerRequest& request ) {
+
+    this->mPending.push_back ( request );
+}
 
 //================================================================//
 // HTTPGetJSONTask
@@ -72,14 +94,23 @@ public:
 //================================================================//
 
 //----------------------------------------------------------------//
-void HTTPMiningMessenger::deserailizeHeaderList ( const list < shared_ptr < const BlockHeader >>, Poco::JSON::Array::Ptr headersJSON ) {
+void HTTPMiningMessenger::completeRequest ( const MiningMessengerRequest& request ) {
+    Poco::ScopedLock < Poco::Mutex > lock ( this->mMutex );
+
+    this->mQueues [ this->getQueueIndex ( request )].mActiveCount--;
+    this->mTotalActive--;
+    
+    this->pumpQueues ();
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::deserailizeHeaderList ( list < shared_ptr < const BlockHeader >>& responseHeaders, Poco::JSON::Array::Ptr headersJSON ) {
 
     assert ( headersJSON );
 
     SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
     FromJSONSerializer::fromJSON ( headers, *headersJSON );
     
-    list < shared_ptr < const BlockHeader >> responseHeaders;
     SerializableList < SerializableSharedConstPtr < BlockHeader >>::const_iterator headersIt = headers.cbegin ();
     for ( ; headersIt != headers.cend (); ++headersIt ) {
         responseHeaders.push_back ( *headersIt );
@@ -87,146 +118,51 @@ void HTTPMiningMessenger::deserailizeHeaderList ( const list < shared_ptr < cons
 }
 
 //----------------------------------------------------------------//
-HTTPMiningMessenger::HTTPMiningMessenger () :
-    mTaskManager ( this->mThreadPool ) {
-    
-    this->mTaskManager.addObserver (
-        Poco::Observer < HTTPMiningMessenger, Poco::TaskFinishedNotification > ( *this, &HTTPMiningMessenger::onTaskFinishedNotification )
-    );
-    
-    this->mTaskManager.addObserver (
-        Poco::Observer < HTTPMiningMessenger, Poco::TaskCancelledNotification > ( *this, &HTTPMiningMessenger::onTaskCancelledNotification )
-    );
+size_t HTTPMiningMessenger::getQueueIndex ( const MiningMessengerRequest& request ) const {
 
-    this->mTaskManager.addObserver (
-        Poco::Observer < HTTPMiningMessenger, Poco::TaskFailedNotification > ( *this, &HTTPMiningMessenger::onTaskFailedNotification )
-    );
-}
+    switch ( request.mRequestType ) {
+        
+        case MiningMessengerRequest::REQUEST_BLOCK:
+            return BLOCK_QUEUE_INDEX;
 
-//----------------------------------------------------------------//
-HTTPMiningMessenger::~HTTPMiningMessenger () {
-
-    this->mTaskManager.cancelAll ();
-    this->mTaskManager.joinAll ();
-}
-
-//----------------------------------------------------------------//
-void HTTPMiningMessenger::onTaskCancelledNotification ( Poco::TaskCancelledNotification* pNf ) {
+        case MiningMessengerRequest::REQUEST_EXTEND_NETWORK:
+            return TOPOLOGY_QUEUE_INDEX;
     
-    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
-    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
-    
-    if ( task ) {
-        const MiningMessengerRequest& request = task->mUserData;
-        this->enqueueErrorResponse ( request );
+        case MiningMessengerRequest::REQUEST_LATEST_HEADERS:
+        case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS:
+            return HEADER_QUEUE_INDEX;
+        
+        case MiningMessengerRequest::REQUEST_MINER_INFO:
+            return INFO_QUEUE_INDEX;
+
+        default:
+            break;
     }
-}
-
-//----------------------------------------------------------------//
-void HTTPMiningMessenger::onTaskFailedNotification ( Poco::TaskFailedNotification* pNf ) {
-        
-    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
-    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
     
-    if ( task ) {
-        const MiningMessengerRequest& request = task->mUserData;
-        this->enqueueErrorResponse ( request );
-    }
+    assert ( false );
+    return TOTAL_QUEUES;
 }
 
 //----------------------------------------------------------------//
-void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotification* pNf ) {
+size_t HTTPMiningMessenger::getQueueRawWeight ( size_t index ) const {
 
-    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
-    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
+    switch ( index ) {
+        
+        case BLOCK_QUEUE_INDEX:         return BLOCK_QUEUE_WEIGHT;
+        case HEADER_QUEUE_INDEX:        return HEADER_QUEUE_WEIGHT;
+        case INFO_QUEUE_INDEX:          return INFO_QUEUE_WEIGHT;
+        case TOPOLOGY_QUEUE_INDEX:      return TOPOLOGY_QUEUE_WEIGHT;
+
+        default: break;
+    }
     
-    if ( task ) {
-        
-        const MiningMessengerRequest& request = task->mUserData;
-        Poco::JSON::Object::Ptr json = task->mJSON;
-        
-        if ( json ) {
-        
-            switch ( request.mRequestType ) {
-                
-                case MiningMessengerRequest::REQUEST_BLOCK: {
-                
-                    Poco::JSON::Object::Ptr blockJSON = json ? json->getObject ( "block" ) : NULL;
-                    if ( blockJSON ) {
-                        shared_ptr < Block > block = make_shared < Block >();
-                        FromJSONSerializer::fromJSON ( *block, *blockJSON );
-                        this->enqueueBlockResponse ( request, block );
-                    }
-                    break;
-                }
-                
-                case MiningMessengerRequest::REQUEST_EXTEND_NETWORK: {
-                
-                    Poco::JSON::Array::Ptr minerListJSON = json ? json->getArray ( "miners" ) : NULL;
-                    if ( minerListJSON ) {
-                        SerializableSet < string > minerSet;
-                        FromJSONSerializer::fromJSON ( minerSet, *minerListJSON );
-                        this->enqueueExtendNetworkResponse ( request, minerSet );
-                    }
-                    break;
-                }
-                
-                case MiningMessengerRequest::REQUEST_LATEST_HEADERS: {
-                
-                    Poco::JSON::Array::Ptr headersJSON = json ? json->getArray ( "headers" ) : NULL;
-                    if ( headersJSON ) {
-                        list < shared_ptr < const BlockHeader >> responseHeaders;
-                        HTTPMiningMessenger::deserailizeHeaderList ( responseHeaders, headersJSON );
-                        this->enqueueLatestHeadersResponse ( request, responseHeaders );
-                    }
-                    break;
-                }
-                
-                case MiningMessengerRequest::REQUEST_MINER_INFO: {
-                
-                    Poco::JSON::Object::Ptr nodeJSON = json ? json->getObject ( "node" ) : NULL;
-                    if ( nodeJSON ) {
-                        string minerID  = nodeJSON->optValue < string >( "minerID", "" );
-                        this->enqueueMinerInfoResponse ( request, minerID, request.mMinerURL );
-                    }
-                    break;
-                }
-                
-                case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS: {
-                
-                    Poco::JSON::Array::Ptr headersJSON = json ? json->getArray ( "headers" ) : NULL;
-                    if ( headersJSON ) {
-                        list < shared_ptr < const BlockHeader >> responseHeaders;
-                        HTTPMiningMessenger::deserailizeHeaderList ( responseHeaders, headersJSON );
-                        this->enqueuePreviousHeadersResponse ( request, responseHeaders );
-                    }
-                    break;
-                }
-                
-                default:
-                    this->enqueueErrorResponse ( request );
-                    break;
-            }
-        }
-        else {
-            this->enqueueErrorResponse ( request );
-        }
-    }
-}
-
-//================================================================//
-// virtual
-//================================================================//
-
-//----------------------------------------------------------------//
-void HTTPMiningMessenger::AbstractMiningMessenger_await () {
-
-    this->mThreadPool.joinAll ();
+    assert ( false );
+    return 0;
 }
 
 //----------------------------------------------------------------//
-void HTTPMiningMessenger::AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) {
-        
+string HTTPMiningMessenger::getRequestURL ( const MiningMessengerRequest& request ) const {
+
     string url;
 
     switch ( request.mRequestType ) {
@@ -255,8 +191,241 @@ void HTTPMiningMessenger::AbstractMiningMessenger_sendRequest ( const MiningMess
             assert ( false );
             break;
     }
+    
+    return url;
+}
 
+//----------------------------------------------------------------//
+HTTPMiningMessenger::HTTPMiningMessenger () :
+    mTaskManager ( this->mThreadPool ),
+    mTotalPending ( 0 ),
+    mTotalActive ( 0 ) {
+    
+    this->mTaskManager.addObserver (
+        Poco::Observer < HTTPMiningMessenger, Poco::TaskFinishedNotification > ( *this, &HTTPMiningMessenger::onTaskFinishedNotification )
+    );
+    
+    this->mTaskManager.addObserver (
+        Poco::Observer < HTTPMiningMessenger, Poco::TaskCancelledNotification > ( *this, &HTTPMiningMessenger::onTaskCancelledNotification )
+    );
+
+    this->mTaskManager.addObserver (
+        Poco::Observer < HTTPMiningMessenger, Poco::TaskFailedNotification > ( *this, &HTTPMiningMessenger::onTaskFailedNotification )
+    );
+    
+    size_t totalWeight = 0;
+    
+    for ( size_t i = 0; i < TOTAL_QUEUES; ++i ) {
+        HTTPMiningMessengerRequestQueue& queue = this->mQueues [ i ];
+        queue.mRawWeight = this->getQueueRawWeight ( i );
+        totalWeight += queue.mRawWeight;
+    }
+    
+    for ( size_t i = 0; i < TOTAL_QUEUES; ++i ) {
+        HTTPMiningMessengerRequestQueue& queue = this->mQueues [ i ];
+        queue.mWeight = (( double )queue.mRawWeight / ( double )totalWeight );
+    }
+}
+
+//----------------------------------------------------------------//
+HTTPMiningMessenger::~HTTPMiningMessenger () {
+
+    this->mTaskManager.cancelAll ();
+    this->mTaskManager.joinAll ();
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::onTaskCancelledNotification ( Poco::TaskCancelledNotification* pNf ) {
+    
+    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
+    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
+    
+    assert ( task );
+    
+    const MiningMessengerRequest& request = task->mUserData;
+    this->enqueueErrorResponse ( request );
+    this->completeRequest ( request );
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::onTaskFailedNotification ( Poco::TaskFailedNotification* pNf ) {
+        
+    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
+    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
+    
+    const MiningMessengerRequest& request = task->mUserData;
+    this->enqueueErrorResponse ( request );
+    this->completeRequest ( request );
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotification* pNf ) {
+
+    Poco::TaskManager::TaskPtr taskPtr = pNf->task (); // TODO: this bullshit right here. pNf->task () increments the ref count. because of course it does.
+    HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
+    
+    assert ( task );
+        
+    const MiningMessengerRequest& request = task->mUserData;
+    Poco::JSON::Object::Ptr json = task->mJSON;
+    
+    if ( json ) {
+    
+        switch ( request.mRequestType ) {
+            
+            case MiningMessengerRequest::REQUEST_BLOCK: {
+            
+                Poco::JSON::Object::Ptr blockJSON = json ? json->getObject ( "block" ) : NULL;
+                if ( blockJSON ) {
+                    shared_ptr < Block > block = make_shared < Block >();
+                    FromJSONSerializer::fromJSON ( *block, *blockJSON );
+                    this->enqueueBlockResponse ( request, block );
+                }
+                break;
+            }
+            
+            case MiningMessengerRequest::REQUEST_EXTEND_NETWORK: {
+            
+                Poco::JSON::Array::Ptr minerListJSON = json ? json->getArray ( "miners" ) : NULL;
+                if ( minerListJSON ) {
+                    SerializableSet < string > minerSet;
+                    FromJSONSerializer::fromJSON ( minerSet, *minerListJSON );
+                    this->enqueueExtendNetworkResponse ( request, minerSet );
+                }
+                break;
+            }
+            
+            case MiningMessengerRequest::REQUEST_LATEST_HEADERS: {
+            
+                Poco::JSON::Array::Ptr headersJSON = json ? json->getArray ( "headers" ) : NULL;
+                if ( headersJSON ) {
+                    list < shared_ptr < const BlockHeader >> responseHeaders;
+                    HTTPMiningMessenger::deserailizeHeaderList ( responseHeaders, headersJSON );
+                    this->enqueueLatestHeadersResponse ( request, responseHeaders );
+                }
+                break;
+            }
+            
+            case MiningMessengerRequest::REQUEST_MINER_INFO: {
+            
+                Poco::JSON::Object::Ptr nodeJSON = json ? json->getObject ( "node" ) : NULL;
+                if ( nodeJSON ) {
+                    string minerID  = nodeJSON->optValue < string >( "minerID", "" );
+                    this->enqueueMinerInfoResponse ( request, minerID, request.mMinerURL );
+                }
+                break;
+            }
+            
+            case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS: {
+            
+                Poco::JSON::Array::Ptr headersJSON = json ? json->getArray ( "headers" ) : NULL;
+                if ( headersJSON ) {
+                    list < shared_ptr < const BlockHeader >> responseHeaders;
+                    HTTPMiningMessenger::deserailizeHeaderList ( responseHeaders, headersJSON );
+                    this->enqueuePreviousHeadersResponse ( request, responseHeaders );
+                }
+                break;
+            }
+            
+            default:
+                this->enqueueErrorResponse ( request );
+                break;
+        }
+    }
+    else {
+        this->enqueueErrorResponse ( request );
+    }
+    
+    this->completeRequest ( request );
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::pumpQueues () {
+
+    // keep going until all available resources have been used.
+    while ( this->mTotalPending && this->mThreadPool.available ()) {
+
+        // we measure utilization as a percent of total resources, so that is active plus available.
+        size_t totalResources = this->mTotalActive + ( size_t )this->mThreadPool.available ();
+
+        set < HTTPMiningMessengerRequestQueue* > under;
+        set < HTTPMiningMessengerRequestQueue* > over;
+        
+        // loop through the queues and calculate utilization percentages. sort them into two
+        // pools: under their target percent or over.
+        for ( size_t i = 0; i < TOTAL_QUEUES; ++i ) {
+            
+            HTTPMiningMessengerRequestQueue& queue = this->mQueues [ i ];
+            if ( queue.mPending.size () == 0 ) continue; // ignore queues with nothing pending.
+            
+            // this is the current utilization percentage the queue's active requests againt total resources.
+            double weight = (( double )queue.mActiveCount / ( double )totalResources );
+            
+            // sort the queue into either underserved or overserved.
+            (( weight < queue.mWeight ) ? under : over ).insert ( &queue );
+        }
+
+        // if there are any underserved queues, choose those instead of overserved queues.
+        set < HTTPMiningMessengerRequestQueue* >& queues = under.size () ? under : over;
+        
+        // if mTotalPending is not zero, there *must* be pending requests, which means this *can't* be empty.
+        assert ( queues.size () != 0 );
+        
+        // now, while there are resources available, randomly select a queue, send the request and remove it.
+        while (( this->mThreadPool.available () > 0 ) && queues.size ()) {
+            set < HTTPMiningMessengerRequestQueue* >::iterator queueIt = queues.begin ();
+            std::advance ( queueIt, ( long )( UnsecureRandom::get ().random ( 0, queues.size () - 1 )));
+            this->sendRequest ( **queueIt );
+            queues.erase ( queueIt );
+        }
+        
+        // all of the queues in the set have been serviced; if there are still pending requests and
+        // resources available, rinse and repeat.
+    }
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::sendRequest ( HTTPMiningMessengerRequestQueue& queue ) {
+
+    assert ( queue.mPending.size ());
+
+    // pick a pending request at random
+    list < MiningMessengerRequest >::iterator requestIt = queue.mPending.begin ();
+    std::advance ( requestIt, ( long )( UnsecureRandom::get ().random ( 0, queue.mPending.size () - 1 )));
+
+    assert ( requestIt != queue.mPending.end ());
+
+    // send the request
+    MiningMessengerRequest& request = *requestIt;
+    string url = this->getRequestURL ( request );
     this->mTaskManager.start ( new HTTPGetJSONTask < MiningMessengerRequest >( request, url ));
+
+    // remove it from the queue and update the counts
+    queue.mPending.erase ( requestIt );
+    queue.mActiveCount++;
+    
+    this->mTotalActive++;
+    this->mTotalPending--;
+}
+
+//================================================================//
+// virtual
+//================================================================//
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::AbstractMiningMessenger_await () {
+
+    this->mThreadPool.joinAll ();
+}
+
+//----------------------------------------------------------------//
+void HTTPMiningMessenger::AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) {
+
+    Poco::ScopedLock < Poco::Mutex > lock ( this->mMutex );
+
+    this->mQueues [ this->getQueueIndex ( request )].pushRequest ( request );
+    this->mTotalPending++;
+    this->pumpQueues ();
 }
 
 } // namespace Volition
