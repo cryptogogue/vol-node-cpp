@@ -28,21 +28,19 @@ bool RemoteMiner::isOnline () const {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::processHeaders ( Miner& miner, time_t now ) {
+void RemoteMiner::processHeaders ( Miner& miner, const MiningMessengerResponse& response, time_t now ) {
+    
+    const list < shared_ptr < const BlockHeader >>& headerList = response.mHeaders;
     
     AbstractBlockTree& blockTree = *miner.mBlockTree;
     
-    size_t accepted = 0;
-    while ( this->mHeaderList.size ()) {
-        
-        list < shared_ptr < const BlockHeader >>::const_iterator headerIt = this->mHeaderList.cbegin ();
-        
+    list < shared_ptr < const BlockHeader >>::const_iterator headerIt = headerList.begin ();
+    for ( ; headerIt != headerList.end (); ++headerIt ) {
+                
         shared_ptr < const BlockHeader > header = *headerIt;
         
-        if ( !header || ( now < header->getTime ())) {
-            this->mHeaderList.clear ();
-            return;
-        }
+        // ignore missing headers and headers from the future.
+        if ( !header || ( now < header->getTime ())) return;
         
         // if genesis hashes don't match, we have a real problem.
         if (( header->getHeight () == 0 ) && ( header->getDigest ().toHex () != miner.mLedger->getGenesisHash ())) {
@@ -57,26 +55,20 @@ void RemoteMiner::processHeaders ( Miner& miner, time_t now ) {
             case kBlockTreeAppendResult::ALREADY_EXISTS:
             
                 blockTree.affirmHeader ( this->mTag, header );
-                accepted++;
+                this->mHeight = header->getHeight ();
+                this->mRewind = 0;
                 break;
             
             case kBlockTreeAppendResult::MISSING_PARENT:
-            
-                if ( accepted == 0 ) {
-                    this->mTag.reset ();
-                    this->mImproved.reset ();
-                }
-                else {
-                    this->reset ();
-                }
+                
+                this->mRewind = this->mRewind ? this->mRewind : 1;
                 return;
             
             case kBlockTreeAppendResult::TOO_SOON:
-                this->reset ();
+                
+                this->mRewind = 0;
                 return;
         }
-        
-        this->mHeaderList.pop_front ();
     }
 }
 
@@ -97,20 +89,11 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
     
     switch ( request.mRequestType ) {
         
-        case MiningMessengerRequest::REQUEST_LATEST_HEADERS:
-        case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS: {
+        case MiningMessengerRequest::REQUEST_HEADERS: {
                                         
             if ( this->mState == STATE_WAITING_FOR_HEADERS ) {
-            
-                // sanity check.
-                if (( this->mHeaderList.size () && response.mHeaders.size ()) && ( this->mHeaderList.front ()->getHeight () != ( response.mHeaders.back ()->getHeight () + 1 ))) {
-                    this->mHeaderList.clear ();
-                }
                 
-                // prepend the new batch of headers and process it.
-                this->mHeaderList.insert ( this->mHeaderList.begin (), response.mHeaders.cbegin (), response.mHeaders.cend ());
-                this->processHeaders ( miner, now );
-                
+                this->processHeaders ( miner, response, now );
                 this->mState = STATE_ONLINE;
             }
             break;
@@ -119,7 +102,7 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
 
             if ( this->mState == STATE_WAITING_FOR_INFO ) {
-
+                
                 this->setMinerID ( response.mMinerID );
                 miner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
                 
@@ -135,7 +118,9 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
 
 //----------------------------------------------------------------//
 RemoteMiner::RemoteMiner () :
-    mState ( STATE_OFFLINE ) {
+    mState ( STATE_OFFLINE ),
+    mRewind ( 0 ),
+    mHeight ( 0 ) {
 }
 
 //----------------------------------------------------------------//
@@ -161,16 +146,8 @@ void RemoteMiner::report () const {
         case STATE_ONLINE:
         case STATE_WAITING_FOR_HEADERS:
             
-            if ( this->mHeaderList.size ()) {
-            
-                LGN_LOG (
-                    VOL_FILTER_ROOT,
-                    INFO,
-                    "%s [%d ... %d]: REWINDING",
-                    minerID,
-                    ( int )this->mHeaderList.front ()->getHeight (),
-                    ( int )this->mHeaderList.back ()->getHeight ()
-                );
+            if ( this->mRewind ) {
+                LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: REWINDING (height: %d)", minerID, ( int )this->mHeight );
             }
             else {
             
@@ -197,9 +174,6 @@ void RemoteMiner::report () const {
 
 //----------------------------------------------------------------//
 void RemoteMiner::reset () {
-
-    this->mHeaderList.clear ();
-
     this->mTag.reset ();
     this->mImproved.reset ();
 }
@@ -235,12 +209,17 @@ void RemoteMiner::update ( AbstractMiningMessenger& messenger ) {
         
         case STATE_ONLINE:
         
-            if ( this->mHeaderList.size ()) {
-                messenger.enqueuePreviousHeadersRequest ( this->mURL, ( *this->mHeaderList.begin ())->getHeight () - 1 );
+            if ( this->mRewind ) {
+                if ( this->mRewind < this->mHeight ) {
+                    this->mHeight -= this->mRewind;
+                    this->mRewind = this->mRewind * 2;
+                }
+                else {
+                    this->mHeight = 0;
+                }
             }
-            else {
-                messenger.enqueueLatestHeadersRequest ( this->mURL );
-            }
+            
+            messenger.enqueueHeadersRequest ( this->mURL, this->mHeight );
             this->mState = STATE_WAITING_FOR_HEADERS;
             break;
         

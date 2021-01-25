@@ -1,17 +1,16 @@
 {
     "height" : 0,
     "time" : "1970-01-01T00:00:00UTC",
-    "blockDelay": 30,
-    "rewriteWindow": 600,
     "transactions" : [
         {
             "bodyIn" : {
+
                 "type" : "GENESIS",
 
                 "identity" :                    "VOLITION_TEST_NET",
                 "maxBlockWeight" :              1024,
                 "blockDelayInSeconds" :         1,
-                "rewriteWindowInSeconds" :      600,
+                "rewriteWindowInSeconds" :      30,
 
                 "accounts" : [
                     {
@@ -40,6 +39,18 @@
                         "key" : {
                             "type" : "EC_PEM",
                             "publicKey" : "-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAkeYtzyK6I9BNjB5MOBfbO7\/EAK1orGj\nzicNsAWY5t+6tDB9MY\/1datWY5LKOfmWZxmn58VE+K4XZCSQWa\/nZg==\n-----END PUBLIC KEY-----\n"
+                        },
+                        "minerInfo": {
+                            "url" :             "http:\/\/127.0.0.1:9091",
+                            "key" : {
+                                "publicKey" : "-----BEGIN RSA PUBLIC KEY-----\nMIICCgKCAgEAvxAJvdSZLPUnkRnj7InUCFWuCUaLz7O604mONQtCUotvUmoAEZJo\nGSvjQ4nRNhPYWvKx3oOWEgrW1JkmAzd9V2dviVMQLGKYYqZ1nMabxBlzdC9ueNFI\n+wkNFemU5fUXc8VAMU0++ZyB1jCamPhp+\/Kw4v0xbl50BQE+i1qv8pGgj2wz\/toS\nuSbAb3GtyWUAxusxCeCFYvO7ho11AQ8hxKRJG2n+rCQ14JlMIs8saxcWBUCyZger\ni8xzwZcfkux8WxnMe\/n99KRXkVZY88si8\/0c9oZiRn5qwVl28O22\/Fyd4v9x6V5j\nw0oBL+Sv5GQ12RTmrqLknUviZT+v0PpQHlfG03SdsoK+OZ9\/Buwvms9UxzXjFfax\n+xnVUH63QvFubHGTp5DXfDbSmsGL+ANWegGtG0fAGSjeuUC8FerbMHSYQ4irmZCl\n9LxL6TkKoCOp2KQLzNVg2php\/h4Roq7r68SWORjZ1sAoSIF2sPCjlx8EXv9E93cE\ndZD25\/a2hfHTJbXPFUhLKrHb0IOo\/WJbRaT\/hXbyuvdgjTl\/r47DrGS9c9fPoAtk\nLMGAmiaNa0BG0LPmv7H4SuRDdFNIjtsRJBFMgnfS3QXYr81u44EtqOplPJhqVP1q\nC8884e5ST6X\/R3dKaWmgiYpIviL6xExiaH3FOL9DWI\/b2+Vd+QM2MMcCAwEAAQ==\n-----END RSA PUBLIC KEY-----\n",
+                                "type" : "RSA_PEM"
+                            },
+                            "motto" :           "",
+                            "visage" : {
+                                "hashAlgorithm" : "SHA256",
+                                "signature" : "147e53ca126f263ede8011b42cadabcd522218c871e14898da68f498e5b5144c82fe5b56e1a7a639b1f02622306400ff1452d7305f57e19b1bcf1892bac17be337b36e8f837661f0e26d049d6a2159e2b9b9436194f083dc7434eab89ffb67c9e4a3777d00c868de31990de45b33a1911f1fa2b908df85a8a7e56fd8fc437377b396674c9f25c2b00d5940a6f76dd63a7a22cff7a01dc57bad12229b9499f7ff42a8b2698692a6d574de1e8a8cc2e31b0a48c18bdf3973d335ab9e6fc3924436e65a57341a06a8a6e5fc1bdea3bcd987af9b783d443836cd99155530f9cd085de1bc1a3c0efb18e21f94ee2235b4728f9b72589309e5c1286a780283d7fc080aeb5a85d585a723525bc574af60bcfb5aae0ababe6099e489bee85350a07fd9eaa3a983cefe2c84b5381ef6f019d6dd38f919f33e1b358fb2871d159337291a24f18af7bc0ffdcce84e2575ae827c3c2e1fd073ef0868b75e556e62a971f7d5347186238fd96787abfc91bd4b9e5a3268520fbe77638a044af4a08faa4d0d77be3dcdf0e8d7cbcea97f816fe91f2c0ec39d9a64a8628db2d5b9a5cb124297021eb1929c655a369f58521a705d26939c216664f2d69f03163bad6fc99e26c17ce1b6b05f8b498928f613d5a6176af0265f2f64f8d3a050e4df36785190e5ac7ae24836897bd6f85250f67d0f83ac414244c4fefd2c304f322888cae795e3949a99"
+                            }
                         }
                     }
                 ]

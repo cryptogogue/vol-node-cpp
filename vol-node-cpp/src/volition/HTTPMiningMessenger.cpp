@@ -128,8 +128,7 @@ size_t HTTPMiningMessenger::getQueueIndex ( const MiningMessengerRequest& reques
         case MiningMessengerRequest::REQUEST_EXTEND_NETWORK:
             return TOPOLOGY_QUEUE_INDEX;
     
-        case MiningMessengerRequest::REQUEST_LATEST_HEADERS:
-        case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS:
+        case MiningMessengerRequest::REQUEST_HEADERS:
             return HEADER_QUEUE_INDEX;
         
         case MiningMessengerRequest::REQUEST_MINER_INFO:
@@ -175,16 +174,12 @@ string HTTPMiningMessenger::getRequestURL ( const MiningMessengerRequest& reques
             Format::write ( url, "%s/miners?sample=random", request.mMinerURL.c_str ());
             break;
     
-        case MiningMessengerRequest::REQUEST_LATEST_HEADERS:
-            Format::write ( url, "%s/consensus/headers", request.mMinerURL.c_str ());
+        case MiningMessengerRequest::REQUEST_HEADERS:
+            Format::write ( url, "%s/consensus/headers?height=%llu", request.mMinerURL.c_str (), request.mHeight );
             break;
         
         case MiningMessengerRequest::REQUEST_MINER_INFO:
             Format::write ( url, "%s/node", request.mMinerURL.c_str ());
-            break;
-        
-        case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS:
-            Format::write ( url, "%s/consensus/headers?height=%llu", request.mMinerURL.c_str (), request.mHeight );
             break;
         
         default:
@@ -298,13 +293,13 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
                 break;
             }
             
-            case MiningMessengerRequest::REQUEST_LATEST_HEADERS: {
+            case MiningMessengerRequest::REQUEST_HEADERS: {
             
                 Poco::JSON::Array::Ptr headersJSON = json ? json->getArray ( "headers" ) : NULL;
                 if ( headersJSON ) {
                     list < shared_ptr < const BlockHeader >> responseHeaders;
                     HTTPMiningMessenger::deserailizeHeaderList ( responseHeaders, headersJSON );
-                    this->enqueueLatestHeadersResponse ( request, responseHeaders );
+                    this->enqueueHeadersResponse ( request, responseHeaders );
                 }
                 break;
             }
@@ -315,17 +310,6 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
                 if ( nodeJSON ) {
                     string minerID  = nodeJSON->optValue < string >( "minerID", "" );
                     this->enqueueMinerInfoResponse ( request, minerID, request.mMinerURL );
-                }
-                break;
-            }
-            
-            case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS: {
-            
-                Poco::JSON::Array::Ptr headersJSON = json ? json->getArray ( "headers" ) : NULL;
-                if ( headersJSON ) {
-                    list < shared_ptr < const BlockHeader >> responseHeaders;
-                    HTTPMiningMessenger::deserailizeHeaderList ( responseHeaders, headersJSON );
-                    this->enqueuePreviousHeadersResponse ( request, responseHeaders );
                 }
                 break;
             }

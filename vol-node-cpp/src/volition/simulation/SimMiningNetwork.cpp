@@ -119,40 +119,27 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
             break;
         }
         
-        case MiningMessengerRequest::REQUEST_LATEST_HEADERS: {
-        
-            BlockTreeCursor cursor = miner->getLedgerTag ();
+        case MiningMessengerRequest::REQUEST_HEADERS: {
             
-            list < shared_ptr < const BlockHeader >> headers;
-            while ( cursor.hasHeader () && ( headers.size () < HEADER_BATCH_SIZE )) {
-                headers.push_front ( make_shared < BlockHeader >( cursor.getHeader ()));
-                cursor = cursor.getParent ();
-            }
-            client->enqueueLatestHeadersResponse ( request, headers );
+//            BlockTreeCursor cursor = miner->getLedgerTag ();
+//
+//            size_t top = request.mHeight;
+//            size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
+//
+//            list < shared_ptr < const BlockHeader >> headers;
+//            while ( cursor.hasHeader () && ( base <= cursor.getHeight ())) {
+//                if ( cursor.getHeight () < top ) {
+//                    headers.push_front ( make_shared < BlockHeader >( cursor.getHeader ()));
+//                }
+//                cursor = cursor.getParent ();
+//            }
+//            client->enqueueHeadersResponse ( request, headers );
             break;
         }
         
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
         
             client->enqueueMinerInfoResponse ( request, minerID, miner->getURL ());
-            break;
-        }
-        
-        case MiningMessengerRequest::REQUEST_PREVIOUS_HEADERS: {
-            
-            BlockTreeCursor cursor = miner->getLedgerTag ();
-            
-            size_t top = request.mHeight;
-            size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
-            
-            list < shared_ptr < const BlockHeader >> headers;
-            while ( cursor.hasHeader () && ( base <= cursor.getHeight ())) {
-                if ( cursor.getHeight () < top ) {
-                    headers.push_front ( make_shared < BlockHeader >( cursor.getHeader ()));
-                }
-                cursor = cursor.getParent ();
-            }
-            client->enqueuePreviousHeadersResponse ( request, headers );
             break;
         }
         

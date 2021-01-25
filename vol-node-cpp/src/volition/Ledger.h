@@ -241,6 +241,7 @@ public:
     FeeDistributionTable                getFeeDistributionTable         () const;
     FeeSchedule                         getFeeSchedule                  () const;
     string                              getGenesisHash                  () const;
+    shared_ptr < const BlockHeader >    getHeader                       ( u64 height ) const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
     u64                                 getMaxBlockWeight               () const;

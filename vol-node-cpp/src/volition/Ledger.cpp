@@ -188,6 +188,13 @@ string Ledger::getGenesisHash () const {
 }
 
 //----------------------------------------------------------------//
+shared_ptr < const BlockHeader > Ledger::getHeader ( u64 height ) const {
+
+    BlockODBM blockODBM ( *this, height );
+    return blockODBM.mHeader.get ();
+}
+
+//----------------------------------------------------------------//
 u64 Ledger::getHeight () const {
 
     return ( u64 )this->getVersion ();

@@ -26,7 +26,7 @@ private:
     string                      mMinerID;
 
     //----------------------------------------------------------------//
-    void            processHeaders          ( Miner& miner, time_t now );
+    void            processHeaders          ( Miner& miner, const MiningMessengerResponse& response, time_t now );
 
 
 public:
@@ -44,8 +44,9 @@ public:
     BlockTreeTag                mImproved;
     MinerState                  mState;
     string                      mMessage;
-
-    list < shared_ptr < const BlockHeader >>    mHeaderList;
+    
+    size_t                      mRewind;
+    size_t                      mHeight;
 
     GET ( string,       MinerID,        mMinerID )
     GET ( string,       URL,            mURL )
