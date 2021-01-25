@@ -121,19 +121,22 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_HEADERS: {
             
-//            BlockTreeCursor cursor = miner->getLedgerTag ();
-//
-//            size_t top = request.mHeight;
-//            size_t base = HEADER_BATCH_SIZE < top ? top - HEADER_BATCH_SIZE : 0;
-//
-//            list < shared_ptr < const BlockHeader >> headers;
-//            while ( cursor.hasHeader () && ( base <= cursor.getHeight ())) {
-//                if ( cursor.getHeight () < top ) {
-//                    headers.push_front ( make_shared < BlockHeader >( cursor.getHeader ()));
-//                }
-//                cursor = cursor.getParent ();
-//            }
-//            client->enqueueHeadersResponse ( request, headers );
+            const Ledger& ledger = miner->getLedger ();
+            size_t totalBlocks = ledger.countBlocks ();
+            
+            size_t base = request.mHeight;
+            base = base < totalBlocks ? base : totalBlocks - 1;
+            
+            size_t top = base + HEADER_BATCH_SIZE;
+            top = top <= totalBlocks ? top : totalBlocks;
+            
+            list < shared_ptr < const BlockHeader >> headers;
+            for ( size_t i = base; i < top; ++i ) {
+                shared_ptr < const BlockHeader > header = ledger.getHeader ( i );
+                if ( !header ) break;
+                headers.push_back ( header );
+            }
+            client->enqueueHeadersResponse ( request, headers );
             break;
         }
         
