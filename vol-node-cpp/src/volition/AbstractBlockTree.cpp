@@ -188,7 +188,7 @@ BlockTreeCursor AbstractBlockTree::findCursorForTag ( const BlockTreeTag& tag ) 
     assert ( tag.check ( this ));
 
     if ( tag.getTree ()) {
-        return this->AbstractBlockTree_findCursorForTag ( tag );
+        return this->AbstractBlockTree_findCursorForTagName ( tag.getName ());
     }
     return BlockTreeCursor ();
 }
@@ -285,6 +285,15 @@ BlockTreeCursor AbstractBlockTree::makeCursor ( shared_ptr < const BlockHeader >
 void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) {
 
     this->AbstractBlockTree_mark ( cursor, status );
+}
+
+//----------------------------------------------------------------//
+BlockTreeCursor AbstractBlockTree::restoreTag ( BlockTreeTag& tag ) {
+
+    assert ( tag.check ( this ));
+    
+    BlockTreeCursor cursor = this->AbstractBlockTree_findCursorForTagName ( tag.getName ());
+    return cursor;
 }
 
 //----------------------------------------------------------------//

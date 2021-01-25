@@ -420,11 +420,9 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string ha
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTag ( const BlockTreeTag& tag ) const {
+BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTagName ( string tagName ) const {
 
     BlockTreeCursor cursor;
-
-    string name = tag.getName ();
 
     this->mDB.exec (
         
@@ -432,7 +430,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTag ( const Bloc
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
-            stmt.bind ( 1, name );
+            stmt.bind ( 1, tagName );
         },
         
         //--------------------------------//

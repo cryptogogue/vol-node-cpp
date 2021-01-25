@@ -36,7 +36,7 @@ private:
     //----------------------------------------------------------------//
     BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) override;
     BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const override;
-    BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const override;
+    BlockTreeCursor             AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
     shared_ptr < const Block >  AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
     void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) override;
     BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;

@@ -67,7 +67,7 @@ protected:
     //----------------------------------------------------------------//
     virtual BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const = 0;
-    virtual BlockTreeCursor             AbstractBlockTree_findCursorForTag          ( const BlockTreeTag& tag ) const = 0;
+    virtual BlockTreeCursor             AbstractBlockTree_findCursorForTagName      ( string tagName ) const = 0;
     virtual shared_ptr < const Block >  AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const = 0;
     virtual void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) = 0;
     virtual BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) = 0;
@@ -91,6 +91,7 @@ public:
     shared_ptr < const Block >  getBlock                ( const BlockTreeCursor& cursor ) const;
     BlockTreeCursor             getParent               ( const BlockTreeCursor& cursor ) const;
     void                        mark                    ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status );
+    BlockTreeCursor             restoreTag              ( BlockTreeTag& tag );
     BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeCursor& cursor );
     BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeTag& otherTag );
     void                        update                  ( shared_ptr < const Block > block );

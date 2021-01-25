@@ -128,9 +128,9 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForHash ( string 
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForTag ( const BlockTreeTag& tag ) const {
+BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_findCursorForTagName ( string tagName ) const {
 
-    map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tag.getName ());
+    map < string, shared_ptr < InMemoryBlockTreeNode >>::const_iterator nodeIt = this->mTags.find ( tagName );
     if ( nodeIt != this->mTags.cend ()) return *nodeIt->second;
 
     return BlockTreeCursor ();
