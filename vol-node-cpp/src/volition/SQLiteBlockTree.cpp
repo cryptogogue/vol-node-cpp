@@ -175,18 +175,20 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
 //----------------------------------------------------------------//
 void SQLiteBlockTree::pruneUnreferencedNodes () {
     
+    // TODO: this was killing performance with nontrivial trees; optimize or find another way
+    
     // take a look at this gem! with a union including a self-join.
     // should delete all nodes with no references (other nodes or tags).
     
-    SQLiteResult result = this->mDB.exec ( SQL_STR (
-        DELETE FROM nodes
-        WHERE nodeID NOT IN (
-            SELECT nodeID FROM tags WHERE nodeID IS nodes.nodeID
-            UNION
-            SELECT a.nodeID FROM nodes a INNER JOIN nodes b ON a.nodeID IS b.parentID
-        )
-    ));
-    assert ( result );
+//    SQLiteResult result = this->mDB.exec ( SQL_STR (
+//        DELETE FROM nodes
+//        WHERE nodeID NOT IN (
+//            SELECT nodeID FROM tags WHERE nodeID IS nodes.nodeID
+//            UNION
+//            SELECT a.nodeID FROM nodes a INNER JOIN nodes b ON a.nodeID IS b.parentID
+//        )
+//    ));
+//    assert ( result );
 }
 
 //----------------------------------------------------------------//
