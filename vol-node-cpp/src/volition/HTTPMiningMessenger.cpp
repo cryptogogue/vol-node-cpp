@@ -49,9 +49,11 @@ private:
         std::string path ( uri.getPathAndQuery ());
         
         Poco::Net::HTTPClientSession* session = NULL;
-
-        try {
         
+        try {
+
+            const Poco::Net::Context::Ptr context = new Poco::Net::Context ( Poco::Net::Context::CLIENT_USE, "", "", "", Poco::Net::Context::VERIFY_RELAXED, 9, false, "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH" );
+                    
             // TODO: this is so fucking gross, I hate POCO so fucking much
             if ( uri.getScheme () == "https" ) {
                 session = new Poco::Net::HTTPSClientSession ( uri.getHost (), uri.getPort ());
@@ -83,7 +85,7 @@ private:
         }
         
         if ( session ) {
-            delete session;
+            delete ( session );
         }
     }
 
