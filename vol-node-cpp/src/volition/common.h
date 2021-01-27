@@ -52,7 +52,6 @@
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/MD5Engine.h>
-#include <Poco/Net/Context.h>
 #include <Poco/Net/HTTPClientSession.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPRequestHandlerFactory.h>

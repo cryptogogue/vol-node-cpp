@@ -132,6 +132,8 @@ protected:
             this->loadConfiguration ( PRIO_APPLICATION - 1 );
         }
         
+        this->printProperties ();
+        
         string controlKeyfile           = configuration.getString       ( "control-key", "" );
         string controlLevel             = configuration.getString       ( "control-level", "" );
         string dump                     = configuration.getString       ( "dump", "" );
