@@ -47,17 +47,26 @@ private:
     
         Poco::URI uri ( this->mURL );
         std::string path ( uri.getPathAndQuery ());
+        
+        Poco::Net::HTTPClientSession* session = NULL;
 
         try {
         
-            Poco::Net::HTTPClientSession session ( uri.getHost (), uri.getPort ());
+            // TODO: this is so fucking gross, I hate POCO so fucking much
+            if ( uri.getScheme () == "https" ) {
+                session = new Poco::Net::HTTPSClientSession ( uri.getHost (), uri.getPort ());
+            }
+            else {
+                session = new Poco::Net::HTTPClientSession ( uri.getHost (), uri.getPort ());
+            }
+                    
             Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
-            session.setKeepAlive ( true );
-//            session.setTimeout ( Poco::Timespan ( 30, 0 ));
-            session.sendRequest ( request );
+            session->setKeepAlive ( true );
+//            session->setTimeout ( Poco::Timespan ( 30, 0 ));
+            session->sendRequest ( request );
             
             Poco::Net::HTTPResponse response;
-            std::istream& jsonStream = session.receiveResponse ( response );
+            std::istream& jsonStream = session->receiveResponse ( response );
             
             if ( response.getStatus () == Poco::Net::HTTPResponse::HTTP_OK ) {
                 
@@ -67,11 +76,14 @@ private:
             }
         }
         catch ( Poco::Exception& exc ) {
-        
             string msg = exc.message ();
             if ( msg.size () > 0 ) {
                 LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", exc.message ().c_str ());
             }
+        }
+        
+        if ( session ) {
+            delete session;
         }
     }
 
