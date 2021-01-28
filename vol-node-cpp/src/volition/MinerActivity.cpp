@@ -16,13 +16,14 @@ namespace Volition {
 void MinerActivity::runActivity () {
 
     while ( !this->isStopped ()) {
-    
+        
         Poco::Timestamp timestamp;
         
         time_t now;
         time ( &now );
         
         try {
+            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
             this->step ( now );
             this->report ();
         }
