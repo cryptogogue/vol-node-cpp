@@ -1,10 +1,10 @@
 [submodule "3rd-party/poco"]
-	path = vol-node-cpp/3rd-party/poco
+	path = 3rd-party/poco
 	url = git@github.com:pocoproject/poco.git
 	branch = poco-1.9.1
 [submodule "3rd-party/simple-cpp-router"]
-	path = vol-node-cpp/3rd-party/simple-cpp-router
+	path = 3rd-party/simple-cpp-router
 url=git@github.com:cryptogogue/simple-cpp-router.git
 [submodule "3rd-party/padamose"]
-	path = vol-node-cpp/3rd-party/padamose
+	path = 3rd-party/padamose
 	url = git@github.com:cryptogogue/padamose.git
