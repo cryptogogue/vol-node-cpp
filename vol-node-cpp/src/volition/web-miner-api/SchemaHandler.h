@@ -17,19 +17,18 @@ namespace WebMinerAPI {
 // SchemaHandler
 //================================================================//
 class SchemaHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
         try {
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
+        
             const Schema& schema = ledger.getSchema ();
 
             jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schema ));

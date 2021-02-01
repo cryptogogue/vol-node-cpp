@@ -16,29 +16,26 @@ namespace WebMinerAPI {
 // InventoryAssetsHandler
 //================================================================//
 class InventoryAssetsHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
         try {
         
             string accountName = this->getMatchString ( "accountName" );
-        
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
             
             SerializableList < SerializableSharedConstPtr < Asset >> inventory;
             ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, 0, true );
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         
-            jsonOut.set ( "inventory",      inventoryJSON.extract < Poco::JSON::Array::Ptr >());
+            jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Array::Ptr >());
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

@@ -83,9 +83,9 @@ void Ledger::clearSchemaCache () {
 }
 
 //----------------------------------------------------------------//
-size_t Ledger::countBlocks () const {
+u64 Ledger::countBlocks () const {
 
-    return LedgerFieldODBM < u64 >( *this, Ledger::keyFor_globalBlockCount ()).get ( 0 );
+    return this->getHeight ();
 }
 
 //----------------------------------------------------------------//

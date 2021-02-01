@@ -18,7 +18,7 @@ namespace WebMinerAPI {
 // AccountDetailsHandler
 //================================================================//
 class AccountDetailsHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -53,22 +53,20 @@ public:
     }
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
         string accountName = this->getMatchString ( "accountName" );
         
         ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Ledger& ledger = this->mWebMiner->getLedger ();
 
         AccountODBM accountODBM ( ledger, accountName );
-        if ( accountODBM ) {
-            AccountDetailsHandler::formatJSON ( ledger, accountODBM, jsonOut );
-            jsonOut.set ( "minGratuity",    this->mWebMiner->getMinimumGratuity ());
-            return Poco::Net::HTTPResponse::HTTP_OK;
-        }
-        return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        if ( !accountODBM ) return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        
+        AccountDetailsHandler::formatJSON ( ledger, accountODBM, jsonOut );
+        jsonOut.set ( "minGratuity",    this->mWebMiner->getMinimumGratuity ());
+        return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
 

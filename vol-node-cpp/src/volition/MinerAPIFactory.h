@@ -11,15 +11,22 @@
 namespace Volition {
 
 //================================================================//
-// MinerAPIRequestHandler
+// AbstractMinerAPIRequestHandler
 //================================================================//
-class MinerAPIRequestHandler :
+class AbstractMinerAPIRequestHandler :
     public AbstractAPIRequestHandler {
 protected:
 
     friend class MinerAPIFactory;
     
-    shared_ptr < Miner >     mWebMiner;
+    shared_ptr < Miner >    mWebMiner;
+    
+    //----------------------------------------------------------------//
+    HTTPStatus              AbstractAPIRequestHandler_handleRequest             ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override;
+    virtual HTTPStatus      AbstractMinerAPIRequestHandler_handleRequest        ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
+    
+    //----------------------------------------------------------------//
+            AbstractMinerAPIRequestHandler      ();
 };
 
 //================================================================//
@@ -29,10 +36,10 @@ class MinerAPIFactory :
     public Poco::Net::HTTPRequestHandlerFactory {
 private:
 
-    RouteTable < MinerAPIRequestHandler >   mRouteTable;
-    shared_ptr < Miner >                    mMiner;
-    map < string, shared_ptr < Miner >>     mMiners;
-    bool                                    mWithPrefix;
+    RouteTable < AbstractMinerAPIRequestHandler >   mRouteTable;
+    shared_ptr < Miner >                            mMiner;
+    map < string, shared_ptr < Miner >>             mMiners;
+    bool                                            mWithPrefix;
 
     //----------------------------------------------------------------//
     Poco::Net::HTTPRequestHandler*      createRequestHandler        ( const Poco::Net::HTTPServerRequest& request ) override;

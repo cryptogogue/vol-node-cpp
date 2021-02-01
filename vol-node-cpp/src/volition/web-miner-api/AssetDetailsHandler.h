@@ -17,13 +17,13 @@ namespace WebMinerAPI {
 // AssetDetailsHandler
 //================================================================//
 class AssetDetailsHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
@@ -35,10 +35,7 @@ public:
             u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoull ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
             
             if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-            
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
-        
+                    
             shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ();
             
             if ( asset ) {

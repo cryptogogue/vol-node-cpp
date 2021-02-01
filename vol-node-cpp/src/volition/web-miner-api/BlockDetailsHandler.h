@@ -16,22 +16,19 @@ namespace WebMinerAPI {
 // BlockDetailsHandler
 //================================================================//
 class BlockDetailsHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
 
         try {
         
             u64 height = this->getMatchU64 ( "blockID" );
-
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            const Ledger& ledger = this->mWebMiner->getLedger ();
 
             shared_ptr < const Block > block = ledger.getBlock ( height );
             if ( block ) {

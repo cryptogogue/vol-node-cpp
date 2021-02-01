@@ -20,19 +20,16 @@ namespace WebMinerAPI {
 // DefaultHandler
 //================================================================//
 class DefaultHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-        
-        ScopedMinerLock scopedLock ( this->mWebMiner );
-        
-        const Ledger& ledger = this->mWebMiner->getLedger ();
+                
         SchemaVersion schemaVersion = ledger.getSchemaVersion ();
         
         jsonOut.set ( "type",           "VOL_MINING_NODE" );
@@ -48,12 +45,13 @@ public:
         jsonOut.set ( "pool",           ledger.getFeeDistributionPool ());
         jsonOut.set ( "minGratuity",    this->mWebMiner->getMinimumGratuity ());
         jsonOut.set ( "reward",         this->mWebMiner->getReward ());
+        jsonOut.set ( "totalBlocks",    ledger.countBlocks ());
 
         FeeSchedule feeSchedule = ledger.getFeeSchedule ();
-        jsonOut.set ( "feeSchedule",    ToJSONSerializer::toJSON ( feeSchedule ));
+        jsonOut.set ( "feeSchedule", ToJSONSerializer::toJSON ( feeSchedule ));
 
         FeeDistributionTable feeDistributionTable = ledger.getFeeDistributionTable ();
-        jsonOut.set ( "feeDistributionTable",   ToJSONSerializer::toJSON ( feeDistributionTable ));
+        jsonOut.set ( "feeDistributionTable", ToJSONSerializer::toJSON ( feeDistributionTable ));
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

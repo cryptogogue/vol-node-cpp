@@ -210,6 +210,7 @@
 		CD7752B72536966100A53765 /* CryptoPublicKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7752B52536966100A53765 /* CryptoPublicKey.cpp */; };
 		CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747823B052BF00FBE468 /* SerializableOpaque.h */; };
 		CD7C747B23B6EC6700FBE468 /* UpgradeAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */; };
+		CD840B1325C420B40051703C /* ConsensusPeekHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD840B1125C420B40051703C /* ConsensusPeekHandler.h */; };
 		CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1D0228F47DA000C2A54 /* FileSys.cpp */; };
 		CD85B1D3228F47DA000C2A54 /* FileSys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD85B1D1228F47DA000C2A54 /* FileSys.h */; };
 		CD8BAE3A21EBC81900B5040E /* AbstractSerializablePtrFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE3621EBC81900B5040E /* AbstractSerializablePtrFactory.h */; };
@@ -991,6 +992,7 @@
 		CD7791FD20F93B1E0058EBAC /* SerializableVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableVector.h; path = src/volition/serialization/SerializableVector.h; sourceTree = "<group>"; };
 		CD7C747823B052BF00FBE468 /* SerializableOpaque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableOpaque.h; path = src/volition/serialization/SerializableOpaque.h; sourceTree = "<group>"; };
 		CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpgradeAssets.h; path = src/volition/transactions/UpgradeAssets.h; sourceTree = "<group>"; };
+		CD840B1125C420B40051703C /* ConsensusPeekHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConsensusPeekHandler.h; path = "src/volition/web-miner-api/ConsensusPeekHandler.h"; sourceTree = "<group>"; };
 		CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestFormatUtils.cpp; path = src/volition/gtest/TestFormatUtils.cpp; sourceTree = "<group>"; };
 		CD85B1D0228F47DA000C2A54 /* FileSys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileSys.cpp; path = src/volition/FileSys.cpp; sourceTree = "<group>"; };
 		CD85B1D1228F47DA000C2A54 /* FileSys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileSys.h; path = src/volition/FileSys.h; sourceTree = "<group>"; };
@@ -1749,6 +1751,7 @@
 				CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */,
 				CD7751E4252FE41C00A53765 /* ConsensusBlockDetailsHandler.h */,
 				CD7751E5252FE41C00A53765 /* ConsensusBlockHeaderListHandler.h */,
+				CD840B1125C420B40051703C /* ConsensusPeekHandler.h */,
 				CD20FFC2253D978600DEB809 /* ControlCommandHandler.h */,
 				CDDA755B255B490C007AAA07 /* DebugKeyGenHandler.h */,
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
@@ -2049,6 +2052,7 @@
 				CD20FFAF253D904A00DEB809 /* HardReset.h in Headers */,
 				CD0CF460255EDC5D008C67F0 /* RemoteMiner.h in Headers */,
 				CD5ECAF0246B2945009146FB /* version.h in Headers */,
+				CD840B1325C420B40051703C /* ConsensusPeekHandler.h in Headers */,
 				CD5ECAEE246B2938009146FB /* version.h in Headers */,
 				CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */,
 				CD19E004259E20A60007ACF0 /* BlockTreeTag.h in Headers */,

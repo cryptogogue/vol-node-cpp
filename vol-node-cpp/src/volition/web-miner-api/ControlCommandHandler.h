@@ -18,17 +18,16 @@ namespace WebMinerAPI {
 // ControlCommandHandler
 //================================================================//
 class ControlCommandHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET_POST )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-    
-        ScopedMinerLock scopedLock ( this->mWebMiner );
-    
+        UNUSED ( ledger );
+        
         SerializableUniquePtr < ControlCommand > command;
         FromJSONSerializer::fromJSON ( command, jsonIn );
 

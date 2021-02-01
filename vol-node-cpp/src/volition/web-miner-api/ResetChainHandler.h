@@ -17,11 +17,14 @@ namespace WebMinerAPI {
 // ResetChainHandler
 //================================================================//
 class ResetChainHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
+    SUPPORTED_HTTP_METHODS ( HTTP::DELETE )
+
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleDelete () const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method, Ledger& ledger, const Poco::JSON::Object&, Poco::JSON::Object& ) const override {
+        UNUSED ( ledger );
     
         try {
             ScopedMinerLock scopedLock ( this->mWebMiner );

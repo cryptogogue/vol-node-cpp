@@ -16,7 +16,7 @@ namespace WebMinerAPI {
 // ConsensusBlockHeaderListHandler
 //================================================================//
 class ConsensusBlockHeaderListHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     static const size_t HEADER_BATCH_SIZE = 32;
@@ -24,21 +24,20 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
 
         try {
-        
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            
-            const Ledger& ledger = this->mWebMiner->getLedger ();
+                    
             size_t totalBlocks = ledger.countBlocks ();
+            
+            size_t max = this->optQuery ( "max", HEADER_BATCH_SIZE );
             
             size_t base = this->optQuery ( "height", 0 );
             base = base < totalBlocks ? base : totalBlocks - 1;
             
-            size_t top = base + HEADER_BATCH_SIZE;
+            size_t top = base + max;
             top = top <= totalBlocks ? top : totalBlocks;
             
             SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;

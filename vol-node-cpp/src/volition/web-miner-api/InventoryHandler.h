@@ -17,22 +17,19 @@ namespace WebMinerAPI {
 // InventoryHandler
 //================================================================//
 class InventoryHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
         try {
         
             string accountName = this->getMatchString ( "accountName" );
-        
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
         
             AccountID accountID = ledger.getAccountID ( accountName );
             
@@ -46,8 +43,8 @@ public:
             }
             
             const Schema& schema = ledger.getSchema ();
-            jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schema.getVersion ()));
-            jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
+            jsonOut.set ( "schemaVersion", ToJSONSerializer::toJSON ( schema.getVersion ()));
+            jsonOut.set ( "schemaHash", ledger.getSchemaHash ());
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;

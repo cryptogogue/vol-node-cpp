@@ -18,7 +18,7 @@ namespace WebMinerAPI {
 // MinerListHandler
 //================================================================//
 class MinerListHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     static const size_t RANDOM_BATCH_SIZE = 16;
@@ -26,15 +26,14 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
+        UNUSED ( ledger );
         UNUSED ( jsonIn );
-    
-        ScopedMinerLock scopedLock ( this->mWebMiner );
+            
         set < string > minerURLs = ( this->optQuery ( "sample", "" ) == "random" ) ? this->mWebMiner->sampleOnlineMinerURLs ( RANDOM_BATCH_SIZE ) : this->mWebMiner->sampleOnlineMinerURLs ();
         
         SerializableList < string > result;
-        
         set < string >::const_iterator urlIt = minerURLs.cbegin ();
         for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
             result.push_back ( *urlIt );

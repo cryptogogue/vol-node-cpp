@@ -34,11 +34,12 @@ public:
         ( void )static_cast < AbstractRequestHandler* >(( REQUEST_HANDLER_TYPE* )NULL );
 
         string uri = request.getURI ();
+        string uriNoQuery = uri.substr ( 0, uri.find ( '?' ));
 
         unique_ptr < REQUEST_HANDLER_TYPE > handler;
 
         try {
-            Routing::PathMatch match = this->mRouter.matchPath ( uri );
+            Routing::PathMatch match = this->mRouter.matchPath ( uriNoQuery );
             const string& pattern = match.pathTemplate ();
             
             handler = this->mFactories [ request.getMethod ()].create ( pattern );

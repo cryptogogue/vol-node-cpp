@@ -16,14 +16,15 @@ namespace WebMinerAPI {
 // TestSignatureHandler
 //================================================================//
 class TestSignatureHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::POST )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
+        UNUSED ( ledger) ;
         UNUSED ( jsonOut );
 
         const Poco::JSON::Object::Ptr keyJSON = jsonIn.getObject ( "key" );

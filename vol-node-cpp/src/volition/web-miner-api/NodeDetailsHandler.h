@@ -17,17 +17,16 @@ namespace WebMinerAPI {
 // NodeDetailsHandler
 //================================================================//
 class NodeDetailsHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
+        UNUSED ( ledger );
         UNUSED ( jsonIn );
-            
-        ScopedMinerLock scopedLock ( this->mWebMiner );
         
         Poco::JSON::Object::Ptr nodeInfoJSON = new Poco::JSON::Object ();
         

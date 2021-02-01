@@ -17,23 +17,21 @@ namespace WebMinerAPI {
 // KeyAccountDetailsHandler
 //================================================================//
 class KeyAccountDetailsHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
         string keyID = this->getMatchString ( "keyHash" );
-        
-        ScopedMinerLock scopedLock ( this->mWebMiner );
-        const Ledger& ledger = this->mWebMiner->getLedger ();
 
         shared_ptr < AccountKeyLookup > accountKeyLookup = ledger.getAccountKeyLookup ( keyID );
         if ( accountKeyLookup ) {
+        
             AccountODBM accountODBM ( ledger, accountKeyLookup->mAccountIndex );
             if ( accountODBM ) {
                 AccountDetailsHandler::formatJSON ( ledger, accountODBM, jsonOut );

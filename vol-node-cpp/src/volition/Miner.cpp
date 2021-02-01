@@ -174,6 +174,7 @@ bool Miner::checkTags () const {
 
     #ifdef DEBUG
         BlockTreeCursor ledgerCursor = *this->mLedgerTag;
+        assert ( this->mLedger->countBlocks () == ( ledgerCursor.getHeight () + 1 ));
         shared_ptr < const Block > ledgerBlock = this->mLedger->getBlock ();
         return ledgerBlock->equals ( ledgerCursor );
     #else
@@ -294,13 +295,19 @@ Ledger& Miner::getLedger () {
 }
 
 //----------------------------------------------------------------//
-TransactionStatus Miner::getTransactionStatus ( string accountName, string uuid ) const {
+Ledger Miner::getLedgerAtHeight ( u64 height ) const {
+
+    Ledger ledger ( *this->mLedger );
+    ledger.revertAndClear ( height );
+    return ledger;
+}
+
+//----------------------------------------------------------------//
+TransactionStatus Miner::getTransactionStatus ( const Ledger& ledger, string accountName, string uuid ) const {
 
     if ( this->isBlocked ( accountName )) {
         return this->getLastStatus ( accountName );
     }
-
-    const Ledger& ledger = this->getLedger ();
 
     if ( ledger.hasTransaction ( accountName, uuid )) {
         return TransactionStatus ( TransactionStatus::ACCEPTED, "Transaction was accepted and applied.", uuid );
@@ -464,6 +471,9 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     shared_ptr < const Block > topBlock = ledger->getBlock ();
     
     if ( topBlock ) {
+    
+        assert ( ledger->getHeight () == ( topBlock->getHeight () + 1 ));
+    
         this->mLedger = ledger;
         this->mBlockTree->affirmBlock ( this->mLedgerTag, topBlock );
         this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
@@ -532,7 +542,9 @@ void Miner::pruneTransactions () {
 //----------------------------------------------------------------//
 void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
-    this->mLedger->revert ( block->getHeight ());
+    assert ( this->mLedger->countBlocks () == block->getHeight ());
+
+    this->mLedger->revertAndClear ( block->getHeight ());
 
     bool result = this->mLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
     assert ( result );
@@ -709,7 +721,7 @@ void Miner::step ( time_t now ) {
     // fill the provisional block (if any)
     this->extend ( now );
     this->saveChain ();
-    this->pruneTransactions ();
+//    this->pruneTransactions ();
     
     this->updateRemoteMiners ();
     this->updateBlockSearches ();

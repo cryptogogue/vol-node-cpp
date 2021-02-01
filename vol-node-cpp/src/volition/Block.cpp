@@ -96,7 +96,7 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
     blockODBM.mHeader.set ( *this );
     blockODBM.mBlock.set ( *this );
 
-    ledger.setValue < u64 >( Ledger::keyFor_globalBlockCount (), this->mHeight + 1 );
+//    ledger.setValue < u64 >( Ledger::keyFor_globalBlockCount (), this->mHeight + 1 );
     return true;
 }
 

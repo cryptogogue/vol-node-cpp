@@ -18,24 +18,23 @@ namespace WebMinerAPI {
 // AccountTransactionHandler
 //================================================================//
 class AccountTransactionHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET_PUT )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+        UNUSED ( ledger );
     
         string accountName  = this->getMatchString ( "accountName" );
         string uuid         = this->getMatchString ( "uuid" );
-    
-        ScopedMinerLock scopedLock ( this->mWebMiner );
-    
+        
         switch ( method ) {
     
             case HTTP::GET: {
 
-                TransactionStatus status = this->mWebMiner->getTransactionStatus ( accountName, uuid );
+                TransactionStatus status = this->mWebMiner->getTransactionStatus ( ledger, accountName, uuid );
                 
                 jsonOut.set ( "status", status.getStatusCodeString ());
                 jsonOut.set ( "message", status.mMessage );

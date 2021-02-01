@@ -17,13 +17,13 @@ namespace WebMinerAPI {
 // InventoryLogHandler
 //================================================================//
 class InventoryLogHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
@@ -32,9 +32,6 @@ public:
             string accountName  = this->getMatchString ( "accountName" );
             u64 nonce           = this->getMatchU64 ( "nonce" );
             u64 count           = this->optQuery ( "count", 1 );
-            
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            Ledger& ledger = this->mWebMiner->getLedger ();
             
             SerializableSet < AssetID::Index > additions;
             SerializableSet < AssetID::Index > deletions;

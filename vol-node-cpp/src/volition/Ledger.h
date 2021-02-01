@@ -166,10 +166,10 @@ public:
         return Format::write ( "asset.count" );
     }
 
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_globalBlockCount () {
-        return "block.count";
-    }
+//    //----------------------------------------------------------------//
+//    static LedgerKey keyFor_globalBlockCount () {
+//        return "block.count";
+//    }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_identity () {
@@ -227,7 +227,7 @@ public:
     bool                                checkMiners                     ( string miners ) const;
     LedgerResult                        checkSchemaMethodsAndRewards    ( const Schema& schema ) const;
     void                                clearSchemaCache                ();
-    size_t                              countBlocks                     () const;
+    u64                                 countBlocks                     () const;
     u64                                 countVOL                        () const;
     u64                                 createVOL                       ( u64 amount );
     void                                distribute                      ( u64 amount );

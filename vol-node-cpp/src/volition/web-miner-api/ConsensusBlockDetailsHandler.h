@@ -16,21 +16,20 @@ namespace WebMinerAPI {
 // ConsensusBlockDetailsHandler
 //================================================================//
 class ConsensusBlockDetailsHandler :
-    public MinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
+        UNUSED ( ledger );
         UNUSED ( jsonIn );
 
         try {
-            
+        
             string hash = this->getMatchString ( "hash" );
-
-            ScopedMinerLock scopedLock ( this->mWebMiner );
 
             const AbstractBlockTree& blockTree = this->mWebMiner->getBlockTree ();
             BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
