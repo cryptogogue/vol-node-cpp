@@ -31,7 +31,7 @@
 		534E4B7D035AC51F8531461D /* libPods-util.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7DC74F79C8943E538901AB0 /* libPods-util.a */; };
 		876E3261FDBAAFDCFA33CE77 /* libPods-simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F16AC04619F5F5A7A17758B1 /* libPods-simulator.a */; };
 		90FF2D66544C7374029F78C9 /* libPods-server.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF26DB15A06182876F2F802A /* libPods-server.a */; };
-		CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */; };
+		CD039C6F23F49F060012CE4F /* TransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* TransactionHandler.h */; };
 		CD039C7123F7D7A90012CE4F /* LedgerFieldODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */; };
 		CD059BE324CAB1150049C97E /* InventoryLogEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */; };
 		CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaHandler.h */; };
@@ -857,7 +857,7 @@
 		BF26DB15A06182876F2F802A /* libPods-server.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-server.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7DC74F79C8943E538901AB0 /* libPods-util.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-util.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA9D810E378775C28CC39500 /* Pods-server.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-server.release.xcconfig"; path = "Target Support Files/Pods-server/Pods-server.release.xcconfig"; sourceTree = "<group>"; };
-		CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountTransactionHandler.h; path = "src/volition/web-miner-api/AccountTransactionHandler.h"; sourceTree = "<group>"; };
+		CD039C6E23F49F060012CE4F /* TransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHandler.h; path = "src/volition/web-miner-api/TransactionHandler.h"; sourceTree = "<group>"; };
 		CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerFieldODBM.h; path = src/volition/LedgerFieldODBM.h; sourceTree = "<group>"; };
 		CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InventoryLogEntry.cpp; path = src/volition/InventoryLogEntry.cpp; sourceTree = "<group>"; };
 		CD09ED742207D82500B09249 /* SchemaHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaHandler.h; path = "src/volition/web-miner-api/SchemaHandler.h"; sourceTree = "<group>"; };
@@ -1745,7 +1745,6 @@
 			children = (
 				CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */,
 				CDB8B3F821ACC874004EE816 /* AccountKeyListHandler.h */,
-				CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */,
 				CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */,
 				CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */,
 				CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */,
@@ -1766,6 +1765,7 @@
 				CD09ED742207D82500B09249 /* SchemaHandler.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
+				CD039C6E23F49F060012CE4F /* TransactionHandler.h */,
 			);
 			name = api;
 			sourceTree = "<group>";
@@ -2019,7 +2019,7 @@
 				CDDB4BA7232B5EE400EEAA60 /* KeyEntitlements.h in Headers */,
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
 				CDA1573723FA59FE00DFACCF /* KeyAndPolicy.h in Headers */,
-				CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */,
+				CD039C6F23F49F060012CE4F /* TransactionHandler.h in Headers */,
 				CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CD77522D2532A76200A53765 /* Accessors.h in Headers */,

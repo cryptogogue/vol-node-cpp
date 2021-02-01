@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_ACCOUNTTRANSACTIONSHANDLER_H
-#define VOLITION_WEBMINERAPI_ACCOUNTTRANSACTIONSHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_TRANSACTIONSHANDLER_H
+#define VOLITION_WEBMINERAPI_TRANSACTIONSHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
@@ -15,9 +15,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// AccountTransactionHandler
+// TransactionHandler
 //================================================================//
-class AccountTransactionHandler :
+class TransactionHandler :
     public AbstractMinerAPIRequestHandler {
 public:
 
