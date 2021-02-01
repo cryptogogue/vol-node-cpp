@@ -1,7 +1,6 @@
 .git
 3rd-party/poco
 bin
-bin-back
 build
 cmake_install.cmake
 CMakeCache.txt
@@ -10,6 +9,11 @@ doxydocs
 keys
 Makefile
 node-js
+persist-chain
 poco
+Pods
 test
+test-net
+test-observe
 volition.xcodeproj
+volition.xcworkspace
