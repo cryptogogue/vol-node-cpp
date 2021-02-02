@@ -4,7 +4,8 @@
 #include <volition/Block.h>
 #include <volition/CryptoKey.h>
 #include <volition/Miner.h>
-#include <volition/transactions/Genesis.h>
+#include <volition/Transaction.h>
+#include <volition/Transactions.h>
 
 using namespace Volition;
 
@@ -67,15 +68,8 @@ public:
         else {
             cryptoKey.rsa ( Volition::CryptoKeyPair::RSA_4096 );
         }
-
-        CryptoKeyInfo keyInfo ( cryptoKey, Volition::CryptoKeyInfo::ENCODE_AS_PEM );
-        Poco::Dynamic::Var var = Volition::ToJSONSerializer::toJSON ( keyInfo );
-        Poco::JSON::Object::Ptr object = var.extract < Poco::JSON::Object::Ptr >();
-
-        fstream jsonOutStream;
-        jsonOutStream.open ( outfile, ios_base::out );
-        object->stringify ( jsonOutStream, 4 );
-        jsonOutStream.close ();
+        
+        ToJSONSerializer::toJSONFile ( cryptoKey, outfile );
         
         return EXIT_OK;
     }
@@ -168,6 +162,57 @@ public:
 };
 
 //================================================================//
+// GenesisFromLedgerApp
+//================================================================//
+class GenesisFromLedgerApp :
+    public Poco::Util::Application {
+public:
+
+    //----------------------------------------------------------------//
+    void defineOptions ( Poco::Util::OptionSet& options ) override {
+        Application::defineOptions ( options );
+        defineKeyFileOptions ( options, false );
+        
+        options.addOption (
+            Poco::Util::Option ( "in", "i", "infile" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "infile" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "out", "o", "outfile" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "outfile" )
+        );
+    }
+
+    //----------------------------------------------------------------//
+    int main ( const vector < string > &args ) override {
+        UNUSED ( args );
+        
+        Poco::Util::AbstractConfiguration& configuration = this->config ();
+    
+        string infile       = configuration.getString ( "infile", "" );
+        string outfile      = configuration.getString ( "outfile", "" );
+        
+        shared_ptr < Transactions::LoadLedger > loadLedger = make_shared < Transactions::LoadLedger >();
+        FromJSONSerializer::fromJSONFile ( *loadLedger, infile );
+        
+        shared_ptr < Transaction > transaction = make_shared < Transaction >();
+        transaction->setBody ( loadLedger );
+        
+        shared_ptr < Block > block = make_shared < Block >();
+        block->pushTransaction ( transaction );
+
+        ToJSONSerializer::toJSONFile ( *block, outfile );
+        
+        return EXIT_OK;
+    }
+};
+
+//================================================================//
 // SignBlockApp
 //================================================================//
 class SignBlockApp :
@@ -230,8 +275,6 @@ public:
 // main
 //================================================================//
 
-//POCO_APP_MAIN ( SignBlockApp );
-
 //----------------------------------------------------------------//
 int runApp ( int argc, char** argv, Poco::Util::Application* app );
 int runApp ( int argc, char** argv, Poco::Util::Application* app ) {
@@ -261,6 +304,10 @@ int main ( int argc, char** argv ) {
     
     if ( command == "dump-miner" ) {
         return runApp ( argc, argv, new DumpMinerApp );
+    }
+    
+    if ( command == "genesis-from-ledger" ) {
+        return runApp ( argc, argv, new GenesisFromLedgerApp );
     }
     
     if ( command == "sign-block" ) {
