@@ -244,7 +244,6 @@ public:
     TransactionStatus                   getTransactionStatus        ( const Ledger& ledger, string accountName, string uuid ) const;
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
-    static shared_ptr < Block >         loadGenesisLedger           ( string genesisFile );
     void                                loadKey                     ( string keyfile, string password = "" );
                                         Miner                       ();
     virtual                             ~Miner                      ();

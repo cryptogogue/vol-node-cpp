@@ -76,13 +76,6 @@ protected:
         );
         
         options.addOption (
-            Poco::Util::Option ( "genesis-format", "gen-fmt", "genesis format ('block', 'ledger')" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "genesis-format" )
-        );
-        
-        options.addOption (
             Poco::Util::Option ( "keyfile", "k", "path to public miner key file" )
                 .required ( false )
                 .argument ( "value", true )
@@ -138,7 +131,6 @@ protected:
         string controlLevel             = configuration.getString       ( "control-level", "" );
         string dump                     = configuration.getString       ( "dump", "" );
         string genesis                  = configuration.getString       ( "genesis", "genesis.json" );
-        string genesisFormat            = configuration.getString       ( "genesis-format", "block" );
         int fixedDelay                  = configuration.getInt          ( "delay-fixed", MinerActivity::DEFAULT_FIXED_UPDATE_MILLIS );
         int variableDelay               = configuration.getInt          ( "delay-variable", MinerActivity::DEFAULT_VARIABLE_UPDATE_MILLIS );
         string keyfile                  = configuration.getString       ( "keyfile" );
@@ -200,21 +192,10 @@ protected:
             return Application::EXIT_CONFIG;
         }
         
-        shared_ptr < Block > genesisBlock;
-        
-        switch ( FNV1a::hash_64 ( genesisFormat )) {
-        
-            case FNV1a::const_hash_64 ( "block" ):
-                genesisBlock = Miner::loadGenesisBlock ( genesis );
-                break;
-            
-            case FNV1a::const_hash_64 ( "ledger" ):
-                genesisBlock = Miner::loadGenesisLedger ( genesis );
-                break;
-        }
+        shared_ptr < Block > genesisBlock = Miner::loadGenesisBlock ( genesis );
         
         if ( !genesisBlock ) {
-            LOG_F ( INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
+            LOG_F ( INFO, "UNABLE TO LOAD GENESIS BLOCK" );
             return Application::EXIT_CONFIG;
         }
         

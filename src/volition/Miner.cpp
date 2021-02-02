@@ -405,20 +405,6 @@ shared_ptr < Block > Miner::loadGenesisBlock ( string path ) {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < Block > Miner::loadGenesisLedger ( string path ) {
-
-    shared_ptr < Transactions::LoadLedger > loadLedger = make_shared < Transactions::LoadLedger >();
-    FromJSONSerializer::fromJSONFile ( *loadLedger, path );
-    
-    shared_ptr < Transaction > transaction = make_shared < Transaction >();
-    transaction->setBody ( loadLedger );
-    
-    shared_ptr < Block > block = make_shared < Block >();
-    block->pushTransaction ( transaction );
-    return block;
-}
-
-//----------------------------------------------------------------//
 void Miner::loadKey ( string keyfile, string password ) {
     UNUSED ( password );
 
