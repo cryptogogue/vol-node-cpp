@@ -1,6 +1,6 @@
 [submodule "3rd-party/poco"]
 	path = 3rd-party/poco
-	url = git@github.com:pocoproject/poco.git
+url=git@github.com:cryptogogue/poco.git
 	branch = poco-1.9.1
 [submodule "3rd-party/simple-cpp-router"]
 	path = 3rd-party/simple-cpp-router
