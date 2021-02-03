@@ -94,15 +94,33 @@ The keys will be placed ./ops/volume-volition/keys. After running the script, yo
 ./ops/compose-volition/up.sh
 ```
 
-This will run the mining node. Open your web browser and navigate to your server's IP address or domain. You should see a .json dump of information about the node.
+This will run the mining node. You can verify the node is running by typing:
+
+```
+docker ps
+```
+
+This will list the currently running containers.
+
+You can also verify the node is running by opening your web browser and navigate to your server's IP address or domain. You should see a .json dump of information about the node.
+
+The example volition.ini configured the node to write its log to ./ops/volume-volition/log. A new log is written each time the node is run.
+
+With the example configuration, the node's state is written to ./ops/volume-volition/persis-chain as two sqlite3 databases. The filenames are prefixed with the has of the genesis block. If you are curious, you can download them and use a sqlite client to check their contents.
+
+When you are ready to stop the node, you can use the helper script:
+
+```
+./ops/compose-volition/down.sh
+```
 
 ### Configuring HTTPS/SSL
 
 To use HTTPS/SSL you will need a domain name. Procuring a domain name is outside of the scope of this document; check with your hosting provider for instructions.
 
-One you have a domain name, there are two ways to set up HTTPS. The first is to produre an SSL certificate, install it manually and configure the node to use it by editing volition.ini. The work in this approach is procuring and maintaining the certificate. The configuration is fairly straightforward to do; we'll update this document later with instructions.
+One you have a domain name, there are two ways to set up HTTPS. The first is to produre an SSL certificate, install it manually and configure the node to use it by editing volition.ini. The challenge of this approach is procuring and maintaining the certificate. The configuration is fairly straightforward to do and just requires changes to volition.ini; we'll update this document later with instructions.
 
-For now, we recommend you use nginx and certbot to via docker-compose to automatically obtain a letsencrypt SSL certiciate.
+For now, we recommend you use nginx and certbot to via docker-compose to automatically obtain a letsencrypt SSL certificate.
 
 First, copy the example nginx configuration directory in volume-nginx:
 
