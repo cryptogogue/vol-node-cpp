@@ -41,7 +41,44 @@ If you look inside build.sh, you'll see it generates a header file containing so
 
 The .env file has some settings you don't probably need to change. It is ignored by git; you may want to adjust it later in certain advanced scenarios (if you need to deploy multiple versions of the node on the same machine, for example).
 
+### Set Up the Docker Volume
+
+The reference Docker configuration maps ./ops/volume-volition onto /var/lib/volition/ inside the Docker container. This folder should be configured to contain the volition.ini file and the genesis block. We'll add the keys in a separate step.
+
+The miner will need the genesis block for the network you want to join. If the genesis block you need is hosted somewhere, you can use curl to pull it into the folder:
+
+```
+curl <URL of genesis block> -o ./ops/volume-volition/genesis.json
+```
+
+Now, copy and configure volition.ini:
+
+```
+cp ./ops/volume-volition/volition.ini.example ./ops/volume-volition/volition.ini
+```
+
+And edit the file by adding the name of the account you plan to use for mining.
+
+```
+control-key             = /var/lib/volition/keys/control.pub.pem
+control-level           = config
+genesis                 = /var/lib/volition/genesis.json
+keyfile                 = /var/lib/volition/keys/mining.priv.pem
+logpath                 = /var/lib/volition/log
+persist                 = /var/lib/volition/persist-chain
+port                    = 9090
+
+miner                   = <your miner account name>
+```
+
 ### Generate Your Keys
+
+Create a folder for the keys:
+
+```
+mkdir ./ops/volume-volition/keys
+cd ./ops/volume-volition/keys
+```
 
 You will need a mining key and a control key. The mining key will is a 4096-bit RSA key used to identify your mining node and sign blocks. The control key is a secp256k1 elliptic key used to sign mining node control transactions.
 
@@ -63,43 +100,7 @@ rm control.priv.pem.tmp
 
 Store these keys somewhere safe. On the server hosting the node you will need the *private* mining key and the *public* control key. To upgrade your account for mining you will need the *public* mining key and to sign miner control transactions (from your wallet) you will need the *private* control key.
 
-### Set Up the Docker Volume
-
-The reference Docker configuration maps ./ops/volume-volition onto /var/lib/volition/ inside the Docker container. This folder should be configured to contain the keys, the volition.ini file and the genesis block.
-
-Create a folder for the keys:
-
-```
-mkdir ./ops/volume-volition/keys
-```
-
-Place control.pub.pem and mining.priv.pem in that folder.
-
-The miner will also need a genesis block. This should be the genesis block for the network you intend to join. If the genesis block you need is hosten somewhere, you can use curl to pull it into the folder:
-
-```
-curl <URL of genesis block> -o ./ops/volume-volition/genesis.json
-```
-
-Now, configure up volition.ini:
-
-```
-cp ./ops/volume-volition/volition.ini.example ./ops/volume-volition/volition.ini
-```
-
-And edit the file by adding the name of the account you plan to use for mining.
-
-```
-control-key             = /var/lib/volition/keys/control.pub.pem
-control-level           = config
-genesis                 = /var/lib/volition/genesis.json
-keyfile                 = /var/lib/volition/keys/mining.priv.pem
-logpath                 = /var/lib/volition/log
-persist                 = /var/lib/volition/persist-chain
-port                    = 9090
-
-miner                   = <your miner account name>
-```
+When you are done, return to the project root directory:
 
 ### Run the Mining Node
 
