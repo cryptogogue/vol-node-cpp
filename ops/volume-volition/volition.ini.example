@@ -1,7 +1,9 @@
 control-key             = /var/lib/volition/keys/control.pub.pem
 control-level           = config
-genesis					= /var/lib/volition/genesis.json
+genesis                 = /var/lib/volition/genesis.json
 keyfile                 = /var/lib/volition/keys/mining.priv.pem
-miner                   = 9090
-persist					= /var/lib/volition/persist-chain
+logpath                 = /var/lib/volition/log
+persist                 = /var/lib/volition/persist-chain
 port                    = 9090
+
+miner                   = my-miner-id

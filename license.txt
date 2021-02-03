@@ -1,3 +1,0 @@
-Copyright (c) 2021 Cryptogogue, Inc. All Rights Reserved.
-
-The vol-node-cpp source code and the inventions therein are the exclusive property of Cryptogogue, Inc. No license is granted or implied.

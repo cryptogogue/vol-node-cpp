@@ -4,15 +4,15 @@ version: '3.5'
 
 services:
 
-    mysql:
+    volition:
         container_name: $VOLITION_CONTAINER_NAME
         image: $VOLITION_IMAGE_NAME
         ports:
-            - 9090:9090
+            - 9090:$VOLITION_EXTERNAL_PORT
         volumes:
             - ../volume-volition:/var/lib/volition
 
 networks:
     default:
-        name: fallguy
+        name: volition
         driver: bridge
