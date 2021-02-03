@@ -43,7 +43,7 @@ The .env file has some settings you don't probably need to change. It is ignored
 
 ### Set Up the Docker Volume
 
-The reference Docker configuration maps ./ops/volume-volition onto /var/lib/volition/ inside the Docker container. This folder should be configured to contain the volition.ini file and the genesis block. We'll add the keys in a separate step.
+The reference Docker configuration maps ./ops/volume-volition onto /var/lib/volition/ inside the Docker container. This folder should be configured to contain the volition.ini file and the genesis block.
 
 The miner will need the genesis block for the network you want to join. If the genesis block you need is hosted somewhere, you can use curl to pull it into the folder:
 
@@ -71,36 +71,15 @@ port                    = 9090
 miner                   = <your miner account name>
 ```
 
-### Generate Your Keys
+You will also need a mining key and a control key. The mining key will is a 4096-bit RSA key used to identify your mining node and sign blocks. The control key is a secp256k1 elliptic key used to sign mining node control transactions.
 
-Create a folder for the keys:
-
-```
-mkdir ./ops/volume-volition/keys
-cd ./ops/volume-volition/keys
-```
-
-You will need a mining key and a control key. The mining key will is a 4096-bit RSA key used to identify your mining node and sign blocks. The control key is a secp256k1 elliptic key used to sign mining node control transactions.
-
-You can generate the keys using the openssl command-line utility. Here are commands to generate the mining key pair and export the public key (which we'll need later to register the minig account):
+If you already have openssl installed, you can generate the keys using the helper script:
 
 ```
-openssl genrsa -out mining.priv.pem 4096
-openssl rsa -in mining.priv.pem -outform PEM -pubout -out mining.pub.pem
+./ops/make-keys.sh
 ```
 
-And here are commands to generate the secp256k1 elliptic "miner control" key:
-
-```
-openssl ecparam -genkey -name secp256k1 -conv_form compressed -noout -out control.priv.pem.tmp
-openssl pkcs8 -in control.priv.pem.tmp -topk8 -nocrypt -out control.priv.pem
-openssl ec -in control.priv.pem -outform PEM -pubout -out control.pub.pem
-rm control.priv.pem.tmp
-```
-
-Store these keys somewhere safe. On the server hosting the node you will need the *private* mining key and the *public* control key. To upgrade your account for mining you will need the *public* mining key and to sign miner control transactions (from your wallet) you will need the *private* control key.
-
-When you are done, return to the project root directory:
+The keys will be placed ./ops/volume-volition/keys.
 
 ### Run the Mining Node
 
