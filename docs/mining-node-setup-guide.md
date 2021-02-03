@@ -66,15 +66,16 @@ cp ./ops/volume-volition/volition.ini.example ./ops/volume-volition/volition.ini
 Edit volition.ini by adding the name of the account you plan to use for mining:
 
 ```
-control-key             = /var/lib/volition/keys/control.pub.pem
-control-level           = config
-genesis                 = /var/lib/volition/genesis.json
-keyfile                 = /var/lib/volition/keys/mining.priv.pem
-logpath                 = /var/lib/volition/log
-persist                 = /var/lib/volition/persist-chain
-port                    = 9090
+control-key                 = /var/lib/volition/keys/control.pub.pem
+control-level               = config
+genesis                     = /var/lib/volition/genesis.json
+keyfile                     = /var/lib/volition/keys/mining.priv.pem
+logpath                     = /var/lib/volition/log
+openSSL.client.caConfig     = /etc/ssl/certs
+persist                     = /var/lib/volition/persist-chain
+port                        = 9090
 
-miner                   = <your miner account name>
+miner                       = <your miner account name>
 ```
 
 You will also need a mining key and a control key. The mining key will is a 4096-bit RSA key used to identify your mining node and sign blocks. The control key is a secp256k1 elliptic key used to sign mining node control transactions.
