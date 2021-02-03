@@ -195,7 +195,7 @@ LedgerResult Ledger_Account::newAccount ( string accountName, const Account& acc
 
     // provision the account ID
     LedgerKey KEY_FOR_GLOBAL_ACCOUNT_COUNT = Ledger::keyFor_globalAccountCount ();
-    AccountID accountID = ledger.getValue < AccountID::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT );
+    AccountID accountID = ledger.getValueOrFallback < AccountID::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, 0 );
     ledger.setValue < AccountID::Index >( KEY_FOR_GLOBAL_ACCOUNT_COUNT, accountID + 1 ); // increment counter
     
     map < string, KeyAndPolicy >::const_iterator keyIt = account.mKeys.cbegin ();

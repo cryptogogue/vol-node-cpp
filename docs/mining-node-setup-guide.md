@@ -37,27 +37,33 @@ cp ./ops/.env.example ./ops/.env
 ./ops/build.sh
 ```
 
+During the build, you may see some red warning messages. Make note of these, but realize they are not immediate cause for concern. Once the build is done, you should see a message indicating that image was sucsessfully tagged. You can get a list of Docker images on your system by typing:
+
+```
+docker image ls
+```
+
 If you look inside build.sh, you'll see it generates a header file containing some information from git, then it invokes docker to build the image.
 
 The .env file has some settings you don't probably need to change. It is ignored by git; you may want to adjust it later in certain advanced scenarios (if you need to deploy multiple versions of the node on the same machine, for example).
 
 ### Set Up the Docker Volume
 
-The reference Docker configuration maps ./ops/volume-volition onto /var/lib/volition/ inside the Docker container. This folder should be configured to contain the volition.ini file and the genesis block.
+The example docker-compose files map ./ops/volume-volition onto /var/lib/volition/ inside the Docker container. This folder should be configured to contain the genesis block, the volition.ini file and the mining keys.
 
-The miner will need the genesis block for the network you want to join. If the genesis block you need is hosted somewhere, you can use curl to pull it into the folder:
+You can use curl to pull it into the folder:
 
 ```
 curl <URL of genesis block> -o ./ops/volume-volition/genesis.json
 ```
 
-Now, copy and configure volition.ini:
+Now, copy the example volition.ini:
 
 ```
 cp ./ops/volume-volition/volition.ini.example ./ops/volume-volition/volition.ini
 ```
 
-And edit the file by adding the name of the account you plan to use for mining.
+Edit volition.ini by adding the name of the account you plan to use for mining:
 
 ```
 control-key             = /var/lib/volition/keys/control.pub.pem
@@ -79,7 +85,7 @@ If you already have openssl installed, you can generate the keys using the helpe
 ./ops/make-keys.sh
 ```
 
-The keys will be placed ./ops/volume-volition/keys.
+The keys will be placed ./ops/volume-volition/keys. After running the script, you should have two sets of pen files there: one for mining and one for mining node control.
 
 ### Run the Mining Node
 

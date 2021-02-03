@@ -64,7 +64,7 @@
                 "type" :            "SET_FEE_DISTRIBUTION_TABLE",
                 "distributionTable" : {
                     "shares" : {
-                        "9090" : 100,
+                        "9090" : 100
                     }
                 }
             }

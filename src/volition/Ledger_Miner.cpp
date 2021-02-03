@@ -55,7 +55,7 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
     
     LedgerKey KEY_FOR_MINERS = Ledger::keyFor_miners ();
     shared_ptr < SerializableSet < string >> miners = ledger.getObjectOrNull < SerializableSet < string >>( KEY_FOR_MINERS );
-    assert ( miners );
+    miners = miners ? miners : make_shared < SerializableSet < string >>();
     miners->insert ( accountName );
     ledger.setObject < SerializableSet < string >>( KEY_FOR_MINERS, *miners );
 
