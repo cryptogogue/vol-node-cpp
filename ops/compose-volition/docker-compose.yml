@@ -8,7 +8,7 @@ services:
         container_name: $VOLITION_CONTAINER_NAME
         image: $VOLITION_IMAGE_NAME
         ports:
-            - 9090:$VOLITION_EXTERNAL_PORT
+            - $VOLITION_EXTERNAL_PORT:9090
         volumes:
             - ../volume-volition:/var/lib/volition
 

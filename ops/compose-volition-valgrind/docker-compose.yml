@@ -16,7 +16,7 @@ services:
             "/var/lib/volition/volition.ini"
         ]
         ports:
-            - 9090:9090
+            - $VOLITION_EXTERNAL_PORT:9090
         volumes:
             - ../volume-volition:/var/lib/volition
 
