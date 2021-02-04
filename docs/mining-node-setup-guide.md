@@ -8,28 +8,24 @@ Also, before you begin, make sure you have an active account on whatever Volitio
 
 ### Prepare Your Server
 
-To get started, you'll want to install:
-
 ```
-docker
-docker-compose
-git
-openssl
+sudo apt update
+sudo apt install curl docker docker-compose git openssl vim
 ```
 
-You will may also want to install curl and a text editor (such as vi/vim).
+Also set up an SSH key for use with github:
 
-Finally, check your server's settings and make sure port 80 is open. You will also need to open port 443 if you plan to configure HTTPS/SSL.
+https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+
+Check your server's settings and make sure port 80 is open. Open port 443 if you plan to configure HTTPS/SSL.
 
 ### Clone and Build the Node
-
-First, clone the repository from github:
 
 ```
 git clone --recurse-submodules git@github.com:cryptogogue/vol-node-cpp.git
 ```
 
-Now build the docker image using a helper script:
+Build the docker image using a helper script:
 
 ```
 cd vol-node-cpp
@@ -37,7 +33,11 @@ cp ./ops/.env.example ./ops/.env
 ./ops/build.sh
 ```
 
-During the build, you may see some red warning messages. Make note of these, but realize they are not immediate cause for concern. Once the build is done, you should see a message indicating that image was sucsessfully tagged. You can get a list of Docker images on your system by typing:
+This will take a long time. You may see some red warning messages; they are not immediate cause for concern.
+
+Once the build is done, you should see a message indicating that image was sucsessfully tagged.
+
+You can get a list of Docker images on your system by typing:
 
 ```
 docker image ls
@@ -51,13 +51,7 @@ The .env file has some settings you don't probably need to change. It is ignored
 
 The example docker-compose files map ./ops/volume-volition onto /var/lib/volition/ inside the Docker container. This folder should be configured to contain the genesis block, the volition.ini file and the mining keys.
 
-You can use curl to pull it into the folder:
-
-```
-curl <URL of genesis block> -o ./ops/volume-volition/genesis.json
-```
-
-Now, copy the example volition.ini:
+Copy the example volition.ini:
 
 ```
 cp ./ops/volume-volition/volition.ini.example ./ops/volume-volition/volition.ini
@@ -78,15 +72,19 @@ port                        = 9090
 miner                       = <your miner account name>
 ```
 
-You will also need a mining key and a control key. The mining key will is a 4096-bit RSA key used to identify your mining node and sign blocks. The control key is a secp256k1 elliptic key used to sign mining node control transactions.
-
-If you already have openssl installed, you can generate the keys using the helper script:
+You can generate the keys using the helper script:
 
 ```
 ./ops/make-keys.sh
 ```
 
-The keys will be placed ./ops/volume-volition/keys. After running the script, you should have two sets of pen files there: one for mining and one for mining node control.
+The keys will be placed ./ops/volume-volition/keys. After running the script, you should have two sets of pem files there: one for mining and one for mining node control.
+
+Finally, use curl to fetch the genesis block:
+
+```
+curl <URL of genesis block> -o ./ops/volume-volition/genesis.json
+```
 
 ### Run the Mining Node
 
@@ -118,26 +116,30 @@ When you are ready to stop the node, you can use the helper script:
 
 To use HTTPS/SSL you will need a domain name. Procuring a domain name is outside of the scope of this document; check with your hosting provider for instructions.
 
-One you have a domain name, there are two ways to set up HTTPS. The first is to produre an SSL certificate, install it manually and configure the node to use it by editing volition.ini. The challenge of this approach is procuring and maintaining the certificate. The configuration is fairly straightforward to do and just requires changes to volition.ini; we'll update this document later with instructions.
-
-For now, we recommend you use nginx and certbot to via docker-compose to automatically obtain a letsencrypt SSL certificate.
-
-First, copy the example nginx configuration directory in volume-nginx:
+First, make sure there is a *valid* email address in ./ops/.env:
 
 ```
-cp volume-nginx.example volume-nginx
+CERTBOT_EMAIL=totally_valid_email@some_real_domain.com
+```
+
+If you don't have a *valid* email in your configuration, certbot will not work.
+
+Copy the example nginx configuration directory in volume-nginx:
+
+```
+cp -r ./ops/volume-nginx.example ./ops/volume-nginx
 ```
 
 Now rename the example configuration file to your domain:
 
 ```
-mv www.mydomain.com.conf <mysubdomain>.<mydomain>.<mydomainextension>.conf
+mv ./ops/volume-nginx/user.conf.d/www.mydomain.com.conf ./ops/volume-nginx/user.conf.d/<mysubdomain>.<mydomain>.<mydomainextension>.conf
 ```
 
 For example, if you own the domain 'volhodler.net' and you want to access the node at the subdomain 'node':
 
 ```
-mv www.mydomain.com.conf node.volhodler.net.conf
+mv ./ops/volume-nginx/user.conf.d/www.mydomain.com.conf ./ops/volume-nginx/user.conf.d/node.volhodler.net.conf
 ```
 
 Now, open the conf file and edit it to include your domain in the SSL path. Note that the domain must be formatted correctly for certbot to work:
@@ -176,10 +178,10 @@ Once that is done, make sure the original instance of volition is stopped:
 ./ops/compose-volition/down.sh
 ```
 
-Now you can run volition with nginx:
+Now you can run volition with nginx and certbot:
 
 ```
-./ops/compose-volition-nginx/up.sh
+./ops/compose-volition-nginx-certbot/up.sh
 ```
 
 Navigate to the domain you configured and you should see the SSL lock appear in the address bar to indicate a secure site.
