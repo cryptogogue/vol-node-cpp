@@ -21,11 +21,11 @@ class SimTransaction {
 public:
 
     //----------------------------------------------------------------//
-    static shared_ptr < AbstractTransactionBody > makeBody_RegisterMiner ( const Miner& miner ) {
+    static shared_ptr < AbstractTransactionBody > makeBody_RegisterMiner ( const Miner& miner, string url ) {
 
         return makeBody_RegisterMiner (
             miner.getMinerID (),
-            miner.getURL (),
+            url,
             miner.getKeyPair ().getPublicKey (),
             miner.getMotto (),
             miner.getVisage ()

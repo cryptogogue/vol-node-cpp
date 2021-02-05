@@ -46,11 +46,10 @@ public:
         try {
             
             jsonOut.set ( "minerID", this->mWebMiner->getMinerID ());
-            jsonOut.set ( "url", this->mWebMiner->getURL ());
             
             size_t totalBlocks = ledger.countBlocks ();
             jsonOut.set ( "totalBlocks", totalBlocks );
-                        
+
             this->peek ( ledger, jsonOut, "peek", this->optQuery ( "peek", 0 ), totalBlocks );
             this->peek ( ledger, jsonOut, "prev", this->optQuery ( "prev", 0 ), totalBlocks );
             

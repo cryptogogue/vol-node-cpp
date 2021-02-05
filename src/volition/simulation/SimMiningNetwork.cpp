@@ -142,7 +142,7 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
         
-            client->enqueueMinerInfoResponse ( request, minerID, miner->getURL ());
+            client->enqueueMinerInfoResponse ( request, minerID );
             break;
         }
         
@@ -184,21 +184,16 @@ void SimMiningNetwork::pushConstraintDropHeader ( double probability, size_t bas
 }
 
 //----------------------------------------------------------------//
-void SimMiningNetwork::setMiners ( vector < shared_ptr < Miner >> miners ) {
+void SimMiningNetwork::setMiner ( shared_ptr < SimMiner > miner ) {
 
-    this->mConstraintListsByIndex.resize ( miners.size ());
-
-    for ( size_t i = 0; i < miners.size (); ++i ) {
+    size_t i = this->mMinersByURL.size ();
+    this->mConstraintListsByIndex.resize ( i + 1 );
     
-        shared_ptr < SimMiner > miner = dynamic_pointer_cast < SimMiner >( miners [ i ]);
-        assert ( miner );
-        
-        string minerID  = miner->getMinerID ();
-        string url      = miner->getURL ();
-        
-        this->mMinersByURL [ url ]              = miner;
-        this->mConstraintListsByIndex [ i ]     = &this->mConstraintLists [ minerID ];
-    }
+    shared_ptr < SimMiner > simMiner = dynamic_pointer_cast < SimMiner >( miner );
+    assert ( simMiner );
+    
+    this->mMinersByURL [ miner->getURL ()]  = simMiner;
+    this->mConstraintListsByIndex [ i ]     = &this->mConstraintLists [ miner->getMinerID ()];
 }
 
 //----------------------------------------------------------------//

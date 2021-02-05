@@ -111,7 +111,6 @@ protected:
     static constexpr const char* MASTER_BRANCH      = "master";
 
     string                                          mMinerID;
-    string                                          mURL;
     time_t                                          mStartTime;
 
     CryptoKeyPair                                   mKeyPair;
@@ -132,6 +131,7 @@ protected:
     MinerConfig                                     mConfig;
     
     set < string >                                  mNewMinerURLs;
+    set < string >                                  mCompletedURLs;
     
     set < shared_ptr < RemoteMiner >>               mRemoteMiners;
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByID;
@@ -222,7 +222,6 @@ public:
     GET_SET ( string,                                       Motto,                      mMotto )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
-    GET_SET ( string,                                       URL,                        mURL )
     
     //----------------------------------------------------------------//
     operator Poco::Mutex& () {

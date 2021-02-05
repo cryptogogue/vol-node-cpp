@@ -127,7 +127,8 @@ void SimMiner::scrambleRemotes () {
 }
 
 //----------------------------------------------------------------//
-SimMiner::SimMiner ( bool isGenesisMiner ) :
+SimMiner::SimMiner ( string url, bool isGenesisMiner ) :
+    mURL ( url ),
     mActive ( true ),
     mInterval ( 1 ),
     mIsGenesisMiner ( isGenesisMiner ) {

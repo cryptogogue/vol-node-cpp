@@ -127,7 +127,7 @@ void Miner::affirmMessenger () {
 //----------------------------------------------------------------//
 void Miner::affirmRemoteMiner ( string url ) {
 
-    if ( url.size () && ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ())) {
+    if ( url.size () && ( this->mCompletedURLs.find ( url ) == this->mCompletedURLs.cend ())) {
         this->mNewMinerURLs.insert ( url );
     }
 }
@@ -694,7 +694,6 @@ void Miner::step ( time_t now ) {
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
     this->affirmMessenger ();
-//    this->mMessenger->await ();
     this->mMessenger->receiveResponses ( *this, now );
     this->updateRemoteMinerGroups ();
     
@@ -805,10 +804,10 @@ void Miner::updateRemoteMinerGroups () {
     this->mOnlineMiners.clear ();
     this->mContributors.clear ();
     
-    map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
-    for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
     
-        shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt->second;
+        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         
         if ( remoteMiner->isOnline ()) {
             this->mOnlineMiners.insert ( remoteMiner );
@@ -829,38 +828,30 @@ void Miner::updateRemoteMiners () {
     for ( ; minerIt != miners.end (); ++minerIt ) {
         
         string minerID = *minerIt;
-        if ( minerID == this->mMinerID ) {
-            if ( this->mURL.size () == 0 ) {
-                AccountODBM minerODBM ( this->getLedger (), *minerIt );
-                this->mURL = minerODBM.mMinerInfo.get ()->getURL ();
-            }
-            continue;
-        }
+        if ( minerID == this->mMinerID ) continue;
         
-        if ( this->mRemoteMinersByID.find ( minerID ) == this->mRemoteMinersByID.cend ()) {
-            
-            AccountODBM minerODBM ( this->getLedger (), *minerIt );
-            string url = minerODBM.mMinerInfo.get ()->getURL ();
-            
-            if ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ()) {
-                this->mNewMinerURLs.insert ( url );
-            }
+        AccountODBM minerODBM ( this->getLedger (), *minerIt );
+        string url = minerODBM.mMinerInfo.get ()->getURL ();
+        
+        if ( this->mCompletedURLs.find ( url ) == this->mCompletedURLs.cend ()) {
+            this->mNewMinerURLs.insert ( url );
         }
     }
     
     // affirm miners for pending URLs
     while ( this->mNewMinerURLs.size ()) {
-    
+        
         string url = *this->mNewMinerURLs.begin ();
         
-        if (( this->mURL != url ) && ( this->mRemoteMinersByURL.find ( url ) == this->mRemoteMinersByURL.cend ())) {
-        
+        if ( this->mCompletedURLs.find ( url ) == this->mCompletedURLs.cend ()) {
+            
             shared_ptr < RemoteMiner > remoteMiner = make_shared < RemoteMiner >();
             remoteMiner->mURL = url;
             this->mRemoteMinersByURL [ url ] = remoteMiner;
             this->mRemoteMiners.insert ( remoteMiner );
+            this->mCompletedURLs.insert ( url );
         }
-        this->mNewMinerURLs.erase ( this->mNewMinerURLs.begin ());
+        this->mNewMinerURLs.erase ( url );
     }
     
     // update miner state
@@ -883,15 +874,19 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
     const MiningMessengerRequest& request   = response.mRequest;
     string url                              = response.mRequest.mMinerURL;
     
-    // TODO: these could be set deliberately as an attack
-    assert ( url != this->mURL );
-    assert ( response.mMinerID != this->mMinerID );
-    
     map < string, shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMinersByURL.find ( url );
     shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt != this->mRemoteMinersByURL.cend () ? remoteMinerIt->second : NULL;
-        
-    // TODO: also could be tripped by an attack
-    assert ( remoteMiner );
+    
+    // TODO: need to verify miners are who they say (return signed timestamp or challenge)
+    
+    if ( !remoteMiner ) return;
+    
+    // TODO: could be set deliberately as an attack (eacy to knock other miners out of circulation this way)
+    if ( response.mMinerID == this->mMinerID ) {
+        this->mRemoteMinersByURL.erase ( url );
+        this->mRemoteMiners.erase ( remoteMiner );
+        return;
+    }
     
     switch ( request.mRequestType ) {
         

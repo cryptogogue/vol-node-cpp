@@ -73,7 +73,7 @@ public:
     void            enqueueRequest                  ( AbstractMiningMessenger* messenger, const MiningMessengerRequest& request );
     void            pushConstraintDropBlock         ( double probability, size_t base, size_t top = 0 );
     void            pushConstraintDropHeader        ( double probability, size_t base, size_t top = 0 );
-    void            setMiners                       ( vector < shared_ptr < Miner >> miners );
+    void            setMiner                        ( shared_ptr < SimMiner > miner );
                     SimMiningNetwork                ();
                     ~SimMiningNetwork               ();
     void            updateAndDispatch               ();

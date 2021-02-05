@@ -20,6 +20,7 @@ protected:
     friend class Simulator;
     friend class SimMiningNetwork;
     
+    string          mURL;
     bool            mActive;
     size_t          mInterval;
     bool            mIsGenesisMiner;
@@ -29,13 +30,15 @@ protected:
 
 public:
 
+    GET ( string,   URL,    mURL )
+
     //----------------------------------------------------------------//
     void                    extendChain             ( string charmHex, time_t time = 0 );
     void                    rewindChain             ( size_t height );
     void                    setActive               ( bool active );
     void                    setCharm                ( size_t height, string charmHex = "" );
     void                    scrambleRemotes         ();
-                            SimMiner                ( bool isGenesisMiner = true );
+                            SimMiner                ( string url, bool isGenesisMiner = true );
                             ~SimMiner               ();
 };
 

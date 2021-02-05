@@ -76,7 +76,6 @@ protected:
     void                sendRequest                                 ( HTTPMiningMessengerRequestQueue& queue );
 
     //----------------------------------------------------------------//
-    void                AbstractMiningMessenger_await               () override;
     void                AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) override;
 
 public:

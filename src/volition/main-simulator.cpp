@@ -116,7 +116,7 @@ protected:
                 simulator.setActive ( 1, 2, true );
                 simulator.getSimMiner ( 0 )->pushTransaction (
                     SimTransaction::makeTransaction (
-                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 1 )),
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 1 ), simulator.getSimMiner ( 1 )->getURL ()),
                         "0e449540-5c04-4c2b-a437-dcc75db54de8",
                         "9091"
                     )
@@ -141,7 +141,7 @@ protected:
                 // add 9092, 9093 as miners
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
-                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 2 )),
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 2 ), simulator.getSimMiner ( 2 )->getURL ()),
                         "12ad8de5-0aa1-4fbf-a6fe-bdce7640aed3",
                         "9092"
                     )
@@ -149,7 +149,7 @@ protected:
 
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
-                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 3 )),
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 3 ), simulator.getSimMiner ( 3 )->getURL ()),
                         "333a6f1b-cdf3-4b1d-8979-898d99d22f5c",
                         "9093"
                     )
@@ -173,7 +173,7 @@ protected:
                 // add 9094 - 9097 as miners
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
-                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 4 )),
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 4 ), simulator.getSimMiner ( 4 )->getURL ()),
                         "8f460ff6-a290-44c7-98d3-a678449a613b",
                         "9094"
                     )
@@ -181,7 +181,7 @@ protected:
 
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
-                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 5 )),
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 5 ), simulator.getSimMiner ( 5 )->getURL ()),
                         "1d69ad2a-8ee1-4f35-968f-a4ce725c8dea",
                         "9095"
                     )
@@ -189,7 +189,7 @@ protected:
 
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
-                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 6 )),
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 6 ), simulator.getSimMiner ( 6 )->getURL ()),
                         "a9f4409e-7a1b-48ef-8fcf-b58070a2ee9a",
                         "9096"
                     )
@@ -197,7 +197,7 @@ protected:
 
                 simulator.getSimMiner ( 1 )->pushTransaction (
                     SimTransaction::makeTransaction (
-                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 7 )),
+                        SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 7 ), simulator.getSimMiner ( 7 )->getURL ()),
                         "356cff67-a911-4602-8950-a667fd2fd040",
                         "9097"
                     )
@@ -380,21 +380,9 @@ public:
         
         SimulatorActivity simulator;
         simulator.initialize ( make_shared < THE_SCENARO >());
-        
-        Poco::ThreadPool threadPool;
-        
-        shared_ptr < Poco::Net::HTTPServer > server = make_shared < Poco::Net::HTTPServer >(
-            new Volition::MinerAPIFactory ( simulator.getMiners ()),
-            threadPool,
-            Poco::Net::ServerSocket (( Poco::UInt16 )BASE_PORT ),
-            new Poco::Net::HTTPServerParams ()
-        );
-        server->start ();
 
         simulator.start ();
 
-        // nasty little hack. POCO considers the set breakpoint signal to be a termination event.
-        // need to find out how to stop POCO from doing this. in the meantime, this hack.
         #ifdef _DEBUG
             Poco::Event shutdownEvent;
             shutdownEvent.wait ();
@@ -403,10 +391,6 @@ public:
         #endif
 
         simulator.shutdown ();
-
-        server->stop ();
-        
-        threadPool.stopAll ();
 
         return EXIT_OK;
     }

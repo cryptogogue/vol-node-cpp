@@ -13,11 +13,20 @@ sudo apt update
 sudo apt install curl docker docker-compose git openssl vim
 ```
 
-Also set up an SSH key for use with github:
+Also, set up an SSH key for use with github:
 
 https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
-Check your server's settings and make sure port 80 is open. Open port 443 if you plan to configure HTTPS/SSL.
+If you are setting up on Ubuntu, you may also need to create a \~/.ssh/config file in:
+
+```
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/<ssh_key_filename>
+```
+
+Finally, make sure your server's port 80 is open. Open port 443 as well if you plan to configure HTTPS/SSL.
 
 ### Clone and Build the Node
 

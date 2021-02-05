@@ -20,7 +20,7 @@ size_t BlockTreeSegment::getFullLength () const {
 size_t BlockTreeSegment::getRewriteDefeatCount () const {
 
     time_t window = this->mHead->getRewriteWindow (); // TODO: account for different rewrite windows in segment
-    return ( size_t )ceil ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window );
+    return ( size_t )floor ( difftime ( this->mTop->getTime (), this->mHead->getTime ()) / window ) + 1;
 }
 
 //----------------------------------------------------------------//

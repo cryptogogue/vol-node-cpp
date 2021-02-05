@@ -20,10 +20,6 @@ protected:
     shared_ptr < SimMiningNetwork >    mNetwork;
 
     //----------------------------------------------------------------//
-    void AbstractMiningMessenger_await () override {
-    }
-    
-    //----------------------------------------------------------------//
     void AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) override {
     
         assert ( this->mNetwork );

@@ -321,7 +321,7 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
                 Poco::JSON::Object::Ptr nodeJSON = json ? json->getObject ( "node" ) : NULL;
                 if ( nodeJSON ) {
                     string minerID  = nodeJSON->optValue < string >( "minerID", "" );
-                    this->enqueueMinerInfoResponse ( request, minerID, request.mMinerURL );
+                    this->enqueueMinerInfoResponse ( request, minerID );
                 }
                 break;
             }
@@ -410,12 +410,6 @@ void HTTPMiningMessenger::sendRequest ( HTTPMiningMessengerRequestQueue& queue )
 //================================================================//
 // virtual
 //================================================================//
-
-//----------------------------------------------------------------//
-void HTTPMiningMessenger::AbstractMiningMessenger_await () {
-
-    this->mThreadPool.joinAll ();
-}
 
 //----------------------------------------------------------------//
 void HTTPMiningMessenger::AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) {

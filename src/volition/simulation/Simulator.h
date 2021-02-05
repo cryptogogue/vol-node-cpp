@@ -24,7 +24,8 @@ class AbstractScenario;
 class Simulator {
 public:
 
-    typedef vector < shared_ptr < Miner >> Miners;
+    typedef map < string, shared_ptr < SimMiner >> MinersByURL;
+    typedef vector < shared_ptr < SimMiner >> MinersByID;
 
     enum ReportMode {
         REPORT_SUMMARY,
@@ -42,7 +43,8 @@ protected:
     Analysis                            mAnalysis;
     
     size_t                              mBasePort;
-    Miners                              mMiners;
+    MinersByURL                         mMinersByURL;
+    MinersByID                          mMinersByID;
     Poco::Event                         mShutdownEvent;
     
     InMemoryBlockTree                   mOptimal;
@@ -63,7 +65,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-    const Miners&                       getMiners               ();
+    const MinersByID&                   getMiners               ();
     shared_ptr < SimMiner >             getSimMiner             ( size_t idx );
     void                                initialize              ( shared_ptr < AbstractScenario > scenario );
     void                                initializeGenesis       ( time_t blockDelayInSeconds = 1, time_t rewriteWindowInSeconds = 600, size_t maxBlockWeight = 1024 );

@@ -63,7 +63,6 @@ public:
     string                                      mMinerID;
     shared_ptr < const Block >                  mBlock;
     list < shared_ptr < const BlockHeader >>    mHeaders;
-    string                                      mURL;
     set < string >                              mMinerURLs;
 };
 
@@ -106,7 +105,6 @@ protected:
     list < MiningMessengerResponse >    mResponseQueue;
     
     //----------------------------------------------------------------//
-    virtual void        AbstractMiningMessenger_await               () = 0;
     virtual void        AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) = 0;
 
     //----------------------------------------------------------------//
@@ -131,12 +129,6 @@ public:
     //----------------------------------------------------------------//
     virtual ~AbstractMiningMessenger () {
     }
-
-    //----------------------------------------------------------------//
-    void await () {
-    
-        this->AbstractMiningMessenger_await ();
-    }  
 
     //----------------------------------------------------------------//
     void enqueueBlockRequest ( string minerURL, const Digest& digest, u64 height, string debug = "" ) {
@@ -210,13 +202,12 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void enqueueMinerInfoResponse ( const MiningMessengerRequest& request, string minerID, string url ) {
+    void enqueueMinerInfoResponse ( const MiningMessengerRequest& request, string minerID ) {
     
         MiningMessengerResponse response;
         response.mStatus    = MiningMessengerResponse::STATUS_OK;
         response.mRequest   = request;
         response.mMinerID   = minerID;
-        response.mURL       = url;
         this->enqueueResponse ( response );
     }
 
