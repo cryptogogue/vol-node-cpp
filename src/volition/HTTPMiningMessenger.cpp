@@ -52,6 +52,8 @@ private:
         
         try {
         
+            Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
+        
             // TODO: this is so fucking gross, I hate POCO so fucking much
             if ( uri.getScheme () == "https" ) {
                 session = new Poco::Net::HTTPSClientSession ( uri.getHost (), uri.getPort ());
@@ -59,10 +61,9 @@ private:
             else {
                 session = new Poco::Net::HTTPClientSession ( uri.getHost (), uri.getPort ());
             }
-                    
-            Poco::Net::HTTPRequest request ( Poco::Net::HTTPRequest::HTTP_GET, path, Poco::Net::HTTPMessage::HTTP_1_1 );
-            session->setKeepAlive ( true );
-//            session->setTimeout ( Poco::Timespan ( 30, 0 ));
+            
+            session->setKeepAlive ( false );
+            session->setTimeout ( Poco::Timespan ( 30, 0 ), Poco::Timespan ( 60, 0 ), Poco::Timespan ( 60, 0 ));
             session->sendRequest ( request );
             
             Poco::Net::HTTPResponse response;

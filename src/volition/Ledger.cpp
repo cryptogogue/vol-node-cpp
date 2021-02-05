@@ -327,8 +327,6 @@ LedgerResult Ledger::invokeReward ( string minerID, string rewardName, time_t ti
 
 //----------------------------------------------------------------//
 Ledger::Ledger () {
-
-    this->init ();
 }
 
 //----------------------------------------------------------------//

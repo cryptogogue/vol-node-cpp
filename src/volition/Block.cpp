@@ -27,6 +27,11 @@ void Block::affirmHash () {
 bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
 
     if ( ledger.getVersion () != this->mHeight ) return false;
+    
+    if ( this->mHeight == 0 ) {
+        ledger.init ();
+    }
+    
     if ( !this->verify ( ledger, policy )) return false;
 
     // some transactions need to be applied later.
