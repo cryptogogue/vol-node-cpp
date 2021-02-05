@@ -37,21 +37,15 @@ cp ./ops/.env.example ./ops/.env
 ./ops/build.sh
 ```
 
-This will take a long time. You may see some red warning messages; they are not an immediate cause for concern:
-
-![Harmless Warnings](images/build-warnings.png)
+This will take a long time. You may see some red warning messages; they are not an immediate cause for concern.
 
 Once the build is done, you should see a message indicating that image was sucsessfully tagged.
-
-![Build Success](images/build-success.png)
 
 You can get a list of Docker images on your system by typing:
 
 ```
 docker image ls
 ```
-
-![Docker Images](images/docker-images.png)
 
 If you look inside build.sh, you'll see it generates a header file containing some information from git, then it invokes docker to build the image.
 
@@ -90,8 +84,6 @@ Generate the mining keys with the helper script:
 
 The keys will be placed ./ops/volume-volition/keys. After running the script, you should have two sets of .pem files: one for mining and one for mining node control.
 
-![Keys](images/mining-keys.png)
-
 Finally, use curl to fetch the genesis block:
 
 ```
@@ -113,8 +105,6 @@ docker ps
 This will list the currently running containers.
 
 You can also verify the node is running by opening your web browser and navigating to your server's IP address or domain. You should see a .json dump of information about the node.
-
-![Node JSON](images/node-json-by-ip.png)
 
 The example volition.ini configures the node to write its log to ./ops/volume-volition/log. A new log is written each time the node is run.
 
