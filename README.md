@@ -44,9 +44,10 @@ We hope you'll help for a good reason (you find it interesting) and not a dubiou
 
 ### Getting Started
 
-Mining Node Setup Guide
+- [Mining Node Setup Guide](docs/mining-node-setup-guide/mining-node-setup-guide.md)
+- [VOLWAL Miner Control Setup Guide](docs/mining-node-setup-guide/volwal-miner-control-setup-guide.md)
 
 ### How it Works
 
-Volition Consensus
+- [Volition Consensus](docs/consensus.md)
 
