@@ -11,11 +11,11 @@ This codebase is also the idiosyncratic work of a single developer. Clearly, we 
 
 ### Proof of Personhood
 
-While the Volition protocol was designed to be used in permissioned scenarios, participation in the Volition CCG mining network will eventually be public through "[Proof of Personhood](https://en.wikipedia.org/wiki/Proof_of_personhood)." For this, we will rely on third party KYC/AML vendors to issuing digital identities within a pluggable identity framework: miners will be able to go to an independent KYC/AML vendor, receive a digital identity, use that identity to agree to Volition's mining Terms of Service and then participate in the network. Miners will not need to get permission from us or anyone else.
+While the Volition protocol was designed to be used in permissioned scenarios, participation in the Volition CCG mining network will eventually be public through "[Proof of Personhood](https://en.wikipedia.org/wiki/Proof_of_personhood)." For this, we will rely on third party KYC/AML vendors to issue digital identities within a pluggable identity framework: miners will be able to go to an independent KYC/AML vendor, receive a digital identity, use that identity to agree to Volition's mining Terms of Service and then participate in the network. Miners will not need to get permission from us or anyone else.
 
 We like this approach because it strikes a sensible balance between trustlessness (Volition is trustful) and decentralization (no single entity controls access).
 
-Our vision is not a single, private ledger for one project or a universal public ledger for all projects, but many independent "public permissioned" ledgers, one for each publisher or project. And of course, once a miner has a valid digital identity, that can participate in as many different ledgers as they desire.
+Our vision is not a single, private ledger for one project or a universal public ledger for all projects, but many independent "public permissioned" ledgers, one for each publisher or project. And, of course, once a miner has a valid digital identity, they can participate in as many different ledgers as they desire.
 
 ### Warning
 
@@ -27,7 +27,7 @@ The current codebase has also not been optimized. For example, the current imple
 
 It's still too early in the project for a proper roadmap; that will come into focus as we move into open beta and start seeing the network operate, even at limited scale.
 
-Also, please note that although Volition is a technically deep, complex and hopefully *interesting* project, it not the product of professional mathematicians or cryptographers. Our approach has been intuitive; whether Volition can weather the attacks that will come with any attention we're lucky enough to receive remains to be seen.
+Also, please note that although Volition is a technically deep, complex and hopefully *interesting* project, it's not the product of professional mathematicians or cryptographers. Our approach has been intuitive; whether Volition can weather the attacks that will come with any attention we're lucky enough to receive remains to be seen.
 
 ### Why Help?
 
