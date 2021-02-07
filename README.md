@@ -1,4 +1,4 @@
-# VOLITION NODE CPP - The Volition Reference Node in C++
+# The Volition Reference Node in C++
 
 This is an implementation of a Volition blockchain mining node in C++.
 
