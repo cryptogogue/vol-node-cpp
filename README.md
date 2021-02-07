@@ -11,7 +11,7 @@ This codebase is also the idiosyncratic work of a single developer. Clearly, we 
 
 ### Proof of Personhood
 
-While the Volition protocol was designed to be used in permissioned scenarios, participation in the Volition CCG mining network will eventually be "public" as well through "Proof of Personhood." What we mean by this is that anyone will eventually be able to run a mining node and participate in consensus if they a) can prove their identity and b) operate under a jurisdiction where there is rule of law (including legal recognition for digital signatures).
+While the Volition protocol was designed to be used in permissioned scenarios, participation in the Volition CCG mining network will eventually be "public" as well through "[Proof of Personhood](https://en.wikipedia.org/wiki/Proof_of_personhood)." What we mean by this is that anyone will eventually be able to run a mining node and participate in consensus if they a) can prove their identity and b) operate under a jurisdiction where there is rule of law (including legal recognition for digital signatures).
 
 In other words, unlike permissionless protocols with anonymous miners, Volition is permissioned, but participation is open to any qualifying member of the public and, importantly, that qualification will be available in an open decentralized fashion with no single gatekeeper.
 
