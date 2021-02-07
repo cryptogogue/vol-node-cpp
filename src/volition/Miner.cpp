@@ -446,6 +446,7 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     string hash = block->getDigest ().toHex ();
     this->mLedgerFilename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
     this->mConfigFilename = Format::write ( "%s/%s-config.json", path.c_str (), hash.c_str ());
+    this->mMinersFilename = Format::write ( "%s/%s-miners.json", path.c_str (), hash.c_str ());
     this->mBlocksFilename = Format::write ( "%s/%s-blocks.db", path.c_str (), hash.c_str ());
     
     this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
@@ -470,6 +471,17 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     
     if ( FileSys::exists ( this->mConfigFilename )) {
         FromJSONSerializer::fromJSONFile ( this->mConfig, this->mConfigFilename );
+    }
+    
+    if ( FileSys::exists ( this->mMinersFilename )) {
+    
+        SerializableSet < string > minerURLs;
+        FromJSONSerializer::fromJSONFile ( minerURLs, this->mMinersFilename );
+        
+        SerializableSet < string >::const_iterator urlIt = minerURLs.cbegin ();
+        for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
+            this->affirmRemoteMiner ( *urlIt );
+        }
     }
 }
 
@@ -854,11 +866,18 @@ void Miner::updateRemoteMiners () {
         this->mNewMinerURLs.erase ( url );
     }
     
+    SerializableSet < string > minerURLs;
+    
     // update miner state
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         remoteMiner->update ( *this->mMessenger );
+        minerURLs.insert ( remoteMiner->getURL ());
+    }
+    
+    if ( this->mMinersFilename.size ()) {
+        ToJSONSerializer::toJSONFile ( minerURLs, this->mMinersFilename );
     }
 }
 

@@ -163,6 +163,7 @@ protected:
     string                                          mLedgerFilename;
     string                                          mConfigFilename;
     string                                          mBlocksFilename;
+    string                                          mMinersFilename;
     
     Poco::Mutex                                     mMutex;
     shared_ptr < AbstractMiningMessenger >          mMessenger;
@@ -175,7 +176,6 @@ protected:
     bool                                checkTags                   () const;
     void                                composeChain                ();
     void                                composeChainRecurse         ( BlockTreeCursor branch );
-    void                                discoverMiners              ();
     BlockSearch*                        findBlockSearch             ( const Digest& digest );
     BlockTreeCursor                     improveBranch               ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
