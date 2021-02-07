@@ -11,11 +11,7 @@ This codebase is also the idiosyncratic work of a single developer. Clearly, we 
 
 ### Proof of Personhood
 
-While the Volition protocol was designed to be used in permissioned scenarios, participation in the Volition CCG mining network will eventually be "public" as well through "[Proof of Personhood](https://en.wikipedia.org/wiki/Proof_of_personhood)." What we mean by this is that anyone will eventually be able to run a mining node and participate in consensus if they a) can prove their identity and b) operate under a jurisdiction where there is rule of law (including legal recognition for digital signatures).
-
-In other words, unlike permissionless protocols with anonymous miners, Volition is permissioned, but participation is open to any qualifying member of the public and, importantly, that qualification will be available in an open decentralized fashion with no single gatekeeper.
-
-For this, we rely on third party KYC/AML vendors to issuing digital identities within a pluggable identity framework: you will be able to go to an independent KYC/AML vendor, receive a digital identity (notarized by that vendor), use that identity to agree to Volition's mining Terms of Service and then freely participate in the network. You do not need to get permission from us or anyone else.
+While the Volition protocol was designed to be used in permissioned scenarios, participation in the Volition CCG mining network will eventually be public through "[Proof of Personhood](https://en.wikipedia.org/wiki/Proof_of_personhood)." For this, we will rely on third party KYC/AML vendors to issuing digital identities within a pluggable identity framework: miners will be able to go to an independent KYC/AML vendor, receive a digital identity, use that identity to agree to Volition's mining Terms of Service and then participate in the network. Miners will not need to get permission from us or anyone else.
 
 We like this approach because it strikes a sensible balance between trustlessness (Volition is trustful) and decentralization (no single entity controls access).
 
