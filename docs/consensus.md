@@ -49,7 +49,7 @@ Longer branches are compared to each other and the more CHARMing branch is selec
 Because branches are clipped to the shortest common length, it may happen that a short branch may defeat a long branch. For example if a participant mines the most charming block at height N but waits until N+1000 to reveal their block, then all 1000 subsequent blocks will be discarded. To prevent this, LOOKBACK is defined as the maximum amount of time in which an earlier block may be submitted. We can use this to calculate the minimum length a shorter chain would need to be to "defeat" a longer chain. For example, consider two chains with a common root N. The longer chain has a length of N + 100 and the shorter has a length of N + 5. The "defeat count" is then:
 
 ```
-DEFEAT_COUNT = ( FLOOR ( TIME ( N + 100 ) - TIME ( N + 1 )) + 1 ) / LOOKBACK
+DEFEAT_COUNT = FLOOR (( TIME ( N + 100 ) - TIME ( N + 1 )) / LOOKBACK ) + 1
 ```
 
 DEFEAT_COUNT has nothing to do with the length of the branch; it based only on the time difference between top and base of the branch.
