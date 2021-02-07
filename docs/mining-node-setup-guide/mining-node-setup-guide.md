@@ -162,7 +162,7 @@ server {
     ssl_certificate_key     /etc/letsencrypt/live/<mysubdomain>.<mydomain>.<mydomainextension>/privkey.pem;
 
     location / {
-        proxy_pass http://volition:80;
+        proxy_pass http://volition:9090;
     }
 }
 ```
@@ -177,7 +177,7 @@ server {
     ssl_certificate_key     /etc/letsencrypt/live/node.volhodler.net/privkey.pem;
 
     location / {
-        proxy_pass http://volition:80;
+        proxy_pass http://volition:9090;
     }
 }
 ```
