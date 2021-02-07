@@ -2,7 +2,7 @@
 
 If you're using VOLWAL as your wallet, open it in your browser and add a new network using the address of your mining node. Once the network is online, you can import your account.
 
-There is a secret 'admin' screen accessible from the network screen in VOLWOL. To access it, naivagate to the network screen (the screen that shows the list of accounts on the network) and append "/admin" to the URL:
+There is a secret 'admin' screen accessible from the network screen in VOLWOL. To access it, navigate to the network screen (the screen that shows the list of accounts on the network) and append "/admin" to the URL:
 
 ![Network Admin URL](images/volwal-network-admin-url.png)
 

@@ -11,14 +11,20 @@ sudo apt update
 sudo apt install curl docker docker-compose git openssl vim
 ```
 
-Also, set up an SSH key for use with [github](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+Also, [set up an SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) for use with github.
 
-If you are setting up on Ubuntu, you may need to create an \~/.ssh/config file:
+You may need to create an \~/.ssh/config file:
 
 ```
 Host *
   AddKeysToAgent yes
   IdentityFile ~/.ssh/<ssh_key_filename>
+```
+
+You may also want to configure git to automatically pull submodules:
+
+```
+git config --global submodule.recurse true
 ```
 
 Finally, make sure your server's port 80 is open. Open port 443 as well if you have a domain name and plan to configure HTTPS/SSL.
@@ -39,9 +45,9 @@ cp ./ops/.env.example ./ops/.env
 
 This will take a long time. You may see some red warning messages; they are not an immediate cause for concern.
 
-Once the build is done, you should see a message indicating that image was sucsessfully tagged.
+Once the build is done, you should see a message indicating that image was successfully tagged.
 
-You can get a list of Docker images on your system by typing:
+You can get a list of the Docker images available on your system by typing:
 
 ```
 docker image ls
@@ -202,7 +208,7 @@ If you don't need to send miner control commands, you are done and can take a br
 
 ### Updating the Node
 
-From time to time you will want to update to the latest mining ndoe software. To do so, SSH in to your server, pull the latest, rebuild and restart:
+From time to time you will want to update to the latest mining node software. To do so, SSH in to your server, pull the latest, rebuild and restart:
 
 ```
 cd vol-node-cpp
