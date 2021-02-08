@@ -378,7 +378,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         if ( parentHeader.getMinerID () == this->mMinerID ) break;
         
         // don't replace the block in which we became a miner.
-        if ( parent.getHeight () < minerHeight ) break;
+        if ( parent.getHeight () <= minerHeight ) break;
         
         child = parent;
         parent = parent.getParent ();
@@ -820,6 +820,9 @@ void Miner::updateRemoteMinerGroups () {
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
     
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+        
+        AccountODBM accountODBM ( *this->mLedger, remoteMiner->getMinerID ());
+        if ( !accountODBM.isMiner ()) continue;
         
         if ( remoteMiner->isOnline ()) {
             this->mOnlineMiners.insert ( remoteMiner );
