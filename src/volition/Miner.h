@@ -239,7 +239,7 @@ public:
     void                                extend                      ( time_t now );
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
-    Ledger                              getLedgerAtHeight           ( u64 height ) const;
+    Ledger                              getLedgerAtBlock            ( u64 index ) const;
     TransactionStatus                   getTransactionStatus        ( const Ledger& ledger, string accountName, string uuid ) const;
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );

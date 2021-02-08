@@ -85,11 +85,38 @@ public:
     //----------------------------------------------------------------//
     void defineOptions ( Poco::Util::OptionSet& options ) override {
         Application::defineOptions ( options );
-        defineKeyFileOptions ( options, false );
+        
+        options.addOption (
+            Poco::Util::Option ( "eckey", "ec", "path to elliptic key file" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "eckey" )
+        );
+
+        options.addOption (
+            Poco::Util::Option ( "ecpassword", "p", "elliptic key file password" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "ecpassword" )
+        );
+        
+        options.addOption (
+            Poco::Util::Option ( "rsakey", "rsa", "path to rsa key file" )
+                .required ( true )
+                .argument ( "value", true )
+                .binding ( "rsakey" )
+        );
+
+        options.addOption (
+            Poco::Util::Option ( "rsapassword", "p", "rsa key file password" )
+                .required ( false )
+                .argument ( "value", true )
+                .binding ( "rsapassword" )
+        );
         
         options.addOption (
             Poco::Util::Option ( "name", "n", "miner name" )
-                .required ( true )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "name" )
         );
@@ -103,7 +130,7 @@ public:
         
         options.addOption (
             Poco::Util::Option ( "url", "u", "miner url" )
-                .required ( true )
+                .required ( false )
                 .argument ( "value", true )
                 .binding ( "url" )
         );
@@ -115,26 +142,23 @@ public:
         
         Poco::Util::AbstractConfiguration& configuration = this->config ();
     
-        string keyfile      = configuration.getString ( "keyfile", "" );
-        string password     = configuration.getString ( "password", "" );
-        string name         = configuration.getString ( "name" );
-        string motto        = configuration.getString ( "motto", "" );
-        string url          = configuration.getString ( "url" );
+        string ecKeyfile        = configuration.getString ( "eckey", "" );
+        string ecPassword       = configuration.getString ( "ecpassword", "" );
+        string rsaKeyfile       = configuration.getString ( "rsakey", "" );
+        string rsaPassword      = configuration.getString ( "rsapassword", "" );
+        string name             = configuration.getString ( "name", "miner-name" );
+        string motto            = configuration.getString ( "motto", "" );
+        string url              = configuration.getString ( "url", "https://www.mydomain.com" );
         
         shared_ptr < Volition::Miner > miner = make_shared < Volition::Miner >();
         
-        CryptoKeyPair cryptoKey;
+        CryptoKeyPair ecKeyPair;
+        ecKeyPair.load ( ecKeyfile );
+        
+        CryptoKeyPair rsaKeyPair;
+        rsaKeyPair.load ( rsaKeyfile );
 
-        if ( keyfile.size () && Poco::File ( keyfile ).exists ()) {
-            fstream inStream;
-            inStream.open ( keyfile, ios_base::in );
-            Volition::FromJSONSerializer::fromJSON ( cryptoKey, inStream );
-        }
-        else {
-            cryptoKey.rsa ( Volition::CryptoKeyPair::RSA_4096 );
-        }
-
-        miner->setKeyPair ( cryptoKey );
+        miner->setKeyPair ( rsaKeyPair );
         miner->setMinerID ( name );
         miner->setMotto ( motto );
         miner->affirmKey ();
@@ -144,18 +168,19 @@ public:
         
         shared_ptr < const MinerInfo > minerInfo = make_shared < MinerInfo >(
             url,
-            miner->getKeyPair ().getPublicKey (),
+            rsaKeyPair.getPublicKey (),
             miner->getMotto (),
             miner->getVisage ()
         );
         
         genesisAccount.mName            = miner->getMinerID ();
-        genesisAccount.mKey             = miner->getKeyPair ().getPublicKey ();
+        genesisAccount.mKey             = ecKeyPair.getPublicKey ();
         genesisAccount.mGrant           = 0;
         genesisAccount.mMinerInfo       = minerInfo;
 
         ToJSONSerializer::toJSONFile ( genesisAccount, Format::write ( "%s.account.json", name.c_str ()));
-        ToJSONSerializer::toJSONFile ( cryptoKey, Format::write ( "%s.keypair.json", name.c_str ()));
+        ToJSONSerializer::toJSONFile ( ecKeyPair, Format::write ( "%s.eckey.json", name.c_str ()));
+        ToJSONSerializer::toJSONFile ( rsaKeyPair, Format::write ( "%s.rsakey.json", name.c_str ()));
         
         return EXIT_OK;
     }

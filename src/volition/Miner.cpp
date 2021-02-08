@@ -295,10 +295,10 @@ Ledger& Miner::getLedger () {
 }
 
 //----------------------------------------------------------------//
-Ledger Miner::getLedgerAtHeight ( u64 height ) const {
+Ledger Miner::getLedgerAtBlock ( u64 index ) const {
 
     Ledger ledger ( *this->mLedger );
-    ledger.revertAndClear ( height );
+    ledger.revert ( index );
     return ledger;
 }
 

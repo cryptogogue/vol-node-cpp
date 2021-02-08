@@ -50,7 +50,7 @@ AbstractAPIRequestHandler::HTTPStatus AbstractMinerAPIRequestHandler::AbstractAP
     
     u64 totalBlocks = this->mWebMiner->getLedger ().countBlocks ();
     u64 height = this->optQuery ( "at", totalBlocks );
-    Ledger ledger ( this->mWebMiner->getLedgerAtHeight ( height ));
+    Ledger ledger ( this->mWebMiner->getLedgerAtBlock ( height ));
     
     return this->AbstractMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
 }
