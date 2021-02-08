@@ -50,6 +50,11 @@ public:
         
         FeeSchedule feeSchedule = ledger.getFeeSchedule ();
         jsonOut.set ( "feeSchedule", ToJSONSerializer::toJSON ( feeSchedule ));
+        
+        shared_ptr < const MinerInfo > minerInfo = accountODBM.mMinerInfo.get ();
+        if ( minerInfo ) {
+            jsonOut.set ( "miner", ToJSONSerializer::toJSON ( *minerInfo ));
+        }
     }
 
     //----------------------------------------------------------------//
