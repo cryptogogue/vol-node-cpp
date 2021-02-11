@@ -124,7 +124,7 @@ When you are ready to stop the node, you can use the helper script:
 
 ### Configuring HTTPS/SSL
 
-To use HTTPS/SSL you will need a domain name. Procuring a domain name is outside of the scope of this document; check with your hosting provider for instructions.
+To use HTTPS/SSL you will need a domain name. You will need to update the CNAME and A records in your domain's DNS to point at the public IP address of the server running your node. Procuring a domain name and configuring your DNS is outside of the scope of this document; check with your hosting provider for instructions.
 
 First, make sure there is a *valid* email address in ./ops/.env:
 
@@ -193,6 +193,8 @@ Now you can run volition with nginx and certbot:
 ```
 ./ops/compose-volition-nginx-certbot/up.sh
 ```
+
+Note that if you've configured your domain name's DNS *after* this step, you may need to restart nginx.
 
 Navigate to the domain you configured and you should see the SSL lock appear in the address bar to indicate a secure site.
 
