@@ -15,12 +15,27 @@
 #include <volition/LuaContext.h>
 #include <volition/MiningReward.h>
 #include <volition/Transaction.h>
+#include <volition/UnsecureRandom.h>
 
 namespace Volition {
 
 //================================================================//
 // Ledger
 //================================================================//
+
+//----------------------------------------------------------------//
+bool Ledger::canReward ( string rewardName ) const {
+
+    const Schema& schema = this->getSchema ();
+
+    const MiningReward* reward = schema.getRewardOrNull ( rewardName );
+    if ( !reward ) return false;
+    
+    LedgerFieldODBM < u64 > rewardCountField ( *this, Ledger::keyFor_rewardCount ( rewardName ));
+    u64 rewardCount = rewardCountField.get ( 0 );
+    
+    return ( rewardCount < reward->mQuantity );
+}
 
 //----------------------------------------------------------------//
 bool Ledger::checkMiners ( string miners ) const {
@@ -55,7 +70,7 @@ LedgerResult Ledger::checkSchemaMethodsAndRewards ( const Schema& schema ) const
         LedgerResult result = lua.compile ( method.mLua );
         if ( !result ) {
         
-            Format::write ( out, "LUA COMPILATION ERROR IN CRAFINT METHOD %s:\n", methodIt->first.c_str ());
+            Format::write ( out, "LUA COMPILATION ERROR IN CRAFTING METHOD %s:\n", methodIt->first.c_str ());
             out.append ( result.getMessage ());
             out.append ( "\n" );
         }
@@ -74,6 +89,32 @@ LedgerResult Ledger::checkSchemaMethodsAndRewards ( const Schema& schema ) const
     }
     
     return out;
+}
+
+//----------------------------------------------------------------//
+string Ledger::chooseReward ( string rewardName ) {
+
+    if ( !this->canReward ( rewardName )) {
+    
+        set < string > available;
+    
+        const Schema& schema = this->getSchema ();
+        Schema::Rewards::const_iterator rewardIt = schema.mRewards.begin ();
+        for ( ; rewardIt != schema.mRewards.end (); ++rewardIt ) {
+            
+            string checkName = rewardIt->first;
+            if ( checkName == rewardName ) continue;
+            
+            if ( this->canReward ( checkName )) {
+                available.insert ( checkName );
+            }
+        }
+        
+        if ( available.size () == 0 ) return "";
+        rewardName = UnsecureRandom::get ().randomDraw ( available );
+    }
+
+    return rewardName;
 }
 
 //----------------------------------------------------------------//
@@ -219,7 +260,7 @@ time_t Ledger::getRewriteWindowInSeconds () const {
 }
 
 //----------------------------------------------------------------//
-const Schema& Ledger::getSchema () {
+const Schema& Ledger::getSchema () const {
 
     if ( !this->mSchemaCache ) {
         this->mSchemaCache = make_shared < map < string, Schema >>();
@@ -318,9 +359,8 @@ bool Ledger::isGenesis () const {
 //----------------------------------------------------------------//
 LedgerResult Ledger::invokeReward ( string minerID, string rewardName, time_t time ) {
 
-    if ( !rewardName.size ()) return true;
+    if ( !this->canReward ( rewardName )) return true;
 
-    // TODO: this is brutally inefficient, but we're doing it for now. can add a cache of LuaContext objects later to speed things up.
     LuaContext lua ( *this, time );
     return lua.invoke ( minerID, rewardName );
 }

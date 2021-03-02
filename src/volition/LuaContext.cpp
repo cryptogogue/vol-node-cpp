@@ -524,15 +524,15 @@ LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
     u64 rewardCount = rewardCountField.get ( 0 );
     
     lua_pushnumber ( this->mLuaState, ( int )rewardCount ); // TODO: check for overflow
+    lua_pushnumber ( this->mLuaState, ( int )reward->mQuantity ); // TODO: check for overflow
 
     // call the method
     this->mResult = true;
-    result = _lua_call ( this->mLuaState, 2, 0 );
+    result = _lua_call ( this->mLuaState, 3, 0 );
     
     if ( result && this->mResult ) {
         rewardCountField.set ( rewardCount + 1 );
     }
-    
     return result ? this->mResult : result;
 }
 

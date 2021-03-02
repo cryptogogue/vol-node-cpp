@@ -82,7 +82,7 @@ public:
 
         if ( !this->mOwner.exists ()) return NULL;
 
-        const Schema& schema = this->mLedger->getSchema ();
+        const Schema& schema = this->mLedger.getConst ().getSchema ();
 
         const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( this->mType.get ());
         if ( !assetDefinition ) return NULL;

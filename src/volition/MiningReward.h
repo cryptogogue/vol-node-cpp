@@ -21,13 +21,17 @@ public:
     string          mFriendlyName;
     string          mDescription;       // friendly description for the reward.
     string          mLua;
+    u64             mQuantity;
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
+        this->mQuantity = 0; // fallback
+    
         serializer.serialize ( "friendlyName",      this->mFriendlyName );
         serializer.serialize ( "description",       this->mDescription );
         serializer.serialize ( "lua",               this->mLua );
+        serializer.serialize ( "quantity",          this->mQuantity );
     }
     
     //----------------------------------------------------------------//
@@ -36,6 +40,7 @@ public:
         serializer.serialize ( "friendlyName",      this->mFriendlyName );
         serializer.serialize ( "description",       this->mDescription );
         serializer.serialize ( "lua",               this->mLua );
+        serializer.serialize ( "quantity",          this->mQuantity );
     }
 };
 

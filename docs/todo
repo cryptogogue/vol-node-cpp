@@ -122,12 +122,29 @@ DONE: node - implement tax
 DONE: node - fixed gratuity requirement
 DONE: node - make sure transactions can be resubmitted with new gratuity
 DONE: node - alert users when their transactions are declined for insufficient gratuity
+DONE: node - setup guide
+
+----------------------------------------------------------------
+OPEN BETA
+
+node - implement TOS (user and miner)
+
+mining - legal ToS
+mining - chain ToS (copyright/trademark inheritance)
+mining - blocks mined counter
+mining - chain visualization endpoint
+
+node - support genesis block ledger import with updated schema
+node - publish mining rewards from schema
+node - automatic reward selection
+node - scripting method to mark mining rewards as depleted
+node - mining reward fallback (detect if no reward and fallback on next reward)
+
+wallet - key tool (export JSON keys)
+wallet - schema tool (export JSON schema)
 
 ----------------------------------------------------------------
 LAUNCH
-
-node - implement TOS (user and miner)
-node - setup guide
 
 node - capture transactions when rewinding chain
 node - implement pluggable transaction database (mysql and in-memory drivers)
@@ -136,8 +153,6 @@ wallet - RSA key support
 wallet - mining account request (RSA key, motto, visage)
 wallet - multi-node scan, consensus and transaction dispatch
 
-mining - legal ToS
-mining - chain ToS (copyright/trademark inheritance)
 mining - onboard new miners (check certs)
 
 node - publish default media url prefix (from schema, with miner override)
@@ -167,9 +182,6 @@ layout tool - kerning
 layout tool - paragraph styles (leading indent)
 layout tool - justify text
 layout tool - layouts-as-icons (and/or "layered" icons)
-
-node - scripting method to mark mining rewards as depleted
-node - mining reward fallback (detect if no reward and fallback on next reward)
 
 node - finalize multi-part transaction implementation
 node - reimplement 'run script' as multi-part transaction

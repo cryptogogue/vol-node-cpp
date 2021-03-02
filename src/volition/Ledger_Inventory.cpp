@@ -245,6 +245,20 @@ LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName,
 }
 
 //----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID ) {
+
+    Ledger& ledger = this->getLedger ();
+
+    if ( accountID == AccountID::NULL_INDEX ) return true;
+    AccountODBM accountODBM ( ledger, accountID );
+
+    accountODBM.mAssetCount.set ( 0 );
+    accountODBM.mInventoryNonce.set ( 0 );
+
+    return true;
+}
+
+//----------------------------------------------------------------//
 AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 
     const Ledger& ledger = this->getLedger ();

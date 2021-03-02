@@ -29,6 +29,7 @@ bool Schema::compose ( const Schema& other ) {
     Schema::merge ( this->mIcons, other.mIcons );
     Schema::merge ( this->mLayouts, other.mLayouts );
     Schema::merge ( this->mMethods, other.mMethods );
+    Schema::merge ( this->mRewards, other.mRewards );
     Schema::merge ( this->mSets, other.mSets );
     Schema::merge ( this->mUpgrades, other.mUpgrades );
 

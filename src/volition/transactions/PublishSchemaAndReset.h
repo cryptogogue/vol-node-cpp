@@ -53,7 +53,10 @@ public:
 
         context.mLedger.setSchema ( this->mSchema );
 
-        // TODO: delete all inventories
+        AccountID::Index totalAccounts = context.mLedger.getValue < AccountID::Index >( Ledger::keyFor_globalAccountCount ());
+        for ( AccountID::Index i = 0; i < totalAccounts; ++i ) {
+            context.mLedger.clearInventory ( AccountID ( i ));
+        }
 
         if ( this->mDeckName.size () > 0 ) {
             return context.mLedger.awardDeck ( context.mIndex, this->mDeckName, context.mTime );

@@ -31,7 +31,7 @@ public:
             string accountName = this->getMatchString ( "accountName" );
             
             SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-            ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, 0, true );
+            ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, 0 );
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         

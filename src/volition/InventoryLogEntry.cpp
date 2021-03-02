@@ -52,7 +52,7 @@ void InventoryLogEntry::expand ( const Ledger& ledger, string accountName, const
         AccountID ownerID = AssetODBM ( ledger, assetID ).mOwner.get ();
     
         if ( ownerID == accountID ) {
-            shared_ptr < const Asset > asset = AssetODBM ( ledger, assetID ).getAsset ( true );
+            shared_ptr < const Asset > asset = AssetODBM ( ledger, assetID ).getAsset ();
             assert ( asset );
             assetList.push_back ( asset );
         }

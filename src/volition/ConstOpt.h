@@ -25,12 +25,14 @@ public:
 
     //----------------------------------------------------------------//
     operator TYPE* () {
+        assert ( this->mMutable );
         return this->mMutable;
     }
 
     //----------------------------------------------------------------//
-    operator TYPE* () const {
-        return this->mMutable;
+    operator const TYPE* () const {
+        assert ( this->mConst );
+        return this->mConst;
     }
 
     //----------------------------------------------------------------//
@@ -39,7 +41,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    operator TYPE& () const {
+    operator const TYPE& () const {
         return this->get ();
     }
 
@@ -55,11 +57,13 @@ public:
 
     //----------------------------------------------------------------//
     TYPE* operator -> () {
+        assert ( this->mMutable );
         return this->mMutable;
     }
 
     //----------------------------------------------------------------//
     const TYPE* operator -> () const {
+        assert ( this->mConst );
         return this->mConst;
     }
 

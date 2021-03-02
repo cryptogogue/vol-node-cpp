@@ -49,6 +49,8 @@ private:
 
 public:
 
+    GET_SET ( string, Reward, mReward )
+
     //----------------------------------------------------------------//
     void                affirmHash                          ();
     bool                apply                               ( Ledger& ledger, VerificationPolicy policy ) const;

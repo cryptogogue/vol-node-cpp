@@ -42,6 +42,15 @@ public:
     }
 
     //----------------------------------------------------------------//
+    template < typename TYPE >
+    TYPE randomDraw ( std::set < TYPE > sample ) {
+        
+        typename std::set < TYPE >::const_iterator sampleIt = sample.cbegin ();
+        std::advance ( sampleIt, ( long )( this->random ( 0, sample.size () - 1 )));
+        return *sampleIt;
+    }
+
+    //----------------------------------------------------------------//
     void reset () {
     
         this->mPRNG                     = mt19937 ( 0 );
@@ -52,7 +61,7 @@ public:
     //----------------------------------------------------------------//
     template < typename TYPE >
     std::set < TYPE > sampleSet ( std::set < TYPE > remaining, size_t sampleSize ) {
-                
+        
         if ( sampleSize && ( sampleSize < remaining.size ())) {
             
             std::set < TYPE > subset;

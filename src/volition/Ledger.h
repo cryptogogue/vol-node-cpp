@@ -98,7 +98,7 @@ class Ledger :
     public Ledger_Miner {
 private:
 
-    shared_ptr < map < string, Schema >> mSchemaCache;
+    mutable shared_ptr < map < string, Schema >> mSchemaCache;
 
     //----------------------------------------------------------------//
     Ledger&             AbstractLedgerComponent_getLedger       () override;
@@ -224,8 +224,10 @@ public:
     }
 
     //----------------------------------------------------------------//
+    bool                                canReward                       ( string rewardName ) const;
     bool                                checkMiners                     ( string miners ) const;
     LedgerResult                        checkSchemaMethodsAndRewards    ( const Schema& schema ) const;
+    string                              chooseReward                    ( string rewardName );
     void                                clearSchemaCache                ();
     u64                                 countBlocks                     () const;
     u64                                 countVOL                        () const;
@@ -246,7 +248,7 @@ public:
     string                              getIdentity                     () const;
     u64                                 getMaxBlockWeight               () const;
     time_t                              getRewriteWindowInSeconds       () const;
-    const Schema&                       getSchema                       ();
+    const Schema&                       getSchema                       () const;
     SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaHash                   () const;
     string                              getSchemaString                 () const;
