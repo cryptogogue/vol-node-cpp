@@ -8,11 +8,20 @@ services:
         image: traefik:v2.4
         container_name: traefik
         ports:
-            - "80:80"
-            - "8080:8080"
+            - '80:80'
+            - '8080:8080'
+            - '443:443'
+        command:
+            - --api.insecure=true
+            - --providers.docker=true
+            - --entrypoints.web.address=:80
+            - --entrypoints.websecure.address=:443
+            - --certificatesresolvers.letsencrypt.acme.email=$ACME_EMAIL
+            - --certificatesresolvers.letsencrypt.acme.storage=acme.json
+            - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - ../volume-traefik:/etc/traefik/
+            - ../volume-traefik:/etc/traefik/acme/acme.json
 
     whoami:
         image: traefik/whoami
@@ -29,6 +38,8 @@ services:
             - ../volume-volition:/var/lib/volition
         labels:
             - 'traefik.http.routers.volition.rule=Host(`$VOLITION_SUBDOMAIN.$DOMAINNAME`)'
+            - traefik.http.routers.blog.tls=true
+            - traefik.http.routers.blog.tls.certresolver=letsencrypt
 
     dozzle:
         image: amir20/dozzle:latest
@@ -41,6 +52,8 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock
         labels:
             - 'traefik.http.routers.dozzle.rule=Host(`dozzle.$DOMAINNAME`)'
+            - traefik.http.routers.blog.tls=true
+            - traefik.http.routers.blog.tls.certresolver=letsencrypt
 
 networks:
     default:
