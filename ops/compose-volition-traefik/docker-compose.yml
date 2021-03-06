@@ -6,6 +6,7 @@ services:
 
     traefik:
         image: traefik:v2.4
+        container_name: traefik
         ports:
             - "80:80"
             - "8080:8080"
@@ -15,17 +16,31 @@ services:
 
     whoami:
         image: traefik/whoami
+        container_name: whoami
         labels:
             - 'traefik.http.routers.whoami.rule=Host(`whoami.$DOMAINNAME`)'   
 
     volition:
         image: $VOLITION_IMAGE_NAME
+        container_name: volition
         ports:
             - "9090:9090"
         volumes:
             - ../volume-volition:/var/lib/volition
         labels:
             - 'traefik.http.routers.volition.rule=Host(`$VOLITION_SUBDOMAIN.$DOMAINNAME`)'
+
+    dozzle:
+        image: amir20/dozzle:latest
+        container_name: dozzle
+        environment:
+            DOZZLE_LEVEL: info
+            DOZZLE_TAILSIZE: 300
+            DOZZLE_FILTER: "status=running"
+        volumes:
+            --volume=/var/run/docker.sock:/var/run/docker.sock
+        labels:
+            - "traefik.http.routers.dozzle.rule=Host(`dozzle.$DOMAINNAME`)"
 
 networks:
     default:
