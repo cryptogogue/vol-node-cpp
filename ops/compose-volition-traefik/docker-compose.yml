@@ -1,0 +1,31 @@
+#!/bin/bash
+
+version: '3.5'
+
+services:
+
+    traefik:
+        image: traefik:v2.4
+        ports:
+            - "80:80"
+            - "8080:8080"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ../volume-traefik:/etc/traefik/
+
+    whoami:
+        image: traefik/whoami
+        labels:
+            - 'traefik.http.routers.whoami.rule=Host(`whoami.$VOLITION_DOMAINNAME`)'   
+
+    volition:
+        image: $VOLITION_IMAGE_NAME
+        volumes:
+            - ../volume-volition:/var/lib/volition
+        labels:
+            - 'traefik.http.routers.volition.rule=Host(`$VOLITION_NODE_SUBDOMAIN.$VOLITION_DOMAINNAME`)'
+
+networks:
+    default:
+        name: volition
+        driver: bridge
