@@ -23,6 +23,7 @@
 #include <volition/web-miner-api/NodeDetailsHandler.h>
 #include <volition/web-miner-api/ResetChainHandler.h>
 #include <volition/web-miner-api/SchemaHandler.h>
+#include <volition/web-miner-api/TestExceptions.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
 #include <volition/web-miner-api/TransactionHandler.h>
@@ -88,16 +89,12 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::NodeDetailsHandler >                   ( HTTP::GET,        Format::write ( "%s/node/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::SchemaHandler >                        ( HTTP::GET,        Format::write ( "%s/schema/?", prefix ));
 
+    this->mRouteTable.addEndpoint < WebMinerAPI::TestExceptions >                       ( HTTP::GET,        Format::write ( "%s/test/exceptions/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >                     ( HTTP::POST,       Format::write ( "%s/test/keyid/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >                 ( HTTP::POST,       Format::write ( "%s/test/signature/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ResetChainHandler >                    ( HTTP::DELETE,     Format::write ( "%s/?", prefix ));
-
-    #if VOLITION_ENABLE_DEBUG_ENDPOINTS
-
-        this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >                     ( HTTP::POST,       Format::write ( "%s/test/keyid/?", prefix ));
-        this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >                 ( HTTP::POST,       Format::write ( "%s/test/signature/?", prefix ));
-        this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
-        this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
-    
-    #endif
     
     this->mRouteTable.setDefault < WebMinerAPI::DefaultHandler >                        ();
 }

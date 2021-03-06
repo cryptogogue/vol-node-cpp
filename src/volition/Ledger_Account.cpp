@@ -73,12 +73,17 @@ LedgerResult Ledger_Account::awardVOL ( AccountID accountID, u64 amount ) {
     shared_ptr < const Account > account = accountODBM.mBody.get ();
     if ( account ) {
         
-        u64 created = ledger.createVOL ( amount );
-        if ( created < amount ) return "New VOL request exceeds ledger maximum.";
-    
+        LedgerFieldODBM < u64 > prizePoolField ( ledger, Ledger::keyFor_prizePool ());
+        u64 available = prizePoolField.get ( 0 );
+        
+        if ( available < amount ) return "Insufficient funds in prize pool.";
+        
         Account updatedAccount = *account;
-        updatedAccount.mBalance += created;
+        updatedAccount.mBalance += amount;
         accountODBM.mBody.set ( updatedAccount );
+        
+        prizePoolField.set ( available - amount );
+        
         return true;
     }
     return false;

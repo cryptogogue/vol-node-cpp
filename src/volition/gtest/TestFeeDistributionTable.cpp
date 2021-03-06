@@ -9,29 +9,53 @@ using namespace Volition;
 //----------------------------------------------------------------//
 TEST ( FeeDistributionTable, simple_distribution ) {
     
-//    {
-//        FeeDistributionTable table;
-//        table.setShare ( "foo", 0.5 );
-//        table.setShare ( "bar", 0.5 );
-//        ASSERT_TRUE ( table.isBalanced ());
-//        ASSERT_TRUE ( table.findDecimals () == 10 );
-//    }
-//    
-//    {
-//        FeeDistributionTable table;
-//        table.setShare ( "foo", 0.5 );
-//        table.setShare ( "bar", 0.25 );
-//        table.setShare ( "baz", 0.25 );
-//        ASSERT_TRUE ( table.isBalanced ());
-//        ASSERT_TRUE ( table.findDecimals () == 100 );
-//    }
-//
-//    {
-//        FeeDistributionTable table;
-//        table.setShare ( "foo", 0.666 );
-//        table.setShare ( "bar", 0.333 );
-//        table.setShare ( "baz", 0.001 );
-//        ASSERT_TRUE ( table.isBalanced ());
-//        ASSERT_TRUE ( table.findDecimals () == 1000 );
-//    }
+    {
+        FeeDistributionTable table;
+        table.setScale ( 10 );
+        table.setShare ( "foo", 5 );
+        table.setShare ( "bar", 5 );
+        ASSERT_TRUE ( table.isBalanced ());
+    }
+    
+    {
+        FeeDistributionTable table;
+        table.setScale ( 100 );
+        table.setShare ( "foo", 50 );
+        table.setShare ( "bar", 25 );
+        table.setShare ( "baz", 25 );
+        ASSERT_TRUE ( table.isBalanced ());
+    }
+
+    {
+        FeeDistributionTable table;
+        table.setScale ( 1000 );
+        table.setShare ( "foo", 666 );
+        table.setShare ( "bar", 333 );
+        table.setShare ( "baz", 1 );
+        ASSERT_TRUE ( table.isBalanced ());
+    }
+}
+
+//----------------------------------------------------------------//
+TEST ( FeePercent, fixedPoint ) {
+    
+    {
+        FeePercent percent ( 10, 5 );
+        ASSERT_TRUE ( percent.computeAndRoundDown ( 1000 ) == 500 );
+        ASSERT_TRUE ( percent.computeAndRoundDown ( 1001 ) == 500 );
+        ASSERT_TRUE ( percent.computeAndRoundUp ( 1001 ) == 501 );
+    }
+    
+    {
+        FeePercent percent ( 2, 1 );
+        ASSERT_TRUE ( percent.computeAndRoundDown ( 1000 ) == 500 );
+        ASSERT_TRUE ( percent.computeAndRoundDown ( 1001 ) == 500 );
+        ASSERT_TRUE ( percent.computeAndRoundUp ( 1001 ) == 501 );
+    }
+    
+    {
+        FeePercent percent ( 9, 3 );
+        ASSERT_TRUE ( percent.computeAndRoundDown ( 100 ) == 33 );
+        ASSERT_TRUE ( percent.computeAndRoundUp ( 100 ) == 34 );
+    }
 }

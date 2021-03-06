@@ -32,20 +32,23 @@ public:
                 
         SchemaVersion schemaVersion = ledger.getSchemaVersion ();
         
-        jsonOut.set ( "type",           "VOL_MINING_NODE" );
-        jsonOut.set ( "minerID",        this->mWebMiner->getMinerID ().c_str ());
-        jsonOut.set ( "started",        ( string )( SerializableTime ( this->mWebMiner->getStartTime ())));
-        jsonOut.set ( "genesis",        ledger.getGenesisHash ());
-        jsonOut.set ( "identity",       ledger.getIdentity ());
-        jsonOut.set ( "schemaVersion",  ToJSONSerializer::toJSON ( schemaVersion ));
-        jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
-        jsonOut.set ( "build",          Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
-        jsonOut.set ( "commit",         Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
-        jsonOut.set ( "vol",            ledger.countVOL ());
-        jsonOut.set ( "pool",           ledger.getFeeDistributionPool ());
-        jsonOut.set ( "minGratuity",    this->mWebMiner->getMinimumGratuity ());
-        jsonOut.set ( "reward",         this->mWebMiner->getReward ());
-        jsonOut.set ( "totalBlocks",    ledger.countBlocks ());
+        jsonOut.set ( "type",               "VOL_MINING_NODE" );
+        jsonOut.set ( "minerID",            this->mWebMiner->getMinerID ().c_str ());
+        jsonOut.set ( "started",            ( string )( SerializableTime ( this->mWebMiner->getStartTime ())));
+        jsonOut.set ( "genesis",            ledger.getGenesisHash ());
+        jsonOut.set ( "identity",           ledger.getIdentity ());
+        jsonOut.set ( "schemaVersion",      ToJSONSerializer::toJSON ( schemaVersion ));
+        jsonOut.set ( "schemaHash",         ledger.getSchemaHash ());
+        jsonOut.set ( "build",              Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
+        jsonOut.set ( "commit",             Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
+        jsonOut.set ( "minGratuity",        this->mWebMiner->getMinimumGratuity ());
+        jsonOut.set ( "reward",             this->mWebMiner->getReward ());
+        jsonOut.set ( "totalBlocks",        ledger.countBlocks ());
+        
+        jsonOut.set ( "vol",                ledger.countVOL ());
+        jsonOut.set ( "distributionPool",   ledger.getFeeDistributionPool ());
+        jsonOut.set ( "rewardPool",         ledger.getRewardPool ());
+        jsonOut.set ( "prizePool",          ledger.getPrizePool ());
 
         FeeSchedule feeSchedule = ledger.getFeeSchedule ();
         jsonOut.set ( "feeSchedule", ToJSONSerializer::toJSON ( feeSchedule ));

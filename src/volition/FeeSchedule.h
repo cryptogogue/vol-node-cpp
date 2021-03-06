@@ -24,6 +24,12 @@ public:
     u64         mPercent;               // percent of the gratuity offered to miner (in fixed point)
     
     //----------------------------------------------------------------//
+    operator bool () const {
+    
+        return (( this->mScale > 0 ) && ( this->mPercent > 0 ));
+    }
+    
+    //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
         serializer.serialize ( "scale",             this->mScale );
@@ -39,18 +45,40 @@ public:
 
     //----------------------------------------------------------------//
     bool check ( u64 amount, u64 share ) const {
-    
-        u64 amountF     = amount * this->mScale;
-        u64 checkF      = ( u64 )floor (( amountF * this->mPercent ) / this->mScale );
-        u64 check       = ( u64 )floor ( checkF / this->mScale ) + ((( checkF % this->mScale ) == 0 ) ? 0 : 1 );
         
-        return ( share == check );
+        return ( share == this->computeAndRoundUp ( amount ));
     }
     
     //----------------------------------------------------------------//
+    u64 computeAndRoundDown ( u64 amount ) const {
+    
+        if ( this->mScale == 0 ) return 0;
+    
+        u128 x = amount * this->mScale * this->mPercent;
+        u128 y = this->mScale * this->mScale;
+        return ( u64 )( x / y );
+    }
+    
+    //----------------------------------------------------------------//
+    u64 computeAndRoundUp ( u64 amount ) const {
+        
+        if ( this->mScale == 0 ) return 0;
+    
+        u128 x = amount * this->mScale * this->mPercent;
+        u128 y = this->mScale * this->mScale;
+        return ( u64 )(( x / y ) + (( x % y ) ? 1 : 0 ));
+    }
+
+    //----------------------------------------------------------------//
     FeePercent () :
-        mScale ( DEFAULT_SCALE ),
+        mScale ( 0 ),
         mPercent ( 0 ) {
+    }
+    
+    //----------------------------------------------------------------//
+    FeePercent ( u64 scale, u64 percent ) :
+        mScale ( scale ),
+        mPercent ( percent ) {
     }
 };
 
@@ -98,11 +126,21 @@ class FeeSchedule :
     public AbstractSerializable {
 public:
     
+    u64                                         mFixedMiningReward;
+    FeePercent                                  mScaledMiningReward;
+    FeePercent                                  mMiningTax;
+    
     FeeProfile                                  mDefaultProfile;
     SerializableMap < string, FeeProfile >      mTransactionProfiles;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+
+        this->mFixedMiningReward = 0;
+
+        serializer.serialize ( "fixedMiningReward",     this->mFixedMiningReward );
+        serializer.serialize ( "scaledMiningReward",    this->mScaledMiningReward );
+        serializer.serialize ( "miningTax",             this->mMiningTax );
     
         serializer.serialize ( "defaultProfile",        this->mDefaultProfile );
         serializer.serialize ( "transactionProfiles",   this->mTransactionProfiles );
@@ -111,8 +149,25 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
+        serializer.serialize ( "fixedMiningReward",     this->mFixedMiningReward );
+        serializer.serialize ( "scaledMiningReward",    this->mScaledMiningReward );
+        serializer.serialize ( "miningTax",             this->mMiningTax );
+        
         serializer.serialize ( "defaultProfile",        this->mDefaultProfile );
         serializer.serialize ( "transactionProfiles",   this->mTransactionProfiles );
+    }
+    
+    //----------------------------------------------------------------//
+    u64 calculateMiningReward ( u64 rewardPool ) const {
+    
+        u64 maxReward = this->mFixedMiningReward + this->mScaledMiningReward.computeAndRoundUp ( rewardPool );
+        return maxReward <= rewardPool ? maxReward : rewardPool;
+    }
+    
+    //----------------------------------------------------------------//
+    u64 calculateMiningRewardTax ( u64 miningReward ) const {
+    
+        return this->mMiningTax.computeAndRoundDown ( miningReward );
     }
     
     //----------------------------------------------------------------//
@@ -121,6 +176,12 @@ public:
         SerializableMap < string, FeeProfile >::const_iterator profileIt = this->mTransactionProfiles.find ( feeType );
         if ( profileIt != this->mTransactionProfiles.cend ()) return profileIt->second;
         return this->mDefaultProfile;
+    }
+    
+    //----------------------------------------------------------------//
+    bool hasMiningReward () const {
+    
+        return (( this->mFixedMiningReward > 0  ) || this->mScaledMiningReward );
     }
 };
 

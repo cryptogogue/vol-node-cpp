@@ -273,7 +273,7 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
     HTTPGetJSONTask < MiningMessengerRequest >* task = dynamic_cast < HTTPGetJSONTask < MiningMessengerRequest >* >( taskPtr.get ());
     
     assert ( task );
-        
+    
     const MiningMessengerRequest& request = task->mUserData;
     Poco::JSON::Object::Ptr json = task->mJSON;
     

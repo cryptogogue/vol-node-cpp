@@ -302,7 +302,7 @@ map < string, size_t > Ledger_Inventory::getInventoryHistogram ( AccountID accou
     map < string, size_t > histogram;
 
     SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-    this->getInventory ( accountID, inventory );
+    this->getInventory ( accountID, inventory, 0, true );
 
     SerializableList < SerializableSharedConstPtr < Asset >>::const_iterator inventoryIt = inventory.cbegin ();
     for ( ; inventoryIt != inventory.cend (); ++inventoryIt ) {

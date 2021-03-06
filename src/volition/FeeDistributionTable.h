@@ -41,7 +41,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    u64 countDecimals ( double v ) const {
+    static u64 countDecimals ( double v ) {
     
         u64 decimals = 1;
         while (( v - floor ( v )) != 0 ) {
@@ -60,7 +60,7 @@ public:
         if ( !this->isBalanced ()) return;
         if ( !this->hasAccounts ( ledger )) return;
         
-        u64 dist = ( u64 )floor ( pool / this->mScale );
+        u64 dist = ( u64 )( pool / this->mScale );
 
         if ( dist > 0 ) {
             
@@ -111,6 +111,11 @@ public:
             balance += shareIt->second;
         }
         return ( balance == this->mScale );
+    }
+    
+    //----------------------------------------------------------------//
+    void setScale ( u64 scale ) {
+        this->mScale = scale;
     }
     
     //----------------------------------------------------------------//

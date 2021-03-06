@@ -173,7 +173,8 @@ static const char* schema_json = JSON_STR (
             "boosterBox": {
                 "friendlyName": "",
                 "description": "",
-                "lua": "function main ( caller, count )\r\n    print ( 'boosterBox', caller, count )\r\n    if count < 3 then\r\n        awardAsset ( caller, 'pack', 12 )\r\n    end\r\nend"
+                "quantity" : 3,
+                "lua": "function main ( caller, count, quantity )\r\n    print ( 'boosterBox', caller, count, quantity )\r\n    awardAsset ( caller, 'pack', 12 )\r\nend"
             }
         },
         "sets": {

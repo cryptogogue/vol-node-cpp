@@ -166,11 +166,6 @@ public:
         return Format::write ( "asset.count" );
     }
 
-//    //----------------------------------------------------------------//
-//    static LedgerKey keyFor_globalBlockCount () {
-//        return "block.count";
-//    }
-
     //----------------------------------------------------------------//
     static LedgerKey keyFor_identity () {
         return "identity";
@@ -187,10 +182,20 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_prizePool () {
+        return "prizePool";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_rewardCount ( string name ) {
 
         assert ( name.size () > 0 );
         return Format::write ( "rewards.%s.count", name.c_str ());
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_rewardPool () {
+        return "rewardPool";
     }
     
     //----------------------------------------------------------------//
@@ -219,8 +224,8 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_VOL () {
-        return "VOL";
+    static LedgerKey keyFor_totalVOL () {
+        return "totalVOL";
     }
 
     //----------------------------------------------------------------//
@@ -231,7 +236,7 @@ public:
     void                                clearSchemaCache                ();
     u64                                 countBlocks                     () const;
     u64                                 countVOL                        () const;
-    u64                                 createVOL                       ( u64 amount );
+    u64                                 createVOL                       ( u64 rewards, u64 prizes );
     void                                distribute                      ( u64 amount );
     shared_ptr < const Block >          getBlock                        () const;
     shared_ptr < const Block >          getBlock                        ( u64 height ) const;
@@ -247,6 +252,8 @@ public:
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
     u64                                 getMaxBlockWeight               () const;
+    u64                                 getPrizePool                    () const;
+    u64                                 getRewardPool                   () const;
     time_t                              getRewriteWindowInSeconds       () const;
     const Schema&                       getSchema                       () const;
     SchemaVersion                       getSchemaVersion                () const;
@@ -272,7 +279,6 @@ public:
     bool                                setIdentity                     ( string identity );
     void                                setSchema                       ( const Schema& schema );
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
-    void                                setVOL                          ( u64 vol );
     bool                                verify                          ( const AssetMethodInvocation& invocation );
 
     //----------------------------------------------------------------//

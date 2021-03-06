@@ -125,6 +125,9 @@ public:
     TRANSACTION_WEIGHT ( 0 )
     TRANSACTION_MATURITY ( 0 )
 
+    u64                                     mTotalVOL;
+    u64                                     mPrizePool;
+    
     SerializableVector < GenesisAccount >   mAccounts;
 
     //----------------------------------------------------------------//
@@ -138,6 +141,11 @@ public:
         ConsensusSettings::AbstractSerializable_serializeFrom ( serializer );
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
+        this->mTotalVOL     = 100000000000;
+        this->mPrizePool    = 0;
+        
+        serializer.serialize ( "totalVOL",                  this->mTotalVOL );
+        serializer.serialize ( "prizePool",                 this->mPrizePool );
         serializer.serialize ( "accounts",                  this->mAccounts );
     }
     
@@ -146,6 +154,8 @@ public:
         ConsensusSettings::AbstractSerializable_serializeTo ( serializer );
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
+        serializer.serialize ( "totalVOL",                  this->mTotalVOL );
+        serializer.serialize ( "prizePool",                 this->mPrizePool );
         serializer.serialize ( "accounts",                  this->mAccounts );
     }
     
@@ -158,19 +168,34 @@ public:
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_genesis ( Ledger& ledger ) const override {
         
+        u64 accountVOL = 0;
+        
         for ( size_t i = 0; i < this->mAccounts.size (); ++i ) {
             const GenesisAccount& account = this->mAccounts [ i ];
-            
-            u64 grant = ledger.createVOL ( account.mGrant );
-            
-            if ( !ledger.newAccount ( account.mName, grant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
+                        
+            if ( !ledger.newAccount ( account.mName, account.mGrant, Ledger::MASTER_KEY_NAME, account.mKey, Policy (), Policy ())) return false;
             if ( account.mMinerInfo ) {
                 if ( !ledger.registerMiner (
                     ledger.getAccountID ( account.mName ),
                     *account.mMinerInfo
                 )) return false;
             }
+            accountVOL += account.mGrant;
         }
+        
+        u64 premined = accountVOL + this->mPrizePool;
+        
+        if ( this->mTotalVOL < premined ) return false;
+                
+        LedgerFieldODBM < u64 > rewardPoolField ( ledger, Ledger::keyFor_rewardPool ());
+        rewardPoolField.set ( this->mTotalVOL - premined );
+        
+        LedgerFieldODBM < u64 > prizePoolField ( ledger, Ledger::keyFor_prizePool ());
+        prizePoolField.set ( this->mPrizePool );
+        
+        LedgerFieldODBM < u64 > totalVOLField ( ledger, Ledger::keyFor_totalVOL ());
+        totalVOLField.set ( this->mTotalVOL );
+        
         return this->ConsensusSettings::apply ( ledger );
     }
 };

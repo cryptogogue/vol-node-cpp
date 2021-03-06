@@ -12,6 +12,9 @@
                 "blockDelayInSeconds" :         1,
                 "rewriteWindowInSeconds" :      30,
 
+                "totalVOL" :                    100000000000,
+                "prizePool" :                   0,
+
                 "accounts" : [
                     {
                         "name" :            "9090",
@@ -103,6 +106,10 @@
                 },
                 "type" :            "SET_FEE_SCHEDULE",
                 "feeSchedule" : {
+
+                    "fixedMiningReward" :   100000,
+                    "miningTax" :           { "scale" : 1000, "percent" : 25 },
+
                     "defaultProfile" : {
                         "profitShare" : { "percent" : 15 },
                         "transferTax" : { "percent" : 5 }

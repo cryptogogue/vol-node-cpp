@@ -409,6 +409,7 @@
 		CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
 		CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */ = {isa = PBXBuildFile; fileRef = CDEDC20722BD57BC00C5643C /* AssetID.h */; };
 		CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20A22BD5AD800C5643C /* AssetID.cpp */; };
+		CDF234EF25F2F479009DE55E /* TestExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF234ED25F2F479009DE55E /* TestExceptions.h */; };
 		CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF4B7682325A94A0004392C /* BetaGetAssets.h */; };
 		CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7981E21EC3010002C4D80 /* FuncSquap.h */; };
 		CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7982121EC30B6002C4D80 /* ConstSquap.h */; };
@@ -1174,6 +1175,7 @@
 		CDEDC20722BD57BC00C5643C /* AssetID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetID.h; path = src/volition/AssetID.h; sourceTree = "<group>"; };
 		CDEDC20A22BD5AD800C5643C /* AssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetID.cpp; path = src/volition/AssetID.cpp; sourceTree = "<group>"; };
 		CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestAssetID.cpp; path = src/volition/gtest/TestAssetID.cpp; sourceTree = "<group>"; };
+		CDF234ED25F2F479009DE55E /* TestExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestExceptions.h; path = "src/volition/web-miner-api/TestExceptions.h"; sourceTree = "<group>"; };
 		CDF4B7682325A94A0004392C /* BetaGetAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BetaGetAssets.h; path = src/volition/transactions/BetaGetAssets.h; sourceTree = "<group>"; };
 		CDF7981E21EC3010002C4D80 /* FuncSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuncSquap.h; path = src/volition/FuncSquap.h; sourceTree = "<group>"; };
 		CDF7982121EC30B6002C4D80 /* ConstSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConstSquap.h; path = src/volition/ConstSquap.h; sourceTree = "<group>"; };
@@ -1763,6 +1765,7 @@
 				CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */,
 				CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */,
 				CD09ED742207D82500B09249 /* SchemaHandler.h */,
+				CDF234ED25F2F479009DE55E /* TestExceptions.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
 				CD039C6E23F49F060012CE4F /* TransactionHandler.h */,
@@ -2050,6 +2053,7 @@
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
 				CDAA38ED251ACBD300FEAFB5 /* AbstractScenario.h in Headers */,
 				CD20FFAF253D904A00DEB809 /* HardReset.h in Headers */,
+				CDF234EF25F2F479009DE55E /* TestExceptions.h in Headers */,
 				CD0CF460255EDC5D008C67F0 /* RemoteMiner.h in Headers */,
 				CD5ECAF0246B2945009146FB /* version.h in Headers */,
 				CD840B1325C420B40051703C /* ConsensusPeekHandler.h in Headers */,

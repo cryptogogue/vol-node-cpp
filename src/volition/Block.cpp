@@ -139,16 +139,39 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
         }
     }
     
-    ledger.invokeReward ( this->mMinerID, this->mReward, this->mTime );
+    if ( accountODBM ) {
     
-    if ( accountODBM && ( gratuity > 0 )) {
-        Account accountUpdated = *accountODBM.mBody.get ();
-        accountUpdated.mBalance += gratuity - profitShare;
-        accountODBM.mBody.set ( accountUpdated );
+        ledger.invokeReward ( this->mMinerID, this->mReward, this->mTime );
+        
+        FeeSchedule feeSchedule = ledger.getFeeSchedule ();
+        
+        u64 miningReward = 0;
+        u64 miningTax = 0;
+        
+        if ( feeSchedule.hasMiningReward ()) {
+        
+            LedgerFieldODBM < u64 > rewardPoolField ( ledger, Ledger::keyFor_rewardPool ());
+            u64 rewardPool = rewardPoolField.get ();
+            
+            if ( rewardPool ) {
+                
+                u64 grossMiningReward   = feeSchedule.calculateMiningReward ( rewardPool );
+                miningTax               = feeSchedule.calculateMiningRewardTax ( grossMiningReward );
+                
+                rewardPoolField.set ( rewardPool - grossMiningReward );
+                miningReward = grossMiningReward - miningTax;
+            }
+        }
+        
+        u64 minerProfit = miningReward + gratuity;
+        if ( minerProfit > 0 ) {
+            Account accountUpdated = *accountODBM.mBody.get ();
+            accountUpdated.mBalance += minerProfit - profitShare;
+            accountODBM.mBody.set ( accountUpdated );
+        }
+        
+        ledger.distribute ( miningTax + transferTax + profitShare );
     }
-    
-    ledger.distribute ( transferTax );
-    
     return nextMaturity;
 }
 

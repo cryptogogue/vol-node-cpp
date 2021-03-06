@@ -132,15 +132,24 @@ u64 Ledger::countBlocks () const {
 //----------------------------------------------------------------//
 u64 Ledger::countVOL () const {
 
-    return LedgerFieldODBM < u64 >( *this, Ledger::keyFor_VOL ()).get ( 0 );
+    return LedgerFieldODBM < u64 >( *this, Ledger::keyFor_totalVOL ()).get ( 0 );
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::createVOL ( u64 amount ) {
+u64 Ledger::createVOL ( u64 rewards, u64 prizes ) {
 
-    LedgerFieldODBM < u64 > totalVOLField ( *this, Ledger::keyFor_VOL ());
-    totalVOLField.set ( totalVOLField.get ( 0 ) + amount );
-    return amount;
+    LedgerFieldODBM < u64 > rewardPoolField ( *this, Ledger::keyFor_rewardPool ());
+    rewardPoolField.set ( rewardPoolField.get ( 0 ) + rewards );
+    
+    LedgerFieldODBM < u64 > prizePoolField ( *this, Ledger::keyFor_prizePool ());
+    rewardPoolField.set ( prizePoolField.get ( 0 ) + rewards );
+
+    u64 total = rewards + prizes;
+
+    LedgerFieldODBM < u64 > totalVOLField ( *this, Ledger::keyFor_totalVOL ());
+    totalVOLField.set ( totalVOLField.get ( 0 ) + total );
+    
+    return total;
 }
 
 //----------------------------------------------------------------//
@@ -254,6 +263,18 @@ u64 Ledger::getMaxBlockWeight () const {
 }
 
 //----------------------------------------------------------------//
+u64 Ledger::getPrizePool () const {
+
+    return this->getValueOrFallback < u64 >( keyFor_prizePool (), 0 );
+}
+
+//----------------------------------------------------------------//
+u64 Ledger::getRewardPool () const {
+
+    return this->getValueOrFallback < u64 >( keyFor_rewardPool (), 0 );
+}
+
+//----------------------------------------------------------------//
 time_t Ledger::getRewriteWindowInSeconds () const {
 
     return ( time_t )this->getValue < u64 >( keyFor_rewriteWindow ());
@@ -274,7 +295,7 @@ const Schema& Ledger::getSchema () const {
         return schemaIt->second;
     }
     
-    Schema& schema = schemaCache[ schemaHash ];
+    Schema& schema = schemaCache [ schemaHash ];
     string schemaString = this->getSchemaString ();
     if ( schemaString.size () > 0 ) {
         FromJSONSerializer::fromJSONString ( schema, schemaString );
@@ -518,13 +539,6 @@ void Ledger::setSchema ( const Schema& schema ) {
 void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
     this->setObject < UnfinishedBlockList >( keyFor_unfinished (), unfinished );
-}
-
-//----------------------------------------------------------------//
-void Ledger::setVOL ( u64 vol ) {
-
-    LedgerFieldODBM < u64 > totalVOLField ( *this, Ledger::keyFor_VOL ());
-    totalVOLField.set ( vol );
 }
 
 //----------------------------------------------------------------//
