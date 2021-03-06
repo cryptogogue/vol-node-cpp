@@ -27,19 +27,21 @@ services:
         image: traefik/whoami
         container_name: whoami
         labels:
-            - 'traefik.http.routers.whoami.rule=Host(`whoami.$DOMAINNAME`)'   
+            - 'traefik.http.routers.whoami.rule=Host(`whoami.$DOMAINNAME`)'
+            - traefik.http.routers.whoami.tls=true
+            - traefik.http.routers.whoami.tls.certresolver=letsencrypt 
 
-    # volition:
-    #     image: $VOLITION_IMAGE_NAME
-    #     container_name: volition
-    #     ports:
-    #         - "9090:9090"
-    #     volumes:
-    #         - ../volume-volition:/var/lib/volition
-    #     labels:
-    #         - 'traefik.http.routers.volition.rule=Host(`$VOLITION_SUBDOMAIN.$DOMAINNAME`)'
-    #         - traefik.http.routers.volition.tls=true
-    #         - traefik.http.routers.volition.tls.certresolver=letsencrypt
+    volition:
+        image: $VOLITION_IMAGE_NAME
+        container_name: volition
+        ports:
+            - "9090:9090"
+        volumes:
+            - ../volume-volition:/var/lib/volition
+        labels:
+            - 'traefik.http.routers.volition.rule=Host(`$VOLITION_SUBDOMAIN.$DOMAINNAME`)'
+            - traefik.http.routers.volition.tls=true
+            - traefik.http.routers.volition.tls.certresolver=letsencrypt
 
     dozzle:
         image: amir20/dozzle:latest
