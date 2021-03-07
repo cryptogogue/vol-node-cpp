@@ -19,44 +19,44 @@ services:
             - --certificatesresolvers.letsencrypt.acme.email=$ACME_EMAIL
             - --certificatesresolvers.letsencrypt.acme.storage=acme.json
             - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
-            - --certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+            # - --certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - ../volume-traefik/acme.json:/etc/traefik/acme/acme.json
+            - ../volume-traefik/acme.json:/acme.json
 
     whoami:
         image: traefik/whoami
         container_name: whoami
         labels:
-            - 'traefik.http.routers.whoami.rule=Host(`whoozat.$DOMAINNAME`)'
+            - 'traefik.http.routers.whoami.rule=Host(`whoami.$DOMAINNAME`)'
             - traefik.http.routers.whoami.tls=true
             - traefik.http.routers.whoami.tls.certresolver=letsencrypt 
 
-    # volition:
-    #     image: $VOLITION_IMAGE_NAME
-    #     container_name: volition
-    #     ports:
-    #         - "9090:9090"
-    #     volumes:
-    #         - ../volume-volition:/var/lib/volition
-    #     labels:
-    #         - 'traefik.http.routers.volition.rule=Host(`$VOLITION_SUBDOMAIN.$DOMAINNAME`)'
-    #         - traefik.http.routers.volition.tls=true
-    #         - traefik.http.routers.volition.tls.certresolver=letsencrypt
+    volition:
+        image: $VOLITION_IMAGE_NAME
+        container_name: volition
+        ports:
+            - "9090:9090"
+        volumes:
+            - ../volume-volition:/var/lib/volition
+        labels:
+            - 'traefik.http.routers.volition.rule=Host(`$VOLITION_SUBDOMAIN.$DOMAINNAME`)'
+            - traefik.http.routers.volition.tls=true
+            - traefik.http.routers.volition.tls.certresolver=letsencrypt
 
-    # dozzle:
-    #     image: amir20/dozzle:latest
-    #     container_name: dozzle
-    #     environment:
-    #         DOZZLE_LEVEL: info
-    #         DOZZLE_TAILSIZE: 300
-    #         DOZZLE_FILTER: "status=running"
-    #     volumes:
-    #         - /var/run/docker.sock:/var/run/docker.sock
-    #     labels:
-    #         - 'traefik.http.routers.dozzle.rule=Host(`dozzle.$DOMAINNAME`)'
-    #         - traefik.http.routers.dozzle.tls=true
-    #         - traefik.http.routers.dozzle.tls.certresolver=letsencrypt
+    dozzle:
+        image: amir20/dozzle:latest
+        container_name: dozzle
+        environment:
+            DOZZLE_LEVEL: info
+            DOZZLE_TAILSIZE: 300
+            DOZZLE_FILTER: "status=running"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        labels:
+            - 'traefik.http.routers.dozzle.rule=Host(`dozzle.$DOMAINNAME`)'
+            - traefik.http.routers.dozzle.tls=true
+            - traefik.http.routers.dozzle.tls.certresolver=letsencrypt
 
 networks:
     default:
