@@ -15,6 +15,7 @@ services:
             - --api.insecure=true
             - --providers.docker=true
             - --entrypoints.web.address=:80
+            - --entrypoints.web.http.redirections.entryPoint.to=websecure
             - --entrypoints.websecure.address=:443
             - --certificatesresolvers.letsencrypt.acme.email=$ACME_EMAIL
             - --certificatesresolvers.letsencrypt.acme.storage=acme.json
