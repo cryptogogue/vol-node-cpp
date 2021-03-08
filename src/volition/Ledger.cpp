@@ -272,6 +272,12 @@ UnfinishedBlockList Ledger::getUnfinished () {
 }
 
 //----------------------------------------------------------------//
+bool Ledger::hasBlock ( string hash ) const {
+
+    return this->hasKey ( keyFor_blockHeightByHash ( hash ) );
+}
+
+//----------------------------------------------------------------//
 bool Ledger::hasTransaction ( string accountName, string uuid ) const {
 
     AccountID accountID = this->getAccountID ( accountName );

@@ -753,6 +753,9 @@ void Miner::updateBestBranch ( time_t now ) {
         
         assert ( !remoteImproved.isMissingOrInvalid ());
         
+        // trivially reject earlier chains
+        if ( this->mLedger->hasBlock ( remoteImproved.getHash ())) continue;
+        
         if ( BlockTreeCursor::compare ( remoteImproved, bestCursor ) < 0 ) {
             bestCursor = this->mBlockTree->tag ( this->mBestBranchTag, remoteImproved );
         }
