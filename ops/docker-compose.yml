@@ -1,0 +1,249 @@
+version: "3.7"
+
+networks:
+  t2_proxy:
+    external:
+      name: t2_proxy
+  socket_proxy:
+    external:
+      name: socket_proxy
+  default:
+    driver: bridge
+
+services:
+
+#Infrastructure
+
+  # Traefik 2 - Reverse Proxy
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: unless-stopped
+    command:
+      - --global.checkNewVersion=true
+      - --global.sendAnonymousUsage=true
+      - --entryPoints.http.address=:80
+      - --entryPoints.https.address=:443
+        # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
+      - --entrypoints.https.forwardedHeaders.trustedIPs=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/12,172.64.0.0/13,131.0.72.0/22
+      - --entryPoints.traefik.address=:8080
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.1,0.3,1.2,5.0
+      - --api=true
+      - --api.dashboard=true
+      - --log=true
+      - --log.level=WARN # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      - --accessLog=true
+      - --accessLog.filePath=/traefik.log
+      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
+      - --accessLog.filters.statusCodes=400-499
+      - --providers.docker=true
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
+#      - --providers.docker.defaultrule=Host(`{{ index .Labels "com.docker.compose.service" }}.$DOMAINNAME`)
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.https.http.tls.options=tls-opts@file
+      - --entrypoints.https.http.tls.certresolver=dns-cloudflare
+      - --entrypoints.https.http.tls.domains[0].main=$DOMAINNAME
+      - --entrypoints.https.http.tls.domains[0].sans=*.$DOMAINNAME
+      - --providers.docker.network=t2_proxy
+      - --providers.docker.swarmMode=false
+      - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory.
+#      - --providers.file.filename=/path/to/file # Load dynamic configuration from a file.
+      - --providers.file.watch=true # Only works on top level files in the rules folder
+#      - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # LetsEncrypt Staging Server - uncomment when testing
+      - --certificatesResolvers.dns-cloudflare.acme.email=$CLOUDFLARE_EMAIL
+      - --certificatesResolvers.dns-cloudflare.acme.storage=/acme.json
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90
+    networks:
+      t2_proxy:
+        ipv4_address: 192.168.90.254
+      socket_proxy:
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+        #- target: 8080
+        #published: 8080
+        #protocol: tcp
+        #mode: host
+    volumes:
+      - $DOCKERDIR/traefik2/rules:/rules
+        #- /var/run/docker.sock:/var/run/docker.sock:ro <-Unused because we're using the more secure socket_proxy
+      - $DOCKERDIR/traefik2/acme/acme.json:/acme.json
+      - $DOCKERDIR/traefik2/traefik.log:/traefik.log
+      - $DOCKERDIR/shared:/shared
+    environment:
+      - CF_API_EMAIL=$CLOUDFLARE_EMAIL
+      - CF_API_KEY=$CLOUDFLARE_API_KEY
+    labels:
+      - "traefik.enable=true"
+      # HTTP-to-HTTPS Redirect
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # HTTP Routers
+      - "traefik.http.routers.traefik-rtr.entrypoints=https"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME`)"
+      - "traefik.http.routers.traefik-rtr.tls=true"
+      - "traefik.http.routers.traefik-rtr.tls.certresolver=dns-cloudflare" # Comment out this line after first run of traefik to force the use of wildcard certs
+      - "traefik.http.routers.traefik-rtr.tls.domains[0].main=$DOMAINNAME"
+      - "traefik.http.routers.traefik-rtr.tls.domains[0].sans=*.$DOMAINNAME"
+  #   - "traefik.http.routers.traefik-rtr.tls.domains[1].main=$SECONDDOMAINNAME" # Pulls main cert for second domain
+  #   - "traefik.http.routers.traefik-rtr.tls.domains[1].sans=*.$SECONDDOMAINNAME" # Pulls wildcard cert for second domain
+      ## Services - API
+      - "traefik.http.routers.traefik-rtr.service=api@internal"
+      ## Middlewares
+      #      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file"
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file"
+
+  # Secure docker.sock access
+  socket-proxy:
+    container_name: socket-proxy
+    image: fluencelabs/docker-socket-proxy
+    restart: always
+    networks:
+      socket_proxy:
+        ipv4_address: 192.168.91.254
+    privileged: true
+    ports:
+      - "127.0.01:2375:2375"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      - -LOG_LEVEL=info
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      - AUTH=0
+      - SECRETS=0
+      - POST=1
+      - DELETE=1
+      - BUILD=0
+      - COMMIT=0
+      - CONFIGS=0
+      - CONTAINERS=1
+      - DISTRIBUTION=0
+      - EXEC=0
+      - IMAGES=1
+      - INFO=1
+      - NETWORKS=1
+      - NODES=0
+      - PLUGINS=0
+      - SERVICES=1
+      - SESSION=0
+      - SWARM=0
+      - SYSTEM=0
+      - TASKS=1
+      - VOLUMES=1
+      - CONTAINERS_CREATE=1
+      - CONTAINERS_START=1
+      - CONTAINERS_UPDATE=1
+      - CONTAINERS_DELETE=1
+      - IMAGES_DELETE=1
+
+  # Docker Container Log Viewer
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    networks:
+      - t2_proxy
+      - socket_proxy
+    depends_on:
+      - socket-proxy
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      DOZZLE_LEVEL: info
+      DOZZLE_TAILSIZE: 300
+      DOZZLE_FILTER: "status=running"
+      DOCKER_HOST: tcp://socket-proxy:2375
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dozzle-rtr.entrypoints=https"
+      - "traefik.http.routers.dozzle-rtr.rule=Host(`dozzle.$DOMAINNAME`)"
+      - "traefik.http.routers.dozzle-rtr.middlewares=chain-no-auth@file"
+      - "traefik.http.routers.dozzle-rtr.service=dozzle-svc"
+      - "traefik.http.services.dozzle-svc.loadbalancer.server.port=8080"
+
+  # Docker Container auto-updater
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    networks:
+      - default
+      - socket_proxy
+    depends_on:
+      - socket-proxy
+    environment:
+      TZ: $TZ
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_REMOVE_VOLUMES: "true"
+      WATCHTOWER_INCLUDE_STOPPED: "true"
+      WATCHTOWER_NO_STARTUP_MESSAGE: "false"
+      WATCHTOWER_SCHEDULE: "0 30 12 * * *" # Everyday at 12:30
+      DOCKER_HOST: tcp://socket-proxy:2375
+      DOCKER_API_VERSION: "1.40"
+
+  # Glances - System Information
+  glances:
+    image: nicolargo/glances:latest
+    container_name: glances
+    restart: unless-stopped
+    privileged: true
+    # network_mode: host
+    networks:
+      - t2_proxy
+      - socket_proxy
+    depends_on:
+      - socket-proxy
+    security_opt:
+      - no-new-privileges:true
+    # ports:
+    #   - "$GLANCES_PORT:61208"
+    pid: host
+    #volumes:
+      # - $DOCKERDIR/glances/glances.conf:/glances/conf/glances.conf # Use this if you want to add a glances.conf file
+      # - /var/run/docker.sock:/var/run/docker.sock:ro # Use Docker Socket Proxy instead for improved security
+    environment:
+      # GLANCES_OPT: "-C /glances/conf/glances.conf --quiet --export influxdb"
+      GLANCES_OPT: "-w"
+      DOCKER_HOST: tcp://socket-proxy:2375
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.glances-rtr.entrypoints=https"
+      - "traefik.http.routers.glances-rtr.rule=Host(`glances.$DOMAINNAME`)"
+      ## Middlewares
+      - "traefik.http.routers.glances-rtr.middlewares=chain-no-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.glances-rtr.service=glances-svc"
+      - "traefik.http.services.glances-svc.loadbalancer.server.port=61208"
+
+# Volition
+  volition:
+    image: cryptogogue/volition
+    container_name: volition
+    restart: unless-stopped
+    networks:
+      - t2_proxy
+    volumes:
+            - $DOCKERDIR/volition:/var/lib/volition
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.volition-rtr.entrypoints=https"
+      - "traefik.http.routers.volition-rtr.rule=Host(`volition.$DOMAINNAME`)"
+      - "traefik.http.routers.volition-rtr.middlewares=chain-no-auth@file"
+      - "traefik.http.routers.volition-rtr.service=volition-svc"
+      - "traefik.http.services.volition-svc.loadbalancer.server.port=9090"
