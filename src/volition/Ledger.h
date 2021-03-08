@@ -260,6 +260,7 @@ public:
     string                              getSchemaHash                   () const;
     string                              getSchemaString                 () const;
     UnfinishedBlockList                 getUnfinished                   ();
+    bool                                hasBlock                        ( string hash ) const;
     bool                                hasTransaction                  ( string accountName, string uuid ) const;
     void                                init                            ();
     LedgerResult                        invoke                          ( string accountName, const AssetMethodInvocation& invocation, time_t time );
