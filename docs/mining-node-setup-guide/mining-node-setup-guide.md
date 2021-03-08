@@ -14,6 +14,7 @@ Currently the docker-compose stack consists of:
 - Glances (HTop over https)
 - Watchtower (automatically update docker containers)
 - Volition (volition node miner)
+- CloudFlare DDNS (Updates CloudFlare with your most recent public IP) [`only needed if your server does not have a static ip`]
 
 ## Prepare Your Server
 
@@ -159,6 +160,26 @@ Edit the .env file with your information.
 Copy the docker-compose.yml into the docker data directory
 
 $ `cp [location of vol-cpp clone]/ops/docker-compose.yml /mnt/data/docker/docker-compose.yml`
+
+> If your server does not have a static IP Follow the next instructions
+
+### DDNS Setup
+
+If you do not have a static IP, you need to update CloudFlare with your most recent public IP. To avoid doing this manually, there is a container that will use the API key we retrieved earlier to update your domain names new IP address.
+
+Uncomment out from the docker-compose file.
+
+```
+  cloudflare-ddns:
+    container_name: cloudflare-ddns
+    image: oznu/cloudflare-ddns:latest
+    restart: unless-stopped
+    environment:
+      - EMAIL=${CLOUDFLARE_EMAIL}
+      - API_KEY=${CLOUDFLARE_API_KEY}
+      - ZONE=cuken.net
+      - PROXIED=false
+```
 
 ### Set Up the Volition Docker Directory
 

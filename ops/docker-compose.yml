@@ -231,6 +231,17 @@ services:
       - "traefik.http.routers.glances-rtr.service=glances-svc"
       - "traefik.http.services.glances-svc.loadbalancer.server.port=61208"
 
+  # CloudFlare DDNS updater
+  #cloudflare-ddns:
+  #  container_name: cloudflare-ddns
+  #  image: oznu/cloudflare-ddns:latest
+  #  restart: unless-stopped
+  #  environment:
+  #    - EMAIL=$CLOUDFLARE_EMAIL
+  #    - API_KEY=$CLOUDFLARE_API_KEY
+  #    - ZONE=$DOMAINNAME
+  #    - PROXIED=false
+
 # Volition
   volition:
     image: cryptogogue/volition
