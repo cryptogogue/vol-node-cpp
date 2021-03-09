@@ -79,7 +79,7 @@ private:
         catch ( Poco::Exception& exc ) {
             string msg = exc.message ();
             if ( msg.size () > 0 ) {
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", exc.message ().c_str ());
+                LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s", exc.message ().c_str ());
             }
         }
         

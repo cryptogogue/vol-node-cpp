@@ -153,9 +153,9 @@ protected:
             freopen ( logname.c_str (), "w+", stderr );
         }
         
-        LOG_F ( INFO, "\nHello from VOLITION main.cpp!" );
-        LOG_F ( INFO, "commit: %s", VOLITION_GIT_COMMIT_STR );
-        LOG_F ( INFO, "build: %s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "Hello from VOLITION main.cpp!" );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "commit: %s", VOLITION_GIT_COMMIT_STR );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "build: %s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR );
         
         this->mMinerActivity = make_shared < MinerActivity >();
         this->mMinerActivity->setMinerID ( minerID );
@@ -166,36 +166,36 @@ protected:
             controlKey.load ( controlKeyfile );
             
             if ( !controlKey ) {
-                LOG_F ( INFO, "CONTROL KEY NOT FOUND: %s", controlKeyfile.c_str ());
+                LGN_LOG ( VOL_FILTER_APP, INFO, "CONTROL KEY NOT FOUND: %s", controlKeyfile.c_str ());
                 return Application::EXIT_CONFIG;
             }
-            LOG_F ( INFO, "CONTROL KEY: %s", controlKeyfile.c_str ());
+            LGN_LOG ( VOL_FILTER_APP, INFO, "CONTROL KEY: %s", controlKeyfile.c_str ());
             this->mMinerActivity->setControlKey ( controlKey );
         }
         
         switch ( FNV1a::hash_64 ( controlLevel )) {
         
             case FNV1a::const_hash_64 ( "config" ):
-                LOG_F ( INFO, "CONTROL LEVEL: CONFIG" );
+                LGN_LOG ( VOL_FILTER_APP, INFO, "CONTROL LEVEL: CONFIG" );
                 this->mMinerActivity->setControlLevel ( Miner::CONTROL_CONFIG );
                 break;
             
             case FNV1a::const_hash_64 ( "admin" ):
-               LOG_F ( INFO, "CONTROL LEVEL: ADMIN" );
+               LGN_LOG ( VOL_FILTER_APP, INFO, "CONTROL LEVEL: ADMIN" );
                 this->mMinerActivity->setControlLevel ( Miner::CONTROL_ADMIN );
                 break;
         }
         
-        LOG_F ( INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
+        LGN_LOG ( VOL_FILTER_APP, INFO, "LOADING GENESIS BLOCK: %s", genesis.c_str ());
         if ( !FileSys::exists ( genesis )) {
-            LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+            LGN_LOG ( VOL_FILTER_APP, INFO, "...BUT THE FILE DOES NOT EXIST!" );
             return Application::EXIT_CONFIG;
         }
         
         shared_ptr < Block > genesisBlock = Miner::loadGenesisBlock ( genesis );
         
         if ( !genesisBlock ) {
-            LOG_F ( INFO, "UNABLE TO LOAD GENESIS BLOCK" );
+            LGN_LOG ( VOL_FILTER_APP, INFO, "UNABLE TO LOAD GENESIS BLOCK" );
             return Application::EXIT_CONFIG;
         }
         
@@ -207,7 +207,7 @@ protected:
         }
         
         if ( this->mMinerActivity->getLedger ().countBlocks () == 0 ) {
-            LOG_F ( INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
+            LGN_LOG ( VOL_FILTER_APP, INFO, "MISSING OR CORRUPT GENESIS BLOCK" );
             return Application::EXIT_CONFIG;
         }
         
@@ -216,9 +216,9 @@ protected:
             return Application::EXIT_OK;
         }
         
-        LOG_F ( INFO, "LOADING KEY FILE: %s\n", keyfile.c_str ());
+        LGN_LOG ( VOL_FILTER_APP, INFO, "LOADING KEY FILE: %s", keyfile.c_str ());
         if ( !FileSys::exists ( keyfile )) {
-            LOG_F ( INFO, "...BUT THE FILE DOES NOT EXIST!" );
+            LGN_LOG ( VOL_FILTER_APP, INFO, "...BUT THE FILE DOES NOT EXIST!" );
             return Application::EXIT_CONFIG;
         }
         
@@ -230,11 +230,11 @@ protected:
         this->mMinerActivity->setFixedUpdateDelayInMillis (( u32 )fixedDelay );
         this->mMinerActivity->setVariableUpdateDelayInMillis (( u32 )variableDelay );
         
-        LOG_F ( INFO, "MINER ID: %s", this->mMinerActivity->getMinerID ().c_str ());
+        LGN_LOG ( VOL_FILTER_APP, INFO, "MINER ID: %s", this->mMinerActivity->getMinerID ().c_str ());
 
         this->serve ( port, sslCertFile.length () > 0 );
         
-        LOG_F ( INFO, "SHUTDOWN: main" );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "SHUTDOWN: main" );
         
         return Application::EXIT_OK;
     }
@@ -257,8 +257,7 @@ protected:
                 msg.append ( base );
                 msg.append ( " = " );
                 msg.append ( config ().getString ( base ));
-                //logger ().information ( msg );
-                printf ( "%s\n", msg.c_str ());
+                LGN_LOG ( VOL_FILTER_APP, INFO, "%s", msg.c_str ())
             }
         }
         else {
@@ -286,9 +285,9 @@ protected:
         server.start ();
         this->mMinerActivity->start ();
 
-        LOG_F ( INFO, "\nSERVING YOU BLOCKCHAIN REALNESS ON PORT: %d\n", port );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "SERVING YOU BLOCKCHAIN REALNESS ON PORT: %d", port );
         this->mMinerActivity->waitForShutdown ();
-        LOG_F ( INFO, "SHUTDOWN: this->mMinerActivity->waitForShutdown ()" );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "SHUTDOWN: this->mMinerActivity->waitForShutdown ()" );
 
         server.stop ();
         threadPool.stopAll ();
@@ -298,7 +297,7 @@ protected:
             ScopedMinerLock scopedLock ( this->mMinerActivity );
             this->mMinerActivity->shutdown ( false );
         }
-        LOG_F ( INFO, "SHUTDOWN: ~serve" );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "SHUTDOWN: ~serve" );
     }
 
 public:
@@ -313,7 +312,7 @@ public:
     ~ServerApp () {
     
         Poco::Net::uninitializeSSL ();
-        LOG_F ( INFO, "SHUTDOWN: ~ServerApp" );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "SHUTDOWN: ~ServerApp" );
     }
     
     //----------------------------------------------------------------//
@@ -335,7 +334,7 @@ void onSignal ( int sig ) {
 
     signal ( sig, SIG_IGN );
 
-    LOG_F ( INFO, "CAUGHT A SIGNAL - SHUTTING DOWN." );
+    LGN_LOG ( VOL_FILTER_APP, INFO, "CAUGHT A SIGNAL - SHUTTING DOWN." );
 
     if ( sApp ) {
         sApp->shutdown ();

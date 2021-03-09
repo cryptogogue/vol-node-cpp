@@ -140,6 +140,8 @@ bool AbstractBlockTree::checkStatusTransition ( kBlockTreeEntryStatus from, kBlo
 //----------------------------------------------------------------//
 int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     BlockTreeFork fork;
     this->findFork ( fork, cursor0, cursor1 );
 
@@ -195,6 +197,8 @@ BlockTreeCursor AbstractBlockTree::findCursorForTag ( const BlockTreeTag& tag ) 
 
 //----------------------------------------------------------------//
 void AbstractBlockTree::findFork ( BlockTreeFork& fork, BlockTreeCursor cursor0, BlockTreeCursor cursor1 ) const {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
     assert ( cursor0.mTree && ( cursor0.mTree == cursor1.mTree ));
     

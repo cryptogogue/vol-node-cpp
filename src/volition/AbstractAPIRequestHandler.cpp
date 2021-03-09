@@ -80,9 +80,13 @@ HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleRequest ( 
 void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const {
     UNUSED ( match );
 
+    LGN_LOG_SCOPE ( VOL_FILTER_HTTP, INFO, __PRETTY_FUNCTION__ );
+
     response.add ( "Access-Control-Allow-Origin", "*" );
     response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );
     response.add ( "Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, POST, PUT" );
+
+    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%s %s", request.getMethod ().c_str (), request.getURI ().c_str ());
 
     HTTP::Method method = HTTP::getMethodForString ( request.getMethod ());
     

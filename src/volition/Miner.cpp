@@ -8,6 +8,7 @@
 #include <volition/InMemoryBlockTree.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
+#include <volition/ScopedProfile.h>
 #include <volition/SQLiteBlockTree.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
@@ -20,7 +21,8 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockSearch::BlockSearch () {
+BlockSearch::BlockSearch () :
+    mT0 ( chrono::high_resolution_clock::now ()) {
 }
 
 //----------------------------------------------------------------//
@@ -32,10 +34,12 @@ bool BlockSearch::step ( Miner& miner ) {
     if ( !( cursor.hasHeader () && cursor.checkStatus (( kBlockTreeEntryStatus )( kBlockTreeEntryStatus::STATUS_NEW | kBlockTreeEntryStatus::STATUS_MISSING )))) return false;
 
     set < shared_ptr < RemoteMiner >> remoteMiners;
-    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = miner.mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != miner.mOnlineMiners.end (); ++remoteMinerIt ) {
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = miner.mRemoteMiners.begin ();
+    for ( ; remoteMinerIt != miner.mRemoteMiners.end (); ++remoteMinerIt ) {
     
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+        if ( !remoteMiner->isOnline ()) continue;
+        
         string minerID = remoteMiner->getMinerID ();
         
         if ( this->mCompletedMiners.find ( minerID ) != this->mCompletedMiners.end ()) continue;
@@ -185,6 +189,8 @@ bool Miner::checkTags () const {
 //----------------------------------------------------------------//
 void Miner::composeChain () {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     assert ( this->checkTags ());
 
     // TODO: gather transactions if rewinding chain
@@ -224,23 +230,30 @@ void Miner::composeChain () {
 //----------------------------------------------------------------//
 void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 
+    // we're descending to find this cursor
     BlockTreeCursor ledgerCursor = this->mLedgerTag.getCursor ();
 
-    if ( ledgerCursor.equals ( branch )) return; // nothing to do
+    list < BlockTreeCursor > stack;
+
+    while ( !ledgerCursor.equals ( branch )) {
     
-    BlockTreeCursor parent = branch.getParent ();
-    if ( !parent.equals ( ledgerCursor )) {
-        this->composeChainRecurse ( parent );
+        if ( branch.isComplete ()) {
+            stack.push_front ( branch );
+        }
+        branch = branch.getParent ();
     }
-    
-    if ( branch.isComplete ()) {
-        this->pushBlock ( branch.getBlock ()); // TODO: handle invalid blocks
-        assert (( *this->mLedgerTag ).equals ( branch ));
+
+    list < BlockTreeCursor >::iterator stackIt = stack.begin ();
+    for ( ; stackIt != stack.end (); ++stackIt ) {
+        this->pushBlock ( stackIt->getBlock ());
+        assert (( *this->mLedgerTag ).equals ( *stackIt ));
     }
 }
 
 //----------------------------------------------------------------//
 void Miner::extend ( time_t now ) {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
     // we can only extend the chain if we've already appended a provisional block.
     // the provisional block is just an empty header, but with a valid charm.
@@ -562,13 +575,15 @@ void Miner::report () const {
 //----------------------------------------------------------------//
 void Miner::report ( ReportMode reportMode ) const {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_MINING_REPORT, INFO, __PRETTY_FUNCTION__ );
+
     BlockTreeCursor ledgerCursor = *this->mBestBranchTag;
 
     switch ( reportMode ) {
     
         case REPORT_BEST_BRANCH: {
         
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
             break;
         }
         
@@ -579,16 +594,43 @@ void Miner::report ( ReportMode reportMode ) const {
                 remoteMinerIt->second->report ();
             }
             
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearches.size ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "LEDGER TAG: %s", this->getLedgerTag ().write ().c_str ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearches.size ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "LEDGER TAG: %s", this->getLedgerTag ().write ().c_str ());
             break;
         }
         
         case REPORT_NONE:
         default:
             break;
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::reportBlockSearches () const {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, __PRETTY_FUNCTION__ );
+
+     map < string, BlockSearch >::const_iterator blockSearchIt = this->mBlockSearches.begin ();
+     for ( ; blockSearchIt != this->mBlockSearches.end (); ++blockSearchIt ) {
+        const BlockSearch& blockSearch = blockSearchIt->second;
+        
+        LGN_LOG ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, "BLOCK SEARCH: %s", blockSearch.mHash.c_str ());
+        
+        set < string >::const_iterator activeIt = blockSearch.mActiveMiners.begin ();
+        for ( ; activeIt != blockSearch.mActiveMiners.end (); ++activeIt ) {
+            LGN_LOG ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, "    ACTIVE: %s", activeIt->c_str ());
+        }
+        
+        set < string >::const_iterator completedIt = blockSearch.mCompletedMiners.begin ();
+        for ( ; completedIt != blockSearch.mCompletedMiners.end (); ++completedIt ) {
+            LGN_LOG ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, "    DONE: %s", completedIt->c_str ());
+        }
+        
+        chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now ();
+        chrono::milliseconds span = chrono::duration_cast < chrono::milliseconds >( t1 - blockSearch.mT0 );
+        
+        LGN_LOG ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, "    TIME: %.2lfs", ( double )span.count () * 0.001 );
     }
 }
 
@@ -628,6 +670,8 @@ set < string > Miner::sampleOnlineMinerURLs ( size_t sampleSize ) const {
 
 //----------------------------------------------------------------//
 void Miner::saveChain () {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
     if ( this->mLedger && this->mPersistenceProvider ) {
         assert ( this->checkTags ());
@@ -703,6 +747,8 @@ void Miner::shutdown ( bool kill ) {
 //----------------------------------------------------------------//
 void Miner::step ( time_t now ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
     this->affirmMessenger ();
@@ -728,12 +774,14 @@ void Miner::step ( time_t now ) {
         this->mMessenger->sendRequests ();
     }
     catch ( Poco::Exception& exc ) {
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "Caught exception in MinerActivity::runActivity ()" );
+        LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Caught exception in MinerActivity::runActivity ()" );
     }
 }
 
 //----------------------------------------------------------------//
 void Miner::updateBestBranch ( time_t now ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
     assert ( this->checkTags ());
 
@@ -769,6 +817,8 @@ void Miner::updateBestBranch ( time_t now ) {
 //----------------------------------------------------------------//
 void Miner::updateBlockSearches () {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.begin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
         
@@ -803,6 +853,8 @@ void Miner::updateBlockSearches () {
 //----------------------------------------------------------------//
 void Miner::updateNetworkSearches () {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     // poll network for miner URLs
     if ( !this->mNetworkSearch ) {
         set < shared_ptr < RemoteMiner >> miners = this->sampleOnlineMiners ( 1 );
@@ -815,6 +867,8 @@ void Miner::updateNetworkSearches () {
 
 //----------------------------------------------------------------//
 void Miner::updateRemoteMinerGroups () {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
     this->mOnlineMiners.clear ();
     this->mContributors.clear ();
@@ -839,6 +893,8 @@ void Miner::updateRemoteMinerGroups () {
 
 //----------------------------------------------------------------//
 void Miner::updateRemoteMiners () {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
     // get miner URL list from ledger
     set < string > miners = this->getLedger ().getMiners ();

@@ -226,6 +226,7 @@
 		CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */; };
 		CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */; };
 		CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD964FA223C48EAB009010C3 /* TransactionQueue.h */; };
+		CD9941F725F7E60100524DB6 /* ScopedProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9941F525F7E60100524DB6 /* ScopedProfile.h */; };
 		CD9E7BA124FF67C30065C5FC /* InMemoryBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */; };
 		CD9E7BA224FF67C30065C5FC /* InMemoryBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */; };
 		CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */; };
@@ -1010,6 +1011,7 @@
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionQueue.cpp; path = src/volition/TransactionQueue.cpp; sourceTree = "<group>"; };
 		CD964FA223C48EAB009010C3 /* TransactionQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueue.h; path = src/volition/TransactionQueue.h; sourceTree = "<group>"; };
+		CD9941F525F7E60100524DB6 /* ScopedProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScopedProfile.h; path = src/volition/ScopedProfile.h; sourceTree = "<group>"; };
 		CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InMemoryBlockTree.cpp; path = src/volition/InMemoryBlockTree.cpp; sourceTree = "<group>"; };
 		CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InMemoryBlockTree.h; path = src/volition/InMemoryBlockTree.h; sourceTree = "<group>"; };
 		CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockHeader.cpp; path = src/volition/BlockHeader.cpp; sourceTree = "<group>"; };
@@ -1519,6 +1521,7 @@
 				CD36663720F595B2000E0B43 /* FNV1a.h */,
 				CDA1573E23FAA92300DFACCF /* Munge.cpp */,
 				CDA1573F23FAA92300DFACCF /* Munge.h */,
+				CD9941F525F7E60100524DB6 /* ScopedProfile.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
 				CD2000442548CC9200DEB809 /* UnsecureRandom.h */,
 			);
@@ -2045,6 +2048,7 @@
 				CDFA2393246015FA00B4CECF /* AbstractLedgerComponent.h in Headers */,
 				CDFA23A7246065AF00B4CECF /* InventoryLogEntry.h in Headers */,
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
+				CD9941F725F7E60100524DB6 /* ScopedProfile.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
 				CD7751E6252FE41C00A53765 /* ConsensusBlockDetailsHandler.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,

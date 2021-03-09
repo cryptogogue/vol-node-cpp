@@ -28,13 +28,15 @@ class Miner;
 class BlockSearch {
 protected:
 
-    static const size_t SEARCH_SIZE = 16;
+    static const size_t SEARCH_SIZE = 4;
 
     friend class Miner;
 
     string              mHash;
     set < string >      mActiveMiners;
     set < string >      mCompletedMiners;
+
+    chrono::high_resolution_clock::time_point   mT0;
 
 public:
 
@@ -250,6 +252,9 @@ public:
     shared_ptr < Block >                prepareBlock                ( time_t now );
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                pruneTransactions           ();
+    void                                report                      () const;
+    void                                report                      ( ReportMode reportMode ) const;
+    void                                reportBlockSearches         () const;
     void                                reset                       ();
     set < string >                      sampleOnlineMinerURLs       ( size_t sampleSize = 0 ) const;
     void                                setGenesis                  ( shared_ptr < const Block > block );
@@ -259,8 +264,6 @@ public:
     void                                setVerbose                  ( bool verbose = true );
     void                                shutdown                    ( bool kill = false );
     void                                step                        ( time_t now );
-    void                                report                      () const;
-    void                                report                      ( ReportMode reportMode ) const;
 };
 
 //================================================================//

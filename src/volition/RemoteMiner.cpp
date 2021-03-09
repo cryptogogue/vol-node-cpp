@@ -140,24 +140,24 @@ void RemoteMiner::report () const {
     switch ( this->mState ) {
     
         case STATE_OFFLINE:
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: OFFLINE (%s)", minerID, url );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: OFFLINE (%s)", minerID, url );
             break;
         
         case STATE_WAITING_FOR_INFO:
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: WAITING (%s)", minerID, url );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: WAITING (%s)", minerID, url );
             break;
         
         case STATE_ONLINE:
         case STATE_WAITING_FOR_HEADERS:
             
             if ( this->mRewind ) {
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: REWINDING (height: %d)", minerID, ( int )this->mHeight );
+                LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: REWINDING (height: %d)", minerID, ( int )this->mHeight );
             }
             else {
             
                  BlockTreeCursor remoteCursor = *this->mTag;
                  if ( remoteCursor.hasHeader ()) {
-                    LGN_LOG ( VOL_FILTER_ROOT, INFO,
+                    LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO,
                         "%s - %d: %s",
                         minerID,
                         ( int )remoteCursor.getHeight (),
@@ -165,13 +165,13 @@ void RemoteMiner::report () const {
                     );
                 }
                 else {
-                    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: MISSING CURSOR", minerID );
+                    LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: MISSING CURSOR", minerID );
                 }
             }
             break;
         
         case STATE_ERROR:
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: UNRECOVERABLE", minerID );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: UNRECOVERABLE", minerID );
             break;
     }
 }

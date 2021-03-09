@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <cmath>
+#include <chrono>
 #include <csignal>
 #include <cstring>
 #include <dirent.h>
@@ -115,7 +116,11 @@ typedef int16_t                 s16;
 typedef int32_t                 s32;
 typedef int64_t                 s64;
 
-#define VOL_FILTER_ROOT "volition"
+#define VOL_FILTER_APP                      " @VOL_APP "
+#define VOL_FILTER_CONSENSUS                " @VOL_CONSENSUS "
+#define VOL_FILTER_HTTP                     " @VOL_HTTP "
+#define VOL_FILTER_MINING_REPORT            " @VOL_REPORT "
+#define VOL_FILTER_MINING_SEARCH_REPORT     " @VOL_SEARCH "
 
 #if !defined(UNUSED)
     #define UNUSED(x) ((void)(x))

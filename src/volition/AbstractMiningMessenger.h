@@ -214,6 +214,8 @@ public:
     //----------------------------------------------------------------//
     void sendRequests () {
     
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+    
         list < MiningMessengerRequest > requests;
         {
             Poco::ScopedLock < Poco::Mutex > lock ( this->mRequestMutex );
@@ -229,6 +231,8 @@ public:
     
     //----------------------------------------------------------------//
     void receiveResponses ( AbstractMiningMessengerClient& client, time_t now ) {
+    
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
         list < MiningMessengerResponse > responses;
         {

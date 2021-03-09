@@ -64,7 +64,7 @@ void InMemoryBlockTree::logTreeRecurse ( string prefix, size_t maxDepth, const I
         ++i;
     }
     while ( node && ( node->mChildren.size () <= 1 ));
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s%s", prefix.c_str (), str.c_str ());
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s%s", prefix.c_str (), str.c_str ());
     
     if ( node ) {
         ++depth;
