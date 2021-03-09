@@ -8,7 +8,6 @@
 #include <volition/InMemoryBlockTree.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
-#include <volition/ScopedProfile.h>
 #include <volition/SQLiteBlockTree.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
