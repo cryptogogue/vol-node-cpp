@@ -213,7 +213,6 @@ void Simulator::report () {
                 
             LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
             LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "GOAL: %s", ( *this->mOptimalTag ).writeBranch ().c_str ());
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "" );
         
             break;
         }
@@ -229,8 +228,6 @@ void Simulator::report () {
                 LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
             }
             
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "" );
-        
             break;
         }
         
@@ -238,7 +235,6 @@ void Simulator::report () {
         
             LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "----------------------------------------------------------------" );
             LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "STEP: %d", ( int )this->mStepCount );
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "" );
             
             for ( size_t i = 0; i < this->mMinersByID.size (); ++i ) {
             
