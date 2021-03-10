@@ -4,10 +4,10 @@
 #ifndef VOLITION_WEBMINERAPI_ACCOUNTKEYLISTHANDLER_H
 #define VOLITION_WEBMINERAPI_ACCOUNTKEYLISTHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Block.h>
-#include <volition/AbstractAPIRequestHandler.h>
-#include <volition/TheTransactionBodyFactory.h>
 #include <volition/MinerAPIFactory.h>
+#include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {

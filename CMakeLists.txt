@@ -44,9 +44,11 @@ target_sources ( volition-lib
     PRIVATE
         src/volition/AbstractAPIRequestHandler.cpp
         src/volition/AbstractBlockTree.cpp
+        src/volition/AbstractConsensusInspector.cpp
         src/volition/AbstractControlCommandBody.cpp
         src/volition/AbstractCryptoKey.cpp
         src/volition/AbstractEntitlement.cpp
+        src/volition/AbstractMinerAPIRequestHandler.cpp
         src/volition/AbstractRequestHandler.cpp
         src/volition/AbstractTransactionBody.cpp
         src/volition/AssetID.cpp
@@ -85,6 +87,7 @@ target_sources ( volition-lib
         src/volition/Schema.cpp
         src/volition/Signature.cpp
         src/volition/SQLiteBlockTree.cpp
+        src/volition/SQLiteConsensusInspector.cpp
         src/volition/SquapFactory.cpp
         src/volition/TheControlCommandBodyFactory.cpp
         src/volition/TheTransactionBodyFactory.cpp

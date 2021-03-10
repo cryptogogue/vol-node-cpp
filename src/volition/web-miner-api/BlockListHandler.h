@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_BLOCKLISTHANDLER_H
 #define VOLITION_WEBMINERAPI_BLOCKLISTHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>

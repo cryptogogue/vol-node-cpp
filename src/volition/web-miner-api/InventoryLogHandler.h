@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_INVENTORYLOGHANDLER_H
 #define VOLITION_WEBMINERAPI_INVENTORYLOGHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/InventoryLogEntry.h>

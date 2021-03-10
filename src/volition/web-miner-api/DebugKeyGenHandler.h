@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_DEBUGKEYGENHANDLER_H
 #define VOLITION_WEBMINERAPI_DEBUGKEYGENHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/CryptoKey.h>
 
 namespace Volition {

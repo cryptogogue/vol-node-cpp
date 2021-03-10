@@ -4,10 +4,10 @@
 #ifndef VOLITION_WEBMINERAPI_KEYACCOUNTDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_KEYACCOUNTDETAILSHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/AccountODBM.h>
 #include <volition/AssetODBM.h>
 #include <volition/Block.h>
-#include <volition/AbstractAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/MinerAPIFactory.h>
 

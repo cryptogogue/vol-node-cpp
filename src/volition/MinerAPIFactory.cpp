@@ -32,30 +32,6 @@
 namespace Volition {
 
 //================================================================//
-// AbstractMinerAPIRequestHandler
-//================================================================//
-    
-//----------------------------------------------------------------//
-AbstractMinerAPIRequestHandler::AbstractMinerAPIRequestHandler () {
-}
-
-//================================================================//
-// overrides
-//================================================================//
-
-//----------------------------------------------------------------//
-AbstractAPIRequestHandler::HTTPStatus AbstractMinerAPIRequestHandler::AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const {
-
-    ScopedMinerLock scopedLock ( this->mWebMiner );
-    
-    u64 totalBlocks = this->mWebMiner->getLedger ().countBlocks ();
-    u64 height = this->optQuery ( "at", totalBlocks );
-    Ledger ledger ( this->mWebMiner->getLedgerAtBlock ( height ));
-    
-    return this->AbstractMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
-}
-
-//================================================================//
 // MinerAPIFactory
 //================================================================//
 
@@ -132,17 +108,17 @@ MinerAPIFactory::~MinerAPIFactory () {
 //----------------------------------------------------------------//
 Poco::Net::HTTPRequestHandler* MinerAPIFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
     
-    unique_ptr < AbstractMinerAPIRequestHandler > handler = this->mRouteTable.match ( request );
+    unique_ptr < AbstractAPIRequestHandlerWithMiner > handler = this->mRouteTable.match ( request );
     
     if ( this->mWithPrefix ) {
         string minerID = handler->getMatchString ( "minerID" );
         map < string, shared_ptr < Miner >>::iterator webMinerIt = this->mMiners.find ( minerID );
         if ( webMinerIt != this->mMiners.end ()) {
-            handler->mWebMiner = webMinerIt->second;
+            handler->initialize ( webMinerIt->second );
         }
     }
     else {
-        handler->mWebMiner = this->mMiner;
+        handler->initialize ( this->mMiner );
     }
     
     return handler.release ();

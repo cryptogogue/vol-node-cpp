@@ -19,6 +19,7 @@
 namespace Volition {
 
 class AbstractChainRecorder;
+class AbstractConsensusInspector;
 class AbstractHashable;
 class Miner;
 
@@ -103,6 +104,8 @@ public:
     };
 
     static const int DEFAULT_FLAGS = 0;
+
+    typedef shared_ptr < AbstractConsensusInspector > InspectorPtr;
 
 protected:
 
@@ -237,7 +240,7 @@ public:
     void                                affirmVisage                ();
     static Signature                    calculateVisage             ( const CryptoKeyPair& keyPair, string motto = "" );
     bool                                checkBestBranch             ( string miners ) const;
-    size_t                              countBranches               () const;
+    InspectorPtr                        createInspector              () const;
     void                                extend                      ( time_t now );
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();

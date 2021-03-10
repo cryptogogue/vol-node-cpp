@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_TESTKEYIDHANDLER_H
 #define VOLITION_WEBMINERAPI_TESTKEYIDHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/Block.h>
 #include <volition/CryptoKeyInfo.h>

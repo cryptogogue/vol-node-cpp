@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_ASSETDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_ASSETDETAILSHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Asset.h>
 #include <volition/Block.h>
 #include <volition/AbstractAPIRequestHandler.h>

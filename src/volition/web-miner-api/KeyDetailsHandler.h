@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_KEYDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_KEYDETAILSHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/AccountODBM.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/Block.h>

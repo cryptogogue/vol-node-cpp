@@ -4,6 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_NODEDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_NODEDETAILSHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/AccountODBM.h>
 #include <volition/AbstractAPIRequestHandler.h>
 #include <volition/Block.h>

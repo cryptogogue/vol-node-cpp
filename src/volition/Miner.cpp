@@ -9,6 +9,7 @@
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/SQLiteBlockTree.h>
+#include <volition/SQLiteConsensusInspector.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
@@ -247,6 +248,12 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
         this->pushBlock ( stackIt->getBlock ());
         assert (( *this->mLedgerTag ).equals ( *stackIt ));
     }
+}
+
+//----------------------------------------------------------------//
+Miner::InspectorPtr Miner::createInspector () const {
+
+    return make_shared < SQLiteConsensusInspector >( this->mBlocksFilename );
 }
 
 //----------------------------------------------------------------//
