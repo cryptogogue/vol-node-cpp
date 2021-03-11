@@ -32,7 +32,7 @@ shared_ptr < const Block > SQLiteConsensusInspector::AbstractConsensusInspector_
 
     this->mDB.exec (
         
-        "SELECT block FROM nodes WHERE hash IS ?1",
+        "SELECT block FROM nodes WHERE hash IS ?1 AND hasBlock IS 1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -44,10 +44,10 @@ shared_ptr < const Block > SQLiteConsensusInspector::AbstractConsensusInspector_
         
             string blockJSON = stmt.getValue < string >( "block" );
 
-            assert ( blockJSON.size ());
-            
-            block = make_shared < Block >();
-            FromJSONSerializer::fromJSONString ( *block, blockJSON );
+            if ( blockJSON.size ()) {
+                block = make_shared < Block >();
+                FromJSONSerializer::fromJSONString ( *block, blockJSON );
+            }
         }
     );
 
