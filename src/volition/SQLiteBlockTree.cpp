@@ -31,7 +31,7 @@ int SQLiteBlockTree::getNodeIDFromHash ( string hash ) const {
             nodeID = stmt.getValue < int >( 0 );
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
     
     return nodeID;
 }
@@ -55,7 +55,7 @@ int SQLiteBlockTree::getNodeIDFromTagName ( string tagName ) const {
             nodeID = stmt.getValue < int >( 0 );
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
     
     return nodeID;
 }
@@ -77,7 +77,7 @@ kBlockTreeEntryStatus SQLiteBlockTree::getNodeStatus ( int nodeID, kBlockTreeEnt
             status = stringToStatus ( stmt.getValue < string >( 0 ));
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
     
     return status;
 }
@@ -113,7 +113,7 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
             exists              = true;
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
 
     // if we couldn't find it, or we did find it and the status already matches what we want to set, we can bail.
     if ( !exists || ( status == prevStatus )) return;
@@ -138,7 +138,7 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
             stmt.bind ( 2,  nodeID );
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
     
     // set parentStatus for all child nodes.
     result = this->mDB.exec (
@@ -151,7 +151,7 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
             stmt.bind ( 2, nodeID );
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
     
     // recursively mark the child nodes.
     result = this->mDB.exec (
@@ -169,7 +169,7 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
             this->markRecurse ( childID, status );
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
 }
 
 //----------------------------------------------------------------//
@@ -233,7 +233,7 @@ void SQLiteBlockTree::setTag ( string tagName, int nodeID ) {
             stmt.bind ( 2, nodeID );
         }
     );
-    assert ( result );
+    result.reportWithAssert ();
     
     this->pruneUnreferencedNodes ();
 }
@@ -254,7 +254,7 @@ string SQLiteBlockTree::stringFromStatus ( kBlockTreeEntryStatus status ) {
     switch ( status ) {
         case kBlockTreeEntryStatus::STATUS_NEW:         return "N";
         case kBlockTreeEntryStatus::STATUS_COMPLETE:    return "C";
-        case kBlockTreeEntryStatus::STATUS_MISSING:     return "M";
+        case kBlockTreeEntryStatus::STATUS_MISSING:     return "?";
         case kBlockTreeEntryStatus::STATUS_INVALID:     return "X";
     }
     return "";
@@ -290,7 +290,7 @@ kBlockTreeEntryStatus SQLiteBlockTree::stringToStatus ( string str ) {
 SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
 
     SQLiteResult result = this->mDB.open ( filename );
-    assert ( result );
+    result.reportWithAssert ();
     
     // nodes
     result = this->mDB.exec ( SQL_STR (
@@ -308,7 +308,7 @@ SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
             FOREIGN KEY ( parentID ) REFERENCES nodes ( nodeID )
         )
     ));
-    assert ( result );
+    result.reportWithAssert ();
     
     // tags
     result = this->mDB.exec ( SQL_STR (
@@ -319,18 +319,18 @@ SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
             FOREIGN KEY ( nodeID ) REFERENCES nodes ( nodeID )
         )
     ));
-    assert ( result );
+    result.reportWithAssert ();
     
     // indices
     
     result = this->mDB.exec ( SQL_STR ( CREATE UNIQUE INDEX IF NOT EXISTS hash ON nodes ( hash )));
-    assert ( result );
+    result.reportWithAssert ();
     
     result = this->mDB.exec ( SQL_STR ( CREATE INDEX IF NOT EXISTS parentID ON nodes ( parentID )));
-    assert ( result );
+    result.reportWithAssert ();
     
     result = this->mDB.exec ( SQL_STR ( CREATE UNIQUE INDEX IF NOT EXISTS name ON tags ( name )));
-    assert ( result );
+    result.reportWithAssert ();
 }
 
 //----------------------------------------------------------------//
@@ -388,7 +388,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
                 stmt.bind ( 9,      block ? 1 : 0 );
             }
         );
-        assert ( result );
+        result.reportWithAssert ();
         
         // make the cursor
         cursor = this->makeCursor ( header, status, kBlockTreeEntryMeta::META_NONE, ( bool )block );
@@ -403,7 +403,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string ha
 
     BlockTreeCursor cursor;
 
-    this->mDB.exec (
+    SQLiteResult result = this->mDB.exec (
         
         "SELECT hash, header, status, meta, hasBlock FROM nodes WHERE hash IS ?1",
         
@@ -417,6 +417,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string ha
             cursor = this->readCursor ( stmt );
         }
     );
+    result.reportWithAssert ();
 
     return cursor;
 }
@@ -426,7 +427,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTagName ( string
 
     BlockTreeCursor cursor;
 
-    this->mDB.exec (
+    SQLiteResult result = this->mDB.exec (
         
         "SELECT hash, header, status, meta, hasBlock FROM nodes INNER JOIN tags ON tags.nodeID = nodes.nodeID WHERE tags.name IS ?1",
         
@@ -440,6 +441,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTagName ( string
             cursor = this->readCursor ( stmt );
         }
     );
+    result.reportWithAssert ();
 
     return cursor;
 }
@@ -452,7 +454,7 @@ shared_ptr < const Block > SQLiteBlockTree::AbstractBlockTree_getBlock ( const B
 
     shared_ptr < Block > block;
 
-    this->mDB.exec (
+    SQLiteResult result = this->mDB.exec (
         
         "SELECT block FROM nodes WHERE hash IS ?1",
         
@@ -472,6 +474,7 @@ shared_ptr < const Block > SQLiteBlockTree::AbstractBlockTree_getBlock ( const B
             FromJSONSerializer::fromJSONString ( *block, blockJSON );
         }
     );
+    result.reportWithAssert ();
 
     assert ( block );
     return block;
@@ -484,9 +487,9 @@ void SQLiteBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, kB
     int blockID     = 0;
     bool exists     = false;
     
-    this->mDB.exec (
+    SQLiteResult result = this->mDB.exec (
         
-        "SELECT nodeID FROM nodes WHERE hash ID ?1",
+        "SELECT nodeID FROM nodes WHERE hash IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -499,6 +502,7 @@ void SQLiteBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, kB
             exists      = true;
         }
     );
+    result.reportWithAssert ();
     
     if ( !exists ) return;
     
@@ -534,7 +538,7 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
     int nodeID = this->getNodeIDFromHash ( block->getDigest ().toHex ());
     if ( !nodeID ) return;
     
-    this->mDB.exec (
+    SQLiteResult result = this->mDB.exec (
     
         "UPDATE nodes SET block = ?1, hasBlock = 1 WHERE nodeID IS ?2",
         
@@ -544,6 +548,7 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
             stmt.bind ( 2, nodeID );
         }
     );
+    result.reportWithAssert ();
     
     this->markRecurse ( nodeID, STATUS_COMPLETE );
 }

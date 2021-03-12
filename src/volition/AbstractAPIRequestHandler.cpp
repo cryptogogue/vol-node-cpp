@@ -80,13 +80,11 @@ HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleRequest ( 
 void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const {
     UNUSED ( match );
 
-    LGN_LOG_SCOPE ( VOL_FILTER_HTTP, INFO, __PRETTY_FUNCTION__ );
+    chrono::high_resolution_clock::time_point t0 = chrono::high_resolution_clock::now ();
 
     response.add ( "Access-Control-Allow-Origin", "*" );
     response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );
     response.add ( "Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, POST, PUT" );
-
-    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%s %s", request.getMethod ().c_str (), request.getURI ().c_str ());
 
     HTTP::Method method = HTTP::getMethodForString ( request.getMethod ());
     
@@ -128,6 +126,11 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     ostream& out = response.send ();
     jsonOut->stringify ( out, 4, -1 );
     out.flush ();
+    
+    chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now ();
+    chrono::milliseconds span = chrono::duration_cast < chrono::milliseconds >( t1 - t0 );
+
+    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%llums: %s %s", span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
 }
 
 } // namespace Volition

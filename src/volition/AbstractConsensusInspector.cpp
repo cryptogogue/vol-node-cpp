@@ -16,6 +16,8 @@ AbstractConsensusInspector::AbstractConsensusInspector () {
 
 //----------------------------------------------------------------//
 AbstractConsensusInspector::~AbstractConsensusInspector () {
+
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "~AbstractConsensusInspector: %p", ( void* )this );
 }
 
 //----------------------------------------------------------------//

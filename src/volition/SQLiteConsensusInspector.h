@@ -16,7 +16,7 @@ class SQLiteConsensusInspector :
     public AbstractConsensusInspector {
 protected:
 
-    mutable SQLite      mDB;
+    string              mFilename;
 
     //----------------------------------------------------------------//
     shared_ptr < const Block >      AbstractConsensusInspector_getBlock     ( string hash ) const override;

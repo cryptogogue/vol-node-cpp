@@ -11,10 +11,8 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-SQLiteConsensusInspector::SQLiteConsensusInspector ( string filename ) {
-
-    SQLiteResult result = this->mDB.open ( filename );
-    assert ( result );
+SQLiteConsensusInspector::SQLiteConsensusInspector ( string filename ) :
+    mFilename ( filename ){
 }
 
 //----------------------------------------------------------------//
@@ -28,9 +26,13 @@ SQLiteConsensusInspector::~SQLiteConsensusInspector () {
 //----------------------------------------------------------------//
 shared_ptr < const Block > SQLiteConsensusInspector::AbstractConsensusInspector_getBlock ( string hash ) const {
 
+    SQLite db;
+    SQLiteResult result = db.open ( this->mFilename, SQLITE_OPEN_READONLY );
+    if ( !result ) return NULL;
+
     shared_ptr < Block > block;
 
-    this->mDB.exec (
+    db.exec (
         
         "SELECT block FROM nodes WHERE hash IS ?1 AND hasBlock IS 1",
         

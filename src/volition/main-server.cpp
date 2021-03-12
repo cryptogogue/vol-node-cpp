@@ -353,6 +353,7 @@ int main ( int argc, char** argv ) {
     setvbuf ( stderr, NULL, _IOLBF, 0 );
 
     Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
+    Lognosis::setFilter ( PDM_FILTER_SQLITE, Lognosis::MAX );
     Lognosis::init ( argc, argv );
 
     sApp = make_shared < ServerApp >();
