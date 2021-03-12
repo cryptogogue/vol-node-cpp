@@ -563,8 +563,8 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
     this->mLedger->revertAndClear ( block->getHeight ());
 
-    bool result = this->mLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
-    assert ( result );
+    LedgerResult result = this->mLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
+    result.reportWithAssert ();
     
     BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mLedgerTag, block );
     assert ( node.hasHeader ());

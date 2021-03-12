@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/BlockHeader.h>
+#include <volition/LedgerResult.h>
 
 namespace Volition {
 
@@ -40,7 +41,7 @@ private:
     SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;
 
     //----------------------------------------------------------------//
-    size_t              applyTransactions                   ( Ledger& ledger, VerificationPolicy policy ) const;
+    LedgerResult        applyTransactions                   ( Ledger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const;
     size_t              getWeight                           () const;
     
     //----------------------------------------------------------------//
@@ -51,13 +52,13 @@ public:
 
     //----------------------------------------------------------------//
     void                affirmHash                          ();
-    bool                apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
+    LedgerResult        apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
                         Block                               ();
                         ~Block                              ();
     size_t              countTransactions                   () const;
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
     const Digest&       sign                                ( const CryptoKeyPair& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
-    bool                verify                              ( const Ledger& ledger, VerificationPolicy policy ) const;
+    LedgerResult        verify                              ( const Ledger& ledger, VerificationPolicy policy ) const;
 };
 
 } // namespace Volition

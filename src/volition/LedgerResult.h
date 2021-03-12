@@ -51,6 +51,14 @@ public:
     LedgerResult ( const LedgerResult& other ) {
         *this = other;
     }
+    
+    //----------------------------------------------------------------//
+    void reportWithAssert () const {
+        if ( !this->mStatus ) {
+            LGN_LOG ( VOL_FILTER_CONSENSUS, ERROR, "%s", this->mMessage.c_str ());
+            assert ( false );
+        }
+    }
 };
 
 } // namespace Volition

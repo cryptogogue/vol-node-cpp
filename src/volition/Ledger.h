@@ -261,7 +261,7 @@ public:
                                         Ledger                          ( Ledger& other );
                                         ~Ledger                         ();
     string                              printChain                      ( const char* pre = NULL, const char* post = NULL ) const;
-    bool                                pushBlock                       ( const Block& block, Block::VerificationPolicy policy );
+    LedgerResult                        pushBlock                       ( const Block& block, Block::VerificationPolicy policy );
     void                                serializeEntitlements           ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
