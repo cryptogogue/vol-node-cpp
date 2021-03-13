@@ -4,7 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_DEBUGKEYGENHANDLER_H
 #define VOLITION_WEBMINERAPI_DEBUGKEYGENHANDLER_H
 
-#include <volition/AbstractMinerAPIRequestHandler.h>
+#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/CryptoKey.h>
 
 namespace Volition {
@@ -14,13 +14,13 @@ namespace WebMinerAPI {
 // DebugKeyGenHandler
 //================================================================//
 class DebugKeyGenHandler :
-    public AbstractMinerAPIRequestHandler {
+    public BlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( ledger );
         UNUSED ( jsonIn );

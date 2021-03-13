@@ -4,13 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_MINERLISTHANDLER_H
 #define VOLITION_WEBMINERAPI_MINERLISTHANDLER_H
 
-#include <volition/AbstractMinerAPIRequestHandler.h>
-#include <volition/AccountODBM.h>
-#include <volition/AbstractAPIRequestHandler.h>
-#include <volition/Block.h>
-#include <volition/TheTransactionBodyFactory.h>
-#include <volition/MinerAPIFactory.h>
-#include <volition/UnsecureRandom.h>
+#include <volition/NonBlockingMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -19,7 +13,7 @@ namespace WebMinerAPI {
 // MinerListHandler
 //================================================================//
 class MinerListHandler :
-    public AbstractMinerAPIRequestHandler {
+    public NonBlockingMinerAPIRequestHandler {
 public:
 
     static const size_t RANDOM_BATCH_SIZE = 16;
@@ -27,12 +21,13 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, MinerSnapshot& snapshot, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-        UNUSED ( ledger );
         UNUSED ( jsonIn );
-            
-        set < string > minerURLs = ( this->optQuery ( "sample", "" ) == "random" ) ? this->mWebMiner->sampleOnlineMinerURLs ( RANDOM_BATCH_SIZE ) : this->mWebMiner->sampleOnlineMinerURLs ();
+        
+        size_t batchSize = ( this->optQuery ( "sample", "" ) == "random" ) ? RANDOM_BATCH_SIZE : 0;
+        
+        set < string > minerURLs = snapshot.sampleOnlineMinerURLs ( batchSize );
         
         SerializableList < string > result;
         set < string >::const_iterator urlIt = minerURLs.cbegin ();

@@ -4,7 +4,7 @@
 #ifndef VOLITION_MINERAPIFACTORY_H
 #define VOLITION_MINERAPIFACTORY_H
 
-#include <volition/AbstractMinerAPIRequestHandler.h>
+#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/RouteTable.h>
 #include <volition/Miner.h>
 
@@ -17,7 +17,7 @@ class MinerAPIFactory :
     public Poco::Net::HTTPRequestHandlerFactory {
 private:
 
-    RouteTable < AbstractAPIRequestHandlerWithMiner >   mRouteTable;
+    RouteTable < AbstractMinerAPIRequestHandler >   mRouteTable;
     shared_ptr < Miner >                                mMiner;
     map < string, shared_ptr < Miner >>                 mMiners;
     bool                                                mWithPrefix;

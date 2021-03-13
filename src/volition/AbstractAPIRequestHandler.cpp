@@ -130,7 +130,8 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now ();
     chrono::milliseconds span = chrono::duration_cast < chrono::milliseconds >( t1 - t0 );
 
-    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%llums: %s %s", span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
+    // TODO: the cast to int here is slightly gross, but is a quick fix for a build warning on some platforms (where u64 is defined as a long instead of a long long).
+    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%dms: %s %s", ( int )span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
 }
 
 } // namespace Volition

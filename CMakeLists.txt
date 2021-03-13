@@ -48,7 +48,6 @@ target_sources ( volition-lib
         src/volition/AbstractControlCommandBody.cpp
         src/volition/AbstractCryptoKey.cpp
         src/volition/AbstractEntitlement.cpp
-        src/volition/AbstractMinerAPIRequestHandler.cpp
         src/volition/AbstractRequestHandler.cpp
         src/volition/AbstractTransactionBody.cpp
         src/volition/AssetID.cpp

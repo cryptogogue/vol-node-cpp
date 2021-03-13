@@ -4,9 +4,8 @@
 #ifndef VOLITION_WEBMINERAPI_ACCOUNTKEYLISTHANDLER_H
 #define VOLITION_WEBMINERAPI_ACCOUNTKEYLISTHANDLER_H
 
-#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Block.h>
-#include <volition/MinerAPIFactory.h>
+#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
@@ -16,13 +15,13 @@ namespace WebMinerAPI {
 // AccountKeyListHandler
 //================================================================//
 class AccountKeyListHandler :
-    public AbstractMinerAPIRequestHandler {
+    public BlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     

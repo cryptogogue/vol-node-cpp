@@ -108,7 +108,7 @@ MinerAPIFactory::~MinerAPIFactory () {
 //----------------------------------------------------------------//
 Poco::Net::HTTPRequestHandler* MinerAPIFactory::createRequestHandler ( const Poco::Net::HTTPServerRequest& request ) {
     
-    unique_ptr < AbstractAPIRequestHandlerWithMiner > handler = this->mRouteTable.match ( request );
+    unique_ptr < AbstractMinerAPIRequestHandler > handler = this->mRouteTable.match ( request );
     
     if ( this->mWithPrefix ) {
         string minerID = handler->getMatchString ( "minerID" );

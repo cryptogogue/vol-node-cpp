@@ -15,6 +15,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 void MinerActivity::runActivity () {
 
+    this->mSnapshot = *this;
+
     while ( !this->isStopped ()) {
         
         Poco::Timestamp timestamp;

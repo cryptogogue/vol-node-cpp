@@ -83,6 +83,22 @@ void BlockSearch::step ( shared_ptr < RemoteMiner > remoteMiner ) {
 }
 
 //================================================================//
+// MinerSnapshot
+//================================================================//
+
+//----------------------------------------------------------------//
+MinerSnapshot::InspectorPtr MinerSnapshot::createInspector () const {
+
+    return make_shared < SQLiteConsensusInspector >( this->mBlocksFilename );
+}
+
+//----------------------------------------------------------------//
+set < string > MinerSnapshot::sampleOnlineMinerURLs ( size_t sampleSize ) const {
+    
+    return UnsecureRandom::get ().sampleSet < string > ( this->mOnlineMinerURLs, sampleSize );
+}
+
+//================================================================//
 // Miner
 //================================================================//
 
@@ -251,12 +267,6 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 }
 
 //----------------------------------------------------------------//
-Miner::InspectorPtr Miner::createInspector () const {
-
-    return make_shared < SQLiteConsensusInspector >( this->mBlocksFilename );
-}
-
-//----------------------------------------------------------------//
 void Miner::extend ( time_t now ) {
     
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
@@ -284,7 +294,6 @@ void Miner::extend ( time_t now ) {
         assert ( block->getHeight () == provisional.getHeight ());
         assert ( block->getCharm () == provisional.getCharm ());
         
-//        this->mBestProvisional = parent;
         this->pushBlock ( block );
         this->scheduleReport ();
     }
@@ -302,7 +311,6 @@ BlockSearch* Miner::findBlockSearch ( const Digest& digest ) {
 //----------------------------------------------------------------//
 size_t Miner::getChainSize () const {
 
-//    return this->mLedgerTag.hasCursor () ? ( this->mLedgerTag.getHeight () + 1 ) : 0;
     return this->mLedger->countBlocks ();
 }
 
@@ -319,6 +327,13 @@ Ledger Miner::getLedgerAtBlock ( u64 index ) const {
     Ledger ledger ( *this->mLedger );
     ledger.revert ( index );
     return ledger;
+}
+
+//----------------------------------------------------------------//
+void Miner::getSnapshot ( MinerSnapshot& snapshot ) {
+
+    Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mSnapshotMutex );
+    snapshot = this->mSnapshot;
 }
 
 //----------------------------------------------------------------//
@@ -662,19 +677,6 @@ set < shared_ptr < RemoteMiner >> Miner::sampleOnlineMiners ( size_t sampleSize 
 }
 
 //----------------------------------------------------------------//
-set < string > Miner::sampleOnlineMinerURLs ( size_t sampleSize ) const {
-
-    set < shared_ptr < RemoteMiner >> miners = this->sampleOnlineMiners ( sampleSize );
-    set < string > urls;
-    
-    set < shared_ptr < RemoteMiner >>::iterator minerIt = miners.begin ();
-    for ( ; minerIt != miners.end (); ++minerIt ) {
-        urls.insert (( *minerIt )->getURL ());
-    }
-    return urls;;
-}
-
-//----------------------------------------------------------------//
 void Miner::saveChain () {
     
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
@@ -775,6 +777,11 @@ void Miner::step ( time_t now ) {
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
     this->updateNetworkSearches ();
+    
+    {
+        Poco::ScopedLock < Poco::Mutex > snapshotLoc ( this->mSnapshotMutex );
+        this->mSnapshot = *this;
+    }
     
     try {
         this->mMessenger->sendRequests ();
@@ -877,6 +884,8 @@ void Miner::updateRemoteMinerGroups () {
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
     this->mOnlineMiners.clear ();
+    this->mOnlineMinerURLs.clear ();
+    
     this->mContributors.clear ();
     
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
@@ -889,6 +898,7 @@ void Miner::updateRemoteMinerGroups () {
         
         if ( remoteMiner->isOnline ()) {
             this->mOnlineMiners.insert ( remoteMiner );
+            this->mOnlineMinerURLs.insert ( remoteMiner->getURL ());
         }
         
         if ( remoteMiner->isContributor ()) {

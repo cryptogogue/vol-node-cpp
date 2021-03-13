@@ -4,12 +4,10 @@
 #ifndef VOLITION_WEBMINERAPI_CONTROLCOMMANDHANDLER_H
 #define VOLITION_WEBMINERAPI_CONTROLCOMMANDHANDLER_H
 
-#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Block.h>
-#include <volition/AbstractAPIRequestHandler.h>
+#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/ControlCommand.h>
 #include <volition/LedgerResult.h>
-#include <volition/MinerAPIFactory.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
@@ -19,13 +17,13 @@ namespace WebMinerAPI {
 // ControlCommandHandler
 //================================================================//
 class ControlCommandHandler :
-    public AbstractMinerAPIRequestHandler {
+    public BlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET_POST )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( ledger );
         

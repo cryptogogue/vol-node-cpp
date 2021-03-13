@@ -78,12 +78,46 @@ public:
 };
 
 //================================================================//
+// MinerSnapshot
+//================================================================//
+class MinerSnapshot {
+public:
+
+    typedef shared_ptr < AbstractConsensusInspector > InspectorPtr;
+
+    string                              mMinerID;
+    time_t                              mStartTime;
+
+    CryptoKeyPair                       mKeyPair;
+    string                              mMotto;
+    Signature                           mVisage;
+    
+    string                              mLedgerFilename;
+    string                              mConfigFilename;
+    string                              mBlocksFilename;
+    string                              mMinersFilename;
+
+    set < string >                      mOnlineMinerURLs;
+    
+    GET ( time_t,                       StartTime,                  mStartTime )
+    GET ( const Signature&,             Visage,                     mVisage )
+    GET_SET ( const CryptoKeyPair&,     KeyPair,                    mKeyPair )
+    GET_SET ( string,                   MinerID,                    mMinerID )
+    GET_SET ( string,                   Motto,                      mMotto )
+    
+    //----------------------------------------------------------------//
+    InspectorPtr            createInspector                 () const;
+    set < string >          sampleOnlineMinerURLs           ( size_t sampleSize = 0 ) const;
+};
+
+//================================================================//
 // Miner
 //================================================================//
 class Miner :
     public AbstractSerializable,
     public AbstractMiningMessengerClient,
-    public TransactionQueue {
+    public TransactionQueue,
+    public MinerSnapshot {
 public:
 
     enum Control {
@@ -105,8 +139,6 @@ public:
 
     static const int DEFAULT_FLAGS = 0;
 
-    typedef shared_ptr < AbstractConsensusInspector > InspectorPtr;
-
 protected:
 
     friend class AbstractChainRecorder;
@@ -115,13 +147,7 @@ protected:
 
     static constexpr const char* MASTER_BRANCH      = "master";
 
-    string                                          mMinerID;
-    time_t                                          mStartTime;
-
-    CryptoKeyPair                                   mKeyPair;
-    string                                          mMotto;
-    Signature                                       mVisage;
-
+    
     int                                             mFlags;
     bool                                            mNeedsReport;
     ReportMode                                      mReportMode;
@@ -162,12 +188,12 @@ protected:
     // to offload the RAM burder required to persist the ledger database and to speed
     // up rebuilding the database when restarting the node.
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
-    string                                          mLedgerFilename;
-    string                                          mConfigFilename;
-    string                                          mBlocksFilename;
-    string                                          mMinersFilename;
     
     Poco::Mutex                                     mMutex;
+    
+    MinerSnapshot                                   mSnapshot;
+    Poco::Mutex                                     mSnapshotMutex;
+    
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     
     //----------------------------------------------------------------//
@@ -212,16 +238,11 @@ public:
     GET ( BlockTreeCursor,                                  LedgerTag,                  mLedgerTag.getCursor ())
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                           Reward,                     mConfig.mReward )
-    GET ( time_t,                                           StartTime,                  mStartTime )
-    GET ( const Signature&,                                 Visage,                     mVisage )
     
     SET ( shared_ptr < AbstractMiningMessenger >,           Messenger,                  mMessenger )
     
     GET_SET ( const CryptoPublicKey&,                       ControlKey,                 mControlKey )
     GET_SET ( Control,                                      ControlLevel,               mControlLevel )
-    GET_SET ( const CryptoKeyPair&,                         KeyPair,                    mKeyPair )
-    GET_SET ( string,                                       MinerID,                    mMinerID )
-    GET_SET ( string,                                       Motto,                      mMotto )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
     
@@ -237,11 +258,11 @@ public:
     void                                affirmVisage                ();
     static Signature                    calculateVisage             ( const CryptoKeyPair& keyPair, string motto = "" );
     bool                                checkBestBranch             ( string miners ) const;
-    InspectorPtr                        createInspector              () const;
     void                                extend                      ( time_t now );
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
     Ledger                              getLedgerAtBlock            ( u64 index ) const;
+    void                                getSnapshot                 ( MinerSnapshot& snapshot );
     TransactionStatus                   getTransactionStatus        ( const Ledger& ledger, string accountName, string uuid ) const;
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
@@ -256,7 +277,6 @@ public:
     void                                report                      ( ReportMode reportMode ) const;
     void                                reportBlockSearches         () const;
     void                                reset                       ();
-    set < string >                      sampleOnlineMinerURLs       ( size_t sampleSize = 0 ) const;
     void                                setGenesis                  ( shared_ptr < const Block > block );
     void                                setMinimumGratuity          ( u64 minimumGratuity );
     void                                setMute                     ( bool paused );
