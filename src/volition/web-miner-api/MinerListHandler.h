@@ -21,13 +21,13 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, MinerSnapshot& snapshot, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
         
         size_t batchSize = ( this->optQuery ( "sample", "" ) == "random" ) ? RANDOM_BATCH_SIZE : 0;
         
-        set < string > minerURLs = snapshot.sampleOnlineMinerURLs ( batchSize );
+        set < string > minerURLs = this->mSnapshot.sampleOnlineMinerURLs ( batchSize );
         
         SerializableList < string > result;
         set < string >::const_iterator urlIt = minerURLs.cbegin ();

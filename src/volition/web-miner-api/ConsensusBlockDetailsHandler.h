@@ -22,7 +22,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, MinerSnapshot& snapshot, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
 
@@ -30,7 +30,7 @@ public:
             
             string hash = this->getMatchString ( "hash" );
 
-            MinerSnapshot::InspectorPtr inspector = snapshot.createInspector ();
+            MinerSnapshot::InspectorPtr inspector = this->mSnapshot.createInspector ();
             shared_ptr < const Block > block = inspector ? inspector->getBlock ( hash ) : NULL;
 
             if ( block ) {

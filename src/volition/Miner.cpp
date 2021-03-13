@@ -330,10 +330,11 @@ Ledger Miner::getLedgerAtBlock ( u64 index ) const {
 }
 
 //----------------------------------------------------------------//
-void Miner::getSnapshot ( MinerSnapshot& snapshot ) {
+void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mSnapshotMutex );
     snapshot = this->mSnapshot;
+    status = this->mMinerStatus;
 }
 
 //----------------------------------------------------------------//
@@ -781,6 +782,21 @@ void Miner::step ( time_t now ) {
     {
         Poco::ScopedLock < Poco::Mutex > snapshotLoc ( this->mSnapshotMutex );
         this->mSnapshot = *this;
+        
+        Ledger& ledger = *this->mLedger;
+        
+        // TODO: this is a hack to speed up the default query
+        this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
+        this->mMinerStatus.mSchemaHash              = ledger.getSchemaHash ();
+        this->mMinerStatus.mGenesisHash             = ledger.getGenesisHash ();
+        this->mMinerStatus.mIdentity                = ledger.getIdentity ();
+        this->mMinerStatus.mVOL                     = ledger.countVOL ();
+        this->mMinerStatus.mFeeDistributionPool     = ledger.getFeeDistributionPool ();
+        this->mMinerStatus.mMinimumGratuity         = this->getMinimumGratuity ();
+        this->mMinerStatus.mReward                  = this->getReward ();
+        this->mMinerStatus.mTotalBlocks             = ledger.countBlocks ();
+        this->mMinerStatus.mFeeSchedule             = ledger.getFeeSchedule ();
+        this->mMinerStatus.mFeeDistributionTable    = ledger.getFeeDistributionTable ();
     }
     
     try {

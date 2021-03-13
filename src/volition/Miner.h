@@ -8,6 +8,8 @@
 #include <volition/AbstractMiningMessenger.h>
 #include <volition/Accessors.h>
 #include <volition/AbstractBlockTree.h>
+#include <volition/FeeDistributionTable.h>
+#include <volition/FeeSchedule.h>
 #include <volition/CryptoKey.h>
 #include <volition/Ledger.h>
 #include <volition/RemoteMiner.h>
@@ -111,6 +113,26 @@ public:
 };
 
 //================================================================//
+// MinerStatus
+//================================================================//
+// TODO: this is a hack to speed up the default node endpoint.
+class MinerStatus {
+public:
+
+    SchemaVersion           mSchemaVersion;
+    string                  mSchemaHash;
+    string                  mGenesisHash;
+    string                  mIdentity;
+    u64                     mVOL;
+    u64                     mFeeDistributionPool;
+    u64                     mMinimumGratuity;
+    string                  mReward;
+    u64                     mTotalBlocks;
+    FeeSchedule             mFeeSchedule;
+    FeeDistributionTable    mFeeDistributionTable;
+};
+
+//================================================================//
 // Miner
 //================================================================//
 class Miner :
@@ -192,6 +214,7 @@ protected:
     Poco::Mutex                                     mMutex;
     
     MinerSnapshot                                   mSnapshot;
+    MinerStatus                                     mMinerStatus;
     Poco::Mutex                                     mSnapshotMutex;
     
     shared_ptr < AbstractMiningMessenger >          mMessenger;
@@ -262,7 +285,7 @@ public:
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
     Ledger                              getLedgerAtBlock            ( u64 index ) const;
-    void                                getSnapshot                 ( MinerSnapshot& snapshot );
+    void                                getSnapshot                 ( MinerSnapshot& snapshot, MinerStatus& status );
     TransactionStatus                   getTransactionStatus        ( const Ledger& ledger, string accountName, string uuid ) const;
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );

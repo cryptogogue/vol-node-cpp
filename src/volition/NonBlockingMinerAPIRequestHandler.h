@@ -25,20 +25,21 @@ protected:
     friend class MinerAPIFactory;
     
     mutable MinerSnapshot   mSnapshot;
+    mutable MinerStatus     mStatus;
     
     //----------------------------------------------------------------//
-    virtual HTTPStatus      NonBlockingMinerAPIRequestHandler_handleRequest     ( HTTP::Method method, MinerSnapshot& snapshot, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
+    virtual HTTPStatus      NonBlockingMinerAPIRequestHandler_handleRequest     ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
     
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-        return this->NonBlockingMinerAPIRequestHandler_handleRequest ( method, this->mSnapshot, jsonIn, jsonOut );
+        return this->NonBlockingMinerAPIRequestHandler_handleRequest ( method, jsonIn, jsonOut );
     }
     
     //----------------------------------------------------------------//
     void AbstractMinerAPIRequestHandler_initialize ( shared_ptr < Miner > miner ) override {
     
-        miner->getSnapshot ( this->mSnapshot );
+        miner->getSnapshot ( this->mSnapshot, this->mStatus );
     }
 
 public:
