@@ -201,7 +201,7 @@ LedgerResult Block::verify ( const Ledger& ledger, VerificationPolicy policy ) c
 
     if ( this->mHeight == 0 ) {
         BlockODBM genesisODBM ( ledger, 0 );
-        if ( genesisODBM.mHash.get () != this->mDigest.toHex ()) return "Verify block: genesis hash mismatch.";
+        if ( genesisODBM && ( genesisODBM.mHash.get () != this->mDigest.toHex ())) return "Verify block: genesis hash mismatch.";
         return true;
     }
     else {

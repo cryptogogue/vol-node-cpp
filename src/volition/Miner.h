@@ -127,9 +127,6 @@ protected:
     ReportMode                                      mReportMode;
     Block::VerificationPolicy                       mBlockVerificationPolicy;
 
-    string                                          mReward;
-    u64                                             mMinimumGratuity;
-
     CryptoPublicKey                                 mControlKey;
     Control                                         mControlLevel;
 
