@@ -85,6 +85,12 @@ kBlockTreeEntryStatus SQLiteBlockTree::getNodeStatus ( int nodeID, kBlockTreeEnt
 //----------------------------------------------------------------//
 void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
 
+    while ( this->markRecurseInner ( nodeID, status ));
+}
+
+//----------------------------------------------------------------//
+bool SQLiteBlockTree::markRecurseInner ( int& nodeID, kBlockTreeEntryStatus status ) {
+
     SQLiteResult result;
 
     kBlockTreeEntryStatus prevStatus;
@@ -116,12 +122,12 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
     result.reportWithAssert ();
 
     // if we couldn't find it, or we did find it and the status already matches what we want to set, we can bail.
-    if ( !exists || ( status == prevStatus )) return;
+    if ( !exists || ( status == prevStatus )) return false;
 
     // if we're setting the status to complete, then there has to be a block and the parent status also has to be complete.
     if ( status == STATUS_COMPLETE ) {
-        if ( !hasBlock ) return;
-        if (( height > 0 ) && ( prevParentStatus != STATUS_COMPLETE )) return;
+        if ( !hasBlock ) return false;
+        if (( height > 0 ) && ( prevParentStatus != STATUS_COMPLETE )) return false;
     }
 
     // sanity check.
@@ -153,7 +159,9 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
     );
     result.reportWithAssert ();
     
-    // recursively mark the child nodes.
+    bool more = false;
+    
+    // get the child node (if any).
     result = this->mDB.exec (
     
         "SELECT nodeID FROM nodes WHERE parentID IS ?1",
@@ -165,11 +173,13 @@ void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
         
         //--------------------------------//
         [ & ]( int, SQLiteStatement stmt ) {
-            int childID = stmt.getValue < int >( 0 );
-            this->markRecurse ( childID, status );
+            nodeID = stmt.getValue < int >( 0 );
+            more = true;
         }
     );
     result.reportWithAssert ();
+    
+    return more;
 }
 
 //----------------------------------------------------------------//

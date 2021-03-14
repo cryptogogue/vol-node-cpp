@@ -27,6 +27,7 @@ private:
     int                                 getNodeIDFromTagName            ( string tagName ) const;
     kBlockTreeEntryStatus               getNodeStatus                   ( int nodeID, kBlockTreeEntryStatus status = kBlockTreeEntryStatus::STATUS_INVALID ) const;
     void                                markRecurse                     ( int nodeID, kBlockTreeEntryStatus status );
+    bool                                markRecurseInner                ( int& nodeID, kBlockTreeEntryStatus status );
     void                                pruneUnreferencedNodes          ();
     BlockTreeCursor                     readCursor                      ( const SQLiteStatement& stmt ) const;
     void                                setTag                          ( string tagName, int nodeID );
