@@ -31,6 +31,7 @@ bool BlockSearch::step ( Miner& miner ) {
     if ( SEARCH_SIZE <= this->mActiveMiners.size ()) return true;
 
     BlockTreeCursor cursor = miner.mBlockTree->findCursorForHash ( this->mHash );
+    if ( cursor.hasBlock ()) return false;
     if ( !( cursor.hasHeader () && cursor.checkStatus (( kBlockTreeEntryStatus )( kBlockTreeEntryStatus::STATUS_NEW | kBlockTreeEntryStatus::STATUS_MISSING )))) return false;
 
     set < shared_ptr < RemoteMiner >> remoteMiners;
@@ -854,12 +855,8 @@ void Miner::updateBlockSearches () {
         shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
 
         // we only care about missing branches; ignore new/complete/invalid branches.
-        if ( remoteMiner->mImproved.hasCursor () && ( *remoteMiner->mImproved ).isMissing ()) {
-            
-            // only affirm a search if the other chain could beat our current.
-            if ( BlockTreeCursor::compare ( *remoteMiner->mImproved, *this->mBestBranchTag ) < 0 ) {
-                this->affirmBranchSearch ( *remoteMiner->mImproved );
-            }
+        if ( remoteMiner->mTag.hasCursor () && ( *remoteMiner->mTag ).isMissing ()) {
+            this->affirmBranchSearch ( *remoteMiner->mTag );
         }
     }
     
@@ -1011,7 +1008,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             
             map < string, BlockSearch >::iterator blockSearchIt = this->mBlockSearches.find ( request.mBlockDigest.toHex ());
             if ( blockSearchIt != this->mBlockSearches.end ()) {
-                blockSearchIt->second.step ( remoteMiner );
+                this->mBlockSearches.erase ( blockSearchIt );
             }
             break;
         }
