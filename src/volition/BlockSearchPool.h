@@ -92,6 +92,7 @@ protected:
     static const size_t MAX_SEARCHES = 256;
 
     Miner&                          mMiner;
+    AbstractBlockTree&              mBlockTree;
     set < BlockSearchKey >          mActiveSearches;
     map < string, BlockSearch >     mBlockSearchesByHash;
     set < BlockSearchKey >          mPendingSearches;
@@ -102,10 +103,11 @@ protected:
 public:
     
     //----------------------------------------------------------------//
-    void                    affirmBlockSearch               ( BlockTreeCursor cursor );
     void                    affirmBranchSearch              ( BlockTreeCursor cursor );
-                            BlockSearchPool                 ( Miner& miner );
+                            BlockSearchPool                 ( Miner& miner, AbstractBlockTree& blockTree );
     virtual                 ~BlockSearchPool                ();
+    size_t                  countActiveSearches             () const;
+    size_t                  countSearches                   () const;
     BlockSearch*            findBlockSearch                 ( const Digest& digest );
     void                    reportBlockSearches             () const;
     void                    update                          ();

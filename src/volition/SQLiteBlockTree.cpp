@@ -61,11 +61,11 @@ int SQLiteBlockTree::getNodeIDFromTagName ( string tagName ) const {
 }
 
 //----------------------------------------------------------------//
-kBlockTreeEntryStatus SQLiteBlockTree::getNodeStatus ( int nodeID, kBlockTreeEntryStatus status ) const {
+kBlockTreeBranchStatus SQLiteBlockTree::getNodeBranchStatus ( int nodeID, kBlockTreeBranchStatus status ) const {
             
     SQLiteResult result = this->mDB.exec (
         
-        "SELECT status FROM nodes WHERE nodeID IS ?1",
+        "SELECT branchStatus FROM nodes WHERE nodeID IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement stmt ) {
@@ -74,112 +74,12 @@ kBlockTreeEntryStatus SQLiteBlockTree::getNodeStatus ( int nodeID, kBlockTreeEnt
         
         //--------------------------------//
         [ & ]( int, SQLiteStatement stmt ) {
-            status = stringToStatus ( stmt.getValue < string >( 0 ));
+            status = stringToBranchStatus ( stmt.getValue < string >( 0 ));
         }
     );
     result.reportWithAssert ();
     
     return status;
-}
-
-//----------------------------------------------------------------//
-void SQLiteBlockTree::markRecurse ( int nodeID, kBlockTreeEntryStatus status ) {
-
-    while ( this->markRecurseInner ( nodeID, status ));
-}
-
-//----------------------------------------------------------------//
-bool SQLiteBlockTree::markRecurseInner ( int& nodeID, kBlockTreeEntryStatus status ) {
-
-    SQLiteResult result;
-
-    kBlockTreeEntryStatus prevStatus;
-    kBlockTreeEntryStatus prevParentStatus;
-    
-    size_t height   = 0;
-    bool hasBlock   = false;
-    bool exists     = false;
-    
-    // first, get some information about the node as it exists now.
-    result = this->mDB.exec (
-    
-        "SELECT height, status, parentStatus, hasBlock FROM nodes WHERE nodeID IS ?1",
-    
-        //--------------------------------//
-        [ & ]( SQLiteStatement stmt ) {
-            stmt.bind ( 1, nodeID );
-        },
-        
-        //--------------------------------//
-        [ & ]( int, SQLiteStatement stmt ) {
-            height              = ( size_t )stmt.getValue < int >( 0 );
-            prevStatus          = SQLiteBlockTree::stringToStatus ( stmt.getValue < string >( 1 ));
-            prevParentStatus    = SQLiteBlockTree::stringToStatus ( stmt.getValue < string >( 2 ));
-            hasBlock            = stmt.getValue < int >( 3 ) != 0;
-            exists              = true;
-        }
-    );
-    result.reportWithAssert ();
-
-    // if we couldn't find it, or we did find it and the status already matches what we want to set, we can bail.
-    if ( !exists || ( status == prevStatus )) return false;
-
-    // if we're setting the status to complete, then there has to be a block and the parent status also has to be complete.
-    if ( status == STATUS_COMPLETE ) {
-        if ( !hasBlock ) return false;
-        if (( height > 0 ) && ( prevParentStatus != STATUS_COMPLETE )) return false;
-    }
-
-    // sanity check.
-    assert ( AbstractBlockTree::checkStatusTransition ( prevStatus, status ));
-    
-    // go ahead and update the status.
-    result = this->mDB.exec (
-    
-        "UPDATE nodes SET status = ?1 WHERE nodeID IS ?2",
-    
-        //--------------------------------//
-        [ & ]( SQLiteStatement stmt ) {
-            stmt.bind ( 1,  SQLiteBlockTree::stringFromStatus ( status ) );
-            stmt.bind ( 2,  nodeID );
-        }
-    );
-    result.reportWithAssert ();
-    
-    // set parentStatus for all child nodes.
-    result = this->mDB.exec (
-    
-        "UPDATE nodes SET parentStatus = ?1 WHERE parentID IS ?2",
-        
-        //--------------------------------//
-        [ & ]( SQLiteStatement stmt ) {
-            stmt.bind ( 1, SQLiteBlockTree::stringFromStatus ( status ));
-            stmt.bind ( 2, nodeID );
-        }
-    );
-    result.reportWithAssert ();
-    
-    bool more = false;
-    
-    // get the child node (if any).
-    result = this->mDB.exec (
-    
-        "SELECT nodeID FROM nodes WHERE parentID IS ?1",
-    
-        //--------------------------------//
-        [ & ]( SQLiteStatement stmt ) {
-            stmt.bind ( 1, nodeID );
-        },
-        
-        //--------------------------------//
-        [ & ]( int, SQLiteStatement stmt ) {
-            nodeID = stmt.getValue < int >( 0 );
-            more = true;
-        }
-    );
-    result.reportWithAssert ();
-    
-    return more;
 }
 
 //----------------------------------------------------------------//
@@ -204,11 +104,9 @@ void SQLiteBlockTree::pruneUnreferencedNodes () {
 //----------------------------------------------------------------//
 BlockTreeCursor SQLiteBlockTree::readCursor ( const SQLiteStatement& stmt ) const {
 
-    string hash             = stmt.getValue < string >( "hash" );
     string headerJSON       = stmt.getValue < string >( "header" );
-    string statusStr        = stmt.getValue < string >( "status" );
-    string metaStr          = stmt.getValue < string >( "meta" );
-    bool hasBlock           = stmt.getValue < int >( "hasBlock" ) != 0;
+    string branchStatus     = stmt.getValue < string >( "branchStatus" );
+    string searchStatus     = stmt.getValue < string >( "searchStatus" );
 
     // header *must* exist.
     assert ( headerJSON.size ());
@@ -218,10 +116,126 @@ BlockTreeCursor SQLiteBlockTree::readCursor ( const SQLiteStatement& stmt ) cons
 
     return this->makeCursor (
         header,
-        stringToStatus ( statusStr ),
-        stringToMeta ( metaStr ),
-        hasBlock
+        stringToBranchStatus ( branchStatus ),
+        stringToSearchStatus ( searchStatus )
     );
+}
+
+//----------------------------------------------------------------//
+void SQLiteBlockTree::setBranchStatus ( int nodeID, const Digest& parentDigest, kBlockTreeBranchStatus status ) {
+
+    if ( !nodeID ) return;
+
+    if ( status == BRANCH_STATUS_COMPLETE ) {
+
+        int parentID = this->getNodeIDFromHash ( parentDigest.toHex ());
+
+        if ( parentID ) {
+            kBlockTreeBranchStatus parentBranchStatus = this->getNodeBranchStatus ( parentID, kBlockTreeBranchStatus::BRANCH_STATUS_INVALID );
+            if ( parentBranchStatus != BRANCH_STATUS_COMPLETE ) return;
+        }
+    }
+    
+    set < int > queue;
+    queue.insert ( nodeID );
+    
+    while ( queue.size ()) {
+        
+        set < int >::iterator queueIt = queue.begin ();
+        nodeID = *queueIt;
+        queue.erase ( queueIt );
+        
+        this->setBranchStatusInner ( nodeID, status, queue );
+    }
+}
+
+//----------------------------------------------------------------//
+void SQLiteBlockTree::setBranchStatusInner ( int nodeID, kBlockTreeBranchStatus status, set < int >& queue ) {
+
+    SQLiteResult result;
+
+    kBlockTreeBranchStatus prevBranchStatus;
+    kBlockTreeSearchStatus searchStatus;
+    bool exists = false;
+
+    // first, get some information about the node as it exists now.
+    result = this->mDB.exec (
+
+        "SELECT branchStatus, searchStatus FROM nodes WHERE nodeID IS ?1",
+
+        //--------------------------------//
+        [ & ]( SQLiteStatement stmt ) {
+            stmt.bind ( 1, nodeID );
+        },
+
+        //--------------------------------//
+        [ & ]( int, SQLiteStatement stmt ) {
+            prevBranchStatus    = SQLiteBlockTree::stringToBranchStatus ( stmt.getValue < string >( 0 ));
+            searchStatus        = SQLiteBlockTree::stringToSearchStatus ( stmt.getValue < string >( 1 ));
+            exists              = true;
+        }
+    );
+    result.reportWithAssert ();
+
+    // block doesn't exist.
+    if ( !exists ) return;
+    
+    // status already matches; nothing else to do.
+    if ( prevBranchStatus == status ) return;
+
+    // cannot recover an invalid branch.
+    if ( prevBranchStatus == BRANCH_STATUS_INVALID ) return;
+
+    // cannot complete without a block.
+    if (( status == BRANCH_STATUS_COMPLETE ) && ( searchStatus != SEARCH_STATUS_HAS_BLOCK )) return;
+
+    result = this->mDB.exec (
+
+        "UPDATE nodes SET branchStatus = ?1 WHERE nodeID IS ?2",
+
+        //--------------------------------//
+        [ & ]( SQLiteStatement stmt ) {
+            stmt.bind ( 1,  SQLiteBlockTree::stringFromBranchStatus ( status ) );
+            stmt.bind ( 2,  nodeID );
+        }
+    );
+    result.reportWithAssert ();
+
+    // get the child node (if any).
+    result = this->mDB.exec (
+
+        "SELECT nodeID FROM nodes WHERE parentID IS ?1",
+
+        //--------------------------------//
+        [ & ]( SQLiteStatement stmt ) {
+            stmt.bind ( 1, nodeID );
+        },
+
+        //--------------------------------//
+        [ & ]( int, SQLiteStatement stmt ) {
+            queue.insert ( stmt.getValue < int >( 0 ));
+        }
+    );
+    result.reportWithAssert ();
+}
+
+//----------------------------------------------------------------//
+void SQLiteBlockTree::setSearchStatus ( int nodeID, kBlockTreeSearchStatus status ) {
+
+    if ( !nodeID ) return;
+    
+    // go ahead and update the status.
+    SQLiteResult result = this->mDB.exec (
+
+        "UPDATE nodes SET searchStatus = ?1 WHERE nodeID IS ?2",
+
+        //--------------------------------//
+        [ & ]( SQLiteStatement stmt ) {
+            stmt.bind ( 1,  SQLiteBlockTree::stringFromSearchStatus ( status ));
+            stmt.bind ( 2,  nodeID );
+        }
+    );
+    result.reportWithAssert ();
 }
 
 //----------------------------------------------------------------//
@@ -249,51 +263,57 @@ void SQLiteBlockTree::setTag ( string tagName, int nodeID ) {
 }
 
 //----------------------------------------------------------------//
-string SQLiteBlockTree::stringFromMeta ( kBlockTreeEntryMeta meta ) {
-
-    switch ( meta ) {
-        case kBlockTreeEntryMeta::META_PROVISIONAL:     return "*";
-        case kBlockTreeEntryMeta::META_NONE:            return ".";
-    }
-    return "";
-}
-
-//----------------------------------------------------------------//
-string SQLiteBlockTree::stringFromStatus ( kBlockTreeEntryStatus status ) {
+string SQLiteBlockTree::stringFromBranchStatus ( kBlockTreeBranchStatus status ) {
 
     switch ( status ) {
-        case kBlockTreeEntryStatus::STATUS_NEW:         return "N";
-        case kBlockTreeEntryStatus::STATUS_COMPLETE:    return "C";
-        case kBlockTreeEntryStatus::STATUS_MISSING:     return "?";
-        case kBlockTreeEntryStatus::STATUS_INVALID:     return "X";
+        case kBlockTreeBranchStatus::BRANCH_STATUS_NEW:             return "N";
+        case kBlockTreeBranchStatus::BRANCH_STATUS_COMPLETE:        return "C";
+        case kBlockTreeBranchStatus::BRANCH_STATUS_MISSING:         return "?";
+        case kBlockTreeBranchStatus::BRANCH_STATUS_INVALID:         return "X";
     }
     return "";
 }
 
 //----------------------------------------------------------------//
-kBlockTreeEntryMeta SQLiteBlockTree::stringToMeta ( string str ) {
+string SQLiteBlockTree::stringFromSearchStatus ( kBlockTreeSearchStatus status ) {
 
-    char c = str.size () ? str [ 0 ] : 0;
-
-    switch ( c ) {
-        case '*':       return kBlockTreeEntryMeta::META_PROVISIONAL;
-        case '.':       return kBlockTreeEntryMeta::META_NONE;
+    switch ( status ) {
+        case kBlockTreeSearchStatus::SEARCH_STATUS_NEW:             return "+";
+        case kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL:     return "*";
+        case kBlockTreeSearchStatus::SEARCH_STATUS_SEARCHING:       return "~";
+        case kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK:       return "#";
     }
-    return kBlockTreeEntryMeta::META_NONE;
+    return "";
 }
 
 //----------------------------------------------------------------//
-kBlockTreeEntryStatus SQLiteBlockTree::stringToStatus ( string str ) {
+kBlockTreeBranchStatus SQLiteBlockTree::stringToBranchStatus ( string str ) {
 
     char c = str.size () ? str [ 0 ] : 0;
 
     switch ( c ) {
-        case 'N':       return kBlockTreeEntryStatus::STATUS_NEW;
-        case 'C':       return kBlockTreeEntryStatus::STATUS_COMPLETE;
-        case '?':       return kBlockTreeEntryStatus::STATUS_MISSING;
-        case 'X':       return kBlockTreeEntryStatus::STATUS_INVALID;
+        case 'N':       return kBlockTreeBranchStatus::BRANCH_STATUS_NEW;
+        case 'C':       return kBlockTreeBranchStatus::BRANCH_STATUS_COMPLETE;
+        case '?':       return kBlockTreeBranchStatus::BRANCH_STATUS_MISSING;
+        case 'X':       return kBlockTreeBranchStatus::BRANCH_STATUS_INVALID;
     }
-    return kBlockTreeEntryStatus::STATUS_INVALID;
+    assert ( false );
+    return kBlockTreeBranchStatus::BRANCH_STATUS_INVALID;
+}
+
+//----------------------------------------------------------------//
+kBlockTreeSearchStatus SQLiteBlockTree::stringToSearchStatus ( string str ) {
+
+    char c = str.size () ? str [ 0 ] : 0;
+
+    switch ( c ) {
+        case '+':       return kBlockTreeSearchStatus::SEARCH_STATUS_NEW;
+        case '*':       return kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL;
+        case '~':       return kBlockTreeSearchStatus::SEARCH_STATUS_SEARCHING;
+        case '#':       return kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK;
+    }
+    assert ( false );
+    return kBlockTreeSearchStatus::SEARCH_STATUS_NEW;
 }
 
 //----------------------------------------------------------------//
@@ -311,10 +331,10 @@ SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
             height          INTEGER                                                 NOT NULL DEFAULT 0,
             header          TEXT                                                    NOT NULL,
             block           TEXT,
-            status          TEXT CHECK ( status IN ( 'N', 'C', '?', 'X' ))          NOT NULL DEFAULT 'N',
-            parentStatus    TEXT CHECK ( parentStatus IN ( 'N', 'C', '?', 'X' ))    NOT NULL DEFAULT 'N',
-            meta            TEXT CHECK ( meta IN ( '.', '*', '#' ))                 NOT NULL DEFAULT '.',
-            hasBlock        INTEGER                                                 NOT NULL DEFAULT 0,
+            
+            branchStatus    TEXT CHECK ( branchStatus IN ( 'N', 'C', '?', 'X' ))    NOT NULL DEFAULT 'N',
+            searchStatus    TEXT CHECK ( searchStatus IN ( '+', '*', '~', '#' ))    NOT NULL DEFAULT '+',
+            
             FOREIGN KEY ( parentID ) REFERENCES nodes ( nodeID )
         )
     ));
@@ -365,24 +385,26 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
     }
     else {
         
-        kBlockTreeEntryStatus status = block ? kBlockTreeEntryStatus::STATUS_COMPLETE : kBlockTreeEntryStatus::STATUS_NEW;
-        kBlockTreeEntryStatus parentStatus = kBlockTreeEntryStatus::STATUS_COMPLETE;
+        kBlockTreeSearchStatus searchStatus = isProvisional ? kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL : kBlockTreeSearchStatus::SEARCH_STATUS_NEW;
+        searchStatus = block ? kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK : searchStatus;
+
+        kBlockTreeBranchStatus branchStatus = block ? kBlockTreeBranchStatus::BRANCH_STATUS_COMPLETE : kBlockTreeBranchStatus::BRANCH_STATUS_NEW;
 
         int parentID = header->isGenesis () ? 0 : this->getNodeIDFromHash ( header->getPrevDigest ().toHex ());
 
         if ( parentID ) {
-        
-            parentStatus = this->getNodeStatus ( parentID, kBlockTreeEntryStatus::STATUS_INVALID );
             
-            if (( parentStatus == kBlockTreeEntryStatus::STATUS_MISSING ) || ( parentStatus == kBlockTreeEntryStatus::STATUS_INVALID )) {
-                status = parentStatus;
+            branchStatus = this->getNodeBranchStatus ( parentID, kBlockTreeBranchStatus::BRANCH_STATUS_INVALID );
+            
+            if (( branchStatus == BRANCH_STATUS_COMPLETE ) && ( !block )) {
+                branchStatus = BRANCH_STATUS_NEW;
             }
         }
 
         // insert node
         SQLiteResult result = this->mDB.exec (
             
-            "INSERT INTO nodes ( parentID, hash, height, header, block, status, parentStatus, meta, hasBlock ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9 )",
+            "INSERT INTO nodes ( parentID, hash, height, header, block, branchStatus, searchStatus ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7 )",
             
             //--------------------------------//
             [ & ]( SQLiteStatement stmt ) {
@@ -392,16 +414,14 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
                 stmt.bind ( 3,      ( int )header->getHeight ());
                 stmt.bind ( 4,      ToJSONSerializer::toJSONString ( *header ));
                 stmt.bind ( 5,      block ? ToJSONSerializer::toJSONString ( *block ) : "" );
-                stmt.bind ( 6,      SQLiteBlockTree::stringFromStatus ( status ));
-                stmt.bind ( 7,      SQLiteBlockTree::stringFromStatus ( parentStatus ));
-                stmt.bind ( 8,      SQLiteBlockTree::stringFromMeta ( isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE ));
-                stmt.bind ( 9,      block ? 1 : 0 );
+                stmt.bind ( 6,      SQLiteBlockTree::stringFromBranchStatus ( branchStatus ));
+                stmt.bind ( 7,      SQLiteBlockTree::stringFromSearchStatus ( searchStatus ));
             }
         );
         result.reportWithAssert ();
         
         // make the cursor
-        cursor = this->makeCursor ( header, status, kBlockTreeEntryMeta::META_NONE, ( bool )block );
+        cursor = this->makeCursor ( header, branchStatus, searchStatus );
     }
 
     // tag and return
@@ -415,7 +435,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string ha
 
     SQLiteResult result = this->mDB.exec (
         
-        "SELECT hash, header, status, meta, hasBlock FROM nodes WHERE hash IS ?1",
+        "SELECT hash, header, branchStatus, searchStatus FROM nodes WHERE hash IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -439,7 +459,7 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForTagName ( string
 
     SQLiteResult result = this->mDB.exec (
         
-        "SELECT hash, header, status, meta, hasBlock FROM nodes INNER JOIN tags ON tags.nodeID = nodes.nodeID WHERE tags.name IS ?1",
+        "SELECT header, branchStatus, searchStatus FROM nodes INNER JOIN tags ON tags.nodeID = nodes.nodeID WHERE tags.name IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -491,32 +511,17 @@ shared_ptr < const Block > SQLiteBlockTree::AbstractBlockTree_getBlock ( const B
 }
 
 //----------------------------------------------------------------//
-void SQLiteBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) {
+void SQLiteBlockTree::AbstractBlockTree_setBranchStatus ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status ) {
 
-    string hash     = cursor.getDigest ().toHex ();
-    int blockID     = 0;
-    bool exists     = false;
-    
-    SQLiteResult result = this->mDB.exec (
-        
-        "SELECT nodeID FROM nodes WHERE hash IS ?1",
-        
-        //--------------------------------//
-        [ & ]( SQLiteStatement& stmt ) {
-            stmt.bind ( 1, hash );
-        },
-        
-        //--------------------------------//
-        [ & ]( int, const SQLiteStatement& stmt ) {
-            blockID     = stmt.getValue< int >( 0 );
-            exists      = true;
-        }
-    );
-    result.reportWithAssert ();
-    
-    if ( !exists ) return;
-    
-    this->markRecurse ( blockID, status );
+    int nodeID = this->getNodeIDFromHash ( cursor.getDigest ().toHex ());
+    this->setBranchStatus ( nodeID, cursor.getPrevDigest (), status );
+}
+
+//----------------------------------------------------------------//
+void SQLiteBlockTree::AbstractBlockTree_setSearchStatus ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) {
+
+    int nodeID = this->getNodeIDFromHash ( cursor.getDigest ().toHex ());
+    this->setSearchStatus ( nodeID, status );
 }
 
 //----------------------------------------------------------------//
@@ -544,13 +549,12 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
 
     if ( !block ) return;
     
-    // we'll use this for the recurse
     int nodeID = this->getNodeIDFromHash ( block->getDigest ().toHex ());
     if ( !nodeID ) return;
     
     SQLiteResult result = this->mDB.exec (
     
-        "UPDATE nodes SET block = ?1, hasBlock = 1 WHERE nodeID IS ?2",
+        "UPDATE nodes SET block = ?1, searchStatus = '#' WHERE nodeID IS ?2",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -560,7 +564,7 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
     );
     result.reportWithAssert ();
     
-    this->markRecurse ( nodeID, STATUS_COMPLETE );
+    this->setBranchStatus ( nodeID, block->getPrevDigest (), BRANCH_STATUS_COMPLETE );
 }
 
 } // namespace Volition

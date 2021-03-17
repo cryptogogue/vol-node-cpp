@@ -20,37 +20,39 @@ class SQLiteBlockTree :
     public AbstractBlockTree {
 private:
 
-    mutable SQLite              mDB;
+    mutable SQLite                      mDB;
 
     //----------------------------------------------------------------//
     int                                 getNodeIDFromHash               ( string hash ) const;
     int                                 getNodeIDFromTagName            ( string tagName ) const;
-    kBlockTreeEntryStatus               getNodeStatus                   ( int nodeID, kBlockTreeEntryStatus status = kBlockTreeEntryStatus::STATUS_INVALID ) const;
-    void                                markRecurse                     ( int nodeID, kBlockTreeEntryStatus status );
-    bool                                markRecurseInner                ( int& nodeID, kBlockTreeEntryStatus status );
+    kBlockTreeBranchStatus              getNodeBranchStatus             ( int nodeID, kBlockTreeBranchStatus status = kBlockTreeBranchStatus::BRANCH_STATUS_INVALID ) const;
     void                                pruneUnreferencedNodes          ();
     BlockTreeCursor                     readCursor                      ( const SQLiteStatement& stmt ) const;
+    void                                setBranchStatus                 ( int nodeID, const Digest& parentDigest, kBlockTreeBranchStatus status );
+    void                                setBranchStatusInner            ( int nodeID, kBlockTreeBranchStatus status, set < int >& queue );
+    void                                setSearchStatus                 ( int nodeID, kBlockTreeSearchStatus status );
     void                                setTag                          ( string tagName, int nodeID );
-    static string                       stringFromMeta                  ( kBlockTreeEntryMeta meta );
-    static string                       stringFromStatus                ( kBlockTreeEntryStatus status );
-    static kBlockTreeEntryMeta          stringToMeta                    ( string str );
-    static kBlockTreeEntryStatus        stringToStatus                  ( string str );
+    static string                       stringFromBranchStatus          ( kBlockTreeBranchStatus status );
+    static string                       stringFromSearchStatus          ( kBlockTreeSearchStatus status );
+    static kBlockTreeBranchStatus       stringToBranchStatus            ( string str );
+    static kBlockTreeSearchStatus       stringToSearchStatus            ( string str );
 
     //----------------------------------------------------------------//
-    BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) override;
-    BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const override;
-    BlockTreeCursor             AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
-    shared_ptr < const Block >  AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
-    void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) override;
-    BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
-    BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;
-    void                        AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
+    BlockTreeCursor                     AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional = false ) override;
+    BlockTreeCursor                     AbstractBlockTree_findCursorForHash         ( string hash ) const override;
+    BlockTreeCursor                     AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
+    shared_ptr < const Block >          AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
+    void                                AbstractBlockTree_setBranchStatus           ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status ) override;
+    void                                AbstractBlockTree_setSearchStatus           ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) override;
+    BlockTreeCursor                     AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
+    BlockTreeCursor                     AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;
+    void                                AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
 
 public:
 
     //----------------------------------------------------------------//
-                                SQLiteBlockTree                 ( string filename );
-                                ~SQLiteBlockTree                ();
+                                        SQLiteBlockTree                 ( string filename );
+                                        ~SQLiteBlockTree                ();
 };
 
 } // namespace Volition

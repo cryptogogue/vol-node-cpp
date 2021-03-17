@@ -25,19 +25,12 @@ namespace Volition {
 //----------------------------------------------------------------//
 BlockTreeCursor::BlockTreeCursor () :
     mTree ( NULL ),
-    mStatus ( STATUS_INVALID ),
-    mMeta ( META_NONE ),
-    mHasBlock ( false ) {
+    mBranchStatus ( BRANCH_STATUS_NEW ),
+    mSearchStatus ( SEARCH_STATUS_NEW ) {
 }
 
 //----------------------------------------------------------------//
 BlockTreeCursor::~BlockTreeCursor () {
-}
-
-//----------------------------------------------------------------//
-bool BlockTreeCursor::checkStatus ( kBlockTreeEntryStatus status ) const {
-
-    return ( this->mStatus & status );
 }
 
 //----------------------------------------------------------------//
@@ -73,7 +66,7 @@ BlockTreeCursor BlockTreeCursor::findRoot ( const BlockTreeCursor& node0, const 
 //----------------------------------------------------------------//
 shared_ptr < const Block > BlockTreeCursor::getBlock () const {
 
-    return ( this->mHasBlock && this->mTree ) ? this->mTree->getBlock ( *this ) : NULL;
+    return ( this->hasBlock () && this->mTree ) ? this->mTree->getBlock ( *this ) : NULL;
 }
 
 //----------------------------------------------------------------//
@@ -95,14 +88,8 @@ BlockTreeCursor BlockTreeCursor::getParent () const {
 }
 
 //----------------------------------------------------------------//
-kBlockTreeEntryStatus BlockTreeCursor::getStatus () const {
-    
-    return this->mStatus;
-}
-
-//----------------------------------------------------------------//
 bool BlockTreeCursor::hasBlock () const {
-    return this->mHasBlock;
+    return ( this->mSearchStatus == SEARCH_STATUS_HAS_BLOCK );
 }
 
 //----------------------------------------------------------------//
@@ -131,37 +118,37 @@ bool BlockTreeCursor::isAncestorOf ( BlockTreeCursor tail ) const {
 //----------------------------------------------------------------//
 bool BlockTreeCursor::isComplete () const {
 
-    return ( this->mStatus & STATUS_COMPLETE );
+    return ( this->mBranchStatus & BRANCH_STATUS_COMPLETE );
 }
 
 //----------------------------------------------------------------//
 bool BlockTreeCursor::isInvalid () const {
 
-    return ( this->mStatus & STATUS_INVALID );
+    return ( this->mBranchStatus & BRANCH_STATUS_INVALID );
 }
 
 //----------------------------------------------------------------//
 bool BlockTreeCursor::isMissing () const {
 
-    return ( this->mStatus & STATUS_MISSING );
+    return ( this->mBranchStatus & BRANCH_STATUS_MISSING );
 }
 
 //----------------------------------------------------------------//
 bool BlockTreeCursor::isMissingOrInvalid () const {
 
-    return ( this->mStatus & ( STATUS_MISSING | STATUS_INVALID ));
+    return ( this->mBranchStatus & ( BRANCH_STATUS_MISSING | BRANCH_STATUS_INVALID ));
 }
 
 //----------------------------------------------------------------//
 bool BlockTreeCursor::isNew () const {
 
-    return ( this->mStatus & STATUS_NEW );
+    return ( this->mBranchStatus & BRANCH_STATUS_NEW );
 }
 
 //----------------------------------------------------------------//
 bool BlockTreeCursor::isProvisional () const {
 
-    return ( this->mMeta == META_PROVISIONAL );
+    return ( this->mSearchStatus == SEARCH_STATUS_PROVISIONAL );
 }
 
 //----------------------------------------------------------------//
@@ -169,42 +156,34 @@ void BlockTreeCursor::log ( string& str, string prefix ) const {
     
     cc8* status = "";
     
-    if ( this->mMeta != META_NONE ) {
+    if ( this->mSearchStatus == SEARCH_STATUS_PROVISIONAL ) {
     
-        switch ( this->mMeta ) {
-            
-            case META_PROVISIONAL:
-                status = "*";
-                break;
-            
-            default:
-                break;
-        }
+        status = "*";
     }
     else {
-    
-        switch ( this->mStatus ) {
+
+        switch ( this->mBranchStatus ) {
             
-            case STATUS_NEW:
+            case BRANCH_STATUS_NEW:
                 status = "N";
                 break;
                 
-            case STATUS_COMPLETE:
+            case BRANCH_STATUS_COMPLETE:
                 status = "C";
                 break;
             
-            case STATUS_MISSING:
+            case BRANCH_STATUS_MISSING:
                 status = "?";
                 break;
                 
-            case STATUS_INVALID:
-                status = "X";
+            case BRANCH_STATUS_INVALID:
+                status = "C";
                 break;
         }
     }
     
     string charm = this->getCharmTag ();
-    cc8* format = this->mHasBlock ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
+    cc8* format = this->hasBlock () ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
     
     const BlockHeader& header = *this->mHeader;
     size_t height = header.getHeight ();
@@ -224,32 +203,32 @@ void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTreeCursor::trim ( kBlockTreeEntryStatus status ) const {
+BlockTreeCursor BlockTreeCursor::trimBranch ( kBlockTreeBranchStatus statusMask ) const {
 
     BlockTreeCursor cursor = *this;
 
-    while ( cursor.hasHeader () && ( cursor.mStatus & status )) {
+    while ( cursor.hasHeader () && ( cursor.mBranchStatus & statusMask )) {
         cursor = cursor.getParent ();
     }
     return cursor;
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTreeCursor::trimInvalid () const {
+BlockTreeCursor BlockTreeCursor::trimInvalidBranch () const {
 
-    return this->trim ( STATUS_INVALID );
+    return this->trimBranch ( BRANCH_STATUS_INVALID );
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTreeCursor::trimMissing () const {
+BlockTreeCursor BlockTreeCursor::trimMissingBranch () const {
 
-    return this->trim ( STATUS_MISSING );
+    return this->trimBranch ( BRANCH_STATUS_MISSING );
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor BlockTreeCursor::trimMissingOrInvalid () const {
+BlockTreeCursor BlockTreeCursor::trimMissingOrInvalidBranch () const {
 
-    return this->trim (( kBlockTreeEntryStatus )( STATUS_MISSING | STATUS_INVALID ));
+    return this->trimBranch (( kBlockTreeBranchStatus )( BRANCH_STATUS_MISSING | BRANCH_STATUS_INVALID ));
 }
 
 //----------------------------------------------------------------//

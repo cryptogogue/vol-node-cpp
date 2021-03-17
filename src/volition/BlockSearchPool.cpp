@@ -96,10 +96,10 @@ void BlockSearch::reset () {
 bool BlockSearch::step ( BlockSearchPool& pool ) {
 
     Miner& miner = pool.mMiner;
-    BlockTreeCursor cursor = miner.mBlockTree->findCursorForHash ( this->mHash );
+    BlockTreeCursor cursor = pool.mBlockTree.findCursorForHash ( this->mHash );
     
     if ( cursor.hasBlock ()) return false;
-    if ( !( cursor.hasHeader () && cursor.checkStatus (( kBlockTreeEntryStatus )( kBlockTreeEntryStatus::STATUS_NEW | kBlockTreeEntryStatus::STATUS_MISSING )))) return false;
+    if ( cursor.getSearchStatus () != SEARCH_STATUS_SEARCHING ) return false;
     
     if ( miner.mRemoteMiners.size () == 0 ) return true;
 
@@ -111,7 +111,7 @@ bool BlockSearch::step ( BlockSearchPool& pool ) {
         if ( this->extendSearch ( pool )) return true;
     }
     
-    miner.mBlockTree->mark ( cursor, kBlockTreeEntryStatus::STATUS_MISSING );
+    pool.mBlockTree.setBranchStatus ( cursor, kBlockTreeBranchStatus::BRANCH_STATUS_MISSING );
     return false;
 }
 
@@ -128,42 +128,63 @@ void BlockSearch::step ( string minerID ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-void BlockSearchPool::affirmBlockSearch ( BlockTreeCursor cursor ) {
-
-    if ( cursor.hasBlock ()) return;
-
-    string hash = cursor.getDigest ();
-    if ( this->mBlockSearchesByHash.find ( hash ) != this->mBlockSearchesByHash.end ()) return; // already searching
-
-    BlockSearch& search = this->mBlockSearchesByHash [ hash ];
-    search.initialize ( cursor );
-    
-    this->mPendingSearches.insert ( search );
-}
-
-//----------------------------------------------------------------//
 void BlockSearchPool::affirmBranchSearch ( BlockTreeCursor cursor ) {
 
-    while ( !cursor.isComplete ()) {
+    // extend the search until we hit a complete branch.
+    for ( ; !cursor.isComplete (); cursor = cursor.getParent ()) {
     
-        if ( !( cursor.hasHeader () && cursor.checkStatus (( kBlockTreeEntryStatus )( kBlockTreeEntryStatus::STATUS_NEW | kBlockTreeEntryStatus::STATUS_MISSING )))) return;
+        if ( !cursor.hasHeader ()) continue;
         
-        bool skip = cursor.hasBlock () || ( cursor.isProvisional () && ( cursor.getMinerID () == this->mMiner.getMinerID()));
+        kBlockTreeSearchStatus searchStatus = cursor.getSearchStatus ();
         
-        if ( !skip ) {
-            this->affirmBlockSearch ( cursor );
-        }
-        cursor = cursor.getParent ();
+        // no need to search if we already have a block.
+        if ( searchStatus == SEARCH_STATUS_HAS_BLOCK ) continue;
+        
+        // block is provision and should be generated locally.
+        if ( searchStatus == SEARCH_STATUS_PROVISIONAL ) continue;
+        
+        kBlockTreeBranchStatus branchStatus = cursor.getBranchStatus ();
+        
+        // don't search for anything downstream of an invalid block.
+        if ( branchStatus == BRANCH_STATUS_INVALID ) continue;
+        
+        // if the branch has been flagged missing, only search for blocks that were previously flagged.
+        if (( branchStatus == BRANCH_STATUS_MISSING ) && ( searchStatus != SEARCH_STATUS_SEARCHING )) continue;
+        
+        // see if a search is already in progress.
+        string hash = cursor.getDigest ();
+        if ( this->mBlockSearchesByHash.find ( hash ) != this->mBlockSearchesByHash.end ()) return; // already searching (this and all parents)
+
+        // create the search.
+        BlockSearch& search = this->mBlockSearchesByHash [ hash ];
+        search.initialize ( cursor );
+        this->mPendingSearches.insert ( search );
+
+        // flag the cursor as searching.
+        this->mBlockTree.setSearchStatus ( cursor, kBlockTreeSearchStatus::SEARCH_STATUS_SEARCHING );
     }
 }
 
 //----------------------------------------------------------------//
-BlockSearchPool::BlockSearchPool ( Miner& miner ) :
-    mMiner ( miner ) {
+BlockSearchPool::BlockSearchPool ( Miner& miner, AbstractBlockTree& blockTree ) :
+    mMiner ( miner ),
+    mBlockTree ( blockTree ) {
 }
 
 //----------------------------------------------------------------//
 BlockSearchPool::~BlockSearchPool () {
+}
+
+//----------------------------------------------------------------//
+size_t BlockSearchPool::countActiveSearches () const {
+
+    return this->mActiveSearches.size ();
+}
+
+//----------------------------------------------------------------//
+size_t BlockSearchPool::countSearches () const {
+
+    return this->mBlockSearchesByHash.size ();
 }
 
 //----------------------------------------------------------------//

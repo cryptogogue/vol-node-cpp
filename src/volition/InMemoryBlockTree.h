@@ -29,26 +29,27 @@ private:
     map < string, shared_ptr < InMemoryBlockTreeNode >>     mTags;
 
     //----------------------------------------------------------------//
-    InMemoryBlockTreeNode*          findNodeForHash             ( string hash );
-    const InMemoryBlockTreeNode*    findNodeForHash             ( string hash ) const;
-    void                            logTreeRecurse              ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const;
+    InMemoryBlockTreeNode*          findNodeForHash                 ( string hash );
+    const InMemoryBlockTreeNode*    findNodeForHash                 ( string hash ) const;
+    void                            logTreeRecurse                  ( string prefix, size_t maxDepth, const InMemoryBlockTreeNode* node, size_t depth ) const;
 
     //----------------------------------------------------------------//
-    BlockTreeCursor             AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) override;
-    BlockTreeCursor             AbstractBlockTree_findCursorForHash         ( string hash ) const override;
-    BlockTreeCursor             AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
-    shared_ptr < const Block >  AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
-    void                        AbstractBlockTree_mark                      ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) override;
-    BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
-    BlockTreeCursor             AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;
-    void                        AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
+    BlockTreeCursor                 AbstractBlockTree_affirm                    ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header, shared_ptr < const Block > block, bool isProvisional ) override;
+    BlockTreeCursor                 AbstractBlockTree_findCursorForHash         ( string hash ) const override;
+    BlockTreeCursor                 AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
+    shared_ptr < const Block >      AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
+    void                            AbstractBlockTree_setBranchStatus           ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status ) override;
+    void                            AbstractBlockTree_setSearchStatus           ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) override;
+    BlockTreeCursor                 AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
+    BlockTreeCursor                 AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;
+    void                            AbstractBlockTree_update                    ( shared_ptr < const Block > block ) override;
 
 public:
 
     //----------------------------------------------------------------//
-                                InMemoryBlockTree               ();
-                                ~InMemoryBlockTree              ();
-    void                        logTree                         ( string prefix = "", size_t maxDepth = 0 ) const;
+                                    InMemoryBlockTree               ();
+                                    ~InMemoryBlockTree              ();
+    void                            logTree                         ( string prefix = "", size_t maxDepth = 0 ) const;
 };
 
 } // namespace Volition

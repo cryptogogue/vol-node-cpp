@@ -32,8 +32,7 @@ private:
 
     //----------------------------------------------------------------//
     void            clearParent                 ();
-    void            mark                        ( kBlockTreeEntryStatus status );
-    void            markComplete                ();
+    void            setBranchStatus             ( kBlockTreeBranchStatus status );
 
 public:
 

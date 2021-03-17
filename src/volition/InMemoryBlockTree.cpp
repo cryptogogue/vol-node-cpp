@@ -100,13 +100,9 @@ BlockTreeCursor InMemoryBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag,
         node = shared.get ();
 
         if ( prevNode ) {
-        
             node->mParent = prevNode->shared_from_this ();
             prevNode->mChildren.insert ( node );
-            
-            if (( node->mParent->mStatus == kBlockTreeEntryStatus::STATUS_MISSING ) || ( node->mParent->mStatus == kBlockTreeEntryStatus::STATUS_INVALID )) {
-                node->mStatus = node->mParent->mStatus;
-            }
+            node->mBranchStatus = prevNode->mBranchStatus == BRANCH_STATUS_COMPLETE ? BRANCH_STATUS_NEW : prevNode->mBranchStatus;
         }
         else {
             this->mRoot = node;
@@ -149,13 +145,20 @@ shared_ptr < const Block > InMemoryBlockTree::AbstractBlockTree_getBlock ( const
 }
 
 //----------------------------------------------------------------//
-void InMemoryBlockTree::AbstractBlockTree_mark ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) {
+void InMemoryBlockTree::AbstractBlockTree_setBranchStatus ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status ) {
 
     InMemoryBlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
 
     if ( node ) {
-        node->mark ( status );
+        node->setBranchStatus ( status );
     }
+}
+
+//----------------------------------------------------------------//
+void InMemoryBlockTree::AbstractBlockTree_setSearchStatus ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) {
+
+    InMemoryBlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());
+    node->mSearchStatus = status;
 }
 
 //----------------------------------------------------------------//
@@ -190,9 +193,9 @@ void InMemoryBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bl
     assert ( node->mHeader );
     assert ( node->mHeader->getDigest ().toHex () == hash );
     
-    node->mBlock        = block;
-    node->mHasBlock     = true;
-    node->mark ( STATUS_COMPLETE );
+    node->mBlock = block;
+    node->mSearchStatus = kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK;
+    node->setBranchStatus ( kBlockTreeBranchStatus::BRANCH_STATUS_COMPLETE );
 }
 
 } // namespace Volition

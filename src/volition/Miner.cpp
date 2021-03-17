@@ -141,7 +141,7 @@ void Miner::composeChain () {
         // REWIND chain to point of divergence
         BlockTreeCursor root = BlockTreeCursor::findRoot ( ledgerCursor, bestCursor );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
-        assert ( root.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ));  // guaranteed -> was in chain
+        assert ( root.isComplete ());  // guaranteed -> was in chain
         
         this->mLedger->revertAndClear ( root.getHeight () + 1 );
         this->mBlockTree->tag ( this->mLedgerTag, root );
@@ -297,7 +297,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         const BlockHeader& parentHeader = parent.getHeader ();
         
         // if parent is one of ours, but it isn't yet complete, stop the search.
-        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ))) break;
+        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.isComplete ())) break;
         
         // if enough time has elapsed since the parent was declared, we can consider replacing the child
         // with our own block (or appending a new block).
@@ -368,7 +368,7 @@ Miner::Miner () :
     MinerLaunchTests::checkEnvironment ();
     
     this->mBlockTree        = make_shared < InMemoryBlockTree >();
-    this->mBlockSearchPool  = make_shared < BlockSearchPool >( *this );
+    this->mBlockSearchPool  = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
 }
 
 //----------------------------------------------------------------//
@@ -390,6 +390,7 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     this->mBlocksFilename = Format::write ( "%s/%s-blocks.db", path.c_str (), hash.c_str ());
     
     this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
+    this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
     this->mPersistenceProvider  = SQLiteStringStore::make ( this->mLedgerFilename );
     
     shared_ptr < Ledger > ledger = make_shared < Ledger >();
@@ -522,7 +523,8 @@ void Miner::report ( ReportMode reportMode ) const {
             }
             
             LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
-//            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearches.size ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearchPool->countSearches ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "ACTIVE SEARCHES: %d", ( int )this->mBlockSearchPool->countActiveSearches ());
             LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "LEDGER TAG: %s", this->getLedgerTag ().write ().c_str ());
             break;
         }
@@ -694,7 +696,7 @@ void Miner::updateBestBranch ( time_t now ) {
     // update the current best branch, excluding missing or invalid blocks.
     // this may append an additional provisional header if branch is complete.
     
-    BlockTreeCursor bestCursor = this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalid (), now );
+    BlockTreeCursor bestCursor = this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalidBranch (), now );
 
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
@@ -702,7 +704,7 @@ void Miner::updateBestBranch ( time_t now ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         if ( !remoteMiner->mTag.hasCursor ()) continue;
         
-        BlockTreeCursor remoteImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalid (), now );
+        BlockTreeCursor remoteImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalidBranch (), now );
         if ( remoteImproved.isMissing ()) continue;
         
         assert ( !remoteImproved.isMissingOrInvalid ());
@@ -733,7 +735,7 @@ void Miner::updateBlockSearches () {
         shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
 
         // we only care about missing branches; ignore new/complete/invalid branches.
-        if ( remoteMiner->mTag.hasCursor () && ( *remoteMiner->mTag ).isMissing ()) {
+        if ( remoteMiner->mImproved.hasCursor () && ( *remoteMiner->mImproved ).isMissing ()) {
             blockSearchPool.affirmBranchSearch ( *remoteMiner->mTag );
         }
     }

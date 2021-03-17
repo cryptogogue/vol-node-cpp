@@ -105,39 +105,6 @@ kBlockTreeAppendResult AbstractBlockTree::checkAppend ( const BlockHeader& heade
 }
 
 //----------------------------------------------------------------//
-bool AbstractBlockTree::checkStatusTransition ( kBlockTreeEntryStatus from, kBlockTreeEntryStatus to ) {
-
-    if ( from != true ) {
-
-        switch ( from ) {
-            
-            case STATUS_NEW:
-                // --> missing
-                // --> complete
-                assert ( to != STATUS_INVALID );
-                break;
-            
-            case STATUS_COMPLETE:
-                // --> invalid
-                assert ( to != STATUS_NEW );
-                assert ( to != STATUS_MISSING );
-                break;
-            
-            case STATUS_MISSING:
-                // --> complete
-                assert ( to != STATUS_NEW );
-                assert ( to != STATUS_INVALID );
-                break;
-                
-            case STATUS_INVALID:
-                assert ( false ); // no valid transition
-                break;
-        }
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
 int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const {
 
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
@@ -272,23 +239,28 @@ BlockTreeCursor AbstractBlockTree::getParent ( const BlockTreeCursor& cursor ) c
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor AbstractBlockTree::makeCursor ( shared_ptr < const BlockHeader > header, kBlockTreeEntryStatus status, kBlockTreeEntryMeta meta, bool hasBlock ) const {
+BlockTreeCursor AbstractBlockTree::makeCursor ( shared_ptr < const BlockHeader > header, kBlockTreeBranchStatus branchStatus, kBlockTreeSearchStatus searchStatus ) const {
 
     BlockTreeCursor cursor;
     
-    cursor.mTree        = this;
-    cursor.mHeader      = header;
-    cursor.mStatus      = status;
-    cursor.mMeta        = meta;
-    cursor.mHasBlock    = hasBlock;
+    cursor.mTree            = this;
+    cursor.mHeader          = header;
+    cursor.mBranchStatus    = branchStatus;
+    cursor.mSearchStatus    = searchStatus;
     
     return cursor;
 }
 
 //----------------------------------------------------------------//
-void AbstractBlockTree::mark ( const BlockTreeCursor& cursor, kBlockTreeEntryStatus status ) {
+void AbstractBlockTree::setBranchStatus ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status ) {
 
-    this->AbstractBlockTree_mark ( cursor, status );
+    this->AbstractBlockTree_setBranchStatus ( cursor, status );
+}
+
+//----------------------------------------------------------------//
+void AbstractBlockTree::setSearchStatus ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) {
+
+    this->AbstractBlockTree_setSearchStatus ( cursor, status );
 }
 
 //----------------------------------------------------------------//
