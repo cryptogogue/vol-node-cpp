@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/BlockSearchPool.h>
 #include <volition/Format.h>
 #include <volition/Singleton.h>
 #include <volition/MinerActivity.h>
@@ -28,7 +29,7 @@ void MinerActivity::runActivity () {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
             this->step ( now );
             this->report ();
-            this->reportBlockSearches ();
+            this->mBlockSearchPool->reportBlockSearches ();
         }
         catch ( Poco::Exception& exc ) {
             LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Caught exception in MinerActivity::runActivity ()" );

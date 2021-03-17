@@ -28,11 +28,11 @@ bool RemoteMiner::isOnline () const {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::processHeaders ( Miner& miner, const MiningMessengerResponse& response, time_t now ) {
+void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time_t now ) {
     
     const list < shared_ptr < const BlockHeader >>& headerList = response.mHeaders;
     
-    AbstractBlockTree& blockTree = *miner.mBlockTree;
+    AbstractBlockTree& blockTree = *this->mMiner.mBlockTree;
     
     list < shared_ptr < const BlockHeader >>::const_iterator headerIt = headerList.begin ();
     for ( ; headerIt != headerList.end (); ++headerIt ) {
@@ -43,7 +43,7 @@ void RemoteMiner::processHeaders ( Miner& miner, const MiningMessengerResponse& 
         if ( !header || ( now < header->getTime ())) return;
         
         // if genesis hashes don't match, we have a real problem.
-        if (( header->getHeight () == 0 ) && ( header->getDigest ().toHex () != miner.mLedger->getGenesisHash ())) {
+        if (( header->getHeight () == 0 ) && ( header->getDigest ().toHex () != this->mMiner.mLedger->getGenesisHash ())) {
             this->setError ( "Unrecoverable error: genesis block mismatch." );
             return;
         }
@@ -73,7 +73,7 @@ void RemoteMiner::processHeaders ( Miner& miner, const MiningMessengerResponse& 
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse& response, time_t now ) {
+bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, time_t now ) {
 
     const MiningMessengerRequest& request   = response.mRequest;
     string url                              = response.mRequest.mMinerURL;
@@ -84,7 +84,7 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
     
     if ( status != MiningMessengerResponse::STATUS_OK ) {
         this->mState = STATE_OFFLINE;
-        return;
+        return true;
     }
     
     switch ( request.mRequestType ) {
@@ -93,7 +93,7 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
                                         
             if ( this->mState == STATE_WAITING_FOR_HEADERS ) {
                 
-                this->processHeaders ( miner, response, now );
+                this->processHeaders ( response, now );
                 this->mState = STATE_ONLINE;
             }
             break;
@@ -104,9 +104,9 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
             if ( this->mState == STATE_WAITING_FOR_INFO ) {
                 
                 this->setMinerID ( response.mMinerID );
-                miner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
+                this->mMiner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
                 
-                BlockTreeCursor cursor = miner.mBlockTree->restoreTag ( this->mTag );
+                BlockTreeCursor cursor = this->mMiner.mBlockTree->restoreTag ( this->mTag );
                 if ( cursor.hasHeader ()) {
                     this->mHeight = cursor.getHeight ();
                 }
@@ -118,10 +118,13 @@ void RemoteMiner::receiveResponse ( Miner& miner, const MiningMessengerResponse&
         default:
             break;
     }
+    
+    return true;
 }
 
 //----------------------------------------------------------------//
-RemoteMiner::RemoteMiner () :
+RemoteMiner::RemoteMiner ( Miner& miner ) :
+    mMiner ( miner ),
     mState ( STATE_OFFLINE ),
     mRewind ( 0 ),
     mHeight ( 0 ) {
@@ -202,7 +205,9 @@ void RemoteMiner::setMinerID ( string minerID ) {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::update ( AbstractMiningMessenger& messenger ) {
+void RemoteMiner::update () {
+    
+    AbstractMiningMessenger& messenger = *this->mMiner.getMessenger ();
     
     switch ( this->mState ) {
     

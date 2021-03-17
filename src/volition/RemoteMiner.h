@@ -16,6 +16,8 @@
 
 namespace Volition {
 
+class Miner;
+
 //================================================================//
 // RemoteMiner
 //================================================================//
@@ -23,10 +25,11 @@ class RemoteMiner :
     public enable_shared_from_this < RemoteMiner > {
 private:
 
+    Miner&                      mMiner;
     string                      mMinerID;
 
     //----------------------------------------------------------------//
-    void            processHeaders          ( Miner& miner, const MiningMessengerResponse& response, time_t now );
+    void            processHeaders          ( const MiningMessengerResponse& response, time_t now );
 
 
 public:
@@ -56,14 +59,14 @@ public:
     bool            canFetchHeaders         () const;
     bool            isContributor           () const;
     bool            isOnline                () const;
-    void            receiveResponse         ( Miner& miner, const MiningMessengerResponse& response, time_t now );
-                    RemoteMiner             ();
+    bool            receiveResponse         ( const MiningMessengerResponse& response, time_t now );
+                    RemoteMiner             ( Miner& miner );
                     ~RemoteMiner            ();
     void            report                  () const;
     void            reset                   ();
     void            setError                ( string message = "" );
     void            setMinerID              ( string minerID );
-    void            update                  ( AbstractMiningMessenger& messenger );
+    void            update                  ();
 };
 
 } // namespace Volition

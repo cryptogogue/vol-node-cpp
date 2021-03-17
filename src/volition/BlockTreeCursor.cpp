@@ -159,6 +159,12 @@ bool BlockTreeCursor::isNew () const {
 }
 
 //----------------------------------------------------------------//
+bool BlockTreeCursor::isProvisional () const {
+
+    return ( this->mMeta == META_PROVISIONAL );
+}
+
+//----------------------------------------------------------------//
 void BlockTreeCursor::log ( string& str, string prefix ) const {
     
     cc8* status = "";

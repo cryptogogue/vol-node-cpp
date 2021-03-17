@@ -23,31 +23,8 @@ namespace Volition {
 class AbstractChainRecorder;
 class AbstractConsensusInspector;
 class AbstractHashable;
+class BlockSearchPool;
 class Miner;
-
-//================================================================//
-// BlockSearch
-//================================================================//
-class BlockSearch {
-protected:
-
-    static const size_t SEARCH_SIZE = 4;
-
-    friend class Miner;
-
-    string              mHash;
-    set < string >      mActiveMiners;
-    set < string >      mCompletedMiners;
-
-    chrono::high_resolution_clock::time_point   mT0;
-
-public:
-
-    //----------------------------------------------------------------//
-                    BlockSearch     ();
-    bool            step            ( Miner& miner );
-    void            step            ( shared_ptr < RemoteMiner > remoteMiner );
-};
 
 //================================================================//
 // MinerConfig
@@ -190,10 +167,10 @@ protected:
     set < shared_ptr < RemoteMiner >>               mOnlineMiners;
     set < shared_ptr < RemoteMiner >>               mContributors;
     
-    map < string, BlockSearch >                     mBlockSearches;
     bool                                            mNetworkSearch;
     
     shared_ptr < AbstractBlockTree >                mBlockTree;
+    shared_ptr < BlockSearchPool >                  mBlockSearchPool;
     
     // the "working" legder is a "complete" chain (in that all blocks are accounted for),
     // but still likely to revert if a superior branch is discovered.
@@ -220,14 +197,11 @@ protected:
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     
     //----------------------------------------------------------------//
-    void                                affirmBlockSearch           ( BlockTreeCursor cursor );
-    void                                affirmBranchSearch          ( BlockTreeCursor cursor );
     void                                affirmMessenger             ();
     double                              checkConsensus              ( BlockTreeCursor tag ) const;
     bool                                checkTags                   () const;
     void                                composeChain                ();
     void                                composeChainRecurse         ( BlockTreeCursor branch );
-    BlockSearch*                        findBlockSearch             ( const Digest& digest );
     BlockTreeCursor                     improveBranch               ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now );
     void                                pushBlock                   ( shared_ptr < const Block > block );
     set < shared_ptr < RemoteMiner >>   sampleContributors          ( size_t sampleSize ) const;
@@ -261,11 +235,10 @@ public:
     GET ( BlockTreeCursor,                                  LedgerTag,                  mLedgerTag.getCursor ())
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                           Reward,                     mConfig.mReward )
-    
-    SET ( shared_ptr < AbstractMiningMessenger >,           Messenger,                  mMessenger )
-    
+        
     GET_SET ( const CryptoPublicKey&,                       ControlKey,                 mControlKey )
     GET_SET ( Control,                                      ControlLevel,               mControlLevel )
+    GET_SET ( shared_ptr < AbstractMiningMessenger >,       Messenger,                  mMessenger )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
     
@@ -298,7 +271,6 @@ public:
     void                                pruneTransactions           ();
     void                                report                      () const;
     void                                report                      ( ReportMode reportMode ) const;
-    void                                reportBlockSearches         () const;
     void                                reset                       ();
     void                                setGenesis                  ( shared_ptr < const Block > block );
     void                                setMinimumGratuity          ( u64 minimumGratuity );

@@ -64,6 +64,7 @@ public:
     bool                                isMissing                   () const;
     bool                                isMissingOrInvalid          () const;
     bool                                isNew                       () const;
+    bool                                isProvisional               () const;
     BlockTreeCursor                     trim                        ( kBlockTreeEntryStatus status ) const;
     BlockTreeCursor                     trimInvalid                 () const;
     BlockTreeCursor                     trimMissing                 () const;

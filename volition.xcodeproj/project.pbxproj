@@ -234,7 +234,7 @@
 		CD99420825F9303900524DB6 /* AbstractMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */; };
 		CD99421825FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99421625FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h */; };
 		CD99421925FC492800524DB6 /* BlockingMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99421725FC492800524DB6 /* BlockingMinerAPIRequestHandler.h */; };
-		CD99422625FEAD3C00524DB6 /* BLockSearchPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD99422325FEAD3C00524DB6 /* BLockSearchPool.cpp */; };
+		CD99422625FEAD3C00524DB6 /* BlockSearchPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */; };
 		CD99422725FEAD3C00524DB6 /* BlockSearchPool.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */; };
 		CD9E7BA124FF67C30065C5FC /* InMemoryBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */; };
 		CD9E7BA224FF67C30065C5FC /* InMemoryBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */; };
@@ -1028,7 +1028,7 @@
 		CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractMinerAPIRequestHandler.h; path = src/volition/AbstractMinerAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD99421625FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NonBlockingMinerAPIRequestHandler.h; path = src/volition/NonBlockingMinerAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD99421725FC492800524DB6 /* BlockingMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockingMinerAPIRequestHandler.h; path = src/volition/BlockingMinerAPIRequestHandler.h; sourceTree = "<group>"; };
-		CD99422325FEAD3C00524DB6 /* BLockSearchPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BLockSearchPool.cpp; path = src/volition/BLockSearchPool.cpp; sourceTree = "<group>"; };
+		CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockSearchPool.cpp; path = src/volition/BlockSearchPool.cpp; sourceTree = "<group>"; };
 		CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockSearchPool.h; path = src/volition/BlockSearchPool.h; sourceTree = "<group>"; };
 		CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InMemoryBlockTree.cpp; path = src/volition/InMemoryBlockTree.cpp; sourceTree = "<group>"; };
 		CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InMemoryBlockTree.h; path = src/volition/InMemoryBlockTree.h; sourceTree = "<group>"; };
@@ -1399,7 +1399,7 @@
 				CDB8B3E221ACC657004EE816 /* api */,
 				CD9941F925F8562C00524DB6 /* inspector */,
 				CD9E7BC2250B97710065C5FC /* messenger */,
-				CD99422325FEAD3C00524DB6 /* BLockSearchPool.cpp */,
+				CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */,
 				CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */,
 				CD775194251FF03A00A53765 /* Miner.cpp */,
 				CD775195251FF03A00A53765 /* Miner.h */,
@@ -2829,7 +2829,7 @@
 				CDFA23A4246051CD00B4CECF /* Ledger_Miner.cpp in Sources */,
 				CDAA38EA251AA72400FEAFB5 /* SimulatorActivity.cpp in Sources */,
 				CDFA2396246016E700B4CECF /* Ledger_Inventory.cpp in Sources */,
-				CD99422625FEAD3C00524DB6 /* BLockSearchPool.cpp in Sources */,
+				CD99422625FEAD3C00524DB6 /* BlockSearchPool.cpp in Sources */,
 				CDFA239B24601DA100B4CECF /* TransactionResult.cpp in Sources */,
 				CD775196251FF03A00A53765 /* Miner.cpp in Sources */,
 				CD4E8193210593A4007DA585 /* Signature.cpp in Sources */,
