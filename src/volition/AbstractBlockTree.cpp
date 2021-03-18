@@ -173,6 +173,9 @@ void AbstractBlockTree::findFork ( BlockTreeFork& fork, BlockTreeCursor cursor0,
 
     assert ( cursor0.mTree && ( cursor0.mTree == cursor1.mTree ));
     
+    // do this here!
+    bool isSame = cursor0.equals ( cursor1 );
+    
     BlockTreeSegment& seg0 = fork.mSeg0;
     BlockTreeSegment& seg1 = fork.mSeg1;
 
@@ -203,7 +206,7 @@ void AbstractBlockTree::findFork ( BlockTreeFork& fork, BlockTreeCursor cursor0,
     fork.mRoot = seg0.begin ();
 
     // if cursors are equal, it's the same branch.
-    if ( cursor0.equals ( cursor1 )) {
+    if ( isSame ) {
         fork.mStatus = BlockTreeFork::SAME;
         return;
     }
