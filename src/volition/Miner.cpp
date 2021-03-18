@@ -207,6 +207,7 @@ void Miner::extend ( time_t now ) {
         assert ( block->getCharm () == provisional.getCharm ());
         
         this->pushBlock ( block );
+        this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
         this->scheduleReport ();
     }
 }
@@ -491,7 +492,7 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mLedgerTag, block );
     assert ( node.hasHeader ());
     
-    this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
+//    this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
 }
 
 //----------------------------------------------------------------//
@@ -597,6 +598,7 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
     
         this->mLedger = make_shared < Ledger >();
         this->pushBlock ( block );
+        this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
     }
 }
 
@@ -776,8 +778,9 @@ void Miner::updateRemoteMinerGroups () {
     
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         
-        AccountODBM accountODBM ( *this->mLedger, remoteMiner->getMinerID ());
-        if ( !accountODBM.isMiner ()) continue;
+        // TODO: detect and exclude blocks from non-miners
+//        AccountODBM accountODBM ( *this->mLedger, remoteMiner->getMinerID ());
+//        if ( !accountODBM.isMiner ()) continue;
         
         if ( remoteMiner->isOnline ()) {
             this->mOnlineMiners.insert ( remoteMiner );

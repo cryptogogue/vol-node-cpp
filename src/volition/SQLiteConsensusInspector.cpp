@@ -32,9 +32,9 @@ shared_ptr < const Block > SQLiteConsensusInspector::AbstractConsensusInspector_
 
     shared_ptr < Block > block;
 
-    db.exec (
+    result = db.exec (
         
-        "SELECT block FROM nodes WHERE hash IS ?1 AND hasBlock IS 1",
+        "SELECT block FROM nodes WHERE hash IS ?1 AND searchStatus IS '#'",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
@@ -52,6 +52,7 @@ shared_ptr < const Block > SQLiteConsensusInspector::AbstractConsensusInspector_
             }
         }
     );
+    result.reportWithAssert ();
 
     return block;
 }

@@ -41,9 +41,18 @@ public:
 class BlockTreeFork {
 public:
 
+    enum kStatus {
+        FORK,
+        SAME,
+        RIGHT_DOMINANT_SUBSET,
+        LEFT_DOMINANT_SUBSET,
+    };
+
     BlockTreeSegment::Iterator      mRoot;
     BlockTreeSegment                mSeg0;
     BlockTreeSegment                mSeg1;
+    
+    kStatus                         mStatus;
     
     //----------------------------------------------------------------//
     size_t          getSegLength            () const;

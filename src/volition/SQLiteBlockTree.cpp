@@ -9,6 +9,69 @@
 namespace Volition {
 
 //================================================================//
+// BlockCursorCache
+//================================================================//
+
+//----------------------------------------------------------------//
+void BlockCursorCache::cacheCursor ( int nodeID, const BlockTreeCursor& cursor ) {
+
+    // if block is already in the cache, update it
+    if ( this->mCache.find ( nodeID ) != this->mCache.cend ()) {
+
+        // erase the original key
+        assert ( this->mCacheKeysByHash.find ( nodeID ) != this->mCacheKeysByHash.cend ());
+        BlockCursorCacheKey lastKey = this->mCacheKeysByHash [ nodeID ];
+        this->mExpirationSet.erase ( lastKey );
+        this->mCacheKeysByHash.erase ( nodeID );
+    }
+    else {
+    
+        // make room
+        while ( this->mCache.size () > ( CACHE_SIZE - 1 )) {
+        
+            set < BlockCursorCacheKey >::reverse_iterator expiryIt = this->mExpirationSet.rbegin ();
+            
+            map < int, BlockTreeCursor >::iterator cacheIt = this->mCache.find ( expiryIt->mNodeID );
+            if ( cacheIt != this->mCache.end ()) {
+                this->mCache.erase ( cacheIt );
+            }
+            this->mExpirationSet.erase ( *expiryIt );
+            this->mCacheKeysByHash.erase ( expiryIt->mNodeID );
+        }
+    }
+    
+    this->mCache [ nodeID ] = cursor;
+    
+    BlockCursorCacheKey key = BlockCursorCacheKey ( nodeID );
+    this->mCacheKeysByHash [ nodeID ] = key;
+    this->mExpirationSet.insert ( key );
+}
+
+//----------------------------------------------------------------//
+const BlockTreeCursor* BlockCursorCache::getCursor ( int nodeID ) const {
+
+    map < int, BlockTreeCursor >::const_iterator cursorIt = this->mCache.find ( nodeID );
+    if ( cursorIt != this->mCache.cend ()) {
+        return &cursorIt->second;
+    }
+    return NULL;
+}
+
+//----------------------------------------------------------------//
+void BlockCursorCache::invalidate ( int nodeID ) {
+
+    if ( this->mCache.find ( nodeID ) != this->mCache.cend ()) {
+
+        // erase the original key
+        assert ( this->mCacheKeysByHash.find ( nodeID ) != this->mCacheKeysByHash.cend ());
+        BlockCursorCacheKey lastKey = this->mCacheKeysByHash [ nodeID ];
+        this->mExpirationSet.erase ( lastKey );
+        this->mCacheKeysByHash.erase ( nodeID );
+        this->mCache.erase ( nodeID );
+    }
+}
+
+//================================================================//
 // SQLiteBlockTree
 //================================================================//
 
@@ -189,6 +252,8 @@ void SQLiteBlockTree::setBranchStatusInner ( int nodeID, kBlockTreeBranchStatus 
     // cannot complete without a block.
     if (( status == BRANCH_STATUS_COMPLETE ) && ( searchStatus != SEARCH_STATUS_HAS_BLOCK )) return;
 
+    this->mCache.invalidate ( nodeID );
+
     result = this->mDB.exec (
 
         "UPDATE nodes SET branchStatus = ?1 WHERE nodeID IS ?2",
@@ -223,6 +288,8 @@ void SQLiteBlockTree::setBranchStatusInner ( int nodeID, kBlockTreeBranchStatus 
 void SQLiteBlockTree::setSearchStatus ( int nodeID, kBlockTreeSearchStatus status ) {
 
     if ( !nodeID ) return;
+    
+    this->mCache.invalidate ( nodeID );
     
     // go ahead and update the status.
     SQLiteResult result = this->mDB.exec (
@@ -432,14 +499,20 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
 BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string hash ) const {
 
     BlockTreeCursor cursor;
+    
+    int nodeID = this->getNodeIDFromHash ( hash );
+    if ( !nodeID ) return cursor;
+
+    const BlockTreeCursor* cursorFromCache = this->mCache.getCursor ( nodeID );
+    if ( cursorFromCache ) return *cursorFromCache;
 
     SQLiteResult result = this->mDB.exec (
         
-        "SELECT hash, header, branchStatus, searchStatus FROM nodes WHERE hash IS ?1",
+        "SELECT hash, header, branchStatus, searchStatus FROM nodes WHERE nodeID IS ?1",
         
         //--------------------------------//
         [ & ]( SQLiteStatement& stmt ) {
-            stmt.bind ( 1, hash );
+            stmt.bind ( 1, nodeID );
         },
         
         //--------------------------------//
@@ -448,6 +521,8 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_findCursorForHash ( string ha
         }
     );
     result.reportWithAssert ();
+
+    this->mCache.cacheCursor ( nodeID, cursor );
 
     return cursor;
 }
@@ -551,6 +626,8 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
     
     int nodeID = this->getNodeIDFromHash ( block->getDigest ().toHex ());
     if ( !nodeID ) return;
+    
+    this->mCache.invalidate ( nodeID );
     
     SQLiteResult result = this->mDB.exec (
     

@@ -14,18 +14,77 @@
 namespace Volition {
 
 //================================================================//
+// BlockCursorCacheKey
+//================================================================//
+class BlockCursorCacheKey {
+public:
+
+    int             mNodeID;
+    time_t          mTime;
+    
+    //----------------------------------------------------------------//
+    bool operator < ( const BlockCursorCacheKey& rhs ) const {
+    
+        if ( this->mTime == rhs.mTime ) return this->mNodeID < rhs.mNodeID;
+        return this->mTime < rhs.mTime;
+    }
+    
+    //----------------------------------------------------------------//
+    BlockCursorCacheKey () {
+    }
+    
+    //----------------------------------------------------------------//
+    BlockCursorCacheKey ( int nodeID ) :
+        mNodeID ( nodeID ) {
+        time ( &this->mTime );
+    }
+    
+    //----------------------------------------------------------------//
+    BlockCursorCacheKey ( const BlockCursorCacheKey& other ) :
+        mNodeID ( other.mNodeID ),
+        mTime ( other.mTime ) {
+    }
+};
+
+//================================================================//
+// BlockCursorCache
+//================================================================//
+class BlockCursorCache {
+private:
+
+    static const size_t CACHE_SIZE      = 50000;
+
+    set < BlockCursorCacheKey >         mExpirationSet;
+    map < int, BlockCursorCacheKey >    mCacheKeysByHash;
+    map < int, BlockTreeCursor >        mCache;
+
+public:
+
+    //----------------------------------------------------------------//
+    void                                cacheCursor                     ( int nodeID, const BlockTreeCursor& cursor );
+    const BlockTreeCursor*              getCursor                       ( int nodeID ) const;
+    void                                invalidate                      ( int nodeID );
+};
+
+//================================================================//
 // SQLiteBlockTree
 //================================================================//
 class SQLiteBlockTree :
     public AbstractBlockTree {
 private:
 
+    static const size_t CACHE_SIZE      = 4096;
+
     mutable SQLite                      mDB;
+    mutable BlockCursorCache            mCache;
 
     //----------------------------------------------------------------//
+    void                                cacheCursor                     ( const BlockTreeCursor& cursor );
+    const BlockTreeCursor*              getCursorFromCache              ( string hash ) const;
     int                                 getNodeIDFromHash               ( string hash ) const;
     int                                 getNodeIDFromTagName            ( string tagName ) const;
     kBlockTreeBranchStatus              getNodeBranchStatus             ( int nodeID, kBlockTreeBranchStatus status = kBlockTreeBranchStatus::BRANCH_STATUS_INVALID ) const;
+    void                                invalidate                      ( string hash );
     void                                pruneUnreferencedNodes          ();
     BlockTreeCursor                     readCursor                      ( const SQLiteStatement& stmt ) const;
     void                                setBranchStatus                 ( int nodeID, const Digest& parentDigest, kBlockTreeBranchStatus status );

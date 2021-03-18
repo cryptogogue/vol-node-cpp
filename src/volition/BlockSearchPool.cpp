@@ -23,6 +23,7 @@ namespace Volition {
 
 //----------------------------------------------------------------//
 BlockSearch::BlockSearch () :
+    mActive ( false ),
     mRetries ( 0 ),
     mT0 ( chrono::high_resolution_clock::now ()) {
 }
@@ -216,10 +217,10 @@ void BlockSearchPool::reportBlockSearches () const {
     LGN_LOG_SCOPE ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, __PRETTY_FUNCTION__ );
 
      set < BlockSearchKey >::const_iterator blockSearchIt = this->mActiveSearches.begin ();
-     for ( ; blockSearchIt != this->mActiveSearches.end (); ++blockSearchIt ) {
+     for ( size_t i = 0; blockSearchIt != this->mActiveSearches.end (); ++i, ++blockSearchIt ) {
         const BlockSearch& blockSearch = blockSearchIt->mBlockSearch;
         
-        LGN_LOG ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, "BLOCK SEARCH: %s", blockSearch.mTag.c_str ());
+        LGN_LOG ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, "BLOCK SEARCH %d: %s", ( int )i, blockSearch.mTag.c_str ());
         
         LGN_LOG ( VOL_FILTER_MINING_SEARCH_REPORT, INFO, "    HASH: %s", blockSearch.mHash.c_str ());
         
@@ -263,6 +264,12 @@ void BlockSearchPool::update () {
         set < BlockSearchKey >::iterator cursor = blockSearchIt++;
         
         BlockSearch& blockSearch = cursor->mBlockSearch;
+        
+        if ( !blockSearch.mActive ) {
+            blockSearch.mT0 = chrono::high_resolution_clock::now ();
+            blockSearch.mActive = true;
+        }
+        
         if ( !blockSearch.step ( *this )) {
             this->erase ( blockSearch.mHash );
         }

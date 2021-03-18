@@ -112,6 +112,10 @@ int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTree
     BlockTreeFork fork;
     this->findFork ( fork, cursor0, cursor1 );
 
+    if ( fork.mStatus == BlockTreeFork::SAME ) return 0;
+    if ( fork.mStatus == BlockTreeFork::LEFT_DOMINANT_SUBSET ) return -1;
+    if ( fork.mStatus == BlockTreeFork::RIGHT_DOMINANT_SUBSET ) return 1;
+
     size_t fullLength0  = fork.mSeg0.getFullLength ();
     size_t fullLength1  = fork.mSeg1.getFullLength ();
     size_t segLength    = fork.getSegLength (); // length of the comparison segment
@@ -195,6 +199,20 @@ void AbstractBlockTree::findFork ( BlockTreeFork& fork, BlockTreeCursor cursor0,
 
     seg0.mTail = seg0.begin ();
     seg1.mTail = seg1.begin ();
+    
+    fork.mRoot = seg0.begin ();
+
+    // if cursors are equal, it's the same branch.
+    if ( cursor0.equals ( cursor1 )) {
+        fork.mStatus = BlockTreeFork::SAME;
+        return;
+    }
+
+    // one branch is a subset of the other.
+    if ( cursor0.equals ( cursor1 )) {
+        fork.mStatus = ( fork.mSeg0.mTop->getHeight () < fork.mSeg1.mTop->getHeight ()) ? BlockTreeFork::RIGHT_DOMINANT_SUBSET : BlockTreeFork::LEFT_DOMINANT_SUBSET;
+        return;
+    }
 
     while ( !cursor0.equals ( cursor1 )) {
     
@@ -213,6 +231,8 @@ void AbstractBlockTree::findFork ( BlockTreeFork& fork, BlockTreeCursor cursor0,
     fork.mRoot = seg0.begin ();
     
     assert ( fork.mSeg0.mTail->getHeight () == fork.mSeg1.mTail->getHeight ());
+    
+    fork.mStatus = BlockTreeFork::FORK;
 }
 
 //----------------------------------------------------------------//

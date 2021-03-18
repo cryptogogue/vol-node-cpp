@@ -35,10 +35,12 @@ protected:
     friend class BlockSearchPool;
     friend class BlockSearchKey;
 
-    static const size_t SAMPLE_SIZE     = 2;
+    static const size_t SAMPLE_SIZE     = 8;
     static const size_t MAX_RETRIES     = 256;
 
     friend class Miner;
+
+    bool                mActive;
 
     string              mTag;
     string              mHash;
