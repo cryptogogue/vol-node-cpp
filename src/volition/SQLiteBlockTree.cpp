@@ -389,6 +389,18 @@ SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
     SQLiteResult result = this->mDB.open ( filename );
     result.reportWithAssert ();
     
+    size_t userVersion = 0;
+    result = this->mDB.exec ( "PRAGMA user_version", NULL,
+
+        //--------------------------------//
+        [ & ]( int, const SQLiteStatement& stmt ) {
+            userVersion = ( size_t ) stmt.getValue < int >( 0 );
+        }
+    );
+    result.reportWithAssert ();
+
+    if ( userVersion < MIN_SUPPORTED_USER_VERSION ) throw SQLiteBlockTreeUnsupportedVersionException ();
+    
     // nodes
     result = this->mDB.exec ( SQL_STR (
         CREATE TABLE IF NOT EXISTS nodes (
@@ -428,6 +440,11 @@ SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
     
     result = this->mDB.exec ( SQL_STR ( CREATE UNIQUE INDEX IF NOT EXISTS name ON tags ( name )));
     result.reportWithAssert ();
+    
+    if ( userVersion != CURRENT_USER_VERSION ) {
+        result = this->mDB.exec ( Format::write ( "PRAGMA user_version = %d", ( int )CURRENT_USER_VERSION ));
+        result.reportWithAssert ();
+    }
 }
 
 //----------------------------------------------------------------//

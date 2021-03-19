@@ -200,7 +200,12 @@ protected:
         }
         
         if ( persist.size ()) {
-            this->mMinerActivity->persist ( persist, genesisBlock );
+            LedgerResult result = this->mMinerActivity->persist ( persist, genesisBlock );
+            if ( !result ) {
+                LGN_LOG ( VOL_FILTER_APP, INFO, "ERROR LOADING OR INITIALIZING PERSISTENCE" );
+                LGN_LOG ( VOL_FILTER_APP, INFO, "%s", result.getMessage ().c_str ());
+                return Application::EXIT_CONFIG;
+            }
         }
         else {
             this->mMinerActivity->setGenesis ( genesisBlock );

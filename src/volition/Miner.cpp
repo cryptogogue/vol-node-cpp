@@ -377,7 +377,7 @@ Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
-void Miner::persist ( string path, shared_ptr < const Block > block ) {
+LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
     
     assert ( block );
     assert ( this->mLedger == NULL );
@@ -385,14 +385,22 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     FileSys::createDirectories ( path );
 
     string hash = block->getDigest ().toHex ();
-    this->mLedgerFilename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
-    this->mConfigFilename = Format::write ( "%s/%s-config.json", path.c_str (), hash.c_str ());
-    this->mMinersFilename = Format::write ( "%s/%s-miners.json", path.c_str (), hash.c_str ());
-    this->mBlocksFilename = Format::write ( "%s/%s-blocks.db", path.c_str (), hash.c_str ());
+    string primary = Format::write ( "%s/%s-%s", path.c_str (), PERSIST_PREFIX, hash.c_str ());
     
-    this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
-    this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
-    this->mPersistenceProvider  = SQLiteStringStore::make ( this->mLedgerFilename );
+    this->mLedgerFilename = Format::write ( "%s.db", primary.c_str ());
+    this->mConfigFilename = Format::write ( "%s-config.json", primary.c_str ());
+    this->mMinersFilename = Format::write ( "%s-miners.json", primary.c_str ());
+    this->mBlocksFilename = Format::write ( "%s-blocks.db", primary.c_str ());
+    
+    try {
+        this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
+        this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
+        this->mPersistenceProvider  = SQLiteStringStore::make ( this->mLedgerFilename );
+    }
+    catch ( SQLiteBlockTreeUnsupportedVersionException ) {
+    
+        return "Unsupported SQLite block tree format; delete your persist-chain folder and re-sync.";
+    }
     
     shared_ptr < Ledger > ledger = make_shared < Ledger >();
     ledger->takeSnapshot ( this->mPersistenceProvider, "master" );
@@ -425,6 +433,8 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
             this->affirmRemoteMiner ( *urlIt );
         }
     }
+    
+    return true;
 }
 
 //----------------------------------------------------------------//

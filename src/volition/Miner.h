@@ -144,9 +144,9 @@ protected:
     friend class BlockSearch;
     friend class RemoteMiner;
 
+    static constexpr const char* PERSIST_PREFIX     = "v1";
     static constexpr const char* MASTER_BRANCH      = "master";
 
-    
     int                                             mFlags;
     bool                                            mNeedsReport;
     ReportMode                                      mReportMode;
@@ -265,7 +265,7 @@ public:
     void                                loadKey                     ( string keyfile, string password = "" );
                                         Miner                       ();
     virtual                             ~Miner                      ();
-    void                                persist                     ( string path, shared_ptr < const Block > block );
+    LedgerResult                        persist                     ( string path, shared_ptr < const Block > block );
     shared_ptr < Block >                prepareBlock                ( time_t now );
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                pruneTransactions           ();

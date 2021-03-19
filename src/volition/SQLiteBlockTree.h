@@ -67,13 +67,26 @@ public:
 };
 
 //================================================================//
+// SQLiteBlockTreeUnsupportedVersionException
+//================================================================//
+class SQLiteBlockTreeUnsupportedVersionException :
+    public runtime_error {
+public:
+
+    SQLiteBlockTreeUnsupportedVersionException ( string what = "" ) :
+        std::runtime_error ( what ) {
+    }
+};
+
+//================================================================//
 // SQLiteBlockTree
 //================================================================//
 class SQLiteBlockTree :
     public AbstractBlockTree {
 private:
 
-    static const size_t CACHE_SIZE      = 4096;
+    static const size_t MIN_SUPPORTED_USER_VERSION      = 0;
+    static const size_t CURRENT_USER_VERSION            = 1;
 
     mutable SQLite                      mDB;
     mutable BlockCursorCache            mCache;
