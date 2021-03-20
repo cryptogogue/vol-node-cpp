@@ -458,7 +458,7 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
     this->fillBlock ( *this->mLedger, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
-        block->setReward ( this->mLedger->chooseReward ( this->mReward ));
+        block->setReward ( this->mLedger->chooseReward ( this->getReward ()));
         block->sign ( this->mKeyPair, Digest::DEFAULT_HASH_ALGORITHM );
         return block;
     }
