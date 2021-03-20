@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/BlockSearchPool.h>
 #include <volition/Digest.h>
 #include <volition/FileSys.h>
 #include <volition/HTTPMiningMessenger.h>
@@ -9,6 +10,7 @@
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/SQLiteBlockTree.h>
+#include <volition/SQLiteConsensusInspector.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
@@ -16,94 +18,24 @@
 namespace Volition {
 
 //================================================================//
-// BlockSearch
+// MinerSnapshot
 //================================================================//
 
 //----------------------------------------------------------------//
-BlockSearch::BlockSearch () {
+MinerSnapshot::InspectorPtr MinerSnapshot::createInspector () const {
+
+    return make_shared < SQLiteConsensusInspector >( this->mBlocksFilename );
 }
 
 //----------------------------------------------------------------//
-bool BlockSearch::step ( Miner& miner ) {
-
-    if ( SEARCH_SIZE <= this->mActiveMiners.size ()) return true;
-
-    BlockTreeCursor cursor = miner.mBlockTree->findCursorForHash ( this->mHash );
-    if ( !( cursor.hasHeader () && cursor.checkStatus (( kBlockTreeEntryStatus )( kBlockTreeEntryStatus::STATUS_NEW | kBlockTreeEntryStatus::STATUS_MISSING )))) return false;
-
-    set < shared_ptr < RemoteMiner >> remoteMiners;
-    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = miner.mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != miner.mOnlineMiners.end (); ++remoteMinerIt ) {
+set < string > MinerSnapshot::sampleOnlineMinerURLs ( size_t sampleSize ) const {
     
-        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        string minerID = remoteMiner->getMinerID ();
-        
-        if ( this->mCompletedMiners.find ( minerID ) != this->mCompletedMiners.end ()) continue;
-        if ( this->mActiveMiners.find ( minerID ) != this->mActiveMiners.end ()) continue;
-        
-        remoteMiners.insert ( remoteMiner );
-    }
-            
-    size_t sampleSize = ( SEARCH_SIZE - this->mActiveMiners.size ());
-    
-    for ( size_t i = 0; (( i < sampleSize ) && ( remoteMiners.size () > 0 )); ++i ) {
-    
-        remoteMinerIt = remoteMiners.begin ();
-        advance ( remoteMinerIt, ( long )( UnsecureRandom::get ().random ( 0, remoteMiners.size () - 1 )));
-        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        remoteMiners.erase ( remoteMinerIt );
-        
-        this->mActiveMiners.insert ( remoteMiner->getMinerID ());
-        miner.mMessenger->enqueueBlockRequest (
-            remoteMiner->mURL,
-            cursor.getDigest (),
-            cursor.getHeight (),
-            Format::write ( "%s:%s", miner.mMinerID.c_str (), cursor.getCharmTag ().c_str ())
-        );
-    }
-    
-    if ( this->mActiveMiners.size () == 0 ) {
-        miner.mBlockTree->mark ( cursor, kBlockTreeEntryStatus::STATUS_MISSING );
-        return false;
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
-void BlockSearch::step ( shared_ptr < RemoteMiner > remoteMiner ) {
-
-    string minerID = remoteMiner->getMinerID ();
-    assert ( this->mActiveMiners.find ( minerID ) != this->mActiveMiners.cend ());
-    this->mCompletedMiners.insert ( minerID );
-    this->mActiveMiners.erase ( minerID );
+    return UnsecureRandom::get ().sampleSet < string > ( this->mOnlineMinerURLs, sampleSize );
 }
 
 //================================================================//
 // Miner
 //================================================================//
-
-//----------------------------------------------------------------//
-void Miner::affirmBlockSearch ( BlockTreeCursor cursor ) {
-
-    if ( cursor.hasBlock ()) return;
-
-    string hash = cursor.getDigest ();
-    if ( this->mBlockSearches.find ( hash ) != this->mBlockSearches.end ()) return; // already searching
-
-    BlockSearch& search = this->mBlockSearches [ hash ];
-    search.mHash = cursor.getHash ();
-}
-
-//----------------------------------------------------------------//
-void Miner::affirmBranchSearch ( BlockTreeCursor cursor ) {
-
-    while ( !cursor.isComplete ()) {
-        if ( !cursor.hasBlock ()) {
-            this->affirmBlockSearch ( cursor );
-        }
-        cursor = cursor.getParent ();
-    }
-}
 
 //----------------------------------------------------------------//
 void Miner::affirmKey ( uint keyLength, unsigned long exp ) {
@@ -185,6 +117,8 @@ bool Miner::checkTags () const {
 //----------------------------------------------------------------//
 void Miner::composeChain () {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     assert ( this->checkTags ());
 
     // TODO: gather transactions if rewinding chain
@@ -207,7 +141,7 @@ void Miner::composeChain () {
         // REWIND chain to point of divergence
         BlockTreeCursor root = BlockTreeCursor::findRoot ( ledgerCursor, bestCursor );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
-        assert ( root.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ));  // guaranteed -> was in chain
+        assert ( root.isComplete ());  // guaranteed -> was in chain
         
         this->mLedger->revertAndClear ( root.getHeight () + 1 );
         this->mBlockTree->tag ( this->mLedgerTag, root );
@@ -224,23 +158,30 @@ void Miner::composeChain () {
 //----------------------------------------------------------------//
 void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 
+    // we're descending to find this cursor
     BlockTreeCursor ledgerCursor = this->mLedgerTag.getCursor ();
 
-    if ( ledgerCursor.equals ( branch )) return; // nothing to do
+    list < BlockTreeCursor > stack;
+
+    while ( !ledgerCursor.equals ( branch )) {
     
-    BlockTreeCursor parent = branch.getParent ();
-    if ( !parent.equals ( ledgerCursor )) {
-        this->composeChainRecurse ( parent );
+        if ( branch.isComplete ()) {
+            stack.push_front ( branch );
+        }
+        branch = branch.getParent ();
     }
-    
-    if ( branch.isComplete ()) {
-        this->pushBlock ( branch.getBlock ()); // TODO: handle invalid blocks
-        assert (( *this->mLedgerTag ).equals ( branch ));
+
+    list < BlockTreeCursor >::iterator stackIt = stack.begin ();
+    for ( ; stackIt != stack.end (); ++stackIt ) {
+        this->pushBlock ( stackIt->getBlock ());
+        assert (( *this->mLedgerTag ).equals ( *stackIt ));
     }
 }
 
 //----------------------------------------------------------------//
 void Miner::extend ( time_t now ) {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
     // we can only extend the chain if we've already appended a provisional block.
     // the provisional block is just an empty header, but with a valid charm.
@@ -265,25 +206,15 @@ void Miner::extend ( time_t now ) {
         assert ( block->getHeight () == provisional.getHeight ());
         assert ( block->getCharm () == provisional.getCharm ());
         
-//        this->mBestProvisional = parent;
         this->pushBlock ( block );
+        this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
         this->scheduleReport ();
     }
 }
 
 //----------------------------------------------------------------//
-BlockSearch* Miner::findBlockSearch ( const Digest& digest ) {
-
-    map < string, BlockSearch >::iterator searchIt = this->mBlockSearches.find ( digest.toHex ());
-    if ( searchIt == this->mBlockSearches.cend ()) return NULL; // no search; bail.
-    
-    return &searchIt->second;
-}
-
-//----------------------------------------------------------------//
 size_t Miner::getChainSize () const {
 
-//    return this->mLedgerTag.hasCursor () ? ( this->mLedgerTag.getHeight () + 1 ) : 0;
     return this->mLedger->countBlocks ();
 }
 
@@ -300,6 +231,14 @@ Ledger Miner::getLedgerAtBlock ( u64 index ) const {
     Ledger ledger ( *this->mLedger );
     ledger.revert ( index );
     return ledger;
+}
+
+//----------------------------------------------------------------//
+void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
+
+    Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mSnapshotMutex );
+    snapshot = this->mSnapshot;
+    status = this->mMinerStatus;
 }
 
 //----------------------------------------------------------------//
@@ -359,7 +298,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
         const BlockHeader& parentHeader = parent.getHeader ();
         
         // if parent is one of ours, but it isn't yet complete, stop the search.
-        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.checkStatus ( kBlockTreeEntryStatus::STATUS_COMPLETE ))) break;
+        if (( parentHeader.getMinerID () == this->mMinerID ) && ( !parent.isComplete ())) break;
         
         // if enough time has elapsed since the parent was declared, we can consider replacing the child
         // with our own block (or appending a new block).
@@ -385,6 +324,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
     }
 
     if ( extendFrom.hasHeader ()) {
+        // this is what updates tag, which may be the "improved" tag from another miner
         return this->mBlockTree->affirmProvisional ( tag, this->prepareProvisional ( extendFrom.getHeader (), now ));
     }
     return tail; // use the chain as-is.
@@ -428,7 +368,8 @@ Miner::Miner () :
     
     MinerLaunchTests::checkEnvironment ();
     
-    this->mBlockTree = make_shared < InMemoryBlockTree >();
+    this->mBlockTree        = make_shared < InMemoryBlockTree >();
+    this->mBlockSearchPool  = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
 }
 
 //----------------------------------------------------------------//
@@ -436,7 +377,7 @@ Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
-void Miner::persist ( string path, shared_ptr < const Block > block ) {
+LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
     
     assert ( block );
     assert ( this->mLedger == NULL );
@@ -444,13 +385,22 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
     FileSys::createDirectories ( path );
 
     string hash = block->getDigest ().toHex ();
-    this->mLedgerFilename = Format::write ( "%s/%s.db", path.c_str (), hash.c_str ());
-    this->mConfigFilename = Format::write ( "%s/%s-config.json", path.c_str (), hash.c_str ());
-    this->mMinersFilename = Format::write ( "%s/%s-miners.json", path.c_str (), hash.c_str ());
-    this->mBlocksFilename = Format::write ( "%s/%s-blocks.db", path.c_str (), hash.c_str ());
+    string primary = Format::write ( "%s/%s-%s", path.c_str (), PERSIST_PREFIX, hash.c_str ());
     
-    this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
-    this->mPersistenceProvider  = SQLiteStringStore::make ( this->mLedgerFilename );
+    this->mLedgerFilename = Format::write ( "%s.db", primary.c_str ());
+    this->mConfigFilename = Format::write ( "%s-config.json", primary.c_str ());
+    this->mMinersFilename = Format::write ( "%s-miners.json", primary.c_str ());
+    this->mBlocksFilename = Format::write ( "%s-blocks.db", primary.c_str ());
+    
+    try {
+        this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
+        this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
+        this->mPersistenceProvider  = SQLiteStringStore::make ( this->mLedgerFilename );
+    }
+    catch ( SQLiteBlockTreeUnsupportedVersionException ) {
+    
+        return "Unsupported SQLite block tree format; delete your persist-chain folder and re-sync.";
+    }
     
     shared_ptr < Ledger > ledger = make_shared < Ledger >();
     ledger->takeSnapshot ( this->mPersistenceProvider, "master" );
@@ -483,11 +433,13 @@ void Miner::persist ( string path, shared_ptr < const Block > block ) {
             this->affirmRemoteMiner ( *urlIt );
         }
     }
+    
+    return true;
 }
 
 //----------------------------------------------------------------//
 shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
-        
+    
     shared_ptr < const Block > prevBlock = this->mLedger->getBlock ();
     assert ( prevBlock );
     
@@ -545,13 +497,13 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
     this->mLedger->revertAndClear ( block->getHeight ());
 
-    bool result = this->mLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
-    assert ( result );
+    LedgerResult result = this->mLedger->pushBlock ( *block, this->mBlockVerificationPolicy );
+    result.reportWithAssert ();
     
     BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mLedgerTag, block );
     assert ( node.hasHeader ());
     
-    this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
+//    this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
 }
 
 //----------------------------------------------------------------//
@@ -563,13 +515,15 @@ void Miner::report () const {
 //----------------------------------------------------------------//
 void Miner::report ( ReportMode reportMode ) const {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_MINING_REPORT, INFO, __PRETTY_FUNCTION__ );
+
     BlockTreeCursor ledgerCursor = *this->mBestBranchTag;
 
     switch ( reportMode ) {
     
         case REPORT_BEST_BRANCH: {
         
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
             break;
         }
         
@@ -580,10 +534,10 @@ void Miner::report ( ReportMode reportMode ) const {
                 remoteMinerIt->second->report ();
             }
             
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearches.size ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "LEDGER TAG: %s", this->getLedgerTag ().write ().c_str ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearchPool->countSearches ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "ACTIVE SEARCHES: %d", ( int )this->mBlockSearchPool->countActiveSearches ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "LEDGER TAG: %s", this->getLedgerTag ().write ().c_str ());
             break;
         }
         
@@ -615,20 +569,9 @@ set < shared_ptr < RemoteMiner >> Miner::sampleOnlineMiners ( size_t sampleSize 
 }
 
 //----------------------------------------------------------------//
-set < string > Miner::sampleOnlineMinerURLs ( size_t sampleSize ) const {
-
-    set < shared_ptr < RemoteMiner >> miners = this->sampleOnlineMiners ( sampleSize );
-    set < string > urls;
-    
-    set < shared_ptr < RemoteMiner >>::iterator minerIt = miners.begin ();
-    for ( ; minerIt != miners.end (); ++minerIt ) {
-        urls.insert (( *minerIt )->getURL ());
-    }
-    return urls;;
-}
-
-//----------------------------------------------------------------//
 void Miner::saveChain () {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
     if ( this->mLedger && this->mPersistenceProvider ) {
         assert ( this->checkTags ());
@@ -666,6 +609,7 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
     
         this->mLedger = make_shared < Ledger >();
         this->pushBlock ( block );
+        this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
     }
 }
 
@@ -704,6 +648,8 @@ void Miner::shutdown ( bool kill ) {
 //----------------------------------------------------------------//
 void Miner::step ( time_t now ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
 
     this->affirmMessenger ();
@@ -725,23 +671,45 @@ void Miner::step ( time_t now ) {
     this->updateBlockSearches ();
     this->updateNetworkSearches ();
     
+    {
+        Poco::ScopedLock < Poco::Mutex > snapshotLoc ( this->mSnapshotMutex );
+        this->mSnapshot = *this;
+        
+        Ledger& ledger = *this->mLedger;
+        
+        // TODO: this is a hack to speed up the default query
+        this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
+        this->mMinerStatus.mSchemaHash              = ledger.getSchemaHash ();
+        this->mMinerStatus.mGenesisHash             = ledger.getGenesisHash ();
+        this->mMinerStatus.mIdentity                = ledger.getIdentity ();
+        this->mMinerStatus.mVOL                     = ledger.countVOL ();
+        this->mMinerStatus.mFeeDistributionPool     = ledger.getFeeDistributionPool ();
+        this->mMinerStatus.mMinimumGratuity         = this->getMinimumGratuity ();
+        this->mMinerStatus.mReward                  = this->getReward ();
+        this->mMinerStatus.mTotalBlocks             = ledger.countBlocks ();
+        this->mMinerStatus.mFeeSchedule             = ledger.getFeeSchedule ();
+        this->mMinerStatus.mFeeDistributionTable    = ledger.getFeeDistributionTable ();
+    }
+    
     try {
         this->mMessenger->sendRequests ();
     }
     catch ( Poco::Exception& exc ) {
-        LGN_LOG ( VOL_FILTER_ROOT, INFO, "Caught exception in MinerActivity::runActivity ()" );
+        LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Caught exception in MinerActivity::runActivity ()" );
     }
 }
 
 //----------------------------------------------------------------//
 void Miner::updateBestBranch ( time_t now ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     assert ( this->checkTags ());
 
     // update the current best branch, excluding missing or invalid blocks.
     // this may append an additional provisional header if branch is complete.
     
-    BlockTreeCursor bestCursor = this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalid (), now );
+    BlockTreeCursor bestCursor = this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalidBranch (), now );
 
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
@@ -749,7 +717,7 @@ void Miner::updateBestBranch ( time_t now ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         if ( !remoteMiner->mTag.hasCursor ()) continue;
         
-        BlockTreeCursor remoteImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalid (), now );
+        BlockTreeCursor remoteImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalidBranch (), now );
         if ( remoteImproved.isMissing ()) continue;
         
         assert ( !remoteImproved.isMissingOrInvalid ());
@@ -770,6 +738,10 @@ void Miner::updateBestBranch ( time_t now ) {
 //----------------------------------------------------------------//
 void Miner::updateBlockSearches () {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
+    BlockSearchPool& blockSearchPool = *this->mBlockSearchPool;
+
     set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.begin ();
     for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
         
@@ -777,32 +749,20 @@ void Miner::updateBlockSearches () {
 
         // we only care about missing branches; ignore new/complete/invalid branches.
         if ( remoteMiner->mImproved.hasCursor () && ( *remoteMiner->mImproved ).isMissing ()) {
-            
-            // only affirm a search if the other chain could beat our current.
-            if ( BlockTreeCursor::compare ( *remoteMiner->mImproved, *this->mBestBranchTag ) < 0 ) {
-                this->affirmBranchSearch ( *remoteMiner->mImproved );
-            }
+            blockSearchPool.affirmBranchSearch ( *remoteMiner->mTag );
         }
     }
     
     // always affirm a search for the current branch
-    this->affirmBranchSearch ( *this->mBestBranchTag );
+    blockSearchPool.affirmBranchSearch ( *this->mBestBranchTag );
     
-    // step the currently active block searches
-    map < string, BlockSearch >::iterator blockSearchIt = this->mBlockSearches.begin ();
-    while ( blockSearchIt != this->mBlockSearches.end ()) {
-    
-        map < string, BlockSearch >::iterator cursor = blockSearchIt++;
-    
-        BlockSearch& blockSearch = cursor->second;
-        if ( !blockSearch.step ( *this )) {
-            this->mBlockSearches.erase ( cursor );
-        }
-    }
+    blockSearchPool.update ();
 }
 
 //----------------------------------------------------------------//
 void Miner::updateNetworkSearches () {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
     // poll network for miner URLs
     if ( !this->mNetworkSearch ) {
@@ -817,7 +777,11 @@ void Miner::updateNetworkSearches () {
 //----------------------------------------------------------------//
 void Miner::updateRemoteMinerGroups () {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     this->mOnlineMiners.clear ();
+    this->mOnlineMinerURLs.clear ();
+    
     this->mContributors.clear ();
     
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
@@ -825,11 +789,13 @@ void Miner::updateRemoteMinerGroups () {
     
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         
-        AccountODBM accountODBM ( *this->mLedger, remoteMiner->getMinerID ());
-        if ( !accountODBM.isMiner ()) continue;
+        // TODO: detect and exclude blocks from non-miners
+//        AccountODBM accountODBM ( *this->mLedger, remoteMiner->getMinerID ());
+//        if ( !accountODBM.isMiner ()) continue;
         
         if ( remoteMiner->isOnline ()) {
             this->mOnlineMiners.insert ( remoteMiner );
+            this->mOnlineMinerURLs.insert ( remoteMiner->getURL ());
         }
         
         if ( remoteMiner->isContributor ()) {
@@ -840,6 +806,8 @@ void Miner::updateRemoteMinerGroups () {
 
 //----------------------------------------------------------------//
 void Miner::updateRemoteMiners () {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
     // get miner URL list from ledger
     set < string > miners = this->getLedger ().getMiners ();
@@ -864,7 +832,7 @@ void Miner::updateRemoteMiners () {
         
         if ( this->mCompletedURLs.find ( url ) == this->mCompletedURLs.cend ()) {
             
-            shared_ptr < RemoteMiner > remoteMiner = make_shared < RemoteMiner >();
+            shared_ptr < RemoteMiner > remoteMiner = make_shared < RemoteMiner >( *this );
             remoteMiner->mURL = url;
             this->mRemoteMinersByURL [ url ] = remoteMiner;
             this->mRemoteMiners.insert ( remoteMiner );
@@ -879,7 +847,7 @@ void Miner::updateRemoteMiners () {
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        remoteMiner->update ( *this->mMessenger );
+        remoteMiner->update ();
         minerURLs.insert ( remoteMiner->getURL ());
     }
     
@@ -921,11 +889,8 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             if ( response.mBlock ) {
                 this->mBlockTree->update ( response.mBlock );
             }
-            
-            map < string, BlockSearch >::iterator blockSearchIt = this->mBlockSearches.find ( request.mBlockDigest.toHex ());
-            if ( blockSearchIt != this->mBlockSearches.end ()) {
-                blockSearchIt->second.step ( remoteMiner );
-            }
+            string hash = request.mBlockDigest.toHex ();
+            this->mBlockSearchPool->updateBlockSearch ( remoteMiner->getMinerID (), hash, ( bool )response.mBlock );
             break;
         }
         
@@ -939,10 +904,12 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
             break;
         }
         
-        default: break;
+        default: {
+            break;
+        }
     }
     
-    remoteMiner->receiveResponse ( *this, response, now );
+    remoteMiner->receiveResponse ( response, now );
 }
 
 //----------------------------------------------------------------//

@@ -434,11 +434,11 @@ string Ledger::printChain ( const char* pre, const char* post ) const {
 }
 
 //----------------------------------------------------------------//
-bool Ledger::pushBlock ( const Block& block, Block::VerificationPolicy policy ) {
+LedgerResult Ledger::pushBlock ( const Block& block, Block::VerificationPolicy policy ) {
 
     Ledger fork ( *this );
 
-    bool result = block.apply ( fork, policy );
+    LedgerResult result = block.apply ( fork, policy );
 
     if ( result ) {
     
@@ -583,7 +583,8 @@ void Ledger::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& 
     for ( size_t i = 0; i < size; ++i ) {
     
         Block block = blocks [ i ];
-        this->pushBlock ( block, Block::VerificationPolicy::NONE );
+        LedgerResult result = this->pushBlock ( block, Block::VerificationPolicy::NONE );
+        assert ( result );
     }
 }
 

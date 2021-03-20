@@ -4,11 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_NODEDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_NODEDETAILSHANDLER_H
 
-#include <volition/AccountODBM.h>
-#include <volition/AbstractAPIRequestHandler.h>
-#include <volition/Block.h>
-#include <volition/TheTransactionBodyFactory.h>
-#include <volition/MinerAPIFactory.h>
+#include <volition/NonBlockingMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -17,23 +13,22 @@ namespace WebMinerAPI {
 // NodeDetailsHandler
 //================================================================//
 class NodeDetailsHandler :
-    public AbstractMinerAPIRequestHandler {
+    public NonBlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-        UNUSED ( ledger );
         UNUSED ( jsonIn );
         
         Poco::JSON::Object::Ptr nodeInfoJSON = new Poco::JSON::Object ();
         
-        nodeInfoJSON->set ( "minerID",          this->mWebMiner->getMinerID ().c_str ());
-        nodeInfoJSON->set ( "publicKey",        ToJSONSerializer::toJSON ( this->mWebMiner->getKeyPair ().getPublicKey ()));
-        nodeInfoJSON->set ( "motto",            this->mWebMiner->getMotto ());
-        nodeInfoJSON->set ( "visage",           ToJSONSerializer::toJSON ( this->mWebMiner->getVisage ()));
+        nodeInfoJSON->set ( "minerID",          this->mSnapshot.getMinerID ().c_str ());
+        nodeInfoJSON->set ( "publicKey",        ToJSONSerializer::toJSON ( this->mSnapshot.getKeyPair ().getPublicKey ()));
+        nodeInfoJSON->set ( "motto",            this->mSnapshot.getMotto ());
+        nodeInfoJSON->set ( "visage",           ToJSONSerializer::toJSON ( this->mSnapshot.getVisage ()));
         
         jsonOut.set ( "node", nodeInfoJSON );
         return Poco::Net::HTTPResponse::HTTP_OK;

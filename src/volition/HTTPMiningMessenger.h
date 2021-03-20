@@ -47,10 +47,10 @@ protected:
     };
     
     enum {
-        BLOCK_QUEUE_WEIGHT              = 4,
-        HEADER_QUEUE_WEIGHT             = 8,
-        INFO_QUEUE_WEIGHT               = 2,
-        TOPOLOGY_QUEUE_WEIGHT           = 2,
+        BLOCK_QUEUE_WEIGHT              = 8,
+        HEADER_QUEUE_WEIGHT             = 6,
+        INFO_QUEUE_WEIGHT               = 1,
+        TOPOLOGY_QUEUE_WEIGHT           = 1,
     };
     
     Poco::Mutex                         mMutex;

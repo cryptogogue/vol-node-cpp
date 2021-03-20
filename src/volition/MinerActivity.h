@@ -31,7 +31,7 @@ private:
 public:
 
     static const u32    DEFAULT_FIXED_UPDATE_MILLIS         = 1000;
-    static const u32    DEFAULT_VARIABLE_UPDATE_MILLIS      = 10000;
+    static const u32    DEFAULT_VARIABLE_UPDATE_MILLIS      = 1000;
 
     GET_SET ( u32,      FixedUpdateDelayInMillis,       mFixedUpdateDelayInMillis )
     GET_SET ( u32,      VariableUpdateDelayInMillis,    mVariableUpdateDelayInMillis )

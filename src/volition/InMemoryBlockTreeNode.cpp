@@ -36,10 +36,10 @@ InMemoryBlockTreeNode::InMemoryBlockTreeNode ( InMemoryBlockTree& tree, shared_p
     mInMemoryBlockTree ( &tree ) {
     
     assert ( header );
-    this->mTree     = &tree;
-    this->mHeader   = header;
-    this->mStatus   = kBlockTreeEntryStatus::STATUS_NEW;
-    this->mMeta     = isProvisional ? kBlockTreeEntryMeta::META_PROVISIONAL : kBlockTreeEntryMeta::META_NONE;
+    this->mTree             = &tree;
+    this->mHeader           = header;
+    this->mBranchStatus     = kBlockTreeBranchStatus::BRANCH_STATUS_NEW;
+    this->mSearchStatus     = isProvisional ? kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL : kBlockTreeSearchStatus::SEARCH_STATUS_NEW;
 }
 
 //----------------------------------------------------------------//
@@ -54,22 +54,20 @@ InMemoryBlockTreeNode::~InMemoryBlockTreeNode () {
 }
 
 //----------------------------------------------------------------//
-void InMemoryBlockTreeNode::mark ( kBlockTreeEntryStatus status ) {
+void InMemoryBlockTreeNode::setBranchStatus ( kBlockTreeBranchStatus status ) {
 
-    if ( status == this->mStatus ) return;
+    if ( status == this->mBranchStatus ) return;
 
-    if ( status == STATUS_COMPLETE ) {
-        if ( !this->mBlock ) return;
-        if ( this->mParent && ( this->mParent->mStatus != STATUS_COMPLETE )) return;
+    if ( status == BRANCH_STATUS_COMPLETE ) {
+        if ( this->mSearchStatus != SEARCH_STATUS_HAS_BLOCK ) return;
+        if ( this->mParent && ( this->mParent->mBranchStatus != BRANCH_STATUS_COMPLETE )) return;
     }
 
-    assert ( AbstractBlockTree::checkStatusTransition ( this->mStatus, status ));
-    
-    this->mStatus = status;
-    
+    this->mBranchStatus = status;
+
     set < InMemoryBlockTreeNode* >::iterator childIt = this->mChildren.begin ();
     for ( ; childIt != this->mChildren.end (); ++childIt ) {
-        ( *childIt )->mark ( status );
+        ( *childIt )->setBranchStatus ( status );
     }
 }
 

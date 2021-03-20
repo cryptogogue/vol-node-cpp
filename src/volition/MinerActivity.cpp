@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/BlockSearchPool.h>
 #include <volition/Format.h>
 #include <volition/Singleton.h>
 #include <volition/MinerActivity.h>
@@ -15,6 +16,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 void MinerActivity::runActivity () {
 
+    this->mSnapshot = *this;
+
     while ( !this->isStopped ()) {
         
         Poco::Timestamp timestamp;
@@ -26,9 +29,10 @@ void MinerActivity::runActivity () {
             Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
             this->step ( now );
             this->report ();
+            this->mBlockSearchPool->reportBlockSearches ();
         }
         catch ( Poco::Exception& exc ) {
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "Caught exception in MinerActivity::runActivity ()" );
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Caught exception in MinerActivity::runActivity ()" );
         }
         
         u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
@@ -75,7 +79,7 @@ void MinerActivity::Miner_shutdown ( bool kill ) {
         this->stop ();
         
         if ( kill ) {
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "REQUESTED WEB MINER SHUTDOWN\n" );
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "REQUESTED WEB MINER SHUTDOWN\n" );
             this->mShutdownEvent.set ();
             Poco::Util::ServerApplication::terminate ();
         }

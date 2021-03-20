@@ -80,6 +80,8 @@ HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleRequest ( 
 void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const {
     UNUSED ( match );
 
+    chrono::high_resolution_clock::time_point t0 = chrono::high_resolution_clock::now ();
+
     response.add ( "Access-Control-Allow-Origin", "*" );
     response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );
     response.add ( "Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, POST, PUT" );
@@ -124,6 +126,12 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
     ostream& out = response.send ();
     jsonOut->stringify ( out, 4, -1 );
     out.flush ();
+    
+    chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now ();
+    chrono::milliseconds span = chrono::duration_cast < chrono::milliseconds >( t1 - t0 );
+
+    // TODO: the cast to int here is slightly gross, but is a quick fix for a build warning on some platforms (where u64 is defined as a long instead of a long long).
+    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%dms: %s %s", ( int )span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
 }
 
 } // namespace Volition

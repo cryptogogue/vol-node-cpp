@@ -4,11 +4,10 @@
 #ifndef VOLITION_WEBMINERAPI_TESTKEYIDHANDLER_H
 #define VOLITION_WEBMINERAPI_TESTKEYIDHANDLER_H
 
-#include <volition/AbstractAPIRequestHandler.h>
 #include <volition/Block.h>
+#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/CryptoKeyInfo.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -17,13 +16,13 @@ namespace WebMinerAPI {
 // TestKeyIDHandler
 //================================================================//
 class TestKeyIDHandler :
-    public AbstractMinerAPIRequestHandler {
+    public BlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::POST )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( ledger );
         UNUSED ( jsonOut );

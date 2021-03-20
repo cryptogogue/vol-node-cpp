@@ -77,7 +77,7 @@ int _print ( lua_State *L ) {
     }
 //    str.append ( "\n" );
     
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA: %s", str.c_str ());
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "LUA: %s", str.c_str ());
     
     return 0;
 }
@@ -145,7 +145,7 @@ int _traceback ( lua_State* L ) {
 
     out.append ( "\n" );
     
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "LUA ERROR: %s", out.c_str ());
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "LUA ERROR: %s", out.c_str ());
     lua_pushstring ( L, out.c_str ());
 
     return 1;

@@ -5,8 +5,7 @@
 #define VOLITION_WEBMINERAPI_TRANSACTIONSHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/AbstractAPIRequestHandler.h>
-#include <volition/MinerAPIFactory.h>
+#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/Transaction.h>
 #include <volition/TransactionStatus.h>
@@ -18,13 +17,13 @@ namespace WebMinerAPI {
 // TransactionHandler
 //================================================================//
 class TransactionHandler :
-    public AbstractMinerAPIRequestHandler {
+    public BlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET_PUT )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( ledger );
     
         string accountName  = this->getMatchString ( "accountName" );

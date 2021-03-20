@@ -4,10 +4,10 @@
 #ifndef VOLITION_WEBMINERAPI_CONSENSUSBLOCKDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_CONSENSUSBLOCKDETAILSHANDLER_H
 
+#include <volition/AbstractConsensusInspector.h>
 #include <volition/Block.h>
-#include <volition/AbstractAPIRequestHandler.h>
+#include <volition/NonBlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -16,24 +16,22 @@ namespace WebMinerAPI {
 // ConsensusBlockDetailsHandler
 //================================================================//
 class ConsensusBlockDetailsHandler :
-    public AbstractMinerAPIRequestHandler {
+    public NonBlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-        UNUSED ( ledger );
         UNUSED ( jsonIn );
 
         try {
-        
+            
             string hash = this->getMatchString ( "hash" );
 
-            const AbstractBlockTree& blockTree = this->mWebMiner->getBlockTree ();
-            BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
-            shared_ptr < const Block > block = cursor.getBlock ();
+            MinerSnapshot::InspectorPtr inspector = this->mSnapshot.createInspector ();
+            shared_ptr < const Block > block = inspector ? inspector->getBlock ( hash ) : NULL;
 
             if ( block ) {
                 jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));

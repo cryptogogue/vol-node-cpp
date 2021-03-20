@@ -24,15 +24,16 @@ void Block::affirmHash () {
 }
 
 //----------------------------------------------------------------//
-bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
+LedgerResult Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
 
-    if ( ledger.getVersion () != this->mHeight ) return false;
+    if ( ledger.getVersion () != this->mHeight ) return "Apply block: height/version mismatch.";
     
     if ( this->mHeight == 0 ) {
         ledger.init ();
     }
     
-    if ( !this->verify ( ledger, policy )) return false;
+    LedgerResult verifyResult = this->verify ( ledger, policy );
+    if ( !verifyResult ) return verifyResult;
 
     // some transactions need to be applied later.
     // we need to evaluate if they are legal now.
@@ -62,7 +63,9 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
             shared_ptr < const Block > block = ledger.getBlock ( unfinishedBlock.mBlockID );
             assert ( block );
             
-            size_t nextMaturity = block->applyTransactions ( ledger, policy );
+            size_t nextMaturity;
+            LedgerResult transactionsResult = block->applyTransactions ( ledger, policy, nextMaturity );
+            if ( !transactionsResult ) return transactionsResult;
             
             if ( nextMaturity > this->mHeight ) {
             
@@ -75,7 +78,9 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
     }
 
     // apply transactions
-    size_t nextMaturity = this->applyTransactions ( ledger, policy );
+    size_t nextMaturity;
+    LedgerResult transactionsResult = this->applyTransactions ( ledger, policy, nextMaturity );
+    if ( !transactionsResult ) return transactionsResult;
     
     if ( nextMaturity > this->mHeight ) {
     
@@ -101,14 +106,13 @@ bool Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
     blockODBM.mHeader.set ( *this );
     blockODBM.mBlock.set ( *this );
 
-//    ledger.setValue < u64 >( Ledger::keyFor_globalBlockCount (), this->mHeight + 1 );
     return true;
 }
 
 //----------------------------------------------------------------//
-size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) const {
+LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const {
 
-    size_t nextMaturity = this->mHeight;
+    nextMaturity = this->mHeight;
     size_t height = ledger.getVersion ();
 
     AccountODBM accountODBM ( ledger, this->mMinerID );
@@ -126,8 +130,10 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
             
             size_t transactionMaturity = this->mHeight + transaction.getMaturity ();
             if ( transactionMaturity == height ) {
+            
                 TransactionResult result = transaction.apply ( ledger, this->mTime, policy );
-                assert ( result );
+                if ( !result ) return Format::write ( "%s: %s", result.getUUID ().c_str (), result.getMessage ().c_str ());
+                
                 gratuity        += transaction.getGratuity ();
                 profitShare     += transaction.getProfitShare ();
                 transferTax     += transaction.getTransferTax ();
@@ -172,7 +178,8 @@ size_t Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy ) co
         
         ledger.distribute ( miningTax + transferTax + profitShare );
     }
-    return nextMaturity;
+
+    return true;
 }
 
 //----------------------------------------------------------------//
@@ -214,24 +221,25 @@ const Digest& Block::sign ( const CryptoKeyPair& key, string hashAlgorithm ) {
 }
 
 //----------------------------------------------------------------//
-bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
+LedgerResult Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 
     if ( this->mHeight == 0 ) {
         BlockODBM genesisODBM ( ledger, 0 );
-        return genesisODBM ? ( genesisODBM.mHash.get () == this->mDigest.toHex ()) : true;
+        if ( genesisODBM && ( genesisODBM.mHash.get () != this->mDigest.toHex ())) return "Verify block: genesis hash mismatch.";
+        return true;
     }
     else {
     
         BlockODBM parentODBM ( ledger, this->mHeight - 1 );
-        if ( parentODBM.mHash.get ( "" ) != this->mPrevDigest.toHex ()) return false;
+        if ( parentODBM.mHash.get ( "" ) != this->mPrevDigest.toHex ()) return "Verify block: parent hash mismatch.";
 
-        if ( this->mBlockDelay != ledger.getBlockDelayInSeconds ()) return false;
-        if ( this->mRewriteWindow != ledger.getRewriteWindowInSeconds ()) return false;
-        if ( this->getWeight () > ledger.getMaxBlockWeight ()) return false;
+        if ( this->mBlockDelay != ledger.getBlockDelayInSeconds ()) return "Verify block: block delay mismatch.";
+        if ( this->mRewriteWindow != ledger.getRewriteWindowInSeconds ()) return "Verify block: rewrite window mismatch.";
+        if ( this->getWeight () > ledger.getMaxBlockWeight ()) return "Verify block: max block weight exceeded.";
     }
 
     shared_ptr < const MinerInfo > minerInfo = AccountODBM ( ledger, this->mMinerID ).mMinerInfo.get ();
-    if ( !minerInfo ) return false;
+    if ( !minerInfo ) return "Verify block: miner info not found.";
 
     const CryptoPublicKey& key = minerInfo->getPublicKey ();
 
@@ -242,7 +250,7 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
 
         if ( policy & VerificationPolicy::VERIFY_POSE ) {
             Digest digest = this->hashPose ( prevPoseHex );
-            if ( !key.verify ( this->mPose, digest )) return false;
+            if ( !key.verify ( this->mPose, digest )) return "Verify block: invalid POSE.";
         }
 
         if ( policy & VerificationPolicy::VERIFY_CHARM ) {
@@ -250,12 +258,12 @@ bool Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
             Digest prevPose;
             prevPose.fromHex ( prevPoseHex );
             Digest charm = BlockHeader::calculateCharm ( prevPose, minerInfo->getVisage ());
-            if ( this->mCharm != charm ) return false;
+            if ( this->mCharm != charm ) return "Verify block: invalid CHARM.";
         }
     }
 
     if ( policy & VerificationPolicy::VERIFY_BLOCK_SIG ) {
-        return key.verify ( this->mSignature, *this );
+        if ( !key.verify ( this->mSignature, *this )) return "Verify block: invalid SIGNATURE.";
     }
     return true;
 }

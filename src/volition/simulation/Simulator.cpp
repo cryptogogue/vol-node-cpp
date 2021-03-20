@@ -136,7 +136,7 @@ void Simulator::initializeGenesis ( time_t blockDelayInSeconds, time_t rewriteWi
         genesisMinerTransactionBody->pushAccount ( genesisAccount );
     }
     
-    LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s", ToJSONSerializer::toJSONString ( keyDump, 4 ).c_str ());
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s", ToJSONSerializer::toJSONString ( keyDump, 4 ).c_str ());
     
     shared_ptr < Transaction > transaction = make_shared < Transaction >();
     transaction->setBody ( move ( genesisMinerTransactionBody ));
@@ -211,34 +211,30 @@ void Simulator::report () {
             shared_ptr < Miner > miner = this->mMinersByID [ 0 ];
             BlockTreeCursor tail = miner->getBestProvisional ();
                 
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "GOAL: %s", ( *this->mOptimalTag ).writeBranch ().c_str ());
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "GOAL: %s", ( *this->mOptimalTag ).writeBranch ().c_str ());
         
             break;
         }
             
         case REPORT_ALL_MINERS: {
         
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "STEP: %d", ( int )this->mStepCount );
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "STEP: %d", ( int )this->mStepCount );
             for ( size_t i = 0; i < this->mMinersByID.size (); ++i ) {
             
                 shared_ptr < Miner > miner = this->mMinersByID [ i ];
                 BlockTreeCursor tail = miner->getBestProvisional ();
                 
-                LGN_LOG ( VOL_FILTER_ROOT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
+                LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
             }
             
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
-        
             break;
         }
         
         case REPORT_ALL_MINERS_VERBOSE: {
         
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "----------------------------------------------------------------" );
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "STEP: %d", ( int )this->mStepCount );
-            LGN_LOG ( VOL_FILTER_ROOT, INFO, "" );
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "----------------------------------------------------------------" );
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "STEP: %d", ( int )this->mStepCount );
             
             for ( size_t i = 0; i < this->mMinersByID.size (); ++i ) {
             

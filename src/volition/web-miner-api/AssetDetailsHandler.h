@@ -6,9 +6,8 @@
 
 #include <volition/Asset.h>
 #include <volition/Block.h>
-#include <volition/AbstractAPIRequestHandler.h>
+#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/MinerAPIFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -17,13 +16,13 @@ namespace WebMinerAPI {
 // AssetDetailsHandler
 //================================================================//
 class AssetDetailsHandler :
-    public AbstractMinerAPIRequestHandler {
+    public BlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     
