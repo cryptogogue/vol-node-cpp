@@ -47,7 +47,7 @@ public:
         ledger.serializeEntitlements ( *account, entitlements );
         jsonOut.set ( "entitlements", entitlements );
         
-        FeeSchedule feeSchedule = ledger.getFeeSchedule ();
+        TransactionFeeSchedule feeSchedule = ledger.getTransactionFeeSchedule ();
         jsonOut.set ( "feeSchedule", ToJSONSerializer::toJSON ( feeSchedule ));
         
         shared_ptr < const MinerInfo > minerInfo = accountODBM.mMinerInfo.get ();

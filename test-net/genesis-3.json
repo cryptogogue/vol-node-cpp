@@ -1,6 +1,4 @@
 {
-    "height" : 0,
-    "time" : "1970-01-01T00:00:00UTC",
     "transactions" : [
         {
             "bodyIn" : {
@@ -84,22 +82,11 @@
                 "maker" : {
                     "accountName" : "9090"
                 },
-                "type" :            "SET_FEE_SCHEDULE",
-                "feeSchedule" : {
+                "type" :            "SET_MONETARY_POLICY",
+                "monetaryPolicy" : {
 
                     "fixedMiningReward" :   100000,
-                    "miningTax" :           { "scale" : 1000, "percent" : 25 },
-
-                    "defaultProfile" : {
-                        "profitShare" : { "percent" : 15 },
-                        "transferTax" : { "percent" : 5 }
-                    },
-                    "transactionProfiles" : {
-                        "RUN_SCRIPT" : {
-                            "profitShare" : { "percent" : 35 },
-                            "transferTax" : { "percent" : 5 }
-                        }
-                    }
+                    "miningTax" :           { "factor" : 1000, "integer" : 25 }
                 }
             }
         },
@@ -108,11 +95,10 @@
                 "maker" : {
                     "accountName" : "9090"
                 },
-                "type" :            "SET_FEE_DISTRIBUTION_TABLE",
-                "distributionTable" : {
+                "type" :            "SET_PAYOUT_POLICY",
+                "payoutPolicy" : {
                     "shares" : {
-                        "9090" : 75,
-                        "9091" : 25
+                        "9090" : 100
                     }
                 }
             }

@@ -57,7 +57,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::
         
         TransactionContext context ( ledger, accountODBM, keyAndPolicy, time );
         
-        const FeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getFeeName ());
+        const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getFeeName ());
         
         if ( !feeProfile.checkProfitShare ( maker->getGratuity (), maker->getProfitShare ())) return "Incorrect profit share.";
         if ( !feeProfile.checkTransferTax ( this->getSendVOL (), maker->getTransferTax ())) return "Incorrect transfer tax.";
@@ -87,6 +87,8 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::
 
 //----------------------------------------------------------------//
 TransactionResult Transaction::checkBody ( Ledger& ledger, time_t time ) const {
+
+    if ( !this->mBody ) return "Missing transaction body.";
 
     if ( this->mBody->mUUID.size () > MAX_UUID_LENGTH ) return Format::write ( "Transaction UUID exceeds %d-character limit.", MAX_UUID_LENGTH );
     

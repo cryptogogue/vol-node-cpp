@@ -7,7 +7,7 @@
 #include <volition/common.h>
 #include <volition/AccountEntitlements.h>
 #include <volition/AccountODBM.h>
-#include <volition/FeeSchedule.h>
+#include <volition/TransactionFeeSchedule.h>
 #include <volition/KeyEntitlements.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/TransactionMaker.h>
@@ -27,7 +27,7 @@ public:
     const Account           mAccount;
     Entitlements            mAccountEntitlements;
     AccountODBM&            mAccountODBM;
-    FeeSchedule             mFeeSchedule;
+    TransactionFeeSchedule  mFeeSchedule;
     AccountID               mIndex;
     const KeyAndPolicy&     mKeyAndPolicy;
     Entitlements            mKeyEntitlements;

@@ -8,10 +8,11 @@
 #include <volition/AbstractMiningMessenger.h>
 #include <volition/Accessors.h>
 #include <volition/AbstractBlockTree.h>
-#include <volition/FeeDistributionTable.h>
-#include <volition/FeeSchedule.h>
+#include <volition/PayoutPolicy.h>
+#include <volition/TransactionFeeSchedule.h>
 #include <volition/CryptoKey.h>
 #include <volition/Ledger.h>
+#include <volition/MonetaryPolicy.h>
 #include <volition/RemoteMiner.h>
 #include <volition/TransactionQueue.h>
 #include <volition/serialization/AbstractSerializable.h>
@@ -96,18 +97,22 @@ public:
 class MinerStatus {
 public:
 
-    SchemaVersion           mSchemaVersion;
-    string                  mSchemaHash;
-    string                  mGenesisHash;
-    string                  mIdentity;
-    u64                     mVOL;
-    u64                     mFeeDistributionPool;
-    u64                     mMinimumGratuity;
-    string                  mReward;
-    u64                     mTotalBlocks;
-    FeeSchedule             mFeeSchedule;
-    FeeDistributionTable    mFeeDistributionTable;
-    u64                     mMinerBlockCount;
+    SchemaVersion               mSchemaVersion;
+    string                      mSchemaHash;
+    string                      mGenesisHash;
+    string                      mIdentity;
+    u64                         mMinimumGratuity;
+    string                      mReward;
+    u64                         mTotalBlocks;
+    TransactionFeeSchedule      mFeeSchedule;
+    MonetaryPolicy              mMonetaryPolicy;
+    PayoutPolicy                mPayoutPolicy;
+    u64                         mMinerBlockCount;
+    
+    u64                         mRewardPool;
+    u64                         mPrizePool;
+    u64                         mPayoutPool;
+    u64                         mVOL;
 };
 
 //================================================================//
@@ -145,7 +150,7 @@ protected:
     friend class BlockSearch;
     friend class RemoteMiner;
 
-    static constexpr const char* PERSIST_PREFIX     = "v1";
+    static constexpr const char* PERSIST_PREFIX     = "v2-beta-";
     static constexpr const char* MASTER_BRANCH      = "master";
 
     int                                             mFlags;
@@ -212,6 +217,7 @@ protected:
     void                                scheduleReport              ();
     void                                updateBestBranch            ( time_t now );
     void                                updateBlockSearches         ();
+    void                                updateMinerStatus           ();
     void                                updateNetworkSearches       ();
     void                                updateRemoteMinerGroups     ();
     void                                updateRemoteMiners          ();

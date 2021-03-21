@@ -8,8 +8,8 @@
 #include <volition/AbstractMiningMessenger.h>
 #include <volition/Accessors.h>
 #include <volition/AbstractBlockTree.h>
-#include <volition/FeeDistributionTable.h>
-#include <volition/FeeSchedule.h>
+#include <volition/PayoutPolicy.h>
+#include <volition/TransactionFeeSchedule.h>
 #include <volition/CryptoKey.h>
 #include <volition/Ledger.h>
 #include <volition/RemoteMiner.h>

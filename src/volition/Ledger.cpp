@@ -7,14 +7,15 @@
 #include <volition/AssetMethodInvocation.h>
 #include <volition/AssetODBM.h>
 #include <volition/BlockODBM.h>
-#include <volition/FeeDistributionTable.h>
-#include <volition/FeeSchedule.h>
+#include <volition/PayoutPolicy.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
 #include <volition/MiningReward.h>
+#include <volition/MonetaryPolicy.h>
 #include <volition/Transaction.h>
+#include <volition/TransactionFeeSchedule.h>
 #include <volition/UnsecureRandom.h>
 
 namespace Volition {
@@ -153,18 +154,6 @@ u64 Ledger::createVOL ( u64 rewards, u64 prizes ) {
 }
 
 //----------------------------------------------------------------//
-void Ledger::distribute ( u64 amount ) {
-
-    if ( amount == 0 ) return;
-    this->setFeeDistributionPool ( this->getFeeDistributionPool () + amount );
-    
-    shared_ptr < FeeDistributionTable > distributionTable = this->getObjectOrNull < FeeDistributionTable >( this->keyFor_feeDistributionTable ());
-    if ( distributionTable ) {
-        distributionTable->distribute ( *this );
-    }
-}
-
-//----------------------------------------------------------------//
 shared_ptr < const Block > Ledger::getBlock () const {
 
     u64 totalBlocks = this->countBlocks ();
@@ -211,26 +200,6 @@ string Ledger::getEntropyString () const {
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getFeeDistributionPool () const {
-
-    return this->getValueOrFallback < u64 >( keyFor_feeDistributionPool (), 0 );
-}
-
-//----------------------------------------------------------------//
-FeeDistributionTable Ledger::getFeeDistributionTable () const {
-    
-    shared_ptr < FeeDistributionTable > feeDistributionTable = this->getObjectOrNull < FeeDistributionTable >( keyFor_feeDistributionTable ());
-    return feeDistributionTable ? *feeDistributionTable : FeeDistributionTable ();
-}
-
-//----------------------------------------------------------------//
-FeeSchedule Ledger::getFeeSchedule () const {
-        
-    shared_ptr < FeeSchedule > feeSchedule = this->getObjectOrNull < FeeSchedule >( keyFor_feeSchedule ());
-    return feeSchedule ? *feeSchedule : FeeSchedule ();
-}
-
-//----------------------------------------------------------------//
 string Ledger::getGenesisHash () const {
     
     BlockODBM genesisODBM ( *this, 0 );
@@ -260,6 +229,26 @@ string Ledger::getIdentity () const {
 u64 Ledger::getMaxBlockWeight () const {
 
     return this->getValue < u64 >( keyFor_maxBlockWeight ());
+}
+
+//----------------------------------------------------------------//
+MonetaryPolicy Ledger::getMonetaryPolicy () const {
+        
+    shared_ptr < MonetaryPolicy > monetaryPolicy = this->getObjectOrNull < MonetaryPolicy >( keyFor_monetaryPolicy ());
+    return monetaryPolicy ? *monetaryPolicy : MonetaryPolicy ();
+}
+
+//----------------------------------------------------------------//
+PayoutPolicy Ledger::getPayoutPolicy () const {
+    
+    shared_ptr < PayoutPolicy > feeDistributionTable = this->getObjectOrNull < PayoutPolicy >( keyFor_payoutPolicy ());
+    return feeDistributionTable ? *feeDistributionTable : PayoutPolicy ();
+}
+
+//----------------------------------------------------------------//
+u64 Ledger::getPayoutPool () const {
+
+    return this->getValueOrFallback < u64 >( keyFor_payoutPool (), 0 );
 }
 
 //----------------------------------------------------------------//
@@ -327,6 +316,13 @@ SchemaVersion Ledger::getSchemaVersion () const {
 }
 
 //----------------------------------------------------------------//
+TransactionFeeSchedule Ledger::getTransactionFeeSchedule () const {
+        
+    shared_ptr < TransactionFeeSchedule > feeSchedule = this->getObjectOrNull < TransactionFeeSchedule >( keyFor_transactionFeeSchedule ());
+    return feeSchedule ? *feeSchedule : TransactionFeeSchedule ();
+}
+
+//----------------------------------------------------------------//
 UnfinishedBlockList Ledger::getUnfinished () {
 
     shared_ptr < UnfinishedBlockList > unfinished = this->getObjectOrNull < UnfinishedBlockList >( keyFor_unfinished ());
@@ -357,7 +353,7 @@ void Ledger::init () {
     this->setValue < AssetID::Index >( keyFor_globalAccountCount (), 0 );
     this->setValue < AssetID::Index >( keyFor_globalAssetCount (), 0 );
     this->setValue < string >( keyFor_schema (), "{}" );
-    this->setObject < FeeSchedule >( keyFor_feeSchedule (), FeeSchedule ());
+    this->setObject < TransactionFeeSchedule >( keyFor_transactionFeeSchedule (), TransactionFeeSchedule ());
 }
 
 //----------------------------------------------------------------//
@@ -403,6 +399,18 @@ Ledger::Ledger ( Ledger& other ) :
 
 //----------------------------------------------------------------//
 Ledger::~Ledger () {
+}
+
+//----------------------------------------------------------------//
+void Ledger::payout ( u64 amount ) {
+
+    if ( amount == 0 ) return;
+    this->setPayoutPool ( this->getPayoutPool () + amount );
+    
+    shared_ptr < PayoutPolicy > distributionTable = this->getObjectOrNull < PayoutPolicy >( this->keyFor_payoutPolicy ());
+    if ( distributionTable ) {
+        distributionTable->payout ( *this );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -496,34 +504,34 @@ void Ledger::setEntropyString ( string entropy ) {
 }
 
 //----------------------------------------------------------------//
-void Ledger::setFeeDistributionPool ( u64 amount ) {
-
-    this->setValue < u64 >( keyFor_feeDistributionPool (), amount );
-}
-
-//----------------------------------------------------------------//
-LedgerResult Ledger::setFeeDistributionTable ( const FeeDistributionTable& distributionTable ) {
-
-    if ( !distributionTable.isBalanced ()) return "Distribution table does not balance.";
-    if ( !distributionTable.hasAccounts ( *this )) return "Distribution table names unknown accounts.";
-
-    this->setObject < FeeDistributionTable >( keyFor_feeDistributionTable (), distributionTable );
-    return true;
-}
-
-//----------------------------------------------------------------//
-void Ledger::setFeeSchedule ( const FeeSchedule& feeSchedule ) {
-
-    this->setObject < FeeSchedule >( keyFor_feeSchedule (), feeSchedule );
-}
-
-//----------------------------------------------------------------//
 bool Ledger::setIdentity ( string identity ) {
 
     LedgerKey KEY_FOR_IDENTITY = keyFor_identity ();
     if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
     this->setValue < string >( KEY_FOR_IDENTITY, identity );
     return true;
+}
+
+//----------------------------------------------------------------//
+void Ledger::setMonetaryPolicy ( const MonetaryPolicy& monetaryPolicy ) {
+
+    this->setObject < MonetaryPolicy >( keyFor_monetaryPolicy (), monetaryPolicy );
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger::setPayoutPolicy ( const PayoutPolicy& distributionTable ) {
+
+    if ( !distributionTable.isBalanced ()) return "Distribution table does not balance.";
+    if ( !distributionTable.hasAccounts ( *this )) return "Distribution table names unknown accounts.";
+
+    this->setObject < PayoutPolicy >( keyFor_payoutPolicy (), distributionTable );
+    return true;
+}
+
+//----------------------------------------------------------------//
+void Ledger::setPayoutPool ( u64 amount ) {
+
+    this->setValue < u64 >( keyFor_payoutPool (), amount );
 }
 
 //----------------------------------------------------------------//
@@ -539,6 +547,12 @@ void Ledger::setSchema ( const Schema& schema ) {
         this->mSchemaCache = make_shared < map < string, Schema >>();
     }
     ( *this->mSchemaCache )[ schemaHash ] = schema;
+}
+
+//----------------------------------------------------------------//
+void Ledger::setTransactionFeeSchedule ( const TransactionFeeSchedule& feeSchedule ) {
+
+    this->setObject < TransactionFeeSchedule >( keyFor_transactionFeeSchedule (), feeSchedule );
 }
 
 //----------------------------------------------------------------//

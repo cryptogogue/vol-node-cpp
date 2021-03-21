@@ -2,15 +2,15 @@
 // http://cryptogogue.com
 
 #include <gtest/gtest.h>
-#include <volition/FeeDistributionTable.h>
+#include <volition/PayoutPolicy.h>
 
 using namespace Volition;
 
 //----------------------------------------------------------------//
-TEST ( FeeDistributionTable, simple_distribution ) {
+TEST ( PayoutPolicy, simple_distribution ) {
     
     {
-        FeeDistributionTable table;
+        PayoutPolicy table;
         table.setScale ( 10 );
         table.setShare ( "foo", 5 );
         table.setShare ( "bar", 5 );
@@ -18,7 +18,7 @@ TEST ( FeeDistributionTable, simple_distribution ) {
     }
     
     {
-        FeeDistributionTable table;
+        PayoutPolicy table;
         table.setScale ( 100 );
         table.setShare ( "foo", 50 );
         table.setShare ( "bar", 25 );
@@ -27,7 +27,7 @@ TEST ( FeeDistributionTable, simple_distribution ) {
     }
 
     {
-        FeeDistributionTable table;
+        PayoutPolicy table;
         table.setScale ( 1000 );
         table.setShare ( "foo", 666 );
         table.setShare ( "bar", 333 );

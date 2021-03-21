@@ -1,49 +1,48 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_SETFEESCHEDULE_H
-#define VOLITION_TRANSACTIONS_SETFEESCHEDULE_H
+#ifndef VOLITION_TRANSACTIONS_SETPAYOUTPOLICY_H
+#define VOLITION_TRANSACTIONS_SETPAYOUTPOLICY_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
-#include <volition/FeeSchedule.h>
+#include <volition/PayoutPolicy.h>
 
 namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// SetFeeSchedule
+// SetPayoutPolicy
 //================================================================//
-class SetFeeSchedule :
+class SetPayoutPolicy :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "SET_FEE_SCHEDULE" )
+    TRANSACTION_TYPE ( "SET_PAYOUT_POLICY" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    FeeSchedule     mFeeSchedule;
+    PayoutPolicy    mPayoutPolicy;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "feeSchedule",       this->mFeeSchedule  );
+        serializer.serialize ( "payoutPolicy",      this->mPayoutPolicy );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "feeSchedule",       this->mFeeSchedule  );
+        serializer.serialize ( "payoutPolicy",      this->mPayoutPolicy );
     }
 
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
                 
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_FEE_SCHEDULE )) return "Permission denied.";
-        context.mLedger.setFeeSchedule ( this->mFeeSchedule );
-        return true;
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_PAYOUT_POLICY )) return "Permission denied.";
+        return context.mLedger.setPayoutPolicy ( this->mPayoutPolicy );
     }
 };
 

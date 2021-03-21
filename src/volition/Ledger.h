@@ -28,11 +28,12 @@ class AssetFieldValue;
 class AssetMethod;
 class AssetMethodInvocation;
 class Block;
-class FeeDistributionTable;
-class FeeSchedule;
+class PayoutPolicy;
 class KeyEntitlements;
+class MonetaryPolicy;
 class Policy;
 class Schema;
+class TransactionFeeSchedule;
 class TransactionMaker;
 class TransactionMakerSignature;
 
@@ -142,21 +143,6 @@ public:
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_feeDistributionPool () {
-        return "feeDistributionPool";
-    }
-    
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_feeDistributionTable () {
-        return "feeDistributionTable";
-    }
-    
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_feeSchedule () {
-        return "feeSchedule";
-    }
-
-    //----------------------------------------------------------------//
     static LedgerKey keyFor_globalAccountCount () {
         return "account.count";
     }
@@ -179,6 +165,21 @@ public:
     //----------------------------------------------------------------//
     static LedgerKey keyFor_miners () {
         return "miners";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_monetaryPolicy () {
+        return "monetaryPolicy";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_payoutPolicy () {
+        return "payoutPolicy";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_payoutPool () {
+        return "payoutPool";
     }
     
     //----------------------------------------------------------------//
@@ -219,6 +220,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_transactionFeeSchedule () {
+        return "transactionFeeSchedule";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_unfinished () {
         return "unfinished";
     }
@@ -237,21 +243,20 @@ public:
     u64                                 countBlocks                     () const;
     u64                                 countVOL                        () const;
     u64                                 createVOL                       ( u64 rewards, u64 prizes );
-    void                                distribute                      ( u64 amount );
     shared_ptr < const Block >          getBlock                        () const;
     shared_ptr < const Block >          getBlock                        ( u64 height ) const;
     shared_ptr < const Block >          getBlock                        ( string hash ) const;
     time_t                              getBlockDelayInSeconds          () const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
-    u64                                 getFeeDistributionPool          () const;
-    FeeDistributionTable                getFeeDistributionTable         () const;
-    FeeSchedule                         getFeeSchedule                  () const;
     string                              getGenesisHash                  () const;
     shared_ptr < const BlockHeader >    getHeader                       ( u64 height ) const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
     u64                                 getMaxBlockWeight               () const;
+    MonetaryPolicy                      getMonetaryPolicy               () const;
+    PayoutPolicy                        getPayoutPolicy                 () const;
+    u64                                 getPayoutPool                   () const;
     u64                                 getPrizePool                    () const;
     u64                                 getRewardPool                   () const;
     time_t                              getRewriteWindowInSeconds       () const;
@@ -259,6 +264,7 @@ public:
     SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaHash                   () const;
     string                              getSchemaString                 () const;
+    TransactionFeeSchedule              getTransactionFeeSchedule       () const;
     UnfinishedBlockList                 getUnfinished                   ();
     bool                                hasBlock                        ( string hash ) const;
     bool                                hasTransaction                  ( string accountName, string uuid ) const;
@@ -269,16 +275,18 @@ public:
                                         Ledger                          ();
                                         Ledger                          ( Ledger& other );
                                         ~Ledger                         ();
+    void                                payout                          ( u64 amount );
     string                              printChain                      ( const char* pre = NULL, const char* post = NULL ) const;
     LedgerResult                        pushBlock                       ( const Block& block, Block::VerificationPolicy policy );
     void                                serializeEntitlements           ( const Account& account, AbstractSerializerTo& serializer ) const;
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
-    void                                setFeeDistributionPool          ( u64 pool );
-    LedgerResult                        setFeeDistributionTable         ( const FeeDistributionTable& distributionTable );
-    void                                setFeeSchedule                  ( const FeeSchedule& feeSchedule );
     bool                                setIdentity                     ( string identity );
+    void                                setMonetaryPolicy               ( const MonetaryPolicy& monetaryPolicy );
+    LedgerResult                        setPayoutPolicy                 ( const PayoutPolicy& distributionTable );
+    void                                setPayoutPool                   ( u64 pool );
     void                                setSchema                       ( const Schema& schema );
+    void                                setTransactionFeeSchedule       ( const TransactionFeeSchedule& feeSchedule );
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
     bool                                verify                          ( const AssetMethodInvocation& invocation );
 

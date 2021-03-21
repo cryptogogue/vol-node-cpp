@@ -399,9 +399,7 @@ SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
     );
     result.reportWithAssert ();
 
-    #if MIN_SUPPORTED_USER_VERSION > 0
-        if ( userVersion < MIN_SUPPORTED_USER_VERSION ) throw SQLiteBlockTreeUnsupportedVersionException ();
-    #endif
+    if ( userVersion && ( userVersion < MIN_SUPPORTED_USER_VERSION )) throw SQLiteBlockTreeUnsupportedVersionException ();
     
     // nodes
     result = this->mDB.exec ( SQL_STR (

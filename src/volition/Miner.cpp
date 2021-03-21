@@ -610,6 +610,8 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
         this->pushBlock ( block );
         this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
     }
+    
+    this->updateMinerStatus ();
 }
 
 //----------------------------------------------------------------//
@@ -669,28 +671,7 @@ void Miner::step ( time_t now ) {
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
     this->updateNetworkSearches ();
-    
-    {
-        Poco::ScopedLock < Poco::Mutex > snapshotLoc ( this->mSnapshotMutex );
-        this->mSnapshot = *this;
-        
-        Ledger& ledger = *this->mLedger;
-        AccountODBM accountODBM ( ledger, this->getMinerID ());
-        
-        // TODO: this is a hack to speed up the default query
-        this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
-        this->mMinerStatus.mSchemaHash              = ledger.getSchemaHash ();
-        this->mMinerStatus.mGenesisHash             = ledger.getGenesisHash ();
-        this->mMinerStatus.mIdentity                = ledger.getIdentity ();
-        this->mMinerStatus.mVOL                     = ledger.countVOL ();
-        this->mMinerStatus.mFeeDistributionPool     = ledger.getFeeDistributionPool ();
-        this->mMinerStatus.mMinimumGratuity         = this->getMinimumGratuity ();
-        this->mMinerStatus.mReward                  = this->getReward ();
-        this->mMinerStatus.mTotalBlocks             = ledger.countBlocks ();
-        this->mMinerStatus.mFeeSchedule             = ledger.getFeeSchedule ();
-        this->mMinerStatus.mFeeDistributionTable    = ledger.getFeeDistributionTable ();
-        this->mMinerStatus.mMinerBlockCount         = accountODBM.mMinerBlockCount.get ( 0 );
-    }
+    this->updateMinerStatus ();
     
     try {
         this->mMessenger->sendRequests ();
@@ -758,6 +739,34 @@ void Miner::updateBlockSearches () {
     blockSearchPool.affirmBranchSearch ( *this->mBestBranchTag );
     
     blockSearchPool.update ();
+}
+
+//----------------------------------------------------------------//
+void Miner::updateMinerStatus () {
+
+    Poco::ScopedLock < Poco::Mutex > snapshotLoc ( this->mSnapshotMutex );
+    this->mSnapshot = *this;
+    
+    Ledger& ledger = *this->mLedger;
+    AccountODBM accountODBM ( ledger, this->getMinerID ());
+    
+    // TODO: this is a hack to speed up the default query
+    this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
+    this->mMinerStatus.mSchemaHash              = ledger.getSchemaHash ();
+    this->mMinerStatus.mGenesisHash             = ledger.getGenesisHash ();
+    this->mMinerStatus.mIdentity                = ledger.getIdentity ();
+    this->mMinerStatus.mMinimumGratuity         = this->getMinimumGratuity ();
+    this->mMinerStatus.mReward                  = this->getReward ();
+    this->mMinerStatus.mTotalBlocks             = ledger.countBlocks ();
+    this->mMinerStatus.mFeeSchedule             = ledger.getTransactionFeeSchedule ();
+    this->mMinerStatus.mMonetaryPolicy          = ledger.getMonetaryPolicy ();
+    this->mMinerStatus.mPayoutPolicy            = ledger.getPayoutPolicy ();
+    this->mMinerStatus.mMinerBlockCount         = accountODBM.mMinerBlockCount.get ( 0 );
+    
+    this->mMinerStatus.mRewardPool              = ledger.getRewardPool ();
+    this->mMinerStatus.mPrizePool               = ledger.getPrizePool ();
+    this->mMinerStatus.mPayoutPool              = ledger.getPayoutPool ();
+    this->mMinerStatus.mVOL                     = ledger.countVOL ();
 }
 
 //----------------------------------------------------------------//

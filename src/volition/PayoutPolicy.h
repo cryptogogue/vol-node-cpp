@@ -1,21 +1,21 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_FEEDISTRIBUTIONTABLE_H
-#define VOLITION_FEEDISTRIBUTIONTABLE_H
+#ifndef VOLITION_PAYOUTPOLICY_H
+#define VOLITION_PAYOUTPOLICY_H
 
 #include <volition/common.h>
 #include <volition/AccountODBM.h>
-#include <volition/FeeSchedule.h>
+#include <volition/TransactionFeeSchedule.h>
 #include <volition/Ledger.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
 
 //================================================================//
-// FeeDistributionTable
+// PayoutPolicy
 //================================================================//
-class FeeDistributionTable :
+class PayoutPolicy :
     public AbstractSerializable {
 private:
 
@@ -52,9 +52,9 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void distribute ( Ledger& ledger ) const {
+    void payout ( Ledger& ledger ) const {
         
-        u64 pool = ledger.getFeeDistributionPool ();
+        u64 pool = ledger.getPayoutPool ();
         if ( pool == 0 ) return;
         
         if ( !this->isBalanced ()) return;
@@ -81,12 +81,12 @@ public:
 
                 totalDistributed += distribution;
             }
-            ledger.setFeeDistributionPool ( pool - totalDistributed );
+            ledger.setPayoutPool ( pool - totalDistributed );
         }
     }
 
     //----------------------------------------------------------------//
-    FeeDistributionTable () :
+    PayoutPolicy () :
         mScale ( DEFAULT_SCALE ) {
     }
     

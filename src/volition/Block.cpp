@@ -6,6 +6,7 @@
 #include <volition/CryptoKey.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
+#include <volition/MonetaryPolicy.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/Transaction.h>
 
@@ -181,20 +182,20 @@ LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy polic
     
         ledger.invokeReward ( this->mMinerID, this->mBody->mReward, this->mTime );
         
-        FeeSchedule feeSchedule = ledger.getFeeSchedule ();
+        MonetaryPolicy monetaryPolicy = ledger.getMonetaryPolicy ();
         
         u64 miningReward = 0;
         u64 miningTax = 0;
         
-        if ( feeSchedule.hasMiningReward ()) {
+        if ( monetaryPolicy.hasMiningReward ()) {
         
             LedgerFieldODBM < u64 > rewardPoolField ( ledger, Ledger::keyFor_rewardPool ());
             u64 rewardPool = rewardPoolField.get ();
             
             if ( rewardPool ) {
                 
-                u64 grossMiningReward   = feeSchedule.calculateMiningReward ( rewardPool );
-                miningTax               = feeSchedule.calculateMiningRewardTax ( grossMiningReward );
+                u64 grossMiningReward   = monetaryPolicy.calculateMiningReward ( rewardPool );
+                miningTax               = monetaryPolicy.calculateMiningRewardTax ( grossMiningReward );
                 
                 rewardPoolField.set ( rewardPool - grossMiningReward );
                 miningReward = grossMiningReward - miningTax;
@@ -208,7 +209,7 @@ LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy polic
             accountODBM.mBody.set ( accountUpdated );
         }
         
-        ledger.distribute ( miningTax + transferTax + profitShare );
+        ledger.payout ( miningTax + transferTax + profitShare );
     }
 
     accountODBM.mMinerBlockCount.set ( accountODBM.mMinerBlockCount.get ( 0 ) + 1 );

@@ -85,8 +85,8 @@ class SQLiteBlockTree :
     public AbstractBlockTree {
 private:
 
-    static const size_t MIN_SUPPORTED_USER_VERSION      = 0;
-    static const size_t CURRENT_USER_VERSION            = 1;
+    static const size_t MIN_SUPPORTED_USER_VERSION      = 2;
+    static const size_t CURRENT_USER_VERSION            = 2;
 
     mutable SQLite                      mDB;
     mutable BlockCursorCache            mCache;

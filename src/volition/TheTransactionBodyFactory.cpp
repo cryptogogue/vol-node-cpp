@@ -35,8 +35,9 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::SendAssets >();
     this->registerTransaction < Volition::Transactions::SendVOL >();
     this->registerTransaction < Volition::Transactions::SetEntitlements >();
-    this->registerTransaction < Volition::Transactions::SetFeeDistributionTable >();
-    this->registerTransaction < Volition::Transactions::SetFeeSchedule >();
+    this->registerTransaction < Volition::Transactions::SetMonetaryPolicy >();
+    this->registerTransaction < Volition::Transactions::SetPayoutPolicy >();
+    this->registerTransaction < Volition::Transactions::SetTransactionFeeSchedule >();
     this->registerTransaction < Volition::Transactions::UpgradeAssets >();    
 }
 

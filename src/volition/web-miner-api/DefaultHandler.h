@@ -5,8 +5,8 @@
 #define VOLITION_WEBMINERAPI_DEFAULTHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/FeeDistributionTable.h>
-#include <volition/FeeSchedule.h>
+#include <volition/PayoutPolicy.h>
+#include <volition/TransactionFeeSchedule.h>
 #include <volition/Format.h>
 #include <volition/NonBlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -41,14 +41,18 @@ public:
         jsonOut.set ( "schemaHash",             status.mSchemaHash );
         jsonOut.set ( "build",                  Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
         jsonOut.set ( "commit",                 Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
-        jsonOut.set ( "vol",                    status.mVOL );
-        jsonOut.set ( "pool",                   status.mFeeDistributionPool );
         jsonOut.set ( "minGratuity",            status.mMinimumGratuity );
         jsonOut.set ( "reward",                 status.mReward );
         jsonOut.set ( "totalBlocks",            status.mTotalBlocks );
         jsonOut.set ( "minerBlocks",            status.mMinerBlockCount );
         jsonOut.set ( "feeSchedule",            ToJSONSerializer::toJSON ( status.mFeeSchedule ));
-        jsonOut.set ( "feeDistributionTable",   ToJSONSerializer::toJSON ( status.mFeeDistributionTable ));
+        jsonOut.set ( "monetaryPolicy",         ToJSONSerializer::toJSON ( status.mMonetaryPolicy ));
+        jsonOut.set ( "payoutPolicy",           ToJSONSerializer::toJSON ( status.mPayoutPolicy ));
+
+        jsonOut.set ( "rewardPool",             status.mRewardPool );
+        jsonOut.set ( "prizePool",              status.mPrizePool );
+        jsonOut.set ( "payoutPool",             status.mPayoutPool );
+        jsonOut.set ( "vol",                    status.mVOL );
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
