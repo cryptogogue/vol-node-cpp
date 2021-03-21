@@ -12,6 +12,36 @@
 namespace Volition {
 
 //================================================================//
+// BlockBody
+//================================================================//
+
+//----------------------------------------------------------------//
+BlockBody::BlockBody () {
+}
+
+//----------------------------------------------------------------//
+BlockBody::~BlockBody () {
+}
+
+//================================================================//
+// override
+//================================================================//
+
+//----------------------------------------------------------------//
+void BlockBody::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+
+    serializer.serialize ( "reward",        this->mReward );
+    serializer.serialize ( "transactions",  this->mTransactions );
+}
+
+//----------------------------------------------------------------//
+void BlockBody::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+
+    serializer.serialize ( "reward",        this->mReward );
+    serializer.serialize ( "transactions",  this->mTransactions );
+}
+
+//================================================================//
 // Block
 //================================================================//
 
@@ -112,6 +142,8 @@ LedgerResult Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
 //----------------------------------------------------------------//
 LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const {
 
+    if ( !this->mBody ) return false;
+
     nextMaturity = this->mHeight;
     size_t height = ledger.getVersion ();
 
@@ -125,8 +157,8 @@ LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy polic
     if ( ledger.getVersion () >= this->mHeight ) {
         
         // apply block transactions.
-        for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
-            const Transaction& transaction = *this->mTransactions [ i ];
+        for ( size_t i = 0; i < this->mBody->mTransactions.size (); ++i ) {
+            const Transaction& transaction = *this->mBody->mTransactions [ i ];
             
             size_t transactionMaturity = this->mHeight + transaction.getMaturity ();
             if ( transactionMaturity == height ) {
@@ -147,7 +179,7 @@ LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy polic
     
     if ( accountODBM ) {
     
-        ledger.invokeReward ( this->mMinerID, this->mReward, this->mTime );
+        ledger.invokeReward ( this->mMinerID, this->mBody->mReward, this->mTime );
         
         FeeSchedule feeSchedule = ledger.getFeeSchedule ();
         
@@ -179,11 +211,23 @@ LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy polic
         ledger.distribute ( miningTax + transferTax + profitShare );
     }
 
+    accountODBM.mMinerBlockCount.set ( accountODBM.mMinerBlockCount.get ( 0 ) + 1 );
+
     return true;
 }
 
 //----------------------------------------------------------------//
-Block::Block () {
+Block::Block () :
+    mBodyType ( 0 ) {
+}
+
+//----------------------------------------------------------------//
+Block::Block ( string bodyString ) :
+    mBodyType ( 0 ),
+    mBodyString ( bodyString ) {
+    
+    this->affirmBody ();
+    this->affirmHash ();
 }
 
 //----------------------------------------------------------------//
@@ -193,15 +237,17 @@ Block::~Block () {
 //----------------------------------------------------------------//
 size_t Block::countTransactions () const {
 
-    return this->mTransactions.size ();
+    return this->mBody ? this->mBody->mTransactions.size () : 0;
 }
 
 //----------------------------------------------------------------//
 size_t Block::getWeight () const {
 
     size_t weight = 0;
-    for ( size_t i = 0; i < this->mTransactions.size (); ++i ) {
-        weight += this->mTransactions [ i ]->getWeight ();
+    if ( this->mBody ) {
+        for ( size_t i = 0; i < this->mBody->mTransactions.size (); ++i ) {
+            weight += this->mBody->mTransactions [ i ]->getWeight ();
+        }
     }
     return weight;
 }
@@ -209,7 +255,15 @@ size_t Block::getWeight () const {
 //----------------------------------------------------------------//
 void Block::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
-    this->mTransactions.push_back ( transaction );
+    this->affirmBody ();
+    this->mBody->mTransactions.push_back ( transaction );
+}
+
+//----------------------------------------------------------------//
+void Block::setReward ( string reward ) {
+
+    this->affirmBody ();
+    this->mBody->mReward = reward;
 }
 
 //----------------------------------------------------------------//
@@ -272,12 +326,26 @@ LedgerResult Block::verify ( const Ledger& ledger, VerificationPolicy policy ) c
 // overrides
 //================================================================//
 
+ //----------------------------------------------------------------//
+void Block::affirmBody () {
+
+    if ( this->mBody ) return;
+
+    shared_ptr < BlockBody > body = make_shared < BlockBody >();
+
+    if ( this->mBodyString.size ()) {
+        FromJSONSerializer::fromJSONString ( *body, this->mBodyString );
+    }
+    this->mBody = body;
+}
+
 //----------------------------------------------------------------//
 void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     BlockHeader::AbstractSerializable_serializeFrom ( serializer );
     
-    serializer.serialize ( "reward",        this->mReward );
-    serializer.serialize ( "transactions",  this->mTransactions );
+    serializer.serialize ( "bodyType",      this->mBodyType );
+    serializer.serialize ( "body",          this->mBodyString );
+    this->affirmBody ();
     this->affirmHash ();
 }
 
@@ -285,8 +353,12 @@ void Block::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& s
 void Block::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
     BlockHeader::AbstractSerializable_serializeTo ( serializer );
     
-    serializer.serialize ( "reward",        this->mReward );
-    serializer.serialize ( "transactions",  this->mTransactions );
+    serializer.serialize ( "bodyType",      this->mBodyType );
+        
+    if ( !this->mBodyString.size ()) {
+        this->mBodyString = this->mBody ? ToJSONSerializer::toJSONString ( *this->mBody ) : "";
+    }
+    serializer.serialize ( "body",          this->mBodyString );
 }
 
 } // namespace Volition

@@ -56,6 +56,11 @@ private:
     static LedgerKey keyFor_minerInfo ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.miner", index ); });
     }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_minerBlockCount ( AssetID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.minerBLockCount", index ); });
+    }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_name ( AssetID::Index index ) {
@@ -78,13 +83,14 @@ private:
         this->mLedger       = ledger;
         this->mAccountID    = index;
         
-        mAssetCount         = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
-        mInventoryNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
-        mTransactionNonce   = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
-        mName               = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
-        mBody               = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
-        mMinerHeight        = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerHeight ( this->mAccountID ),            0 );
-        mMinerInfo          = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mAccountID ));
+        this->mAssetCount           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
+        this->mInventoryNonce       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
+        this->mTransactionNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
+        this->mName                 = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
+        this->mBody                 = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
+        this->mMinerHeight          = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerHeight ( this->mAccountID ),            0 );
+        this->mMinerInfo            = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mAccountID ));
+        this->mMinerBlockCount      = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerBlockCount ( this->mAccountID ),        0 );
     }
 
 public:
@@ -100,6 +106,7 @@ public:
     LedgerObjectFieldODBM < Account >       mBody;
     LedgerFieldODBM < u64 >                 mMinerHeight;
     LedgerObjectFieldODBM < MinerInfo >     mMinerInfo;
+    LedgerFieldODBM < u64 >                 mMinerBlockCount;
 
     //----------------------------------------------------------------//
     operator bool () {

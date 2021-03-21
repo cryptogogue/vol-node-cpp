@@ -166,7 +166,6 @@ void Transaction::AbstractSerializable_serializeFrom ( const AbstractSerializerF
     else {
         serializer.serialize ( "body", this->mBodyString );
         if ( this->mBodyString.size ()) {
-        
             FromJSONSerializer::fromJSONString ( this->mBody, this->mBodyString );
             assert ( this->mBody );
         }

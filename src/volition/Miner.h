@@ -107,6 +107,7 @@ public:
     u64                     mTotalBlocks;
     FeeSchedule             mFeeSchedule;
     FeeDistributionTable    mFeeDistributionTable;
+    u64                     mMinerBlockCount;
 };
 
 //================================================================//

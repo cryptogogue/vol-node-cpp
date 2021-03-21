@@ -46,6 +46,7 @@ public:
         jsonOut.set ( "minGratuity",            status.mMinimumGratuity );
         jsonOut.set ( "reward",                 status.mReward );
         jsonOut.set ( "totalBlocks",            status.mTotalBlocks );
+        jsonOut.set ( "minerBlocks",            status.mMinerBlockCount );
         jsonOut.set ( "feeSchedule",            ToJSONSerializer::toJSON ( status.mFeeSchedule ));
         jsonOut.set ( "feeDistributionTable",   ToJSONSerializer::toJSON ( status.mFeeDistributionTable ));
 

@@ -339,9 +339,8 @@ bool Miner::isLazy () const {
 //----------------------------------------------------------------//
 shared_ptr < Block > Miner::loadGenesisBlock ( string path ) {
 
-    shared_ptr < Block > block = make_shared < Block >();
-    FromJSONSerializer::fromJSONFile ( *block, path );
-    return block;
+    string bodyString = FileSys::loadFileAsString ( path );
+    return make_shared < Block >( bodyString );
 }
 
 //----------------------------------------------------------------//
@@ -676,6 +675,7 @@ void Miner::step ( time_t now ) {
         this->mSnapshot = *this;
         
         Ledger& ledger = *this->mLedger;
+        AccountODBM accountODBM ( ledger, this->getMinerID ());
         
         // TODO: this is a hack to speed up the default query
         this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
@@ -689,6 +689,7 @@ void Miner::step ( time_t now ) {
         this->mMinerStatus.mTotalBlocks             = ledger.countBlocks ();
         this->mMinerStatus.mFeeSchedule             = ledger.getFeeSchedule ();
         this->mMinerStatus.mFeeDistributionTable    = ledger.getFeeDistributionTable ();
+        this->mMinerStatus.mMinerBlockCount         = accountODBM.mMinerBlockCount.get ( 0 );
     }
     
     try {

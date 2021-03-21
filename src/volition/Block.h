@@ -14,6 +14,33 @@ class Ledger;
 class Transaction;
 
 //================================================================//
+// BlockBody
+//================================================================//
+class BlockBody :
+    public virtual AbstractSerializable {
+private:
+
+    friend class Context;
+    friend class Ledger;
+    friend class Block;
+
+    string              mReward;
+
+    // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
+    SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;
+    
+    //----------------------------------------------------------------//
+    void        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+
+public:
+
+    //----------------------------------------------------------------//
+                BlockBody           ();
+                ~BlockBody          ();
+};
+
+//================================================================//
 // Block
 //================================================================//
 class Block :
@@ -35,12 +62,12 @@ private:
     friend class Context;
     friend class Ledger;
 
-    string              mReward;
-
-    // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
-    SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;
+    u64                             mBodyType;
+    mutable string                  mBodyString;
+    shared_ptr < BlockBody >        mBody;
 
     //----------------------------------------------------------------//
+    void                affirmBody                          ();
     LedgerResult        applyTransactions                   ( Ledger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const;
     size_t              getWeight                           () const;
     
@@ -50,16 +77,16 @@ private:
 
 public:
 
-    GET_SET ( string, Reward, mReward )
-
     //----------------------------------------------------------------//
     void                affirmHash                          ();
     LedgerResult        apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
                         Block                               ();
+                        Block                               ( string bodyString );
                         ~Block                              ();
     size_t              countTransactions                   () const;
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
     const Digest&       sign                                ( const CryptoKeyPair& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
+    void                setReward                           ( string reward );
     LedgerResult        verify                              ( const Ledger& ledger, VerificationPolicy policy ) const;
 };
 

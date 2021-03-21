@@ -495,10 +495,12 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
             //--------------------------------//
             [ & ]( SQLiteStatement stmt ) {
                 
+                BlockHeader headerOnly = *header;
+                
                 stmt.bind ( 1,      parentID );
                 stmt.bind ( 2,      hash );
                 stmt.bind ( 3,      ( int )header->getHeight ());
-                stmt.bind ( 4,      ToJSONSerializer::toJSONString ( *header ));
+                stmt.bind ( 4,      ToJSONSerializer::toJSONString ( headerOnly ));
                 stmt.bind ( 5,      block ? ToJSONSerializer::toJSONString ( *block ) : "" );
                 stmt.bind ( 6,      SQLiteBlockTree::stringFromBranchStatus ( branchStatus ));
                 stmt.bind ( 7,      SQLiteBlockTree::stringFromSearchStatus ( searchStatus ));

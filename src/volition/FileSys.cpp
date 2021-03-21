@@ -56,5 +56,28 @@ size_t getDirSize ( string path ) {
     return count;
 }
 
+//----------------------------------------------------------------//
+string loadFileAsString ( string path ) {
+
+    struct stat fileStat;
+
+    int result = stat ( path.c_str (), &fileStat );
+	if ( result ) return "";
+	
+    size_t size = ( size_t )fileStat.st_size;
+    if ( !size ) return "";
+    
+    char* buffer = ( char* )malloc ( size + 1 );
+   
+    FILE* fp = fopen ( path.c_str (), "r" );
+    assert ( fp );
+    
+    size_t elemsRead = fread ( buffer, size, 1, fp );
+    assert ( elemsRead == 1 );
+    
+    buffer [ size ] = 0;
+    return buffer;
+}
+
 } // namespace Format
 } // namespace Volition
