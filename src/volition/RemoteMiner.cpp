@@ -44,7 +44,7 @@ void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time
         
         // if genesis hashes don't match, we have a real problem.
         if (( header->getHeight () == 0 ) && ( header->getDigest ().toHex () != this->mMiner.mLedger->getGenesisHash ())) {
-            this->setError ( "Unrecoverable error: genesis block mismatch." );
+            this->setError ();
             return;
         }
         
@@ -103,14 +103,21 @@ bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, tim
 
             if ( this->mState == STATE_WAITING_FOR_INFO ) {
                 
-                this->setMinerID ( response.mMinerID );
-                this->mMiner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
-                
-                BlockTreeCursor cursor = this->mMiner.mBlockTree->restoreTag ( this->mTag );
-                if ( cursor.hasHeader ()) {
-                    this->mHeight = cursor.getHeight ();
+                // if genesis hashes don't match, we have a real problem.
+                if ( response.mGenesisHash != this->mMiner.mLedger->getGenesisHash ()) {
+                    this->setError ();
                 }
-                this->mState = STATE_ONLINE;
+                else {
+                
+                    this->setMinerID ( response.mMinerID );
+                    this->mMiner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
+                    
+                    BlockTreeCursor cursor = this->mMiner.mBlockTree->restoreTag ( this->mTag );
+                    if ( cursor.hasHeader ()) {
+                        this->mHeight = cursor.getHeight ();
+                    }
+                    this->mState = STATE_ONLINE;
+                }
             }
             break;
         }
@@ -174,7 +181,8 @@ void RemoteMiner::report () const {
             break;
         
         case STATE_ERROR:
-            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: UNRECOVERABLE", minerID );
+            // TODO: genesis block mismatch is the only error we check for right now. Handler/report more.
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: ERROR - Genesis block mismatch.", minerID );
             break;
     }
 }
@@ -186,12 +194,10 @@ void RemoteMiner::reset () {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::setError ( string message ) {
+void RemoteMiner::setError () {
 
     this->reset ();
-
     this->mState    = STATE_ERROR;
-    this->mMessage  = message;
 }
 
 //----------------------------------------------------------------//

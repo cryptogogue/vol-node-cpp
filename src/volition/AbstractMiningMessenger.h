@@ -61,6 +61,7 @@ public:
     Status                                      mStatus;
 
     string                                      mMinerID;
+    string                                      mGenesisHash;
     shared_ptr < const Block >                  mBlock;
     list < shared_ptr < const BlockHeader >>    mHeaders;
     set < string >                              mMinerURLs;
@@ -144,9 +145,9 @@ public:
     void enqueueBlockResponse ( const MiningMessengerRequest& request, shared_ptr < const Block > block ) {
     
         MiningMessengerResponse response;
-        response.mRequest   = request;
-        response.mStatus    = MiningMessengerResponse::STATUS_OK;
-        response.mBlock     = block;
+        response.mStatus        = MiningMessengerResponse::STATUS_OK;
+        response.mRequest       = request;
+        response.mBlock         = block;
         this->enqueueResponse ( response );
     }
 
@@ -154,8 +155,8 @@ public:
     void enqueueErrorResponse ( const MiningMessengerRequest& request ) {
     
         MiningMessengerResponse response;
-        response.mStatus    = MiningMessengerResponse::STATUS_ERROR;
-        response.mRequest   = request;
+        response.mStatus        = MiningMessengerResponse::STATUS_ERROR;
+        response.mRequest       = request;
         this->enqueueResponse ( response );
     }
 
@@ -170,9 +171,9 @@ public:
     void enqueueExtendNetworkResponse ( const MiningMessengerRequest& request, const set < string > urls ) {
     
         MiningMessengerResponse response;
-        response.mStatus    = MiningMessengerResponse::STATUS_OK;
-        response.mRequest   = request;
-        response.mMinerURLs = urls;
+        response.mStatus        = MiningMessengerResponse::STATUS_OK;
+        response.mRequest       = request;
+        response.mMinerURLs     = urls;
         this->enqueueResponse ( response );
     }
 
@@ -180,7 +181,7 @@ public:
     void enqueueHeadersRequest ( string minerURL, size_t height ) {
         
         MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_HEADERS );
-        request.mHeight     = height;
+        request.mHeight         = height;
         this->enqueueRequest ( request );
     }
 
@@ -188,9 +189,9 @@ public:
     void enqueueHeadersResponse ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
     
         MiningMessengerResponse response;
-        response.mStatus    = MiningMessengerResponse::STATUS_OK;
-        response.mRequest   = request;
-        response.mHeaders   = headers;
+        response.mStatus        = MiningMessengerResponse::STATUS_OK;
+        response.mRequest       = request;
+        response.mHeaders       = headers;
         this->enqueueResponse ( response );
     }
     
@@ -202,12 +203,13 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void enqueueMinerInfoResponse ( const MiningMessengerRequest& request, string minerID ) {
+    void enqueueMinerInfoResponse ( const MiningMessengerRequest& request, string minerID, string genesisHash ) {
     
         MiningMessengerResponse response;
-        response.mStatus    = MiningMessengerResponse::STATUS_OK;
-        response.mRequest   = request;
-        response.mMinerID   = minerID;
+        response.mStatus        = MiningMessengerResponse::STATUS_OK;
+        response.mRequest       = request;
+        response.mMinerID       = minerID;
+        response.mGenesisHash   = genesisHash;
         this->enqueueResponse ( response );
     }
 

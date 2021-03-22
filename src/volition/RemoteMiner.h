@@ -31,7 +31,6 @@ private:
     //----------------------------------------------------------------//
     void            processHeaders          ( const MiningMessengerResponse& response, time_t now );
 
-
 public:
 
     enum MinerState {
@@ -46,7 +45,6 @@ public:
     BlockTreeTag                mTag;
     BlockTreeTag                mImproved;
     MinerState                  mState;
-    string                      mMessage;
     
     size_t                      mRewind;
     size_t                      mHeight;
@@ -64,7 +62,7 @@ public:
                     ~RemoteMiner            ();
     void            report                  () const;
     void            reset                   ();
-    void            setError                ( string message = "" );
+    void            setError                ();
     void            setMinerID              ( string minerID );
     void            update                  ();
 };

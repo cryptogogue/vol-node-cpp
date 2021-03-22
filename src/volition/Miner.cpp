@@ -501,8 +501,6 @@ void Miner::pushBlock ( shared_ptr < const Block > block ) {
     
     BlockTreeCursor node = this->mBlockTree->affirmBlock ( this->mLedgerTag, block );
     assert ( node.hasHeader ());
-    
-//    this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
 }
 
 //----------------------------------------------------------------//

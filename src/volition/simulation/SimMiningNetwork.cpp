@@ -142,7 +142,8 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
         
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
         
-            client->enqueueMinerInfoResponse ( request, minerID );
+            const Ledger& ledger = miner->getLedger ();
+            client->enqueueMinerInfoResponse ( request, minerID, ledger.getGenesisHash ());
             break;
         }
         

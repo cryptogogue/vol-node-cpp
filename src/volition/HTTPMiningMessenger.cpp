@@ -321,8 +321,9 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
             
                 Poco::JSON::Object::Ptr nodeJSON = json ? json->getObject ( "node" ) : NULL;
                 if ( nodeJSON ) {
-                    string minerID  = nodeJSON->optValue < string >( "minerID", "" );
-                    this->enqueueMinerInfoResponse ( request, minerID );
+                    string minerID      = nodeJSON->optValue < string >( "minerID", "" );
+                    string genesisHash  = nodeJSON->optValue < string >( "genesisHash", "" );
+                    this->enqueueMinerInfoResponse ( request, minerID, genesisHash );
                 }
                 break;
             }
