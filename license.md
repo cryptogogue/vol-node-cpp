@@ -1,28 +1,32 @@
-Copyright (c) 2021 Cryptogogue, Inc. All Rights Reserved.
+# Preview Software License
+### Last updated: March 1, 2021
 
-This source code repository is part of the Volition blockchain project. The source code and inventions herein are the exclusive property of Cryptogogue, Inc.
+Thank you for your interest Cryptogogue, Inc.’s Volition blockchain project! By downloading or using any of the Software (defined below) you are agreeing to this Preview Software License (this “**Agreement**”). This is a binding Agreement between you, the downloader (or copier, or installer, or otherwise the user of any portion) of the Software (“**You**” or “**Your**” or similar pronouns) and Cryptogogue, Inc., a Delaware corporation (“**Cryptogogue**” or “**We**” or “**Us**” or similar pronouns). So please read this Agreement carefully!
 
-### Background
+1. **Summary and Scope.**
+- **a. Summary and Background.** We are excited to test and experiment with our Software and Volition and we invite you to do the same. Our plan is to start with a very limited experimental license and eventually offer a more comprehensive open-source license in the future. Accordingly, this Agreement grants You limited permission to experiment with our Software and Volition locally and in small, private deployments. As such, there is no right to publicly deploy or commercialize any Volition-based projects or derivative works of the Software (“derivative works” is meant herein to have the broadest possible interpretation, including derivative works of any of the individual components of the Software). We would welcome custom requests for a license on Your individual projects, and to do that, please contact us through Discord.
+- **b. Legally Binding.** This is a legally binding Agreement. If you do not agree with any of the terms of this Agreement now, or as it may be updated from time to time, do not use the Software and delete or destroy all copies of the Software (and all derivatives therefrom) in Your possession or control.
+- **c. Changes.** We reserve the right to change or amend this Agreement, and any of its terms and conditions, at any time. We will include the date of when this Agreement was last updated at the top, but reserve the right to have changes with retroactive implications. Further, because of the nature of the preview license and with the intent of an eventual community-based launch, Cryptogogue may terminate this Agreement at any time and/or request that You remove the Software and all derivative works and any copies of the forementioned in Your control.
+2. **Software License.**
+- **a. Software and Software Ownership.** The “Software” shall collectively mean the source code, object code, algorithms, protocols, databases, documentation, all other data files and information that constitute the Volition blockchain project.  The Software, and all its individual parts, inventions, and intellectual property rights, and any derivative works derived therefrom (including any crpytoassets created from the Software), shall be the sole and exclusive property of Cryptogogue.
+- **b. License.**  We hereby grant You a limited, non-exclusive, revocable, nontransferable, and worldwide license (the “License”) to use the Software as further explained in this Agreement. Any derivative works from the Software shall remain the property of Cryptogogue and, if published, shall be governed by this License.
+- **c. License Use.** You May:
+  - Download and deploy locally on a single machine for experimental purposes only;
+  - Build on the Software and deploy it across a single private network for experimental purposes only;
+  - NOT use any original algorithm or invention or described or implemented in this Software in any other project;
+  - NOT use any portion of the Software to operate a publicly accessible service or to track or promote any cryptoassets;
+  - NOT use any portion of the Software for any commercial purpose.
+- **d. Term and Termination.** The term of this Agreement is meant to be short, but in all events shall not be longer than 5 years. With the intent of an eventual community-based launch, Cryptogogue may terminate this Agreement at any time and/or request that You remove the Software and all derivative works and any copies of the forementioned in Your control at any time. You acknowledge that monetary damages for a failure to destroy or remove the Software and any and all derivative works when requested by Cryptoguge would not be a sufficient remedy to allow Us to move forward with a community launch of the Software. Accordingly, Cryptogogue shall be entitled to seek injunctive or other equitable relief from a court of competent jurisdiction. To avoid irrevocable harm, Cryptogogue may seek such equitable relief without the requirement of posting a bond or proving injury as a pre-requisite for relief.
 
-This license grants limited permission to experiment with Volition locally and in small, private deployments but not to publicly deploy or commercialize any Volition-based projects or derivative works.
+3. **Warranty and General Disclaimers.**
 
-This codebase remains the sole property of Cryptogogue, Inc. That extends to the novel algorithms and processes implemented herein. No license is granted to use these in any other work.
+It should go without saying for a preview license, but our legal counsel reminded us that we actually must put in writing that:
 
-We will eventually offer a more comprehensive open-source license. In the meantime, if you want to discuss obtaining a custom license for your project, post your inquiry as an issue on github. We will consider projects on a case-by-case basis.
+*The Software is in an early stage and is not meant to be used for a commercial or particular purpose. Accordingly, the Software is provided “AS-IS” without any warranties of any kind. Cryptogogue disclaims all warranties, whether express or implied or at equity or law or under any statute or code including warranties of merchantability or fitness for a particular purpose. Even if We later express to You that the Software could be used for Your project or idea, We are not warrantying that it will achieve any specific goals or outcomes.*
 
-You may contribute to this source code by modifying it and opening a pull request on GitHub. You agree that any such contributions are made freely and shall become the sole property of Cryptogogue, Inc.
-
-### License
-
-- You MAY download this source code to build and deploy on your local development machine for experimental purposes only.
-- You MAY build this source code and deploy it on a private network for testing and experimental purposes only.
-- You MAY NOT use any original algorithm or invention described or implemented in this source code in any other project.
-- You MAY NOT use any portion of this source code to operate a publicly accessible service or to track or promote any cryptoassets.
-- You MAY NOT use any portion of this source code for any commercial purpose.
-- You MAY NOT use any novel invention, algorithm or technique described or implemented by or in this source code or its documentation in any other project.
-- Any derivative works based on this source code are the property of Cryptogogue, Inc. and, if published, shall remain under the terms of this license.
-- Any cryptoassets created and tracked on any deployment of this source code or any derivative work shall become the sole property of Cryptogogue, Inc.
-- If you redistribute any portion of this source code in source form or as a compiled binary, your distribution must include the original source code in its entirety as well as a copy of this license.
-
-Cryptogogue, Inc. may retroactively restrict or amend this license. If you use of this source code or binaries compiled from it in any way, including in a derivative work, you agree to cease using it in and remove it (and any derivative works) from all machines and servers under your control if requested by Cryptogogue, Inc. at any time, either directly or in any future version of this license.
-
+4. **Governing Law, Jurisdiction, Venue.** This Agreement will be governed by and construed in accordance with the laws of the State of Washington without regard to conflict of laws principles.  You consent to the jurisdiction of Washington, and any dispute arising under this agreement shall be settled and decided in King County.
+5. **Severability.** If any provision of this Agreement is declared to be invalid under any applicable statute or rule of law, the remaining portions of this Agreement will be enforced to the maximum extent allowed by law. If any provision is declared unenforceable because it is held to be unreasonable, then that provision shall be enforced to the maximum extent reasonable.
+6. **Successors and Assigns.** This Agreement shall be binding on affiliates, transferees, successors or assigns. Please note that this means anyone (and all machines and networks) to which You share or expose the Software or its component parts.
+7. **Non-Waiver.** If We waive any term, provision, or breach of this Agreement, such waiver will not be effective unless provided in writing. No waiver of a breach of this Agreement will constitute a waiver of any other provision or subsequent breach.
+8. **Headings.** The Article and Section Headings, and the Exhibits and their headings are for reference and convenience only.  They shall not be considered in the interpretation of this Agreement.
+9. **Survival.** Upon cancellation or termination, those provisions of this Agreement that by their nature are intended to survive termination, shall survive termination.
