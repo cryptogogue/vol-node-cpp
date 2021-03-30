@@ -4,7 +4,7 @@ The Volition distributed ledger is a blockchain maintained by a network of parti
 
 ### Intuition
 
-Digital signatures can have the quality of being unpredictable yet verifiable: the value of the signature is unfeasible to predict, but, once produced, can be verified.
+Digital signatures can have the quality of being unpredictable yet verifiable: the value of the signature is unfeasible to predict (without knowing the private key), but, once produced, can be verified by anyone with the public key.
 
 This suggests an idea: digital signatures can play a role in ordering the chain.
 
@@ -31,7 +31,7 @@ N = The height of the block.
 KEY = The key of the winning participant at height N.
 MOTTO = An optional string constant chosen at account creation; may be the empty string.
 SIG = A deterministic digital signature algorithm.
-VISAGE = SIG ( KEY, MOTTO )
+VISAGE = SIG ( KEY, SHA256 ( MOTTO ))
 POSE ( N ) = SIG ( KEY, SHA256 ( POSE ( N - 1 )))
 CHARM ( N ) = POSE ( N - 1 ) ^ VISAGE.
 ```
