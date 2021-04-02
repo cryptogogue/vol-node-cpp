@@ -272,7 +272,7 @@ AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 }
 
 //----------------------------------------------------------------//
-void Ledger_Inventory::getInventory ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t max, bool sparse ) {
+void Ledger_Inventory::getInventory ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t base, size_t count, bool sparse ) {
 
     Ledger& ledger = this->getLedger ();
 
@@ -281,13 +281,16 @@ void Ledger_Inventory::getInventory ( AccountID accountID, SerializableList < Se
     AccountODBM accountODBM ( ledger, accountID );
     if ( accountODBM.mAccountID == AccountID::NULL_INDEX ) return;
 
-    size_t assetCount = accountODBM.mAssetCount.get ( 0 );
+    size_t top = accountODBM.mAssetCount.get ( 0 );
     
-    if (( max > 0 ) && ( max < assetCount )) {
-        assetCount = max;
+    if ( count ) {
+        size_t max = base + count;
+        if ( max < top ) {
+            top = max;
+        }
     }
     
-    for ( size_t i = 0; i < assetCount; ++i ) {
+    for ( size_t i = base; i < top; ++i ) {
     
         AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
         shared_ptr < const Asset > asset = AssetODBM ( ledger, assetIndex ).getAsset ( sparse );

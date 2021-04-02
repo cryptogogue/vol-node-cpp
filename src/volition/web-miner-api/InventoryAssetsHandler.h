@@ -18,6 +18,8 @@ class InventoryAssetsHandler :
     public BlockingMinerAPIRequestHandler {
 public:
 
+    static const size_t ASSET_BATCH_SIZE = 256;
+
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
@@ -28,9 +30,10 @@ public:
         try {
         
             string accountName = this->getMatchString ( "accountName" );
+            size_t base = ( size_t )this->optQuery ( "base", 0 );
             
             SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-            ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, 0 );
+            ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, base, ASSET_BATCH_SIZE );
         
             Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
         

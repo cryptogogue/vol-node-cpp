@@ -36,7 +36,7 @@ protected:
     friend class BlockSearchKey;
 
     static const size_t SAMPLE_SIZE     = 8;
-    static const size_t MAX_RETRIES     = 256;
+    static const size_t MAX_RETRIES     = 16;
 
     friend class Miner;
 

@@ -26,6 +26,8 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
     
+        static const size_t ASSET_BATCH_SIZE = 256;
+    
         try {
         
             string accountName  = this->getMatchString ( "accountName" );
@@ -37,12 +39,14 @@ public:
             
             AccountODBM accountODBM ( ledger, accountName );
             
-            for ( u64 i = 0; i < count; ++i ) {
+            u64 found = 0;
+            for ( ; found < count; ++found ) {
                 
-                shared_ptr < const InventoryLogEntry > logEntry = accountODBM.getInventoryLogEntryField ( nonce + i ).get ();
+                shared_ptr < const InventoryLogEntry > logEntry = accountODBM.getInventoryLogEntryField ( nonce + found ).get ();
                 if ( !logEntry ) continue;
                 
                 logEntry->apply ( additions, deletions );
+                if ( additions.size () >= ASSET_BATCH_SIZE ) break;
             }
             
             SerializableList < SerializableSharedConstPtr < Asset >> assets;
@@ -56,6 +60,8 @@ public:
             SerializableList < string > deletionsDecoded;
             InventoryLogEntry::decode ( deletions, deletionsDecoded );
             jsonOut.set ( "deletions", ToJSONSerializer::toJSON ( deletionsDecoded ));
+            
+            jsonOut.set ( "nextNonce", nonce + found );
         }
         catch ( ... ) {
             return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
