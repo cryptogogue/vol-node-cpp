@@ -19,19 +19,23 @@ Digest HasBlockHeaderFields::calculateCharm ( const Digest& pose, const Digest& 
 //    printf ( "POSE: %s\n", pose.toHex ().substr ( 0, 6 ).c_str ());
 //    printf ( "VISAGE: %s\n", visage.toHex ().substr ( 0, 6 ).c_str ());
 
-    Digest charm;
-    charm.resize ( CHARM_SIZE );
-    
     size_t poseSize     = pose.size ();
     size_t visageSize   = visage.size ();
+    size_t keySize      = poseSize < visageSize ? visageSize : poseSize;
+
+    Digest key;
+    key.resize ( keySize );
     
-    for ( size_t i = 0; i < CHARM_SIZE; ++i ) {
+    for ( size_t i = 0; i < keySize; ++i ) {
     
-        u8 a = poseSize ? pose [ i % poseSize ] : 0;
-        u8 v = visageSize ? visage [ i % visageSize ] : 0;
+        u8 a = i < poseSize ? pose [ i ] : 0;
+        u8 v = i < visageSize ? visage [ i ] : 0;
     
-        charm [ i ] = a ^ v;
+        key [ i ] = a ^ v;
     }
+    
+    Digest charm ( key.toHex (), Digest::HASH_ALGORITHM_SHA256 );
+    charm.resize ( CHARM_SIZE );
     
 //    printf ( "CHARM:  %s\n", charm.toHex ().c_str ());
     
