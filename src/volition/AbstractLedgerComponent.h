@@ -6,7 +6,7 @@
 
 namespace Volition {
 
-class Ledger;
+class AbstractLedger;
 
 //================================================================//
 // Ledger
@@ -15,8 +15,8 @@ class AbstractLedgerComponent {
 protected:
 
     //----------------------------------------------------------------//
-    virtual Ledger&         AbstractLedgerComponent_getLedger       () = 0;
-    virtual const Ledger&   AbstractLedgerComponent_getLedger       () const = 0;
+    virtual AbstractLedger&         AbstractLedgerComponent_getLedger       () = 0;
+    virtual const AbstractLedger&   AbstractLedgerComponent_getLedger       () const = 0;
 
 public:
 
@@ -29,12 +29,12 @@ public:
     }
 
     //----------------------------------------------------------------//
-    Ledger& getLedger () {
+    AbstractLedger& getLedger () {
         return this->AbstractLedgerComponent_getLedger ();
     }
 
     //----------------------------------------------------------------//
-    const Ledger& getLedger () const {
+    const AbstractLedger& getLedger () const {
         return this->AbstractLedgerComponent_getLedger ();
     }
 };

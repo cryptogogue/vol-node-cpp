@@ -108,6 +108,7 @@ bool Miner::checkTags () const {
         BlockTreeCursor ledgerCursor = *this->mLedgerTag;
         assert ( this->mLedger->countBlocks () == ( ledgerCursor.getHeight () + 1 ));
         shared_ptr < const Block > ledgerBlock = this->mLedger->getBlock ();
+        assert ( ledgerBlock );
         return ledgerBlock->equals ( ledgerCursor );
     #else
         return true;
@@ -236,9 +237,10 @@ Ledger Miner::getLedgerAtBlock ( u64 index ) const {
 //----------------------------------------------------------------//
 void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 
-    Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mSnapshotMutex );
+    this->mSnapshotMutex.lock_shared ();
     snapshot = this->mSnapshot;
     status = this->mMinerStatus;
+    this->mSnapshotMutex.unlock_shared ();
 }
 
 //----------------------------------------------------------------//
@@ -401,8 +403,8 @@ LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
         return "Unsupported SQLite block tree format; delete your persist-chain folder and re-sync.";
     }
     
-    shared_ptr < Ledger > ledger = make_shared < Ledger >();
-    ledger->takeSnapshot ( this->mPersistenceProvider, "master" );
+    VersionedStoreTag tag = this->mPersistenceProvider->restore ( "master" );
+    shared_ptr < Ledger > ledger = make_shared < Ledger >( tag );
         
     shared_ptr < const Block > topBlock = ledger->getBlock ();
     
@@ -572,7 +574,7 @@ void Miner::saveChain () {
 
     if ( this->mLedger && this->mPersistenceProvider ) {
         assert ( this->checkTags ());
-        this->mLedger->persist ( this->mPersistenceProvider, "master" );
+        this->mPersistenceProvider->persist ( *this->mLedger, "master" );
         assert ( this->checkTags ());
     }
 }
@@ -742,10 +744,11 @@ void Miner::updateBlockSearches () {
 //----------------------------------------------------------------//
 void Miner::updateMinerStatus () {
 
-    Poco::ScopedLock < Poco::Mutex > snapshotLoc ( this->mSnapshotMutex );
+    this->mSnapshotMutex.lock ();
     this->mSnapshot = *this;
     
     Ledger& ledger = *this->mLedger;
+    
     AccountODBM accountODBM ( ledger, this->getMinerID ());
     
     // TODO: this is a hack to speed up the default query
@@ -765,6 +768,12 @@ void Miner::updateMinerStatus () {
     this->mMinerStatus.mPrizePool               = ledger.getPrizePool ();
     this->mMinerStatus.mPayoutPool              = ledger.getPayoutPool ();
     this->mMinerStatus.mVOL                     = ledger.countVOL ();
+
+    this->mSnapshotMutex.unlock ();
+    
+    this->mLockedLedgerMutex.lock ();
+    this->mLockedLedger.lock ( *this->mLedger );
+    this->mLockedLedgerMutex.unlock ();
 }
 
 //----------------------------------------------------------------//

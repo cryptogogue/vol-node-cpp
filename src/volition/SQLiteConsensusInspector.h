@@ -16,7 +16,7 @@ class SQLiteConsensusInspector :
     public AbstractConsensusInspector {
 protected:
 
-    string              mFilename;
+    string              mBlockTreeFilename;
 
     //----------------------------------------------------------------//
     shared_ptr < const Block >      AbstractConsensusInspector_getBlock     ( string hash ) const override;
@@ -24,7 +24,7 @@ protected:
 public:
 
     //----------------------------------------------------------------//
-                SQLiteConsensusInspector        ( string filename );
+                SQLiteConsensusInspector        ( string blockTreeFilename );
                 ~SQLiteConsensusInspector       ();
 };
 

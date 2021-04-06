@@ -5,8 +5,8 @@
 #define VOLITION_WEBMINERAPI_CONSENSUSPEEKHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/BlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
+#include <volition/SemiBlockingMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -15,7 +15,7 @@ namespace WebMinerAPI {
 // ConsensusPeekHandler
 //================================================================//
 class ConsensusPeekHandler :
-    public BlockingMinerAPIRequestHandler {
+    public SemiBlockingMinerAPIRequestHandler {
 public:
 
     static const size_t HEADER_BATCH_SIZE = 32;
@@ -23,7 +23,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
     
     //----------------------------------------------------------------//
-    void peek ( Ledger& ledger, Poco::JSON::Object& jsonOut, string key, u64 height, u64 totalBlocks ) const {
+    void peek ( LockedLedgerIterator& ledger, Poco::JSON::Object& jsonOut, string key, u64 height, u64 totalBlocks ) const {
     
         if ( height < totalBlocks ) {
     
@@ -38,7 +38,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
 

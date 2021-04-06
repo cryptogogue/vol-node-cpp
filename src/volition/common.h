@@ -33,6 +33,7 @@
 #include <memory>
 #include <random>
 #include <set>
+#include <shared_mutex>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -78,15 +79,7 @@
 #include <Routing/Exceptions.h>
 #include <Routing/Router.h>
 
-#include <padamose/DebugStringStore.h>
-#include <padamose/SQLite.h>
-#include <padamose/SQLiteStringStore.h>
-#include <padamose/VersionedCollectionIterator.h>
-#include <padamose/VersionedMap.h>
-#include <padamose/VersionedList.h>
-#include <padamose/VersionedStore.h>
-#include <padamose/VersionedStoreIterator.h>
-#include <padamose/VersionedValueIterator.h>
+#include <padamose/padamose.h>
 
 #include <lua.hpp>
 

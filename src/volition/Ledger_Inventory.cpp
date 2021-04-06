@@ -27,7 +27,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
     size_t quantity = assets.size ();
     if ( quantity == 0 ) return true;
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
 
     LedgerKey KEY_FOR_GLOBAL_ASSET_COUNT = Ledger::keyFor_globalAssetCount ();
@@ -69,7 +69,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
 
     if ( quantity == 0 ) return true;
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
 
     if ( !schema.getDefinitionOrNull ( assetType )) return Format::write ( "Asset type '%s' not found.", assetType.c_str ());
@@ -100,7 +100,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, string assetType, size_t quantity, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
     if ( accountODBM.mAccountID == AccountID::NULL_INDEX ) return "Account not found.";
@@ -117,7 +117,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, string assetTy
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, const list < AssetBase >& assets, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
     if ( accountODBM.mAccountID == AccountID::NULL_INDEX ) return "Account not found.";
@@ -134,7 +134,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, const list < A
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssetsAll ( AccountID accountID, size_t quantity, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
     
     AccountODBM accountODBM ( ledger, accountID );
@@ -156,7 +156,7 @@ LedgerResult Ledger_Inventory::awardAssetsAll ( AccountID accountID, size_t quan
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssetsRandom ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
 
     if ( quantity == 0 ) return true;
@@ -231,7 +231,7 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( AccountID accountID, string d
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
 
     const Schema::Deck* deck = schema.getDeck ( deckName );
@@ -247,7 +247,7 @@ LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName,
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     if ( accountID == AccountID::NULL_INDEX ) return true;
     AccountODBM accountODBM ( ledger, accountID );
@@ -261,7 +261,7 @@ LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID ) {
 //----------------------------------------------------------------//
 AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 
-    const Ledger& ledger = this->getLedger ();
+    const AbstractLedger& ledger = this->getLedger ();
 
     AssetID::Index assetIndex = AssetID::decode ( assetID );
     
@@ -274,7 +274,7 @@ AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 //----------------------------------------------------------------//
 void Ledger_Inventory::getInventory ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t base, size_t count, bool sparse ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     SerializableList < Asset > assets;
 
@@ -322,7 +322,7 @@ map < string, size_t > Ledger_Inventory::getInventoryHistogram ( AccountID accou
 //----------------------------------------------------------------//
 bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string fieldName, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
 
     AssetODBM assetODBM ( ledger, index );
@@ -365,7 +365,7 @@ bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string field
 //----------------------------------------------------------------//
 bool Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     // make sure the asset exists
     AssetODBM assetODBM ( ledger, index );
@@ -422,7 +422,7 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( AssetID::Index index, string
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, AccountID receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
     
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM senderODBM ( ledger, senderAccountIndex );
     AccountODBM receiverODBM ( ledger, receiverAccountIndex );
@@ -490,7 +490,7 @@ LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, Ac
 //----------------------------------------------------------------//
 void Ledger_Inventory::updateInventory ( AccountID accountID, const InventoryLogEntry& entry ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     AccountODBM accountODBM ( ledger, accountID );
 
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
@@ -501,7 +501,7 @@ void Ledger_Inventory::updateInventory ( AccountID accountID, const InventoryLog
 //----------------------------------------------------------------//
 void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     AccountID ownerIndex = assetODBM.mOwner.get ( AccountID::NULL_INDEX );
     if ( ownerIndex != AccountID::NULL_INDEX  ) {
@@ -518,7 +518,7 @@ void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, Inve
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::upgradeAssets ( AccountID accountID, const map < string, string >& upgrades, time_t time ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
     
     AccountODBM accountODBM ( ledger, accountID );

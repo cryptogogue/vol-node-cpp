@@ -18,7 +18,7 @@ class KeyAndPolicy :
     public AbstractSerializable {
 public:
 
-    friend class Ledger;
+    friend class AbstractLedger;
     friend class Account;
     
     CryptoPublicKey                     mKey;

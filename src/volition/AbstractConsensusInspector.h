@@ -9,6 +9,7 @@
 namespace Volition {
 
 class Block;
+class Ledger;
 
 //================================================================//
 // AbstractConsensusInspector

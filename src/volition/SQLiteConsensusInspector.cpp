@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/Ledger.h>
 #include <volition/SQLiteConsensusInspector.h>
 
 namespace Volition {
@@ -11,8 +12,8 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-SQLiteConsensusInspector::SQLiteConsensusInspector ( string filename ) :
-    mFilename ( filename ){
+SQLiteConsensusInspector::SQLiteConsensusInspector ( string blockTreeFilename ) :
+    mBlockTreeFilename ( blockTreeFilename ) {
 }
 
 //----------------------------------------------------------------//
@@ -27,7 +28,7 @@ SQLiteConsensusInspector::~SQLiteConsensusInspector () {
 shared_ptr < const Block > SQLiteConsensusInspector::AbstractConsensusInspector_getBlock ( string hash ) const {
 
     SQLite db;
-    SQLiteResult result = db.open ( this->mFilename, SQLITE_OPEN_READONLY );
+    SQLiteResult result = db.open ( this->mBlockTreeFilename, SQLITE_OPEN_READONLY );
     if ( !result ) return NULL;
 
     shared_ptr < Block > block;

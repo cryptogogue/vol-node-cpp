@@ -34,7 +34,7 @@ public:
 
 private:
 
-    friend class Ledger;
+    friend class AbstractLedger;
     friend class LuaContext;
 
     Decks                   mDecks;

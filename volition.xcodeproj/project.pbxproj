@@ -240,6 +240,7 @@
 		CD99422625FEAD3C00524DB6 /* BlockSearchPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */; };
 		CD99422725FEAD3C00524DB6 /* BlockSearchPool.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */; };
 		CD9C391E26149F5E00AE8782 /* VersionTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C391C26149F5E00AE8782 /* VersionTree.h */; };
+		CD9C3932261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */; };
 		CD9E7BA124FF67C30065C5FC /* InMemoryBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */; };
 		CD9E7BA224FF67C30065C5FC /* InMemoryBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */; };
 		CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */; };
@@ -1039,6 +1040,7 @@
 		CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockSearchPool.cpp; path = src/volition/BlockSearchPool.cpp; sourceTree = "<group>"; };
 		CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockSearchPool.h; path = src/volition/BlockSearchPool.h; sourceTree = "<group>"; };
 		CD9C391C26149F5E00AE8782 /* VersionTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionTree.h; path = src/volition/VersionTree.h; sourceTree = "<group>"; };
+		CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SemiBlockingMinerAPIRequestHandler.h; path = src/volition/SemiBlockingMinerAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InMemoryBlockTree.cpp; path = src/volition/InMemoryBlockTree.cpp; sourceTree = "<group>"; };
 		CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InMemoryBlockTree.h; path = src/volition/InMemoryBlockTree.h; sourceTree = "<group>"; };
 		CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockHeader.cpp; path = src/volition/BlockHeader.cpp; sourceTree = "<group>"; };
@@ -1766,6 +1768,7 @@
 				CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */,
 				CD99421725FC492800524DB6 /* BlockingMinerAPIRequestHandler.h */,
 				CD99421625FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h */,
+				CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */,
 			);
 			name = handler;
 			sourceTree = "<group>";
@@ -2201,6 +2204,7 @@
 				CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
 				CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */,
+				CD9C3932261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h in Headers */,
 				CDDA74912552D423007AAA07 /* LoadLedger.h in Headers */,
 				CD9C391E26149F5E00AE8782 /* VersionTree.h in Headers */,
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,

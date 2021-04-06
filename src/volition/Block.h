@@ -21,7 +21,7 @@ class BlockBody :
 private:
 
     friend class Context;
-    friend class Ledger;
+    friend class AbstractLedger;
     friend class Block;
 
     string              mReward;
@@ -60,7 +60,7 @@ public:
 private:
 
     friend class Context;
-    friend class Ledger;
+    friend class AbstractLedger;
 
     u64                             mBodyType;
     mutable string                  mBodyString;

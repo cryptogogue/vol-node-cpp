@@ -18,14 +18,14 @@ class AssetMethodInvocation;
 class LuaContext {
 private:
 
-    friend class Ledger;
+    friend class AbstractLedger;
     
     static constexpr const char* CONTEXT_KEY    = "vol.context";
 
-    ConstOpt < Ledger >     mLedger;
-    time_t                  mTime;
-    lua_State*              mLuaState;
-    LedgerResult            mResult;
+    ConstOpt < AbstractLedger >     mLedger;
+    time_t                          mTime;
+    lua_State*                      mLuaState;
+    LedgerResult                    mResult;
 
     //----------------------------------------------------------------//
     static int              _awardAsset             ( lua_State* L );
@@ -57,10 +57,10 @@ public:
     //----------------------------------------------------------------//
     LedgerResult            invoke                  ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation );
     LedgerResult            invoke                  ( string accountName, string rewardName );
-                            LuaContext              ( ConstOpt < Ledger > ledger, time_t time );
+                            LuaContext              ( ConstOpt < AbstractLedger > ledger, time_t time );
                             ~LuaContext             ();
-    void                    miningReward            ( Ledger& ledger, string rewardName );
-    void                    publish                 ( Ledger& ledger );
+//    void                    miningReward            ( AbstractLedger& ledger, string rewardName );
+//    void                    publish                 ( AbstractLedger& ledger );
 };
 
 } // namespace Volition

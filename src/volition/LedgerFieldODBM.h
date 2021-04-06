@@ -27,10 +27,10 @@ private:
         LOADED,
     };
 
-    ConstOpt < Ledger >     mLedger;
-    LedgerKey               mKey;
-    State                   mState;
-    TYPE                    mValue;
+    ConstOpt < AbstractLedger >     mLedger;
+    LedgerKey                       mKey;
+    State                           mState;
+    TYPE                            mValue;
 
 public:
 
@@ -90,14 +90,14 @@ public:
     }
     
     //----------------------------------------------------------------//
-    LedgerFieldODBM ( ConstOpt < Ledger > ledger, const LedgerKey& ledgerKey ) :
+    LedgerFieldODBM ( ConstOpt < AbstractLedger > ledger, const LedgerKey& ledgerKey ) :
         mLedger ( ledger ),
         mKey ( ledgerKey ),
         mState ( EMPTY ) {
     }
     
     //----------------------------------------------------------------//
-    LedgerFieldODBM ( ConstOpt < Ledger > ledger, const LedgerKey& ledgerKey, TYPE fallback ) :
+    LedgerFieldODBM ( ConstOpt < AbstractLedger > ledger, const LedgerKey& ledgerKey, TYPE fallback ) :
         mLedger ( ledger ),
         mKey ( ledgerKey ),
         mState ( FALLBACK ),

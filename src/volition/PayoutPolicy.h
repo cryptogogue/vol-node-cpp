@@ -50,9 +50,32 @@ public:
         }
         return decimals;
     }
-
+    
     //----------------------------------------------------------------//
-    void payout ( Ledger& ledger ) const {
+    bool hasAccounts ( const AbstractLedger& ledger ) const {
+    
+        SerializableMap < string, u64 >::const_iterator shareIt = this->mShares.cbegin ();
+        for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
+            string accountName  = shareIt->first;
+            AccountODBM accountODBM ( ledger, accountName );
+            if ( !accountODBM ) return false;
+        }
+        return true;
+    }
+    
+    //----------------------------------------------------------------//
+    bool isBalanced () const {
+    
+        double balance = 0;
+        SerializableMap < string, u64 >::const_iterator shareIt = this->mShares.cbegin ();
+        for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
+            balance += shareIt->second;
+        }
+        return ( balance == this->mScale );
+    }
+    
+    //----------------------------------------------------------------//
+    void payout ( AbstractLedger& ledger ) const {
         
         u64 pool = ledger.getPayoutPool ();
         if ( pool == 0 ) return;
@@ -88,29 +111,6 @@ public:
     //----------------------------------------------------------------//
     PayoutPolicy () :
         mScale ( DEFAULT_SCALE ) {
-    }
-    
-    //----------------------------------------------------------------//
-    bool hasAccounts ( const Ledger& ledger ) const {
-    
-        SerializableMap < string, u64 >::const_iterator shareIt = this->mShares.cbegin ();
-        for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
-            string accountName  = shareIt->first;
-            AccountODBM accountODBM ( ledger, accountName );
-            if ( !accountODBM ) return false;
-        }
-        return true;
-    }
-    
-    //----------------------------------------------------------------//
-    bool isBalanced () const {
-    
-        double balance = 0;
-        SerializableMap < string, u64 >::const_iterator shareIt = this->mShares.cbegin ();
-        for ( ; shareIt != this->mShares.cend (); ++shareIt ) {
-            balance += shareIt->second;
-        }
-        return ( balance == this->mScale );
     }
     
     //----------------------------------------------------------------//

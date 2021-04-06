@@ -21,9 +21,9 @@ template < typename TYPE >
 class LedgerObjectFieldODBM {
 private:
 
-    ConstOpt < Ledger >     mLedger;
-    LedgerKey               mKey;
-    shared_ptr < TYPE >     mObject;
+    ConstOpt < AbstractLedger >     mLedger;
+    LedgerKey                       mKey;
+    shared_ptr < TYPE >             mObject;
 
 public:
 
@@ -43,13 +43,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void init ( const Ledger& ledger, const LedgerKey& ledgerKey ) {
+    void init ( const AbstractLedger& ledger, const LedgerKey& ledgerKey ) {
         this->mLedger.set ( ledger );
         this->mKey = ledgerKey;
     }
     
     //----------------------------------------------------------------//
-    void init ( Ledger& ledger, const LedgerKey& ledgerKey ) {
+    void init ( AbstractLedger& ledger, const LedgerKey& ledgerKey ) {
         this->mLedger.set ( ledger );
         this->mKey = ledgerKey;
     }
@@ -66,7 +66,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    LedgerObjectFieldODBM ( ConstOpt < Ledger > ledger, const LedgerKey& ledgerKey ) :
+    LedgerObjectFieldODBM ( ConstOpt < AbstractLedger > ledger, const LedgerKey& ledgerKey ) :
         mLedger ( ledger ),
         mKey ( ledgerKey ) {
     }

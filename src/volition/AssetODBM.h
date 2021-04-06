@@ -54,8 +54,8 @@ public:
         return Format::write ( "asset.%d.fields.%s", index, fieldName.c_str ());
     }
 
-    ConstOpt < Ledger >     mLedger;
-    AssetID                 mAssetID;
+    ConstOpt < AbstractLedger >             mLedger;
+    AssetID                                 mAssetID;
 
     LedgerFieldODBM < AccountID::Index >    mOwner;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
@@ -68,7 +68,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    AssetODBM ( ConstOpt < Ledger > ledger, AssetID::Index index ) :
+    AssetODBM ( ConstOpt < AbstractLedger > ledger, AssetID::Index index ) :
         mLedger ( ledger ),
         mAssetID ( index ),
         mOwner ( ledger,            keyFor_owner ( this->mAssetID ),            AccountID::NULL_INDEX ),

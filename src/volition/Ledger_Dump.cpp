@@ -16,7 +16,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 void Ledger_Dump::dump ( string filename ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     Transactions::LoadLedger loadLedger;
     loadLedger.init ( ledger );

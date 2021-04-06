@@ -21,25 +21,33 @@
 namespace Volition {
 
 //================================================================//
-// Ledger
+// AbstractLedger
 //================================================================//
 
 //----------------------------------------------------------------//
-bool Ledger::canReward ( string rewardName ) const {
+AbstractLedger::AbstractLedger () {
+}
+
+//----------------------------------------------------------------//
+AbstractLedger::~AbstractLedger () {
+}
+
+//----------------------------------------------------------------//
+bool AbstractLedger::canReward ( string rewardName ) const {
 
     const Schema& schema = this->getSchema ();
 
     const MiningReward* reward = schema.getRewardOrNull ( rewardName );
     if ( !reward ) return false;
     
-    LedgerFieldODBM < u64 > rewardCountField ( *this, Ledger::keyFor_rewardCount ( rewardName ));
+    LedgerFieldODBM < u64 > rewardCountField ( *this, AbstractLedger::keyFor_rewardCount ( rewardName ));
     u64 rewardCount = rewardCountField.get ( 0 );
     
     return ( rewardCount < reward->mQuantity );
 }
 
 //----------------------------------------------------------------//
-bool Ledger::checkMiners ( string miners ) const {
+bool AbstractLedger::checkMiners ( string miners ) const {
     
     const char* delim = ",";
     
@@ -59,7 +67,7 @@ bool Ledger::checkMiners ( string miners ) const {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::checkSchemaMethodsAndRewards ( const Schema& schema ) const {
+LedgerResult AbstractLedger::checkSchemaMethodsAndRewards ( const Schema& schema ) const {
 
     string out;
 
@@ -93,7 +101,7 @@ LedgerResult Ledger::checkSchemaMethodsAndRewards ( const Schema& schema ) const
 }
 
 //----------------------------------------------------------------//
-string Ledger::chooseReward ( string rewardName ) {
+string AbstractLedger::chooseReward ( string rewardName ) {
 
     if ( !this->canReward ( rewardName )) {
     
@@ -119,42 +127,42 @@ string Ledger::chooseReward ( string rewardName ) {
 }
 
 //----------------------------------------------------------------//
-void Ledger::clearSchemaCache () {
+void AbstractLedger::clearSchemaCache () {
 
     this->mSchemaCache = NULL;
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::countBlocks () const {
+u64 AbstractLedger::countBlocks () const {
 
     return this->getHeight ();
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::countVOL () const {
+u64 AbstractLedger::countVOL () const {
 
-    return LedgerFieldODBM < u64 >( *this, Ledger::keyFor_totalVOL ()).get ( 0 );
+    return LedgerFieldODBM < u64 >( *this, AbstractLedger::keyFor_totalVOL ()).get ( 0 );
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::createVOL ( u64 rewards, u64 prizes ) {
+u64 AbstractLedger::createVOL ( u64 rewards, u64 prizes ) {
 
-    LedgerFieldODBM < u64 > rewardPoolField ( *this, Ledger::keyFor_rewardPool ());
+    LedgerFieldODBM < u64 > rewardPoolField ( *this, AbstractLedger::keyFor_rewardPool ());
     rewardPoolField.set ( rewardPoolField.get ( 0 ) + rewards );
     
-    LedgerFieldODBM < u64 > prizePoolField ( *this, Ledger::keyFor_prizePool ());
+    LedgerFieldODBM < u64 > prizePoolField ( *this, AbstractLedger::keyFor_prizePool ());
     rewardPoolField.set ( prizePoolField.get ( 0 ) + rewards );
 
     u64 total = rewards + prizes;
 
-    LedgerFieldODBM < u64 > totalVOLField ( *this, Ledger::keyFor_totalVOL ());
+    LedgerFieldODBM < u64 > totalVOLField ( *this, AbstractLedger::keyFor_totalVOL ());
     totalVOLField.set ( totalVOLField.get ( 0 ) + total );
     
     return total;
 }
 
 //----------------------------------------------------------------//
-shared_ptr < const Block > Ledger::getBlock () const {
+shared_ptr < const Block > AbstractLedger::getBlock () const {
 
     u64 totalBlocks = this->countBlocks ();
     if ( !totalBlocks ) return NULL;
@@ -163,14 +171,14 @@ shared_ptr < const Block > Ledger::getBlock () const {
 }
 
 //----------------------------------------------------------------//
-shared_ptr < const Block > Ledger::getBlock ( u64 height ) const {
+shared_ptr < const Block > AbstractLedger::getBlock ( u64 height ) const {
 
     BlockODBM blockODBM ( *this, height );
     return blockODBM.mBlock.get ();
 }
 
 //----------------------------------------------------------------//
-shared_ptr < const Block > Ledger::getBlock ( string hash ) const {
+shared_ptr < const Block > AbstractLedger::getBlock ( string hash ) const {
 
     LedgerKey KEY_FOR_BLOCK_HEIGHT_BY_HASH = keyFor_blockHeightByHash ( hash );
 
@@ -182,95 +190,95 @@ shared_ptr < const Block > Ledger::getBlock ( string hash ) const {
 }
 
 //----------------------------------------------------------------//
-time_t Ledger::getBlockDelayInSeconds () const {
+time_t AbstractLedger::getBlockDelayInSeconds () const {
 
     return ( time_t )this->getValue < u64 >( keyFor_blockDelay ());
 }
 
 //----------------------------------------------------------------//
-Entropy Ledger::getEntropy () const {
+Entropy AbstractLedger::getEntropy () const {
 
     return Entropy ( this->getEntropyString ());
 }
 
 //----------------------------------------------------------------//
-string Ledger::getEntropyString () const {
+string AbstractLedger::getEntropyString () const {
 
     return this->getValueOrFallback < string >( keyFor_entropy (), "" );
 }
 
 //----------------------------------------------------------------//
-string Ledger::getGenesisHash () const {
+string AbstractLedger::getGenesisHash () const {
     
     BlockODBM genesisODBM ( *this, 0 );
     return genesisODBM ? genesisODBM.mHash.get () : "";
 }
 
 //----------------------------------------------------------------//
-shared_ptr < const BlockHeader > Ledger::getHeader ( u64 height ) const {
+shared_ptr < const BlockHeader > AbstractLedger::getHeader ( u64 height ) const {
 
     BlockODBM blockODBM ( *this, height );
     return blockODBM.mHeader.get ();
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getHeight () const {
+u64 AbstractLedger::getHeight () const {
 
     return ( u64 )this->getVersion ();
 }
 
 //----------------------------------------------------------------//
-string Ledger::getIdentity () const {
+string AbstractLedger::getIdentity () const {
 
     return this->getValueOrFallback < string >( keyFor_identity (), "" );
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getMaxBlockWeight () const {
+u64 AbstractLedger::getMaxBlockWeight () const {
 
     return this->getValue < u64 >( keyFor_maxBlockWeight ());
 }
 
 //----------------------------------------------------------------//
-MonetaryPolicy Ledger::getMonetaryPolicy () const {
+MonetaryPolicy AbstractLedger::getMonetaryPolicy () const {
         
     shared_ptr < MonetaryPolicy > monetaryPolicy = this->getObjectOrNull < MonetaryPolicy >( keyFor_monetaryPolicy ());
     return monetaryPolicy ? *monetaryPolicy : MonetaryPolicy ();
 }
 
 //----------------------------------------------------------------//
-PayoutPolicy Ledger::getPayoutPolicy () const {
+PayoutPolicy AbstractLedger::getPayoutPolicy () const {
     
     shared_ptr < PayoutPolicy > feeDistributionTable = this->getObjectOrNull < PayoutPolicy >( keyFor_payoutPolicy ());
     return feeDistributionTable ? *feeDistributionTable : PayoutPolicy ();
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getPayoutPool () const {
+u64 AbstractLedger::getPayoutPool () const {
 
     return this->getValueOrFallback < u64 >( keyFor_payoutPool (), 0 );
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getPrizePool () const {
+u64 AbstractLedger::getPrizePool () const {
 
     return this->getValueOrFallback < u64 >( keyFor_prizePool (), 0 );
 }
 
 //----------------------------------------------------------------//
-u64 Ledger::getRewardPool () const {
+u64 AbstractLedger::getRewardPool () const {
 
     return this->getValueOrFallback < u64 >( keyFor_rewardPool (), 0 );
 }
 
 //----------------------------------------------------------------//
-time_t Ledger::getRewriteWindowInSeconds () const {
+time_t AbstractLedger::getRewriteWindowInSeconds () const {
 
     return ( time_t )this->getValue < u64 >( keyFor_rewriteWindow ());
 }
 
 //----------------------------------------------------------------//
-const Schema& Ledger::getSchema () const {
+const Schema& AbstractLedger::getSchema () const {
 
     if ( !this->mSchemaCache ) {
         this->mSchemaCache = make_shared < map < string, Schema >>();
@@ -293,19 +301,19 @@ const Schema& Ledger::getSchema () const {
 }
 
 //----------------------------------------------------------------//
-string Ledger::getSchemaHash () const {
+string AbstractLedger::getSchemaHash () const {
 
     return this->getValueOrFallback < string >( keyFor_schemaHash (), "" );
 }
 
 //----------------------------------------------------------------//
-string Ledger::getSchemaString () const {
+string AbstractLedger::getSchemaString () const {
 
     return this->getValue < string >( keyFor_schema ());
 }
 
 //----------------------------------------------------------------//
-SchemaVersion Ledger::getSchemaVersion () const {
+SchemaVersion AbstractLedger::getSchemaVersion () const {
 
     SchemaVersion schemaVersion;
     const string schemaVersionString = this->getValueOrFallback < string >( keyFor_schemaVersion (), "" );
@@ -316,27 +324,27 @@ SchemaVersion Ledger::getSchemaVersion () const {
 }
 
 //----------------------------------------------------------------//
-TransactionFeeSchedule Ledger::getTransactionFeeSchedule () const {
+TransactionFeeSchedule AbstractLedger::getTransactionFeeSchedule () const {
         
     shared_ptr < TransactionFeeSchedule > feeSchedule = this->getObjectOrNull < TransactionFeeSchedule >( keyFor_transactionFeeSchedule ());
     return feeSchedule ? *feeSchedule : TransactionFeeSchedule ();
 }
 
 //----------------------------------------------------------------//
-UnfinishedBlockList Ledger::getUnfinished () {
+UnfinishedBlockList AbstractLedger::getUnfinished () {
 
     shared_ptr < UnfinishedBlockList > unfinished = this->getObjectOrNull < UnfinishedBlockList >( keyFor_unfinished ());
     return unfinished ? *unfinished : UnfinishedBlockList ();
 }
 
 //----------------------------------------------------------------//
-bool Ledger::hasBlock ( string hash ) const {
+bool AbstractLedger::hasBlock ( string hash ) const {
 
     return this->hasKey ( keyFor_blockHeightByHash ( hash ) );
 }
 
 //----------------------------------------------------------------//
-bool Ledger::hasTransaction ( string accountName, string uuid ) const {
+bool AbstractLedger::hasTransaction ( string accountName, string uuid ) const {
 
     AccountID accountID = this->getAccountID ( accountName );
     if ( accountID != AccountID::NULL_INDEX ) {
@@ -346,9 +354,9 @@ bool Ledger::hasTransaction ( string accountName, string uuid ) const {
 }
 
 //----------------------------------------------------------------//
-void Ledger::init () {
+void AbstractLedger::init () {
 
-    this->clear ();
+    this->revertAndClear ( 0 );
     this->setObject < SerializableSet < string >>( keyFor_miners (), SerializableSet < string > ());
     this->setValue < AssetID::Index >( keyFor_globalAccountCount (), 0 );
     this->setValue < AssetID::Index >( keyFor_globalAssetCount (), 0 );
@@ -357,7 +365,7 @@ void Ledger::init () {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::invoke ( string accountName, const AssetMethodInvocation& invocation, time_t time ) {
+LedgerResult AbstractLedger::invoke ( string accountName, const AssetMethodInvocation& invocation, time_t time ) {
 
     const Schema& schema = this->getSchema ();
 
@@ -374,13 +382,13 @@ LedgerResult Ledger::invoke ( string accountName, const AssetMethodInvocation& i
 }
 
 //----------------------------------------------------------------//
-bool Ledger::isGenesis () const {
+bool AbstractLedger::isGenesis () const {
 
     return ( this->getHeight () == 0 );
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::invokeReward ( string minerID, string rewardName, time_t time ) {
+LedgerResult AbstractLedger::invokeReward ( string minerID, string rewardName, time_t time ) {
 
     if ( !this->canReward ( rewardName )) return true;
 
@@ -389,20 +397,7 @@ LedgerResult Ledger::invokeReward ( string minerID, string rewardName, time_t ti
 }
 
 //----------------------------------------------------------------//
-Ledger::Ledger () {
-}
-
-//----------------------------------------------------------------//
-Ledger::Ledger ( Ledger& other ) :
-    VersionedStore ( other ) {
-}
-
-//----------------------------------------------------------------//
-Ledger::~Ledger () {
-}
-
-//----------------------------------------------------------------//
-void Ledger::payout ( u64 amount ) {
+void AbstractLedger::payout ( u64 amount ) {
 
     if ( amount == 0 ) return;
     this->setPayoutPool ( this->getPayoutPool () + amount );
@@ -414,7 +409,7 @@ void Ledger::payout ( u64 amount ) {
 }
 
 //----------------------------------------------------------------//
-string Ledger::printChain ( const char* pre, const char* post ) const {
+string AbstractLedger::printChain ( const char* pre, const char* post ) const {
 
     string str;
 
@@ -442,9 +437,10 @@ string Ledger::printChain ( const char* pre, const char* post ) const {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::pushBlock ( const Block& block, Block::VerificationPolicy policy ) {
+LedgerResult AbstractLedger::pushBlock ( const Block& block, Block::VerificationPolicy policy ) {
 
-    Ledger fork ( *this );
+    Ledger fork;
+    fork.takeSnapshot ( *this );
 
     LedgerResult result = block.apply ( fork, policy );
 
@@ -459,7 +455,7 @@ LedgerResult Ledger::pushBlock ( const Block& block, Block::VerificationPolicy p
 }
 
 //----------------------------------------------------------------//
-void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerTo& serializer ) const {
+void AbstractLedger::serializeEntitlements ( const Account& account, AbstractSerializerTo& serializer ) const {
 
     serializer.context ( "account", [ & ]( AbstractSerializerTo& serializer ) {
 
@@ -491,20 +487,20 @@ void Ledger::serializeEntitlements ( const Account& account, AbstractSerializerT
 }
 
 //----------------------------------------------------------------//
-void Ledger::setEntitlements ( string name, const Entitlements& entitlements ) {
+void AbstractLedger::setEntitlements ( string name, const Entitlements& entitlements ) {
 
     LedgerKey KEY_FOR_ENTITLEMENTS = keyFor_entitlements ( name );
     this->setObject < Entitlements >( KEY_FOR_ENTITLEMENTS, entitlements );
 }
 
 //----------------------------------------------------------------//
-void Ledger::setEntropyString ( string entropy ) {
+void AbstractLedger::setEntropyString ( string entropy ) {
 
     this->setValue < string >( keyFor_entropy (), entropy );
 }
 
 //----------------------------------------------------------------//
-bool Ledger::setIdentity ( string identity ) {
+bool AbstractLedger::setIdentity ( string identity ) {
 
     LedgerKey KEY_FOR_IDENTITY = keyFor_identity ();
     if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
@@ -513,13 +509,13 @@ bool Ledger::setIdentity ( string identity ) {
 }
 
 //----------------------------------------------------------------//
-void Ledger::setMonetaryPolicy ( const MonetaryPolicy& monetaryPolicy ) {
+void AbstractLedger::setMonetaryPolicy ( const MonetaryPolicy& monetaryPolicy ) {
 
     this->setObject < MonetaryPolicy >( keyFor_monetaryPolicy (), monetaryPolicy );
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger::setPayoutPolicy ( const PayoutPolicy& distributionTable ) {
+LedgerResult AbstractLedger::setPayoutPolicy ( const PayoutPolicy& distributionTable ) {
 
     if ( !distributionTable.isBalanced ()) return "Distribution table does not balance.";
     if ( !distributionTable.hasAccounts ( *this )) return "Distribution table names unknown accounts.";
@@ -529,19 +525,19 @@ LedgerResult Ledger::setPayoutPolicy ( const PayoutPolicy& distributionTable ) {
 }
 
 //----------------------------------------------------------------//
-void Ledger::setPayoutPool ( u64 amount ) {
+void AbstractLedger::setPayoutPool ( u64 amount ) {
 
     this->setValue < u64 >( keyFor_payoutPool (), amount );
 }
 
 //----------------------------------------------------------------//
-void Ledger::setSchema ( const Schema& schema ) {
+void AbstractLedger::setSchema ( const Schema& schema ) {
 
     string schemaHash = Digest ( schema, Digest::HASH_ALGORITHM_MD5 ).toHex ();
 
-    this->setObject < Schema >( Ledger::keyFor_schema (), schema );
-    this->setObject < SchemaVersion >( Ledger::keyFor_schemaVersion (), schema.mVersion );
-    this->setValue < string >( Ledger::keyFor_schemaHash (), schemaHash );
+    this->setObject < Schema >( AbstractLedger::keyFor_schema (), schema );
+    this->setObject < SchemaVersion >( AbstractLedger::keyFor_schemaVersion (), schema.mVersion );
+    this->setValue < string >( AbstractLedger::keyFor_schemaHash (), schemaHash );
     
     if ( !this->mSchemaCache ) {
         this->mSchemaCache = make_shared < map < string, Schema >>();
@@ -550,19 +546,19 @@ void Ledger::setSchema ( const Schema& schema ) {
 }
 
 //----------------------------------------------------------------//
-void Ledger::setTransactionFeeSchedule ( const TransactionFeeSchedule& feeSchedule ) {
+void AbstractLedger::setTransactionFeeSchedule ( const TransactionFeeSchedule& feeSchedule ) {
 
     this->setObject < TransactionFeeSchedule >( keyFor_transactionFeeSchedule (), feeSchedule );
 }
 
 //----------------------------------------------------------------//
-void Ledger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
+void AbstractLedger::setUnfinished ( const UnfinishedBlockList& unfinished ) {
 
     this->setObject < UnfinishedBlockList >( keyFor_unfinished (), unfinished );
 }
 
 //----------------------------------------------------------------//
-bool Ledger::verify ( const AssetMethodInvocation& invocation ) {
+bool AbstractLedger::verify ( const AssetMethodInvocation& invocation ) {
 
     const Schema& schema = this->getSchema ();
     const AssetMethod* method = schema.getMethodOrNull ( invocation.mMethodName );
@@ -574,19 +570,19 @@ bool Ledger::verify ( const AssetMethodInvocation& invocation ) {
 //================================================================//
 
 //----------------------------------------------------------------//
-Ledger& Ledger::AbstractLedgerComponent_getLedger () {
+AbstractLedger& AbstractLedger::AbstractLedgerComponent_getLedger () {
 
     return *this;
 }
 
 //----------------------------------------------------------------//
-const Ledger& Ledger::AbstractLedgerComponent_getLedger () const {
+const AbstractLedger& AbstractLedger::AbstractLedgerComponent_getLedger () const {
 
     return *this;
 }
 
 //----------------------------------------------------------------//
-void Ledger::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+void AbstractLedger::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
     this->init ();
     
@@ -603,7 +599,7 @@ void Ledger::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& 
 }
 
 //----------------------------------------------------------------//
-void Ledger::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+void AbstractLedger::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     SerializableVector < Block > blocks;
     

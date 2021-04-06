@@ -78,7 +78,7 @@ private:
     }
 
     //----------------------------------------------------------------//
-    void initialize ( ConstOpt < Ledger > ledger, AccountID index ) {
+    void initialize ( ConstOpt < AbstractLedger > ledger, AccountID index ) {
     
         this->mLedger       = ledger;
         this->mAccountID    = index;
@@ -95,8 +95,8 @@ private:
 
 public:
 
-    ConstOpt < Ledger >     mLedger;
-    AccountID               mAccountID;
+    ConstOpt < AbstractLedger >             mLedger;
+    AccountID                               mAccountID;
 
     LedgerFieldODBM < u64 >                 mAssetCount;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
@@ -114,12 +114,12 @@ public:
     }
 
     //----------------------------------------------------------------//
-    AccountODBM ( ConstOpt < Ledger > ledger, AccountID index ) {
+    AccountODBM ( ConstOpt < AbstractLedger > ledger, AccountID index ) {
         this->initialize ( ledger, index );
     }
     
     //----------------------------------------------------------------//
-    AccountODBM ( ConstOpt < Ledger > ledger, string accountName ) {
+    AccountODBM ( ConstOpt < AbstractLedger > ledger, string accountName ) {
         this->initialize ( ledger, ledger.getConst ().getAccountID ( accountName ));
     }
     

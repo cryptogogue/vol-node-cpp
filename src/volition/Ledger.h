@@ -87,25 +87,26 @@ public:
 };
 
 //================================================================//
-// Ledger
+// AbstractLedger
 //================================================================//
-class Ledger :
+class AbstractLedger :
+    public virtual AbstractVersionedStoreInspector,
+    public virtual AbstractVersionedStoreTag,
     public AbstractSerializable,
-    public VersionedStore,
     virtual public AbstractLedgerComponent,
     public Ledger_Account,
     public Ledger_Dump,
     public Ledger_Inventory,
     public Ledger_Miner {
-private:
+protected:
 
     mutable shared_ptr < map < string, Schema >> mSchemaCache;
 
     //----------------------------------------------------------------//
-    Ledger&             AbstractLedgerComponent_getLedger       () override;
-    const Ledger&       AbstractLedgerComponent_getLedger       () const override;
-    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    AbstractLedger&             AbstractLedgerComponent_getLedger           () override;
+    const AbstractLedger&       AbstractLedgerComponent_getLedger           () const override;
+    void                        AbstractSerializable_serializeFrom          ( const AbstractSerializerFrom& serializer ) override;
+    void                        AbstractSerializable_serializeTo            ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
@@ -235,6 +236,8 @@ public:
     }
 
     //----------------------------------------------------------------//
+                                        AbstractLedger                  ();
+                                        ~AbstractLedger                 ();
     bool                                canReward                       ( string rewardName ) const;
     bool                                checkMiners                     ( string miners ) const;
     LedgerResult                        checkSchemaMethodsAndRewards    ( const Schema& schema ) const;
@@ -272,9 +275,6 @@ public:
     LedgerResult                        invoke                          ( string accountName, const AssetMethodInvocation& invocation, time_t time );
     LedgerResult                        invokeReward                    ( string minerID, string rewardName, time_t time );
     bool                                isGenesis                       () const;
-                                        Ledger                          ();
-                                        Ledger                          ( Ledger& other );
-                                        ~Ledger                         ();
     void                                payout                          ( u64 amount );
     string                              printChain                      ( const char* pre = NULL, const char* post = NULL ) const;
     LedgerResult                        pushBlock                       ( const Block& block, Block::VerificationPolicy policy );
@@ -314,12 +314,12 @@ public:
     template < typename TYPE >
     shared_ptr < TYPE > getObjectOrNull ( LedgerKey key ) const {
 
-        return Ledger::getObjectOrNull < TYPE >( *this, key );
+        return AbstractLedger::getObjectOrNull < TYPE >( *this, key );
     }
     
     //----------------------------------------------------------------//
     template < typename TYPE >
-    static shared_ptr < TYPE > getObjectOrNull ( const VersionedStoreSnapshot& snapshot, LedgerKey key ) {
+    static shared_ptr < TYPE > getObjectOrNull ( const AbstractVersionedStoreInspector& snapshot, LedgerKey key ) {
     
         string json = snapshot.getValueOrFallback < string >( key, "" );
         if ( json.size () > 0 ) {
@@ -378,6 +378,100 @@ public:
     
         string json = ToJSONSerializer::toJSONString ( object );
         this->setValue < string >( key, json );
+    }
+};
+
+//================================================================//
+// Ledger
+//================================================================//
+class Ledger :
+    public AbstractLedger,
+    public virtual VersionedStoreTag,
+    public enable_shared_from_this < Ledger > {
+public:
+
+    //----------------------------------------------------------------//
+    Ledger () {
+    }
+
+    //----------------------------------------------------------------//
+    Ledger ( Ledger& other ) :
+        VersionedStoreTag ( other.getTag ()) {
+    }
+    
+    //----------------------------------------------------------------//
+    Ledger ( AbstractLedger& other ) :
+        VersionedStoreTag ( other.getTag ()) {
+    }
+    
+    //----------------------------------------------------------------//
+    Ledger ( VersionedStoreTag& tag ) :
+        VersionedStoreTag ( tag ) {
+    }
+};
+
+//================================================================//
+// LockedLedger
+//================================================================//
+class LockedLedger :
+    public AbstractLedger,
+    public virtual VersionedStoreLock {
+protected:
+    
+    //----------------------------------------------------------------//
+    VersionedStoreTag& AbstractVersionedStoreTag_getTag () override {
+        assert ( false );
+        static VersionedStoreTag dummy;
+        return dummy;
+    }
+
+public:
+
+    //----------------------------------------------------------------//
+    LockedLedger () {
+    }
+
+    //----------------------------------------------------------------//
+    LockedLedger ( Ledger& other ) :
+        VersionedStoreLock ( other.getRef ()) {
+    }
+    
+    //----------------------------------------------------------------//
+    LockedLedger ( AbstractLedger& other ) :
+        VersionedStoreLock ( other.getRef ()) {
+    }
+    
+    //----------------------------------------------------------------//
+    LockedLedger ( LockedLedger& other ) :
+        VersionedStoreLock ( other.getRef ()) {
+    }
+    
+    //----------------------------------------------------------------//
+    LockedLedger ( VersionedStoreTag& tag ) :
+        VersionedStoreLock ( tag ) {
+    }
+};
+
+//================================================================//
+// LockedLedgerIterator
+//================================================================//
+class LockedLedgerIterator :
+    public AbstractLedger,
+    public virtual VersionedStoreIterator {
+protected:
+    
+    //----------------------------------------------------------------//
+    VersionedStoreTag& AbstractVersionedStoreTag_getTag () override {
+        assert ( false );
+        static VersionedStoreTag dummy;
+        return dummy;
+    }
+
+public:
+    
+    //----------------------------------------------------------------//
+    LockedLedgerIterator ( LockedLedger& other ) :
+        VersionedStoreIterator ( other ) {
     }
 };
 

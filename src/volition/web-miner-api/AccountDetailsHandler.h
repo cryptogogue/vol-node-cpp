@@ -7,7 +7,7 @@
 #include <volition/AccountODBM.h>
 #include <volition/AssetODBM.h>
 #include <volition/Block.h>
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/SemiBlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
@@ -17,7 +17,7 @@ namespace WebMinerAPI {
 // AccountDetailsHandler
 //================================================================//
 class AccountDetailsHandler :
-    public BlockingMinerAPIRequestHandler {
+    public SemiBlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
@@ -57,7 +57,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     

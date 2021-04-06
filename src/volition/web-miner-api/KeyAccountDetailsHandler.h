@@ -5,7 +5,7 @@
 #define VOLITION_WEBMINERAPI_ACCOUNTDETAILSHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/SemiBlockingMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/web-miner-api/AccountDetailsHandler.h>
 
@@ -16,13 +16,13 @@ namespace WebMinerAPI {
 // KeyAccountDetailsHandler
 //================================================================//
 class KeyAccountDetailsHandler :
-    public BlockingMinerAPIRequestHandler {
+    public SemiBlockingMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     

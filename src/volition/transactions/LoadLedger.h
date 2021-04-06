@@ -59,7 +59,7 @@ public:
     TransactionResult       AbstractTransactionBody_genesis         ( Ledger& ledger ) const override;
     
     //----------------------------------------------------------------//
-    void                    init                    ( Ledger& ledger );
+    void                    init                    ( AbstractLedger& ledger );
 };
 
 } // namespace Transactions

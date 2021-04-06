@@ -41,7 +41,7 @@ private:
 
 public:
 
-    ConstOpt < Ledger >                     mLedger;
+    ConstOpt < AbstractLedger >             mLedger;
     u64                                     mHeight;
 
     LedgerFieldODBM < string >              mHash;
@@ -56,7 +56,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    BlockODBM ( ConstOpt < Ledger > ledger, u64 height ) :
+    BlockODBM ( ConstOpt < AbstractLedger > ledger, u64 height ) :
         mLedger ( ledger ),
         mHeight ( height ) {
         

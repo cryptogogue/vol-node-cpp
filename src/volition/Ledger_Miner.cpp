@@ -23,7 +23,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 set < string > Ledger_Miner::getMiners () const {
 
-    const Ledger& ledger = this->getLedger ();
+    const AbstractLedger& ledger = this->getLedger ();
 
     set < string > minerInfoSet;
 
@@ -42,7 +42,7 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
 
     if ( !minerInfo.isValid ()) return "Invalid miner info.";
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
     if ( !accountODBM ) return "Miner account not found.";

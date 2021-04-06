@@ -150,6 +150,9 @@ protected:
     friend class BlockSearch;
     friend class RemoteMiner;
 
+    friend class ScopedMinerLock;
+    friend class ScopedMinerLedgerLock;
+
     static constexpr const char* PERSIST_PREFIX     = "v2-beta-";
     static constexpr const char* MASTER_BRANCH      = "master";
 
@@ -198,7 +201,10 @@ protected:
     
     MinerSnapshot                                   mSnapshot;
     MinerStatus                                     mMinerStatus;
-    Poco::Mutex                                     mSnapshotMutex;
+    shared_mutex                                    mSnapshotMutex;
+    
+    LockedLedger                                    mLockedLedger;
+    shared_mutex                                    mLockedLedgerMutex;
     
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     
@@ -300,9 +306,36 @@ private:
 public:
 
     //----------------------------------------------------------------//
-    ScopedMinerLock ( shared_ptr < Miner > minerActivity ) :
-        mMiner ( minerActivity ),
-        mScopedLock ( *minerActivity ) {
+    ScopedMinerLock ( shared_ptr < Miner > miner ) :
+        mMiner ( miner ),
+        mScopedLock ( miner->mMutex ) {
+    }
+};
+
+//================================================================//
+// ScopedMinerLedgerLock
+//================================================================//
+class ScopedMinerLedgerLock {
+private:
+
+    shared_ptr < Miner >                mMiner;
+
+public:
+
+    //----------------------------------------------------------------//
+    LockedLedger& getImmutableLedger () {
+        return this->mMiner->mLockedLedger;
+    }
+
+    //----------------------------------------------------------------//
+    ScopedMinerLedgerLock ( shared_ptr < Miner > miner ) :
+        mMiner ( miner ) {
+        this->mMiner->mLockedLedgerMutex.lock_shared ();
+    }
+    
+    //----------------------------------------------------------------//
+    ~ScopedMinerLedgerLock () {
+        this->mMiner->mLockedLedgerMutex.unlock_shared ();
     }
 };
 

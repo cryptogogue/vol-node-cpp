@@ -23,7 +23,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 bool Ledger_Account::affirmKey ( AccountID accountID, string makerKeyName, string keyName, const CryptoPublicKey& key, const Policy* policy ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     string keyID = key.getKeyID ();
     if ( keyID.size ()) return false;
@@ -66,7 +66,7 @@ bool Ledger_Account::affirmKey ( AccountID accountID, string makerKeyName, strin
 //----------------------------------------------------------------//
 LedgerResult Ledger_Account::awardVOL ( AccountID accountID, u64 amount ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     AccountODBM accountODBM ( ledger, accountID );
 
@@ -92,7 +92,7 @@ LedgerResult Ledger_Account::awardVOL ( AccountID accountID, u64 amount ) {
 //----------------------------------------------------------------//
 bool Ledger_Account::deleteKey ( AccountID accountID, string keyName ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     AccountKey accountKey = ledger.getAccountKey ( accountID, keyName );
     if ( accountKey ) {
@@ -107,7 +107,7 @@ bool Ledger_Account::deleteKey ( AccountID accountID, string keyName ) {
 //----------------------------------------------------------------//
 AccountID Ledger_Account::getAccountID ( string accountName ) const {
 
-    const Ledger& ledger = this->getLedger ();
+    const AbstractLedger& ledger = this->getLedger ();
     if ( accountName.size () == 0 ) return AccountID::NULL_INDEX;
 
     string lowerName = Format::tolower ( accountName );
@@ -118,7 +118,7 @@ AccountID Ledger_Account::getAccountID ( string accountName ) const {
 //----------------------------------------------------------------//
 AccountKey Ledger_Account::getAccountKey ( AccountID accountID, string keyName ) const {
 
-    const Ledger& ledger = this->getLedger ();
+    const AbstractLedger& ledger = this->getLedger ();
 
     AccountKey accountKey;
     accountKey.mKeyAndPolicy = NULL;
@@ -136,7 +136,7 @@ AccountKey Ledger_Account::getAccountKey ( AccountID accountID, string keyName )
 //----------------------------------------------------------------//
 shared_ptr < AccountKeyLookup > Ledger_Account::getAccountKeyLookup ( string keyID ) const {
 
-    const Ledger& ledger = this->getLedger ();
+    const AbstractLedger& ledger = this->getLedger ();
     return ledger.getObjectOrNull < AccountKeyLookup >( Ledger::keyFor_accountKeyLookup ( keyID ));
 }
 
@@ -191,7 +191,7 @@ bool Ledger_Account::isSuffix ( string suffix ) {
 //----------------------------------------------------------------//
 LedgerResult Ledger_Account::newAccount ( string accountName, const Account& account ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     // check to see if there is already an alias for this account name
     string lowerName = Format::tolower ( accountName );
@@ -240,7 +240,7 @@ LedgerResult Ledger_Account::newAccount ( string accountName, u64 balance, strin
 //----------------------------------------------------------------//
 LedgerResult Ledger_Account::renameAccount ( AccountID accountID, string revealedName ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
     
@@ -292,7 +292,7 @@ LedgerResult Ledger_Account::renameAccount ( AccountID accountID, string reveale
 //----------------------------------------------------------------//
 LedgerResult Ledger_Account::reserveAccountname ( string nameHash, string nameSecret ) {
 
-    Ledger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
 
     LedgerFieldODBM < string > reservedNameField = LedgerFieldODBM < string > ( ledger, keyFor_reservedName ( nameHash ));
     if ( reservedNameField.exists ()) return Format::write ( "Account name has already been reserved." );

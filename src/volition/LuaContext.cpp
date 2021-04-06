@@ -269,7 +269,7 @@ int LuaContext::_randomAward ( lua_State* L ) {
 //----------------------------------------------------------------//
 int LuaContext::_resetAssetField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
-    Ledger& ledger = self.mLedger;
+    AbstractLedger& ledger = self.mLedger;
 
     string assetID          = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
@@ -284,7 +284,7 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
 //----------------------------------------------------------------//
 int LuaContext::_revokeAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
-    Ledger& ledger = self.mLedger;
+    AbstractLedger& ledger = self.mLedger;
 
     string assetID          = lua_tostring ( L, 1 );
 
@@ -298,7 +298,7 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
 //----------------------------------------------------------------//
 int LuaContext::_setAssetField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
-    Ledger& ledger = self.mLedger;
+    AbstractLedger& ledger = self.mLedger;
 
     string assetID          = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
@@ -537,7 +537,7 @@ LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
 }
 
 //----------------------------------------------------------------//
-LuaContext::LuaContext ( ConstOpt < Ledger > ledger, time_t time ) :
+LuaContext::LuaContext ( ConstOpt < AbstractLedger > ledger, time_t time ) :
     mLedger ( ledger ),
     mTime ( time ),
     mResult ( true ) {
@@ -569,11 +569,11 @@ LuaContext::~LuaContext () {
     lua_close ( this->mLuaState );
 }
 
-//----------------------------------------------------------------//
-void LuaContext::miningReward ( Ledger& ledger, string rewardName ) {
-    UNUSED ( ledger );
-    UNUSED ( rewardName );
-}
+////----------------------------------------------------------------//
+//void LuaContext::miningReward ( AbstractLedger& ledger, string rewardName ) {
+//    UNUSED ( ledger );
+//    UNUSED ( rewardName );
+//}
 
 //----------------------------------------------------------------//
 void LuaContext::push ( const Asset& asset ) {

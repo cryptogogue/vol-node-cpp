@@ -68,7 +68,7 @@ void LoadLedgerAccount::AbstractSerializable_serializeTo ( AbstractSerializerTo&
 //================================================================//
 
 //----------------------------------------------------------------//
-void LoadLedger::init ( Ledger& ledger ) {
+void LoadLedger::init ( AbstractLedger& ledger ) {
     
     this->mIdentity     = ledger.getIdentity ();
     this->mSchema       = ledger.getSchema ();
