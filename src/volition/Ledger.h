@@ -90,7 +90,6 @@ public:
 // AbstractLedger
 //================================================================//
 class AbstractLedger :
-    public virtual AbstractVersionedStoreInspector,
     public virtual AbstractVersionedStoreTag,
     public AbstractSerializable,
     virtual public AbstractLedgerComponent,
@@ -319,7 +318,7 @@ public:
     
     //----------------------------------------------------------------//
     template < typename TYPE >
-    static shared_ptr < TYPE > getObjectOrNull ( const AbstractVersionedStoreInspector& snapshot, LedgerKey key ) {
+    static shared_ptr < TYPE > getObjectOrNull ( const AbstractHasVersionedBranch& snapshot, LedgerKey key ) {
     
         string json = snapshot.getValueOrFallback < string >( key, "" );
         if ( json.size () > 0 ) {
@@ -417,7 +416,7 @@ class LockedLedger :
     public AbstractLedger,
     public virtual VersionedStoreLock {
 protected:
-    
+
     //----------------------------------------------------------------//
     VersionedStoreTag& AbstractVersionedStoreTag_getTag () override {
         assert ( false );
@@ -432,22 +431,22 @@ public:
     }
 
     //----------------------------------------------------------------//
-    LockedLedger ( Ledger& other ) :
+    LockedLedger ( const Ledger& other ) :
         VersionedStoreLock ( other.getRef ()) {
     }
     
     //----------------------------------------------------------------//
-    LockedLedger ( AbstractLedger& other ) :
+    LockedLedger ( const AbstractLedger& other ) :
         VersionedStoreLock ( other.getRef ()) {
     }
     
     //----------------------------------------------------------------//
-    LockedLedger ( LockedLedger& other ) :
+    LockedLedger ( const LockedLedger& other ) :
         VersionedStoreLock ( other.getRef ()) {
     }
     
     //----------------------------------------------------------------//
-    LockedLedger ( VersionedStoreTag& tag ) :
+    LockedLedger ( const VersionedStoreTag& tag ) :
         VersionedStoreLock ( tag ) {
     }
 };
@@ -459,7 +458,7 @@ class LockedLedgerIterator :
     public AbstractLedger,
     public virtual VersionedStoreIterator {
 protected:
-    
+
     //----------------------------------------------------------------//
     VersionedStoreTag& AbstractVersionedStoreTag_getTag () override {
         assert ( false );
@@ -470,7 +469,7 @@ protected:
 public:
     
     //----------------------------------------------------------------//
-    LockedLedgerIterator ( LockedLedger& other ) :
+    LockedLedgerIterator ( const LockedLedger& other ) :
         VersionedStoreIterator ( other ) {
     }
 };
