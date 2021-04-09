@@ -24,9 +24,7 @@ public:
     
     //----------------------------------------------------------------//
     void peek ( AbstractLedger& ledger, Poco::JSON::Object& jsonOut, string key, u64 height, u64 totalBlocks ) const {
-    
-        LGN_LOG_SCOPE ( VOL_FILTER_HTTP, INFO, __PRETTY_FUNCTION__ );
-    
+        
         if ( height < totalBlocks ) {
     
             Poco::JSON::Object::Ptr headerJSON = new Poco::JSON::Object ();
@@ -43,17 +41,12 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-            
-        LGN_LOG_SCOPE ( VOL_FILTER_HTTP, INFO, __PRETTY_FUNCTION__ );
-        
-        LGN_LOG ( VOL_FILTER_HTTP, INFO, "getting miner ID" );
+                    
         jsonOut.set ( "minerID", this->mSnapshot.getMinerID ());
         
-        LGN_LOG ( VOL_FILTER_HTTP, INFO, "counting blocks" );
         size_t totalBlocks = ledger.countBlocks ();
         jsonOut.set ( "totalBlocks", totalBlocks );
 
-        LGN_LOG ( VOL_FILTER_HTTP, INFO, "peeking" );
         this->peek ( ledger, jsonOut, "peek", this->optQuery ( "peek", 0 ), totalBlocks );
         this->peek ( ledger, jsonOut, "prev", this->optQuery ( "prev", 0 ), totalBlocks );
         
@@ -61,11 +54,9 @@ public:
         
         if ( sampleMiners ) {
         
-            LGN_LOG ( VOL_FILTER_HTTP, INFO, "sampling miners" );
             set < string > minerURLs = this->mSnapshot.sampleOnlineMinerURLs ( sampleMiners );
             Poco::JSON::Array::Ptr minerURLsJSON = new Poco::JSON::Array ();
         
-            LGN_LOG ( VOL_FILTER_HTTP, INFO, "serializing sampled miners" );
             set < string >::const_iterator urlIt = minerURLs.cbegin ();
             for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
                 minerURLsJSON->add ( *urlIt );

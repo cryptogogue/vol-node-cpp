@@ -38,7 +38,6 @@ protected:
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         
         this->mWebMiner->getSnapshot ( this->mSnapshot, this->mStatus );
-
         return this->NonBlockingMinerAPIRequestHandler_handleRequest ( method, jsonIn, jsonOut );
     }
     
