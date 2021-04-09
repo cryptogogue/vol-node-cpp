@@ -18,6 +18,8 @@ class MinerInfo :
     public AbstractSerializable {
 private:
 
+    friend class Ledger_Miner;
+
     string                  mURL;
     CryptoPublicKey         mPublicKey;
     string                  mMotto;

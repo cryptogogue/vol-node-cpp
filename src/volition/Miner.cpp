@@ -28,6 +28,11 @@ MinerSnapshot::InspectorPtr MinerSnapshot::createInspector () const {
 }
 
 //----------------------------------------------------------------//
+MinerSnapshot::MinerSnapshot () :
+    mIsMiner ( false ) {
+}
+
+//----------------------------------------------------------------//
 set < string > MinerSnapshot::sampleOnlineMinerURLs ( size_t sampleSize ) const {
     
     return UnsecureRandom::get ().sampleSet < string > ( this->mOnlineMinerURLs, sampleSize );
@@ -68,6 +73,12 @@ void Miner::affirmRemoteMiner ( string url ) {
 void Miner::affirmVisage () {
 
     this->mVisage = Miner::calculateVisage ( this->mKeyPair, this->mMotto );
+}
+
+//----------------------------------------------------------------//
+Signature Miner::calculateVisage ( string motto ) {
+
+    return Miner::calculateVisage ( this->mKeyPair, motto );
 }
 
 //----------------------------------------------------------------//
@@ -267,12 +278,11 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
     // if muted, no change is possible
     if ( this->mFlags & MINER_MUTE ) return tail;
 
-    // first, check to see if we're authorized to mine. if we're not, then we can't change the branch, so return.
-    AccountODBM accountODBM ( *this->mLedger, this->mMinerID );
-    if ( !accountODBM.isMiner ()) return tail;
+    // first, see if we're authorized to mine. if we're not, then we can't change the branch, so return.
+    if ( !this->mIsMiner) return tail;
 
-    // height at which we became a miner (according to current working ledger).
-    u64 minerHeight = accountODBM.mMinerHeight.get ();
+    // height at which we became a miner (according to current working ledger) or the current miner info was updated.
+    u64 minerHeight = this->mMinerHeight;
 
     // we *are* authorized to mine, so find the height of the common root of the incoming branch and the working ledger branch.
     // if then root is earlier than the height at which we became a miner, then we can't know if we're a miner in the incoming branch.
@@ -282,8 +292,8 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
     if ( root.getHeight () < minerHeight ) return tail;
     
     // at this stage, we're allowed to mine and we know that we're authorized on this branch. so see if we can improve
-    // the branch. we can only improve it if we find a place were we can legally append (or replace) a block with a
-    // more charming block than what's there. we'll need to consider the rewrite window (i.e. don't replace blocks older
+    // the branch. we can only improve it if we find a place where we can legally append (or replace) a block with a
+    // more charming block of our own. we'll need to consider the rewrite window (i.e. don't replace blocks older
     // than the rewrite limit). we'll also need to consider the block delay (i.e. don't append a block before its time).
     // if we can't find an improvement, return the branch as-is. but if we *can* find an improvement, go ahead and
     // append (or replace) with a "provisional" node (i.e. a node with a header but no block).
@@ -666,7 +676,7 @@ void Miner::step ( time_t now ) {
     // fill the provisional block (if any)
     this->extend ( now );
     this->saveChain ();
-//    this->pruneTransactions ();
+    this->pruneTransactions ();
     
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
@@ -744,14 +754,25 @@ void Miner::updateBlockSearches () {
 //----------------------------------------------------------------//
 void Miner::updateMinerStatus () {
 
+    // TODO: this is a hack to speed up the certain queries
+
     this->mSnapshotMutex.lock ();
-    this->mSnapshot = *this;
     
     Ledger& ledger = *this->mLedger;
     
     AccountODBM accountODBM ( ledger, this->getMinerID ());
     
-    // TODO: this is a hack to speed up the default query
+    this->mIsMiner = accountODBM.isMiner ();
+    
+    if ( this->mIsMiner ) {
+
+        this->mMinerHeight = accountODBM.mMinerHeight.get ();
+        
+        shared_ptr < const MinerInfo > minerInfo = accountODBM.mMinerInfo.get ();
+        this->mMotto    = minerInfo->getMotto ();
+        this->mVisage   = minerInfo->getVisage ();
+    }
+    
     this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
     this->mMinerStatus.mSchemaHash              = ledger.getSchemaHash ();
     this->mMinerStatus.mGenesisHash             = ledger.getGenesisHash ();
@@ -768,6 +789,8 @@ void Miner::updateMinerStatus () {
     this->mMinerStatus.mPrizePool               = ledger.getPrizePool ();
     this->mMinerStatus.mPayoutPool              = ledger.getPayoutPool ();
     this->mMinerStatus.mVOL                     = ledger.countVOL ();
+
+    this->mSnapshot = *this;
 
     this->mSnapshotMutex.unlock ();
     

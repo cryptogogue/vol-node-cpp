@@ -49,7 +49,7 @@ public:
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_ASSETS )) return "Permission denied.";
         
         return context.mLedger.transferAssets (
-            context.mIndex,
+            context.mAccountID,
             context.mLedger.getAccountID ( this->mAccountName ),
             this->mAssetIdentifiers.data (),
             this->mAssetIdentifiers.size (),

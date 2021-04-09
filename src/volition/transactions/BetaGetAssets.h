@@ -51,7 +51,7 @@ public:
         const Schema::Definitions& definitions = schema.getDefinitions ();
         size_t addedAssetCount = definitions.size () * ( size_t )this->mNumAssets;
         
-        AccountODBM accountODBM ( ledger, context.mIndex );
+        AccountODBM accountODBM ( ledger, context.mAccountID );
         size_t assetCount = accountODBM.mAssetCount.get ( 0 );
         
         if ( !context.mAccountEntitlements.check ( AccountEntitlements::MAX_ASSETS, assetCount + addedAssetCount )) {

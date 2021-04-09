@@ -79,7 +79,6 @@ protected:
     //----------------------------------------------------------------//
     void                    acceptTransaction       ( shared_ptr < const Transaction > transaction );
     const MakerQueue*       getMakerQueueOrNull     ( string accountName ) const;
-    void                    processTransactions     ();
     void                    reset                   ();
     
 public:

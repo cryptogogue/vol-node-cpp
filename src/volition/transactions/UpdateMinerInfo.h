@@ -1,61 +1,50 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_AFFIRM_KEY_H
-#define VOLITION_TRANSACTIONS_AFFIRM_KEY_H
+#ifndef VOLITION_TRANSACTIONS_UPDATEMINERINFO_H
+#define VOLITION_TRANSACTIONS_UPDATEMINERINFO_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
-#include <volition/Policy.h>
+#include <volition/MinerInfo.h>
 
 namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// AffirmKey
+// UpdateMinerInfo
 //================================================================//
-class AffirmKey :
+class UpdateMinerInfo :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "AFFIRM_KEY" )
+    TRANSACTION_TYPE ( "UPDATE_MINER_INFO" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                              mKeyName;
-    CryptoPublicKey                     mKey;
-    SerializableSharedPtr < Policy >    mPolicy;
+    SerializableSharedConstPtr < MinerInfo >    mMinerInfo;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "keyName",       this->mKeyName );
-        serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "key",           this->mKey );
-        serializer.serialize ( "keyName",       this->mKeyName );
-        serializer.serialize ( "policy",        this->mPolicy );
+        serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
 
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::AFFIRM_KEY )) return "Permission denied.";
-    
-        return context.mLedger.affirmKey (
-            context.mAccountID,
-            this->mMaker->getKeyName (),
-            this->mKeyName,
-            this->mKey,
-            this->mPolicy.get ()
-        );
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
+        if ( !this->mMinerInfo ) return "Missing miner info.";
+        
+        return context.mLedger.updateMinerInfo ( context.mAccountID, *this->mMinerInfo );
     }
 };
 

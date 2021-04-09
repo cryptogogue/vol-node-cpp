@@ -59,7 +59,7 @@ public:
         }
 
         if ( this->mDeckName.size () > 0 ) {
-            return context.mLedger.awardDeck ( context.mIndex, this->mDeckName, context.mTime );
+            return context.mLedger.awardDeck ( context.mAccountID, this->mDeckName, context.mTime );
         }
         return true;
     }

@@ -51,7 +51,7 @@ public:
         AccountODBM receiverODBM ( ledger, this->mAccountName );
         
         if ( !receiverODBM ) return "Could not find recipient account.";
-        if ( context.mIndex == receiverODBM.mAccountID ) return "Cannot send VOL to self.";
+        if ( context.mAccountID == receiverODBM.mAccountID ) return "Cannot send VOL to self.";
         
         Account receiverUpdated = *receiverODBM.mBody.get ();
         receiverUpdated.mBalance += this->mAmount;

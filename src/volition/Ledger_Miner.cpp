@@ -62,4 +62,36 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
     return true;
 }
 
+//----------------------------------------------------------------//
+LedgerResult Ledger_Miner::updateMinerInfo ( AccountID accountID, const MinerInfo& minerInfo ) {
+
+    AbstractLedger& ledger = this->getLedger ();
+    
+    AccountODBM accountODBM ( ledger, accountID );
+    if ( !accountODBM ) return "Miner account not found.";    
+    if ( !accountODBM.mMinerInfo.exists ()) return "Account is not a miner.";
+    
+    MinerInfo composedInfo = *accountODBM.mMinerInfo.get ();
+    
+    if ( minerInfo.mURL.size ()) {
+        composedInfo.mURL       = minerInfo.mURL;
+    }
+    
+    if ( minerInfo.mVisage ) {
+        composedInfo.mMotto     = minerInfo.mMotto;
+        composedInfo.mVisage    = minerInfo.mVisage;
+    }
+    
+    if ( minerInfo.mPublicKey ) {
+        composedInfo.mPublicKey = minerInfo.mPublicKey;
+    }
+    
+    if ( !composedInfo.isValid ()) return "Invalid miner info.";
+    
+    accountODBM.mMinerInfo.set ( composedInfo );
+    accountODBM.mMinerHeight.set ( ledger.countBlocks ());
+
+    return true;
+}
+
 } // namespace Volition

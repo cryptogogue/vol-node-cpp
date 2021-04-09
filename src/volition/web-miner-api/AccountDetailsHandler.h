@@ -23,7 +23,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    static void formatJSON ( const Ledger& ledger, AccountODBM& accountODBM, Poco::JSON::Object& jsonOut ) {
+    static void formatJSON ( const LockedLedgerIterator& ledger, AccountODBM& accountODBM, Poco::JSON::Object& jsonOut ) {
         
         // account's "primary" name
         string accountName = accountODBM.mName.get ();
@@ -63,8 +63,6 @@ public:
     
         string accountName = this->getMatchString ( "accountName" );
         
-        ScopedMinerLock scopedLock ( this->mWebMiner );
-
         AccountODBM accountODBM ( ledger, accountName );
         if ( !accountODBM ) return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
         

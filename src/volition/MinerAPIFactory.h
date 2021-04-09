@@ -17,7 +17,7 @@ class MinerAPIFactory :
     public Poco::Net::HTTPRequestHandlerFactory {
 private:
 
-    RouteTable < AbstractMinerAPIRequestHandler >   mRouteTable;
+    RouteTable < AbstractMinerAPIRequestHandler >       mRouteTable;
     shared_ptr < Miner >                                mMiner;
     map < string, shared_ptr < Miner >>                 mMiners;
     bool                                                mWithPrefix;

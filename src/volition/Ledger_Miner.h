@@ -27,6 +27,7 @@ public:
     //----------------------------------------------------------------//
     set < string >                      getMiners                       () const;
     LedgerResult                        registerMiner                   ( AccountID accountID, const MinerInfo& minerInfo );
+    LedgerResult                        updateMinerInfo                 ( AccountID accountID, const MinerInfo& minerInfo );
 };
 
 } // namespace Volition

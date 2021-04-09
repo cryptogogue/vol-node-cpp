@@ -252,17 +252,6 @@ bool TransactionQueue::isBlocked ( string accountName ) const {
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::processTransactions () {
-
-//    while ( this->mIncoming.size ()) {
-//
-//        shared_ptr < const Transaction > transaction = this->mIncoming.front ();
-//        this->mIncoming.pop_front ();
-//        this->acceptTransaction ( transaction );
-//    }
-}
-
-//----------------------------------------------------------------//
 void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
 
     const Ledger& ledger = chain;

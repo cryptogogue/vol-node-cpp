@@ -55,7 +55,7 @@ public:
             addedAssetCount += deckIt->second;
         }
         
-        AccountODBM accountODBM ( ledger, context.mIndex );
+        AccountODBM accountODBM ( ledger, context.mAccountID );
         size_t assetCount = accountODBM.mAssetCount.get ( 0 );
         
         if ( !context.mAccountEntitlements.check ( AccountEntitlements::MAX_ASSETS, assetCount + addedAssetCount )) {
@@ -63,7 +63,7 @@ public:
             return Format::write ( "Transaction would overflow account inventory limit of %d assets.", ( int )max );
         }
         
-        return ledger.awardDeck ( context.mIndex, this->mDeckName, context.mTime );
+        return ledger.awardDeck ( context.mAccountID, this->mDeckName, context.mTime );
     }
 };
 

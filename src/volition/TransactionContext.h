@@ -25,10 +25,10 @@ class TransactionContext {
 public:
 
     const Account           mAccount;
+    AccountID               mAccountID;
     Entitlements            mAccountEntitlements;
     AccountODBM&            mAccountODBM;
     TransactionFeeSchedule  mFeeSchedule;
-    AccountID               mIndex;
     const KeyAndPolicy&     mKeyAndPolicy;
     Entitlements            mKeyEntitlements;
     Ledger&                 mLedger;

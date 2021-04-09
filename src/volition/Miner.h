@@ -71,6 +71,8 @@ public:
     CryptoKeyPair                       mKeyPair;
     string                              mMotto;
     Signature                           mVisage;
+    bool                                mIsMiner;
+    u64                                 mMinerHeight;
     
     string                              mLedgerFilename;
     string                              mConfigFilename;
@@ -87,6 +89,7 @@ public:
     
     //----------------------------------------------------------------//
     InspectorPtr            createInspector                 () const;
+                            MinerSnapshot                   ();
     set < string >          sampleOnlineMinerURLs           ( size_t sampleSize = 0 ) const;
 };
 
@@ -265,6 +268,7 @@ public:
     void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
     void                                affirmRemoteMiner           ( string url );
     void                                affirmVisage                ();
+    Signature                           calculateVisage             ( string motto = "" );
     static Signature                    calculateVisage             ( const CryptoKeyPair& keyPair, string motto = "" );
     bool                                checkBestBranch             ( string miners ) const;
     void                                extend                      ( time_t now );

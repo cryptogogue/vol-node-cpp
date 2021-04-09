@@ -241,6 +241,8 @@
 		CD99422725FEAD3C00524DB6 /* BlockSearchPool.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */; };
 		CD9C391E26149F5E00AE8782 /* VersionTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C391C26149F5E00AE8782 /* VersionTree.h */; };
 		CD9C3932261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */; };
+		CD9C395D261D876B00AE8782 /* VisageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C395B261D876B00AE8782 /* VisageHandler.h */; };
+		CD9C395F261DB36700AE8782 /* UpdateMinerInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C395E261DB36700AE8782 /* UpdateMinerInfo.h */; };
 		CD9E7BA124FF67C30065C5FC /* InMemoryBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */; };
 		CD9E7BA224FF67C30065C5FC /* InMemoryBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */; };
 		CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */; };
@@ -1041,6 +1043,8 @@
 		CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockSearchPool.h; path = src/volition/BlockSearchPool.h; sourceTree = "<group>"; };
 		CD9C391C26149F5E00AE8782 /* VersionTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionTree.h; path = src/volition/VersionTree.h; sourceTree = "<group>"; };
 		CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SemiBlockingMinerAPIRequestHandler.h; path = src/volition/SemiBlockingMinerAPIRequestHandler.h; sourceTree = "<group>"; };
+		CD9C395B261D876B00AE8782 /* VisageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisageHandler.h; path = "src/volition/web-miner-api/VisageHandler.h"; sourceTree = "<group>"; };
+		CD9C395E261DB36700AE8782 /* UpdateMinerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdateMinerInfo.h; path = src/volition/transactions/UpdateMinerInfo.h; sourceTree = "<group>"; };
 		CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InMemoryBlockTree.cpp; path = src/volition/InMemoryBlockTree.cpp; sourceTree = "<group>"; };
 		CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InMemoryBlockTree.h; path = src/volition/InMemoryBlockTree.h; sourceTree = "<group>"; };
 		CD9E7BA424FF69D00065C5FC /* BlockHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockHeader.cpp; path = src/volition/BlockHeader.cpp; sourceTree = "<group>"; };
@@ -1837,6 +1841,7 @@
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
 				CD039C6E23F49F060012CE4F /* TransactionHandler.h */,
+				CD9C395B261D876B00AE8782 /* VisageHandler.h */,
 			);
 			name = api;
 			sourceTree = "<group>";
@@ -1931,6 +1936,7 @@
 				CD97F71A2607FC1D00C5C8A6 /* SetMonetaryPolicy.h */,
 				CDDA75312556F5ED007AAA07 /* SetPayoutPolicy.h */,
 				CDDA74E22556BA3A007AAA07 /* SetTransactionFeeSchedule.h */,
+				CD9C395E261DB36700AE8782 /* UpdateMinerInfo.h */,
 				CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */,
 			);
 			name = transactions;
@@ -2122,6 +2128,7 @@
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
 				CD9941F725F7E60100524DB6 /* ScopedProfile.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
+				CD9C395D261D876B00AE8782 /* VisageHandler.h in Headers */,
 				CD7751E6252FE41C00A53765 /* ConsensusBlockDetailsHandler.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
 				CDAA38ED251ACBD300FEAFB5 /* AbstractScenario.h in Headers */,
@@ -2231,6 +2238,7 @@
 				CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
 				CDFA238B2460071700B4CECF /* AssetODBM.h in Headers */,
+				CD9C395F261DB36700AE8782 /* UpdateMinerInfo.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,
 				CD4E8192210593A4007DA585 /* Digest.h in Headers */,
 				CD20FF182536D03900DEB809 /* NodeDetailsHandler.h in Headers */,
