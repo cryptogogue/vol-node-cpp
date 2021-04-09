@@ -80,6 +80,8 @@ HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleRequest ( 
 void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const {
     UNUSED ( match );
 
+    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%p: %s REQUEST %s", ( void* )this, request.getMethod ().c_str (), request.getURI ().c_str ());
+
     try {
 
         chrono::high_resolution_clock::time_point t0 = chrono::high_resolution_clock::now ();
@@ -133,10 +135,10 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
         chrono::milliseconds span = chrono::duration_cast < chrono::milliseconds >( t1 - t0 );
 
         // TODO: the cast to int here is slightly gross, but is a quick fix for a build warning on some platforms (where u64 is defined as a long instead of a long long).
-        LGN_LOG ( VOL_FILTER_HTTP, INFO, "%dms: %s %s", ( int )span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
+        LGN_LOG ( VOL_FILTER_HTTP, INFO, "%p: %dms %s RESPONSE %s", ( void* )this, ( int )span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
     }
     catch ( ... ) {
-        LGN_LOG ( VOL_FILTER_HTTP, INFO, "EXCEPTION in %s %s", request.getMethod ().c_str (), request.getURI ().c_str ());
+        LGN_LOG ( VOL_FILTER_HTTP, INFO, "%p: EXCEPTION in %s %s", ( void* )this, request.getMethod ().c_str (), request.getURI ().c_str ());
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR );
     }
 }
