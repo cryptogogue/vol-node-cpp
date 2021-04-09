@@ -23,7 +23,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    static void formatJSON ( const LockedLedgerIterator& ledger, AccountODBM& accountODBM, Poco::JSON::Object& jsonOut ) {
+    static void formatJSON ( const AbstractLedger& ledger, AccountODBM& accountODBM, Poco::JSON::Object& jsonOut ) {
         
         // account's "primary" name
         string accountName = accountODBM.mName.get ();
@@ -57,7 +57,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
     

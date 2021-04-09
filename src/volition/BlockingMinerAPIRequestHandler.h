@@ -27,7 +27,7 @@ protected:
     shared_ptr < Miner >    mWebMiner;
     
     //----------------------------------------------------------------//
-    virtual HTTPStatus      BlockingMinerAPIRequestHandler_handleRequest        ( HTTP::Method method, Ledger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
+    virtual HTTPStatus      BlockingMinerAPIRequestHandler_handleRequest        ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {

@@ -23,7 +23,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
     
     //----------------------------------------------------------------//
-    void peek ( LockedLedgerIterator& ledger, Poco::JSON::Object& jsonOut, string key, u64 height, u64 totalBlocks ) const {
+    void peek ( AbstractLedger& ledger, Poco::JSON::Object& jsonOut, string key, u64 height, u64 totalBlocks ) const {
     
         if ( height < totalBlocks ) {
     
@@ -38,7 +38,7 @@ public:
     }
 
     //----------------------------------------------------------------//
-    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
             

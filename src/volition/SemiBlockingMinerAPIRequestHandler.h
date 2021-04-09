@@ -32,19 +32,27 @@ protected:
     mutable MinerStatus     mStatus;
 
     //----------------------------------------------------------------//
-    virtual HTTPStatus      SemiBlockingMinerAPIRequestHandler_handleRequest    ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
+    virtual HTTPStatus      SemiBlockingMinerAPIRequestHandler_handleRequest    ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-        ScopedMinerLedgerLock scopedLock ( this->mWebMiner );
+//        ScopedMinerLedgerLock scopedLock ( this->mWebMiner );
+//
+//        LockedLedger& lockedLedger = scopedLock.getImmutableLedger ();
+//        LockedLedgerIterator ledger ( lockedLedger );
+//
+//        u64 totalBlocks = ledger.countBlocks ();
+//        u64 height = this->optQuery ( "at", totalBlocks );
+//        ledger.seek ( height );
+//
+//        return this->SemiBlockingMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
+        
+        ScopedMinerLock scopedLock ( this->mWebMiner );
     
-        LockedLedger& lockedLedger = scopedLock.getImmutableLedger ();
-        LockedLedgerIterator ledger ( lockedLedger );
-    
-        u64 totalBlocks = ledger.countBlocks ();
+        u64 totalBlocks = this->mWebMiner->getLedger ().countBlocks ();
         u64 height = this->optQuery ( "at", totalBlocks );
-        ledger.seek ( height );
+        Ledger ledger ( this->mWebMiner->getLedgerAtBlock ( height ));
         
         return this->SemiBlockingMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
     }

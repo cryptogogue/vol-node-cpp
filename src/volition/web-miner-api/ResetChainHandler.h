@@ -22,7 +22,7 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::DELETE )
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method, Ledger& ledger, const Poco::JSON::Object&, Poco::JSON::Object& ) const override {
+    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method, AbstractLedger& ledger, const Poco::JSON::Object&, Poco::JSON::Object& ) const override {
         UNUSED ( ledger );
     
         ScopedMinerLock scopedLock ( this->mWebMiner );
