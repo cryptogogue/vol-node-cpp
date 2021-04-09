@@ -25,30 +25,22 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-    
-        try {
+            
+        string assetIndexOrID = this->getMatchString ( "assetIndexOrID" );
+        if ( assetIndexOrID.size () == 0 ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
         
-            string assetIndexOrID = this->getMatchString ( "assetIndexOrID" );
-            if ( assetIndexOrID.size () == 0 ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-            
-            u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoull ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
-            
-            if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-                    
-            shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ();
-            
-            if ( asset ) {
-                Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );
-                jsonOut.set ( "asset", assetJSON.extract < Poco::JSON::Object::Ptr >());
-            }
-            else {
-                return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
-            }
+        u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoull ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
+        
+        if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
+                
+        shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ();
+        
+        if ( asset ) {
+            Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );
+            jsonOut.set ( "asset", assetJSON.extract < Poco::JSON::Object::Ptr >());
+            return Poco::Net::HTTPResponse::HTTP_OK;
         }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
-        return Poco::Net::HTTPResponse::HTTP_OK;
+        return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
 };
 

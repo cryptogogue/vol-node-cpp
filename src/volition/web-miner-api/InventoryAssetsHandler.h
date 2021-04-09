@@ -26,22 +26,17 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-    
-        try {
-        
-            string accountName = this->getMatchString ( "accountName" );
-            size_t base = ( size_t )this->optQuery ( "base", 0 );
             
-            SerializableList < SerializableSharedConstPtr < Asset >> inventory;
-            ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, base, ASSET_BATCH_SIZE );
+        string accountName = this->getMatchString ( "accountName" );
+        size_t base = ( size_t )this->optQuery ( "base", 0 );
         
-            Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
-        
-            jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Array::Ptr >());
-        }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
+        SerializableList < SerializableSharedConstPtr < Asset >> inventory;
+        ledger.getInventory ( ledger.getAccountID ( accountName ), inventory, base, ASSET_BATCH_SIZE );
+    
+        Poco::Dynamic::Var inventoryJSON = ToJSONSerializer::toJSON ( inventory );
+    
+        jsonOut.set ( "inventory", inventoryJSON.extract < Poco::JSON::Array::Ptr >());
+
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

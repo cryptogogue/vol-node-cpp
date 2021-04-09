@@ -27,45 +27,40 @@ public:
         UNUSED ( jsonIn );
     
         static const size_t ASSET_BATCH_SIZE = 256;
-    
-        try {
         
-            string accountName  = this->getMatchString ( "accountName" );
-            u64 nonce           = this->getMatchU64 ( "nonce" );
-            u64 count           = this->optQuery ( "count", 1 );
+        string accountName  = this->getMatchString ( "accountName" );
+        u64 nonce           = this->getMatchU64 ( "nonce" );
+        u64 count           = this->optQuery ( "count", 1 );
+        
+        SerializableSet < AssetID::Index > additions;
+        SerializableSet < AssetID::Index > deletions;
+        
+        AccountODBM accountODBM ( ledger, accountName );
+        
+        u64 found = 0;
+        for ( ; found < count; ++found ) {
             
-            SerializableSet < AssetID::Index > additions;
-            SerializableSet < AssetID::Index > deletions;
+            shared_ptr < const InventoryLogEntry > logEntry = accountODBM.getInventoryLogEntryField ( nonce + found ).get ();
+            if ( !logEntry ) continue;
             
-            AccountODBM accountODBM ( ledger, accountName );
-            
-            u64 found = 0;
-            for ( ; found < count; ++found ) {
-                
-                shared_ptr < const InventoryLogEntry > logEntry = accountODBM.getInventoryLogEntryField ( nonce + found ).get ();
-                if ( !logEntry ) continue;
-                
-                logEntry->apply ( additions, deletions );
-                if ( additions.size () >= ASSET_BATCH_SIZE ) break;
-            }
-            
-            SerializableList < SerializableSharedConstPtr < Asset >> assets;
-            InventoryLogEntry::expand ( ledger, accountName, additions, assets );
-            jsonOut.set ( "assets", ToJSONSerializer::toJSON ( assets ));
-            
-            SerializableList < string > additionDecoded;
-            InventoryLogEntry::decode ( additions, additionDecoded );
-            jsonOut.set ( "additions", ToJSONSerializer::toJSON ( additionDecoded ));
-            
-            SerializableList < string > deletionsDecoded;
-            InventoryLogEntry::decode ( deletions, deletionsDecoded );
-            jsonOut.set ( "deletions", ToJSONSerializer::toJSON ( deletionsDecoded ));
-            
-            jsonOut.set ( "nextNonce", nonce + found );
+            logEntry->apply ( additions, deletions );
+            if ( additions.size () >= ASSET_BATCH_SIZE ) break;
         }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
+        
+        SerializableList < SerializableSharedConstPtr < Asset >> assets;
+        InventoryLogEntry::expand ( ledger, accountName, additions, assets );
+        jsonOut.set ( "assets", ToJSONSerializer::toJSON ( assets ));
+        
+        SerializableList < string > additionDecoded;
+        InventoryLogEntry::decode ( additions, additionDecoded );
+        jsonOut.set ( "additions", ToJSONSerializer::toJSON ( additionDecoded ));
+        
+        SerializableList < string > deletionsDecoded;
+        InventoryLogEntry::decode ( deletions, deletionsDecoded );
+        jsonOut.set ( "deletions", ToJSONSerializer::toJSON ( deletionsDecoded ));
+        
+        jsonOut.set ( "nextNonce", nonce + found );
+        
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

@@ -41,37 +41,30 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
+            
+        jsonOut.set ( "minerID", this->mWebMiner->getMinerID ());
+        
+        size_t totalBlocks = ledger.countBlocks ();
+        jsonOut.set ( "totalBlocks", totalBlocks );
 
-        try {
-            
-            jsonOut.set ( "minerID", this->mWebMiner->getMinerID ());
-            
-            size_t totalBlocks = ledger.countBlocks ();
-            jsonOut.set ( "totalBlocks", totalBlocks );
-
-            this->peek ( ledger, jsonOut, "peek", this->optQuery ( "peek", 0 ), totalBlocks );
-            this->peek ( ledger, jsonOut, "prev", this->optQuery ( "prev", 0 ), totalBlocks );
-            
-            u64 sampleMiners = this->optQuery ( "sampleMiners", 0 );
-            
-            if ( sampleMiners ) {
-            
-                set < string > minerURLs = this->mWebMiner->sampleOnlineMinerURLs ( sampleMiners );
-                Poco::JSON::Array::Ptr minerURLsJSON = new Poco::JSON::Array ();
-            
-                set < string >::const_iterator urlIt = minerURLs.cbegin ();
-                for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
-                    minerURLsJSON->add ( *urlIt );
-                }
-                jsonOut.set ( "miners", minerURLsJSON );
+        this->peek ( ledger, jsonOut, "peek", this->optQuery ( "peek", 0 ), totalBlocks );
+        this->peek ( ledger, jsonOut, "prev", this->optQuery ( "prev", 0 ), totalBlocks );
+        
+        u64 sampleMiners = this->optQuery ( "sampleMiners", 0 );
+        
+        if ( sampleMiners ) {
+        
+            set < string > minerURLs = this->mWebMiner->sampleOnlineMinerURLs ( sampleMiners );
+            Poco::JSON::Array::Ptr minerURLsJSON = new Poco::JSON::Array ();
+        
+            set < string >::const_iterator urlIt = minerURLs.cbegin ();
+            for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
+                minerURLsJSON->add ( *urlIt );
             }
-            
-            return Poco::Net::HTTPResponse::HTTP_OK;
+            jsonOut.set ( "miners", minerURLsJSON );
         }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
-        return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        
+        return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
 

@@ -25,17 +25,12 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-    
-        try {
         
-            const Schema& schema = ledger.getSchema ();
+        const Schema& schema = ledger.getSchema ();
 
-            jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schema ));
-            jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
-        }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
+        jsonOut.set ( "schema",         ToJSONSerializer::toJSON ( schema ));
+        jsonOut.set ( "schemaHash",     ledger.getSchemaHash ());
+
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

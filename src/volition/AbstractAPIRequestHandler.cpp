@@ -80,58 +80,65 @@ HTTPStatus AbstractAPIRequestHandler::AbstractAPIRequestHandler_handleRequest ( 
 void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Routing::PathMatch& match, Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response ) const {
     UNUSED ( match );
 
-    chrono::high_resolution_clock::time_point t0 = chrono::high_resolution_clock::now ();
+    try {
 
-    response.add ( "Access-Control-Allow-Origin", "*" );
-    response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );
-    response.add ( "Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, POST, PUT" );
+        chrono::high_resolution_clock::time_point t0 = chrono::high_resolution_clock::now ();
 
-    HTTP::Method method = HTTP::getMethodForString ( request.getMethod ());
-    
-    if ( method == HTTP::OPTIONS ) {
-        response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
-        response.send ();
-        return;
-    }
-    
-    if ( !( this->AbstractAPIRequestHandler_getSupportedHTTPMethods () & method )) {
-        response.setStatus ( Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED );
-        response.send ();
-        return;
-    }
+        response.add ( "Access-Control-Allow-Origin", "*" );
+        response.add ( "Access-Control-Allow-Headers", "Accept, Content-Type, Origin, X-Requested-With" );
+        response.add ( "Access-Control-Allow-Methods", "DELETE, GET, HEAD, OPTIONS, POST, PUT" );
 
-    Poco::JSON::Object::Ptr jsonIn  = NULL;
-    Poco::JSON::Object::Ptr jsonOut = new Poco::JSON::Object ();
-    
-    if ( method & ( HTTP::POST | HTTP::PUT | HTTP::PATCH )) {
-    
-        Poco::JSON::Parser parser;
-        Poco::Dynamic::Var result = parser.parse ( request.stream ());
-        jsonIn = result.extract < Poco::JSON::Object::Ptr >();
-    
-        if ( !jsonIn ) {
-            response.setStatus ( Poco::Net::HTTPResponse::HTTP_BAD_REQUEST );
+        HTTP::Method method = HTTP::getMethodForString ( request.getMethod ());
+        
+        if ( method == HTTP::OPTIONS ) {
+            response.setStatus ( Poco::Net::HTTPResponse::HTTP_OK );
             response.send ();
             return;
         }
-    }
-    else {
-        jsonIn = new Poco::JSON::Object ();
-    }
+        
+        if ( !( this->AbstractAPIRequestHandler_getSupportedHTTPMethods () & method )) {
+            response.setStatus ( Poco::Net::HTTPResponse::HTTP_METHOD_NOT_ALLOWED );
+            response.send ();
+            return;
+        }
 
-    HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, *jsonIn, *jsonOut );
-    response.setStatus ( status );
-    response.setContentType ( "application/json" );
-    
-    ostream& out = response.send ();
-    jsonOut->stringify ( out, 4, -1 );
-    out.flush ();
-    
-    chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now ();
-    chrono::milliseconds span = chrono::duration_cast < chrono::milliseconds >( t1 - t0 );
+        Poco::JSON::Object::Ptr jsonIn  = NULL;
+        Poco::JSON::Object::Ptr jsonOut = new Poco::JSON::Object ();
+        
+        if ( method & ( HTTP::POST | HTTP::PUT | HTTP::PATCH )) {
+        
+            Poco::JSON::Parser parser;
+            Poco::Dynamic::Var result = parser.parse ( request.stream ());
+            jsonIn = result.extract < Poco::JSON::Object::Ptr >();
+        
+            if ( !jsonIn ) {
+                response.setStatus ( Poco::Net::HTTPResponse::HTTP_BAD_REQUEST );
+                response.send ();
+                return;
+            }
+        }
+        else {
+            jsonIn = new Poco::JSON::Object ();
+        }
 
-    // TODO: the cast to int here is slightly gross, but is a quick fix for a build warning on some platforms (where u64 is defined as a long instead of a long long).
-    LGN_LOG ( VOL_FILTER_HTTP, INFO, "%dms: %s %s", ( int )span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
+        HTTPStatus status = this->AbstractAPIRequestHandler_handleRequest ( method, *jsonIn, *jsonOut );
+        response.setStatus ( status );
+        response.setContentType ( "application/json" );
+        
+        ostream& out = response.send ();
+        jsonOut->stringify ( out, 4, -1 );
+        out.flush ();
+        
+        chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now ();
+        chrono::milliseconds span = chrono::duration_cast < chrono::milliseconds >( t1 - t0 );
+
+        // TODO: the cast to int here is slightly gross, but is a quick fix for a build warning on some platforms (where u64 is defined as a long instead of a long long).
+        LGN_LOG ( VOL_FILTER_HTTP, INFO, "%dms: %s %s", ( int )span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
+    }
+    catch ( ... ) {
+        LGN_LOG ( VOL_FILTER_HTTP, INFO, "EXCEPTION in %s %s", request.getMethod ().c_str (), request.getURI ().c_str ());
+        response.setStatus ( Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR );
+    }
 }
-
+    
 } // namespace Volition

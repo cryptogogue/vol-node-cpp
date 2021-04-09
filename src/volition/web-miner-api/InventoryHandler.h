@@ -25,29 +25,24 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
+        
+        string accountName = this->getMatchString ( "accountName" );
     
-        try {
+        AccountID accountID = ledger.getAccountID ( accountName );
         
-            string accountName = this->getMatchString ( "accountName" );
-        
-            AccountID accountID = ledger.getAccountID ( accountName );
-            
-            AccountODBM accountODBM ( ledger, accountID );
-            jsonOut.set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
-            jsonOut.set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
-        
-            shared_ptr < const InventoryLogEntry > baseEntry = accountODBM.getInventoryLogEntryField ( 0 ).get ();
-            if ( baseEntry ) {
-                jsonOut.set ( "inventoryTimestamp", ( string )baseEntry->mTime );
-            }
-            
-            const Schema& schema = ledger.getSchema ();
-            jsonOut.set ( "schemaVersion", ToJSONSerializer::toJSON ( schema.getVersion ()));
-            jsonOut.set ( "schemaHash", ledger.getSchemaHash ());
+        AccountODBM accountODBM ( ledger, accountID );
+        jsonOut.set ( "assetCount", accountODBM.mAssetCount.get ( 0 ));
+        jsonOut.set ( "inventoryNonce", accountODBM.mInventoryNonce.get ( 0 ));
+    
+        shared_ptr < const InventoryLogEntry > baseEntry = accountODBM.getInventoryLogEntryField ( 0 ).get ();
+        if ( baseEntry ) {
+            jsonOut.set ( "inventoryTimestamp", ( string )baseEntry->mTime );
         }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
+        
+        const Schema& schema = ledger.getSchema ();
+        jsonOut.set ( "schemaVersion", ToJSONSerializer::toJSON ( schema.getVersion ()));
+        jsonOut.set ( "schemaHash", ledger.getSchemaHash ());
+        
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

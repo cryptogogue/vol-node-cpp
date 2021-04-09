@@ -26,33 +26,26 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-
-        try {
                     
-            size_t totalBlocks = ledger.countBlocks ();
-            
-            size_t max = this->optQuery ( "max", HEADER_BATCH_SIZE );
-            
-            size_t base = this->optQuery ( "height", 0 );
-            base = base < totalBlocks ? base : totalBlocks - 1;
-            
-            size_t top = base + max;
-            top = top <= totalBlocks ? top : totalBlocks;
-            
-            SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
-            for ( size_t i = base; i < top; ++i ) {
-                shared_ptr < const BlockHeader > header = ledger.getHeader ( i );
-                if ( !header ) break;
-                headers.push_back ( header );
-            }
-            
-            jsonOut.set ( "headers", ToJSONSerializer::toJSON ( headers ));
-            return Poco::Net::HTTPResponse::HTTP_OK;
+        size_t totalBlocks = ledger.countBlocks ();
+        
+        size_t max = this->optQuery ( "max", HEADER_BATCH_SIZE );
+        
+        size_t base = this->optQuery ( "height", 0 );
+        base = base < totalBlocks ? base : totalBlocks - 1;
+        
+        size_t top = base + max;
+        top = top <= totalBlocks ? top : totalBlocks;
+        
+        SerializableList < SerializableSharedConstPtr < BlockHeader >> headers;
+        for ( size_t i = base; i < top; ++i ) {
+            shared_ptr < const BlockHeader > header = ledger.getHeader ( i );
+            if ( !header ) break;
+            headers.push_back ( header );
         }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
-        return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        
+        jsonOut.set ( "headers", ToJSONSerializer::toJSON ( headers ));
+        return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
 

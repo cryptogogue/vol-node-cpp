@@ -25,13 +25,9 @@ public:
     HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method, Ledger& ledger, const Poco::JSON::Object&, Poco::JSON::Object& ) const override {
         UNUSED ( ledger );
     
-        try {
-            ScopedMinerLock scopedLock ( this->mWebMiner );
-            this->mWebMiner->reset ();
-        }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
+        ScopedMinerLock scopedLock ( this->mWebMiner );
+        this->mWebMiner->reset ();
+
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

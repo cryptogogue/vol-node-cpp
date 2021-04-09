@@ -25,23 +25,16 @@ public:
     HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-
-        try {
             
-            string hash = this->getMatchString ( "hash" );
+        string hash = this->getMatchString ( "hash" );
 
-            MinerSnapshot::InspectorPtr inspector = this->mSnapshot.createInspector ();
-            shared_ptr < const Block > block = inspector ? inspector->getBlock ( hash ) : NULL;
+        MinerSnapshot::InspectorPtr inspector = this->mSnapshot.createInspector ();
+        shared_ptr < const Block > block = inspector ? inspector->getBlock ( hash ) : NULL;
 
-            if ( block ) {
-                jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
-            }
-            return Poco::Net::HTTPResponse::HTTP_OK;
+        if ( block ) {
+            jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
         }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-        }
-        return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
 

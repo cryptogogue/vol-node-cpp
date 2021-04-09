@@ -24,19 +24,13 @@ public:
     HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-
-        try {
         
-            u64 height = this->getMatchU64 ( "blockID" );
+        u64 height = this->getMatchU64 ( "blockID" );
 
-            shared_ptr < const Block > block = ledger.getBlock ( height );
-            if ( block ) {
-                jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
-                return Poco::Net::HTTPResponse::HTTP_OK;
-            }
-        }
-        catch ( ... ) {
-            return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
+        shared_ptr < const Block > block = ledger.getBlock ( height );
+        if ( block ) {
+            jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
+            return Poco::Net::HTTPResponse::HTTP_OK;
         }
         return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
     }
