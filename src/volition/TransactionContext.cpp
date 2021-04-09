@@ -14,8 +14,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 TransactionContext::TransactionContext ( Ledger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time ) :
     mAccount ( *accountODBM.mBody.get ()),
-    mAccountODBM ( accountODBM ),
     mAccountID ( accountODBM.mAccountID ),
+    mAccountODBM ( accountODBM ),
     mKeyAndPolicy ( keyAndPolicy ),
     mLedger ( ledger ),
     mTime ( time ) {

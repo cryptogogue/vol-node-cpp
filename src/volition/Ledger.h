@@ -395,17 +395,20 @@ public:
 
     //----------------------------------------------------------------//
     Ledger ( Ledger& other ) :
-        VersionedStoreTag ( other.getTag ()) {
+        VersionedStoreTag ( other.getTag ()),
+        enable_shared_from_this < Ledger > () {
     }
     
     //----------------------------------------------------------------//
     Ledger ( AbstractLedger& other ) :
-        VersionedStoreTag ( other.getTag ()) {
+        VersionedStoreTag ( other.getTag ()),
+        enable_shared_from_this < Ledger > () {
     }
     
     //----------------------------------------------------------------//
     Ledger ( VersionedStoreTag& tag ) :
-        VersionedStoreTag ( tag ) {
+        VersionedStoreTag ( tag ),
+        enable_shared_from_this < Ledger > () {
     }
 };
 

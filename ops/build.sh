@@ -11,5 +11,5 @@ fi
 
 pushd ${SCRIPT_HOME}
 	source ./make-version-header.sh
-	docker build -f docker-volition/Dockerfile -t ${VOLITION_IMAGE_NAME} ../
+	docker build --progress plain -f docker-volition/Dockerfile -t ${VOLITION_IMAGE_NAME} ../
 popd
