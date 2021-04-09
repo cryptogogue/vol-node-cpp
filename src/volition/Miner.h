@@ -200,7 +200,7 @@ protected:
     // up rebuilding the database when restarting the node.
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
     
-    Poco::Mutex                                     mMutex;
+    mutex                                           mMutex;
     
     MinerSnapshot                                   mSnapshot;
     MinerStatus                                     mMinerStatus;
@@ -257,12 +257,6 @@ public:
     GET_SET ( shared_ptr < AbstractMiningMessenger >,       Messenger,                  mMessenger )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
-    
-    //----------------------------------------------------------------//
-    operator Poco::Mutex& () {
-    
-        return this->mMutex;
-    }
 
     //----------------------------------------------------------------//
     void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
@@ -305,14 +299,18 @@ class ScopedMinerLock {
 private:
 
     shared_ptr < Miner >                mMiner;
-    Poco::ScopedLock < Poco::Mutex >    mScopedLock;
 
 public:
 
     //----------------------------------------------------------------//
     ScopedMinerLock ( shared_ptr < Miner > miner ) :
-        mMiner ( miner ),
-        mScopedLock ( miner->mMutex ) {
+        mMiner ( miner ) {
+        this->mMiner->mMutex.lock ();
+    }
+    
+    //----------------------------------------------------------------//
+    ~ScopedMinerLock () {
+        this->mMiner->mMutex.unlock ();
     }
 };
 
@@ -334,12 +332,12 @@ public:
     //----------------------------------------------------------------//
     ScopedMinerLedgerLock ( shared_ptr < Miner > miner ) :
         mMiner ( miner ) {
-        this->mMiner->mLockedLedgerMutex.lock_shared ();
+        this->mMiner->mSnapshotMutex.lock_shared ();
     }
     
     //----------------------------------------------------------------//
     ~ScopedMinerLedgerLock () {
-        this->mMiner->mLockedLedgerMutex.unlock_shared ();
+        this->mMiner->mSnapshotMutex.unlock_shared ();
     }
 };
 

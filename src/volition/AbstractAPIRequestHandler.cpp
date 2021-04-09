@@ -137,6 +137,10 @@ void AbstractAPIRequestHandler::AbstractRequestHandler_handleRequest ( const Rou
         // TODO: the cast to int here is slightly gross, but is a quick fix for a build warning on some platforms (where u64 is defined as a long instead of a long long).
         LGN_LOG ( VOL_FILTER_HTTP, INFO, "%p: %dms %s RESPONSE %s", ( void* )this, ( int )span.count (), request.getMethod ().c_str (), request.getURI ().c_str ());
     }
+    catch ( const Poco::Exception& exc ) {
+        LGN_LOG ( VOL_FILTER_HTTP, INFO, "%p: EXCEPTION in %s %s", ( void* )this, request.getMethod ().c_str (), request.getURI ().c_str ());
+        LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s", exc.displayText ().c_str ());
+    }
     catch ( ... ) {
         LGN_LOG ( VOL_FILTER_HTTP, INFO, "%p: EXCEPTION in %s %s", ( void* )this, request.getMethod ().c_str (), request.getURI ().c_str ());
         response.setStatus ( Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR );

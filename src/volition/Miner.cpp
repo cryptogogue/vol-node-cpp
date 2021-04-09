@@ -661,8 +661,6 @@ void Miner::step ( time_t now ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
-    Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
-
     this->affirmMessenger ();
     this->mMessenger->receiveResponses ( *this, now );
     this->updateRemoteMinerGroups ();
@@ -792,11 +790,11 @@ void Miner::updateMinerStatus () {
 
     this->mSnapshot = *this;
 
-    this->mSnapshotMutex.unlock ();
-
-    this->mLockedLedgerMutex.lock ();
+//    this->mLockedLedgerMutex.lock ();
     this->mLockedLedger.lock ( *this->mLedger );
-    this->mLockedLedgerMutex.unlock ();
+//    this->mLockedLedgerMutex.unlock ();
+    
+    this->mSnapshotMutex.unlock ();
 }
 
 //----------------------------------------------------------------//

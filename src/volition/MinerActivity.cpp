@@ -26,13 +26,15 @@ void MinerActivity::runActivity () {
         time ( &now );
         
         try {
-            Poco::ScopedLock < Poco::Mutex > scopedLock ( this->mMutex );
+            this->mMutex.lock ();
             this->step ( now );
             this->report ();
             this->mBlockSearchPool->reportBlockSearches ();
+            this->mMutex.unlock ();
         }
-        catch ( Poco::Exception& exc ) {
+        catch ( const Poco::Exception& exc ) {
             LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Caught exception in MinerActivity::runActivity ()" );
+            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s", exc.displayText ().c_str ());
         }
         
         u32 elapsedMillis = ( u32 )( timestamp.elapsed () / 1000 );
