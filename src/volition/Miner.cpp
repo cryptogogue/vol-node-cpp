@@ -661,6 +661,8 @@ void Miner::step ( time_t now ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
+    this->mMutex.lock ();
+
     this->affirmMessenger ();
     this->mMessenger->receiveResponses ( *this, now );
     this->updateRemoteMinerGroups ();
@@ -687,6 +689,8 @@ void Miner::step ( time_t now ) {
     catch ( Poco::Exception& exc ) {
         LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Caught exception in MinerActivity::runActivity ()" );
     }
+    
+    this->mMutex.unlock ();
 }
 
 //----------------------------------------------------------------//
@@ -752,9 +756,13 @@ void Miner::updateBlockSearches () {
 //----------------------------------------------------------------//
 void Miner::updateMinerStatus () {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     // TODO: this is a hack to speed up the certain queries
 
     this->mSnapshotMutex.lock ();
+    
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Locked snapshot Mutex" );
     
     Ledger& ledger = *this->mLedger;
     
@@ -793,6 +801,8 @@ void Miner::updateMinerStatus () {
 //    this->mLockedLedgerMutex.lock ();
     this->mLockedLedger.lock ( *this->mLedger );
 //    this->mLockedLedgerMutex.unlock ();
+    
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Unlocked snapshot Mutex" );
     
     this->mSnapshotMutex.unlock ();
 }
