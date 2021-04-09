@@ -25,6 +25,8 @@ public:
     //----------------------------------------------------------------//
     static void formatJSON ( const AbstractLedger& ledger, AccountODBM& accountODBM, Poco::JSON::Object& jsonOut ) {
         
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+        
         // account's "primary" name
         string accountName = accountODBM.mName.get ();
         
@@ -61,6 +63,9 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
     
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+    
+        LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "getting account name" );
         string accountName = this->getMatchString ( "accountName" );
         
         AccountODBM accountODBM ( ledger, accountName );
