@@ -10,7 +10,7 @@
 
 namespace Volition {
 
-class Ledger;
+class AbstractLedger;
 class Transaction;
 
 //================================================================//
@@ -68,7 +68,7 @@ private:
 
     //----------------------------------------------------------------//
     void                affirmBody                          ();
-    LedgerResult        applyTransactions                   ( Ledger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const;
+    LedgerResult        applyTransactions                   ( AbstractLedger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const;
     size_t              getWeight                           () const;
     
     //----------------------------------------------------------------//
@@ -79,7 +79,7 @@ public:
 
     //----------------------------------------------------------------//
     void                affirmHash                          ();
-    LedgerResult        apply                               ( Ledger& ledger, VerificationPolicy policy ) const;
+    LedgerResult        apply                               ( AbstractLedger& ledger, VerificationPolicy policy ) const;
                         Block                               ();
                         Block                               ( string bodyString );
                         ~Block                              ();
@@ -87,7 +87,7 @@ public:
     void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
     const Digest&       sign                                ( const CryptoKeyPair& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
     void                setReward                           ( string reward );
-    LedgerResult        verify                              ( const Ledger& ledger, VerificationPolicy policy ) const;
+    LedgerResult        verify                              ( const AbstractLedger& ledger, VerificationPolicy policy ) const;
 };
 
 } // namespace Volition

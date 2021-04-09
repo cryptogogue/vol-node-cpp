@@ -255,7 +255,7 @@ void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 }
 
 //----------------------------------------------------------------//
-TransactionStatus Miner::getTransactionStatus ( const Ledger& ledger, string accountName, string uuid ) const {
+TransactionStatus Miner::getTransactionStatus ( const AbstractLedger& ledger, string accountName, string uuid ) const {
 
     if ( this->isBlocked ( accountName )) {
         return this->getLastStatus ( accountName );

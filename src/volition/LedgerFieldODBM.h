@@ -63,13 +63,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    void init ( const Ledger& ledger, const LedgerKey& ledgerKey ) {
+    void init ( const AbstractLedger& ledger, const LedgerKey& ledgerKey ) {
         this->mLedger.set ( ledger );
         this->mKey = ledgerKey;
     }
     
     //----------------------------------------------------------------//
-    void init ( Ledger& ledger, const LedgerKey& ledgerKey ) {
+    void init ( AbstractLedger& ledger, const LedgerKey& ledgerKey ) {
         this->mLedger.set ( ledger );
         this->mKey = ledgerKey;
     }

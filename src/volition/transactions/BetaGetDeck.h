@@ -41,7 +41,7 @@ public:
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        Ledger& ledger = context.mLedger;
+        AbstractLedger& ledger = context.mLedger;
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::BETA_GET_DECK )) return "Permission denied.";
         

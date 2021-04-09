@@ -58,7 +58,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    TransactionResult apply ( Ledger& ledger ) const {
+    TransactionResult apply ( AbstractLedger& ledger ) const {
     
         if ( this->mIdentity.size () == 0 )         return "Missing network identity string.";
         if ( this->mMaxBlockWeight == 0 )           return "Max block weight must be non-zero.";
@@ -166,7 +166,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    TransactionResult AbstractTransactionBody_genesis ( Ledger& ledger ) const override {
+    TransactionResult AbstractTransactionBody_genesis ( AbstractLedger& ledger ) const override {
         
         u64 accountVOL = 0;
         

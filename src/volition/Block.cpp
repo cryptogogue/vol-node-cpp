@@ -55,7 +55,7 @@ void Block::affirmHash () {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
+LedgerResult Block::apply ( AbstractLedger& ledger, VerificationPolicy policy ) const {
 
     if ( ledger.getVersion () != this->mHeight ) return "Apply block: height/version mismatch.";
     
@@ -141,7 +141,7 @@ LedgerResult Block::apply ( Ledger& ledger, VerificationPolicy policy ) const {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Block::applyTransactions ( Ledger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const {
+LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const {
 
     if ( !this->mBody ) return false;
 
@@ -276,7 +276,7 @@ const Digest& Block::sign ( const CryptoKeyPair& key, string hashAlgorithm ) {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Block::verify ( const Ledger& ledger, VerificationPolicy policy ) const {
+LedgerResult Block::verify ( const AbstractLedger& ledger, VerificationPolicy policy ) const {
 
     if ( this->mHeight == 0 ) {
         BlockODBM genesisODBM ( ledger, 0 );

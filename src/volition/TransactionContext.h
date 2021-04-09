@@ -31,11 +31,11 @@ public:
     TransactionFeeSchedule  mFeeSchedule;
     const KeyAndPolicy&     mKeyAndPolicy;
     Entitlements            mKeyEntitlements;
-    Ledger&                 mLedger;
+    AbstractLedger&         mLedger;
     time_t                  mTime;
 
     //----------------------------------------------------------------//
-    TransactionContext      ( Ledger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time );
+    TransactionContext      ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time );
 };
 
 } // namespace Volition

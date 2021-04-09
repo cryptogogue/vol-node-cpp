@@ -46,7 +46,7 @@ public:
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::RESTRICT_KEY )) return "Permission denied.";
         
-        Ledger& ledger = context.mLedger;
+        AbstractLedger& ledger = context.mLedger;
         KeyAndPolicy keyUpdated = context.mKeyAndPolicy;
         
         // restrict the policy

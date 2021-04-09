@@ -33,8 +33,8 @@ protected:
     SignaturePtr                mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
-    TransactionResult           applyInner              ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const;
-    TransactionResult           checkBody               ( Ledger& ledger, time_t time ) const;
+    TransactionResult           applyInner                  ( AbstractLedger& ledger, time_t time, Block::VerificationPolicy policy ) const;
+    TransactionResult           checkBody                   ( AbstractLedger& ledger, time_t time ) const;
     
     //----------------------------------------------------------------//
     void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -56,13 +56,13 @@ public:
     GET_COMPOSED ( u64,                          Weight,                 this->mBody,       0 )
 
     //----------------------------------------------------------------//
-    TransactionResult           apply                   ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const;
-    bool                        checkMaker              ( string accountName, string uuid ) const;
-    TransactionResult           checkNonceAndSignature  ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
-    void                        setBody                 ( shared_ptr < AbstractTransactionBody > body );
-    void                        sign                    ( const CryptoKeyPair& keyPair );
-                                Transaction             ();
-                                ~Transaction            ();
+    TransactionResult           apply                       ( AbstractLedger& ledger, time_t time, Block::VerificationPolicy policy ) const;
+    bool                        checkMaker                  ( string accountName, string uuid ) const;
+    TransactionResult           checkNonceAndSignature      ( const AbstractLedger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
+    void                        setBody                     ( shared_ptr < AbstractTransactionBody > body );
+    void                        sign                        ( const CryptoKeyPair& keyPair );
+                                Transaction                 ();
+                                ~Transaction                ();
 };
 
 } // namespace Volition

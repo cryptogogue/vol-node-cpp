@@ -30,7 +30,7 @@ const TransactionMaker* AbstractTransactionBody::getMaker () const {
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::genesis ( Ledger& ledger ) {
+TransactionResult AbstractTransactionBody::genesis ( AbstractLedger& ledger ) {
     return this->AbstractTransactionBody_genesis ( ledger );
 }
 
@@ -73,7 +73,7 @@ string AbstractTransactionBody::AbstractTransactionBody_feeName () const {
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::AbstractTransactionBody_genesis ( Ledger& ledger ) const {
+TransactionResult AbstractTransactionBody::AbstractTransactionBody_genesis ( AbstractLedger& ledger ) const {
     UNUSED ( ledger );
     return "Missing transaction maker.";
 }

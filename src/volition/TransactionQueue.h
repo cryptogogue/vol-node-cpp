@@ -88,7 +88,7 @@ public:
     TransactionStatus       getLastStatus           ( string accountName ) const;
     bool                    hasTransaction          ( string accountName, string uuid ) const;
     bool                    isBlocked               ( string accountName ) const;
-    void                    pruneTransactions       ( const Ledger& chain );
+    void                    pruneTransactions       ( const AbstractLedger& chain );
     void                    pushTransaction         ( shared_ptr < const Transaction > transaction );
                             TransactionQueue        ();
     virtual                 ~TransactionQueue       ();

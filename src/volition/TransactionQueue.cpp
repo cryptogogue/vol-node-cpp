@@ -252,9 +252,9 @@ bool TransactionQueue::isBlocked ( string accountName ) const {
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::pruneTransactions ( const Ledger& chain ) {
+void TransactionQueue::pruneTransactions ( const AbstractLedger& chain ) {
 
-    const Ledger& ledger = chain;
+    const AbstractLedger& ledger = chain;
 
     // TODO: fix this brute force
     MakerQueueIt makerQueueItCursor = this->mDatabase.begin ();

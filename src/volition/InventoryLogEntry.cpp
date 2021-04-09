@@ -41,7 +41,7 @@ void InventoryLogEntry::decode ( const SerializableSet < AssetID::Index >& index
 }
 
 //----------------------------------------------------------------//
-void InventoryLogEntry::expand ( const Ledger& ledger, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedConstPtr < Asset >>& assetList ) {
+void InventoryLogEntry::expand ( const AbstractLedger& ledger, string accountName, const SerializableSet < AssetID::Index >& indexSet, SerializableList < SerializableSharedConstPtr < Asset >>& assetList ) {
     
     AccountID accountID = ledger.getAccountID ( accountName );
     

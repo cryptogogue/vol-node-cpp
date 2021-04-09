@@ -54,7 +54,7 @@ public:
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        Ledger& ledger = context.mLedger;
+        AbstractLedger& ledger = context.mLedger;
         const Account& account = context.mAccount;
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return "Permission denied.";

@@ -11,7 +11,7 @@ namespace Transactions {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult LoadLedgerAccount::apply ( Ledger& ledger ) const {
+TransactionResult LoadLedgerAccount::apply ( AbstractLedger& ledger ) const {
     UNUSED ( ledger );
 
     Account account;
@@ -133,7 +133,7 @@ TransactionResult LoadLedger::AbstractTransactionBody_apply ( TransactionContext
 }
 
 //----------------------------------------------------------------//
-TransactionResult LoadLedger::AbstractTransactionBody_genesis ( Ledger& ledger ) const {
+TransactionResult LoadLedger::AbstractTransactionBody_genesis ( AbstractLedger& ledger ) const {
     UNUSED ( ledger );
 
     ledger.setSchema ( this->mSchema );

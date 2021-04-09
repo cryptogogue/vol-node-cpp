@@ -17,7 +17,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::apply ( AbstractLedger& ledger, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
         TransactionResult result = this->checkBody ( ledger, time );
@@ -36,7 +36,7 @@ TransactionResult Transaction::apply ( Ledger& ledger, time_t time, Block::Verif
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::applyInner ( AbstractLedger& ledger, time_t time, Block::VerificationPolicy policy ) const {
     
     if ( !this->mBody ) return "Missing body.";
     
@@ -86,7 +86,7 @@ TransactionResult Transaction::applyInner ( Ledger& ledger, time_t time, Block::
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkBody ( Ledger& ledger, time_t time ) const {
+TransactionResult Transaction::checkBody ( AbstractLedger& ledger, time_t time ) const {
 
     if ( !this->mBody ) return "Missing transaction body.";
 
@@ -113,7 +113,7 @@ bool Transaction::checkMaker ( string accountName, string uuid ) const {
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkNonceAndSignature ( const Ledger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::checkNonceAndSignature ( const AbstractLedger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const {
 
     if ( ledger.isGenesis ()) return true;
     if ( this->getUUID ().size () == 0 ) return false;

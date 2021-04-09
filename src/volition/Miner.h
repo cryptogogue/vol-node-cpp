@@ -276,7 +276,7 @@ public:
     Ledger&                             getLedger                   ();
     Ledger                              getLedgerAtBlock            ( u64 index ) const;
     void                                getSnapshot                 ( MinerSnapshot& snapshot, MinerStatus& status );
-    TransactionStatus                   getTransactionStatus        ( const Ledger& ledger, string accountName, string uuid ) const;
+    TransactionStatus                   getTransactionStatus        ( const AbstractLedger& ledger, string accountName, string uuid ) const;
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
     void                                loadKey                     ( string keyfile, string password = "" );

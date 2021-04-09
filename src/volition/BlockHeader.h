@@ -11,8 +11,8 @@
 
 namespace Volition {
 
+class AbstractLedger;
 class BlockHeader;
-class Ledger;
 
 //================================================================//
 // BlockHeader
@@ -23,7 +23,7 @@ class BlockHeader :
 protected:
 
     //----------------------------------------------------------------//
-    void                applyEntropy                        ( Ledger& ledger ) const;
+    void                applyEntropy                        ( AbstractLedger& ledger ) const;
     
     //----------------------------------------------------------------//
     void                            AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;

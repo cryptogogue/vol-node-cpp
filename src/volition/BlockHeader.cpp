@@ -12,7 +12,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-void BlockHeader::applyEntropy ( Ledger& ledger ) const {
+void BlockHeader::applyEntropy ( AbstractLedger& ledger ) const {
 
     ledger.setEntropyString ( this->mPose.toString ());
 }
