@@ -113,7 +113,19 @@ protected:
 
     //----------------------------------------------------------------//
     int main ( const vector < string >& ) override {
-                
+    
+        #ifdef NDEBUG
+            LGN_LOG ( VOL_FILTER_APP, INFO, "NDEBUG" );
+        #else
+            LGN_LOG ( VOL_FILTER_APP, INFO, "NDEBUG NOT DEFINED" );
+        #endif
+
+        #ifdef _DEBUG
+            LGN_LOG ( VOL_FILTER_APP, INFO, "_DEBUG" );
+        #else
+            LGN_LOG ( VOL_FILTER_APP, INFO, "_DEBUG NOT DEFINED" );
+        #endif
+    
         Poco::Util::AbstractConfiguration& configuration = this->config ();
         
         string configfile = configuration.getString ( "config", "" );
