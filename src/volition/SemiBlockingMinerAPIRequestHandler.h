@@ -54,6 +54,8 @@ protected:
         u64 height = this->optQuery ( "at", totalBlocks );
         Ledger ledger ( this->mWebMiner->getLedgerAtBlock ( height ));
         
+        this->mWebMiner->getSnapshot ( this->mSnapshot, this->mStatus );
+        
         return this->SemiBlockingMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
     }
     
@@ -61,7 +63,6 @@ protected:
     void AbstractMinerAPIRequestHandler_initialize ( shared_ptr < Miner > miner ) override {
     
         this->mWebMiner = miner;
-        miner->getSnapshot ( this->mSnapshot, this->mStatus );
     }
 
 public:

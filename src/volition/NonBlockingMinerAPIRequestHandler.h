@@ -20,6 +20,10 @@ class Miner;
 //================================================================//
 class NonBlockingMinerAPIRequestHandler :
     public AbstractMinerAPIRequestHandler {
+private:
+
+    shared_ptr < Miner >    mWebMiner;
+
 protected:
 
     friend class MinerAPIFactory;
@@ -33,13 +37,17 @@ protected:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
+        ScopedMinerLock scopedLock ( this->mWebMiner );
+    
+        this->mWebMiner->getSnapshot ( this->mSnapshot, this->mStatus );
+
         return this->NonBlockingMinerAPIRequestHandler_handleRequest ( method, jsonIn, jsonOut );
     }
     
     //----------------------------------------------------------------//
     void AbstractMinerAPIRequestHandler_initialize ( shared_ptr < Miner > miner ) override {
     
-        miner->getSnapshot ( this->mSnapshot, this->mStatus );
+        this->mWebMiner = miner;
     }
 
 public:
