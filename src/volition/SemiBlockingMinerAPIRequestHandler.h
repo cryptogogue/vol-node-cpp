@@ -20,12 +20,17 @@ class Miner;
 //================================================================//
 class SemiBlockingMinerAPIRequestHandler :
     public AbstractMinerAPIRequestHandler {
-protected:
+private:
 
     friend class MinerAPIFactory;
     
     shared_ptr < Miner >    mWebMiner;
-    
+
+protected:
+
+    mutable MinerSnapshot   mSnapshot;
+    mutable MinerStatus     mStatus;
+
     //----------------------------------------------------------------//
     virtual HTTPStatus      SemiBlockingMinerAPIRequestHandler_handleRequest    ( HTTP::Method method, LockedLedgerIterator& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const = 0;
 
@@ -48,6 +53,7 @@ protected:
     void AbstractMinerAPIRequestHandler_initialize ( shared_ptr < Miner > miner ) override {
     
         this->mWebMiner = miner;
+        miner->getSnapshot ( this->mSnapshot, this->mStatus );
     }
 
 public:

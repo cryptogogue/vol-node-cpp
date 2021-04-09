@@ -42,7 +42,7 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
             
-        jsonOut.set ( "minerID", this->mWebMiner->getMinerID ());
+        jsonOut.set ( "minerID", this->mSnapshot.getMinerID ());
         
         size_t totalBlocks = ledger.countBlocks ();
         jsonOut.set ( "totalBlocks", totalBlocks );
@@ -54,7 +54,7 @@ public:
         
         if ( sampleMiners ) {
         
-            set < string > minerURLs = this->mWebMiner->sampleOnlineMinerURLs ( sampleMiners );
+            set < string > minerURLs = this->mSnapshot.sampleOnlineMinerURLs ( sampleMiners );
             Poco::JSON::Array::Ptr minerURLsJSON = new Poco::JSON::Array ();
         
             set < string >::const_iterator urlIt = minerURLs.cbegin ();
