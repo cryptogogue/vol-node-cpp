@@ -37,25 +37,17 @@ protected:
     //----------------------------------------------------------------//
     HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
     
-//        ScopedMinerLedgerLock scopedLock ( this->mWebMiner );
-//
-//        LockedLedger& lockedLedger = scopedLock.getImmutableLedger ();
-//        LockedLedgerIterator ledger ( lockedLedger );
-//
-//        u64 totalBlocks = ledger.countBlocks ();
-//        u64 height = this->optQuery ( "at", totalBlocks );
-//        ledger.seek ( height );
-//
-//        return this->SemiBlockingMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
-        
-        ScopedMinerLock scopedLock ( this->mWebMiner );
-    
-        u64 totalBlocks = this->mWebMiner->getLedger ().countBlocks ();
+        ScopedMinerLedgerLock scopedLock ( this->mWebMiner );
+
+        LockedLedger& lockedLedger = scopedLock.getImmutableLedger ();
+        LockedLedgerIterator ledger ( lockedLedger );
+
+        u64 totalBlocks = ledger.countBlocks ();
         u64 height = this->optQuery ( "at", totalBlocks );
-        Ledger ledger ( this->mWebMiner->getLedgerAtBlock ( height ));
-        
+        ledger.seek ( height );
+
         this->mWebMiner->getSnapshot ( this->mSnapshot, this->mStatus );
-        
+
         return this->SemiBlockingMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
     }
     

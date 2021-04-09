@@ -756,7 +756,7 @@ void Miner::updateMinerStatus () {
 
     // TODO: this is a hack to speed up the certain queries
 
-//    this->mSnapshotMutex.lock ();
+    this->mSnapshotMutex.lock ();
     
     Ledger& ledger = *this->mLedger;
     
@@ -792,11 +792,11 @@ void Miner::updateMinerStatus () {
 
     this->mSnapshot = *this;
 
-//    this->mSnapshotMutex.unlock ();
-//
-//    this->mLockedLedgerMutex.lock ();
-//    this->mLockedLedger.lock ( *this->mLedger );
-//    this->mLockedLedgerMutex.unlock ();
+    this->mSnapshotMutex.unlock ();
+
+    this->mLockedLedgerMutex.lock ();
+    this->mLockedLedger.lock ( *this->mLedger );
+    this->mLockedLedgerMutex.unlock ();
 }
 
 //----------------------------------------------------------------//
