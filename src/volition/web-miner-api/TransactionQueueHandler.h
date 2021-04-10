@@ -30,16 +30,19 @@ public:
     
         string accountName = this->getMatchString ( "accountName" );
     
+        SerializableVector < string > summary;
+    
         TransactionQueue& transactionQueue = this->mWebMiner->getTransactionQueue ();
         const MakerQueue* makerQueue = transactionQueue.getMakerQueueOrNull ( accountName );
         
-        SerializableVector < string > summary;
+        if ( makerQueue ) {
         
-        const MakerQueue::Queue& queue = makerQueue->getQueue ();
-        MakerQueue::TransactionQueueConstIt queueIt = queue.cbegin ();
-        for ( ; queueIt != queue.cend (); ++queueIt ) {
-            shared_ptr < const Transaction > transaction = queueIt->second;
-            summary.push_back ( transaction->getUUID ());
+            const MakerQueue::Queue& queue = makerQueue->getQueue ();
+            MakerQueue::TransactionQueueConstIt queueIt = queue.cbegin ();
+            for ( ; queueIt != queue.cend (); ++queueIt ) {
+                shared_ptr < const Transaction > transaction = queueIt->second;
+                summary.push_back ( transaction->getUUID ());
+            }
         }
         
         jsonOut.set ( "queue", ToJSONSerializer::toJSON ( summary ));

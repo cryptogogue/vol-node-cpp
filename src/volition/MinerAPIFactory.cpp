@@ -51,7 +51,7 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryLogHandler >                  ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/log/:nonce/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >                ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/keys/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >                   ( HTTP::GET_PUT,    Format::write ( "%s/accounts/:accountName/transactions/:uuid/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionQueueHandler >              ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/transactions?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionQueueHandler >              ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/transactions/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/assets/:assetIndexOrID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/blocks/:blockID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >                     ( HTTP::GET,        Format::write ( "%s/blocks/?", prefix ));
