@@ -76,6 +76,8 @@ shared_ptr < const Transaction > MakerQueue::nextTransaction ( u64 nonce ) const
 //----------------------------------------------------------------//
 void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
+
     this->mQueue [ transaction->getNonce ()] = transaction;
     this->mLookup [ transaction->getUUID ()] = transaction;
 
@@ -85,10 +87,14 @@ void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction 
 //----------------------------------------------------------------//
 void MakerQueue::prune ( u64 nonce ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
+
     TransactionQueueIt transactionItCursor = this->mQueue.begin ();
     while ( transactionItCursor != this->mQueue.end ()) {
 
         TransactionQueueIt transactionIt = transactionItCursor++;
+
+        LGN_LOG ( VOL_FILTER_QUEUE, INFO, "nonce (account): %d nonce (transaction): %d", ( int )nonce, ( int )transactionIt->first );
 
         if ( transactionIt->first < nonce ) {
             this->mLookup.erase ( transactionIt->second->getUUID ());
@@ -122,6 +128,8 @@ void MakerQueue::setTransactionResult ( TransactionResult result ) {
 //----------------------------------------------------------------//
 void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > transaction ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
+
     const TransactionMaker* maker = transaction->getMaker ();
     assert ( maker );
     
@@ -130,6 +138,8 @@ void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > tran
 
 //----------------------------------------------------------------//
 void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::VerificationPolicy policy, u64 minimumGratuity ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
 
     Ledger ledger;
     ledger.takeSnapshot ( chain );
@@ -254,6 +264,8 @@ bool TransactionQueue::isBlocked ( string accountName ) const {
 //----------------------------------------------------------------//
 void TransactionQueue::pruneTransactions ( const AbstractLedger& chain ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
+
     const AbstractLedger& ledger = chain;
 
     // TODO: fix this brute force
@@ -267,11 +279,15 @@ void TransactionQueue::pruneTransactions ( const AbstractLedger& chain ) {
         AccountID accountID = ledger.getAccountID ( accountName );
         if ( accountID != AccountID::NULL_INDEX ) {
             
+            LGN_LOG ( VOL_FILTER_QUEUE, INFO, "pruning account queue: %s", accountName.c_str ());
+            
             makerQueue.prune ( AccountODBM ( ledger, accountID ).mTransactionNonce.get ());
             
             if ( makerQueue.isBlocked ()) continue;
             if ( makerQueue.hasTransactions ()) continue;
         }
+        
+        LGN_LOG ( VOL_FILTER_QUEUE, INFO, "erasing empty account queue: %s", accountName.c_str ());
         this->mDatabase.erase ( makerQueueIt );
     }
 }
@@ -279,8 +295,9 @@ void TransactionQueue::pruneTransactions ( const AbstractLedger& chain ) {
 //----------------------------------------------------------------//
 void TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
+
     if ( transaction ) {
-//        this->mIncoming.push_back ( transaction );
         this->acceptTransaction ( transaction );
     }
 }
@@ -289,7 +306,32 @@ void TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transa
 void TransactionQueue::reset () {
 
     this->mDatabase.clear ();
-//    this->mIncoming.clear ();
+}
+
+//----------------------------------------------------------------//
+TransactionStatus TransactionQueue::getTransactionStatus ( const AbstractLedger& ledger, string accountName, string uuid ) const {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
+
+    LGN_LOG ( VOL_FILTER_QUEUE, INFO, "account: %s uuid: %s", accountName.c_str (), uuid.c_str ());
+
+    if ( this->isBlocked ( accountName )) {
+        LGN_LOG ( VOL_FILTER_QUEUE, INFO, "BLOCKED" );
+        return this->getLastStatus ( accountName );
+    }
+
+    if ( ledger.hasTransaction ( accountName, uuid )) {
+        LGN_LOG ( VOL_FILTER_QUEUE, INFO, "APPLIED" );
+        return TransactionStatus ( TransactionStatus::ACCEPTED, "Transaction was accepted and applied.", uuid );
+    }
+
+    if ( this->hasTransaction ( accountName, uuid )) {
+        LGN_LOG ( VOL_FILTER_QUEUE, INFO, "PENDING" );
+        return TransactionStatus ( TransactionStatus::PENDING, "Transaction is pending in queue.", uuid );
+    }
+    
+    LGN_LOG ( VOL_FILTER_QUEUE, INFO, "UNKNOWN" );
+    return TransactionStatus ( TransactionStatus::UNKNOWN, "Transaction is unknown.", uuid );
 }
 
 //----------------------------------------------------------------//

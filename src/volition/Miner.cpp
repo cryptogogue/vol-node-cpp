@@ -255,24 +255,6 @@ void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 }
 
 //----------------------------------------------------------------//
-TransactionStatus Miner::getTransactionStatus ( const AbstractLedger& ledger, string accountName, string uuid ) const {
-
-    if ( this->isBlocked ( accountName )) {
-        return this->getLastStatus ( accountName );
-    }
-
-    if ( ledger.hasTransaction ( accountName, uuid )) {
-        return TransactionStatus ( TransactionStatus::ACCEPTED, "Transaction was accepted and applied.", uuid );
-    }
-
-    if ( this->hasTransaction ( accountName, uuid )) {
-        return TransactionStatus ( TransactionStatus::PENDING, "Transaction is pending in queue.", uuid );
-    }
-    
-    return TransactionStatus ( TransactionStatus::UNKNOWN, "Transaction is unknown.", uuid );
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now ) {
 
     // if muted, no change is possible
@@ -379,8 +361,9 @@ Miner::Miner () :
     
     MinerLaunchTests::checkEnvironment ();
     
-    this->mBlockTree        = make_shared < InMemoryBlockTree >();
-    this->mBlockSearchPool  = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
+    this->mBlockTree            = make_shared < InMemoryBlockTree >();
+    this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
+    this->mTransactionQueue     = make_shared < TransactionQueue >();
 }
 
 //----------------------------------------------------------------//
@@ -466,7 +449,7 @@ shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
     block->setBlockDelayInSeconds( this->mLedger->getBlockDelayInSeconds ());
     block->setRewriteWindow ( this->mLedger->getRewriteWindowInSeconds ());
     
-    this->fillBlock ( *this->mLedger, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
+    this->mTransactionQueue->fillBlock ( *this->mLedger, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
     
     if ( !( this->isLazy () && ( block->countTransactions () == 0 ))) {
         block->setReward ( this->mLedger->chooseReward ( this->getReward ()));
@@ -498,7 +481,7 @@ shared_ptr < BlockHeader > Miner::prepareProvisional ( const BlockHeader& parent
 //----------------------------------------------------------------//
 void Miner::pruneTransactions () {
 
-    this->TransactionQueue::pruneTransactions ( *this->mLedger );
+    this->mTransactionQueue->pruneTransactions ( *this->mLedger );
 }
 
 //----------------------------------------------------------------//
@@ -559,7 +542,7 @@ void Miner::report ( ReportMode reportMode ) const {
 //----------------------------------------------------------------//
 void Miner::reset () {
 
-    this->TransactionQueue::reset ();
+    this->mTransactionQueue->reset ();
     this->mLedger->revertAndClear ( 1 );
     this->mLedger->clearSchemaCache ();
     this->Miner_reset ();
@@ -674,6 +657,7 @@ void Miner::step ( time_t now ) {
     // fill the provisional block (if any)
     this->extend ( now );
     this->saveChain ();
+    
     this->pruneTransactions ();
     
     this->updateRemoteMiners ();

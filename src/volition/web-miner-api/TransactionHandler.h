@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_TRANSACTIONSHANDLER_H
-#define VOLITION_WEBMINERAPI_TRANSACTIONSHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_TRANSACTIONHANDLER_H
+#define VOLITION_WEBMINERAPI_TRANSACTIONHANDLER_H
 
 #include <volition/Block.h>
 #include <volition/BlockingMinerAPIRequestHandler.h>
@@ -28,12 +28,14 @@ public:
     
         string accountName  = this->getMatchString ( "accountName" );
         string uuid         = this->getMatchString ( "uuid" );
-        
+    
+        TransactionQueue& transactionQueue = this->mWebMiner->getTransactionQueue ();
+    
         switch ( method ) {
     
             case HTTP::GET: {
 
-                TransactionStatus status = this->mWebMiner->getTransactionStatus ( ledger, accountName, uuid );
+                TransactionStatus status = transactionQueue.getTransactionStatus ( ledger, accountName, uuid );
                 
                 jsonOut.set ( "status", status.getStatusCodeString ());
                 jsonOut.set ( "message", status.mMessage );
@@ -47,7 +49,7 @@ public:
                 FromJSONSerializer::fromJSON ( transaction, jsonIn );
 
                 if ( transaction && transaction->checkMaker ( accountName, uuid )) {
-                    this->mWebMiner->pushTransaction ( move ( transaction ));
+                    transactionQueue.pushTransaction ( move ( transaction ));
                     jsonOut.set ( "status", "OK" );
                     return Poco::Net::HTTPResponse::HTTP_OK;
                 }

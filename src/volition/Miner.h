@@ -124,7 +124,6 @@ public:
 class Miner :
     public AbstractSerializable,
     public AbstractMiningMessengerClient,
-    public TransactionQueue,
     public MinerSnapshot {
 public:
 
@@ -210,6 +209,7 @@ protected:
     shared_mutex                                    mLockedLedgerMutex;
     
     shared_ptr < AbstractMiningMessenger >          mMessenger;
+    shared_ptr < TransactionQueue >                 mTransactionQueue;
     
     //----------------------------------------------------------------//
     void                                affirmMessenger             ();
@@ -218,6 +218,7 @@ protected:
     void                                composeChain                ();
     void                                composeChainRecurse         ( BlockTreeCursor branch );
     BlockTreeCursor                     improveBranch               ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now );
+    void                                pruneTransactions           ();
     void                                pushBlock                   ( shared_ptr < const Block > block );
     set < shared_ptr < RemoteMiner >>   sampleContributors          ( size_t sampleSize ) const;
     set < shared_ptr < RemoteMiner >>   sampleOnlineMiners          ( size_t sampleSize ) const;
@@ -251,6 +252,7 @@ public:
     GET ( BlockTreeCursor,                                  LedgerTag,                  mLedgerTag.getCursor ())
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                           Reward,                     mConfig.mReward )
+    GET ( TransactionQueue&,                                TransactionQueue,           *mTransactionQueue )
         
     GET_SET ( const CryptoPublicKey&,                       ControlKey,                 mControlKey )
     GET_SET ( Control,                                      ControlLevel,               mControlLevel )
@@ -270,7 +272,6 @@ public:
     Ledger&                             getLedger                   ();
     Ledger                              getLedgerAtBlock            ( u64 index ) const;
     void                                getSnapshot                 ( MinerSnapshot& snapshot, MinerStatus& status );
-    TransactionStatus                   getTransactionStatus        ( const AbstractLedger& ledger, string accountName, string uuid ) const;
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
     void                                loadKey                     ( string keyfile, string password = "" );
@@ -279,7 +280,6 @@ public:
     LedgerResult                        persist                     ( string path, shared_ptr < const Block > block );
     shared_ptr < Block >                prepareBlock                ( time_t now );
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
-    void                                pruneTransactions           ();
     void                                report                      () const;
     void                                report                      ( ReportMode reportMode ) const;
     void                                reset                       ();

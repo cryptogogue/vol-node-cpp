@@ -116,6 +116,7 @@ typedef __int128                s128;
 #define VOL_FILTER_HTTP                     " @VOL_HTTP "
 #define VOL_FILTER_MINING_REPORT            " @VOL_REPORT "
 #define VOL_FILTER_MINING_SEARCH_REPORT     " @VOL_SEARCH "
+#define VOL_FILTER_QUEUE                    " @VOL_QUEUE "
 
 #if !defined(UNUSED)
     #define UNUSED(x) ((void)(x))
