@@ -41,7 +41,6 @@ public:
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
         if ( !this->mMinerInfo ) return "Missing miner info.";
         
         return context.mLedger.updateMinerInfo ( context.mAccountID, *this->mMinerInfo );
