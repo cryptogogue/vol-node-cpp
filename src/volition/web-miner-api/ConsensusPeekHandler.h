@@ -43,6 +43,7 @@ public:
         UNUSED ( jsonIn );
                     
         jsonOut.set ( "minerID", this->mSnapshot.getMinerID ());
+        jsonOut.set ( "isMiner", this->mSnapshot.mIsMiner );
         
         size_t totalBlocks = ledger.countBlocks ();
         jsonOut.set ( "totalBlocks", totalBlocks );

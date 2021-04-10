@@ -36,6 +36,7 @@ public:
         }
         
         jsonOut.set ( "miners", ToJSONSerializer::toJSON ( result ));
+        jsonOut.set ( "isMiner", this->mSnapshot.mIsMiner );
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

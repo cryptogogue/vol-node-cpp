@@ -36,6 +36,7 @@ public:
             
                 Poco::JSON::Object::Ptr accountLookupJSON = new Poco::JSON::Object ();
                 accountLookupJSON->set ( "accountName", accountName.c_str ());
+                accountLookupJSON->set ( "accountIndex", ( u64 )accountKeyLookup->mAccountIndex );
                 accountLookupJSON->set ( "keyName", accountKeyLookup->mKeyName.c_str ());
                 
                 jsonOut.set ( "keyInfo", accountLookupJSON );

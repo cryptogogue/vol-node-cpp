@@ -34,6 +34,7 @@ public:
                 
         jsonOut.set ( "type",                   "VOL_MINING_NODE" );
         jsonOut.set ( "minerID",                snapshot.getMinerID ().c_str ());
+        jsonOut.set ( "isMiner",                this->mSnapshot.mIsMiner );
         jsonOut.set ( "started",                ( string )( SerializableTime ( snapshot.getStartTime ())));
         jsonOut.set ( "genesis",                status.mGenesisHash );
         jsonOut.set ( "identity",               status.mIdentity );
