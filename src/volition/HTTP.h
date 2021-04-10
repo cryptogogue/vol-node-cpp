@@ -16,7 +16,7 @@ class HTTP {
 public:
     
     enum Method {
-        ALL             = -1,
+        ALL             = 0x7f,
         DELETE          =  1 << 0,
         GET             =  1 << 1,
         HEAD            =  1 << 2,

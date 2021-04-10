@@ -12,6 +12,7 @@
 #include <volition/web-miner-api/ConsensusBlockHeaderListHandler.h>
 #include <volition/web-miner-api/ConsensusPeekHandler.h>
 #include <volition/web-miner-api/ControlCommandHandler.h>
+#include <volition/web-miner-api/DebugHTTPEchoHandler.h>
 #include <volition/web-miner-api/DebugKeyGenHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
 #include <volition/web-miner-api/InventoryAssetsHandler.h>
@@ -73,7 +74,7 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::TestExceptions >                       ( HTTP::GET,        Format::write ( "%s/test/exceptions/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::TestKeyIDHandler >                     ( HTTP::POST,       Format::write ( "%s/test/keyid/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::TestSignatureHandler >                 ( HTTP::POST,       Format::write ( "%s/test/signature/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::DebugHTTPEchoHandler >                 ( HTTP::ALL,        Format::write ( "%s/debug/echo/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::DebugKeyGenHandler >                   ( HTTP::GET,        Format::write ( "%s/debug/keygen/:type/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ResetChainHandler >                    ( HTTP::DELETE,     Format::write ( "%s/?", prefix ));
     
