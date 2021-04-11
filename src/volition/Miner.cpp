@@ -248,10 +248,10 @@ Ledger Miner::getLedgerAtBlock ( u64 index ) const {
 //----------------------------------------------------------------//
 void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 
-    this->mSnapshotMutex.lock_shared ();
+    this->mSnapshotMutex.lock ();
     snapshot = this->mSnapshot;
     status = this->mMinerStatus;
-    this->mSnapshotMutex.unlock_shared ();
+    this->mSnapshotMutex.unlock ();
 }
 
 //----------------------------------------------------------------//
