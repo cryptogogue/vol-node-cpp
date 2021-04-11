@@ -78,8 +78,23 @@ void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction 
 
     LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
 
-    this->mQueue [ transaction->getNonce ()] = transaction;
+    u64 nonce = transaction->getNonce ();
+
+    this->mQueue [ nonce ] = transaction;
     this->mLookup [ transaction->getUUID ()] = transaction;
+
+    // transactions *must* be submitted in order; erase any later transactions submitted before current nonce
+    TransactionQueueIt transactionItCursor = this->mQueue.find ( nonce )++;
+    
+    while ( transactionItCursor != this->mQueue.end ()) {
+
+        TransactionQueueIt transactionIt = transactionItCursor++;
+
+        if ( transactionIt->first > nonce ) {
+            this->mLookup.erase ( transactionIt->second->getUUID ());
+            this->mQueue.erase ( transactionIt );
+        }
+    }
 
     this->setTransactionResult ( true );
 }
@@ -145,7 +160,9 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
     ledger.takeSnapshot ( chain );
 
     const u64 maxBlockWeight = ledger.getMaxBlockWeight ();
+    u64 blockHeight = block.getHeight ();
     u64 blockWeight = 0;
+    u64 transactionIndex = 0;
 
     map < string, MakerQueueInfo > infoCache;
 
@@ -202,10 +219,12 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
-            TransactionResult result = transaction->apply ( ledger, block.getTime (), policy );
+            TransactionResult result = transaction->apply ( ledger, blockHeight, transactionIndex, block.getTime (), policy );
+            
             if ( result ) {
                 // transaction succeeded!
                 block.pushTransaction ( transaction );
+                transactionIndex++;
                 blockWeight += transactionWeight;
                 info.mNonce = transaction->getNonce () + 1;
                 infoCache [ accountName ] = info;

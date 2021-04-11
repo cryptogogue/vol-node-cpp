@@ -20,7 +20,7 @@ class TransactionQueueHandler :
     public BlockingMinerAPIRequestHandler {
 public:
 
-    SUPPORTED_HTTP_METHODS ( HTTP::GET_PUT )
+    SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
     HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {

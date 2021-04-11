@@ -17,12 +17,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( AbstractLedger& ledger, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
         TransactionResult result = this->checkBody ( ledger, time );
         if ( result ) {
-            result = this->applyInner ( ledger, time, policy );
+            result = this->applyInner ( ledger, blockHeight, index, time, policy );
         }
         result.setTransactionDetails ( *this );
         return result;
@@ -36,7 +36,7 @@ TransactionResult Transaction::apply ( AbstractLedger& ledger, time_t time, Bloc
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( AbstractLedger& ledger, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const {
     
     if ( !this->mBody ) return "Missing body.";
     
@@ -55,7 +55,7 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, time_t time,
     TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey, policy );
     if ( result ) {
         
-        TransactionContext context ( ledger, accountODBM, keyAndPolicy, time );
+        TransactionContext context ( ledger, accountODBM, keyAndPolicy, blockHeight, index, time );
         
         const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getFeeName ());
         
@@ -71,6 +71,7 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, time_t time,
             if ( !ledger.isGenesis ()) {
                 
                 accountODBM.incAccountTransactionNonce ( this->getNonce (), this->getUUID ());
+                accountODBM.getTransactionLogEntryField ( this->getNonce ()).set ( TransactionLogEntry ( blockHeight, index ));
                 
                 if ( cost > 0 ) {
                 

@@ -53,19 +53,19 @@ public:
     static constexpr const char* MASTER_KEY_NAME = "master";
 
     //----------------------------------------------------------------//
-    bool                                affirmKey                       ( AccountID accountID, string makerKeyName, string keyName, const CryptoPublicKey& key, const Policy* policy );
-    LedgerResult                        awardVOL                        ( AccountID accountID, u64 amount );
-    bool                                deleteKey                       ( AccountID accountID, string keyName );
-    AccountID                           getAccountID                    ( string accountName ) const;
-    AccountKey                          getAccountKey                   ( AccountID accountID, string keyName ) const;
-    shared_ptr < AccountKeyLookup >     getAccountKeyLookup             ( string keyID ) const;
-    static bool                         isAccountName                   ( string accountName );
-    static bool                         isChildName                     ( string accountName );
-    static bool                         isSuffix                        ( string suffix );
-    LedgerResult                        newAccount                      ( string accountName, const Account& account );
-    LedgerResult                        newAccount                      ( string accountName, u64 balance, string keyName, const CryptoPublicKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
-    LedgerResult                        renameAccount                   ( AccountID accountID, string revealedName );
-    LedgerResult                        reserveAccountname              ( string nameHash, string nameSecret );
+    bool                                    affirmKey                       ( AccountID accountID, string makerKeyName, string keyName, const CryptoPublicKey& key, const Policy* policy );
+    LedgerResult                            awardVOL                        ( AccountID accountID, u64 amount );
+    bool                                    deleteKey                       ( AccountID accountID, string keyName );
+    AccountID                               getAccountID                    ( string accountName ) const;
+    AccountKey                              getAccountKey                   ( AccountID accountID, string keyName ) const;
+    shared_ptr < AccountKeyLookup >         getAccountKeyLookup             ( string keyID ) const;
+    static bool                             isAccountName                   ( string accountName );
+    static bool                             isChildName                     ( string accountName );
+    static bool                             isSuffix                        ( string suffix );
+    LedgerResult                            newAccount                      ( string accountName, const Account& account );
+    LedgerResult                            newAccount                      ( string accountName, u64 balance, string keyName, const CryptoPublicKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
+    LedgerResult                            renameAccount                   ( AccountID accountID, string revealedName );
+    LedgerResult                            reserveAccountname              ( string nameHash, string nameSecret );
 };
 
 } // namespace Volition

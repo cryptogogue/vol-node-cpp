@@ -17,6 +17,50 @@
 namespace Volition {
 
 //================================================================//
+// TransactionLogEntry
+//================================================================//
+class TransactionLogEntry :
+    public AbstractSerializable {
+private:
+
+    friend class Ledger_Account;
+
+    u64     mBlockHeight;
+    u64     mTransactionIndex;
+
+public:
+
+    GET ( u64,          BlockHeight,                mBlockHeight )
+    GET ( u64,          TransactionIndex,           mTransactionIndex )
+    
+    //----------------------------------------------------------------//
+    TransactionLogEntry () :
+        mBlockHeight ( 0 ),
+        mTransactionIndex ( 0 ) {
+    }
+    
+    //----------------------------------------------------------------//
+    TransactionLogEntry ( u64 blockHeight, u64 transactionIndex ) :
+        mBlockHeight ( blockHeight ),
+        mTransactionIndex ( transactionIndex ) {
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
+    
+        serializer.serialize ( "blockHeight",           this->mBlockHeight );
+        serializer.serialize ( "transactionIndex",      this->mTransactionIndex );
+    }
+    
+    //----------------------------------------------------------------//
+    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
+    
+        serializer.serialize ( "blockHeight",           this->mBlockHeight );
+        serializer.serialize ( "transactionIndex",      this->mTransactionIndex );
+    }
+};
+
+//================================================================//
 // AccountODBM
 //================================================================//
 class AccountODBM {
@@ -68,8 +112,13 @@ private:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_transactionLogEntry ( AssetID::Index index, u64 nonce ) {
+        return Format::write ( "account.%d.transactionLookupByNonce.%d", index, nonce );
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_transactionLookup ( AssetID::Index index, string uuid ) {
-        return Format::write ( "account.%d.transactionLookup.%s", index, uuid.c_str ());
+        return Format::write ( "account.%d.transactionLookupByUUID.%s", index, uuid.c_str ());
     }
 
     //----------------------------------------------------------------//
@@ -151,6 +200,12 @@ public:
             return KeyAndPolicy ( key, policy );
         }
         return KeyAndPolicy ();
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerObjectFieldODBM < TransactionLogEntry > getTransactionLogEntryField ( u64 nonce ) {
+    
+        return LedgerObjectFieldODBM < TransactionLogEntry >( this->mLedger, keyFor_transactionLogEntry ( this->mAccountID, nonce ));
     }
     
     //----------------------------------------------------------------//

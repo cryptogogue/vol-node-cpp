@@ -33,7 +33,7 @@ MOTTO = An optional string constant chosen at account creation; may be the empty
 SIG = A deterministic digital signature algorithm.
 VISAGE = SIG ( KEY, SHA256 ( MOTTO ))
 POSE ( N ) = SIG ( KEY, SHA256 ( POSE ( N - 1 )))
-CHARM ( N ) = POSE ( N - 1 ) ^ VISAGE.
+CHARM ( N ) = SHA256 ( POSE ( N - 1 ) ^ VISAGE )
 ```
 
 Each participant has a VISAGE. VISAGE is simply the signature produced by signing MOTTO with KEY. Once computed, VISAGE, MOTTO and KEY may not change during the contest.

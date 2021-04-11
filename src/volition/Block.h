@@ -67,27 +67,28 @@ private:
     shared_ptr < BlockBody >        mBody;
 
     //----------------------------------------------------------------//
-    void                affirmBody                          ();
-    LedgerResult        applyTransactions                   ( AbstractLedger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const;
-    size_t              getWeight                           () const;
+    void                    affirmBody                          ();
+    LedgerResult            applyTransactions                   ( AbstractLedger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const;
+    size_t                  getWeight                           () const;
     
     //----------------------------------------------------------------//
-    void                AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
 public:
 
     //----------------------------------------------------------------//
-    void                affirmHash                          ();
-    LedgerResult        apply                               ( AbstractLedger& ledger, VerificationPolicy policy ) const;
-                        Block                               ();
-                        Block                               ( string bodyString );
-                        ~Block                              ();
-    size_t              countTransactions                   () const;
-    void                pushTransaction                     ( shared_ptr < const Transaction > transaction );
-    const Digest&       sign                                ( const CryptoKeyPair& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
-    void                setReward                           ( string reward );
-    LedgerResult        verify                              ( const AbstractLedger& ledger, VerificationPolicy policy ) const;
+    void                    affirmHash                          ();
+    LedgerResult            apply                               ( AbstractLedger& ledger, VerificationPolicy policy ) const;
+                            Block                               ();
+                            Block                               ( string bodyString );
+                            ~Block                              ();
+    size_t                  countTransactions                   () const;
+    const Transaction*      getTransaction                      ( u64 index ) const;
+    void                    pushTransaction                     ( shared_ptr < const Transaction > transaction );
+    const Digest&           sign                                ( const CryptoKeyPair& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
+    void                    setReward                           ( string reward );
+    LedgerResult            verify                              ( const AbstractLedger& ledger, VerificationPolicy policy ) const;
 };
 
 } // namespace Volition

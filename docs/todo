@@ -135,17 +135,15 @@ DONE: node - automatic reward selection
 DONE: node - mining reward fallback (detect if no reward and fallback on next reward)
 DONE: wallet - key tool (export JSON keys)
 DONE: wallet - schema tool (export JSON schema)
+DONE: node - record account transaction lookup (block number and transaction index) per nonce
+DONE: node - implement transaction history endpoint
+DONE: wallet - add transaction history diagnostic
+DONE: wallet - preview provisioned account name when sponsoring an account
+DONE: wallet - embed genesis hash in new account requests (and check against correct genesis)
 
-node - record account transaction lookup (block number and transaction index) per nonce
-node - implement transaction history endpoint
 node - implement account lookup by name, index or key (from same endpoint)
 node - refactor miner multithread access
 node - add mutex and accessor for transaction queue
-node - add account list endpoint
-
-wallet - add transaction history diagnostic
-wallet - add account lookup diagnostic
-wallet - preview provisioned account name when sponsoring an account
 
 node - implement TOS (user and miner)
 
@@ -155,6 +153,8 @@ mining - chain ToS (copyright/trademark inheritance)
 mining - chain visualization endpoint
 
 node - support genesis block ledger import with updated schema
+
+bot - make a discord bot to provision accounts and register miners
 
 ----------------------------------------------------------------
 LAUNCH

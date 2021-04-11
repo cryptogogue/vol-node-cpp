@@ -32,10 +32,12 @@ public:
     const KeyAndPolicy&     mKeyAndPolicy;
     Entitlements            mKeyEntitlements;
     AbstractLedger&         mLedger;
+    u64                     mBlockHeight;
+    u64                     mIndex;
     time_t                  mTime;
 
     //----------------------------------------------------------------//
-    TransactionContext      ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, time_t time );
+    TransactionContext      ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 index, time_t time );
 };
 
 } // namespace Volition
