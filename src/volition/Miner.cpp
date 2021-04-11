@@ -742,44 +742,50 @@ void Miner::updateMinerStatus () {
 
 //    this->mSnapshotMutex.lock ();
     
-    Ledger& ledger = *this->mLedger;
+    {
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "SNAPSHOT" );
     
-    AccountODBM accountODBM ( ledger, this->getMinerID ());
-    
-    this->mIsMiner = accountODBM.isMiner ();
-    
-    if ( this->mIsMiner ) {
-
-        this->mMinerHeight = accountODBM.mMinerHeight.get ();
+        Ledger& ledger = *this->mLedger;
+        AccountODBM accountODBM ( ledger, this->getMinerID ());
         
-        shared_ptr < const MinerInfo > minerInfo = accountODBM.mMinerInfo.get ();
-        this->mMotto    = minerInfo->getMotto ();
-        this->mVisage   = minerInfo->getVisage ();
-    }
-    
-    this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
-    this->mMinerStatus.mSchemaHash              = ledger.getSchemaHash ();
-    this->mMinerStatus.mGenesisHash             = ledger.getGenesisHash ();
-    this->mMinerStatus.mIdentity                = ledger.getIdentity ();
-    this->mMinerStatus.mMinimumGratuity         = this->getMinimumGratuity ();
-    this->mMinerStatus.mReward                  = this->getReward ();
-    this->mMinerStatus.mTotalBlocks             = ledger.countBlocks ();
-    this->mMinerStatus.mFeeSchedule             = ledger.getTransactionFeeSchedule ();
-    this->mMinerStatus.mMonetaryPolicy          = ledger.getMonetaryPolicy ();
-    this->mMinerStatus.mPayoutPolicy            = ledger.getPayoutPolicy ();
-    this->mMinerStatus.mMinerBlockCount         = accountODBM.mMinerBlockCount.get ( 0 );
-    
-    this->mMinerStatus.mRewardPool              = ledger.getRewardPool ();
-    this->mMinerStatus.mPrizePool               = ledger.getPrizePool ();
-    this->mMinerStatus.mPayoutPool              = ledger.getPayoutPool ();
-    this->mMinerStatus.mVOL                     = ledger.countVOL ();
+        this->mIsMiner = accountODBM.isMiner ();
+        
+        if ( this->mIsMiner ) {
 
-    this->mSnapshot = *this;
+            this->mMinerHeight = accountODBM.mMinerHeight.get ();
+            
+            shared_ptr < const MinerInfo > minerInfo = accountODBM.mMinerInfo.get ();
+            this->mMotto    = minerInfo->getMotto ();
+            this->mVisage   = minerInfo->getVisage ();
+        }
+        
+        this->mMinerStatus.mSchemaVersion           = ledger.getSchemaVersion ();
+        this->mMinerStatus.mSchemaHash              = ledger.getSchemaHash ();
+        this->mMinerStatus.mGenesisHash             = ledger.getGenesisHash ();
+        this->mMinerStatus.mIdentity                = ledger.getIdentity ();
+        this->mMinerStatus.mMinimumGratuity         = this->getMinimumGratuity ();
+        this->mMinerStatus.mReward                  = this->getReward ();
+        this->mMinerStatus.mTotalBlocks             = ledger.countBlocks ();
+        this->mMinerStatus.mFeeSchedule             = ledger.getTransactionFeeSchedule ();
+        this->mMinerStatus.mMonetaryPolicy          = ledger.getMonetaryPolicy ();
+        this->mMinerStatus.mPayoutPolicy            = ledger.getPayoutPolicy ();
+        this->mMinerStatus.mMinerBlockCount         = accountODBM.mMinerBlockCount.get ( 0 );
+        
+        this->mMinerStatus.mRewardPool              = ledger.getRewardPool ();
+        this->mMinerStatus.mPrizePool               = ledger.getPrizePool ();
+        this->mMinerStatus.mPayoutPool              = ledger.getPayoutPool ();
+        this->mMinerStatus.mVOL                     = ledger.countVOL ();
+
+        this->mSnapshot = *this;
+    }
 
 //    this->mSnapshotMutex.unlock ();
     
 //    this->mLockedLedgerMutex.lock ();
-    this->mLockedLedger.lock ( *this->mLedger );
+    {
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Ledger LOCK" );
+        this->mLockedLedger.lock ( *this->mLedger );
+    }
 //    this->mLockedLedgerMutex.unlock ();
 }
 
