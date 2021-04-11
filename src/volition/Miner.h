@@ -332,12 +332,12 @@ public:
     //----------------------------------------------------------------//
     ScopedMinerLedgerLock ( shared_ptr < Miner > miner ) :
         mMiner ( miner ) {
-        this->mMiner->mLockedLedgerMutex.lock ();
+        this->mMiner->mMutex.lock ();
     }
     
     //----------------------------------------------------------------//
     ~ScopedMinerLedgerLock () {
-        this->mMiner->mLockedLedgerMutex.unlock ();
+        this->mMiner->mMutex.unlock ();
     }
 };
 

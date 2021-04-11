@@ -248,10 +248,10 @@ Ledger Miner::getLedgerAtBlock ( u64 index ) const {
 //----------------------------------------------------------------//
 void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 
-    this->mSnapshotMutex.lock ();
+    this->mMutex.lock ();
     snapshot = this->mSnapshot;
     status = this->mMinerStatus;
-    this->mSnapshotMutex.unlock ();
+    this->mMutex.unlock ();
 }
 
 //----------------------------------------------------------------//
@@ -740,8 +740,8 @@ void Miner::updateMinerStatus () {
 
     // TODO: this is a hack to speed up the certain queries
 
-    this->mSnapshotMutex.lock ();
-        
+//    this->mSnapshotMutex.lock ();
+    
     Ledger& ledger = *this->mLedger;
     
     AccountODBM accountODBM ( ledger, this->getMinerID ());
@@ -778,9 +778,9 @@ void Miner::updateMinerStatus () {
 
     this->mSnapshotMutex.unlock ();
     
-    this->mLockedLedgerMutex.lock ();
+//    this->mLockedLedgerMutex.lock ();
     this->mLockedLedger.lock ( *this->mLedger );
-    this->mLockedLedgerMutex.unlock ();
+//    this->mLockedLedgerMutex.unlock ();
 }
 
 //----------------------------------------------------------------//
