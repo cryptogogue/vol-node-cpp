@@ -155,7 +155,7 @@ protected:
     friend class ScopedMinerLock;
     friend class ScopedMinerLedgerLock;
 
-    static constexpr const char* PERSIST_PREFIX     = "v2-beta-";
+    static constexpr const char* PERSIST_PREFIX     = "v3-beta-";
     static constexpr const char* MASTER_BRANCH      = "master";
 
     int                                             mFlags;
