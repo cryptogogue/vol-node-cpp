@@ -124,24 +124,32 @@ DONE: node - make sure transactions can be resubmitted with new gratuity
 DONE: node - alert users when their transactions are declined for insufficient gratuity
 DONE: node - setup guide
 
+
+
 ----------------------------------------------------------------
 OPEN BETA
+
+DONE: mining - blocks mined counter
+DONE: node - publish mining rewards from schema
+DONE: node - automatic reward selection
+DONE: node - mining reward fallback (detect if no reward and fallback on next reward)
+DONE: wallet - key tool (export JSON keys)
+DONE: wallet - schema tool (export JSON schema)
+
+node - record account transaction lookup (block number and transaction index) per nonce
+node - implement transaction history endpoint
+node - implement account lookup by name, index or key (from same endpoint)
+node - refactor miner multithread access
+node - add mutex and accessor for transaction queue
 
 node - implement TOS (user and miner)
 
 mining - legal ToS
 mining - chain ToS (copyright/trademark inheritance)
-mining - blocks mined counter
+
 mining - chain visualization endpoint
 
 node - support genesis block ledger import with updated schema
-node - publish mining rewards from schema
-node - automatic reward selection
-node - scripting method to mark mining rewards as depleted
-node - mining reward fallback (detect if no reward and fallback on next reward)
-
-wallet - key tool (export JSON keys)
-wallet - schema tool (export JSON schema)
 
 ----------------------------------------------------------------
 LAUNCH
