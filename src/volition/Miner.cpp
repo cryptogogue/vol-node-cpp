@@ -776,7 +776,7 @@ void Miner::updateMinerStatus () {
 
     this->mSnapshot = *this;
 
-    this->mSnapshotMutex.unlock ();
+//    this->mSnapshotMutex.unlock ();
     
 //    this->mLockedLedgerMutex.lock ();
     this->mLockedLedger.lock ( *this->mLedger );
