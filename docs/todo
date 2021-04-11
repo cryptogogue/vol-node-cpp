@@ -141,6 +141,11 @@ node - implement transaction history endpoint
 node - implement account lookup by name, index or key (from same endpoint)
 node - refactor miner multithread access
 node - add mutex and accessor for transaction queue
+node - add account list endpoint
+
+wallet - add transaction history diagnostic
+wallet - add account lookup diagnostic
+wallet - preview provisioned account name when sponsoring an account
 
 node - implement TOS (user and miner)
 
