@@ -203,10 +203,10 @@ protected:
     
     MinerSnapshot                                   mSnapshot;
     MinerStatus                                     mMinerStatus;
-    mutex                                           mSnapshotMutex;
+    shared_mutex                                    mSnapshotMutex;
     
     LockedLedger                                    mLockedLedger;
-    mutex                                           mLockedLedgerMutex;
+    shared_mutex                                    mLockedLedgerMutex;
     
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     shared_ptr < TransactionQueue >                 mTransactionQueue;
@@ -332,12 +332,12 @@ public:
     //----------------------------------------------------------------//
     ScopedMinerLedgerLock ( shared_ptr < Miner > miner ) :
         mMiner ( miner ) {
-        this->mMiner->mMutex.lock ();
+        this->mMiner->mLockedLedgerMutex.lock_shared ();
     }
     
     //----------------------------------------------------------------//
     ~ScopedMinerLedgerLock () {
-        this->mMiner->mMutex.unlock ();
+        this->mMiner->mLockedLedgerMutex.unlock_shared ();
     }
 };
 

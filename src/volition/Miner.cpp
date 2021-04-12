@@ -248,10 +248,10 @@ Ledger Miner::getLedgerAtBlock ( u64 index ) const {
 //----------------------------------------------------------------//
 void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 
-    this->mMutex.lock ();
+    this->mSnapshotMutex.lock_shared ();
     snapshot = this->mSnapshot;
     status = this->mMinerStatus;
-    this->mMutex.unlock ();
+    this->mSnapshotMutex.unlock_shared ();
 }
 
 //----------------------------------------------------------------//
@@ -740,7 +740,7 @@ void Miner::updateMinerStatus () {
 
     // TODO: this is a hack to speed up the certain queries
 
-//    this->mSnapshotMutex.lock ();
+    this->mSnapshotMutex.lock ();
     
     {
         LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "SNAPSHOT" );
@@ -779,14 +779,14 @@ void Miner::updateMinerStatus () {
         this->mSnapshot = *this;
     }
 
-//    this->mSnapshotMutex.unlock ();
+    this->mSnapshotMutex.unlock ();
     
-//    this->mLockedLedgerMutex.lock ();
+    this->mLockedLedgerMutex.lock ();
     {
         LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Ledger LOCK" );
         this->mLockedLedger.lock ( *this->mLedger );
     }
-//    this->mLockedLedgerMutex.unlock ();
+    this->mLockedLedgerMutex.unlock ();
 }
 
 //----------------------------------------------------------------//
