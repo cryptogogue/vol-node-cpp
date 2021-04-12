@@ -46,7 +46,7 @@ protected:
 
         u64 totalBlocks = ledger.countBlocks ();
         u64 height = this->optQuery ( "at", totalBlocks );
-        ledger.revert ( height );
+        ledger.seek ( height );
         
         return this->SemiBlockingMinerAPIRequestHandler_handleRequest ( method, ledger, jsonIn, jsonOut );
     }
