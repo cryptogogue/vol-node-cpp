@@ -310,6 +310,8 @@ const Schema& AbstractLedger::getSchema () const {
 //----------------------------------------------------------------//
 string AbstractLedger::getSchemaHash () const {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     return this->getValueOrFallback < string >( keyFor_schemaHash (), "" );
 }
 

@@ -371,6 +371,7 @@ int main ( int argc, char** argv ) {
 
     Lognosis::setFilter ( PDM_FILTER_ROOT,                      Lognosis::OFF );
     Lognosis::setFilter ( PDM_FILTER_SQLITE,                    Lognosis::OFF );
+    Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  Lognosis::OFF );
     
 //    Lognosis::setFilter ( VOL_FILTER_APP,                       Lognosis::OFF );
     Lognosis::setFilter ( VOL_FILTER_BLOCK,                     Lognosis::OFF );

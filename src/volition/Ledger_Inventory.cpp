@@ -512,6 +512,8 @@ LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, Ac
 //----------------------------------------------------------------//
 void Ledger_Inventory::updateInventory ( AccountID accountID, const InventoryLogEntry& entry ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     AbstractLedger& ledger = this->getLedger ();
     AccountODBM accountODBM ( ledger, accountID );
 
@@ -522,6 +524,8 @@ void Ledger_Inventory::updateInventory ( AccountID accountID, const InventoryLog
 
 //----------------------------------------------------------------//
 void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
     AbstractLedger& ledger = this->getLedger ();
 

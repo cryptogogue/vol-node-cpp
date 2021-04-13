@@ -355,6 +355,8 @@ int LuaContext::_setAssetField ( lua_State* L ) {
 //----------------------------------------------------------------//
 AccountID LuaContext::checkAccountName ( string accountName ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     if ( accountName.size () == 0 ) {
         this->setResult ( "Missing account name." );
         return AccountID::NULL_INDEX;
@@ -370,6 +372,8 @@ AccountID LuaContext::checkAccountName ( string accountName ) {
 //----------------------------------------------------------------//
 AssetID::Index LuaContext::checkAssetID ( string assetID ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     if ( assetID.size () == 0 ) {
         this->setResult ( "Missing asset ID." );
         return AssetID::NULL_INDEX;
@@ -384,6 +388,8 @@ AssetID::Index LuaContext::checkAssetID ( string assetID ) {
 
 //----------------------------------------------------------------//
 bool LuaContext::checkAssetType ( string assetType ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
     if ( assetType.size () == 0 ) {
         this->setResult ( "Missing asset type." );
@@ -402,6 +408,8 @@ bool LuaContext::checkAssetType ( string assetType ) {
 //----------------------------------------------------------------//
 bool LuaContext::checkDeckOrSet ( string deckName ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     const Schema& schema = this->mLedger->getSchema ();
 
     if ( !schema.getDeck ( deckName )) {
@@ -413,6 +421,8 @@ bool LuaContext::checkDeckOrSet ( string deckName ) {
 
 //----------------------------------------------------------------//
 const AssetDefinition* LuaContext::checkDefinition ( string definitionName ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
     if ( definitionName.size () == 0 ) {
         this->setResult ( "Missing definition name." );
@@ -429,6 +439,8 @@ const AssetDefinition* LuaContext::checkDefinition ( string definitionName ) {
 
 //----------------------------------------------------------------//
 AssetFieldDefinition LuaContext::checkDefinitionField ( const AssetDefinition& definition, string fieldName ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
     AssetFieldDefinition field;
 

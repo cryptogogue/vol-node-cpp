@@ -111,16 +111,16 @@ typedef int32_t                 s32;
 typedef int64_t                 s64;
 typedef __int128                s128;
 
-#define VOL_FILTER_APP                      " @VOL_APP "
-#define VOL_FILTER_BLOCK                    " @VOL_BLOCK "
+#define VOL_FILTER_APP                      " @VOL_APP       "
+#define VOL_FILTER_BLOCK                    " @VOL_BLOCK     "
 #define VOL_FILTER_CONSENSUS                " @VOL_CONSENSUS "
-#define VOL_FILTER_HTTP                     " @VOL_HTTP "
-#define VOL_FILTER_JSON                     " @VOL_JSON "
-#define VOL_FILTER_LEDGER                   " @VOL_LEDGER "
-#define VOL_FILTER_LUA                      " @VOL_LUA "
-#define VOL_FILTER_MINING_REPORT            " @VOL_REPORT "
-#define VOL_FILTER_MINING_SEARCH_REPORT     " @VOL_SEARCH "
-#define VOL_FILTER_QUEUE                    " @VOL_QUEUE "
+#define VOL_FILTER_HTTP                     " @VOL_HTTP      "
+#define VOL_FILTER_JSON                     " @VOL_JSON      "
+#define VOL_FILTER_LEDGER                   " @VOL_LEDGER    "
+#define VOL_FILTER_LUA                      " @VOL_LUA       "
+#define VOL_FILTER_MINING_REPORT            " @VOL_REPORT    "
+#define VOL_FILTER_MINING_SEARCH_REPORT     " @VOL_SEARCH    "
+#define VOL_FILTER_QUEUE                    " @VOL_QUEUE     "
 
 #if !defined(UNUSED)
     #define UNUSED(x) ((void)(x))
