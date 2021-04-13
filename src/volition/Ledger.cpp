@@ -300,9 +300,11 @@ const Schema& AbstractLedger::getSchema () const {
     shared_ptr < Schema > schema = make_shared < Schema >();
     schemaCache [ schemaHash ] = schema;
 
-    string schemaString = this->getSchemaString ();
-    if ( schemaString.size () > 0 ) {
-        FromJSONSerializer::fromJSONString ( *schema, schemaString );
+    if ( schemaHash.size ()) {
+        string schemaString = this->getSchemaString ();
+        if ( schemaString.size () > 0 ) {
+            FromJSONSerializer::fromJSONString ( *schema, schemaString );
+        }
     }
     return *schema;
 }
@@ -318,7 +320,7 @@ string AbstractLedger::getSchemaHash () const {
 //----------------------------------------------------------------//
 string AbstractLedger::getSchemaString () const {
 
-    return this->getValue < string >( keyFor_schema ());
+    return this->getValueOrFallback < string >( keyFor_schema (), "" );
 }
 
 //----------------------------------------------------------------//
