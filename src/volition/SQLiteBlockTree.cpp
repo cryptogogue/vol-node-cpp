@@ -202,13 +202,20 @@ void SQLiteBlockTree::setBranchStatus ( int nodeID, const Digest& parentDigest, 
     set < int > queue;
     queue.insert ( nodeID );
     
-    while ( queue.size ()) {
+    if ( queue.size ()) {
+    
+        this->mDB.beginTransaction ();
+    
+        while ( queue.size ()) {
+            
+            set < int >::iterator queueIt = queue.begin ();
+            nodeID = *queueIt;
+            queue.erase ( queueIt );
+            
+            this->setBranchStatusInner ( nodeID, status, queue );
+        }
         
-        set < int >::iterator queueIt = queue.begin ();
-        nodeID = *queueIt;
-        queue.erase ( queueIt );
-        
-        this->setBranchStatusInner ( nodeID, status, queue );
+        this->mDB.commitTransaction ();
     }
 }
 

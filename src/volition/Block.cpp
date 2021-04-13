@@ -56,6 +56,8 @@ void Block::affirmHash () {
 
 //----------------------------------------------------------------//
 LedgerResult Block::apply ( AbstractLedger& ledger, VerificationPolicy policy ) const {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_BLOCK, INFO, __PRETTY_FUNCTION__ );
 
     if ( ledger.getVersion () != this->mHeight ) return "Apply block: height/version mismatch.";
     
@@ -143,6 +145,8 @@ LedgerResult Block::apply ( AbstractLedger& ledger, VerificationPolicy policy ) 
 //----------------------------------------------------------------//
 LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPolicy policy, size_t& nextMaturity ) const {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_BLOCK, INFO, __PRETTY_FUNCTION__ );
+
     if ( !this->mBody ) return false;
 
     nextMaturity = this->mHeight;
@@ -156,6 +160,8 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
     size_t transferTax      = 0;
 
     if ( ledger.getVersion () >= this->mHeight ) {
+        
+        LGN_LOG_SCOPE ( VOL_FILTER_BLOCK, INFO, "Apply transactions" );
         
         // apply block transactions.
         for ( size_t i = 0; i < this->mBody->mTransactions.size (); ++i ) {
@@ -180,36 +186,45 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
     
     if ( accountODBM ) {
     
-        ledger.invokeReward ( this->mMinerID, this->mBody->mReward, this->mTime );
+        LGN_LOG_SCOPE ( VOL_FILTER_BLOCK, INFO, "Apply mining rewards" );
+    
+        {
+            LGN_LOG_SCOPE ( VOL_FILTER_BLOCK, INFO, "Invoke reward script" );
+            ledger.invokeReward ( this->mMinerID, this->mBody->mReward, this->mTime );
+        }
         
-        MonetaryPolicy monetaryPolicy = ledger.getMonetaryPolicy ();
+        {
+            LGN_LOG_SCOPE ( VOL_FILTER_BLOCK, INFO, "Apply monetary policy" );
         
-        u64 miningReward = 0;
-        u64 miningTax = 0;
-        
-        if ( monetaryPolicy.hasMiningReward ()) {
-        
-            LedgerFieldODBM < u64 > rewardPoolField ( ledger, Ledger::keyFor_rewardPool ());
-            u64 rewardPool = rewardPoolField.get ();
+            MonetaryPolicy monetaryPolicy = ledger.getMonetaryPolicy ();
             
-            if ( rewardPool ) {
+            u64 miningReward = 0;
+            u64 miningTax = 0;
+            
+            if ( monetaryPolicy.hasMiningReward ()) {
+            
+                LedgerFieldODBM < u64 > rewardPoolField ( ledger, Ledger::keyFor_rewardPool ());
+                u64 rewardPool = rewardPoolField.get ();
                 
-                u64 grossMiningReward   = monetaryPolicy.calculateMiningReward ( rewardPool );
-                miningTax               = monetaryPolicy.calculateMiningRewardTax ( grossMiningReward );
-                
-                rewardPoolField.set ( rewardPool - grossMiningReward );
-                miningReward = grossMiningReward - miningTax;
+                if ( rewardPool ) {
+                    
+                    u64 grossMiningReward   = monetaryPolicy.calculateMiningReward ( rewardPool );
+                    miningTax               = monetaryPolicy.calculateMiningRewardTax ( grossMiningReward );
+                    
+                    rewardPoolField.set ( rewardPool - grossMiningReward );
+                    miningReward = grossMiningReward - miningTax;
+                }
             }
+            
+            u64 minerProfit = miningReward + gratuity;
+            if ( minerProfit > 0 ) {
+                Account accountUpdated = *accountODBM.mBody.get ();
+                accountUpdated.mBalance += minerProfit - profitShare;
+                accountODBM.mBody.set ( accountUpdated );
+            }
+            
+            ledger.payout ( miningTax + transferTax + profitShare );
         }
-        
-        u64 minerProfit = miningReward + gratuity;
-        if ( minerProfit > 0 ) {
-            Account accountUpdated = *accountODBM.mBody.get ();
-            accountUpdated.mBalance += minerProfit - profitShare;
-            accountODBM.mBody.set ( accountUpdated );
-        }
-        
-        ledger.payout ( miningTax + transferTax + profitShare );
     }
 
     accountODBM.mMinerBlockCount.set ( accountODBM.mMinerBlockCount.get ( 0 ) + 1 );

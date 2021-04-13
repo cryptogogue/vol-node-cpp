@@ -369,8 +369,22 @@ int main ( int argc, char** argv ) {
     setvbuf ( stdout, NULL, _IOLBF, 0 );
     setvbuf ( stderr, NULL, _IOLBF, 0 );
 
-    Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
-    Lognosis::setFilter ( PDM_FILTER_SQLITE, Lognosis::MAX );
+    Lognosis::setFilter ( PDM_FILTER_ROOT,                      Lognosis::OFF );
+    Lognosis::setFilter ( PDM_FILTER_SQLITE,                    Lognosis::OFF );
+    
+//    Lognosis::setFilter ( VOL_FILTER_APP,                       Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_BLOCK,                     Lognosis::OFF );
+//    Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 Lognosis::OFF );
+    
+    Lognosis::setFilter ( VOL_FILTER_HTTP,                      Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_JSON,                      Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_LEDGER,                    Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_LUA,                       Lognosis::OFF );
+    
+//    Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             Lognosis::OFF );
+//    Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      Lognosis::OFF );
+//    Lognosis::setFilter ( VOL_FILTER_QUEUE,                     Lognosis::OFF );
+    
     Lognosis::init ( argc, argv );
 
     sApp = make_shared < ServerApp >();

@@ -175,18 +175,29 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 
     list < BlockTreeCursor > stack;
 
-    while ( !ledgerCursor.equals ( branch )) {
-    
-        if ( branch.isComplete ()) {
-            stack.push_front ( branch );
+    {
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Building block stack." );
+        
+        while ( !ledgerCursor.equals ( branch )) {
+        
+            if ( branch.isComplete ()) {
+                stack.push_front ( branch );
+            }
+            branch = branch.getParent ();
         }
-        branch = branch.getParent ();
     }
 
-    list < BlockTreeCursor >::iterator stackIt = stack.begin ();
-    for ( ; stackIt != stack.end (); ++stackIt ) {
-        this->pushBlock ( stackIt->getBlock ());
-        assert (( *this->mLedgerTag ).equals ( *stackIt ));
+    {
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Applying block stack." );
+    
+        LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "Block stack height: %d", ( int )stack.size ());
+    
+        list < BlockTreeCursor >::iterator stackIt = stack.begin ();
+        for ( size_t i = 0; stackIt != stack.end (); ++stackIt, ++i ) {
+            LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Block: %d of %d", ( int )i, ( int )stack.size ());
+            this->pushBlock ( stackIt->getBlock ());
+            assert (( *this->mLedgerTag ).equals ( *stackIt ));
+        }
     }
 }
 
@@ -257,11 +268,13 @@ void Miner::getSnapshot ( MinerSnapshot& snapshot, MinerStatus& status ) {
 //----------------------------------------------------------------//
 BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     // if muted, no change is possible
     if ( this->mFlags & MINER_MUTE ) return tail;
 
     // first, see if we're authorized to mine. if we're not, then we can't change the branch, so return.
-    if ( !this->mIsMiner) return tail;
+    if ( !this->mIsMiner ) return tail;
 
     // height at which we became a miner (according to current working ledger) or the current miner info was updated.
     u64 minerHeight = this->mMinerHeight;
@@ -379,7 +392,7 @@ LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
     FileSys::createDirectories ( path );
 
     string hash = block->getDigest ().toHex ();
-    string primary = Format::write ( "%s/%s-%s", path.c_str (), PERSIST_PREFIX, hash.c_str ());
+    string primary = Format::write ( "%s/%s%s", path.c_str (), PERSIST_PREFIX, hash.c_str ());
     
     this->mLedgerFilename = Format::write ( "%s.db", primary.c_str ());
     this->mConfigFilename = Format::write ( "%s-config.json", primary.c_str ());
@@ -389,7 +402,7 @@ LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
     try {
         this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
         this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
-        this->mPersistenceProvider  = SQLiteStringStore::make ( this->mLedgerFilename );
+        this->mPersistenceProvider  = SQLitePersistenceProvider::make ( this->mLedgerFilename );
     }
     catch ( SQLiteBlockTreeUnsupportedVersionException ) {
     

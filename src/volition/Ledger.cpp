@@ -280,24 +280,31 @@ time_t AbstractLedger::getRewriteWindowInSeconds () const {
 //----------------------------------------------------------------//
 const Schema& AbstractLedger::getSchema () const {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     if ( !this->mSchemaCache ) {
-        this->mSchemaCache = make_shared < map < string, Schema >>();
+        this->mSchemaCache = make_shared < map < string, shared_ptr < const Schema >>>();
     }
-    map < string, Schema >& schemaCache = *this->mSchemaCache;
+    map < string, shared_ptr < const Schema >>& schemaCache = *this->mSchemaCache;
     
     string schemaHash = this->getSchemaHash ();
     
-    map < string, Schema >::const_iterator schemaIt = schemaCache.find ( schemaHash );
+    map < string, shared_ptr < const Schema >>::const_iterator schemaIt = schemaCache.find ( schemaHash );
     if ( schemaIt != schemaCache.cend ()) {
-        return schemaIt->second;
+        LGN_LOG ( VOL_FILTER_LEDGER, INFO, "Found in cache" );
+        return *schemaIt->second;
     }
     
-    Schema& schema = schemaCache [ schemaHash ];
+    LGN_LOG ( VOL_FILTER_LEDGER, INFO, "Loading schema" );
+
+    shared_ptr < Schema > schema = make_shared < Schema >();
+    schemaCache [ schemaHash ] = schema;
+
     string schemaString = this->getSchemaString ();
     if ( schemaString.size () > 0 ) {
-        FromJSONSerializer::fromJSONString ( schema, schemaString );
+        FromJSONSerializer::fromJSONString ( *schema, schemaString );
     }
-    return schema;
+    return *schema;
 }
 
 //----------------------------------------------------------------//
@@ -439,8 +446,12 @@ string AbstractLedger::printChain ( const char* pre, const char* post ) const {
 //----------------------------------------------------------------//
 LedgerResult AbstractLedger::pushBlock ( const Block& block, Block::VerificationPolicy policy ) {
 
+    // make sure there's a current schema cache
+    this->getSchema ();
+
     Ledger fork;
     fork.takeSnapshot ( *this );
+    fork.mSchemaCache = this->mSchemaCache; // TODO: this this later
 
     LedgerResult result = block.apply ( fork, policy );
 
@@ -540,9 +551,9 @@ void AbstractLedger::setSchema ( const Schema& schema ) {
     this->setValue < string >( AbstractLedger::keyFor_schemaHash (), schemaHash );
     
     if ( !this->mSchemaCache ) {
-        this->mSchemaCache = make_shared < map < string, Schema >>();
+        this->mSchemaCache = make_shared < map < string, shared_ptr < const Schema >>>();
     }
-    ( *this->mSchemaCache )[ schemaHash ] = schema;
+    ( *this->mSchemaCache )[ schemaHash ] = make_shared < Schema >( schema );
 }
 
 //----------------------------------------------------------------//

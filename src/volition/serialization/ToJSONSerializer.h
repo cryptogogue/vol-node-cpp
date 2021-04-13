@@ -179,6 +179,8 @@ public:
     //----------------------------------------------------------------//
     static void toDigest ( const AbstractSerializable& serializable, std::ostream& outStream ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         ToJSONSerializer serializer;
         serializer.mIsDigest = true;
         serializable.serializeTo ( serializer );
@@ -189,6 +191,8 @@ public:
     //----------------------------------------------------------------//
     static string toDigestString ( const AbstractSerializable& serializable ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         stringstream strStream;
         ToJSONSerializer::toDigest ( serializable, strStream );
         return strStream.str ();
@@ -197,6 +201,8 @@ public:
     //----------------------------------------------------------------//
     static Poco::Dynamic::Var toJSON ( const AbstractSerializable& serializable ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         ToJSONSerializer serializer;
         serializable.serializeTo ( serializer );
         return serializer;
@@ -204,6 +210,8 @@ public:
 
     //----------------------------------------------------------------//
     static void toJSON ( const AbstractSerializable& serializable, ostream& outStream, unsigned int indent = 4, int step = -1 ) {
+
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
 
         Poco::Dynamic::Var json = toJSON ( serializable );
         Poco::JSON::Stringifier ().stringify ( json, outStream, indent, step );
@@ -221,6 +229,8 @@ public:
     //----------------------------------------------------------------//
     static void toJSONFile ( const AbstractSerializable& serializable, string filename, unsigned int indent = 4, int step = -1 ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         fstream outStream;
         outStream.open ( filename, ios_base::out );
         ToJSONSerializer::toJSON ( serializable, outStream, indent, step );
@@ -229,6 +239,8 @@ public:
     
     //----------------------------------------------------------------//
     static string toJSONString ( const AbstractSerializable& serializable, unsigned int indent = 0, int step = -1 ) {
+
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
 
         stringstream strStream;
         ToJSONSerializer::toJSON ( serializable, strStream, indent, step );

@@ -246,6 +246,8 @@ public:
     //----------------------------------------------------------------//
     static void fromJSON ( AbstractSerializable& serializable, const Poco::JSON::Array& array ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         FromJSONSerializer serializer;
         serializer.mArray = &array;
         serializable.serializeFrom ( serializer );
@@ -254,6 +256,8 @@ public:
     //----------------------------------------------------------------//
     static void fromJSON ( AbstractSerializable& serializable, const Poco::JSON::Object& object ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         FromJSONSerializer serializer;
         serializer.mObject = &object;
         serializable.serializeFrom ( serializer );
@@ -261,6 +265,8 @@ public:
 
     //----------------------------------------------------------------//
     static void fromJSON ( AbstractSerializable& serializable, const Poco::Dynamic::Var& var ) {
+
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
 
         if ( var.type () == typeid ( Poco::JSON::Object::Ptr )) {
             Poco::JSON::Object::Ptr object = var.extract < Poco::JSON::Object::Ptr >();
@@ -275,6 +281,8 @@ public:
     //----------------------------------------------------------------//
     static void fromJSON ( AbstractSerializable& serializable, istream& inStream ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         Poco::JSON::Parser parser;
         Poco::Dynamic::Var result = parser.parse ( inStream );
         
@@ -284,6 +292,8 @@ public:
     //----------------------------------------------------------------//
     static void fromJSONFile ( AbstractSerializable& serializable, string filename ) {
 
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
+
         fstream inStream;
         inStream.open ( filename, ios_base::in );
         FromJSONSerializer::fromJSON ( serializable, inStream );
@@ -292,6 +302,8 @@ public:
 
     //----------------------------------------------------------------//
     static void fromJSONString ( AbstractSerializable& serializable, string json ) {
+
+        LGN_LOG_SCOPE ( VOL_FILTER_JSON, INFO, __PRETTY_FUNCTION__ );
 
         istringstream str ( json );
         FromJSONSerializer::fromJSON ( serializable, str );

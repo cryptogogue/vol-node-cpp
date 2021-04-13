@@ -24,6 +24,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inventoryNonce, const list < AssetBase >& assets, InventoryLogEntry& logEntry ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     size_t quantity = assets.size ();
     if ( quantity == 0 ) return true;
 
@@ -67,6 +69,8 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     if ( quantity == 0 ) return true;
 
     AbstractLedger& ledger = this->getLedger ();
@@ -100,6 +104,8 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, string assetType, size_t quantity, time_t time ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
@@ -117,6 +123,8 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, string assetTy
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, const list < AssetBase >& assets, time_t time ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
@@ -133,6 +141,8 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountID accountID, const list < A
 
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssetsAll ( AccountID accountID, size_t quantity, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
     AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
@@ -155,6 +165,8 @@ LedgerResult Ledger_Inventory::awardAssetsAll ( AccountID accountID, size_t quan
 
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardAssetsRandom ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
     AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
@@ -230,6 +242,8 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( AccountID accountID, string d
 
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
     AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
@@ -322,6 +336,8 @@ map < string, size_t > Ledger_Inventory::getInventoryHistogram ( AccountID accou
 //----------------------------------------------------------------//
 bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string fieldName, time_t time ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();
 
@@ -364,6 +380,8 @@ bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string field
 
 //----------------------------------------------------------------//
 bool Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
     AbstractLedger& ledger = this->getLedger ();
 
@@ -409,6 +427,8 @@ bool Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::setAssetFieldValue ( AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
     AssetODBM assetODBM ( this->getLedger (), index );
     if ( assetODBM.mAssetID == AssetID::NULL_INDEX ) return "No such account.";
     
@@ -421,6 +441,8 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( AssetID::Index index, string
 
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, AccountID receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
     
     AbstractLedger& ledger = this->getLedger ();
     
@@ -517,6 +539,8 @@ void Ledger_Inventory::updateInventory ( AssetODBM& assetODBM, time_t time, Inve
 
 //----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::upgradeAssets ( AccountID accountID, const map < string, string >& upgrades, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
     AbstractLedger& ledger = this->getLedger ();
     const Schema& schema = ledger.getSchema ();

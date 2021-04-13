@@ -166,6 +166,8 @@ string _to_string ( lua_State* L, int idx ) {
 int LuaContext::_awardAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+    
     string accountName      = _to_string ( L, 1 );
     string assetType        = _to_string ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
@@ -182,6 +184,8 @@ int LuaContext::_awardAsset ( lua_State* L ) {
 int LuaContext::_awardDeck ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+    
     string accountName      = _to_string ( L, 1 );
     string setOrDeckName    = _to_string ( L, 2 );
 
@@ -197,6 +201,8 @@ int LuaContext::_awardDeck ( lua_State* L ) {
 int LuaContext::_awardVOL ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+    
     string accountName      = _to_string ( L, 1 );
     size_t amount           = ( size_t )lua_tointeger ( L, 2 );
 
@@ -210,6 +216,8 @@ int LuaContext::_awardVOL ( lua_State* L ) {
 //----------------------------------------------------------------//
 int LuaContext::_getDefinitionField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
     string definitionName   = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
@@ -253,6 +261,8 @@ int LuaContext::_getEntropy ( lua_State* L ) {
 int LuaContext::_randomAward ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     string accountName      = _to_string ( L, 1 );
     string setOrDeckName    = _to_string ( L, 2 );
     string seed             = _to_string ( L, 3 );
@@ -271,6 +281,8 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     AbstractLedger& ledger = self.mLedger;
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     string assetID          = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
 
@@ -286,6 +298,8 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     AbstractLedger& ledger = self.mLedger;
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     string assetID          = lua_tostring ( L, 1 );
 
     AssetID::Index assetindex = self.checkAssetID ( assetID );
@@ -299,6 +313,8 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
 int LuaContext::_setAssetField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     AbstractLedger& ledger = self.mLedger;
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
     string assetID          = _to_string ( L, 1 );
     string fieldName        = _to_string ( L, 2 );
@@ -432,6 +448,8 @@ AssetFieldDefinition LuaContext::checkDefinitionField ( const AssetDefinition& d
 //----------------------------------------------------------------//
 LedgerResult LuaContext::compile ( string lua ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     luaL_loadbuffer ( this->mLuaState, lua.c_str (), lua.size (), "main" );
     return _lua_call ( this->mLuaState, 0, 0 );
 }
@@ -449,6 +467,8 @@ LuaContext& LuaContext::getSelf ( lua_State* L ) {
 
 //----------------------------------------------------------------//
 LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method, const AssetMethodInvocation& invocation ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
     LedgerResult result = this->compile ( method.mLua );
     if ( !result ) return result;
@@ -500,6 +520,8 @@ LedgerResult LuaContext::invoke ( string accountName, const AssetMethod& method,
 //----------------------------------------------------------------//
 LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
     const Schema& schema = this->mLedger->getSchema ();
 
     const MiningReward* reward = schema.getRewardOrNull ( rewardName );
@@ -526,9 +548,13 @@ LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
     lua_pushnumber ( this->mLuaState, ( int )rewardCount ); // TODO: check for overflow
     lua_pushnumber ( this->mLuaState, ( int )reward->mQuantity ); // TODO: check for overflow
 
-    // call the method
-    this->mResult = true;
-    result = _lua_call ( this->mLuaState, 3, 0 );
+    {
+        LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, "Lua call" );
+        
+        // call the method
+        this->mResult = true;
+        result = _lua_call ( this->mLuaState, 3, 0 );
+    }
     
     if ( result && this->mResult ) {
         rewardCountField.set ( rewardCount + 1 );
@@ -542,7 +568,11 @@ LuaContext::LuaContext ( ConstOpt < AbstractLedger > ledger, time_t time ) :
     mTime ( time ),
     mResult ( true ) {
     
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+    
     this->mLuaState = luaL_newstate ();
+    
+    lua_gc ( this->mLuaState, LUA_GCSTOP, 0 );
     
     // TODO: sandbox or omit this in release builds
     luaL_openlibs ( this->mLuaState );
@@ -568,12 +598,6 @@ LuaContext::~LuaContext () {
     
     lua_close ( this->mLuaState );
 }
-
-////----------------------------------------------------------------//
-//void LuaContext::miningReward ( AbstractLedger& ledger, string rewardName ) {
-//    UNUSED ( ledger );
-//    UNUSED ( rewardName );
-//}
 
 //----------------------------------------------------------------//
 void LuaContext::push ( const Asset& asset ) {

@@ -99,7 +99,7 @@ class AbstractLedger :
     public Ledger_Miner {
 protected:
 
-    mutable shared_ptr < map < string, Schema >> mSchemaCache;
+    mutable shared_ptr < map < string, shared_ptr < const Schema >>> mSchemaCache;
 
     //----------------------------------------------------------------//
     AbstractLedger&             AbstractLedgerComponent_getLedger           () override;

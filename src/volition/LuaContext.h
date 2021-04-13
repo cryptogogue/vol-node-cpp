@@ -59,8 +59,6 @@ public:
     LedgerResult            invoke                  ( string accountName, string rewardName );
                             LuaContext              ( ConstOpt < AbstractLedger > ledger, time_t time );
                             ~LuaContext             ();
-//    void                    miningReward            ( AbstractLedger& ledger, string rewardName );
-//    void                    publish                 ( AbstractLedger& ledger );
 };
 
 } // namespace Volition
