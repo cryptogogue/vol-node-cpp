@@ -67,62 +67,67 @@ class AccountODBM {
 private:
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_assetCount ( AssetID::Index index ) {
+    static LedgerKey keyFor_assetCount ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.assetCount", index ); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_body ( AssetID::Index index ) {
+    static LedgerKey keyFor_body ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d", index ); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_inventoryField ( AssetID::Index index, size_t position ) {
+    static LedgerKey keyFor_inventoryField ( AccountID::Index index, size_t position ) {
         return Format::write ( "account.%d.assets.%d", index, position );
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_inventoryLogEntry ( AssetID::Index index, u64 inventoryNonce ) {
+    static LedgerKey keyFor_inventoryLogEntry ( AccountID::Index index, u64 inventoryNonce ) {
         return Format::write ( "account.%d.inventoryLog.%d", index, inventoryNonce );
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_inventoryNonce ( AssetID::Index index ) {
+    static LedgerKey keyFor_inventoryNonce ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.inventoryNonce", index ); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_minerHeight ( AssetID::Index index ) {
+    static LedgerKey keyFor_minerHeight ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.minerHeight", index ); });
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_minerInfo ( AssetID::Index index ) {
+    static LedgerKey keyFor_minerInfo ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.miner", index ); });
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_minerBlockCount ( AssetID::Index index ) {
+    static LedgerKey keyFor_minerBlockCount ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.minerBLockCount", index ); });
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_minerRewardCount ( AccountID::Index index, string rewardName ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.minerRewardAcount.%s", index, rewardName.c_str ()); });
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_name ( AssetID::Index index ) {
+    static LedgerKey keyFor_name ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.name", index ); });
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionLogEntry ( AssetID::Index index, u64 nonce ) {
+    static LedgerKey keyFor_transactionLogEntry ( AccountID::Index index, u64 nonce ) {
         return Format::write ( "account.%d.transactionLookupByNonce.%d", index, nonce );
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionLookup ( AssetID::Index index, string uuid ) {
+    static LedgerKey keyFor_transactionLookup ( AccountID::Index index, string uuid ) {
         return Format::write ( "account.%d.transactionLookupByUUID.%s", index, uuid.c_str ());
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionNonce ( AssetID::Index index ) {
+    static LedgerKey keyFor_transactionNonce ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d.transactionNonce", index ); });
     }
 
@@ -200,6 +205,12 @@ public:
             return KeyAndPolicy ( key, policy );
         }
         return KeyAndPolicy ();
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerFieldODBM < u64 > getMinerRewardCountField ( string rewardName ) {
+    
+        return LedgerFieldODBM < u64 >( this->mLedger, keyFor_minerRewardCount ( this->mAccountID, rewardName ), 0 );
     }
     
     //----------------------------------------------------------------//

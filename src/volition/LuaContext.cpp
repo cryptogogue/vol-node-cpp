@@ -553,10 +553,16 @@ LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
     // push the account name
     lua_pushstring ( this->mLuaState, accountName.c_str ());
 
+    // push the reward counts
+    
+    LedgerFieldODBM < u64 > minerRewardCountField = accountODBM.getMinerRewardCountField ( rewardName );
+    u64 minerRewardCount = minerRewardCountField.get ( 0 );
+
     // push the reward count
     LedgerFieldODBM < u64 > rewardCountField ( this->mLedger, Ledger::keyFor_rewardCount ( rewardName ));
     u64 rewardCount = rewardCountField.get ( 0 );
     
+    lua_pushnumber ( this->mLuaState, ( int )minerRewardCount ); // TODO: check for overflow
     lua_pushnumber ( this->mLuaState, ( int )rewardCount ); // TODO: check for overflow
     lua_pushnumber ( this->mLuaState, ( int )reward->mQuantity ); // TODO: check for overflow
 
@@ -565,10 +571,11 @@ LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
         
         // call the method
         this->mResult = true;
-        result = _lua_call ( this->mLuaState, 3, 0 );
+        result = _lua_call ( this->mLuaState, 4, 0 );
     }
     
     if ( result && this->mResult ) {
+        minerRewardCountField.set ( minerRewardCount + 1 );
         rewardCountField.set ( rewardCount + 1 );
     }
     return result ? this->mResult : result;
