@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/Ledger.h>
+#include <volition/Psuedorandom.h>
 #include <volition/Schema.h>
 
 namespace Volition {
@@ -26,16 +27,20 @@ private:
     time_t                          mTime;
     lua_State*                      mLuaState;
     LedgerResult                    mResult;
+    Psuedorandom                    mPRNG;
 
     //----------------------------------------------------------------//
     static int              _awardAsset             ( lua_State* L );
     static int              _awardDeck              ( lua_State* L );
     static int              _awardVOL               ( lua_State* L );
-    static int              _getEntropy             ( lua_State* L );
+    static int              _getEntropyString       ( lua_State* L );
     static int              _getDefinitionField     ( lua_State* L );
     static int              _randomAward            ( lua_State* L );
+    static int              _randomDouble           ( lua_State* L );
+    static int              _randomInt32            ( lua_State* L );
     static int              _resetAssetField        ( lua_State* L );
     static int              _revokeAsset            ( lua_State* L );
+    static int              _seedRandom             ( lua_State* L );
     static int              _setAssetField          ( lua_State* L );
 
     //----------------------------------------------------------------//

@@ -380,7 +380,7 @@ int main ( int argc, char** argv ) {
     Lognosis::setFilter ( VOL_FILTER_HTTP,                      Lognosis::OFF );
     Lognosis::setFilter ( VOL_FILTER_JSON,                      Lognosis::OFF );
     Lognosis::setFilter ( VOL_FILTER_LEDGER,                    Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_LUA,                       Lognosis::OFF );
+//    Lognosis::setFilter ( VOL_FILTER_LUA,                       Lognosis::OFF );
     
 //    Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             Lognosis::OFF );
 //    Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      Lognosis::OFF );

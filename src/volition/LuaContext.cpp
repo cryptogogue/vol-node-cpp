@@ -75,9 +75,8 @@ int _print ( lua_State *L ) {
         str.append ( s );
         lua_pop ( L, 1 );  /* pop result */
     }
-//    str.append ( "\n" );
     
-    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "LUA: %s", str.c_str ());
+    LGN_LOG ( VOL_FILTER_LUA, INFO, "LUA: %s", str.c_str ());
     
     return 0;
 }
@@ -145,7 +144,7 @@ int _traceback ( lua_State* L ) {
 
     out.append ( "\n" );
     
-    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "LUA ERROR: %s", out.c_str ());
+    LGN_LOG ( VOL_FILTER_LUA, INFO, "LUA ERROR: %s", out.c_str ());
     lua_pushstring ( L, out.c_str ());
 
     return 1;
@@ -251,10 +250,14 @@ int LuaContext::_getDefinitionField ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
-int LuaContext::_getEntropy ( lua_State* L ) {
-    UNUSED ( L );
+int LuaContext::_getEntropyString ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
 
-    return 0;
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
+    string entropy = self.mLedger->getEntropyString ();
+    lua_pushstring ( L, entropy.c_str ());
+    return 1;
 }
 
 //----------------------------------------------------------------//
@@ -274,6 +277,28 @@ int LuaContext::_randomAward ( lua_State* L ) {
 
     self.setResult ( self.mLedger->awardAssetsRandom ( accountID, setOrDeckName, seed, quantity, self.mTime ));
     return 0;
+}
+
+//----------------------------------------------------------------//
+int LuaContext::_randomDouble ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
+    double random = self.mPRNG.randomDouble ();
+    lua_pushnumber ( L, random );
+    return 1;
+}
+
+//----------------------------------------------------------------//
+int LuaContext::_randomInt32 ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
+    u32 random = self.mPRNG.randomInt32 ();
+    lua_pushinteger ( L, random );
+    return 1;
 }
 
 //----------------------------------------------------------------//
@@ -306,6 +331,18 @@ int LuaContext::_revokeAsset ( lua_State* L ) {
     if ( assetindex == AssetID::NULL_INDEX ) return 0;
 
     self.setResult ( ledger.revokeAsset ( assetindex, self.mTime ));
+    return 0;
+}
+
+//----------------------------------------------------------------//
+int LuaContext::_seedRandom ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
+    string seedString = _to_string ( L, 1 );
+    self.mPRNG.seed ( seedString );
+
     return 0;
 }
 
@@ -566,15 +603,19 @@ LedgerResult LuaContext::invoke ( string accountName, string rewardName ) {
     lua_pushnumber ( this->mLuaState, ( int )rewardCount ); // TODO: check for overflow
     lua_pushnumber ( this->mLuaState, ( int )reward->mQuantity ); // TODO: check for overflow
 
+    bool didReward = false;
+
     {
         LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, "Lua call" );
         
         // call the method
         this->mResult = true;
-        result = _lua_call ( this->mLuaState, 4, 0 );
+        result = _lua_call ( this->mLuaState, 4, 1 );
+        didReward = lua_toboolean ( this->mLuaState, -1 );
+        lua_pop ( this->mLuaState, 1 );
     }
     
-    if ( result && this->mResult ) {
+    if ( result && this->mResult && didReward ) {
         minerRewardCountField.set ( minerRewardCount + 1 );
         rewardCountField.set ( rewardCount + 1 );
     }
@@ -593,18 +634,20 @@ LuaContext::LuaContext ( ConstOpt < AbstractLedger > ledger, time_t time ) :
     
     lua_gc ( this->mLuaState, LUA_GCSTOP, 0 );
     
-    // TODO: sandbox or omit this in release builds
     luaL_openlibs ( this->mLuaState );
     
     this->registerFunc ( "awardAsset",              _awardAsset );
     this->registerFunc ( "awardDeck",               _awardDeck );
     this->registerFunc ( "awardVOL",                _awardVOL );
-    this->registerFunc ( "getEntropy",              _getEntropy );
+    this->registerFunc ( "getEntropyString",        _getEntropyString );
     this->registerFunc ( "getDefinitionField",      _getDefinitionField );
     this->registerFunc ( "print",                   _print );
     this->registerFunc ( "randomAward",             _randomAward );
+    this->registerFunc ( "randomDouble",            _randomDouble );
+    this->registerFunc ( "randomInt32",             _randomInt32 );
     this->registerFunc ( "resetAssetField",         _resetAssetField );
     this->registerFunc ( "revokeAsset",             _revokeAsset );
+    this->registerFunc ( "seedRandom",              _seedRandom );
     this->registerFunc ( "setAssetField",           _setAssetField );
     
     // set the ledger

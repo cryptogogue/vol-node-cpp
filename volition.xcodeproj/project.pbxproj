@@ -280,6 +280,7 @@
 		CDAC9F2C262148BD00DCA201 /* TransactionQueueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F2A262148BD00DCA201 /* TransactionQueueHandler.h */; };
 		CDAC9F352621E05A00DCA201 /* DebugHTTPEchoHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */; };
 		CDAC9F3B2622E74000DCA201 /* TransactionHistoryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F392622E74000DCA201 /* TransactionHistoryHandler.h */; };
+		CDAC9F76262A35B400DCA201 /* Psuedorandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F74262A35B400DCA201 /* Psuedorandom.h */; };
 		CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD94332470A8A0003FD2CC /* SerializableTime.h */; };
 		CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD9436247138B0003FD2CC /* ReserveAccountName.h */; };
 		CDAF1AE2254FEF1E00CF1010 /* Ledger_Dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */; };
@@ -1078,6 +1079,7 @@
 		CDAC9F2A262148BD00DCA201 /* TransactionQueueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueueHandler.h; path = "src/volition/web-miner-api/TransactionQueueHandler.h"; sourceTree = "<group>"; };
 		CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugHTTPEchoHandler.h; path = "src/volition/web-miner-api/DebugHTTPEchoHandler.h"; sourceTree = "<group>"; };
 		CDAC9F392622E74000DCA201 /* TransactionHistoryHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHistoryHandler.h; path = "src/volition/web-miner-api/TransactionHistoryHandler.h"; sourceTree = "<group>"; };
+		CDAC9F74262A35B400DCA201 /* Psuedorandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Psuedorandom.h; path = src/volition/Psuedorandom.h; sourceTree = "<group>"; };
 		CDAD94332470A8A0003FD2CC /* SerializableTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableTime.h; path = src/volition/serialization/SerializableTime.h; sourceTree = "<group>"; };
 		CDAD9436247138B0003FD2CC /* ReserveAccountName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReserveAccountName.h; path = src/volition/transactions/ReserveAccountName.h; sourceTree = "<group>"; };
 		CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Dump.cpp; path = src/volition/Ledger_Dump.cpp; sourceTree = "<group>"; };
@@ -1564,6 +1566,7 @@
 				CD36663720F595B2000E0B43 /* FNV1a.h */,
 				CDA1573E23FAA92300DFACCF /* Munge.cpp */,
 				CDA1573F23FAA92300DFACCF /* Munge.h */,
+				CDAC9F74262A35B400DCA201 /* Psuedorandom.h */,
 				CD9941F525F7E60100524DB6 /* ScopedProfile.h */,
 				CD0C3E2020C25AF5006E3B1C /* Singleton.h */,
 				CD2000442548CC9200DEB809 /* UnsecureRandom.h */,
@@ -2140,6 +2143,7 @@
 				CD9941F725F7E60100524DB6 /* ScopedProfile.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
 				CD9C395D261D876B00AE8782 /* VisageHandler.h in Headers */,
+				CDAC9F76262A35B400DCA201 /* Psuedorandom.h in Headers */,
 				CD7751E6252FE41C00A53765 /* ConsensusBlockDetailsHandler.h in Headers */,
 				CD63A1BB22AB27FD00D5C801 /* SerializableVectorOrSingle.h in Headers */,
 				CDAA38ED251ACBD300FEAFB5 /* AbstractScenario.h in Headers */,

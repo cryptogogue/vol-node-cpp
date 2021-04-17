@@ -124,8 +124,6 @@ DONE: node - make sure transactions can be resubmitted with new gratuity
 DONE: node - alert users when their transactions are declined for insufficient gratuity
 DONE: node - setup guide
 
-
-
 ----------------------------------------------------------------
 OPEN BETA
 
@@ -140,9 +138,10 @@ DONE: node - implement transaction history endpoint
 DONE: wallet - add transaction history diagnostic
 DONE: wallet - preview provisioned account name when sponsoring an account
 DONE: wallet - embed genesis hash in new account requests (and check against correct genesis)
+DONE: bot - make a discord bot to provision accounts and register miners
 
 node - implement account lookup by name, index or key (from same endpoint)
-node - refactor miner multithread access
+node - refactor miner resource multithread access
 node - add mutex and accessor for transaction queue
 
 node - implement TOS (user and miner)
@@ -154,7 +153,19 @@ mining - chain visualization endpoint
 
 node - support genesis block ledger import with updated schema
 
-bot - make a discord bot to provision accounts and register miners
+----------------------------------------------------------------
+PRE-LAUNCH
+
+node - auctioneer transaction (and prevent resale of inventory held in trust)
+wallet - auction service (headless, integrate with wallet)
+
+node - vol sales matchmaking
+
+identity - identity provisioning for miners
+
+ledger, wallet - art crafting and asset residuals
+
+ledger, wallet - asset sale transaction
 
 ----------------------------------------------------------------
 LAUNCH
@@ -203,13 +214,6 @@ node - record asset exchange metadata (inventory nonce, sender, note)
 
 node - VOLOPT (transaction fees)
 node - exercise option transaction (claim mining reward)
-
-----------------------------------------------------------------
-FUTURE (?)
-
-VOL:ETH
-VOL:ETH - onboarding
-VOL:ETH - bearer bond vs oracles
 
 ----------------------------------------------------------------
 MINING NETWORK

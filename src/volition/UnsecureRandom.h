@@ -55,7 +55,6 @@ public:
     
         this->mPRNG                     = mt19937 ( 0 );
         this->mUniformDistribution      = uniform_real_distribution < double >( 0, 1 );
-        
     }
 
     //----------------------------------------------------------------//
