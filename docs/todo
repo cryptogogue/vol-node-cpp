@@ -140,18 +140,13 @@ DONE: wallet - preview provisioned account name when sponsoring an account
 DONE: wallet - embed genesis hash in new account requests (and check against correct genesis)
 DONE: bot - make a discord bot to provision accounts and register miners
 
-node - implement account lookup by name, index or key (from same endpoint)
 node - refactor miner resource multithread access
 node - add mutex and accessor for transaction queue
-
 node - implement TOS (user and miner)
 
-mining - legal ToS
 mining - chain ToS (copyright/trademark inheritance)
 
-mining - chain visualization endpoint
-
-node - support genesis block ledger import with updated schema
+bot - link discord accounts to vol accounts
 
 ----------------------------------------------------------------
 PRE-LAUNCH
@@ -159,13 +154,13 @@ PRE-LAUNCH
 node - auctioneer transaction (and prevent resale of inventory held in trust)
 wallet - auction service (headless, integrate with wallet)
 
-node - vol sales matchmaking
+ledger, wallet - asset sale transaction
 
+mining - legal ToS
 identity - identity provisioning for miners
-
 ledger, wallet - art crafting and asset residuals
 
-ledger, wallet - asset sale transaction
+node - vol sales matchmaking
 
 ----------------------------------------------------------------
 LAUNCH
