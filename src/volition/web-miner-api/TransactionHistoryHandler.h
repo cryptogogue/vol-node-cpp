@@ -6,7 +6,7 @@
 
 #include <volition/AccountODBM.h>
 #include <volition/Block.h>
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/Transaction.h>
 #include <volition/TransactionStatus.h>
@@ -18,7 +18,7 @@ namespace WebMinerAPI {
 // TransactionHistoryHandler
 //================================================================//
 class TransactionHistoryHandler :
-    public BlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     static const size_t BATCH_SIZE = 4;
@@ -26,10 +26,12 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-        UNUSED ( ledger );
         UNUSED ( jsonIn );
+    
+        ScopedSharedMinerLedgerLock ledger ( miner );
+        ledger.seek ( this->optQuery ( "at", ledger.countBlocks ()));
     
         string accountName = this->getMatchString ( "accountName" );
         

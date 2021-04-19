@@ -3,6 +3,7 @@
 
 #include <volition/Block.h>
 #include <volition/Miner.h>
+#include <volition/MinerLocks.h>
 #include <volition/simulation/SimMiningMessenger.h>
 #include <volition/UnsecureRandom.h>
 
@@ -88,7 +89,7 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
     shared_ptr < SimMiner > miner = this->getMiner ( request );
     assert ( miner );
     
-    ScopedMinerLock scopedLock ( miner );
+    ScopedExclusiveMinerLock scopedLock ( miner );
     string minerID = miner->getMinerID ();
     
     if ( !miner->mActive ) {

@@ -8,7 +8,7 @@
 #include <volition/PayoutPolicy.h>
 #include <volition/TransactionFeeSchedule.h>
 #include <volition/Format.h>
-#include <volition/NonBlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
 
@@ -19,41 +19,40 @@ namespace WebMinerAPI {
 // DefaultHandler
 //================================================================//
 class DefaultHandler :
-    public NonBlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-                
-        const MinerSnapshot& snapshot   = this->mSnapshot;
-        const MinerStatus& status       = this->mStatus;
+        
+        ScopedSharedMinerStatusLock minerStatus ( miner );
                 
         jsonOut.set ( "type",                   "VOL_MINING_NODE" );
-        jsonOut.set ( "minerID",                snapshot.getMinerID ().c_str ());
-        jsonOut.set ( "isMiner",                this->mSnapshot.mIsMiner );
-        jsonOut.set ( "started",                ( string )( SerializableTime ( snapshot.getStartTime ())));
-        jsonOut.set ( "genesis",                status.mGenesisHash );
-        jsonOut.set ( "identity",               status.mIdentity );
-        jsonOut.set ( "schemaVersion",          ToJSONSerializer::toJSON ( status.mSchemaVersion ));
-        jsonOut.set ( "schemaHash",             status.mSchemaHash );
+        jsonOut.set ( "minerID",                minerStatus.getMinerID ().c_str ());
+        jsonOut.set ( "isMiner",                minerStatus.mIsMiner );
+        jsonOut.set ( "started",                ( string )( SerializableTime ( minerStatus.getStartTime ())));
+        jsonOut.set ( "genesis",                minerStatus.mGenesisHash );
+        jsonOut.set ( "identity",               minerStatus.mIdentity );
+        jsonOut.set ( "schemaVersion",          ToJSONSerializer::toJSON ( minerStatus.mSchemaVersion ));
+        jsonOut.set ( "schemaHash",             minerStatus.mSchemaHash );
         jsonOut.set ( "build",                  Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
         jsonOut.set ( "commit",                 Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
-        jsonOut.set ( "minGratuity",            status.mMinimumGratuity );
-        jsonOut.set ( "reward",                 status.mReward );
-        jsonOut.set ( "totalBlocks",            status.mTotalBlocks );
-        jsonOut.set ( "minerBlocks",            status.mMinerBlockCount );
-        jsonOut.set ( "feeSchedule",            ToJSONSerializer::toJSON ( status.mFeeSchedule ));
-        jsonOut.set ( "monetaryPolicy",         ToJSONSerializer::toJSON ( status.mMonetaryPolicy ));
-        jsonOut.set ( "payoutPolicy",           ToJSONSerializer::toJSON ( status.mPayoutPolicy ));
+        jsonOut.set ( "minGratuity",            minerStatus.mMinimumGratuity );
+        jsonOut.set ( "reward",                 minerStatus.mReward );
+        jsonOut.set ( "totalBlocks",            minerStatus.mTotalBlocks );
+        jsonOut.set ( "minerBlocks",            minerStatus.mMinerBlockCount );
+        jsonOut.set ( "feeSchedule",            ToJSONSerializer::toJSON ( minerStatus.mFeeSchedule ));
+        jsonOut.set ( "monetaryPolicy",         ToJSONSerializer::toJSON ( minerStatus.mMonetaryPolicy ));
+        jsonOut.set ( "payoutPolicy",           ToJSONSerializer::toJSON ( minerStatus.mPayoutPolicy ));
 
-        jsonOut.set ( "rewardPool",             status.mRewardPool );
-        jsonOut.set ( "prizePool",              status.mPrizePool );
-        jsonOut.set ( "payoutPool",             status.mPayoutPool );
-        jsonOut.set ( "vol",                    status.mVOL );
+        jsonOut.set ( "rewardPool",             minerStatus.mRewardPool );
+        jsonOut.set ( "prizePool",              minerStatus.mPrizePool );
+        jsonOut.set ( "payoutPool",             minerStatus.mPayoutPool );
+        jsonOut.set ( "vol",                    minerStatus.mVOL );
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

@@ -4,7 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_TESTEXCEPTIONS_H
 #define VOLITION_WEBMINERAPI_TESTEXCEPTIONS_H
 
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -13,15 +13,15 @@ namespace WebMinerAPI {
 // TestExceptions
 //================================================================//
 class TestExceptions :
-    public BlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-        UNUSED ( ledger );
+        UNUSED ( miner );
         UNUSED ( jsonIn );
         UNUSED ( jsonOut );
 

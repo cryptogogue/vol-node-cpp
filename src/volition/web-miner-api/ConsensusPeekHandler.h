@@ -6,7 +6,7 @@
 
 #include <volition/Block.h>
 #include <volition/TheTransactionBodyFactory.h>
-#include <volition/SemiBlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -15,7 +15,7 @@ namespace WebMinerAPI {
 // ConsensusPeekHandler
 //================================================================//
 class ConsensusPeekHandler :
-    public SemiBlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     static const size_t HEADER_BATCH_SIZE = 32;
@@ -38,12 +38,16 @@ public:
     }
 
     //----------------------------------------------------------------//
-    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-                    
-        jsonOut.set ( "minerID", this->mSnapshot.getMinerID ());
-        jsonOut.set ( "isMiner", this->mSnapshot.mIsMiner );
+ 
+        ScopedSharedMinerLedgerLock ledger ( miner );
+        ledger.seek ( this->optQuery ( "at", ledger.countBlocks ()));
+ 
+        ScopedSharedMinerStatusLock minerStatus ( miner );
+        jsonOut.set ( "minerID", minerStatus.getMinerID ());
+        jsonOut.set ( "isMiner", minerStatus.mIsMiner );
         
         size_t totalBlocks = ledger.countBlocks ();
         jsonOut.set ( "totalBlocks", totalBlocks );
@@ -55,7 +59,7 @@ public:
         
         if ( sampleMiners ) {
         
-            set < string > minerURLs = this->mSnapshot.sampleOnlineMinerURLs ( sampleMiners );
+            set < string > minerURLs = minerStatus.sampleOnlineMinerURLs ( sampleMiners );
             Poco::JSON::Array::Ptr minerURLsJSON = new Poco::JSON::Array ();
         
             set < string >::const_iterator urlIt = minerURLs.cbegin ();

@@ -152,8 +152,9 @@ protected:
     friend class BlockSearch;
     friend class RemoteMiner;
 
-    friend class ScopedMinerLock;
-    friend class ScopedMinerLedgerLock;
+    friend class ScopedExclusiveMinerLock;
+    friend class ScopedSharedMinerLock;
+    friend class ScopedSharedMinerLedgerLock;
 
     static constexpr const char* PERSIST_PREFIX     = "v4-beta-";
     static constexpr const char* MASTER_BRANCH      = "master";
@@ -250,6 +251,7 @@ public:
     GET ( const AbstractBlockTree&,                         BlockTree,                  *mBlockTree )
     GET ( const Ledger&,                                    Ledger,                     *mLedger )
     GET ( BlockTreeCursor,                                  LedgerTag,                  mLedgerTag.getCursor ())
+    GET ( const LockedLedger&,                              LockedLedger,               mLockedLedger )
     GET ( u64,                                              MinimumGratuity,            mConfig.mMinimumGratuity )
     GET ( string,                                           Reward,                     mConfig.mReward )
     GET ( TransactionQueue&,                                TransactionQueue,           *mTransactionQueue )
@@ -271,7 +273,7 @@ public:
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
     Ledger                              getLedgerAtBlock            ( u64 index ) const;
-    void                                getSnapshot                 ( MinerSnapshot& snapshot, MinerStatus& status );
+    void                                getSnapshot                 ( MinerSnapshot* snapshot = NULL, MinerStatus* status = NULL );
     bool                                isLazy                      () const;
     static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
     void                                loadKey                     ( string keyfile, string password = "" );
@@ -290,55 +292,6 @@ public:
     void                                setVerbose                  ( bool verbose = true );
     void                                shutdown                    ( bool kill = false );
     void                                step                        ( time_t now );
-};
-
-//================================================================//
-// ScopedMinerLock
-//================================================================//
-class ScopedMinerLock {
-private:
-
-    shared_ptr < Miner >                mMiner;
-
-public:
-
-    //----------------------------------------------------------------//
-    ScopedMinerLock ( shared_ptr < Miner > miner ) :
-        mMiner ( miner ) {
-        this->mMiner->mMutex.lock ();
-    }
-    
-    //----------------------------------------------------------------//
-    ~ScopedMinerLock () {
-        this->mMiner->mMutex.unlock ();
-    }
-};
-
-//================================================================//
-// ScopedMinerLedgerLock
-//================================================================//
-class ScopedMinerLedgerLock {
-private:
-
-    shared_ptr < Miner >                mMiner;
-
-public:
-
-    //----------------------------------------------------------------//
-    LockedLedger& getImmutableLedger () {
-        return this->mMiner->mLockedLedger;
-    }
-
-    //----------------------------------------------------------------//
-    ScopedMinerLedgerLock ( shared_ptr < Miner > miner ) :
-        mMiner ( miner ) {
-        this->mMiner->mLockedLedgerMutex.lock_shared ();
-    }
-    
-    //----------------------------------------------------------------//
-    ~ScopedMinerLedgerLock () {
-        this->mMiner->mLockedLedgerMutex.unlock_shared ();
-    }
 };
 
 } // namespace Volition

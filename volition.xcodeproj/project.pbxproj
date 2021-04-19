@@ -235,12 +235,9 @@
 		CD99420025F85F1600524DB6 /* SQLiteConsensusInspector.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9941FE25F85F1600524DB6 /* SQLiteConsensusInspector.h */; };
 		CD99420125F85F1600524DB6 /* SQLiteConsensusInspector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9941FF25F85F1600524DB6 /* SQLiteConsensusInspector.cpp */; };
 		CD99420825F9303900524DB6 /* AbstractMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */; };
-		CD99421825FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99421625FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h */; };
-		CD99421925FC492800524DB6 /* BlockingMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99421725FC492800524DB6 /* BlockingMinerAPIRequestHandler.h */; };
 		CD99422625FEAD3C00524DB6 /* BlockSearchPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */; };
 		CD99422725FEAD3C00524DB6 /* BlockSearchPool.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */; };
 		CD9C391E26149F5E00AE8782 /* VersionTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C391C26149F5E00AE8782 /* VersionTree.h */; };
-		CD9C3932261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */; };
 		CD9C395D261D876B00AE8782 /* VisageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C395B261D876B00AE8782 /* VisageHandler.h */; };
 		CD9C395F261DB36700AE8782 /* UpdateMinerInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9C395E261DB36700AE8782 /* UpdateMinerInfo.h */; };
 		CD9E7BA124FF67C30065C5FC /* InMemoryBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */; };
@@ -281,6 +278,7 @@
 		CDAC9F352621E05A00DCA201 /* DebugHTTPEchoHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */; };
 		CDAC9F3B2622E74000DCA201 /* TransactionHistoryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F392622E74000DCA201 /* TransactionHistoryHandler.h */; };
 		CDAC9F76262A35B400DCA201 /* Psuedorandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F74262A35B400DCA201 /* Psuedorandom.h */; };
+		CDAC9F7A262B4F9400DCA201 /* MinerLocks.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F79262B4F9400DCA201 /* MinerLocks.h */; };
 		CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD94332470A8A0003FD2CC /* SerializableTime.h */; };
 		CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD9436247138B0003FD2CC /* ReserveAccountName.h */; };
 		CDAF1AE2254FEF1E00CF1010 /* Ledger_Dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */; };
@@ -1041,12 +1039,9 @@
 		CD9941FE25F85F1600524DB6 /* SQLiteConsensusInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLiteConsensusInspector.h; path = src/volition/SQLiteConsensusInspector.h; sourceTree = "<group>"; };
 		CD9941FF25F85F1600524DB6 /* SQLiteConsensusInspector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteConsensusInspector.cpp; path = src/volition/SQLiteConsensusInspector.cpp; sourceTree = "<group>"; };
 		CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractMinerAPIRequestHandler.h; path = src/volition/AbstractMinerAPIRequestHandler.h; sourceTree = "<group>"; };
-		CD99421625FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NonBlockingMinerAPIRequestHandler.h; path = src/volition/NonBlockingMinerAPIRequestHandler.h; sourceTree = "<group>"; };
-		CD99421725FC492800524DB6 /* BlockingMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockingMinerAPIRequestHandler.h; path = src/volition/BlockingMinerAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockSearchPool.cpp; path = src/volition/BlockSearchPool.cpp; sourceTree = "<group>"; };
 		CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockSearchPool.h; path = src/volition/BlockSearchPool.h; sourceTree = "<group>"; };
 		CD9C391C26149F5E00AE8782 /* VersionTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionTree.h; path = src/volition/VersionTree.h; sourceTree = "<group>"; };
-		CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SemiBlockingMinerAPIRequestHandler.h; path = src/volition/SemiBlockingMinerAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD9C395B261D876B00AE8782 /* VisageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisageHandler.h; path = "src/volition/web-miner-api/VisageHandler.h"; sourceTree = "<group>"; };
 		CD9C395E261DB36700AE8782 /* UpdateMinerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdateMinerInfo.h; path = src/volition/transactions/UpdateMinerInfo.h; sourceTree = "<group>"; };
 		CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InMemoryBlockTree.cpp; path = src/volition/InMemoryBlockTree.cpp; sourceTree = "<group>"; };
@@ -1080,6 +1075,7 @@
 		CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugHTTPEchoHandler.h; path = "src/volition/web-miner-api/DebugHTTPEchoHandler.h"; sourceTree = "<group>"; };
 		CDAC9F392622E74000DCA201 /* TransactionHistoryHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHistoryHandler.h; path = "src/volition/web-miner-api/TransactionHistoryHandler.h"; sourceTree = "<group>"; };
 		CDAC9F74262A35B400DCA201 /* Psuedorandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Psuedorandom.h; path = src/volition/Psuedorandom.h; sourceTree = "<group>"; };
+		CDAC9F79262B4F9400DCA201 /* MinerLocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerLocks.h; path = src/volition/MinerLocks.h; sourceTree = "<group>"; };
 		CDAD94332470A8A0003FD2CC /* SerializableTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableTime.h; path = src/volition/serialization/SerializableTime.h; sourceTree = "<group>"; };
 		CDAD9436247138B0003FD2CC /* ReserveAccountName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReserveAccountName.h; path = src/volition/transactions/ReserveAccountName.h; sourceTree = "<group>"; };
 		CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Dump.cpp; path = src/volition/Ledger_Dump.cpp; sourceTree = "<group>"; };
@@ -1432,6 +1428,7 @@
 				CD9E7BB52505A8550065C5FC /* MinerLaunchTests.cpp */,
 				CD9E7BB62505A8550065C5FC /* MinerLaunchTests.h */,
 				CD5ECAD92464CB26009146FB /* MinerLaunchTests.json.h */,
+				CDAC9F79262B4F9400DCA201 /* MinerLocks.h */,
 				CD0CF45F255EDC5D008C67F0 /* RemoteMiner.cpp */,
 				CD0CF45D255EDC5D008C67F0 /* RemoteMiner.h */,
 			);
@@ -1779,9 +1776,6 @@
 			isa = PBXGroup;
 			children = (
 				CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */,
-				CD99421725FC492800524DB6 /* BlockingMinerAPIRequestHandler.h */,
-				CD99421625FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h */,
-				CD9C3930261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h */,
 			);
 			name = handler;
 			sourceTree = "<group>";
@@ -2099,6 +2093,7 @@
 				CDB8B40121ACC874004EE816 /* AccountDetailsHandler.h in Headers */,
 				CD97F7192607E5CD00C5C8A6 /* MonetaryPolicy.h in Headers */,
 				CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */,
+				CDAC9F7A262B4F9400DCA201 /* MinerLocks.h in Headers */,
 				CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */,
 				CDD11D8A22ED6E070051F04E /* AssetFieldValue.h in Headers */,
 				CDAC9F3B2622E74000DCA201 /* TransactionHistoryHandler.h in Headers */,
@@ -2155,7 +2150,6 @@
 				CD5ECAEE246B2938009146FB /* version.h in Headers */,
 				CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */,
 				CD19E004259E20A60007ACF0 /* BlockTreeTag.h in Headers */,
-				CD99421825FC492800524DB6 /* NonBlockingMinerAPIRequestHandler.h in Headers */,
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
 				CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */,
@@ -2226,7 +2220,6 @@
 				CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
 				CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */,
-				CD9C3932261881F700AE8782 /* SemiBlockingMinerAPIRequestHandler.h in Headers */,
 				CDDA74912552D423007AAA07 /* LoadLedger.h in Headers */,
 				CD9C391E26149F5E00AE8782 /* VersionTree.h in Headers */,
 				CDFA235621C24AF300987232 /* TestKeyIDHandler.h in Headers */,
@@ -2278,7 +2271,6 @@
 				CD20FFDB2542327C00DEB809 /* ExtendNetwork.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
 				CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */,
-				CD99421925FC492800524DB6 /* BlockingMinerAPIRequestHandler.h in Headers */,
 				CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
 				CDAC9F2C262148BD00DCA201 /* TransactionQueueHandler.h in Headers */,

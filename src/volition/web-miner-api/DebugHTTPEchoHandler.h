@@ -5,7 +5,7 @@
 #define VOLITION_WEBMINERAPI_DEBUGHTTPECHOHANDLER_H
 
 #include <volition/CryptoKey.h>
-#include <volition/NonBlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -14,13 +14,14 @@ namespace WebMinerAPI {
 // DebugHTTPEchoHandler
 //================================================================//
 class DebugHTTPEchoHandler :
-    public NonBlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::ALL )
 
     //----------------------------------------------------------------//
-    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+        UNUSED ( miner );
         
         jsonOut.set ( "method", HTTP::getStringForMethod ( method ).c_str ());
         jsonOut.set ( "body", jsonIn );

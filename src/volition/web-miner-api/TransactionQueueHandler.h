@@ -5,7 +5,7 @@
 #define VOLITION_WEBMINERAPI_TRANSACTIONQUEUEHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/Transaction.h>
 #include <volition/TransactionStatus.h>
@@ -17,22 +17,23 @@ namespace WebMinerAPI {
 // TransactionQueueHandler
 //================================================================//
 class TransactionQueueHandler :
-    public BlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-        UNUSED ( ledger );
         UNUSED ( jsonIn );
+    
+        ScopedExclusiveMinerLock minerLock ( miner );
     
         string accountName = this->getMatchString ( "accountName" );
     
         SerializableVector < string > summary;
     
-        TransactionQueue& transactionQueue = this->mWebMiner->getTransactionQueue ();
+        TransactionQueue& transactionQueue = miner->getTransactionQueue ();
         const MakerQueue* makerQueue = transactionQueue.getMakerQueueOrNull ( accountName );
         
         if ( makerQueue ) {

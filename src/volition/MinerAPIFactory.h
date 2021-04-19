@@ -4,7 +4,7 @@
 #ifndef VOLITION_MINERAPIFACTORY_H
 #define VOLITION_MINERAPIFACTORY_H
 
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/RouteTable.h>
 #include <volition/Miner.h>
 

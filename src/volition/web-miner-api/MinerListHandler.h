@@ -4,7 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_MINERLISTHANDLER_H
 #define VOLITION_WEBMINERAPI_MINERLISTHANDLER_H
 
-#include <volition/NonBlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -13,7 +13,7 @@ namespace WebMinerAPI {
 // MinerListHandler
 //================================================================//
 class MinerListHandler :
-    public NonBlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     static const size_t RANDOM_BATCH_SIZE = 16;
@@ -21,13 +21,14 @@ public:
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
         
         size_t batchSize = ( this->optQuery ( "sample", "" ) == "random" ) ? RANDOM_BATCH_SIZE : 0;
         
-        set < string > minerURLs = this->mSnapshot.sampleOnlineMinerURLs ( batchSize );
+        ScopedSharedMinerStatusLock minerStatus ( miner );
+        set < string > minerURLs = minerStatus.sampleOnlineMinerURLs ( batchSize );
         
         SerializableList < string > result;
         set < string >::const_iterator urlIt = minerURLs.cbegin ();
@@ -36,7 +37,7 @@ public:
         }
         
         jsonOut.set ( "miners", ToJSONSerializer::toJSON ( result ));
-        jsonOut.set ( "isMiner", this->mSnapshot.mIsMiner );
+        jsonOut.set ( "isMiner", minerStatus.mIsMiner );
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

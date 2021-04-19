@@ -385,7 +385,7 @@ public:
 //================================================================//
 class Ledger :
     public AbstractLedger,
-    public virtual VersionedStoreTag,
+    public VersionedStoreTag,
     public enable_shared_from_this < Ledger > {
 public:
 
@@ -417,7 +417,7 @@ public:
 //================================================================//
 class LockedLedger :
     public AbstractLedger,
-    public virtual VersionedStoreLock {
+    public VersionedStoreLock {
 protected:
 
     //----------------------------------------------------------------//
@@ -434,23 +434,8 @@ public:
     }
 
     //----------------------------------------------------------------//
-    LockedLedger ( const Ledger& other ) :
-        VersionedStoreLock ( other.getRef ()) {
-    }
-    
-    //----------------------------------------------------------------//
-    LockedLedger ( const AbstractLedger& other ) :
-        VersionedStoreLock ( other.getRef ()) {
-    }
-    
-    //----------------------------------------------------------------//
-    LockedLedger ( const LockedLedger& other ) :
-        VersionedStoreLock ( other.getRef ()) {
-    }
-    
-    //----------------------------------------------------------------//
-    LockedLedger ( const VersionedStoreTag& tag ) :
-        VersionedStoreLock ( tag ) {
+    LockedLedger ( const AbstractHasVersionedBranch& other ) :
+        VersionedStoreLock ( other ) {
     }
 };
 
@@ -459,7 +444,7 @@ public:
 //================================================================//
 class LockedLedgerIterator :
     public AbstractLedger,
-    public virtual VersionedStoreIterator {
+    public VersionedStoreIterator {
 protected:
 
     //----------------------------------------------------------------//
@@ -472,7 +457,7 @@ protected:
 public:
     
     //----------------------------------------------------------------//
-    LockedLedgerIterator ( const LockedLedger& other ) :
+    LockedLedgerIterator ( const AbstractHasVersionedBranch& other ) :
         VersionedStoreIterator ( other ) {
     }
 };

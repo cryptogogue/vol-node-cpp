@@ -4,7 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_NODEDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_NODEDETAILSHANDLER_H
 
-#include <volition/NonBlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -13,26 +13,25 @@ namespace WebMinerAPI {
 // NodeDetailsHandler
 //================================================================//
 class NodeDetailsHandler :
-    public NonBlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
         
-        const MinerSnapshot& snapshot   = this->mSnapshot;
-        const MinerStatus& status       = this->mStatus;
+        ScopedSharedMinerStatusLock minerStatus ( miner );
         
         Poco::JSON::Object::Ptr nodeInfoJSON = new Poco::JSON::Object ();
         
-        nodeInfoJSON->set ( "minerID",          snapshot.getMinerID ().c_str ());
-        nodeInfoJSON->set ( "publicKey",        ToJSONSerializer::toJSON ( snapshot.getKeyPair ().getPublicKey ()));
-        nodeInfoJSON->set ( "motto",            snapshot.getMotto ());
-        nodeInfoJSON->set ( "visage",           ToJSONSerializer::toJSON ( snapshot.getVisage ()));
-        nodeInfoJSON->set ( "genesisHash",      status.mGenesisHash );
+        nodeInfoJSON->set ( "minerID",          minerStatus.getMinerID ().c_str ());
+        nodeInfoJSON->set ( "publicKey",        ToJSONSerializer::toJSON ( minerStatus.getKeyPair ().getPublicKey ()));
+        nodeInfoJSON->set ( "motto",            minerStatus.getMotto ());
+        nodeInfoJSON->set ( "visage",           ToJSONSerializer::toJSON ( minerStatus.getVisage ()));
+        nodeInfoJSON->set ( "genesisHash",      minerStatus.mGenesisHash );
         
         jsonOut.set ( "node", nodeInfoJSON );
         return Poco::Net::HTTPResponse::HTTP_OK;

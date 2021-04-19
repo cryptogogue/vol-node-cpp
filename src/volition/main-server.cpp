@@ -311,7 +311,7 @@ protected:
         
         {
             // wait for miner activity to fully shut down
-            ScopedMinerLock scopedLock ( this->mMinerActivity );
+            ScopedExclusiveMinerLock scopedLock ( this->mMinerActivity );
             this->mMinerActivity->shutdown ( false );
         }
         LGN_LOG ( VOL_FILTER_APP, INFO, "SHUTDOWN: ~serve" );

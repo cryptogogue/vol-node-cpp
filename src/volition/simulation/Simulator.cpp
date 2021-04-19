@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/FileSys.h>
+#include <volition/MinerLocks.h>
 #include <volition/simulation/AbstractScenario.h>
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/Simulator.h>
@@ -336,7 +337,7 @@ void Simulator::step () {
             miner->step ( this->mNow );
         }
         
-        ScopedMinerLock minerLock ( miner );
+        ScopedExclusiveMinerLock minerLock ( miner );
         tree.addChain ( this->mMinersByID [ i ]->getLedger ());
     }
     

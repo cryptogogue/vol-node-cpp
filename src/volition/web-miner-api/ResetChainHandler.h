@@ -5,7 +5,7 @@
 #define VOLITION_WEBMINERAPI_RESETCHAINHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Schema.h>
 #include <volition/TheTransactionBodyFactory.h>
 
@@ -16,17 +16,16 @@ namespace WebMinerAPI {
 // ResetChainHandler
 //================================================================//
 class ResetChainHandler :
-    public BlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::DELETE )
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method, AbstractLedger& ledger, const Poco::JSON::Object&, Poco::JSON::Object& ) const override {
-        UNUSED ( ledger );
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method, shared_ptr < Miner > miner, const Poco::JSON::Object&, Poco::JSON::Object& ) const override {
     
-        ScopedMinerLock scopedLock ( this->mWebMiner );
-        this->mWebMiner->reset ();
+        ScopedExclusiveMinerLock scopedLock ( miner );
+        miner->reset ();
 
         return Poco::Net::HTTPResponse::HTTP_OK;
     }

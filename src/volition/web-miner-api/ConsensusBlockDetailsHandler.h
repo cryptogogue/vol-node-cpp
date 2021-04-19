@@ -6,7 +6,7 @@
 
 #include <volition/AbstractConsensusInspector.h>
 #include <volition/Block.h>
-#include <volition/NonBlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
@@ -16,19 +16,20 @@ namespace WebMinerAPI {
 // ConsensusBlockDetailsHandler
 //================================================================//
 class ConsensusBlockDetailsHandler :
-    public NonBlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus NonBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
-            
+        
         string hash = this->getMatchString ( "hash" );
 
-        MinerSnapshot::InspectorPtr inspector = this->mSnapshot.createInspector ();
+        ScopedSharedMinerStatusLock minerStatus ( miner );
+        MinerSnapshot::InspectorPtr inspector = minerStatus.createInspector ();
         shared_ptr < const Block > block = inspector ? inspector->getBlock ( hash ) : NULL;
 
         if ( block ) {

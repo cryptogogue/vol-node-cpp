@@ -5,7 +5,7 @@
 #define VOLITION_WEBMINERAPI_BLOCKDETAILSHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/SemiBlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
@@ -15,15 +15,18 @@ namespace WebMinerAPI {
 // BlockDetailsHandler
 //================================================================//
 class BlockDetailsHandler :
-    public SemiBlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus SemiBlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
         UNUSED ( jsonIn );
+        
+       ScopedSharedMinerLedgerLock ledger ( miner );
+        ledger.seek ( this->optQuery ( "at", ledger.countBlocks ()));
         
         u64 height = this->getMatchU64 ( "blockID" );
 

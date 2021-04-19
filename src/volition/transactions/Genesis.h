@@ -186,13 +186,16 @@ public:
         u64 premined = accountVOL + this->mPrizePool;
         
         if ( this->mTotalVOL < premined ) return false;
-                
+        
+        // miner rewards
         LedgerFieldODBM < u64 > rewardPoolField ( ledger, Ledger::keyFor_rewardPool ());
         rewardPoolField.set ( this->mTotalVOL - premined );
         
+        // prizes (redeemables)
         LedgerFieldODBM < u64 > prizePoolField ( ledger, Ledger::keyFor_prizePool ());
         prizePoolField.set ( this->mPrizePool );
         
+        // total vol in ecosystem
         LedgerFieldODBM < u64 > totalVOLField ( ledger, Ledger::keyFor_totalVOL ());
         totalVOLField.set ( this->mTotalVOL );
         

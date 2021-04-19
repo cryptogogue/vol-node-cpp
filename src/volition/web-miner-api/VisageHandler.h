@@ -4,7 +4,7 @@
 #ifndef VOLITION_WEBMINERAPI_VISAGEHANDLER_H
 #define VOLITION_WEBMINERAPI_VISAGEHANDLER_H
 
-#include <volition/BlockingMinerAPIRequestHandler.h>
+#include <volition/AbstractMinerAPIRequestHandler.h>
 
 namespace Volition {
 namespace WebMinerAPI {
@@ -13,20 +13,21 @@ namespace WebMinerAPI {
 // VisageHandler
 //================================================================//
 class VisageHandler :
-    public BlockingMinerAPIRequestHandler {
+    public AbstractMinerAPIRequestHandler {
 public:
 
     SUPPORTED_HTTP_METHODS ( HTTP::GET )
 
     //----------------------------------------------------------------//
-    HTTPStatus BlockingMinerAPIRequestHandler_handleRequest ( HTTP::Method method, AbstractLedger& ledger, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
+    HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
         UNUSED ( method );
-        UNUSED ( ledger );
         UNUSED ( jsonIn );
+        
+        ScopedExclusiveMinerLock minerLock ( miner );
         
         string motto = this->optQuery ( "motto", "" );
                 
-        Signature visage = this->mWebMiner->calculateVisage ( motto );
+        Signature visage = miner->calculateVisage ( motto );
 
         jsonOut.set ( "visage", ToJSONSerializer::toJSON ( visage ));
 
