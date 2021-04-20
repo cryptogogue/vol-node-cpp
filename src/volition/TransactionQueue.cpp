@@ -156,8 +156,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
 
     LGN_LOG_SCOPE ( VOL_FILTER_QUEUE, INFO, __PRETTY_FUNCTION__ );
 
-    Ledger ledger;
-    ledger.takeSnapshot ( chain );
+    Ledger ledger = chain;
 
     const u64 maxBlockWeight = ledger.getMaxBlockWeight ();
     u64 blockHeight = block.getHeight ();

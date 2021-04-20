@@ -768,6 +768,8 @@ void Miner::updateMinerStatus () {
         LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "SNAPSHOT" );
     
         Ledger& ledger = *this->mLedger;
+        ledger.getSchema ();
+        
         AccountODBM accountODBM ( ledger, this->getMinerID ());
         
         this->mIsMiner = accountODBM.isMiner ();
@@ -807,6 +809,7 @@ void Miner::updateMinerStatus () {
     {
         LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Ledger LOCK" );
         this->mLockedLedger.lock ( *this->mLedger );
+        this->mLockedLedger.mSchemaCache = this->mLedger->mSchemaCache;
     }
     this->mLockedLedgerMutex.unlock ();
 }

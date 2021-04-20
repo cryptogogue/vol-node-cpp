@@ -129,7 +129,7 @@ string AbstractLedger::chooseReward ( string rewardName ) {
 //----------------------------------------------------------------//
 void AbstractLedger::clearSchemaCache () {
 
-    this->mSchemaCache = NULL;
+    this->mSchemaCache.clear ();
 }
 
 //----------------------------------------------------------------//
@@ -282,10 +282,7 @@ const Schema& AbstractLedger::getSchema () const {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
-    if ( !this->mSchemaCache ) {
-        this->mSchemaCache = make_shared < map < string, shared_ptr < const Schema >>>();
-    }
-    map < string, shared_ptr < const Schema >>& schemaCache = *this->mSchemaCache;
+    map < string, shared_ptr < const Schema >>& schemaCache = this->mSchemaCache;
     
     string schemaHash = this->getSchemaHash ();
     
@@ -452,10 +449,7 @@ LedgerResult AbstractLedger::pushBlock ( const Block& block, Block::Verification
 
     // make sure there's a current schema cache
     this->getSchema ();
-
-    Ledger fork;
-    fork.takeSnapshot ( *this );
-    fork.mSchemaCache = this->mSchemaCache; // TODO: this this later
+    Ledger fork = *this;
 
     LedgerResult result = block.apply ( fork, policy );
 
@@ -554,10 +548,7 @@ void AbstractLedger::setSchema ( const Schema& schema ) {
     this->setObject < SchemaVersion >( AbstractLedger::keyFor_schemaVersion (), schema.mVersion );
     this->setValue < string >( AbstractLedger::keyFor_schemaHash (), schemaHash );
     
-    if ( !this->mSchemaCache ) {
-        this->mSchemaCache = make_shared < map < string, shared_ptr < const Schema >>>();
-    }
-    ( *this->mSchemaCache )[ schemaHash ] = make_shared < Schema >( schema );
+    this->mSchemaCache [ schemaHash ] = make_shared < Schema >( schema );
 }
 
 //----------------------------------------------------------------//
