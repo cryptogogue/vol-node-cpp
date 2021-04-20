@@ -213,6 +213,22 @@ int LuaContext::_awardVOL ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+int LuaContext::_bytesToScalar ( lua_State* L ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
+    Buffer buffer = LuaContext::getBuffer ( L, -1 );
+    assert ( buffer.size () >= 4 );
+
+    u32 asInt = *( u32* )buffer.data ();
+
+    double scalar = ( double )asInt / ( double )0xffffffff;
+    LGN_LOG ( VOL_FILTER_LUA, INFO, "Bytes as scalar: %f", scalar );
+    lua_pushnumber ( L, scalar );
+    return 1;
+}
+
+//----------------------------------------------------------------//
 int LuaContext::_getDefinitionField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
 
@@ -250,13 +266,16 @@ int LuaContext::_getDefinitionField ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
-int LuaContext::_getEntropyString ( lua_State* L ) {
+int LuaContext::_getEntropy ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
 
     LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
-    string entropy = self.mLedger->getEntropyString ();
-    lua_pushstring ( L, entropy.c_str ());
+    string entropyHex = self.mLedger->getEntropyString ();
+    Digest entropy;
+    entropy.fromHex ( entropyHex );
+    LGN_LOG ( VOL_FILTER_LUA, INFO, "Entropy string: %s", entropyHex.c_str ());
+    lua_pushlstring ( L, ( const char* )entropy.data (), entropy.size ());
     return 1;
 }
 
@@ -286,6 +305,7 @@ int LuaContext::_randomDouble ( lua_State* L ) {
     LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
     double random = self.mPRNG.randomDouble ();
+    LGN_LOG ( VOL_FILTER_LUA, INFO, "Random double: %f", random );
     lua_pushnumber ( L, random );
     return 1;
 }
@@ -340,10 +360,25 @@ int LuaContext::_seedRandom ( lua_State* L ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
 
-    string seedString = _to_string ( L, 1 );
-    self.mPRNG.seed ( seedString );
+    Buffer buffer = LuaContext::getBuffer ( L, -1 );
+    self.mPRNG.seed ( buffer );
 
     return 0;
+}
+
+//----------------------------------------------------------------//
+LuaContext::Buffer LuaContext::getBuffer ( lua_State* L, int idx ) {
+
+    lua_pushvalue ( L, idx );
+    size_t len;
+    cc8* luaStr = lua_tolstring ( L, -1, &len );
+    lua_pop ( L, 1 );
+
+    Buffer buffer;
+    buffer.resize ( len );
+    memcpy ( buffer.data (), luaStr, len );
+    
+    return buffer;
 }
 
 //----------------------------------------------------------------//
@@ -639,7 +674,8 @@ LuaContext::LuaContext ( ConstOpt < AbstractLedger > ledger, time_t time ) :
     this->registerFunc ( "awardAsset",              _awardAsset );
     this->registerFunc ( "awardDeck",               _awardDeck );
     this->registerFunc ( "awardVOL",                _awardVOL );
-    this->registerFunc ( "getEntropyString",        _getEntropyString );
+    this->registerFunc ( "bytesToScalar",           _bytesToScalar );
+    this->registerFunc ( "getEntropy",              _getEntropy );
     this->registerFunc ( "getDefinitionField",      _getDefinitionField );
     this->registerFunc ( "print",                   _print );
     this->registerFunc ( "randomAward",             _randomAward );

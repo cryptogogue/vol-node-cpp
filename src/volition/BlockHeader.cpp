@@ -14,7 +14,8 @@ namespace Volition {
 //----------------------------------------------------------------//
 void BlockHeader::applyEntropy ( AbstractLedger& ledger ) const {
 
-    ledger.setEntropyString ( this->mPose.toString ());
+    Digest entropy = Digest::hash ( this->mPose );
+    ledger.setEntropyString ( entropy );
 }
 
 //----------------------------------------------------------------//

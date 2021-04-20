@@ -96,13 +96,22 @@ public:
     }
     
     //----------------------------------------------------------------//
+    Digest ( const Poco::DigestEngine::Digest& digest ) :
+        Poco::DigestEngine::Digest ( digest ) {
+    }
+    
+    //----------------------------------------------------------------//
     void fromHex ( string hex ) {
         *this = Poco::DigestEngine::digestFromHex ( hex );
     }
     
     //----------------------------------------------------------------//
-    Digest ( const Poco::DigestEngine::Digest& digest ) :
-        Poco::DigestEngine::Digest ( digest ) {
+    static Digest hash ( const Digest& input, string hashAlgorithm = DEFAULT_HASH_ALGORITHM ) {
+    
+        Poco::Crypto::DigestEngine digestEngine ( hashAlgorithm );
+        digestEngine.update ( input.data (), input.size ());
+        
+        return digestEngine.digest ();
     }
     
     //----------------------------------------------------------------//

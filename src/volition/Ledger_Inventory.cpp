@@ -200,26 +200,11 @@ LedgerResult Ledger_Inventory::awardAssetsRandom ( AccountID accountID, string d
     digestStream << seed;
     digestStream.close ();
 
-    Poco::DigestEngine::Digest digest = digestEngine.digest ();
-    assert ( digest.size () == 32 );
-    const u32* seedVals = ( const u32* )digest.data ();
-
-    std::mt19937 gen;
-    std::seed_seq sseq {
-        seedVals [ 0 ],
-        seedVals [ 1 ],
-        seedVals [ 2 ],
-        seedVals [ 3 ],
-        seedVals [ 4 ],
-        seedVals [ 5 ],
-        seedVals [ 6 ],
-        seedVals [ 7 ],
-    };
-    gen.seed ( sseq );
+    Psuedorandom prng ( digestEngine.digest ());
     
     map < string, size_t > awards;
     for ( size_t i = 0; i < quantity; ++i ) {
-        u32 index = gen ();
+        u32 index = prng.randomInt32 ();
         string awardType = expandedSetOrDeck [ index % expandedSetOrDeck.size ()];
         
         if ( awards.find ( awardType ) == awards.end ()) {

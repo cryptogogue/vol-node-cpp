@@ -21,6 +21,8 @@ private:
 
     friend class AbstractLedger;
     
+    typedef  vector < unsigned char > Buffer;
+    
     static constexpr const char* CONTEXT_KEY    = "vol.context";
 
     ConstOpt < AbstractLedger >     mLedger;
@@ -33,7 +35,8 @@ private:
     static int              _awardAsset             ( lua_State* L );
     static int              _awardDeck              ( lua_State* L );
     static int              _awardVOL               ( lua_State* L );
-    static int              _getEntropyString       ( lua_State* L );
+    static int              _bytesToScalar          ( lua_State* L );
+    static int              _getEntropy             ( lua_State* L );
     static int              _getDefinitionField     ( lua_State* L );
     static int              _randomAward            ( lua_State* L );
     static int              _randomDouble           ( lua_State* L );
@@ -51,6 +54,7 @@ private:
     const AssetDefinition*  checkDefinition         ( string definitionName );
     AssetFieldDefinition    checkDefinitionField    ( const AssetDefinition& definition, string fieldName );
     LedgerResult            compile                 ( string lua );
+    static Buffer           getBuffer               ( lua_State* L, int idx );
     static LuaContext&      getSelf                 ( lua_State* L );
     void                    push                    ( const Asset& asset );
     void                    push                    ( const AssetFieldValue& value );

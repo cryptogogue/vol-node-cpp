@@ -48,7 +48,7 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void seed ( const Digest& digest ) {
+    void seed ( const std::vector < unsigned char >& digest ) {
     
         size_t nSeeds = digest.size () >> 2;
         const u32* seedVals = ( const u32* )digest.data ();

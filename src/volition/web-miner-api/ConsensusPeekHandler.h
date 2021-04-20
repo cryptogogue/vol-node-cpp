@@ -48,6 +48,7 @@ public:
         ScopedSharedMinerStatusLock minerStatus ( miner );
         jsonOut.set ( "minerID", minerStatus.getMinerID ());
         jsonOut.set ( "isMiner", minerStatus.mIsMiner );
+        jsonOut.set ( "genesis", minerStatus.mGenesisHash );
         
         size_t totalBlocks = ledger.countBlocks ();
         jsonOut.set ( "totalBlocks", totalBlocks );
