@@ -64,6 +64,11 @@ void Miner::affirmMessenger () {
 //----------------------------------------------------------------//
 void Miner::affirmRemoteMiner ( string url ) {
 
+    // TODO: properly check and formal URLs
+    while ( url.size () && ( url [ url.size () - 1 ] == '/' )) {
+        url.pop_back ();
+    }
+
     if ( url.size () && ( this->mCompletedURLs.find ( url ) == this->mCompletedURLs.cend ())) {
         this->mNewMinerURLs.insert ( url );
     }
@@ -875,9 +880,7 @@ void Miner::updateRemoteMiners () {
         AccountODBM minerODBM ( this->getLedger (), *minerIt );
         string url = minerODBM.mMinerInfo.get ()->getURL ();
         
-        if ( this->mCompletedURLs.find ( url ) == this->mCompletedURLs.cend ()) {
-            this->mNewMinerURLs.insert ( url );
-        }
+        this->affirmRemoteMiner ( url );
     }
     
     // affirm miners for pending URLs
