@@ -114,7 +114,7 @@ protected:
             
                 // add 9091 as a miner
                 simulator.setActive ( 1, 2, true );
-                simulator.getSimMiner ( 0 )->pushTransaction (
+                simulator.getSimMiner ( 0 )->getTransactionQueue ().pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 1 ), simulator.getSimMiner ( 1 )->getURL ()),
                         "0e449540-5c04-4c2b-a437-dcc75db54de8",
@@ -139,7 +139,7 @@ protected:
             case 6:
 
                 // add 9092, 9093 as miners
-                simulator.getSimMiner ( 1 )->pushTransaction (
+                simulator.getSimMiner ( 1 )->getTransactionQueue ().pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 2 ), simulator.getSimMiner ( 2 )->getURL ()),
                         "12ad8de5-0aa1-4fbf-a6fe-bdce7640aed3",
@@ -147,7 +147,7 @@ protected:
                     )
                 );
 
-                simulator.getSimMiner ( 1 )->pushTransaction (
+                simulator.getSimMiner ( 1 )->getTransactionQueue ().pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 3 ), simulator.getSimMiner ( 3 )->getURL ()),
                         "333a6f1b-cdf3-4b1d-8979-898d99d22f5c",
@@ -171,7 +171,7 @@ protected:
             case 10:
 
                 // add 9094 - 9097 as miners
-                simulator.getSimMiner ( 1 )->pushTransaction (
+                simulator.getSimMiner ( 1 )->getTransactionQueue ().pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 4 ), simulator.getSimMiner ( 4 )->getURL ()),
                         "8f460ff6-a290-44c7-98d3-a678449a613b",
@@ -179,7 +179,7 @@ protected:
                     )
                 );
 
-                simulator.getSimMiner ( 1 )->pushTransaction (
+                simulator.getSimMiner ( 1 )->getTransactionQueue ().pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 5 ), simulator.getSimMiner ( 5 )->getURL ()),
                         "1d69ad2a-8ee1-4f35-968f-a4ce725c8dea",
@@ -187,7 +187,7 @@ protected:
                     )
                 );
 
-                simulator.getSimMiner ( 1 )->pushTransaction (
+                simulator.getSimMiner ( 1 )->getTransactionQueue ().pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 6 ), simulator.getSimMiner ( 6 )->getURL ()),
                         "a9f4409e-7a1b-48ef-8fcf-b58070a2ee9a",
@@ -195,7 +195,7 @@ protected:
                     )
                 );
 
-                simulator.getSimMiner ( 1 )->pushTransaction (
+                simulator.getSimMiner ( 1 )->getTransactionQueue ().pushTransaction (
                     SimTransaction::makeTransaction (
                         SimTransaction::makeBody_RegisterMiner ( *simulator.getSimMiner ( 7 ), simulator.getSimMiner ( 7 )->getURL ()),
                         "356cff67-a911-4602-8950-a667fd2fd040",
@@ -406,6 +406,25 @@ int main ( int argc, char** argv ) {
     Lognosis::setFilter ( PDM_FILTER_ROOT, Lognosis::OFF );
     Lognosis::init ( argc, argv );
     LOG_F ( INFO, "Hello from main.cpp!" );
+
+    Lognosis::setFilter ( PDM_FILTER_ROOT,                      Lognosis::OFF );
+    Lognosis::setFilter ( PDM_FILTER_SQLITE,                    Lognosis::OFF );
+    Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  Lognosis::OFF );
+    
+    Lognosis::setFilter ( VOL_FILTER_APP,                       Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_BLOCK,                     Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 Lognosis::OFF );
+    
+    Lognosis::setFilter ( VOL_FILTER_HTTP,                      Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_JSON,                      Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_LEDGER,                    Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_LUA,                       Lognosis::OFF );
+    
+//    Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_QUEUE,                     Lognosis::OFF );
+
+    Lognosis::init ( argc, argv );
 
     SimulatorApp app;
     return app.run ( argc, argv );

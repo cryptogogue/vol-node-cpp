@@ -166,7 +166,7 @@ void Simulator::initializeMiners ( size_t totalMiners, size_t deferredMiners, si
     for ( size_t i = 0; i < totalMiners; ++i ) {
     
         string minerID = Format::write ( "%d", ( int )( basePort + i ));
-        string url = Format::write ( "http://127.0.0.1:%d/%s/", ( int )this->mBasePort, minerID.c_str ());
+        string url = Format::write ( "http://127.0.0.1:%d/%s", ( int )this->mBasePort, minerID.c_str ());
     
         shared_ptr < SimMiner > miner = make_shared < SimMiner >( url, i < genesisMiners );
         miner->setMinerID ( minerID );
@@ -212,21 +212,21 @@ void Simulator::report () {
             shared_ptr < Miner > miner = this->mMinersByID [ 0 ];
             BlockTreeCursor tail = miner->getBestProvisional ();
                 
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "GOAL: %s", ( *this->mOptimalTag ).writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "GOAL: %s", ( *this->mOptimalTag ).writeBranch ().c_str ());
         
             break;
         }
             
         case REPORT_ALL_MINERS: {
         
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "STEP: %d", ( int )this->mStepCount );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "STEP: %d", ( int )this->mStepCount );
             for ( size_t i = 0; i < this->mMinersByID.size (); ++i ) {
             
                 shared_ptr < Miner > miner = this->mMinersByID [ i ];
                 BlockTreeCursor tail = miner->getBestProvisional ();
                 
-                LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
+                LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
             }
             
             break;
@@ -234,8 +234,8 @@ void Simulator::report () {
         
         case REPORT_ALL_MINERS_VERBOSE: {
         
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "----------------------------------------------------------------" );
-            LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "STEP: %d", ( int )this->mStepCount );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "----------------------------------------------------------------" );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "STEP: %d", ( int )this->mStepCount );
             
             for ( size_t i = 0; i < this->mMinersByID.size (); ++i ) {
             

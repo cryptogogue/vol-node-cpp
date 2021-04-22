@@ -215,26 +215,33 @@ void Miner::extend ( time_t now ) {
     // the provisional block is just an empty header, but with a valid charm.
     
     BlockTreeCursor provisional = *this->mBestBranchTag;
-    if ( !provisional.hasHeader () || provisional.isComplete ()) return;
-    if ( provisional.getMinerID () != this->mMinerID ) return;
+    if ( !provisional.isProvisional ()) return;
+    
+    assert ( provisional.hasHeader ()); // if it's provisional, then it has to have a header.
+    assert ( !provisional.isComplete ()); // if it's provisional, then it can't be complete.
+    assert ( provisional.getMinerID () == this->mMinerID ); // if it's provisional, it must be ours.
     
     // parent must be complete. also, wait for 50% consensus (among
     // visible miners) before extending so as to not waste effort racing ahead.
     
     BlockTreeCursor parent = provisional.getParent ();
-    if ( !( parent.hasHeader () && parent.isComplete ())) return;
-    if ( this->checkConsensus ( parent ) <= 0.5 ) return;
+    if ( !( parent.hasHeader () && parent.isComplete ())) return; // bail if parent block is missing.
+    if ( this->checkConsensus ( parent ) <= 0.5 ) return; // bail if less that 50% of the visible network has accepted the previous block.
 
-    assert (( *this->mLedgerTag ).equals ( parent ));
+    assert (( *this->mLedgerTag ).equals ( parent )); // ledger tag must be the parent.
     assert ( this->checkTags ());
 
+    // prepare block may return an empty block if there's no mining network visible and there are no transactions.
     shared_ptr < Block > block = this->prepareBlock ( now );
     if ( block ) {
         
         assert ( block->getHeight () == provisional.getHeight ());
         assert ( block->getCharm () == provisional.getCharm ());
         
+        // push the block, which will also update the ledger tag.
         this->pushBlock ( block );
+        
+        // re-tag the best branch; the branch with our new block is now our favorite branch.
         this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
         this->scheduleReport ();
     }
@@ -710,6 +717,8 @@ void Miner::updateBestBranch ( time_t now ) {
     // update the current best branch, excluding missing or invalid blocks.
     // this may append an additional provisional header if branch is complete.
     
+    // the "improved" branch trims blocks tagged as missing (searched for with no response) then appends our own provisional block
+    // if there's a better block within the lookback window.
     BlockTreeCursor bestCursor = this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalidBranch (), now );
 
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
@@ -718,6 +727,7 @@ void Miner::updateBestBranch ( time_t now ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
         if ( !remoteMiner->mTag.hasCursor ()) continue;
         
+        // for remote miners, we only trim invalid blocks, but place our own provisional block anywhere within the lookback window.
         BlockTreeCursor remoteImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalidBranch (), now );
         if ( remoteImproved.isMissing ()) continue;
         
@@ -732,8 +742,12 @@ void Miner::updateBestBranch ( time_t now ) {
     }
     assert ( bestCursor.hasHeader ());
     assert ( !bestCursor.isMissingOrInvalid ());
-    
     assert ( this->checkTags ());
+    
+    // at this stage, the "best block" is whatever chain has the bast score, including our own provisional block.
+    // note that we won't place two provisionals in a row.
+    
+    // the branch should always be terminated by a provisional.
 }
 
 //----------------------------------------------------------------//

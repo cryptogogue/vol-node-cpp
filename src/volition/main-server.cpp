@@ -160,7 +160,6 @@ protected:
             time_t t;
             time ( &t );
             string timeStr = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), "%Y-%m-%d-%H%M%S" );
-            
             string logname = Format::write ( "%s/%s-%s.log", logpath.c_str (), minerID.c_str (), timeStr.c_str ());
             freopen ( logname.c_str (), "w+", stderr );
         }
