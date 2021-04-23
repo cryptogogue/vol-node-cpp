@@ -132,31 +132,26 @@ bool Miner::checkTags () const {
 }
 
 //----------------------------------------------------------------//
-void Miner::composeChain () {
+void Miner::composeChain ( BlockTreeCursor cursor ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
-    assert ( this->checkTags ());
+    if ( this->mLedgerTag.getCursor ().equals ( cursor )) return;
 
-    // TODO: gather transactions if rewinding chain
-
-    if ( this->mLedgerTag.equals ( this->mBestBranchTag )) return;
-
-    BlockTreeCursor bestCursor = this->mBestBranchTag.getCursor ();
     BlockTreeCursor ledgerCursor = this->mLedgerTag.getCursor ();
 
     // check to see if chain tag is *behind* best branch
-    if ( bestCursor.isAncestorOf ( ledgerCursor )) {
-        this->mLedger->revertAndClear ( bestCursor.getHeight () + 1 );
-        this->mBlockTree->tag ( this->mLedgerTag, this->mBestBranchTag );
+    if ( cursor.isAncestorOf ( ledgerCursor )) {
+        this->mLedger->revertAndClear ( cursor.getHeight () + 1 );
+        this->mBlockTree->tag ( this->mLedgerTag, cursor);
         return;
     }
 
     // if chain is divergent from best branch, re-root it
-    if ( !ledgerCursor.isAncestorOf ( bestCursor )) {
+    if ( !ledgerCursor.isAncestorOf ( cursor )) {
         
         // REWIND chain to point of divergence
-        BlockTreeCursor root = BlockTreeCursor::findRoot ( ledgerCursor, bestCursor );
+        BlockTreeCursor root = BlockTreeCursor::findRoot ( ledgerCursor, cursor );
         assert ( root.hasHeader ()); // guaranteed -> common genesis
         assert ( root.isComplete ());  // guaranteed -> was in chain
         
@@ -165,9 +160,9 @@ void Miner::composeChain () {
         ledgerCursor = this->mLedgerTag.getCursor ();
     }
     
-    assert ( ledgerCursor.isAncestorOf ( bestCursor ));
+    assert ( ledgerCursor.isAncestorOf ( cursor ));
     
-    this->composeChainRecurse ( bestCursor );
+    this->composeChainRecurse ( cursor );
     
     assert ( this->checkTags ());
 }
@@ -681,18 +676,21 @@ void Miner::step ( time_t now ) {
     this->affirmMessenger ();
     this->mMessenger->receiveResponses ( *this, now );
     this->updateRemoteMinerGroups ();
+  
+    this->updateBestBranchFromTree ( now );
+  
+//    // this evaluates each branch and picks the best candidate
+//    this->updateBestBranch ( now );
+//
+//    // using the best branch, build or rebuild chain
+//    this->composeChain ();
+//
+//    // fill the provisional block (if any)
+//    this->extend ( now );
     
-    // this evaluates each branch and picks the best candidate
-    this->updateBestBranch ( now );
-    
-    // using the best branch, build or rebuild chain
-    this->composeChain ();
-    
-    // fill the provisional block (if any)
-    this->extend ( now );
     this->saveChain ();
     
-    this->pruneTransactions ();
+//    this->pruneTransactions ();
     
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
@@ -748,6 +746,67 @@ void Miner::updateBestBranch ( time_t now ) {
     // note that we won't place two provisionals in a row.
     
     // the branch should always be terminated by a provisional.
+}
+
+//----------------------------------------------------------------//
+void Miner::updateBestBranchFromTree ( time_t now ) {
+
+    BlockTreeSampler sampler;
+    
+    sampler.addLeaf (( *this->mBestBranchTag ).trimMissingOrInvalidBranch ());
+    
+    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+        
+        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
+        if ( !remoteMiner->mTag.hasCursor ()) continue;
+        
+        sampler.addLeaf (( *remoteMiner->mTag ).trimMissingOrInvalidBranch ());
+    }
+    
+    BlockTreeSamplerNode subTree = sampler.sample ();
+    
+    if ( this->mLedgerTag.getCursor ().isAncestorOf ( subTree.mRoot )) {
+        this->mTransactionQueue->pruneTransactions ( *this->mLedger );
+    }
+    
+    Digest bestCharm = subTree.mRoot.getNextCharm ( this->mVisage );
+    bool extend = subTree.mRoot.isComplete ();
+    
+    list < BlockTreeCursor >::const_iterator childIt = subTree.mChildren.cbegin ();
+    for ( ; childIt != subTree.mChildren.cend (); ++childIt ) {
+        
+        Digest childCharm = childIt->getCharm ();
+        if ( BlockHeader::compare ( childCharm, bestCharm ) <= 0 ) {
+            bestCharm = childCharm;
+            this->mBlockTree->tag ( this->mBestBranchTag, *childIt );
+            extend = false;
+        }
+    }
+
+    if ( extend ) {
+
+        this->composeChain ( subTree.mRoot );
+
+        // prepare block may return an empty block if there's no mining network visible and there are no transactions.
+        shared_ptr < Block > block = extend ? this->prepareBlock ( now ) : NULL;
+        if ( block ) {
+            
+            assert ( block->getCharm () == bestCharm );
+            
+            this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
+      
+            // push the block, which will also update the ledger tag.
+            this->pushBlock ( block );
+
+            // re-tag the best branch; the branch with our new block is now our favorite branch.
+            this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
+        }
+    }
+    else {
+    
+        this->composeChain ( this->mBestBranchTag.getCursor ());
+    }
 }
 
 //----------------------------------------------------------------//

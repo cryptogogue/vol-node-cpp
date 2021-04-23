@@ -8,6 +8,7 @@
 #include <volition/AbstractMiningMessenger.h>
 #include <volition/Accessors.h>
 #include <volition/AbstractBlockTree.h>
+#include <volition/BlockTreeSampler.h>
 #include <volition/PayoutPolicy.h>
 #include <volition/TransactionFeeSchedule.h>
 #include <volition/CryptoKey.h>
@@ -216,7 +217,7 @@ protected:
     void                                affirmMessenger             ();
     double                              checkConsensus              ( BlockTreeCursor tag ) const;
     bool                                checkTags                   () const;
-    void                                composeChain                ();
+    void                                composeChain                ( BlockTreeCursor cursor );
     void                                composeChainRecurse         ( BlockTreeCursor branch );
     BlockTreeCursor                     improveBranch               ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now );
     void                                pruneTransactions           ();
@@ -227,6 +228,7 @@ protected:
     void                                saveConfig                  ();
     void                                scheduleReport              ();
     void                                updateBestBranch            ( time_t now );
+    void                                updateBestBranchFromTree    ( time_t now );
     void                                updateBlockSearches         ();
     void                                updateMinerStatus           ();
     void                                updateNetworkSearches       ();

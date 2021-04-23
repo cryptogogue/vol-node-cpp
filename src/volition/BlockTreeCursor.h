@@ -32,7 +32,7 @@ protected:
 
     //----------------------------------------------------------------//
     void                                log                             ( string& str, string prefix = "" ) const;
-    void                                logBranchRecurse                ( string& str, size_t maxDepth ) const;
+    void                                logBranchRecurse                ( string& str, u64 minHeight, u64 maxHeight ) const;
 
     //----------------------------------------------------------------//
     const BlockHeaderFields&            HasBlockHeader_getFields        () const override;
@@ -69,7 +69,8 @@ public:
     BlockTreeCursor                     trimMissingBranch               () const;
     BlockTreeCursor                     trimMissingOrInvalidBranch      () const;
     string                              write                           () const;
-    string                              writeBranch                     ( size_t maxDepth = 3 ) const;
+    string                              writeBranch                     ( u64 maxDepth = 3 ) const;
+    string                              writeBranch                     ( u64 fromHeight, u64 maxDepth ) const;
 };
 
 } // namespace Volition

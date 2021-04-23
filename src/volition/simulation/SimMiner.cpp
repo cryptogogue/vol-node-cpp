@@ -78,7 +78,7 @@ void SimMiner::rewindChain ( size_t height ) {
         bestCursor = bestCursor.getParent ();
         this->mBlockTree->tag ( this->mBestBranchTag, bestCursor );
     }
-    this->composeChain ();
+    this->composeChain ( bestCursor );
 }
 
 //----------------------------------------------------------------//
@@ -97,7 +97,7 @@ void SimMiner::setCharm ( size_t height, string charmHex ) {
 
             shared_ptr < Block > block = this->replaceBlock ( cursor.getBlock (), charmHex );
             this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
-            this->composeChain ();
+            this->composeChain ( this->mBestBranchTag.getCursor ());
             return;
         }
         assert ( cursorHeight > height );

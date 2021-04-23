@@ -221,12 +221,24 @@ void Simulator::report () {
         case REPORT_ALL_MINERS: {
         
             LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "STEP: %d", ( int )this->mStepCount );
+            
+            u64 maxHeight = 0;
+            for ( size_t i = 0; i < this->mMinersByID.size (); ++i ) {
+                shared_ptr < Miner > miner = this->mMinersByID [ i ];
+                BlockTreeCursor tail = miner->getBestProvisional ();
+                u64 tailHeight = tail.getHeight () + 1;
+                maxHeight = maxHeight < tailHeight ? tailHeight : maxHeight;
+            }
+            
+            static const u64 REPORT_LENGTH = 6;
+            u64 minHeight = ( maxHeight < REPORT_LENGTH ) ? 0 : maxHeight - REPORT_LENGTH;
+            
             for ( size_t i = 0; i < this->mMinersByID.size (); ++i ) {
             
                 shared_ptr < Miner > miner = this->mMinersByID [ i ];
                 BlockTreeCursor tail = miner->getBestProvisional ();
                 
-                LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ().c_str ());
+                LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: %s", miner->getMinerID ().c_str (), tail.writeBranch ( minHeight, maxHeight ).c_str ());
             }
             
             break;

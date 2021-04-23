@@ -191,15 +191,20 @@ void BlockTreeCursor::log ( string& str, string prefix ) const {
 }
 
 //----------------------------------------------------------------//
-void BlockTreeCursor::logBranchRecurse ( string& str, size_t maxDepth ) const {
+void BlockTreeCursor::logBranchRecurse ( string& str, u64 minHeight, u64 maxHeight ) const {
 
-    if ( !maxDepth ) return;
+    if ( minHeight == maxHeight ) return;
 
     BlockTreeCursor parent = this->getParent ();
     if ( parent.hasHeader ()) {
-        parent.logBranchRecurse ( str, maxDepth - 1 );
+        parent.logBranchRecurse ( str, minHeight, maxHeight - 1 );
     }
-    this->log ( str, parent.hasHeader () ? ", " : "" );
+    
+    u64 height = this->getHeight ();
+    
+    if (( minHeight <= height ) && ( height < maxHeight )) {
+        this->log ( str, ( minHeight < height ) ? ", " : "" );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -240,10 +245,23 @@ string BlockTreeCursor::write () const {
 }
 
 //----------------------------------------------------------------//
-string BlockTreeCursor::writeBranch ( size_t maxDepth ) const {
+string BlockTreeCursor::writeBranch ( u64 maxDepth ) const {
+
+    u64 height = this->getHeight () + 1;
+    if ( height < maxDepth ) {
+        height = maxDepth;
+    }
 
     string str;
-    this->logBranchRecurse ( str, maxDepth );
+    this->logBranchRecurse ( str, height - maxDepth, height );
+    return str;
+}
+
+//----------------------------------------------------------------//
+string BlockTreeCursor::writeBranch ( u64 minHeight, u64 maxHeight ) const {
+
+    string str;
+    this->logBranchRecurse ( str, minHeight, maxHeight );
     return str;
 }
 

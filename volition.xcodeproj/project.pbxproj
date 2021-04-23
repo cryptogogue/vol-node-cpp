@@ -279,6 +279,8 @@
 		CDAC9F3B2622E74000DCA201 /* TransactionHistoryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F392622E74000DCA201 /* TransactionHistoryHandler.h */; };
 		CDAC9F76262A35B400DCA201 /* Psuedorandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F74262A35B400DCA201 /* Psuedorandom.h */; };
 		CDAC9F7A262B4F9400DCA201 /* MinerLocks.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F79262B4F9400DCA201 /* MinerLocks.h */; };
+		CDAC9F81263217EA00DCA201 /* BlockTreeSampler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F7E263217EA00DCA201 /* BlockTreeSampler.h */; };
+		CDAC9F82263217EA00DCA201 /* BlockTreeSampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAC9F80263217EA00DCA201 /* BlockTreeSampler.cpp */; };
 		CDAD94342470A8A0003FD2CC /* SerializableTime.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD94332470A8A0003FD2CC /* SerializableTime.h */; };
 		CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAD9436247138B0003FD2CC /* ReserveAccountName.h */; };
 		CDAF1AE2254FEF1E00CF1010 /* Ledger_Dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */; };
@@ -1076,6 +1078,8 @@
 		CDAC9F392622E74000DCA201 /* TransactionHistoryHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHistoryHandler.h; path = "src/volition/web-miner-api/TransactionHistoryHandler.h"; sourceTree = "<group>"; };
 		CDAC9F74262A35B400DCA201 /* Psuedorandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Psuedorandom.h; path = src/volition/Psuedorandom.h; sourceTree = "<group>"; };
 		CDAC9F79262B4F9400DCA201 /* MinerLocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinerLocks.h; path = src/volition/MinerLocks.h; sourceTree = "<group>"; };
+		CDAC9F7E263217EA00DCA201 /* BlockTreeSampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockTreeSampler.h; path = src/volition/BlockTreeSampler.h; sourceTree = "<group>"; };
+		CDAC9F80263217EA00DCA201 /* BlockTreeSampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockTreeSampler.cpp; path = src/volition/BlockTreeSampler.cpp; sourceTree = "<group>"; };
 		CDAD94332470A8A0003FD2CC /* SerializableTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableTime.h; path = src/volition/serialization/SerializableTime.h; sourceTree = "<group>"; };
 		CDAD9436247138B0003FD2CC /* ReserveAccountName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReserveAccountName.h; path = src/volition/transactions/ReserveAccountName.h; sourceTree = "<group>"; };
 		CDAF1ADF254FEF1E00CF1010 /* Ledger_Dump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ledger_Dump.cpp; path = src/volition/Ledger_Dump.cpp; sourceTree = "<group>"; };
@@ -1445,6 +1449,8 @@
 				CD19E03125A0658E0007ACF0 /* BlockTreeEnums.h */,
 				CD19E018259E23680007ACF0 /* BlockTreeTag.cpp */,
 				CD19E002259E20A60007ACF0 /* BlockTreeTag.h */,
+				CDAC9F80263217EA00DCA201 /* BlockTreeSampler.cpp */,
+				CDAC9F7E263217EA00DCA201 /* BlockTreeSampler.h */,
 				CD9E7B9F24FF67C30065C5FC /* InMemoryBlockTree.cpp */,
 				CD9E7BA024FF67C30065C5FC /* InMemoryBlockTree.h */,
 				CD19DF54259B3F190007ACF0 /* InMemoryBlockTreeNode.cpp */,
@@ -2095,6 +2101,7 @@
 				CD4E81AF210593DD007DA585 /* AbstractAPIRequestHandler.h in Headers */,
 				CDAC9F7A262B4F9400DCA201 /* MinerLocks.h in Headers */,
 				CD762ADA232827B3005AC85D /* EntitlementFactory.h in Headers */,
+				CDAC9F81263217EA00DCA201 /* BlockTreeSampler.h in Headers */,
 				CDD11D8A22ED6E070051F04E /* AssetFieldValue.h in Headers */,
 				CDAC9F3B2622E74000DCA201 /* TransactionHistoryHandler.h in Headers */,
 				CDB8B3CA21AC7EBF004EE816 /* SerializableList.h in Headers */,
@@ -2867,6 +2874,7 @@
 				CD19E019259E23680007ACF0 /* BlockTreeTag.cpp in Sources */,
 				CD059BE324CAB1150049C97E /* InventoryLogEntry.cpp in Sources */,
 				CDFA23A4246051CD00B4CECF /* Ledger_Miner.cpp in Sources */,
+				CDAC9F82263217EA00DCA201 /* BlockTreeSampler.cpp in Sources */,
 				CDAA38EA251AA72400FEAFB5 /* SimulatorActivity.cpp in Sources */,
 				CDFA2396246016E700B4CECF /* Ledger_Inventory.cpp in Sources */,
 				CD99422625FEAD3C00524DB6 /* BlockSearchPool.cpp in Sources */,
