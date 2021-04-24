@@ -689,10 +689,15 @@ void Miner::updateBestBranch ( time_t now ) {
     
     // if the next block is provisional (i.e. is ours, waiting to be produced).
     if (
-        bestCursor.isProvisional () &&                                      // end of best chain is provisional
-        ( bestCursor.getHeight () == this->mLedger->countBlocks ()) &&      // ledger is complete and caught up (i.e. previous to end of chain)
-        subTree.mRoot.equals ( this->mLedgerTag.getCursor ())               // ledger is also consensus root
+        bestCursor.isProvisional () &&                                  // end of best chain is provisional
+        ( bestCursor.getHeight () == this->mLedger->countBlocks ()) &&  // ledger is complete and caught up (i.e. previous to end of chain)
+        (
+            subTree.mRoot.isProvisional () ||                           // subtree is provisional (solo miner) OR
+            subTree.mRoot.equals ( this->mLedgerTag.getCursor ())       // ledger is also consensus root
+        )
     ) {
+
+        this->mTransactionQueue->pruneTransactions ( *this->mLedger );
 
         // prepare block may return an empty block if there's no mining network visible and there are no transactions.
         shared_ptr < Block > block = this->prepareBlock ( now );
