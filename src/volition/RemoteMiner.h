@@ -60,7 +60,7 @@ public:
     bool            receiveResponse         ( const MiningMessengerResponse& response, time_t now );
                     RemoteMiner             ( Miner& miner );
                     ~RemoteMiner            ();
-    void            report                  () const;
+    void            report                  ( u64 minHeight, u64 maxHeight ) const;
     void            reset                   ();
     void            setError                ();
     void            setMinerID              ( string minerID );

@@ -142,7 +142,7 @@ RemoteMiner::~RemoteMiner () {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::report () const {
+void RemoteMiner::report ( u64 minHeight, u64 maxHeight ) const {
 
     cc8* minerID = this->mMinerID.size () ? this->mMinerID.c_str () : "[??]";
     cc8* url = this->mURL.c_str ();
@@ -171,7 +171,7 @@ void RemoteMiner::report () const {
                         "%s - %d: %s",
                         minerID,
                         ( int )remoteCursor.getHeight (),
-                        remoteCursor.writeBranch ().c_str ()
+                        remoteCursor.writeBranch ( minHeight, maxHeight ).c_str ()
                     );
                 }
                 else {

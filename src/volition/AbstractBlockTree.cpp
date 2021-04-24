@@ -262,6 +262,19 @@ BlockTreeCursor AbstractBlockTree::getParent ( const BlockTreeCursor& cursor ) c
 }
 
 //----------------------------------------------------------------//
+BlockTreeCursor AbstractBlockTree::makeProvisional ( shared_ptr < const BlockHeader > header ) {
+
+    BlockTreeCursor cursor;
+    
+    cursor.mTree            = this;
+    cursor.mHeader          = header;
+    cursor.mBranchStatus    = BRANCH_STATUS_NEW;
+    cursor.mSearchStatus    = SEARCH_STATUS_PROVISIONAL;
+    
+    return cursor;
+}
+
+//----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::makeCursor ( shared_ptr < const BlockHeader > header, kBlockTreeBranchStatus branchStatus, kBlockTreeSearchStatus searchStatus ) const {
 
     BlockTreeCursor cursor;
@@ -305,6 +318,10 @@ BlockTreeCursor AbstractBlockTree::tag ( BlockTreeTag& tag, const BlockTreeCurso
         assert ( cursor.getTree () == this );
         tag.mTree = this;
         
+        if ( cursor.isProvisional ()) {
+            this->affirmProvisional ( tag, cursor.mHeader );
+            return cursor;
+        }
         return this->AbstractBlockTree_tag ( tag, cursor );
     }
     return BlockTreeCursor ();

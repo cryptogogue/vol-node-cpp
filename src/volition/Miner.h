@@ -190,6 +190,9 @@ protected:
     shared_ptr < Ledger >                           mLedger;
     BlockTreeTag                                    mLedgerTag;
     
+    // provisional branch tag.
+    BlockTreeTag                                    mProvisionalBranchTag;
+    
     // the "provisional" branch may not be complete and may end with a "provisional"
     // block header. the "best" provisional branch is the branch the miner is working
     // to complete by gathering (or building) the missing blocks. the provisional
@@ -215,12 +218,11 @@ protected:
     
     //----------------------------------------------------------------//
     void                                affirmMessenger             ();
-    double                              checkConsensus              ( BlockTreeCursor tag ) const;
     bool                                checkTags                   () const;
     void                                composeChain                ( BlockTreeCursor cursor );
     void                                composeChainRecurse         ( BlockTreeCursor branch );
-    BlockTreeCursor                     improveBranch               ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now );
-    void                                pruneTransactions           ();
+    BlockTreeCursor                     improveBranch               ( BlockTreeCursor tail, u64 consensusHeight, time_t now );
+    shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                pushBlock                   ( shared_ptr < const Block > block );
     set < shared_ptr < RemoteMiner >>   sampleContributors          ( size_t sampleSize ) const;
     set < shared_ptr < RemoteMiner >>   sampleOnlineMiners          ( size_t sampleSize ) const;
@@ -228,7 +230,6 @@ protected:
     void                                saveConfig                  ();
     void                                scheduleReport              ();
     void                                updateBestBranch            ( time_t now );
-    void                                updateBestBranchFromTree    ( time_t now );
     void                                updateBlockSearches         ();
     void                                updateMinerStatus           ();
     void                                updateNetworkSearches       ();
@@ -270,8 +271,6 @@ public:
     void                                affirmVisage                ();
     Signature                           calculateVisage             ( string motto = "" );
     static Signature                    calculateVisage             ( const CryptoKeyPair& keyPair, string motto = "" );
-    bool                                checkBestBranch             ( string miners ) const;
-    void                                extend                      ( time_t now );
     size_t                              getChainSize                () const;
     Ledger&                             getLedger                   ();
     Ledger                              getLedgerAtBlock            ( u64 index ) const;
@@ -283,7 +282,6 @@ public:
     virtual                             ~Miner                      ();
     LedgerResult                        persist                     ( string path, shared_ptr < const Block > block );
     shared_ptr < Block >                prepareBlock                ( time_t now );
-    shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                report                      () const;
     void                                report                      ( ReportMode reportMode ) const;
     void                                reset                       ();

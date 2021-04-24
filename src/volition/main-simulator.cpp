@@ -89,7 +89,7 @@ protected:
     //----------------------------------------------------------------//
     void AbstractScenario_setup ( Simulator& simulator ) override {
         
-        simulator.initializeMiners ( 4, 0, BASE_PORT );
+        simulator.initializeMiners ( 16, 0, BASE_PORT );
         simulator.initializeGenesis ();
         simulator.setReportMode ( Simulator::REPORT_ALL_MINERS );
     }

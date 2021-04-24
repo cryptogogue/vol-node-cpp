@@ -99,6 +99,7 @@ public:
     BlockTreeCursor             findRoot                ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
     shared_ptr < const Block >  getBlock                ( const BlockTreeCursor& cursor ) const;
     BlockTreeCursor             getParent               ( const BlockTreeCursor& cursor ) const;
+    BlockTreeCursor             makeProvisional         ( shared_ptr < const BlockHeader > header );
     void                        setBranchStatus         ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status );
     void                        setSearchStatus         ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status );
     BlockTreeCursor             restoreTag              ( BlockTreeTag& tag );

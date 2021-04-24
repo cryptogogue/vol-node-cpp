@@ -57,6 +57,7 @@ target_sources ( volition-lib
         src/volition/BlockHeaderFields.cpp
         src/volition/BlockSearchPool.cpp
         src/volition/BlockTreeCursor.cpp
+        src/volition/BlockTreeSampler.cpp
         src/volition/BlockTreeTag.cpp
         src/volition/ControlCommand.cpp
         src/volition/CryptoKeyInfo.cpp

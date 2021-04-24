@@ -473,52 +473,53 @@ BlockTreeCursor SQLiteBlockTree::AbstractBlockTree_affirm ( BlockTreeTag& tag, s
         if ( block && !cursor.getBlock ()) {
             this->update ( block );
         }
+        return this->AbstractBlockTree_tag ( tag, cursor );
     }
-    else {
+
         
-        kBlockTreeSearchStatus searchStatus = isProvisional ? kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL : kBlockTreeSearchStatus::SEARCH_STATUS_NEW;
-        searchStatus = block ? kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK : searchStatus;
+    kBlockTreeSearchStatus searchStatus = isProvisional ? kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL : kBlockTreeSearchStatus::SEARCH_STATUS_NEW;
+    searchStatus = block ? kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK : searchStatus;
 
-        kBlockTreeBranchStatus branchStatus = block ? kBlockTreeBranchStatus::BRANCH_STATUS_COMPLETE : kBlockTreeBranchStatus::BRANCH_STATUS_NEW;
+    kBlockTreeBranchStatus branchStatus = block ? kBlockTreeBranchStatus::BRANCH_STATUS_COMPLETE : kBlockTreeBranchStatus::BRANCH_STATUS_NEW;
 
-        int parentID = header->isGenesis () ? 0 : this->getNodeIDFromHash ( header->getPrevDigest ().toHex ());
+    int parentID = header->isGenesis () ? 0 : this->getNodeIDFromHash ( header->getPrevDigest ().toHex ());
 
-        if ( parentID ) {
-            
-            branchStatus = this->getNodeBranchStatus ( parentID, kBlockTreeBranchStatus::BRANCH_STATUS_INVALID );
-            
-            if (( branchStatus == BRANCH_STATUS_COMPLETE ) && ( !block )) {
-                branchStatus = BRANCH_STATUS_NEW;
-            }
+    if ( parentID ) {
+        
+        branchStatus = this->getNodeBranchStatus ( parentID, kBlockTreeBranchStatus::BRANCH_STATUS_INVALID );
+        
+        if (( branchStatus == BRANCH_STATUS_COMPLETE ) && ( !block )) {
+            branchStatus = BRANCH_STATUS_NEW;
         }
-
-        // insert node
-        SQLiteResult result = this->mDB.exec (
-            
-            "INSERT INTO nodes ( parentID, hash, height, header, block, branchStatus, searchStatus ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7 )",
-            
-            //--------------------------------//
-            [ & ]( SQLiteStatement stmt ) {
-                
-                BlockHeader headerOnly = *header;
-                
-                stmt.bind ( 1,      parentID );
-                stmt.bind ( 2,      hash );
-                stmt.bind ( 3,      ( int )header->getHeight ());
-                stmt.bind ( 4,      ToJSONSerializer::toJSONString ( headerOnly ));
-                stmt.bind ( 5,      block ? ToJSONSerializer::toJSONString ( *block ) : "" );
-                stmt.bind ( 6,      SQLiteBlockTree::stringFromBranchStatus ( branchStatus ));
-                stmt.bind ( 7,      SQLiteBlockTree::stringFromSearchStatus ( searchStatus ));
-            }
-        );
-        result.reportWithAssert ();
-        
-        // make the cursor
-        cursor = this->makeCursor ( header, branchStatus, searchStatus );
     }
 
-    // tag and return
-    return this->tag ( tag, cursor );
+    // insert node
+    SQLiteResult result = this->mDB.exec (
+        
+        "INSERT INTO nodes ( parentID, hash, height, header, block, branchStatus, searchStatus ) VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7 )",
+        
+        //--------------------------------//
+        [ & ]( SQLiteStatement stmt ) {
+            
+            BlockHeader headerOnly = *header;
+            
+            stmt.bind ( 1,      parentID );
+            stmt.bind ( 2,      hash );
+            stmt.bind ( 3,      ( int )header->getHeight ());
+            stmt.bind ( 4,      ToJSONSerializer::toJSONString ( headerOnly ));
+            stmt.bind ( 5,      block ? ToJSONSerializer::toJSONString ( *block ) : "" );
+            stmt.bind ( 6,      SQLiteBlockTree::stringFromBranchStatus ( branchStatus ));
+            stmt.bind ( 7,      SQLiteBlockTree::stringFromSearchStatus ( searchStatus ));
+        }
+    );
+    result.reportWithAssert ();
+    
+    int nodeID = ( int )sqlite3_last_insert_rowid ( this->mDB );
+    this->setTag ( tagName, nodeID );
+
+    // make the cursor
+    cursor = this->makeCursor ( header, branchStatus, searchStatus );
+    return cursor;
 }
 
 //----------------------------------------------------------------//

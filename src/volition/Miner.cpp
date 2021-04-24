@@ -94,41 +94,13 @@ Signature Miner::calculateVisage ( const CryptoKeyPair& keyPair, string motto ) 
 }
 
 //----------------------------------------------------------------//
-bool Miner::checkBestBranch ( string miners ) const {
-
-    assert ( this->mLedger );
-    return this->mLedger->checkMiners ( miners );
-}
-
-//----------------------------------------------------------------//
-double Miner::checkConsensus ( BlockTreeCursor tag ) const {
-
-    double count = 1;
-    double current = 1;
-
-    set < shared_ptr < RemoteMiner >>::const_iterator minerIt = this->mOnlineMiners.cbegin ();
-    for ( ; minerIt != this->mOnlineMiners.cend (); ++minerIt ) {
-        shared_ptr < RemoteMiner > remoteMiner = *minerIt;
-        if ( remoteMiner->mImproved.hasCursor () && tag.isAncestorOf ( *remoteMiner->mImproved )) {
-            count += 1;
-        }
-        current += 1;
-    }
-    return ( count / current );
-}
-
-//----------------------------------------------------------------//
 bool Miner::checkTags () const {
 
-    #ifdef DEBUG
-        BlockTreeCursor ledgerCursor = *this->mLedgerTag;
-        assert ( this->mLedger->countBlocks () == ( ledgerCursor.getHeight () + 1 ));
-        shared_ptr < const Block > ledgerBlock = this->mLedger->getBlock ();
-        assert ( ledgerBlock );
-        return ledgerBlock->equals ( ledgerCursor );
-    #else
-        return true;
-    #endif
+    BlockTreeCursor ledgerCursor = *this->mLedgerTag;
+    assert ( this->mLedger->countBlocks () == ( ledgerCursor.getHeight () + 1 ));
+    shared_ptr < const Block > ledgerBlock = this->mLedger->getBlock ();
+    assert ( ledgerBlock );
+    return ledgerBlock->equals ( ledgerCursor );
 }
 
 //----------------------------------------------------------------//
@@ -140,7 +112,7 @@ void Miner::composeChain ( BlockTreeCursor cursor ) {
 
     BlockTreeCursor ledgerCursor = this->mLedgerTag.getCursor ();
 
-    // check to see if chain tag is *behind* best branch
+    // check to see if cursor is *behind* best branch
     if ( cursor.isAncestorOf ( ledgerCursor )) {
         this->mLedger->revertAndClear ( cursor.getHeight () + 1 );
         this->mBlockTree->tag ( this->mLedgerTag, cursor);
@@ -202,47 +174,6 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
 }
 
 //----------------------------------------------------------------//
-void Miner::extend ( time_t now ) {
-    
-    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
-    
-    // we can only extend the chain if we've already appended a provisional block.
-    // the provisional block is just an empty header, but with a valid charm.
-    
-    BlockTreeCursor provisional = *this->mBestBranchTag;
-    if ( !provisional.isProvisional ()) return;
-    
-    assert ( provisional.hasHeader ()); // if it's provisional, then it has to have a header.
-    assert ( !provisional.isComplete ()); // if it's provisional, then it can't be complete.
-    assert ( provisional.getMinerID () == this->mMinerID ); // if it's provisional, it must be ours.
-    
-    // parent must be complete. also, wait for 50% consensus (among
-    // visible miners) before extending so as to not waste effort racing ahead.
-    
-    BlockTreeCursor parent = provisional.getParent ();
-    if ( !( parent.hasHeader () && parent.isComplete ())) return; // bail if parent block is missing.
-    if ( this->checkConsensus ( parent ) <= 0.5 ) return; // bail if less that 50% of the visible network has accepted the previous block.
-
-    assert (( *this->mLedgerTag ).equals ( parent )); // ledger tag must be the parent.
-    assert ( this->checkTags ());
-
-    // prepare block may return an empty block if there's no mining network visible and there are no transactions.
-    shared_ptr < Block > block = this->prepareBlock ( now );
-    if ( block ) {
-        
-        assert ( block->getHeight () == provisional.getHeight ());
-        assert ( block->getCharm () == provisional.getCharm ());
-        
-        // push the block, which will also update the ledger tag.
-        this->pushBlock ( block );
-        
-        // re-tag the best branch; the branch with our new block is now our favorite branch.
-        this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
-        this->scheduleReport ();
-    }
-}
-
-//----------------------------------------------------------------//
 size_t Miner::getChainSize () const {
 
     return this->mLedger->countBlocks ();
@@ -282,7 +213,7 @@ void Miner::getSnapshot ( MinerSnapshot* snapshot, MinerStatus* status ) {
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, time_t now ) {
+BlockTreeCursor Miner::improveBranch ( BlockTreeCursor tail, u64 consensusHeight, time_t now ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
@@ -333,6 +264,9 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
             }
         }
         
+        // don't replace any block earlier than the consensus height;
+        if ( parentHeader.getHeight () < consensusHeight ) break;
+        
         // we can only replace blocks within the rewrite window. if parent is outside of that, no point in continuing.
         if ( !parentHeader.isInRewriteWindow ( now )) break;
         
@@ -348,7 +282,7 @@ BlockTreeCursor Miner::improveBranch ( BlockTreeTag& tag, BlockTreeCursor tail, 
 
     if ( extendFrom.hasHeader ()) {
         // this is what updates tag, which may be the "improved" tag from another miner
-        return this->mBlockTree->affirmProvisional ( tag, this->prepareProvisional ( extendFrom.getHeader (), now ));
+        return this->mBlockTree->makeProvisional ( this->prepareProvisional ( extendFrom.getHeader (), now ));
     }
     return tail; // use the chain as-is.
 }
@@ -387,6 +321,7 @@ Miner::Miner () :
     
     this->mLedgerTag.setName ( "working" );
     this->mBestBranchTag.setName ( "best" );
+    this->mProvisionalBranchTag.setName ( "provisional" );
     
     MinerLaunchTests::checkEnvironment ();
     
@@ -508,12 +443,6 @@ shared_ptr < BlockHeader > Miner::prepareProvisional ( const BlockHeader& parent
 }
 
 //----------------------------------------------------------------//
-void Miner::pruneTransactions () {
-
-    this->mTransactionQueue->pruneTransactions ( *this->mLedger );
-}
-
-//----------------------------------------------------------------//
 void Miner::pushBlock ( shared_ptr < const Block > block ) {
 
     assert ( this->mLedger->countBlocks () == block->getHeight ());
@@ -549,13 +478,29 @@ void Miner::report ( ReportMode reportMode ) const {
         }
         
         case REPORT_ALL_BRANCHES: {
-        
-            map < string, shared_ptr < RemoteMiner >> ::const_iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
+                    
+            u64 maxHeight = ledgerCursor.getHeight () + 1;
+                        
+            map < string, shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mRemoteMinersByURL.begin ();
             for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
-                remoteMinerIt->second->report ();
+                shared_ptr < RemoteMiner > remoteMiner = remoteMinerIt->second;
+                
+                BlockTreeCursor remoteCursor = *remoteMinerIt->second->mTag;
+                 if ( remoteCursor.hasHeader ()) {
+                    u64 tailHeight = remoteCursor.getHeight () + 1;
+                    maxHeight = maxHeight < tailHeight ? tailHeight : maxHeight;
+                }
             }
             
-            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BEST - %d: %s", ( int )ledgerCursor.getHeight (), ledgerCursor.writeBranch ().c_str ());
+            static const u64 REPORT_LENGTH = 6;
+            u64 minHeight = ( maxHeight < REPORT_LENGTH ) ? 0 : maxHeight - REPORT_LENGTH;
+            
+            remoteMinerIt = this->mRemoteMinersByURL.begin ();
+            for ( ; remoteMinerIt != this->mRemoteMinersByURL.end (); ++remoteMinerIt ) {
+                remoteMinerIt->second->report ( minHeight, maxHeight );
+            }
+            
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BEST - %d: %s", ( int )maxHeight - 1, ledgerCursor.writeBranch ( minHeight, maxHeight ).c_str ());
             LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "BLOCK SEARCHES: %d", ( int )this->mBlockSearchPool->countSearches ());
             LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "ACTIVE SEARCHES: %d", ( int )this->mBlockSearchPool->countActiveSearches ());
             LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "LEDGER TAG: %s", this->getLedgerTag ().write ().c_str ());
@@ -677,21 +622,10 @@ void Miner::step ( time_t now ) {
     this->mMessenger->receiveResponses ( *this, now );
     this->updateRemoteMinerGroups ();
   
-    this->updateBestBranchFromTree ( now );
-  
-//    // this evaluates each branch and picks the best candidate
-//    this->updateBestBranch ( now );
-//
-//    // using the best branch, build or rebuild chain
-//    this->composeChain ();
-//
-//    // fill the provisional block (if any)
-//    this->extend ( now );
+    this->updateBestBranch ( now );
     
     this->saveChain ();
-    
-//    this->pruneTransactions ();
-    
+        
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
     this->updateNetworkSearches ();
@@ -708,48 +642,9 @@ void Miner::step ( time_t now ) {
 //----------------------------------------------------------------//
 void Miner::updateBestBranch ( time_t now ) {
 
-    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
-
-    assert ( this->checkTags ());
-
-    // update the current best branch, excluding missing or invalid blocks.
-    // this may append an additional provisional header if branch is complete.
-    
-    // the "improved" branch trims blocks tagged as missing (searched for with no response) then appends our own provisional block
-    // if there's a better block within the lookback window.
-    BlockTreeCursor bestCursor = this->improveBranch ( this->mBestBranchTag, ( *this->mBestBranchTag ).trimMissingOrInvalidBranch (), now );
-
-    set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mOnlineMiners.begin ();
-    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
-        
-        shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        if ( !remoteMiner->mTag.hasCursor ()) continue;
-        
-        // for remote miners, we only trim invalid blocks, but place our own provisional block anywhere within the lookback window.
-        BlockTreeCursor remoteImproved = this->improveBranch ( remoteMiner->mImproved, ( *remoteMiner->mTag ).trimInvalidBranch (), now );
-        if ( remoteImproved.isMissing ()) continue;
-        
-        assert ( !remoteImproved.isMissingOrInvalid ());
-        
-        // trivially reject earlier chains
-        if ( this->mLedger->hasBlock ( remoteImproved.getHash ())) continue;
-        
-        if ( BlockTreeCursor::compare ( remoteImproved, bestCursor ) < 0 ) {
-            bestCursor = this->mBlockTree->tag ( this->mBestBranchTag, remoteImproved );
-        }
-    }
-    assert ( bestCursor.hasHeader ());
-    assert ( !bestCursor.isMissingOrInvalid ());
-    assert ( this->checkTags ());
-    
-    // at this stage, the "best block" is whatever chain has the bast score, including our own provisional block.
-    // note that we won't place two provisionals in a row.
-    
-    // the branch should always be terminated by a provisional.
-}
-
-//----------------------------------------------------------------//
-void Miner::updateBestBranchFromTree ( time_t now ) {
+    // first, sample all the branches, including the current "best" branch.
+    // trim missing and invalid segments. the sampler will find the consensus
+    // subtree and also contain a list of branch cursors for future consideration as "best."
 
     BlockTreeSampler sampler;
     
@@ -766,47 +661,52 @@ void Miner::updateBestBranchFromTree ( time_t now ) {
     
     BlockTreeSamplerNode subTree = sampler.sample ();
     
-    if ( this->mLedgerTag.getCursor ().isAncestorOf ( subTree.mRoot )) {
-        this->mTransactionQueue->pruneTransactions ( *this->mLedger );
-    }
+    // iterate through each branch in the sampler; consider it if it is equal to
+    // or greater than the consensus height. if "improving," do not rewind
+    // past the consensus height.
     
-    Digest bestCharm = subTree.mRoot.getNextCharm ( this->mVisage );
-    bool extend = subTree.mRoot.isComplete ();
+    BlockTreeCursor bestCursor;
+    u64 consensusHeight = subTree.mRoot.getHeight ();
     
-    list < BlockTreeCursor >::const_iterator childIt = subTree.mChildren.cbegin ();
-    for ( ; childIt != subTree.mChildren.cend (); ++childIt ) {
+    list < BlockTreeCursor >::const_iterator branchIt = sampler.mLeaves.cbegin ();
+    for ( ; branchIt != sampler.mLeaves.cend (); ++branchIt ) {
         
-        Digest childCharm = childIt->getCharm ();
-        if ( BlockHeader::compare ( childCharm, bestCharm ) <= 0 ) {
-            bestCharm = childCharm;
-            this->mBlockTree->tag ( this->mBestBranchTag, *childIt );
-            extend = false;
+        if ( branchIt->getHeight () < consensusHeight ) continue; // skip child nodes below the consensus height.
+        
+        BlockTreeCursor challengeCursor = this->improveBranch ( *branchIt, consensusHeight, now );
+        
+        assert ( consensusHeight <= challengeCursor.getHeight ());
+        
+        if ( !bestCursor.hasHeader () || ( BlockTreeCursor::compare ( challengeCursor, bestCursor ) < 0 )) {
+            bestCursor = challengeCursor;
         }
     }
-
-    if ( extend ) {
-
-        this->composeChain ( subTree.mRoot );
+    
+    assert ( bestCursor.hasHeader ());
+    this->mBlockTree->tag ( this->mBestBranchTag, bestCursor );
+    
+    this->composeChain ( this->mBestBranchTag.getCursor ());
+    
+    // if the next block is provisional (i.e. is ours, waiting to be produced).
+    if (
+        bestCursor.isProvisional () &&                                      // end of best chain is provisional
+        ( bestCursor.getHeight () == this->mLedger->countBlocks ()) &&      // ledger is complete and caught up (i.e. previous to end of chain)
+        subTree.mRoot.equals ( this->mLedgerTag.getCursor ())               // ledger is also consensus root
+    ) {
 
         // prepare block may return an empty block if there's no mining network visible and there are no transactions.
-        shared_ptr < Block > block = extend ? this->prepareBlock ( now ) : NULL;
+        shared_ptr < Block > block = this->prepareBlock ( now );
         if ( block ) {
-            
-            assert ( block->getCharm () == bestCharm );
-            
-            this->mBlockTree->affirmBlock ( this->mBestBranchTag, block );
-      
+                              
             // push the block, which will also update the ledger tag.
             this->pushBlock ( block );
-
-            // re-tag the best branch; the branch with our new block is now our favorite branch.
+            
+            // re-tag the best branch; this replaces the provisional block with our new one.
             this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
         }
     }
-    else {
-    
-        this->composeChain ( this->mBestBranchTag.getCursor ());
-    }
+
+    // TODO: if consensus root is an ancestor of ledger tag, purge transactions using consensus root
 }
 
 //----------------------------------------------------------------//

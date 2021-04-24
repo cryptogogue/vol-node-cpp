@@ -35,12 +35,12 @@ public:
 class BlockTreeSampler {
 protected:
 
-    list < BlockTreeCursor >    mLeaves;
-
     //----------------------------------------------------------------//
     static u64                  findHeight                  ( const list < BlockTreeSamplerNode >& nodes );
 
 public:
+
+    list < BlockTreeCursor >    mLeaves;
 
     //----------------------------------------------------------------//
     void                        addLeaf                     ( const BlockTreeCursor& leaf );

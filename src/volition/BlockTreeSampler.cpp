@@ -57,7 +57,7 @@ u64 BlockTreeSampler::findHeight ( const list < BlockTreeSamplerNode >& nodes ) 
 BlockTreeSamplerNode BlockTreeSampler::sample ( double threshold ) const {
     UNUSED ( threshold );
     
-    size_t minSize = ( size_t )ceil ( this->mLeaves.size () * threshold );
+    size_t minSize = ( size_t )floor ( this->mLeaves.size () * threshold );
     
     list < BlockTreeSamplerNode > nodes;
     
@@ -94,7 +94,7 @@ BlockTreeSamplerNode BlockTreeSampler::sample ( double threshold ) const {
                 }
             }
             
-            if ( outerIt->mLeaves.size () >= minSize ) return *outerIt;
+            if ( outerIt->mLeaves.size () > minSize ) return *outerIt;
             
             // advance the root to its parent
             if ( height > 0 ) {
