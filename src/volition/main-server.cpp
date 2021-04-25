@@ -154,14 +154,15 @@ protected:
         string sslCertFile              = configuration.getString       ( "openSSL.server.certificateFile", "" );
         
         if ( logpath.size () > 0 ) {
-        
-            FileSys::createDirectories ( logpath );
-            
+                    
             time_t t;
             time ( &t );
             string timeStr = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), "%Y-%m-%d-%H%M%S" );
             string logname = Format::write ( "%s/%s-%s.log", logpath.c_str (), minerID.c_str (), timeStr.c_str ());
-            freopen ( logname.c_str (), "w+", stderr );
+            string lognameErr = Format::write ( "%s/%s-%s-error.log", logpath.c_str (), minerID.c_str (), timeStr.c_str ());
+            
+            loguru::add_file ( logname.c_str (), loguru::Append, loguru::Verbosity_MAX );
+            loguru::add_file ( lognameErr.c_str (), loguru::Append, loguru::Verbosity_WARNING );
         }
         
         LGN_LOG ( VOL_FILTER_APP, INFO, "Hello from VOLITION main.cpp!" );
