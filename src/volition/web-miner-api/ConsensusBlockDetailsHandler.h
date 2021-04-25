@@ -4,7 +4,6 @@
 #ifndef VOLITION_WEBMINERAPI_CONSENSUSBLOCKDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_CONSENSUSBLOCKDETAILSHANDLER_H
 
-#include <volition/AbstractConsensusInspector.h>
 #include <volition/Block.h>
 #include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
@@ -26,12 +25,11 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
         
+        ScopedSharedMinerLedgerLock ledger ( miner );
+        
         string hash = this->getMatchString ( "hash" );
 
-        ScopedSharedMinerStatusLock minerStatus ( miner );
-        MinerSnapshot::InspectorPtr inspector = minerStatus.createInspector ();
-        shared_ptr < const Block > block = inspector ? inspector->getBlock ( hash ) : NULL;
-
+        shared_ptr < const Block > block = ledger.getBlock ( hash );
         if ( block ) {
             jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
         }

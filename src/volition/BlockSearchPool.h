@@ -21,7 +21,6 @@
 namespace Volition {
 
 class AbstractChainRecorder;
-class AbstractConsensusInspector;
 class AbstractHashable;
 class BlockSearchPool;
 class Miner;

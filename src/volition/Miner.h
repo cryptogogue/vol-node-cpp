@@ -23,7 +23,6 @@
 namespace Volition {
 
 class AbstractChainRecorder;
-class AbstractConsensusInspector;
 class AbstractHashable;
 class BlockSearchPool;
 class Miner;
@@ -64,8 +63,6 @@ public:
 class MinerSnapshot {
 public:
 
-    typedef shared_ptr < AbstractConsensusInspector > InspectorPtr;
-
     string                              mMinerID;
     time_t                              mStartTime;
 
@@ -89,7 +86,6 @@ public:
     GET_SET ( string,                   Motto,                      mMotto )
     
     //----------------------------------------------------------------//
-    InspectorPtr            createInspector                 () const;
                             MinerSnapshot                   ();
     set < string >          sampleOnlineMinerURLs           ( size_t sampleSize = 0 ) const;
 };
@@ -157,7 +153,7 @@ protected:
     friend class ScopedSharedMinerLock;
     friend class ScopedSharedMinerLedgerLock;
 
-    static constexpr const char* PERSIST_PREFIX     = "v4-beta-";
+    static constexpr const char* PERSIST_PREFIX     = "v5-beta-";
     static constexpr const char* MASTER_BRANCH      = "master";
 
     int                                             mFlags;

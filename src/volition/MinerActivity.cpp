@@ -27,9 +27,11 @@ void MinerActivity::runActivity () {
         
         try {
             this->mMutex.lock ();
+            
             this->step ( now );
             this->report ();
             this->mBlockSearchPool->reportBlockSearches ();
+            
             this->mMutex.unlock ();
         }
         catch ( const Poco::Exception& exc ) {

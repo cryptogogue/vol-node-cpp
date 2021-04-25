@@ -12,7 +12,6 @@
 
 namespace Volition {
 
-class AbstractConsensusInspector;
 class Ledger;
 class Miner;
 

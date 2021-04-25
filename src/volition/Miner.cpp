@@ -10,7 +10,6 @@
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/SQLiteBlockTree.h>
-#include <volition/SQLiteConsensusInspector.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
@@ -20,12 +19,6 @@ namespace Volition {
 //================================================================//
 // MinerSnapshot
 //================================================================//
-
-//----------------------------------------------------------------//
-MinerSnapshot::InspectorPtr MinerSnapshot::createInspector () const {
-
-    return make_shared < SQLiteConsensusInspector >( this->mBlocksFilename );
-}
 
 //----------------------------------------------------------------//
 MinerSnapshot::MinerSnapshot () :

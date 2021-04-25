@@ -25,7 +25,7 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
         
-       ScopedSharedMinerLedgerLock ledger ( miner );
+        ScopedSharedMinerLedgerLock ledger ( miner );
         ledger.seek ( this->optQuery ( "at", ledger.countBlocks ()));
         
         u64 height = this->getMatchU64 ( "blockID" );

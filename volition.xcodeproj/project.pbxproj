@@ -230,10 +230,6 @@
 		CD97F7192607E5CD00C5C8A6 /* MonetaryPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = CD97F7182607E5CD00C5C8A6 /* MonetaryPolicy.h */; };
 		CD97F71B2607FC1D00C5C8A6 /* SetMonetaryPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = CD97F71A2607FC1D00C5C8A6 /* SetMonetaryPolicy.h */; };
 		CD9941F725F7E60100524DB6 /* ScopedProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9941F525F7E60100524DB6 /* ScopedProfile.h */; };
-		CD9941FC25F8565400524DB6 /* AbstractConsensusInspector.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9941FA25F8565400524DB6 /* AbstractConsensusInspector.h */; };
-		CD9941FD25F8565400524DB6 /* AbstractConsensusInspector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9941FB25F8565400524DB6 /* AbstractConsensusInspector.cpp */; };
-		CD99420025F85F1600524DB6 /* SQLiteConsensusInspector.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9941FE25F85F1600524DB6 /* SQLiteConsensusInspector.h */; };
-		CD99420125F85F1600524DB6 /* SQLiteConsensusInspector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9941FF25F85F1600524DB6 /* SQLiteConsensusInspector.cpp */; };
 		CD99420825F9303900524DB6 /* AbstractMinerAPIRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */; };
 		CD99422625FEAD3C00524DB6 /* BlockSearchPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */; };
 		CD99422725FEAD3C00524DB6 /* BlockSearchPool.h in Headers */ = {isa = PBXBuildFile; fileRef = CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */; };
@@ -1036,10 +1032,6 @@
 		CD97F7182607E5CD00C5C8A6 /* MonetaryPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MonetaryPolicy.h; path = src/volition/MonetaryPolicy.h; sourceTree = "<group>"; };
 		CD97F71A2607FC1D00C5C8A6 /* SetMonetaryPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetMonetaryPolicy.h; path = src/volition/transactions/SetMonetaryPolicy.h; sourceTree = "<group>"; };
 		CD9941F525F7E60100524DB6 /* ScopedProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScopedProfile.h; path = src/volition/ScopedProfile.h; sourceTree = "<group>"; };
-		CD9941FA25F8565400524DB6 /* AbstractConsensusInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractConsensusInspector.h; path = src/volition/AbstractConsensusInspector.h; sourceTree = "<group>"; };
-		CD9941FB25F8565400524DB6 /* AbstractConsensusInspector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractConsensusInspector.cpp; path = src/volition/AbstractConsensusInspector.cpp; sourceTree = "<group>"; };
-		CD9941FE25F85F1600524DB6 /* SQLiteConsensusInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLiteConsensusInspector.h; path = src/volition/SQLiteConsensusInspector.h; sourceTree = "<group>"; };
-		CD9941FF25F85F1600524DB6 /* SQLiteConsensusInspector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteConsensusInspector.cpp; path = src/volition/SQLiteConsensusInspector.cpp; sourceTree = "<group>"; };
 		CD99420625F9303900524DB6 /* AbstractMinerAPIRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractMinerAPIRequestHandler.h; path = src/volition/AbstractMinerAPIRequestHandler.h; sourceTree = "<group>"; };
 		CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlockSearchPool.cpp; path = src/volition/BlockSearchPool.cpp; sourceTree = "<group>"; };
 		CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlockSearchPool.h; path = src/volition/BlockSearchPool.h; sourceTree = "<group>"; };
@@ -1421,7 +1413,6 @@
 			isa = PBXGroup;
 			children = (
 				CDB8B3E221ACC657004EE816 /* api */,
-				CD9941F925F8562C00524DB6 /* inspector */,
 				CD9E7BC2250B97710065C5FC /* messenger */,
 				CD99422325FEAD3C00524DB6 /* BlockSearchPool.cpp */,
 				CD99422525FEAD3C00524DB6 /* BlockSearchPool.h */,
@@ -1765,17 +1756,6 @@
 				CD19DF8B259C18D50007ACF0 /* leaks */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CD9941F925F8562C00524DB6 /* inspector */ = {
-			isa = PBXGroup;
-			children = (
-				CD9941FB25F8565400524DB6 /* AbstractConsensusInspector.cpp */,
-				CD9941FA25F8565400524DB6 /* AbstractConsensusInspector.h */,
-				CD9941FF25F85F1600524DB6 /* SQLiteConsensusInspector.cpp */,
-				CD9941FE25F85F1600524DB6 /* SQLiteConsensusInspector.h */,
-			);
-			name = inspector;
 			sourceTree = "<group>";
 		};
 		CD99421525FC48E100524DB6 /* handler */ = {
@@ -2163,7 +2143,6 @@
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
 				CD19E03725A079E70007ACF0 /* BlockHeaderFields.h in Headers */,
 				CDF8AD5D21F52B34000E285F /* LuaContext.h in Headers */,
-				CD99420025F85F1600524DB6 /* SQLiteConsensusInspector.h in Headers */,
 				CDAA38EB251AA72400FEAFB5 /* SimulatorActivity.h in Headers */,
 				CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */,
 				CDB8B3C721AC7DB8004EE816 /* Asset.h in Headers */,
@@ -2176,7 +2155,6 @@
 				CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */,
 				CD8BAE3D21EBC81900B5040E /* SerializableUniquePtr.h in Headers */,
 				CD19DF57259B3F190007ACF0 /* InMemoryBlockTreeNode.h in Headers */,
-				CD9941FC25F8565400524DB6 /* AbstractConsensusInspector.h in Headers */,
 				CDA1573423FA59EC00DFACCF /* AccountKeyLookup.h in Headers */,
 				CD762AD6232826D7005AC85D /* NumericEntitlement.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransactionBody.h in Headers */,
@@ -2891,14 +2869,12 @@
 				CD9E7BA124FF67C30065C5FC /* InMemoryBlockTree.cpp in Sources */,
 				CD7752A32536960B00A53765 /* CryptoKeyPair.cpp in Sources */,
 				CD4E81CB2105941A007DA585 /* AbstractTransactionBody.cpp in Sources */,
-				CD9941FD25F8565400524DB6 /* AbstractConsensusInspector.cpp in Sources */,
 				CD4E81B0210593DD007DA585 /* AbstractRequestHandler.cpp in Sources */,
 				CD8BAE4321EBD42000B5040E /* SquapFactory.cpp in Sources */,
 				CDF8AD5C21F52B34000E285F /* LuaContext.cpp in Sources */,
 				CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */,
 				CD19E03B25A07A0D0007ACF0 /* HasBlockHeaderFields.cpp in Sources */,
 				CDAA38E6251AA13900FEAFB5 /* SimMiningNetwork.cpp in Sources */,
-				CD99420125F85F1600524DB6 /* SQLiteConsensusInspector.cpp in Sources */,
 				CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */,
 				CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */,
 				CD19E03625A079E70007ACF0 /* BlockHeaderFields.cpp in Sources */,
