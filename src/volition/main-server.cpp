@@ -368,9 +368,9 @@ int main ( int argc, char** argv ) {
     setvbuf ( stdout, NULL, _IOLBF, 0 );
     setvbuf ( stderr, NULL, _IOLBF, 0 );
 
-    Lognosis::setFilter ( PDM_FILTER_ROOT,                      Lognosis::OFF );
-    Lognosis::setFilter ( PDM_FILTER_SQLITE,                    Lognosis::OFF );
-    Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  Lognosis::OFF );
+    Lognosis::setFilter ( PDM_FILTER_ROOT,                      Lognosis::WARNING );
+    Lognosis::setFilter ( PDM_FILTER_SQLITE,                    Lognosis::WARNING );
+    Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  Lognosis::WARNING );
     
 //    Lognosis::setFilter ( VOL_FILTER_APP,                       Lognosis::OFF );
     Lognosis::setFilter ( VOL_FILTER_BLOCK,                     Lognosis::OFF );

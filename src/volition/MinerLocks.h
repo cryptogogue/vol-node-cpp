@@ -23,6 +23,19 @@ public:
 };
 
 //================================================================//
+// ScopedSharedMinerBlockTreeLock
+//================================================================//
+class ScopedSharedMinerBlockTreeLock :
+    public shared_lock < shared_mutex > {
+public:
+
+    //----------------------------------------------------------------//
+    ScopedSharedMinerBlockTreeLock ( shared_ptr < Miner > miner ) :
+        shared_lock < shared_mutex > ( miner->mBlockTreeMutex ) {
+    }
+};
+
+//================================================================//
 // ScopedSharedMinerLedgerLock
 //================================================================//
 class ScopedSharedMinerLedgerLock :

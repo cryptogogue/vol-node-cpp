@@ -25,11 +25,19 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
         
-        ScopedSharedMinerLedgerLock ledger ( miner );
-        
         string hash = this->getMatchString ( "hash" );
-
-        shared_ptr < const Block > block = ledger.getBlock ( hash );
+        
+        shared_ptr < const Block > block;
+        
+        {
+            ScopedSharedMinerBlockTreeLock lock ( miner );
+            const AbstractBlockTree& blockTree = miner->getBlockTree ();
+            BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
+            if ( cursor.hasBlock ()) {
+                block = cursor.getBlock ();
+            }
+        }
+        
         if ( block ) {
             jsonOut.set ( "block", ToJSONSerializer::toJSON ( *block ));
         }
