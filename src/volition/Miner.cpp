@@ -840,6 +840,8 @@ void Miner::updateRemoteMiners () {
     
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "affirming remote miner new URLs" );
+    
     // get miner URL list from ledger
     set < string > miners = this->getLedger ().getMiners ();
     set < string >::iterator minerIt = miners.begin ();
@@ -853,6 +855,8 @@ void Miner::updateRemoteMiners () {
         
         this->affirmRemoteMiner ( url );
     }
+    
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "affirming remote miner pending URLs" );
     
     // affirm miners for pending URLs
     while ( this->mNewMinerURLs.size ()) {
@@ -872,6 +876,8 @@ void Miner::updateRemoteMiners () {
     
     SerializableSet < string > minerURLs;
     
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "updating remote miner miner state" );
+    
     // update miner state
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
@@ -881,6 +887,7 @@ void Miner::updateRemoteMiners () {
     }
     
     if ( this->mMinersFilename.size ()) {
+        LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "writing miners.json" );
         ToJSONSerializer::toJSONFile ( minerURLs, this->mMinersFilename );
     }
 }
