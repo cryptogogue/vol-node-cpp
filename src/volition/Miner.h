@@ -151,7 +151,7 @@ protected:
 
     friend class ScopedExclusiveMinerLock;
     friend class ScopedSharedMinerLock;
-    friend class ScopedSharedMinerBlockTreeLock;
+    friend class ScopedUniqueMinerBlockTreeLock;
     friend class ScopedSharedMinerLedgerLock;
 
     static constexpr const char* PERSIST_PREFIX     = "v5-beta-";
@@ -180,7 +180,7 @@ protected:
     bool                                            mNetworkSearch;
     
     shared_ptr < AbstractBlockTree >                mBlockTree;
-    shared_mutex                                    mBlockTreeMutex;
+    mutex                                           mBlockTreeMutex;
     shared_ptr < BlockSearchPool >                  mBlockSearchPool;
     
     // the "working" legder is a "complete" chain (in that all blocks are accounted for),

@@ -30,7 +30,7 @@ public:
         shared_ptr < const Block > block;
         
         {
-            ScopedSharedMinerBlockTreeLock lock ( miner );
+            ScopedUniqueMinerBlockTreeLock lock ( miner );
             const AbstractBlockTree& blockTree = miner->getBlockTree ();
             BlockTreeCursor cursor = blockTree.findCursorForHash ( hash );
             if ( cursor.hasBlock ()) {
