@@ -213,6 +213,8 @@ void RemoteMiner::setMinerID ( string minerID ) {
 //----------------------------------------------------------------//
 void RemoteMiner::update () {
     
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+    
     AbstractMiningMessenger& messenger = *this->mMiner.getMessenger ();
     
     switch ( this->mState ) {
