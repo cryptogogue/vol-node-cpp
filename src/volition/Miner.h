@@ -72,6 +72,7 @@ public:
     bool                                mIsMiner;
     u64                                 mMinerHeight;
     
+    string                              mPrefixFilename;
     string                              mLedgerFilename;
     string                              mConfigFilename;
     string                              mBlocksFilename;
@@ -201,6 +202,7 @@ protected:
     // to offload the RAM burder required to persist the ledger database and to speed
     // up rebuilding the database when restarting the node.
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
+    size_t                                          mPersistFrequency;
     
     mutex                                           mMutex;
     
@@ -218,8 +220,9 @@ protected:
     void                                affirmMessenger             ();
     bool                                checkTags                   () const;
     void                                composeChain                ( BlockTreeCursor cursor );
-    void                                composeChainRecurse         ( BlockTreeCursor branch );
+    void                                composeChainInnerLoop       ( BlockTreeCursor branch );
     BlockTreeCursor                     improveBranch               ( BlockTreeCursor tail, u64 consensusHeight, time_t now );
+    LedgerResult                        persistLedger               ( shared_ptr < AbstractPersistenceProvider > provider, shared_ptr < const Block > genesisBlock );
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
     void                                pushBlock                   ( shared_ptr < const Block > block );
     set < shared_ptr < RemoteMiner >>   sampleContributors          ( size_t sampleSize ) const;
@@ -261,35 +264,42 @@ public:
     GET_SET ( Control,                                      ControlLevel,               mControlLevel )
     GET_SET ( shared_ptr < AbstractMiningMessenger >,       Messenger,                  mMessenger )
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
+    GET_SET ( size_t,                                       PersistFrequency,           mPersistFrequency )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
 
     //----------------------------------------------------------------//
-    void                                affirmKey                   ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
-    void                                affirmRemoteMiner           ( string url );
-    void                                affirmVisage                ();
-    Signature                           calculateVisage             ( string motto = "" );
-    static Signature                    calculateVisage             ( const CryptoKeyPair& keyPair, string motto = "" );
-    size_t                              getChainSize                () const;
-    Ledger&                             getLedger                   ();
-    Ledger                              getLedgerAtBlock            ( u64 index ) const;
-    void                                getSnapshot                 ( MinerSnapshot* snapshot = NULL, MinerStatus* status = NULL );
-    bool                                isLazy                      () const;
-    static shared_ptr < Block >         loadGenesisBlock            ( string genesisFile );
-    void                                loadKey                     ( string keyfile, string password = "" );
-                                        Miner                       ();
-    virtual                             ~Miner                      ();
-    LedgerResult                        persist                     ( string path, shared_ptr < const Block > block );
-    shared_ptr < Block >                prepareBlock                ( time_t now );
-    void                                report                      () const;
-    void                                report                      ( ReportMode reportMode ) const;
-    void                                reset                       ();
-    void                                setGenesis                  ( shared_ptr < const Block > block );
-    void                                setMinimumGratuity          ( u64 minimumGratuity );
-    void                                setMute                     ( bool paused );
-    void                                setReward                   ( string reward );
-    void                                setVerbose                  ( bool verbose = true );
-    void                                shutdown                    ( bool kill = false );
-    void                                step                        ( time_t now );
+    void                            affirmKey                           ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
+    void                            affirmRemoteMiner                   ( string url );
+    void                            affirmVisage                        ();
+    Signature                       calculateVisage                     ( string motto = "" );
+    static Signature                calculateVisage                     ( const CryptoKeyPair& keyPair, string motto = "" );
+    size_t                          getChainSize                        () const;
+    Ledger&                         getLedger                           ();
+    Ledger                          getLedgerAtBlock                    ( u64 index ) const;
+    void                            getSnapshot                         ( MinerSnapshot* snapshot = NULL, MinerStatus* status = NULL );
+    bool                            isLazy                              () const;
+    static shared_ptr < Block >     loadGenesisBlock                    ( string genesisFile );
+    void                            loadKey                             ( string keyfile, string password = "" );
+                                    Miner                               ();
+    virtual                         ~Miner                              ();
+    LedgerResult                    persistBlockTreeSQLite              ( SQLiteConfig config );
+    LedgerResult                    persistLedgerSQLite                 ( shared_ptr < const Block > genesisBlock, SQLiteConfig config );
+    LedgerResult                    persistLedgerSQLiteStringStore      ( shared_ptr < const Block > genesisBlock, SQLiteConfig config );
+    LedgerResult                    persistLedgerDebugStringStore       ( shared_ptr < const Block > genesisBlock );
+    shared_ptr < Block >            prepareBlock                        ( time_t now );
+    void                            report                              () const;
+    void                            report                              ( ReportMode reportMode ) const;
+    void                            reset                               ();
+    void                            setBlockTree                        ( shared_ptr < AbstractBlockTree > blockTree = NULL );
+    void                            setGenesis                          ( shared_ptr < const Block > block );
+    void                            setMaxBlockSearches                 ( size_t max );
+    void                            setMinimumGratuity                  ( u64 minimumGratuity );
+    void                            setMute                             ( bool paused );
+    void                            setPersistencePath                  ( string path, shared_ptr < const Block > genesisBlock );
+    void                            setReward                           ( string reward );
+    void                            setVerbose                          ( bool verbose = true );
+    void                            shutdown                            ( bool kill = false );
+    void                            step                                ( time_t now );
 };
 
 } // namespace Volition

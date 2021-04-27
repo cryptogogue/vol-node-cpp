@@ -97,11 +97,14 @@ protected:
     set < BlockSearchKey >          mActiveSearches;
     map < string, BlockSearch >     mBlockSearchesByHash;
     set < BlockSearchKey >          mPendingSearches;
+    size_t                          mMaxSearches;
 
     //----------------------------------------------------------------//
     void                    erase                           ( string hash );
 
 public:
+    
+    GET_SET ( size_t,   MaxSearches,    mMaxSearches )
     
     //----------------------------------------------------------------//
     void                    affirmBranchSearch              ( BlockTreeCursor cursor );

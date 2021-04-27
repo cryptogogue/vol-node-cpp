@@ -168,7 +168,8 @@ void BlockSearchPool::affirmBranchSearch ( BlockTreeCursor cursor ) {
 //----------------------------------------------------------------//
 BlockSearchPool::BlockSearchPool ( Miner& miner, AbstractBlockTree& blockTree ) :
     mMiner ( miner ),
-    mBlockTree ( blockTree ) {
+    mBlockTree ( blockTree ),
+    mMaxSearches ( MAX_SEARCHES ) {
 }
 
 //----------------------------------------------------------------//

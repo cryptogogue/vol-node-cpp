@@ -391,9 +391,9 @@ kBlockTreeSearchStatus SQLiteBlockTree::stringToSearchStatus ( string str ) {
 }
 
 //----------------------------------------------------------------//
-SQLiteBlockTree::SQLiteBlockTree ( string filename ) {
+SQLiteBlockTree::SQLiteBlockTree ( string filename, SQLiteConfig config ) {
 
-    SQLiteResult result = this->mDB.open ( filename );
+    SQLiteResult result = this->mDB.open ( filename, config );
     result.reportWithAssert ();
     
     size_t userVersion = 0;

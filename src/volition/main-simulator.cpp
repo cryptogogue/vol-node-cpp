@@ -422,7 +422,7 @@ int main ( int argc, char** argv ) {
     
 //    Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             Lognosis::OFF );
     Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_QUEUE,                     Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_TRANSACTION_QUEUE,                     Lognosis::OFF );
 
     Lognosis::init ( argc, argv );
 

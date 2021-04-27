@@ -123,7 +123,7 @@ private:
 public:
 
     //----------------------------------------------------------------//
-                                        SQLiteBlockTree                 ( string filename );
+                                        SQLiteBlockTree                 ( string filename, SQLiteConfig config );
                                         ~SQLiteBlockTree                ();
 };
 

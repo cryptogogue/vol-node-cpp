@@ -23,92 +23,59 @@ protected:
     shared_ptr < MinerActivity > mMinerActivity;
 
     //----------------------------------------------------------------//
-    void defineOptions ( Poco::Util::OptionSet& options ) override {
-        Application::defineOptions ( options );
-        
-        options.addOption (
-            Poco::Util::Option ( "config", "c", "path to configuration file" )
+    void addOption ( Poco::Util::OptionSet& opts, string name, string shortname, string desc, string oneOf = "", string def = "" ) {
+    
+        string oneOfStr     = oneOf.size () ? Format::write ( "one of: %s.", oneOf.c_str ()) : "";
+        string defStr       = def.size () ? Format::write ( "default: %s.", def.c_str ()) : "";
+    
+        opts.addOption (
+            Poco::Util::Option ( name, shortname, Format::write ( "%s. %s %s", desc.c_str (), oneOfStr.c_str (), defStr.c_str ()))
                 .required ( false )
                 .argument ( "value", true )
-                .binding ( "config" )
+                .binding ( name )
         );
+    }
+
+    //----------------------------------------------------------------//
+    void defineOptions ( Poco::Util::OptionSet& opts ) override {
+        Application::defineOptions ( opts );
         
-        options.addOption (
-            Poco::Util::Option ( "control-key", "", "path to public key for verifying control commands." )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "control-key" )
-        );
+        // log levels
+        this->addOption ( opts, "log-level-app", "",                    "log level for the application",                                "info, warn, error, fatal",     "info" );
+        this->addOption ( opts, "log-level-block", "",                  "log level for push block internals",                           "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-consensus", "",              "log level for consensus",                                      "info, warn, error, fatal",     "info" );
+        this->addOption ( opts, "log-level-http", "",                   "log level for http handlers",                                  "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-json", "",                   "log level for json serialization",                             "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-ledger", "",                 "log level for ledger operations",                              "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-lua", "",                    "log level for lua (crafting) scripts",                         "info, warn, error, fatal",     "info" );
+        this->addOption ( opts, "log-level-mining-report", "",          "log level for the mining report",                              "info, warn, error, fatal",     "info" );
+        this->addOption ( opts, "log-level-padamose", "",               "log level for the padamose versioned store",                   "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-padamose-sqlite", "",        "log level for the sqlite persistence provider in padamose",    "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-search-report", "",          "log level for the block search report",                        "info, warn, error, fatal",     "info" );
+        this->addOption ( opts, "log-level-sqlite", "",                 "log level for sqlite",                                         "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-transaction-queue", "",      "log level for transaction queue",                              "info, warn, error, fatal",     "warn" );
         
-        options.addOption (
-            Poco::Util::Option ( "control-level", "", "miner control level ('config', 'admin')" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "control-level" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "delay-fixed", "df", "set update interval (in milliseconds)" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "delay-fixed" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "delay-variable", "dv", "set update interval (in milliseconds)" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "delay-variable" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "dump", "dmp", "dump ledger to sqlite file" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "dump" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "genesis", "g", "path to the genesis file" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "genesis" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "keyfile", "k", "path to public miner key file" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "keyfile" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "logpath", "l", "path to log folder" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "logpath" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "miner", "m", "miner name" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "miner" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "persist", "", "path to folder for persist files." )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "persist" )
-        );
-        
-        options.addOption (
-            Poco::Util::Option ( "port", "p", "set port to serve from" )
-                .required ( false )
-                .argument ( "value", true )
-                .binding ( "port" )
-        );
+        // general config
+        this->addOption ( opts, "block-search-max", "",                 "maximum number of simultaneous block searches",                            "",                     "256" );
+        this->addOption ( opts, "blocktree-persist-mode", "",           "the persist mode",                                                         "none, sqlite",         "sqlite" );
+        this->addOption ( opts, "config", "c",                          "path to configuration file" );
+        this->addOption ( opts, "control-key", "",                      "path to public key for verifying control commands" );
+        this->addOption ( opts, "control-level", "",                    "miner control level",                                                      "none, config, admin",  "none" );
+        this->addOption ( opts, "sleep-fixed", "",                      "set fixed update sleep (in milliseconds)" );
+        this->addOption ( opts, "sleep-variable", "",                   "set variable update sleep (in milliseconds)" );
+        this->addOption ( opts, "dump", "",                             "dump ledger to sqlite give filename" );
+        this->addOption ( opts, "genesis", "g",                         "path to the genesis file",                                                 "",                     "genesis.json" );
+        this->addOption ( opts, "keyfile", "k",                         "path to public miner key file" );
+        this->addOption ( opts, "ledger-persist-frequency", "",         "force a persist every N blocks (during chain composition)",                "",                     "0" );
+        this->addOption ( opts, "ledger-persist-mode", "",              "the persist mode",                                                         "none, sqlite, sqlite-stringstore, debug-stringstore",        "sqlite" );
+        this->addOption ( opts, "logpath", "l",                         "path to log folder" );
+        this->addOption ( opts, "miner", "m",                           "miner name" );
+        this->addOption ( opts, "persist-path", "",                     "base path to folder for persist files",                                    "",                     "persist-chain" );
+        this->addOption ( opts, "port", "p",                            "set port to serve from",                                                   "",                     "9090" );
+        this->addOption ( opts, "sqlite-journal-mode", "",              "the sqlite journaling mode",                                               "rollback, wal",        "wal" );
+        this->addOption ( opts, "sqlite-small-transactions", "",        "avoid long transactions",                                                  "0, 1, true, false",    "false" );
+        this->addOption ( opts, "sqlite-sleep-frequency", "",           "sleep after N writes",                                                     "",                     "0" );
+        this->addOption ( opts, "sqlite-sleep-millis", "",              "approx milliseconds to sleep if 'sqlite-sleep-frequency' is non-zero",     "",                     "100" );
     }
 
     //----------------------------------------------------------------//
@@ -139,19 +106,43 @@ protected:
         
         this->printProperties ();
         
-        string controlKeyfile           = configuration.getString       ( "control-key", "" );
-        string controlLevel             = configuration.getString       ( "control-level", "" );
-        string dump                     = configuration.getString       ( "dump", "" );
-        string genesis                  = configuration.getString       ( "genesis", "genesis.json" );
-        int fixedDelay                  = configuration.getInt          ( "delay-fixed", MinerActivity::DEFAULT_FIXED_UPDATE_MILLIS );
-        int variableDelay               = configuration.getInt          ( "delay-variable", MinerActivity::DEFAULT_VARIABLE_UPDATE_MILLIS );
-        string keyfile                  = configuration.getString       ( "keyfile" );
-        string logpath                  = configuration.getString       ( "logpath", "" );
-        string minerID                  = configuration.getString       ( "miner", "" );
-        string nodelist                 = configuration.getString       ( "nodelist", "" );
-        string persist                  = configuration.getString       ( "persist", "persist-chain" );
-        int port                        = configuration.getInt          ( "port", 9090 );
-        string sslCertFile              = configuration.getString       ( "openSSL.server.certificateFile", "" );
+        // log levels
+        Lognosis::setFilter ( VOL_FILTER_APP,                       this->stringToLogLevel ( configuration.getString       ( "log-level-app",                   "info" )));
+        Lognosis::setFilter ( VOL_FILTER_BLOCK,                     this->stringToLogLevel ( configuration.getString       ( "log-level-block",                 "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 this->stringToLogLevel ( configuration.getString       ( "log-level-consensus",             "info" )));
+        Lognosis::setFilter ( VOL_FILTER_HTTP,                      this->stringToLogLevel ( configuration.getString       ( "log-level-http",                  "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_JSON,                      this->stringToLogLevel ( configuration.getString       ( "log-level-json",                  "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_LEDGER,                    this->stringToLogLevel ( configuration.getString       ( "log-level-ledger",                "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_LUA,                       this->stringToLogLevel ( configuration.getString       ( "log-level-lua",                   "info" )));
+        Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             this->stringToLogLevel ( configuration.getString       ( "log-level-mining-report",         "info" )));
+        Lognosis::setFilter ( PDM_FILTER_ROOT,                      this->stringToLogLevel ( configuration.getString       ( "log-level-padamose",              "warn" )));
+        Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  this->stringToLogLevel ( configuration.getString       ( "log-level-padamose-sqlite",       "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      this->stringToLogLevel ( configuration.getString       ( "log-level-search-report",         "info" )));
+        Lognosis::setFilter ( PDM_FILTER_SQLITE,                    this->stringToLogLevel ( configuration.getString       ( "log-level-sqlite",                "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_TRANSACTION_QUEUE,         this->stringToLogLevel ( configuration.getString       ( "log-level-transaction-queue",     "warn" )));
+        
+        // general config
+        string blockTreePersistMode         = configuration.getString       ( "blocktree-persist-mode", "sqlite" ); // TODO
+        int blockSearchMax                  = configuration.getInt          ( "blockSearchMax", 256 ); // TODO
+        string controlKeyfile               = configuration.getString       ( "control-key", "" );
+        string controlLevel                 = configuration.getString       ( "control-level", "" );
+        string dump                         = configuration.getString       ( "dump", "" );
+        string genesis                      = configuration.getString       ( "genesis", "genesis.json" );
+        int fixedDelay                      = configuration.getInt          ( "delay-fixed", MinerActivity::DEFAULT_FIXED_UPDATE_MILLIS );
+        int variableDelay                   = configuration.getInt          ( "delay-variable", MinerActivity::DEFAULT_VARIABLE_UPDATE_MILLIS );
+        string keyfile                      = configuration.getString       ( "keyfile" );
+        int ledgerPersistFrequency          = configuration.getInt          ( "ledger-persist-frequency", 0 ); // TODO
+        string ledgerPersistMode            = configuration.getString       ( "ledger-persist-mode", "sqlite" ); // TODO
+        string logpath                      = configuration.getString       ( "logpath", "" );
+        string minerID                      = configuration.getString       ( "miner", "" );
+        string nodelist                     = configuration.getString       ( "nodelist", "" );
+        string persistPath                  = configuration.getString       ( "persist-path", "persist-chain" );
+        int port                            = configuration.getInt          ( "port", 9090 );
+        string sslCertFile                  = configuration.getString       ( "openSSL.server.certificateFile", "" );
+        string sqliteJournalMode            = configuration.getString       ( "sqlite-journal-mode", "wal" ); // TODO
+        bool sqliteSmallTransactions        = configuration.getBool         ( "sqlite-small-transactions", false ); // TODO
+        int sqliteSleepFrequency            = configuration.getInt          ( "sqlite-sleep-frequency", 0 ); // TODO
+        int sqliteSleepMillis               = configuration.getInt          ( "sqlite-sleep-millis", 100 ); // TODO
         
         if ( logpath.size () > 0 ) {
                     
@@ -211,16 +202,74 @@ protected:
             return Application::EXIT_CONFIG;
         }
         
-        if ( persist.size ()) {
-            LedgerResult result = this->mMinerActivity->persist ( persist, genesisBlock );
+        if ( persistPath.size ()) {
+            this->mMinerActivity->setPersistencePath ( persistPath, genesisBlock );
+        }
+        
+        SQLiteConfig sqliteConfig;
+        
+        sqliteConfig.mJournalMode = stringToJournalMode ( sqliteJournalMode );
+        if ( sqliteConfig.mJournalMode == SQLiteConfig::JOURNAL_MODE_UNKNOWN ) {
+            LGN_LOG ( VOL_FILTER_APP, INFO, "UNRECOGNIZED SQLITE JOURNAL MODE %s", sqliteJournalMode.c_str ());
+            return Application::EXIT_CONFIG;
+        }
+        
+        {
+            LedgerResult result = true;
+            
+            switch ( FNV1a::hash_64 ( blockTreePersistMode.c_str ())) {
+                case FNV1a::const_hash_64 ( "none" ): {
+                    this->mMinerActivity->setBlockTree ();
+                    break;
+                }
+                case FNV1a::const_hash_64 ( "sqlite" ): {
+                    result = this->mMinerActivity->persistBlockTreeSQLite ( sqliteConfig );
+                    break;
+                }
+                default: {
+                    LGN_LOG ( VOL_FILTER_APP, INFO, "UNRECOGNIZED BLOCK TREE PERSISTENCE MODE: %s", blockTreePersistMode.c_str ());
+                    return Application::EXIT_CONFIG;
+                }
+            }
+            
             if ( !result ) {
-                LGN_LOG ( VOL_FILTER_APP, INFO, "ERROR LOADING OR INITIALIZING PERSISTENCE" );
+                LGN_LOG ( VOL_FILTER_APP, INFO, "ERROR LOADING OR INITIALIZING BLOCK TREE PERSISTENCE" );
                 LGN_LOG ( VOL_FILTER_APP, INFO, "%s", result.getMessage ().c_str ());
                 return Application::EXIT_CONFIG;
             }
         }
-        else {
-            this->mMinerActivity->setGenesis ( genesisBlock );
+        
+        {
+            LedgerResult result = true;
+        
+            switch ( FNV1a::hash_64 ( ledgerPersistMode.c_str ())) {
+                case FNV1a::const_hash_64 ( "none" ): {
+                    this->mMinerActivity->setGenesis ( genesisBlock );
+                    break;
+                }
+                case FNV1a::const_hash_64 ( "sqlite" ): {
+                    result = this->mMinerActivity->persistLedgerSQLite ( genesisBlock, sqliteConfig );
+                    break;
+                }
+                case FNV1a::const_hash_64 ( "sqlite-stringstore" ): {
+                    result = this->mMinerActivity->persistLedgerSQLiteStringStore ( genesisBlock, sqliteConfig );
+                    break;
+                }
+                case FNV1a::const_hash_64 ( "debug-stringstore" ): {
+                    result = this->mMinerActivity->persistLedgerDebugStringStore ( genesisBlock );
+                    break;
+                }
+                default: {
+                    LGN_LOG ( VOL_FILTER_APP, INFO, "UNRECOGNIZED LEDGER PERSISTENCE MODE: %s", ledgerPersistMode.c_str ());
+                    return Application::EXIT_CONFIG;
+                }
+            }
+            
+            if ( !result ) {
+                LGN_LOG ( VOL_FILTER_APP, INFO, "ERROR LOADING OR INITIALIZING LEDGER PERSISTENCE" );
+                LGN_LOG ( VOL_FILTER_APP, INFO, "%s", result.getMessage ().c_str ());
+                return Application::EXIT_CONFIG;
+            }
         }
         
         if ( this->mMinerActivity->getLedger ().countBlocks () == 0 ) {
@@ -246,6 +295,8 @@ protected:
         this->mMinerActivity->setReportMode ( Miner::REPORT_ALL_BRANCHES );
         this->mMinerActivity->setFixedUpdateDelayInMillis (( u32 )fixedDelay );
         this->mMinerActivity->setVariableUpdateDelayInMillis (( u32 )variableDelay );
+        this->mMinerActivity->setMaxBlockSearches (( size_t )blockSearchMax );
+        this->mMinerActivity->setPersistFrequency (( size_t )ledgerPersistFrequency );
         
         LGN_LOG ( VOL_FILTER_APP, INFO, "MINER ID: %s", this->mMinerActivity->getMinerID ().c_str ());
 
@@ -317,6 +368,28 @@ protected:
         LGN_LOG ( VOL_FILTER_APP, INFO, "SHUTDOWN: ~serve" );
     }
 
+    //----------------------------------------------------------------//
+    static Lognosis::Verbosity stringToLogLevel ( string logLevel ) {
+        switch ( FNV1a::hash_64 ( logLevel.c_str ())) {
+            case FNV1a::const_hash_64 ( "max" ):        return Lognosis::MAX;
+            case FNV1a::const_hash_64 ( "info" ):       return Lognosis::INFO;
+            case FNV1a::const_hash_64 ( "warn" ):       return Lognosis::WARNING;
+            case FNV1a::const_hash_64 ( "error" ):      return Lognosis::ERROR;
+            case FNV1a::const_hash_64 ( "fatal" ):      return Lognosis::FATAL;
+            case FNV1a::const_hash_64 ( "off" ):        return Lognosis::OFF;
+        }
+        return Lognosis::OFF;
+    }
+    
+    //----------------------------------------------------------------//
+    static SQLiteConfig::JournalMode stringToJournalMode ( string journalMode ) {
+        switch ( FNV1a::hash_64 ( journalMode.c_str ())) {
+            case FNV1a::const_hash_64 ( "rollback" ):   return SQLiteConfig::JOURNAL_MODE_ROLLBACK;
+            case FNV1a::const_hash_64 ( "wal" ):        return SQLiteConfig::JOURNAL_MODE_WAL;
+        }
+        return SQLiteConfig::JOURNAL_MODE_UNKNOWN;
+    }
+
 public:
 
     //----------------------------------------------------------------//
@@ -373,18 +446,18 @@ int main ( int argc, char** argv ) {
     Lognosis::setFilter ( PDM_FILTER_SQLITE,                    Lognosis::WARNING );
     Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  Lognosis::WARNING );
     
-//    Lognosis::setFilter ( VOL_FILTER_APP,                       Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_APP,                       Lognosis::INFO );
     Lognosis::setFilter ( VOL_FILTER_BLOCK,                     Lognosis::OFF );
-//    Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 Lognosis::INFO );
     
     Lognosis::setFilter ( VOL_FILTER_HTTP,                      Lognosis::OFF );
     Lognosis::setFilter ( VOL_FILTER_JSON,                      Lognosis::OFF );
     Lognosis::setFilter ( VOL_FILTER_LEDGER,                    Lognosis::OFF );
-//    Lognosis::setFilter ( VOL_FILTER_LUA,                       Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_LUA,                       Lognosis::WARNING );
     
-//    Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             Lognosis::OFF );
-//    Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      Lognosis::OFF );
-//    Lognosis::setFilter ( VOL_FILTER_QUEUE,                     Lognosis::OFF );
+    Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             Lognosis::INFO );
+    Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      Lognosis::INFO );
+    Lognosis::setFilter ( VOL_FILTER_TRANSACTION_QUEUE,                     Lognosis::INFO );
     
     Lognosis::init ( argc, argv );
 

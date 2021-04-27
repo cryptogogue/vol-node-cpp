@@ -127,13 +127,13 @@ void Miner::composeChain ( BlockTreeCursor cursor ) {
     
     assert ( ledgerCursor.isAncestorOf ( cursor ));
     
-    this->composeChainRecurse ( cursor );
+    this->composeChainInnerLoop ( cursor );
     
     assert ( this->checkTags ());
 }
 
 //----------------------------------------------------------------//
-void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
+void Miner::composeChainInnerLoop ( BlockTreeCursor branch ) {
 
     // we're descending to find this cursor
     BlockTreeCursor ledgerCursor = this->mLedgerTag.getCursor ();
@@ -162,6 +162,10 @@ void Miner::composeChainRecurse ( BlockTreeCursor branch ) {
             LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Block: %d of %d", ( int )i, ( int )stack.size ());
             this->pushBlock ( stackIt->getBlock ());
             assert (( *this->mLedgerTag ).equals ( *stackIt ));
+            
+            if ( this->mPersistFrequency && (( i % this->mPersistFrequency ) == 0 )) {
+                this->saveChain ();
+            }
         }
     }
 }
@@ -310,7 +314,8 @@ Miner::Miner () :
     mReportMode ( REPORT_NONE ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ),
-    mNetworkSearch ( false ) {
+    mNetworkSearch ( false ),
+    mPersistFrequency ( 0 ) {
     
     this->mLedgerTag.setName ( "working" );
     this->mBestBranchTag.setName ( "best" );
@@ -328,30 +333,34 @@ Miner::~Miner () {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
+LedgerResult Miner::persistBlockTreeSQLite ( SQLiteConfig config ) {
     
-    assert ( block );
-    assert ( this->mLedger == NULL );
-
-    FileSys::createDirectories ( path );
-
-    string hash = block->getDigest ().toHex ();
-    string primary = Format::write ( "%s/%s%s", path.c_str (), PERSIST_PREFIX, hash.c_str ());
+    if ( this->mPrefixFilename.size () == 0 ) return "Missing persistence path.";
     
-    this->mLedgerFilename = Format::write ( "%s.db", primary.c_str ());
-    this->mConfigFilename = Format::write ( "%s-config.json", primary.c_str ());
-    this->mMinersFilename = Format::write ( "%s-miners.json", primary.c_str ());
-    this->mBlocksFilename = Format::write ( "%s-blocks.db", primary.c_str ());
+    string journalModeString = config.mJournalMode == SQLiteConfig::JOURNAL_MODE_WAL ? "-jmwal" : "";
+    this->mBlocksFilename = Format::write ( "%s-blocks-sqlite%s.db", this->mPrefixFilename.c_str (), journalModeString.c_str ());
     
     try {
-        this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename );
+        this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename, config );
         this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
-        this->mPersistenceProvider  = SQLitePersistenceProvider::make ( this->mLedgerFilename );
     }
     catch ( SQLiteBlockTreeUnsupportedVersionException ) {
     
         return "Unsupported SQLite block tree format; delete your persist-chain folder and re-sync.";
     }
+    
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Miner::persistLedger ( shared_ptr < AbstractPersistenceProvider > provider, shared_ptr < const Block > genesisBlock ) {
+    
+    assert ( genesisBlock );
+    assert ( this->mLedger == NULL );
+    assert ( this->mPersistenceProvider == NULL );
+    assert ( this->mBlockTree );
+    
+    this->mPersistenceProvider  = provider;
     
     VersionedStoreTag tag = this->mPersistenceProvider->restore ( "master" );
     shared_ptr < Ledger > ledger = make_shared < Ledger >( tag );
@@ -367,7 +376,7 @@ LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
         this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
     }
     
-    this->setGenesis ( block );
+    this->setGenesis ( genesisBlock );
     this->saveChain ();
     
     if ( FileSys::exists ( this->mConfigFilename )) {
@@ -386,6 +395,34 @@ LedgerResult Miner::persist ( string path, shared_ptr < const Block > block ) {
     }
     
     return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Miner::persistLedgerDebugStringStore ( shared_ptr < const Block > genesisBlock ) {
+    
+    return this->persistLedger ( make_shared < DebugStringStore >(), genesisBlock );
+}
+
+//----------------------------------------------------------------//
+LedgerResult Miner::persistLedgerSQLite ( shared_ptr < const Block > genesisBlock, SQLiteConfig config ) {
+    
+    if ( this->mPrefixFilename.size () == 0 ) return "Missing persistence path.";
+    
+    string journalModeString = config.mJournalMode == SQLiteConfig::JOURNAL_MODE_WAL ? "-jmwal" : "";
+    this->mLedgerFilename = Format::write ( "%s-sqlite%s.db", this->mPrefixFilename.c_str (), journalModeString.c_str ());
+    
+    return this->persistLedger ( SQLitePersistenceProvider::make ( this->mLedgerFilename, config ), genesisBlock );
+}
+
+//----------------------------------------------------------------//
+LedgerResult Miner::persistLedgerSQLiteStringStore ( shared_ptr < const Block > genesisBlock, SQLiteConfig config ) {
+    
+    if ( this->mPrefixFilename.size () == 0 ) return "Missing persistence path.";
+    
+    string journalModeString = config.mJournalMode == SQLiteConfig::JOURNAL_MODE_WAL ? "-jmwal" : "";
+    this->mLedgerFilename = Format::write ( "%s-sqlite-string-store%s.db", this->mPrefixFilename.c_str (), journalModeString.c_str ());
+    
+    return this->persistLedger ( SQLiteStringStore::make ( this->mLedgerFilename, config ), genesisBlock );
 }
 
 //----------------------------------------------------------------//
@@ -530,13 +567,13 @@ set < shared_ptr < RemoteMiner >> Miner::sampleOnlineMiners ( size_t sampleSize 
 //----------------------------------------------------------------//
 void Miner::saveChain () {
     
+    if ( !( this->mLedger && this->mPersistenceProvider )) return;
+    
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
-    if ( this->mLedger && this->mPersistenceProvider ) {
-        assert ( this->checkTags ());
-        this->mPersistenceProvider->persist ( *this->mLedger, "master" );
-        assert ( this->checkTags ());
-    }
+    assert ( this->checkTags ());
+    this->mPersistenceProvider->persist ( *this->mLedger, "master" );
+    assert ( this->checkTags ());
 }
 
 //----------------------------------------------------------------//
@@ -554,9 +591,17 @@ void Miner::scheduleReport () {
 }
 
 //----------------------------------------------------------------//
+void Miner::setBlockTree (shared_ptr < AbstractBlockTree > blockTree ) {
+
+    this->mBlockTree            = blockTree;
+    this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
+}
+
+//----------------------------------------------------------------//
 void Miner::setGenesis ( shared_ptr < const Block > block ) {
 
     assert ( block );
+    assert ( this->mBlockTree );
 
     if ( this->mLedger ) {
     
@@ -575,6 +620,13 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
 }
 
 //----------------------------------------------------------------//
+void Miner::setMaxBlockSearches ( size_t max ) {
+
+    assert ( this->mBlockSearchPool );
+    this->mBlockSearchPool->setMaxSearches ( max );
+}
+
+//----------------------------------------------------------------//
 void Miner::setMinimumGratuity ( u64 minimumGratuity ) {
 
     this->mConfig.mMinimumGratuity = minimumGratuity;
@@ -585,6 +637,20 @@ void Miner::setMinimumGratuity ( u64 minimumGratuity ) {
 void Miner::setMute ( bool paused ) {
 
     this->mFlags = SET_BITS ( this->mFlags, MINER_MUTE, paused );
+}
+
+//----------------------------------------------------------------//
+void Miner::setPersistencePath ( string path, shared_ptr < const Block > genesisBlock ) {
+    
+    assert ( genesisBlock );
+    
+    FileSys::createDirectories ( path );
+
+    string hash             = genesisBlock->getDigest ().toHex ();
+    this->mPrefixFilename   = Format::write ( "%s/%s%s", path.c_str (), PERSIST_PREFIX, hash.c_str ());
+    
+    this->mConfigFilename   = Format::write ( "%s-config.json", this->mPrefixFilename.c_str ());
+    this->mMinersFilename   = Format::write ( "%s-miners.json", this->mPrefixFilename.c_str ());
 }
 
 //----------------------------------------------------------------//

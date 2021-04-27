@@ -120,7 +120,7 @@ typedef __int128                s128;
 #define VOL_FILTER_LUA                      " @VOL_LUA       "
 #define VOL_FILTER_MINING_REPORT            " @VOL_REPORT    "
 #define VOL_FILTER_MINING_SEARCH_REPORT     " @VOL_SEARCH    "
-#define VOL_FILTER_QUEUE                    " @VOL_QUEUE     "
+#define VOL_FILTER_TRANSACTION_QUEUE        " @VOL_TN_QUEUE "
 
 #if !defined(UNUSED)
     #define UNUSED(x) ((void)(x))
