@@ -1,9 +1,119 @@
-control-key                 = /var/lib/volition/keys/control.pub.pem
-control-level               = config
-genesis                     = /var/lib/volition/genesis.json
-keyfile                     = /var/lib/volition/keys/mining.priv.pem
-openSSL.client.caConfig     = /etc/ssl/certs
-persist                     = /var/lib/volition/persist-chain
-port                        = 9090
 
-miner                       = my-miner-id
+;-------------------------------------------------------------------
+; MINER ACCOUNT NAME
+
+; mining account name
+miner = my-miner-id
+
+;-------------------------------------------------------------------
+; GENERAL CONFIG
+
+; path to public key for verifying control commands.              
+control-key = /var/lib/volition/keys/control.pub.pem
+
+; miner control level. [none, config, admin]
+control-level = config
+
+; path to the genesis file.
+genesis = /var/lib/volition/genesis.json
+
+; path to public miner key file.
+keyfile = /var/lib/volition/keys/mining.priv.pem
+
+; set port to serve from.
+port = 9090
+
+;-------------------------------------------------------------------
+; LOGGING
+
+; path to log folder.
+logpath = /var/lib/volition/logs
+
+; log levels may be one of [info, warn, error, fatal]
+
+; log level for the application.
+log-level-app = info
+
+; log level for push block internals. 
+log-level-block = warn
+
+; log level for consensus.
+log-level-consensus = info
+
+; log level for http handlers.
+log-level-http = warn
+
+; log level for json serialization.
+log-level-json = warn
+
+; log level for ledger operations.
+log-level-ledger = warn
+
+; log level for lua (crafting) scripts.
+log-level-lua = info
+
+; log level for the mining report.
+log-level-mining-report = info
+
+; log level for the padamose versioned store.
+log-level-padamose = warn
+
+; log level for the sqlite persistence provider in padamose.
+log-level-padamose-sqlite = warn
+
+; log level for the block search report.
+log-level-search-report = info
+
+; log level for sqlite.
+log-level-sqlite = warn
+
+; log level for persistent storage.
+log-level-store = warn
+
+; log level for transaction queue.
+log-level-transaction-queue = warn
+
+;-------------------------------------------------------------------
+; CONSENSUS TUNING
+
+; maximum number of simultaneous block searches.
+block-search-max = 256
+
+; set fixed update sleep (in milliseconds).
+sleep-fixed = 1000
+
+; set variable update sleep (in milliseconds).
+sleep-variable = 1000
+
+;-------------------------------------------------------------------
+; PERSISTENCE
+
+; base path to folder for persist files.
+persist-path = /var/lib/volition/persist-chain
+
+; the persist mode. [none, sqlite]      
+blocktree-persist-mode = sqlite
+
+; the persist mode. [none, sqlite, sqlite-stringstore, debug-stringstore]          
+ledger-persist-mode = sqlite
+
+; the sqlite journaling mode. [rollback, wal]
+sqlite-journal-mode = wal
+
+;-------------------------------------------------------------------
+; PERSISTENCE TUNING
+
+; retry the post-save integrity check N times.
+ledger-persist-check-retry = 0
+
+; force a persist every N blocks (during chain composition).         
+ledger-persist-frequency = 0
+
+; sleep N milliseconds after ledger persist.
+ledger-persist-sleep = 0
+
+;-------------------------------------------------------------------
+; SSL
+
+; path to ssl certs folder
+openSSL.client.caConfig = /etc/ssl/certs
