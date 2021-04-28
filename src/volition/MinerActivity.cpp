@@ -47,7 +47,7 @@ void MinerActivity::runActivity () {
         if ( elapsedMillis < updateMillis ) {
             Poco::Thread::sleep ( updateMillis - elapsedMillis );
         }
-        Poco::Thread::sleep ( this->mFixedUpdateDelayInMillis );
+        Poco::Thread::sleep ( this->mFixedUpdateDelayInMillis ? this->mFixedUpdateDelayInMillis : 1 );
     }
 }
 

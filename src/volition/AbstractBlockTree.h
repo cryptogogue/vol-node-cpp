@@ -102,7 +102,6 @@ public:
     BlockTreeCursor             makeProvisional         ( shared_ptr < const BlockHeader > header );
     void                        setBranchStatus         ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status );
     void                        setSearchStatus         ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status );
-    BlockTreeCursor             restoreTag              ( BlockTreeTag& tag );
     BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeCursor& cursor );
     BlockTreeCursor             tag                     ( BlockTreeTag& tag, const BlockTreeTag& otherTag );
     void                        update                  ( shared_ptr < const Block > block );

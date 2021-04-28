@@ -300,15 +300,6 @@ void AbstractBlockTree::setSearchStatus ( const BlockTreeCursor& cursor, kBlockT
 }
 
 //----------------------------------------------------------------//
-BlockTreeCursor AbstractBlockTree::restoreTag ( BlockTreeTag& tag ) {
-
-    assert ( tag.check ( this ));
-    
-    BlockTreeCursor cursor = this->AbstractBlockTree_findCursorForTagName ( tag.getName ());
-    return cursor;
-}
-
-//----------------------------------------------------------------//
 BlockTreeCursor AbstractBlockTree::tag ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) {
 
     assert ( tag.check ( this ));

@@ -112,7 +112,7 @@ bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, tim
                     this->setMinerID ( response.mMinerID );
                     this->mMiner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
                     
-                    BlockTreeCursor cursor = this->mMiner.mBlockTree->restoreTag ( this->mTag );
+                    BlockTreeCursor cursor = *this->mTag;
                     if ( cursor.hasHeader ()) {
                         this->mHeight = cursor.getHeight ();
                     }

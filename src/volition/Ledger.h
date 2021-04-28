@@ -396,12 +396,6 @@ public:
     //----------------------------------------------------------------//
     Ledger () {
     }
-
-//    //----------------------------------------------------------------//
-//    Ledger ( Ledger& other ) :
-//        VersionedStoreTag ( other.getTag ()),
-//        enable_shared_from_this < Ledger > () {
-//    }
     
     //----------------------------------------------------------------//
     Ledger ( AbstractLedger& other ) :
@@ -439,11 +433,6 @@ public:
     LockedLedger () {
     }
 
-//    //----------------------------------------------------------------//
-//    LockedLedger ( const AbstractHasVersionedBranch& other ) :
-//        VersionedStoreLock ( other ) {
-//    }
-
     //----------------------------------------------------------------//
     LockedLedger ( const AbstractLedger& other ) :
         VersionedStoreLock ( other ) {
@@ -467,11 +456,6 @@ protected:
     }
 
 public:
-    
-//    //----------------------------------------------------------------//
-//    LockedLedgerIterator ( const AbstractHasVersionedBranch& other ) :
-//        VersionedStoreIterator ( other ) {
-//    }
     
     //----------------------------------------------------------------//
     LockedLedgerIterator ( const AbstractLedger& other ) :

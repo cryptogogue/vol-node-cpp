@@ -407,23 +407,6 @@ int main ( int argc, char** argv ) {
     Lognosis::init ( argc, argv );
     LOG_F ( INFO, "Hello from main.cpp!" );
 
-    Lognosis::setFilter ( PDM_FILTER_ROOT,                      Lognosis::OFF );
-    Lognosis::setFilter ( PDM_FILTER_SQLITE,                    Lognosis::OFF );
-    Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  Lognosis::OFF );
-    
-    Lognosis::setFilter ( VOL_FILTER_APP,                       Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_BLOCK,                     Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 Lognosis::OFF );
-    
-    Lognosis::setFilter ( VOL_FILTER_HTTP,                      Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_JSON,                      Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_LEDGER,                    Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_LUA,                       Lognosis::OFF );
-    
-//    Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      Lognosis::OFF );
-    Lognosis::setFilter ( VOL_FILTER_TRANSACTION_QUEUE,                     Lognosis::OFF );
-
     Lognosis::init ( argc, argv );
 
     SimulatorApp app;

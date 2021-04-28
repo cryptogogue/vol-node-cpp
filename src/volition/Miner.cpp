@@ -159,8 +159,12 @@ void Miner::composeChainInnerLoop ( BlockTreeCursor branch ) {
     
         list < BlockTreeCursor >::iterator stackIt = stack.begin ();
         for ( size_t i = 0; stackIt != stack.end (); ++stackIt, ++i ) {
-            LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Block: %d of %d", ( int )i, ( int )stack.size ());
-            this->pushBlock ( stackIt->getBlock ());
+        
+            BlockTreeCursor& cursor = *stackIt;
+        
+            LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Block %d: %d of %d", ( int )cursor.getHeight (), ( int )i, ( int )stack.size ());
+            
+            this->pushBlock ( cursor.getBlock ());
             assert (( *this->mLedgerTag ).equals ( *stackIt ));
             
             if ( this->mPersistFrequency && (( i % this->mPersistFrequency ) == 0 )) {
@@ -315,17 +319,16 @@ Miner::Miner () :
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ),
     mNetworkSearch ( false ),
-    mPersistFrequency ( 0 ) {
+    mPersistFrequency ( 0 ),
+    mRetryPersistenceCheck ( 0 ),
+    mPersistenceSleep ( 0 ) {
     
     this->mLedgerTag.setName ( "working" );
     this->mBestBranchTag.setName ( "best" );
-    this->mProvisionalBranchTag.setName ( "provisional" );
     
     MinerLaunchTests::checkEnvironment ();
     
-    this->mBlockTree            = make_shared < InMemoryBlockTree >();
-    this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
-    this->mTransactionQueue     = make_shared < TransactionQueue >();
+    this->mTransactionQueue = make_shared < TransactionQueue >();
 }
 
 //----------------------------------------------------------------//
@@ -364,7 +367,7 @@ LedgerResult Miner::persistLedger ( shared_ptr < AbstractPersistenceProvider > p
     
     VersionedStoreTag tag = this->mPersistenceProvider->restore ( "master" );
     shared_ptr < Ledger > ledger = make_shared < Ledger >( tag );
-        
+    
     shared_ptr < const Block > topBlock = ledger->getBlock ();
     
     if ( topBlock ) {
@@ -377,6 +380,7 @@ LedgerResult Miner::persistLedger ( shared_ptr < AbstractPersistenceProvider > p
     }
     
     this->setGenesis ( genesisBlock );
+    this->composeChain ( *this->mBestBranchTag );
     this->saveChain ();
     
     if ( FileSys::exists ( this->mConfigFilename )) {
@@ -420,7 +424,7 @@ LedgerResult Miner::persistLedgerSQLiteStringStore ( shared_ptr < const Block > 
     if ( this->mPrefixFilename.size () == 0 ) return "Missing persistence path.";
     
     string journalModeString = config.mJournalMode == SQLiteConfig::JOURNAL_MODE_WAL ? "-jmwal" : "";
-    this->mLedgerFilename = Format::write ( "%s-sqlite-string-store%s.db", this->mPrefixFilename.c_str (), journalModeString.c_str ());
+    this->mLedgerFilename = Format::write ( "%s-sqlite-stringstore%s.db", this->mPrefixFilename.c_str (), journalModeString.c_str ());
     
     return this->persistLedger ( SQLiteStringStore::make ( this->mLedgerFilename, config ), genesisBlock );
 }
@@ -573,7 +577,49 @@ void Miner::saveChain () {
 
     assert ( this->checkTags ());
     this->mPersistenceProvider->persist ( *this->mLedger, "master" );
-    assert ( this->checkTags ());
+    
+    if ( this->mPersistenceSleep ) {
+        Poco::Thread::sleep (( long )this->mPersistenceSleep );
+    }
+    
+    BlockTreeCursor ledgerCursor = *this->mLedgerTag;
+    
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK COUNT: %d", ( int )this->mLedger->countBlocks ());
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "BLOCK TREE COUNT: %d", ( int )( ledgerCursor.getHeight () + 1 ));
+    
+    shared_ptr < const Block > ledgerBlock = this->mLedger->getBlock ();
+    assert ( ledgerBlock );
+    
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK HASH: %s", ledgerBlock->getDigest ().toHex ().c_str ());
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK HEIGHT: %d", ( int )ledgerBlock->getHeight ());
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER TAG HASH: %s", ledgerCursor.getHash ().c_str ());
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER TAG HEIGHT: %d", ( int )ledgerCursor.getHeight ());
+    
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "PADAMOSE TREE:" );
+    this->mLedger->printTree ( VOL_FILTER_STORE );
+    
+    if ( !ledgerBlock->equals ( ledgerCursor )) {
+    
+        LGN_LOG ( VOL_FILTER_STORE, ERROR, "PERSISTED LEDGER DOESN'T MATCH LEDGER TAG" );
+    
+        size_t retry = this->mRetryPersistenceCheck;
+        bool recovered = false;
+        
+        for ( size_t i = 0; i < retry; ++i ) {
+            LGN_LOG_SCOPE ( VOL_FILTER_STORE, INFO, "RETRYING PERSISTENCE INTEGRITY CHECK..." );
+            
+            Poco::Thread::sleep (( long )( this->mPersistenceSleep ? this->mPersistenceSleep : 100 ));
+            
+            if ( !this->checkTags ()) {
+                LGN_LOG_SCOPE ( VOL_FILTER_STORE, INFO, " NOPE" );
+            }
+            else {
+                LGN_LOG_SCOPE ( VOL_FILTER_STORE, INFO, " SUCCESS!" );
+                recovered = true;
+            }
+        }
+        assert ( recovered );
+    }
 }
 
 //----------------------------------------------------------------//
@@ -591,9 +637,9 @@ void Miner::scheduleReport () {
 }
 
 //----------------------------------------------------------------//
-void Miner::setBlockTree (shared_ptr < AbstractBlockTree > blockTree ) {
+void Miner::setBlockTree ( shared_ptr < AbstractBlockTree > blockTree ) {
 
-    this->mBlockTree            = blockTree;
+    this->mBlockTree            = blockTree ? blockTree : make_shared < InMemoryBlockTree >();
     this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
 }
 

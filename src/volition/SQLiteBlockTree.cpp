@@ -656,6 +656,8 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
     
     this->mCache.invalidate ( nodeID );
     
+    this->mDB.beginTransaction ();
+    
     SQLiteResult result = this->mDB.exec (
     
         "UPDATE nodes SET block = ?1, searchStatus = '#' WHERE nodeID IS ?2",
@@ -669,6 +671,8 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
     result.reportWithAssert ();
     
     this->setBranchStatus ( nodeID, block->getPrevDigest (), BRANCH_STATUS_COMPLETE );
+
+    this->mDB.commitTransaction ();
 }
 
 } // namespace Volition

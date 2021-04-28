@@ -189,9 +189,6 @@ protected:
     shared_ptr < Ledger >                           mLedger;
     BlockTreeTag                                    mLedgerTag;
     
-    // provisional branch tag.
-    BlockTreeTag                                    mProvisionalBranchTag;
-    
     // the "provisional" branch may not be complete and may end with a "provisional"
     // block header. the "best" provisional branch is the branch the miner is working
     // to complete by gathering (or building) the missing blocks. the provisional
@@ -203,6 +200,8 @@ protected:
     // up rebuilding the database when restarting the node.
     shared_ptr < AbstractPersistenceProvider >      mPersistenceProvider;
     size_t                                          mPersistFrequency;
+    size_t                                          mRetryPersistenceCheck;
+    size_t                                          mPersistenceSleep;
     
     mutex                                           mMutex;
     
@@ -266,6 +265,8 @@ public:
     GET_SET ( shared_ptr < AbstractPersistenceProvider >,   PersistenceProvider,        mPersistenceProvider )
     GET_SET ( size_t,                                       PersistFrequency,           mPersistFrequency )
     GET_SET ( ReportMode,                                   ReportMode,                 mReportMode )
+    GET_SET ( size_t,                                       RetryPersistenceCheck,      mRetryPersistenceCheck )
+    GET_SET ( size_t,                                       PersistenceSleep,           mPersistenceSleep )
 
     //----------------------------------------------------------------//
     void                            affirmKey                           ( uint keyLength = CryptoKeyPair::RSA_1024, unsigned long exp = CryptoKeyPair::RSA_EXP_65537 );
