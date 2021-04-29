@@ -2,6 +2,7 @@
 // http://cryptogogue.com
 
 #include <volition/Block.h>
+#include <volition/BlockODBM.h>
 #include <volition/BlockSearchPool.h>
 #include <volition/Digest.h>
 #include <volition/FileSys.h>
@@ -575,8 +576,14 @@ void Miner::saveChain () {
     
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
 
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "PADAMOSE (BEFORE PERSIST):" );
+    this->mLedger->printTree ( VOL_FILTER_STORE );
+
     assert ( this->checkTags ());
     this->mPersistenceProvider->persist ( *this->mLedger, "master" );
+    
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "PADAMOSE (AFTER PERSIST):" );
+    this->mLedger->printTree ( VOL_FILTER_STORE );
     
     if ( this->mPersistenceSleep ) {
         Poco::Thread::sleep (( long )this->mPersistenceSleep );
@@ -587,35 +594,54 @@ void Miner::saveChain () {
     LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK COUNT: %d", ( int )this->mLedger->countBlocks ());
     LGN_LOG ( VOL_FILTER_STORE, INFO, "BLOCK TREE COUNT: %d", ( int )( ledgerCursor.getHeight () + 1 ));
     
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "HASH FROM BLOCK TREE: %s", ledgerCursor.getHash ().c_str ());
+    LGN_LOG ( VOL_FILTER_STORE, INFO, "HEIGHT FROM BLOCK TREE: %d", ( int )ledgerCursor.getHeight ());
+    
     shared_ptr < const Block > ledgerBlock = this->mLedger->getBlock ();
-    assert ( ledgerBlock );
     
-    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK HASH: %s", ledgerBlock->getDigest ().toHex ().c_str ());
-    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK HEIGHT: %d", ( int )ledgerBlock->getHeight ());
-    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER TAG HASH: %s", ledgerCursor.getHash ().c_str ());
-    LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER TAG HEIGHT: %d", ( int )ledgerCursor.getHeight ());
+    if ( ledgerBlock ) {
+        LGN_LOG ( VOL_FILTER_STORE, INFO, "HASH FROM LEDGER: %s", ledgerBlock->getDigest ().toHex ().c_str ());
+        LGN_LOG ( VOL_FILTER_STORE, INFO, "HEIGHT FROM LEDGER: %d", ( int )ledgerBlock->getHeight ());
+    }
     
-    LGN_LOG ( VOL_FILTER_STORE, INFO, "PADAMOSE TREE:" );
-    this->mLedger->printTree ( VOL_FILTER_STORE );
+    if ( !( ledgerBlock && ledgerBlock->equals ( ledgerCursor ))) {
     
-    if ( !ledgerBlock->equals ( ledgerCursor )) {
-    
-        LGN_LOG ( VOL_FILTER_STORE, ERROR, "PERSISTED LEDGER DOESN'T MATCH LEDGER TAG" );
+        LGN_LOG ( VOL_FILTER_STORE, ERROR, "LEDGER BLOCK IS MISSING OR PERSISTED LEDGER DOESN'T MATCH LEDGER TAG" );
     
         size_t retry = this->mRetryPersistenceCheck;
         bool recovered = false;
         
         for ( size_t i = 0; i < retry; ++i ) {
-            LGN_LOG_SCOPE ( VOL_FILTER_STORE, INFO, "RETRYING PERSISTENCE INTEGRITY CHECK..." );
+            LGN_LOG_SCOPE ( VOL_FILTER_STORE, ERROR, "RETRYING PERSISTENCE INTEGRITY CHECK..." );
             
             Poco::Thread::sleep (( long )( this->mPersistenceSleep ? this->mPersistenceSleep : 100 ));
             
-            if ( !this->checkTags ()) {
-                LGN_LOG_SCOPE ( VOL_FILTER_STORE, INFO, " NOPE" );
+            ledgerBlock = this->mLedger->getBlock ();
+            
+            if ( ledgerBlock && ledgerBlock->equals ( ledgerCursor )) {
+                LGN_LOG ( VOL_FILTER_STORE, ERROR, " SUCCESS!" );
+                recovered = true;
             }
             else {
-                LGN_LOG_SCOPE ( VOL_FILTER_STORE, INFO, " SUCCESS!" );
-                recovered = true;
+                LGN_LOG ( VOL_FILTER_STORE, ERROR, " NOPE" );
+            }
+        }
+        
+        if ( !recovered ) {
+        
+            LGN_LOG_SCOPE ( VOL_FILTER_STORE, ERROR, "BLOCK MISSING OR INCOMPLETE AT HEIGHT %d", ( int )ledgerBlock->getHeight ());
+            BlockODBM blockODBM ( *this->mLedger, ledgerCursor.getHeight ());
+            
+            if ( blockODBM.mHeader.exists ()) {
+                LGN_LOG ( VOL_FILTER_STORE, ERROR, "blockODBM.mHeader.exists () == true" );
+            }
+            
+            if ( blockODBM.mHash.exists ()) {
+                LGN_LOG ( VOL_FILTER_STORE, ERROR, "blockODBM.mHash.exists () == true" );
+            }
+            
+            if ( blockODBM.mBlock.exists ()) {
+                LGN_LOG ( VOL_FILTER_STORE, ERROR, "blockODBM.mBlock.exists () == true" );
             }
         }
         assert ( recovered );
@@ -988,7 +1014,7 @@ void Miner::updateRemoteMiners () {
     
     SerializableSet < string > minerURLs;
     
-    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "updating remote miner miner state" );
+    LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "updating remote miner state" );
     
     // update miner state
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
