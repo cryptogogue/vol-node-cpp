@@ -865,7 +865,7 @@ void Miner::updateBlockSearches () {
         shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
 
         // we only care about missing branches; ignore new/complete/invalid branches.
-        if ( remoteMiner->mImproved.hasCursor () && ( *remoteMiner->mImproved ).isMissing ()) {
+        if ( remoteMiner->mTag.hasCursor () && ( *remoteMiner->mTag ).isMissing ()) {
             blockSearchPool.affirmBranchSearch ( *remoteMiner->mTag );
         }
     }

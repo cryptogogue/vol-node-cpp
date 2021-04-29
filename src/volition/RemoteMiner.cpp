@@ -190,7 +190,6 @@ void RemoteMiner::report ( u64 minHeight, u64 maxHeight ) const {
 //----------------------------------------------------------------//
 void RemoteMiner::reset () {
     this->mTag.reset ();
-    this->mImproved.reset ();
 }
 
 //----------------------------------------------------------------//
@@ -207,7 +206,7 @@ void RemoteMiner::setMinerID ( string minerID ) {
 
     this->mMinerID = minerID;
     this->mTag.setName ( Format::write ( "%s'", minerID.c_str ()));
-    this->mImproved.setName ( Format::write ( "~%s'", minerID.c_str ()));
+    this->mTag.setTree ( this->mMiner.mBlockTree.get ());
 }
 
 //----------------------------------------------------------------//

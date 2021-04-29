@@ -43,7 +43,6 @@ public:
 
     string                      mURL;
     BlockTreeTag                mTag;
-    BlockTreeTag                mImproved;
     MinerState                  mState;
     
     size_t                      mRewind;
