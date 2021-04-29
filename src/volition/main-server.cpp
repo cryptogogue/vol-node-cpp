@@ -169,6 +169,10 @@ protected:
         this->mMinerActivity = make_shared < MinerActivity >();
         this->mMinerActivity->setMinerID ( minerID );
         
+        this->mMinerActivity->setPersistFrequency (( size_t )ledgerPersistFrequency );
+        this->mMinerActivity->setRetryPersistenceCheck (( size_t )ledgerPersistCheckRetry );
+        this->mMinerActivity->setPersistenceSleep (( size_t )ledgerPersistSleep );
+        
         if ( controlKeyfile.size ()) {
         
             CryptoPublicKey controlKey;
@@ -313,9 +317,6 @@ protected:
         this->mMinerActivity->setFixedUpdateDelayInMillis (( u32 )sleepFixed );
         this->mMinerActivity->setVariableUpdateDelayInMillis (( u32 )sleepVariable );
         this->mMinerActivity->setMaxBlockSearches (( size_t )blockSearchMax );
-        this->mMinerActivity->setPersistFrequency (( size_t )ledgerPersistFrequency );
-        this->mMinerActivity->setRetryPersistenceCheck (( size_t )ledgerPersistCheckRetry );
-        this->mMinerActivity->setPersistenceSleep (( size_t )ledgerPersistSleep );
         
         LGN_LOG ( VOL_FILTER_APP, INFO, "MINER ID: %s", this->mMinerActivity->getMinerID ().c_str ());
 

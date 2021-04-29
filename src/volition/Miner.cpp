@@ -591,6 +591,8 @@ void Miner::saveChain () {
     
     BlockTreeCursor ledgerCursor = *this->mLedgerTag;
     
+    this->mLedger->printVersion ( ledgerCursor.getHeight (), VOL_FILTER_STORE );
+    
     LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK COUNT: %d", ( int )this->mLedger->countBlocks ());
     LGN_LOG ( VOL_FILTER_STORE, INFO, "BLOCK TREE COUNT: %d", ( int )( ledgerCursor.getHeight () + 1 ));
     
@@ -603,9 +605,14 @@ void Miner::saveChain () {
         LGN_LOG ( VOL_FILTER_STORE, INFO, "HASH FROM LEDGER: %s", ledgerBlock->getDigest ().toHex ().c_str ());
         LGN_LOG ( VOL_FILTER_STORE, INFO, "HEIGHT FROM LEDGER: %d", ( int )ledgerBlock->getHeight ());
     }
-    
+        
     if ( !( ledgerBlock && ledgerBlock->equals ( ledgerCursor ))) {
     
+        shared_ptr < const Block > ledgerBlockFromHash = this->mLedger->getBlock ( ledgerCursor.getHash ());
+        if ( ledgerBlockFromHash ) {
+            LGN_LOG ( VOL_FILTER_STORE, ERROR, "LEDGER BLOCK *WAS* FOUND FOR HASH" );
+        }
+        
         LGN_LOG ( VOL_FILTER_STORE, ERROR, "LEDGER BLOCK IS MISSING OR PERSISTED LEDGER DOESN'T MATCH LEDGER TAG" );
     
         size_t retry = this->mRetryPersistenceCheck;
@@ -629,7 +636,7 @@ void Miner::saveChain () {
         
         if ( !recovered ) {
         
-            LGN_LOG_SCOPE ( VOL_FILTER_STORE, ERROR, "BLOCK MISSING OR INCOMPLETE AT HEIGHT %d", ( int )ledgerBlock->getHeight ());
+            LGN_LOG_SCOPE ( VOL_FILTER_STORE, ERROR, "BLOCK MISSING OR INCOMPLETE AT HEIGHT %d", ( int )ledgerCursor.getHeight ());
             BlockODBM blockODBM ( *this->mLedger, ledgerCursor.getHeight ());
             
             if ( blockODBM.mHeader.exists ()) {
