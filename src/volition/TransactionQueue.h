@@ -55,16 +55,17 @@ public:
     GET ( const Queue&,     Queue,      mQueue )
 
     //----------------------------------------------------------------//
-    shared_ptr < const Transaction >    getTransaction          ( string uuid ) const;
-    bool                                hasTransaction          ( u64 nonce ) const;
-    bool                                hasTransactions         () const;
-    void                                ignoreTransaction       ( string message, string uuid );
-    bool                                isBlocked               () const;
-                                        MakerQueue              ();
-    shared_ptr < const Transaction >    nextTransaction         ( u64 nonce ) const;
-    void                                pushTransaction         ( shared_ptr < const Transaction > transaction );
-    void                                prune                   ( u64 nonce );
-    void                                setTransactionResult    ( TransactionResult result );
+    TransactionResult                   checkForPendingTransactions     ( u64 nonce ) const;
+    shared_ptr < const Transaction >    getTransaction                  ( string uuid ) const;
+    bool                                hasTransaction                  ( u64 nonce ) const;
+    bool                                hasTransactions                 () const;
+    void                                ignoreTransaction               ( string message, string uuid );
+    bool                                isBlocked                       () const;
+                                        MakerQueue                      ();
+    shared_ptr < const Transaction >    nextTransaction                 ( u64 nonce ) const;
+    void                                pushTransaction                 ( shared_ptr < const Transaction > transaction );
+    void                                prune                           ( u64 nonce );
+    void                                setTransactionResult            ( TransactionResult result );
 };
 
 //================================================================//

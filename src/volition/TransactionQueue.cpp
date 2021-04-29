@@ -29,6 +29,24 @@ public:
 //================================================================//
 
 //----------------------------------------------------------------//
+TransactionResult MakerQueue::checkForPendingTransactions ( u64 nonce ) const {
+
+    TransactionQueueConstIt transactionIt = this->mQueue.cbegin ();
+    for ( ; transactionIt != this->mQueue.cend (); ++transactionIt ) {
+    
+        shared_ptr < const Transaction > transaction = transactionIt->second;
+        u64 transactionNonce = transaction->getNonce ();
+    
+        if ( transactionNonce > nonce ) {
+            TransactionResult result = Format::write ( "Transactions submitted out of order. Nonce is %d, but next transaction in queue is %d.", ( int )nonce, ( int )transactionNonce );
+            result.setTransactionDetails ( *transaction );
+            return result;
+        }
+    }
+    return true;
+}
+
+//----------------------------------------------------------------//
 shared_ptr < const Transaction > MakerQueue::getTransaction ( string uuid ) const {
 
     TransactionLookupConstIt transactionIt = this->mLookup.find ( uuid );
@@ -196,7 +214,15 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             
             // get the next transaction
             shared_ptr < const Transaction > transaction = makerQueue.nextTransaction ( info.mNonce );
-            if ( !transaction ) continue; // skip if no transaction
+            if ( !transaction ) {
+            
+                // get the next transaction
+                TransactionResult result = makerQueue.checkForPendingTransactions ( info.mNonce );
+                if ( !result ) {
+                    makerQueue.setTransactionResult ( result );
+                }
+                continue; // skip if no transaction
+            }
             
             u64 gratuity = transaction->getGratuity ();
             u64 expectedGratuity = transaction->getWeight () * minimumGratuity;
