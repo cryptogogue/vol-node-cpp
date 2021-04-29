@@ -73,6 +73,7 @@ protected:
         this->addOption ( opts, "ledger-persist-sleep", "",             "sleep N milliseconds after ledger persist",                                "",                     "0" );
         this->addOption ( opts, "logpath", "l",                         "path to log folder" );
         this->addOption ( opts, "miner", "m",                           "mining account name" );
+        this->addOption ( opts, "persist", "",                          "alias for 'persist-path'; DEPRECATED",                                     "",                     "persist" );
         this->addOption ( opts, "persist-path", "",                     "base path to folder for persist files",                                    "",                     "persist-chain" );
         this->addOption ( opts, "port", "p",                            "set port to serve from",                                                   "",                     "9090" );
         this->addOption ( opts, "sleep-fixed", "",                      "set fixed update sleep (in milliseconds)"                                  "",                     "1000" );
@@ -145,7 +146,8 @@ protected:
         string logpath                      = configuration.getString       ( "logpath", "" );
         string minerID                      = configuration.getString       ( "miner", "" );
         string nodelist                     = configuration.getString       ( "nodelist", "" );
-        string persistPath                  = configuration.getString       ( "persist-path", "persist-chain" );
+        string persistPath                  = configuration.getString       ( "persist", "persist-chain" );
+        persistPath                         = configuration.getString       ( "persist-path", persistPath );
         int port                            = configuration.getInt          ( "port", 9090 );
         int sleepFixed                      = configuration.getInt          ( "sleep-fixed", MinerActivity::DEFAULT_FIXED_UPDATE_MILLIS );
         int sleepVariable                   = configuration.getInt          ( "sleep-variable", MinerActivity::DEFAULT_VARIABLE_UPDATE_MILLIS );
