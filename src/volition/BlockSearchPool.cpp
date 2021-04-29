@@ -248,13 +248,15 @@ void BlockSearchPool::update () {
 
     LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
-    while (( this->mActiveSearches.size () < this->mMaxSearches ) && ( this->mPendingSearches.size ())) {
-    
-        set < BlockSearchKey >::iterator next = this->mPendingSearches.begin ();
-        BlockSearchKey key = *next;
+    if ( this->mActiveSearches.size () < ( this->mMaxSearches / 4 )) {
+        while (( this->mActiveSearches.size () < this->mMaxSearches ) && ( this->mPendingSearches.size ())) {
         
-        this->mActiveSearches.insert ( key );
-        this->mPendingSearches.erase ( next );
+            set < BlockSearchKey >::iterator next = this->mPendingSearches.begin ();
+            BlockSearchKey key = *next;
+            
+            this->mActiveSearches.insert ( key );
+            this->mPendingSearches.erase ( next );
+        }
     }
     
     // step the currently active block searches

@@ -591,8 +591,6 @@ void Miner::saveChain () {
     
     BlockTreeCursor ledgerCursor = *this->mLedgerTag;
     
-    this->mLedger->printVersion ( ledgerCursor.getHeight (), VOL_FILTER_STORE );
-    
     LGN_LOG ( VOL_FILTER_STORE, INFO, "LEDGER BLOCK COUNT: %d", ( int )this->mLedger->countBlocks ());
     LGN_LOG ( VOL_FILTER_STORE, INFO, "BLOCK TREE COUNT: %d", ( int )( ledgerCursor.getHeight () + 1 ));
     
@@ -607,6 +605,8 @@ void Miner::saveChain () {
     }
         
     if ( !( ledgerBlock && ledgerBlock->equals ( ledgerCursor ))) {
+    
+        this->mLedger->printVersion ( ledgerCursor.getHeight (), VOL_FILTER_STORE );
     
         shared_ptr < const Block > ledgerBlockFromHash = this->mLedger->getBlock ( ledgerCursor.getHash ());
         if ( ledgerBlockFromHash ) {

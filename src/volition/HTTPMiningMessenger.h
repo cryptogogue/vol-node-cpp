@@ -53,6 +53,8 @@ protected:
         TOPOLOGY_QUEUE_WEIGHT           = 1,
     };
     
+    static const size_t                 QUEUE_FULL = 32;
+    
     Poco::Mutex                         mMutex;
     
     Poco::TaskManager                   mTaskManager;
@@ -66,8 +68,8 @@ protected:
     //----------------------------------------------------------------//
     void                completeRequest                             ( const MiningMessengerRequest& request );
     static void         deserailizeHeaderList                       ( list < shared_ptr < const BlockHeader >>& responseHeaders, Poco::JSON::Array::Ptr headersJSON );
-    size_t              getQueueIndex                               ( const MiningMessengerRequest& request ) const;
-    size_t              getQueueRawWeight                           ( size_t index ) const;
+    static size_t       getQueueIndex                               ( MiningMessengerRequest::Type requestType );
+    static size_t       getQueueRawWeight                           ( size_t index );
     string              getRequestURL                               ( const MiningMessengerRequest& request ) const;
     void                onTaskCancelledNotification                 ( Poco::TaskCancelledNotification* pNf );
     void                onTaskFailedNotification                    ( Poco::TaskFailedNotification* pNf );
@@ -76,6 +78,7 @@ protected:
     void                sendRequest                                 ( HTTPMiningMessengerRequestQueue& queue );
 
     //----------------------------------------------------------------//
+    bool                AbstractMiningMessenger_isFull              ( MiningMessengerRequest::Type requestType ) const override;
     void                AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) override;
 
 public:

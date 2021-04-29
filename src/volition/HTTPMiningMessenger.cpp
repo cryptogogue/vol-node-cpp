@@ -63,7 +63,7 @@ private:
             }
             
             session->setKeepAlive ( false );
-            session->setTimeout ( Poco::Timespan ( 30, 0 ), Poco::Timespan ( 60, 0 ), Poco::Timespan ( 60, 0 ));
+            session->setTimeout ( Poco::Timespan ( 1, 0 ), Poco::Timespan ( 1, 0 ), Poco::Timespan ( 5, 0 ));
             session->sendRequest ( request );
             
             Poco::Net::HTTPResponse response;
@@ -110,7 +110,7 @@ public:
 void HTTPMiningMessenger::completeRequest ( const MiningMessengerRequest& request ) {
     Poco::ScopedLock < Poco::Mutex > lock ( this->mMutex );
 
-    this->mQueues [ this->getQueueIndex ( request )].mActiveCount--;
+    this->mQueues [ HTTPMiningMessenger::getQueueIndex ( request.mRequestType )].mActiveCount--;
     this->mTotalActive--;
     
     this->pumpQueues ();
@@ -131,9 +131,9 @@ void HTTPMiningMessenger::deserailizeHeaderList ( list < shared_ptr < const Bloc
 }
 
 //----------------------------------------------------------------//
-size_t HTTPMiningMessenger::getQueueIndex ( const MiningMessengerRequest& request ) const {
+size_t HTTPMiningMessenger::getQueueIndex ( MiningMessengerRequest::Type requestType ) {
 
-    switch ( request.mRequestType ) {
+    switch ( requestType ) {
         
         case MiningMessengerRequest::REQUEST_BLOCK:
             return BLOCK_QUEUE_INDEX;
@@ -156,7 +156,7 @@ size_t HTTPMiningMessenger::getQueueIndex ( const MiningMessengerRequest& reques
 }
 
 //----------------------------------------------------------------//
-size_t HTTPMiningMessenger::getQueueRawWeight ( size_t index ) const {
+size_t HTTPMiningMessenger::getQueueRawWeight ( size_t index ) {
 
     switch ( index ) {
         
@@ -209,6 +209,8 @@ HTTPMiningMessenger::HTTPMiningMessenger () :
     mTotalPending ( 0 ),
     mTotalActive ( 0 ) {
     
+    this->mThreadPool.addCapacity ( 16 );
+    
     this->mTaskManager.addObserver (
         Poco::Observer < HTTPMiningMessenger, Poco::TaskFinishedNotification > ( *this, &HTTPMiningMessenger::onTaskFinishedNotification )
     );
@@ -225,7 +227,7 @@ HTTPMiningMessenger::HTTPMiningMessenger () :
     
     for ( size_t i = 0; i < TOTAL_QUEUES; ++i ) {
         HTTPMiningMessengerRequestQueue& queue = this->mQueues [ i ];
-        queue.mRawWeight = this->getQueueRawWeight ( i );
+        queue.mRawWeight = HTTPMiningMessenger::getQueueRawWeight ( i );
         totalWeight += queue.mRawWeight;
     }
     
@@ -392,7 +394,7 @@ void HTTPMiningMessenger::sendRequest ( HTTPMiningMessengerRequestQueue& queue )
 
     // pick a pending request at random
     list < MiningMessengerRequest >::iterator requestIt = queue.mPending.begin ();
-    std::advance ( requestIt, ( long )( UnsecureRandom::get ().random ( 0, queue.mPending.size () - 1 )));
+    //std::advance ( requestIt, ( long )( UnsecureRandom::get ().random ( 0, queue.mPending.size () - 1 )));
 
     assert ( requestIt != queue.mPending.end ());
 
@@ -414,11 +416,20 @@ void HTTPMiningMessenger::sendRequest ( HTTPMiningMessengerRequestQueue& queue )
 //================================================================//
 
 //----------------------------------------------------------------//
+bool HTTPMiningMessenger::AbstractMiningMessenger_isFull ( MiningMessengerRequest::Type requestType ) const {
+
+    map < size_t, HTTPMiningMessengerRequestQueue >::const_iterator queueIt = this->mQueues.find ( HTTPMiningMessenger::getQueueIndex ( requestType ));
+    if ( queueIt == this->mQueues.cend ()) return false;
+
+    return ( queueIt->second.mPending.size () >= QUEUE_FULL );
+}
+
+//----------------------------------------------------------------//
 void HTTPMiningMessenger::AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) {
 
     Poco::ScopedLock < Poco::Mutex > lock ( this->mMutex );
 
-    this->mQueues [ this->getQueueIndex ( request )].pushRequest ( request );
+    this->mQueues [ HTTPMiningMessenger::getQueueIndex ( request.mRequestType )].pushRequest ( request );
     this->mTotalPending++;
     this->pumpQueues ();
 }

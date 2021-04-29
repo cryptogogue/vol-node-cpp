@@ -34,7 +34,7 @@ protected:
     friend class BlockSearchPool;
     friend class BlockSearchKey;
 
-    static const size_t SAMPLE_SIZE     = 8;
+    static const size_t SAMPLE_SIZE     = 4;
     static const size_t MAX_RETRIES     = 16;
 
     friend class Miner;
@@ -58,7 +58,7 @@ public:
     void                    initialize                      ( BlockTreeCursor cursor );
     void                    reset                           ();
     bool                    step                            ( BlockSearchPool& pool );
-    void                    step                            ( string minderID );
+    void                    step                            ( string minerID );
 };
 
 //================================================================//

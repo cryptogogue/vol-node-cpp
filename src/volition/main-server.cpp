@@ -50,6 +50,8 @@ protected:
         this->addOption ( opts, "log-level-lua", "",                    "log level for lua (crafting) scripts",                         "info, warn, error, fatal",     "info" );
         this->addOption ( opts, "log-level-mining-report", "",          "log level for the mining report",                              "info, warn, error, fatal",     "info" );
         this->addOption ( opts, "log-level-padamose", "",               "log level for the padamose versioned store",                   "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-padamose-lock", "",          "log level for padamose tree locking",                          "info, warn, error, fatal",     "warn" );
+        this->addOption ( opts, "log-level-padamose-optimize", "",      "log level for padamose tree optimization",                     "info, warn, error, fatal",     "warn" );
         this->addOption ( opts, "log-level-padamose-sqlite", "",        "log level for the sqlite persistence provider in padamose",    "info, warn, error, fatal",     "warn" );
         this->addOption ( opts, "log-level-search-report", "",          "log level for the block search report",                        "info, warn, error, fatal",     "info" );
         this->addOption ( opts, "log-level-sqlite", "",                 "log level for sqlite",                                         "info, warn, error, fatal",     "warn" );
@@ -109,20 +111,22 @@ protected:
         this->printProperties ();
         
         // log levels
-        Lognosis::setFilter ( VOL_FILTER_APP,                       this->stringToLogLevel ( configuration.getString ( "log-level-app",                   "info" )));
-        Lognosis::setFilter ( VOL_FILTER_BLOCK,                     this->stringToLogLevel ( configuration.getString ( "log-level-block",                 "warn" )));
-        Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 this->stringToLogLevel ( configuration.getString ( "log-level-consensus",             "info" )));
-        Lognosis::setFilter ( VOL_FILTER_HTTP,                      this->stringToLogLevel ( configuration.getString ( "log-level-http",                  "warn" )));
-        Lognosis::setFilter ( VOL_FILTER_JSON,                      this->stringToLogLevel ( configuration.getString ( "log-level-json",                  "warn" )));
-        Lognosis::setFilter ( VOL_FILTER_LEDGER,                    this->stringToLogLevel ( configuration.getString ( "log-level-ledger",                "warn" )));
-        Lognosis::setFilter ( VOL_FILTER_LUA,                       this->stringToLogLevel ( configuration.getString ( "log-level-lua",                   "info" )));
-        Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             this->stringToLogLevel ( configuration.getString ( "log-level-mining-report",         "info" )));
-        Lognosis::setFilter ( PDM_FILTER_ROOT,                      this->stringToLogLevel ( configuration.getString ( "log-level-padamose",              "warn" )));
-        Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  this->stringToLogLevel ( configuration.getString ( "log-level-padamose-sqlite",       "warn" )));
-        Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      this->stringToLogLevel ( configuration.getString ( "log-level-search-report",         "info" )));
-        Lognosis::setFilter ( PDM_FILTER_SQLITE,                    this->stringToLogLevel ( configuration.getString ( "log-level-sqlite",                "warn" )));
-        Lognosis::setFilter ( VOL_FILTER_STORE,                     this->stringToLogLevel ( configuration.getString ( "log-level-store",                 "warn" )));
-        Lognosis::setFilter ( VOL_FILTER_TRANSACTION_QUEUE,         this->stringToLogLevel ( configuration.getString ( "log-level-transaction-queue",     "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_APP,                       this->stringToLogLevel ( configuration.getString ( "log-level-app",                     "info" )));
+        Lognosis::setFilter ( VOL_FILTER_BLOCK,                     this->stringToLogLevel ( configuration.getString ( "log-level-block",                   "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_CONSENSUS,                 this->stringToLogLevel ( configuration.getString ( "log-level-consensus",               "info" )));
+        Lognosis::setFilter ( VOL_FILTER_HTTP,                      this->stringToLogLevel ( configuration.getString ( "log-level-http",                    "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_JSON,                      this->stringToLogLevel ( configuration.getString ( "log-level-json",                    "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_LEDGER,                    this->stringToLogLevel ( configuration.getString ( "log-level-ledger",                  "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_LUA,                       this->stringToLogLevel ( configuration.getString ( "log-level-lua",                     "info" )));
+        Lognosis::setFilter ( VOL_FILTER_MINING_REPORT,             this->stringToLogLevel ( configuration.getString ( "log-level-mining-report",           "info" )));
+        Lognosis::setFilter ( PDM_FILTER_ROOT,                      this->stringToLogLevel ( configuration.getString ( "log-level-padamose",                "warn" )));
+        Lognosis::setFilter ( PDM_FILTER_LOCK,                      this->stringToLogLevel ( configuration.getString ( "log-level-padamose-lock",           "warn" )));
+        Lognosis::setFilter ( PDM_FILTER_OPTIMIZE,                  this->stringToLogLevel ( configuration.getString ( "log-level-padamose-optimize",       "warn" )));
+        Lognosis::setFilter ( PDM_FILTER_SQLSTORE,                  this->stringToLogLevel ( configuration.getString ( "log-level-padamose-sqlite",         "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_MINING_SEARCH_REPORT,      this->stringToLogLevel ( configuration.getString ( "log-level-search-report",           "info" )));
+        Lognosis::setFilter ( PDM_FILTER_SQLITE,                    this->stringToLogLevel ( configuration.getString ( "log-level-sqlite",                  "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_STORE,                     this->stringToLogLevel ( configuration.getString ( "log-level-store",                   "warn" )));
+        Lognosis::setFilter ( VOL_FILTER_TRANSACTION_QUEUE,         this->stringToLogLevel ( configuration.getString ( "log-level-transaction-queue",       "warn" )));
         
         Lognosis::useCurrentFilterForAllNewThreads ();
         

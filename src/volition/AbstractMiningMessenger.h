@@ -106,6 +106,7 @@ protected:
     list < MiningMessengerResponse >    mResponseQueue;
     
     //----------------------------------------------------------------//
+    virtual bool        AbstractMiningMessenger_isFull              ( MiningMessengerRequest::Type requestType ) const = 0;
     virtual void        AbstractMiningMessenger_sendRequest         ( const MiningMessengerRequest& request ) = 0;
 
     //----------------------------------------------------------------//
@@ -130,7 +131,7 @@ public:
     //----------------------------------------------------------------//
     virtual ~AbstractMiningMessenger () {
     }
-
+    
     //----------------------------------------------------------------//
     void enqueueBlockRequest ( string minerURL, const Digest& digest, u64 height, string debug = "" ) {
         
@@ -211,6 +212,12 @@ public:
         response.mMinerID       = minerID;
         response.mGenesisHash   = genesisHash;
         this->enqueueResponse ( response );
+    }
+
+    //----------------------------------------------------------------//
+    bool isFull ( MiningMessengerRequest::Type requestType ) const {
+    
+        return this->AbstractMiningMessenger_isFull ( requestType );
     }
 
     //----------------------------------------------------------------//

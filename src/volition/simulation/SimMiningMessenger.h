@@ -20,6 +20,13 @@ protected:
     shared_ptr < SimMiningNetwork >    mNetwork;
 
     //----------------------------------------------------------------//
+    bool AbstractMiningMessenger_isFull ( MiningMessengerRequest::Type requestType ) const override {
+    
+        UNUSED ( requestType );
+        return true;
+    }
+
+    //----------------------------------------------------------------//
     void AbstractMiningMessenger_sendRequest ( const MiningMessengerRequest& request ) override {
     
         assert ( this->mNetwork );
