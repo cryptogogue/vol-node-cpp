@@ -28,9 +28,7 @@ public:
     
         ScopedSharedMinerLedgerLock ledger ( miner );
         ledger.seek ( this->optQuery ( "at", ledger.countBlocks ()));
-    
-        static const size_t ASSET_BATCH_SIZE = 256;
-        
+            
         string accountName  = this->getMatchString ( "accountName" );
         u64 nonce           = this->getMatchU64 ( "nonce" );
         u64 count           = this->optQuery ( "count", 1 );
@@ -47,7 +45,6 @@ public:
             if ( !logEntry ) continue;
             
             logEntry->apply ( additions, deletions );
-            if ( additions.size () >= ASSET_BATCH_SIZE ) break;
         }
         
         SerializableList < SerializableSharedConstPtr < Asset >> assets;

@@ -244,15 +244,31 @@ LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName,
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID ) {
+LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID, time_t time ) {
 
     AbstractLedger& ledger = this->getLedger ();
 
     if ( accountID == AccountID::NULL_INDEX ) return true;
     AccountODBM accountODBM ( ledger, accountID );
 
+    InventoryLogEntry logEntry ( time );
+
+    size_t totalAssets = accountODBM.mAssetCount.get ( 0 );    
+    for ( size_t i = 0; i < totalAssets; ++i ) {
+    
+        AssetID::Index assetIndex = accountODBM.getInventoryField ( i ).get ();
+        AssetODBM assetODBM ( ledger, assetIndex );
+
+        // asset has no owner or position
+        assetODBM.mOwner.set ( AssetID::NULL_INDEX );
+        assetODBM.mInventoryNonce.set (( u64 )-1 );
+        assetODBM.mPosition.set ( Asset::NULL_POSITION );
+        
+        logEntry.insertDeletion ( assetODBM.mAssetID );
+    }
+
     accountODBM.mAssetCount.set ( 0 );
-    accountODBM.mInventoryNonce.set ( 0 );
+    ledger.updateInventory ( accountODBM.mAccountID, logEntry );
 
     return true;
 }

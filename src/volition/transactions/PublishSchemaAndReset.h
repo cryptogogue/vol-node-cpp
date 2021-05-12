@@ -55,7 +55,7 @@ public:
 
         AccountID::Index totalAccounts = context.mLedger.getValue < AccountID::Index >( Ledger::keyFor_globalAccountCount ());
         for ( AccountID::Index i = 0; i < totalAccounts; ++i ) {
-            context.mLedger.clearInventory ( AccountID ( i ));
+            context.mLedger.clearInventory ( AccountID ( i ), context.mTime );
         }
 
         if ( this->mDeckName.size () > 0 ) {
