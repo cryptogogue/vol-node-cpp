@@ -47,7 +47,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
     
         AssetODBM assetODBM ( ledger, globalAssetCount );
         
-        assetODBM.mOwner.set ( accountODBM.mAccountID + i ); // TODO: what?
+        assetODBM.mOwner.set ( accountODBM.mAccountID );
         assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mPosition.set ( accountAssetCount + i );
         assetODBM.mType.set ( assetType );
