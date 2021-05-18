@@ -26,7 +26,7 @@ public:
         UNUSED ( method );
         UNUSED ( jsonIn );
         
-       ScopedSharedMinerLedgerLock ledger ( miner );
+        ScopedSharedMinerLedgerLock ledger ( miner );
         ledger.seek ( this->optQuery ( "at", ledger.countBlocks ()));
         
         string assetIndexOrID = this->getMatchString ( "assetIndexOrID" );

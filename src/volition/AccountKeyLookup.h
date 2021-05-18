@@ -5,8 +5,8 @@
 #define VOLITION_ACCOUNTKEYLOOKUP_H
 
 #include <volition/common.h>
-#include <volition/AccountID.h>
 #include <volition/CryptoKey.h>
+#include <volition/IndexID.h>
 #include <volition/Policy.h>
 #include <volition/serialization/Serialization.h>
 

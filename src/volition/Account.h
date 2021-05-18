@@ -5,7 +5,7 @@
 #define VOLITION_ACCOUNT_H
 
 #include <volition/common.h>
-#include <volition/AccountID.h>
+#include <volition/IndexID.h>
 #include <volition/KeyAndPolicy.h>
 #include <volition/serialization/Serialization.h>
 

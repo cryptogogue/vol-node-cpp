@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_ACCOUNTID_H
-#define VOLITION_ACCOUNTID_H
+#ifndef VOLITION_INDEXID_H
+#define VOLITION_INDEXID_H
 
 #include <volition/common.h>
 #include <volition/serialization/Serialization.h>
@@ -10,9 +10,9 @@
 namespace Volition {
 
 //================================================================//
-// AccountID
+// IndexID
 //================================================================//
-class AccountID :
+class IndexID :
     public AbstractSerializable {
 public:
 
@@ -29,29 +29,29 @@ public:
     }
     
     //----------------------------------------------------------------//
-    AccountID& operator = ( Index index ) {
+    IndexID& operator = ( Index index ) {
         this->mIndex = index;
         return *this;
     }
     
     //----------------------------------------------------------------//
-    AccountID& operator = ( const AccountID& accountID ) {
+    IndexID& operator = ( const IndexID& accountID ) {
         this->mIndex = accountID.mIndex;
         return *this;
     }
     
     //----------------------------------------------------------------//
-    AccountID () :
+    IndexID () :
         mIndex ( NULL_INDEX ) {
     }
     
     //----------------------------------------------------------------//
-    AccountID ( Index index ) :
+    IndexID ( Index index ) :
         mIndex ( index ) {
     }
     
     //----------------------------------------------------------------//
-    AccountID ( const AccountID& accountID ) :
+    IndexID ( const IndexID& accountID ) :
         mIndex ( accountID.mIndex ) {
     }
     
@@ -75,6 +75,9 @@ public:
         }
     }
 };
+
+typedef IndexID AccountID;
+typedef IndexID OfferID;
 
 } // namespace Volition
 #endif

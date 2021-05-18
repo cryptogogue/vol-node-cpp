@@ -13,6 +13,7 @@
 #include <volition/Ledger_Inventory.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
+#include <volition/OfferODBM.h>
 #include <volition/TransactionMaker.h>
 
 namespace Volition {
@@ -46,7 +47,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
     
         AssetODBM assetODBM ( ledger, globalAssetCount );
         
-        assetODBM.mOwner.set ( accountODBM.mAccountID + i );
+        assetODBM.mOwner.set ( accountODBM.mAccountID + i ); // TODO: what?
         assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mPosition.set ( accountAssetCount + i );
         assetODBM.mType.set ( assetType );
@@ -335,6 +336,67 @@ map < string, size_t > Ledger_Inventory::getInventoryHistogram ( AccountID accou
 }
 
 //----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPrice, time_t expiration, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
+    if ( expiration <= time ) return "Offer already expired by record time.";
+
+    AbstractLedger& ledger = this->getLedger ();
+
+    AccountODBM sellerODBM ( ledger, accountID );
+    if ( sellerODBM.mAccountID == AccountID::NULL_INDEX ) return "Count not find seller account.";
+
+    // check the assets
+    for ( size_t i = 0; i < totalAssets; ++i ) {
+        string assetIdentifier ( assetIdentifiers [ i ]);
+        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
+        if ( assetODBM.mAssetID == AssetID::NULL_INDEX )            return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
+        if ( assetODBM.mOffer.get () != OfferID::NULL_INDEX )       return Format::write ( "Asset %s already in an open offer.", assetIdentifier.c_str ());
+        if ( assetODBM.mOwner.get () != sellerODBM.mAccountID )     return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), sellerODBM.mName.get ().c_str ());
+    }
+
+    LedgerFieldODBM < u64 > globalOfferCountField ( ledger, OfferODBM::keyFor_globalOfferCount ());
+    u64 offerID = globalOfferCountField.get ( 0 );
+
+    LedgerFieldODBM < u64 > globalOpenOfferCountField ( ledger, OfferODBM::keyFor_globalOpenOfferCount ());
+    u64 offerPosition = globalOpenOfferCountField.get ( 0 );
+
+    u64 inventoryNonce = sellerODBM.mInventoryNonce.get ( 0 );
+    InventoryLogEntry logEntry ( time );
+    
+    // tag the assets and build the vector
+    SerializableVector < AssetID::Index > assetIDVector;
+    for ( size_t i = 0; i < totalAssets; ++i ) {
+        
+        string assetIdentifier ( assetIdentifiers [ i ]);
+        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
+        
+        assetODBM.mInventoryNonce.set ( inventoryNonce );
+        assetODBM.mOffer.set ( offerID ); // associate the asset with the offer
+        
+        logEntry.insertDeletion ( assetODBM.mAssetID );
+        logEntry.insertAddition ( assetODBM.mAssetID );
+        
+        assetIDVector.push_back ( assetODBM.mAssetID );
+    }
+    
+    OfferODBM offerODBM ( ledger, offerID );
+
+    offerODBM.mSeller.set ( accountID );
+    offerODBM.mMinimumPrice.set ( minimumPrice );
+    offerODBM.mExpiration.set ( Format::toISO8601 ( expiration ));
+    offerODBM.mPosition.set ( offerPosition );
+    offerODBM.mAssetIdentifiers.set ( assetIDVector );
+    
+    globalOfferCountField.set ( offerID + 1 );
+    globalOpenOfferCountField.set ( offerPosition + 1 );
+    ledger.updateInventory ( sellerODBM.mAccountID, logEntry );
+    
+    return true;
+}
+
+//----------------------------------------------------------------//
 bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string fieldName, time_t time ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
@@ -450,9 +512,9 @@ LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, Ac
     AccountODBM senderODBM ( ledger, senderAccountIndex );
     AccountODBM receiverODBM ( ledger, receiverAccountIndex );
 
-    if ( senderODBM.mAccountID == AccountID::NULL_INDEX ) return "Count not find sender account.";
-    if ( receiverODBM.mAccountID == AccountID::NULL_INDEX ) return "Could not find recipient account.";
-    if ( senderODBM.mAccountID == receiverODBM.mAccountID ) return "Cannot send assets to self.";
+    if ( senderODBM.mAccountID == AccountID::NULL_INDEX )       return "Count not find sender account.";
+    if ( receiverODBM.mAccountID == AccountID::NULL_INDEX )     return "Could not find recipient account.";
+    if ( senderODBM.mAccountID == receiverODBM.mAccountID )     return "Cannot send assets to self.";
 
     size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
     size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
@@ -468,8 +530,9 @@ LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, Ac
     for ( size_t i = 0; i < totalAssets; ++i ) {
         string assetIdentifier ( assetIdentifiers [ i ]);
         AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
-        if ( assetODBM.mAssetID == AssetID::NULL_INDEX ) return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
-        if ( assetODBM.mOwner.get () != senderODBM.mAccountID ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderODBM.mName.get ().c_str ());
+        if ( assetODBM.mAssetID == AssetID::NULL_INDEX )            return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
+        if ( assetODBM.mOffer.get () != OfferID::NULL_INDEX )       return Format::write ( "Asset %s in an open offer.", assetIdentifier.c_str ());
+        if ( assetODBM.mOwner.get () != senderODBM.mAccountID )     return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderODBM.mName.get ().c_str ());
     }
     
     InventoryLogEntry senderLogEntry ( time );
@@ -562,9 +625,10 @@ LedgerResult Ledger_Inventory::upgradeAssets ( AccountID accountID, const map < 
         
         AssetODBM assetODBM ( ledger, AssetID::decode ( assetID ));
 
-        if ( !assetODBM.mOwner.exists ()) return Format::write ( "Asset %s does not exist.", assetID.c_str ());
-        if ( assetODBM.mOwner.get () != accountODBM.mAccountID ) return Format::write ( "Asset %s does not belong to account %s.", assetID.c_str (), accountODBM.mName.get ().c_str ());
-        if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType )) return Format::write (  "Cannot upgrade asset %s to %s.",  assetID.c_str (),  upgradeType.c_str ());
+        if ( !assetODBM.mOwner.exists ())                                   return Format::write ( "Asset %s does not exist.", assetID.c_str ());
+        if ( assetODBM.mOffer.get () != OfferID::NULL_INDEX )               return Format::write ( "Asset %s in an open offer.", assetID.c_str ());
+        if ( assetODBM.mOwner.get () != accountODBM.mAccountID )            return Format::write ( "Asset %s does not belong to account %s.", assetID.c_str (), accountODBM.mName.get ().c_str ());
+        if ( !schema.canUpgrade ( assetODBM.mType.get (), upgradeType ))    return Format::write (  "Cannot upgrade asset %s to %s.",  assetID.c_str (),  upgradeType.c_str ());
     }
     
     u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );

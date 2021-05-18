@@ -203,7 +203,6 @@
 		CD7751E7252FE41C00A53765 /* ConsensusBlockHeaderListHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7751E5252FE41C00A53765 /* ConsensusBlockHeaderListHandler.h */; };
 		CD77522D2532A76200A53765 /* Accessors.h in Headers */ = {isa = PBXBuildFile; fileRef = CD77522B2532A76200A53765 /* Accessors.h */; };
 		CD775257253535FA00A53765 /* LedgerObjectFieldODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */; };
-		CD7752972536515400A53765 /* AccountID.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7752962536515400A53765 /* AccountID.h */; };
 		CD7752A22536960B00A53765 /* CryptoKeyPair.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7752A02536960B00A53765 /* CryptoKeyPair.h */; };
 		CD7752A32536960B00A53765 /* CryptoKeyPair.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD7752A12536960B00A53765 /* CryptoKeyPair.cpp */; };
 		CD7752B62536966100A53765 /* CryptoPublicKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7752B42536966100A53765 /* CryptoPublicKey.h */; };
@@ -224,6 +223,10 @@
 		CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4621EBD46C00B5040E /* UnarySquap.h */; };
 		CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4821EBEB4100B5040E /* SerializableMap.h */; };
 		CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */; };
+		CD8DB7472653CEC80073D58F /* OfferAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB7452653CEC80073D58F /* OfferAssets.h */; };
+		CD8DB7492653D0FE0073D58F /* OfferODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB7482653D0FE0073D58F /* OfferODBM.h */; };
+		CD8DB74B2653D3030073D58F /* IndexID.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB74A2653D3030073D58F /* IndexID.h */; };
+		CD8DB74D2653E02B0073D58F /* OfferDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB74C2653E02B0073D58F /* OfferDetailsHandler.h */; };
 		CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */; };
 		CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD964FA223C48EAB009010C3 /* TransactionQueue.h */; };
 		CD97F7172607E53300C5C8A6 /* FixedPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = CD97F7152607E53300C5C8A6 /* FixedPoint.h */; };
@@ -1001,7 +1004,6 @@
 		CD7751E5252FE41C00A53765 /* ConsensusBlockHeaderListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConsensusBlockHeaderListHandler.h; path = "src/volition/web-miner-api/ConsensusBlockHeaderListHandler.h"; sourceTree = "<group>"; };
 		CD77522B2532A76200A53765 /* Accessors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Accessors.h; path = src/volition/Accessors.h; sourceTree = "<group>"; };
 		CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerObjectFieldODBM.h; path = src/volition/LedgerObjectFieldODBM.h; sourceTree = "<group>"; };
-		CD7752962536515400A53765 /* AccountID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountID.h; path = src/volition/AccountID.h; sourceTree = "<group>"; };
 		CD7752A02536960B00A53765 /* CryptoKeyPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKeyPair.h; path = src/volition/CryptoKeyPair.h; sourceTree = "<group>"; };
 		CD7752A12536960B00A53765 /* CryptoKeyPair.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CryptoKeyPair.cpp; path = src/volition/CryptoKeyPair.cpp; sourceTree = "<group>"; };
 		CD7752B42536966100A53765 /* CryptoPublicKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoPublicKey.h; path = src/volition/CryptoPublicKey.h; sourceTree = "<group>"; };
@@ -1025,6 +1027,10 @@
 		CD8BAE4621EBD46C00B5040E /* UnarySquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnarySquap.h; path = src/volition/UnarySquap.h; sourceTree = "<group>"; };
 		CD8BAE4821EBEB4100B5040E /* SerializableMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializableMap.h; path = src/volition/serialization/SerializableMap.h; sourceTree = "<group>"; };
 		CD8BAE4A21EBEEEF00B5040E /* SerializerKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerKeys.h; path = src/volition/serialization/SerializerKeys.h; sourceTree = "<group>"; };
+		CD8DB7452653CEC80073D58F /* OfferAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfferAssets.h; path = src/volition/transactions/OfferAssets.h; sourceTree = "<group>"; };
+		CD8DB7482653D0FE0073D58F /* OfferODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfferODBM.h; path = src/volition/OfferODBM.h; sourceTree = "<group>"; };
+		CD8DB74A2653D3030073D58F /* IndexID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IndexID.h; path = src/volition/IndexID.h; sourceTree = "<group>"; };
+		CD8DB74C2653E02B0073D58F /* OfferDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfferDetailsHandler.h; path = "src/volition/web-miner-api/OfferDetailsHandler.h"; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionQueue.cpp; path = src/volition/TransactionQueue.cpp; sourceTree = "<group>"; };
 		CD964FA223C48EAB009010C3 /* TransactionQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueue.h; path = src/volition/TransactionQueue.h; sourceTree = "<group>"; };
@@ -1512,7 +1518,6 @@
 				CDFA2392246015FA00B4CECF /* AbstractLedgerComponent.h */,
 				CD63A1DA22B2244600D5C801 /* Account.h */,
 				CDDB4BA4232B5EE400EEAA60 /* AccountEntitlements.h */,
-				CD7752962536515400A53765 /* AccountID.h */,
 				CDA1573323FA59EC00DFACCF /* AccountKeyLookup.h */,
 				CDB8B3C521AC7DB8004EE816 /* Asset.h */,
 				CDEDC20A22BD5AD800C5643C /* AssetID.cpp */,
@@ -1520,6 +1525,7 @@
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CDD11D8922ED6E070051F04E /* AssetFieldValue.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
+				CD8DB74A2653D3030073D58F /* IndexID.h */,
 				CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */,
 				CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */,
 				CDA1573623FA59FE00DFACCF /* KeyAndPolicy.h */,
@@ -1825,6 +1831,7 @@
 				CDFA235221C1CD8A00987232 /* KeyDetailsHandler.h */,
 				CDB8B3FF21ACC874004EE816 /* MinerListHandler.h */,
 				CD20FF172536D03900DEB809 /* NodeDetailsHandler.h */,
+				CD8DB74C2653E02B0073D58F /* OfferDetailsHandler.h */,
 				CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */,
 				CD09ED742207D82500B09249 /* SchemaHandler.h */,
 				CDF234ED25F2F479009DE55E /* TestExceptions.h */,
@@ -1913,6 +1920,7 @@
 				CD2AB81D230F3D5700805F70 /* Genesis.h */,
 				CDDA748E2552D423007AAA07 /* LoadLedger.cpp */,
 				CDDA748F2552D423007AAA07 /* LoadLedger.h */,
+				CD8DB7452653CEC80073D58F /* OfferAssets.h */,
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
 				CDBFD540218B8999002AB0C3 /* PublishSchema.h */,
 				CD5EE7FB247E121400060B24 /* PublishSchemaAndReset.h */,
@@ -1974,6 +1982,7 @@
 				CDFA23892460071700B4CECF /* AssetODBM.h */,
 				CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */,
 				CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */,
+				CD8DB7482653D0FE0073D58F /* OfferODBM.h */,
 			);
 			name = odbm;
 			sourceTree = "<group>";
@@ -2104,6 +2113,7 @@
 				CDAC9F352621E05A00DCA201 /* DebugHTTPEchoHandler.h in Headers */,
 				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,
 				CDFA235321C1CD8A00987232 /* KeyDetailsHandler.h in Headers */,
+				CD8DB74D2653E02B0073D58F /* OfferDetailsHandler.h in Headers */,
 				CD4E81B8210593E5007DA585 /* FromJSONSerializer.h in Headers */,
 				CD4E819E210593BD007DA585 /* MinerInfo.h in Headers */,
 				CD20FF84253D870800DEB809 /* ControlCommand.h in Headers */,
@@ -2116,6 +2126,7 @@
 				CD8BAE3C21EBC81900B5040E /* SerializableSharedPtr.h in Headers */,
 				CD99422725FEAD3C00524DB6 /* BlockSearchPool.h in Headers */,
 				CD4E81B7210593E5007DA585 /* DigestSerializer.h in Headers */,
+				CD8DB74B2653D3030073D58F /* IndexID.h in Headers */,
 				CDDA74C5255568F4007AAA07 /* BlockODBM.h in Headers */,
 				CD2000592548DAF100DEB809 /* SimTransaction.h in Headers */,
 				CD20FF062536A2ED00DEB809 /* CryptoKey.h in Headers */,
@@ -2186,6 +2197,7 @@
 				CDBFD550218B8999002AB0C3 /* SendVOL.h in Headers */,
 				CDFA238F24600A9300B4CECF /* LedgerKey.h in Headers */,
 				CD2AB81E230F3D5700805F70 /* Genesis.h in Headers */,
+				CD8DB7472653CEC80073D58F /* OfferAssets.h in Headers */,
 				CDBFD551218B8999002AB0C3 /* RunScript.h in Headers */,
 				CDBFD547218B8999002AB0C3 /* AffirmKey.h in Headers */,
 				CD8BAE4121EBD3A400B5040E /* AbstractSquap.h in Headers */,
@@ -2199,7 +2211,6 @@
 				CDFA238A2460071700B4CECF /* AccountODBM.h in Headers */,
 				CD7752B62536966100A53765 /* CryptoPublicKey.h in Headers */,
 				CD20FFD12542327500DEB809 /* SetMotto.h in Headers */,
-				CD7752972536515400A53765 /* AccountID.h in Headers */,
 				CDF8AD5821F39969000E285F /* Entropy.h in Headers */,
 				CDFA23A5246051CD00B4CECF /* Ledger_Miner.h in Headers */,
 				CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */,
@@ -2230,6 +2241,7 @@
 				CDB8B40821ACC874004EE816 /* InventoryHandler.h in Headers */,
 				CDF7982221EC30B6002C4D80 /* ConstSquap.h in Headers */,
 				CD4E81BF210593E5007DA585 /* ToJSONSerializer.h in Headers */,
+				CD8DB7492653D0FE0073D58F /* OfferODBM.h in Headers */,
 				CDFA238B2460071700B4CECF /* AssetODBM.h in Headers */,
 				CD9C395F261DB36700AE8782 /* UpdateMinerInfo.h in Headers */,
 				CD4E81BC210593E5007DA585 /* SerializableVector.h in Headers */,

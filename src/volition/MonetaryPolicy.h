@@ -17,10 +17,9 @@ class MonetaryPolicy :
     public AbstractSerializable {
 public:
     
-    u64                                         mFixedMiningReward;
-    FixedPoint                            mScaledMiningReward;
-    FixedPoint                            mMiningTax;
-    
+    u64                     mFixedMiningReward;
+    FixedPoint              mScaledMiningReward;
+    FixedPoint              mMiningTax;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {

@@ -22,6 +22,7 @@
 #include <volition/web-miner-api/KeyDetailsHandler.h>
 #include <volition/web-miner-api/MinerListHandler.h>
 #include <volition/web-miner-api/NodeDetailsHandler.h>
+#include <volition/web-miner-api/OfferDetailsHandler.h>
 #include <volition/web-miner-api/ResetChainHandler.h>
 #include <volition/web-miner-api/SchemaHandler.h>
 #include <volition/web-miner-api/TestExceptions.h>
@@ -58,6 +59,7 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/assets/:assetIndexOrID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/blocks/:blockID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >                     ( HTTP::GET,        Format::write ( "%s/blocks/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::OfferDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/offers/:offerID/?", prefix ));
     
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockDetailsHandler >         ( HTTP::GET,        Format::write ( "%s/consensus/blocks/:hash/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockHeaderListHandler >      ( HTTP::GET,        Format::write ( "%s/consensus/headers/?", prefix )); // TODO: better regex for query params

@@ -41,6 +41,7 @@ public:
     AssetID::Index                      getAssetID                  ( string assetID ) const;
     void                                getInventory                ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t base = 0, size_t count = 0, bool sparse = false );
     map < string, size_t >              getInventoryHistogram       ( AccountID accountID );
+    LedgerResult                        offerAssets                 ( AccountID accountID, u64 minimumPrice, time_t expiration, const string* assetIdentifiers, size_t totalAssets, time_t time );
     bool                                resetAssetFieldValue        ( AssetID::Index index, string fieldName, time_t time );
     bool                                revokeAsset                 ( AssetID::Index index, time_t time  );
     LedgerResult                        setAssetFieldValue          ( AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time );

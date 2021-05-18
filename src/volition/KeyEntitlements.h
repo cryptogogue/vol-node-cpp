@@ -17,10 +17,12 @@ namespace Volition {
 class KeyEntitlements {
 public:
 
+    // TODO: these constants should be in the transaction class, not here
     static constexpr const char* AFFIRM_KEY                     = "AFFIRM_KEY";
     static constexpr const char* BETA_GET_ASSETS                = "BETA_GET_ASSETS";
     static constexpr const char* BETA_GET_DECK                  = "BETA_GET_DECK";
     static constexpr const char* HARD_RESET                     = "HARD_RESET";
+    static constexpr const char* OFFER_ASSETS                   = "OFFER_ASSETS";
     static constexpr const char* OPEN_ACCOUNT                   = "OPEN_ACCOUNT";
     static constexpr const char* PUBLISH_SCHEMA                 = "PUBLISH_SCHEMA";
     static constexpr const char* PUBLISH_SCHEMA_AND_RESET       = "PUBLISH_SCHEMA_AND_RESET";
@@ -49,6 +51,7 @@ public:
         entitlements->setPath ( BETA_GET_ASSETS,                BooleanEntitlement ( true ));
         entitlements->setPath ( BETA_GET_DECK,                  BooleanEntitlement ( true ));
         entitlements->setPath ( HARD_RESET,                     BooleanEntitlement ( true ));
+        entitlements->setPath ( OFFER_ASSETS,                   BooleanEntitlement ( true ));
         entitlements->setPath ( OPEN_ACCOUNT,                   BooleanEntitlement ( true ));
         entitlements->setPath ( PUBLISH_SCHEMA,                 BooleanEntitlement ( true ));
         entitlements->setPath ( PUBLISH_SCHEMA_AND_RESET,       BooleanEntitlement ( true ));
@@ -80,6 +83,7 @@ public:
         entitlements->setPath ( BETA_GET_ASSETS,                BooleanEntitlement ( false ));
         entitlements->setPath ( BETA_GET_DECK,                  BooleanEntitlement ( false ));
         entitlements->setPath ( HARD_RESET,                     BooleanEntitlement ( false ));
+        entitlements->setPath ( OFFER_ASSETS,                   BooleanEntitlement ( false ));
         entitlements->setPath ( OPEN_ACCOUNT,                   BooleanEntitlement ( false ));
         entitlements->setPath ( PUBLISH_SCHEMA,                 BooleanEntitlement ( false ));
         entitlements->setPath ( PUBLISH_SCHEMA_AND_RESET,       BooleanEntitlement ( false ));

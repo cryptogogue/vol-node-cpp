@@ -5,8 +5,8 @@
 #define VOLITION_TRANSACTIONFEESCHEDULE_H
 
 #include <volition/common.h>
-#include <volition/AccountID.h>
 #include <volition/FixedPoint.h>
+#include <volition/IndexID.h>
 #include <volition/KeyAndPolicy.h>
 #include <volition/serialization/Serialization.h>
 

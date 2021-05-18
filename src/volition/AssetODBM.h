@@ -28,6 +28,11 @@ private:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_offer ( AssetID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "asset.%d.offer", index ); });
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_owner ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "asset.%d.owner", index ); });
     }
@@ -61,6 +66,7 @@ public:
     LedgerFieldODBM < u64 >                 mInventoryNonce;
     LedgerFieldODBM < u64 >                 mPosition;
     LedgerFieldODBM < string >              mType;
+    LedgerFieldODBM < OfferID::Index >      mOffer;
 
     //----------------------------------------------------------------//
     operator bool () {
@@ -74,7 +80,8 @@ public:
         mOwner ( ledger,            keyFor_owner ( this->mAssetID ),            AccountID::NULL_INDEX ),
         mInventoryNonce ( ledger,   keyFor_inventoryNonce ( this->mAssetID ),   0 ),
         mPosition ( ledger,         keyFor_position ( this->mAssetID ),         0 ),
-        mType ( ledger,             keyFor_type ( this->mAssetID ),             "" ) {
+        mType ( ledger,             keyFor_type ( this->mAssetID ),             "" ),
+        mOffer ( ledger,            keyFor_offer ( this->mAssetID ),            OfferID::NULL_INDEX ) {
     }
     
     //----------------------------------------------------------------//
