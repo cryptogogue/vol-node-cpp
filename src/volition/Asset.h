@@ -9,6 +9,7 @@
 #include <volition/AssetFieldValue.h>
 #include <volition/AssetID.h>
 #include <volition/Format.h>
+#include <volition/IndexID.h>
 #include <volition/serialization/Serialization.h>
 
 namespace Volition {
@@ -75,6 +76,7 @@ public:
     AssetID     mAssetID;
     string      mOwner;
     u64         mInventoryNonce;
+    OfferID     mOfferID;
     
     //----------------------------------------------------------------//
     Asset () {
@@ -87,6 +89,7 @@ public:
         serializer.serialize ( "assetID",           this->mAssetID );
         serializer.serialize ( "owner",             this->mOwner );
         serializer.serialize ( "inventoryNonce",    this->mInventoryNonce );
+        serializer.serialize ( "offerID",           this->mOfferID );
     }
     
     //----------------------------------------------------------------//
@@ -96,6 +99,10 @@ public:
         serializer.serialize ( "assetID",           this->mAssetID );
         serializer.serialize ( "owner",             this->mOwner );
         serializer.serialize ( "inventoryNonce",    this->mInventoryNonce );
+        
+        if ( this->mOfferID != OfferID::NULL_INDEX ) {
+            serializer.serialize ( "offerID", this->mOfferID );
+        }
     }
 };
 

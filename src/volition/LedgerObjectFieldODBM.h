@@ -41,6 +41,17 @@ public:
         }
         return this->mObject;
     }
+    
+    //----------------------------------------------------------------//
+    void get ( TYPE& object ) const {
+        
+        if ( this->mObject ) {
+            object = *this->mObject;
+        }
+        else {
+            this->mLedger.getConst ().template getObject < TYPE >( this->mKey, object );
+        }
+    }
 
     //----------------------------------------------------------------//
     void init ( const AbstractLedger& ledger, const LedgerKey& ledgerKey ) {

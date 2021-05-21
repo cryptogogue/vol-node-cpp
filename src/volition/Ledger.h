@@ -315,6 +315,23 @@ public:
 
     //----------------------------------------------------------------//
     template < typename TYPE >
+    void getObject ( LedgerKey key, TYPE& object ) const {
+    
+        AbstractLedger::getObject < TYPE >( *this, key, object );
+    }
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
+    static void getObject ( const AbstractHasVersionedBranch& snapshot, LedgerKey key, TYPE& object ) {
+    
+        string json = snapshot.getValueOrFallback < string >( key, "" );
+        if ( json.size () > 0 ) {
+            FromJSONSerializer::fromJSONString ( object, json );
+        }
+    }
+
+    //----------------------------------------------------------------//
+    template < typename TYPE >
     shared_ptr < TYPE > getObjectOrNull ( LedgerKey key ) const {
 
         return AbstractLedger::getObjectOrNull < TYPE >( *this, key );

@@ -102,6 +102,7 @@ public:
         asset->mAssetID         = this->mAssetID;
         asset->mOwner           = ownerODBM.mName.get ();
         asset->mInventoryNonce  = this->mInventoryNonce.get ( 0 );
+        asset->mOfferID         = this->mOffer.get ();
         
         // copy the fields and apply any overrides
         AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();

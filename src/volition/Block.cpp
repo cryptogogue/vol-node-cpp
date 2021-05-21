@@ -68,6 +68,8 @@ LedgerResult Block::apply ( AbstractLedger& ledger, VerificationPolicy policy ) 
     LedgerResult verifyResult = this->verify ( ledger, policy );
     if ( !verifyResult ) return verifyResult;
 
+    ledger.expireOffers ( this->mTime );
+
     // some transactions need to be applied later.
     // we need to evaluate if they are legal now.
     // then process them once we have the entropy.
@@ -129,7 +131,7 @@ LedgerResult Block::apply ( AbstractLedger& ledger, VerificationPolicy policy ) 
     if ( unfinishedChanged ) {
         ledger.setUnfinished ( nextUnfinished );
     }
-        
+    
     BlockODBM blockODBM ( ledger, this->mHeight );
     
     string hash = this->mDigest.toHex ();

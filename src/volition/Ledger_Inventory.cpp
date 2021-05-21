@@ -245,6 +245,36 @@ LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName,
 }
 
 //----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::clearOffers ( AccountID accountID, const SerializableVector < AssetID::Index >& assetIDs, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
+    AbstractLedger& ledger = this->getLedger ();
+
+    AccountODBM sellerODBM ( ledger, accountID );
+    if ( sellerODBM.mAccountID == AccountID::NULL_INDEX ) return false;
+
+    u64 inventoryNonce = sellerODBM.mInventoryNonce.get ( 0 );
+    InventoryLogEntry logEntry ( time );
+    
+    // tag the assets and build the vector
+    for ( size_t i = 0; i < assetIDs.size (); ++i ) {
+        
+        AssetODBM assetODBM ( ledger, assetIDs [ i ]);
+        
+        assetODBM.mInventoryNonce.set ( inventoryNonce );
+        assetODBM.mOffer.set ( OfferID::NULL_INDEX );
+        
+        logEntry.insertDeletion ( assetODBM.mAssetID );
+        logEntry.insertAddition ( assetODBM.mAssetID );
+    }
+    
+    ledger.updateInventory ( accountID, logEntry );
+    
+    return true;
+}
+
+//----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID, time_t time ) {
 
     AbstractLedger& ledger = this->getLedger ();
@@ -272,6 +302,40 @@ LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID, time_t time
     ledger.updateInventory ( accountODBM.mAccountID, logEntry );
 
     return true;
+}
+
+//----------------------------------------------------------------//
+void Ledger_Inventory::expireOffers ( time_t time ) {
+
+    const AbstractLedger& ledger = this->getLedger ();
+    
+    LedgerFieldODBM < u64 > globalOpenOfferCountField ( ledger, OfferODBM::keyFor_globalOpenOfferCount ());
+    u64 count = globalOpenOfferCountField.get ( 0 );
+    
+    u64 keepCount = 0;
+    for ( u64 i = 0; i < count; ++i ) {
+        
+        LedgerFieldODBM < u64 > globalOpenOfferListElementField ( ledger, OfferODBM::keyFor_globalOpenOfferListElement ( i ));
+        
+        OfferID offerID = globalOpenOfferListElementField.get ();
+        OfferODBM offerODBM ( ledger, offerID );
+        
+        time_t expiration = Format::fromISO8601 ( offerODBM.mExpiration.get ());
+        
+        if ( expiration <= time ) {
+        
+            SerializableVector < AssetID::Index > assetIDs;
+            offerODBM.mAssetIdentifiers.get ( assetIDs );
+            this->clearOffers ( offerODBM.mSeller.get (), assetIDs, time );
+            
+            offerODBM.mSeller.set ( OfferID::NULL_INDEX );
+        }
+        else {
+            globalOpenOfferListElementField.set ( offerID );
+            keepCount++;
+        }
+    }
+    globalOpenOfferCountField.set ( keepCount );
 }
 
 //----------------------------------------------------------------//
@@ -347,20 +411,19 @@ LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPri
     AccountODBM sellerODBM ( ledger, accountID );
     if ( sellerODBM.mAccountID == AccountID::NULL_INDEX ) return "Count not find seller account.";
 
-    // check the assets
-    for ( size_t i = 0; i < totalAssets; ++i ) {
-        string assetIdentifier ( assetIdentifiers [ i ]);
-        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
-        if ( assetODBM.mAssetID == AssetID::NULL_INDEX )            return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
-        if ( assetODBM.mOffer.get () != OfferID::NULL_INDEX )       return Format::write ( "Asset %s already in an open offer.", assetIdentifier.c_str ());
-        if ( assetODBM.mOwner.get () != sellerODBM.mAccountID )     return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), sellerODBM.mName.get ().c_str ());
-    }
-
     LedgerFieldODBM < u64 > globalOfferCountField ( ledger, OfferODBM::keyFor_globalOfferCount ());
     u64 offerID = globalOfferCountField.get ( 0 );
 
-    LedgerFieldODBM < u64 > globalOpenOfferCountField ( ledger, OfferODBM::keyFor_globalOpenOfferCount ());
-    u64 offerPosition = globalOpenOfferCountField.get ( 0 );
+    // check the assets
+    for ( size_t i = 0; i < totalAssets; ++i ) {
+    
+        string assetIdentifier ( assetIdentifiers [ i ]);
+        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
+        
+        if ( assetODBM.mAssetID == AssetID::NULL_INDEX )            return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
+        if ( assetODBM.mOwner.get () != sellerODBM.mAccountID )     return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), sellerODBM.mName.get ().c_str ());
+        if ( assetODBM.mOffer.get () != OfferID::NULL_INDEX )       return Format::write ( "Asset %s already in an open offer.", assetIdentifier.c_str ());
+    }
 
     u64 inventoryNonce = sellerODBM.mInventoryNonce.get ( 0 );
     InventoryLogEntry logEntry ( time );
@@ -381,17 +444,22 @@ LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPri
         assetIDVector.push_back ( assetODBM.mAssetID );
     }
     
+    ledger.updateInventory ( sellerODBM.mAccountID, logEntry );
+    
+    LedgerFieldODBM < u64 > globalOpenOfferCountField ( ledger, OfferODBM::keyFor_globalOpenOfferCount ());
+    u64 offerPosition = globalOpenOfferCountField.get ( 0 );
+    
     OfferODBM offerODBM ( ledger, offerID );
 
     offerODBM.mSeller.set ( accountID );
     offerODBM.mMinimumPrice.set ( minimumPrice );
     offerODBM.mExpiration.set ( Format::toISO8601 ( expiration ));
-    offerODBM.mPosition.set ( offerPosition );
     offerODBM.mAssetIdentifiers.set ( assetIDVector );
+    
+    LedgerFieldODBM < u64 >( ledger, OfferODBM::keyFor_globalOpenOfferListElement ( offerPosition )).set ( offerID );
     
     globalOfferCountField.set ( offerID + 1 );
     globalOpenOfferCountField.set ( offerPosition + 1 );
-    ledger.updateInventory ( sellerODBM.mAccountID, logEntry );
     
     return true;
 }

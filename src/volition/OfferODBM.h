@@ -31,11 +31,6 @@ private:
     static LedgerKey keyFor_minimumPrice ( OfferID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "offer.%d.minimumPrice", index ); });
     }
-
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_position ( OfferID::Index index ) {
-        return LedgerKey ([ = ]() { return Format::write ( "offer.%d.position", index ); });
-    }
     
     //----------------------------------------------------------------//
     static LedgerKey keyFor_seller ( OfferID::Index index ) {
@@ -53,13 +48,17 @@ public:
     static LedgerKey keyFor_globalOpenOfferCount () {
         return Format::write ( "offer.openCount" );
     }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_globalOpenOfferListElement ( u64 index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "offer.openList.%d", index ); });
+    }
 
     ConstOpt < AbstractLedger >             mLedger;
     OfferID                                 mOfferID;
     LedgerFieldODBM < AccountID::Index >    mSeller;
     LedgerFieldODBM < u64 >                 mMinimumPrice;
     LedgerFieldODBM < string >              mExpiration;
-    LedgerFieldODBM < u64 >                 mPosition; // position in active offer list
 
     LedgerObjectFieldODBM < SerializableVector < AssetID::Index >> mAssetIdentifiers;
 
@@ -75,7 +74,6 @@ public:
         mSeller ( ledger,               keyFor_seller ( this->mOfferID ),               OfferID::NULL_INDEX ),
         mMinimumPrice ( ledger,         keyFor_minimumPrice ( this->mOfferID ),         0 ),
         mExpiration ( ledger,           keyFor_expiration ( this->mOfferID ),           "" ),
-        mPosition ( ledger,             keyFor_position ( this->mOfferID ),             0 ),
         mAssetIdentifiers ( ledger,     keyFor_assetIdentifiers ( this->mOfferID )) {
     }
 };

@@ -26,6 +26,7 @@ private:
     //----------------------------------------------------------------//
     LedgerResult                        awardAssets                 ( AccountODBM& accountODBM, u64 inventoryNonce, const list < AssetBase >& assets, InventoryLogEntry& logEntry );
     LedgerResult                        awardAssets                 ( AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
+    LedgerResult                        clearOffers                 ( AccountID accountID, const SerializableVector < AssetID::Index >& assetIDs, time_t time );
     void                                updateInventory             ( AccountID accountID, const InventoryLogEntry& entry );
     void                                updateInventory             ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op );
 
@@ -38,6 +39,7 @@ public:
     LedgerResult                        awardAssetsRandom           ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time );
     LedgerResult                        awardDeck                   ( AccountID accountID, string deckName, time_t time );
     LedgerResult                        clearInventory              ( AccountID accountID, time_t time );
+    void                                expireOffers                ( time_t time );
     AssetID::Index                      getAssetID                  ( string assetID ) const;
     void                                getInventory                ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t base = 0, size_t count = 0, bool sparse = false );
     map < string, size_t >              getInventoryHistogram       ( AccountID accountID );

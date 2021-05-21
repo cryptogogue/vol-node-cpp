@@ -59,7 +59,7 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/assets/:assetIndexOrID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/blocks/:blockID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >                     ( HTTP::GET,        Format::write ( "%s/blocks/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::OfferDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/offers/:offerID/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::OfferDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/offers/:assetID/?", prefix ));
     
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockDetailsHandler >         ( HTTP::GET,        Format::write ( "%s/consensus/blocks/:hash/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockHeaderListHandler >      ( HTTP::GET,        Format::write ( "%s/consensus/headers/?", prefix )); // TODO: better regex for query params
