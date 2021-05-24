@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_BETA_GET_DECK_H
-#define VOLITION_TRANSACTIONS_BETA_GET_DECK_H
+#ifndef VOLITION_TRANSACTIONS_BETAGETDECK_H
+#define VOLITION_TRANSACTIONS_BETAGETDECK_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>

@@ -245,7 +245,48 @@ LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName,
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::clearOffers ( AccountID accountID, const SerializableVector < AssetID::Index >& assetIDs, time_t time ) {
+LedgerResult Ledger_Inventory::buyAssets ( AccountID accountID, string assetIdentifier, u64 price, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
+    AbstractLedger& ledger = this->getLedger ();
+
+    AssetID assetID( assetIdentifier );
+    if ( assetID.mIndex == AssetID::NULL_INDEX ) return "Invalid asset identifier.";
+    
+    AssetODBM assetODBM ( ledger, assetID );
+    if ( !assetODBM ) return "Asset not found.";
+    
+    OfferID offerID = assetODBM.mOffer.get ();
+    if ( offerID.mIndex == AssetID::NULL_INDEX ) return "Asset not offered for sale.";
+
+    OfferODBM offerODBM ( ledger, assetODBM.mOffer.get ());
+    if ( !offerODBM ) return "Asset marked for sale, but no offer found.";
+    
+    AccountODBM sellerODBM ( ledger, offerODBM.mSeller.get ());
+    if ( !sellerODBM ) return "Seller not found.";
+
+    AccountODBM buyerODBM ( ledger, accountID );
+    if ( !buyerODBM ) return "Buyer not found.";
+
+    if ( accountID == sellerODBM.mAccountID ) return "Cannot buy assets from self; cancel sale instead.";
+
+    SerializableVector < AssetID::Index > assetIDs;
+    offerODBM.mAssetIdentifiers.get ( assetIDs );
+
+    this->transferAssets ( sellerODBM, buyerODBM, AssetListAdapter ( assetIDs.data (), assetIDs.size ()), time );
+
+    // TODO: change status instead
+    offerODBM.mSeller.set ( OfferID::NULL_INDEX );
+
+    buyerODBM.subFunds ( price );
+    sellerODBM.addFunds ( price );
+
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::clearOffers ( AccountID accountID, AssetListAdapter assetList, time_t time ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
@@ -258,9 +299,9 @@ LedgerResult Ledger_Inventory::clearOffers ( AccountID accountID, const Serializ
     InventoryLogEntry logEntry ( time );
     
     // tag the assets and build the vector
-    for ( size_t i = 0; i < assetIDs.size (); ++i ) {
+    for ( size_t i = 0; i < assetList.size (); ++i ) {
         
-        AssetODBM assetODBM ( ledger, assetIDs [ i ]);
+        AssetODBM assetODBM ( ledger, assetList.getAssetIndex ( i ));
         
         assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mOffer.set ( OfferID::NULL_INDEX );
@@ -326,7 +367,7 @@ void Ledger_Inventory::expireOffers ( time_t time ) {
         
             SerializableVector < AssetID::Index > assetIDs;
             offerODBM.mAssetIdentifiers.get ( assetIDs );
-            this->clearOffers ( offerODBM.mSeller.get (), assetIDs, time );
+            this->clearOffers ( offerODBM.mSeller.get (), AssetListAdapter ( assetIDs.data (), assetIDs.size ()), time );
             
             offerODBM.mSeller.set ( OfferID::NULL_INDEX );
         }
@@ -400,7 +441,7 @@ map < string, size_t > Ledger_Inventory::getInventoryHistogram ( AccountID accou
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPrice, time_t expiration, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
+LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPrice, time_t expiration, AssetListAdapter assetList, time_t time ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
@@ -415,10 +456,10 @@ LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPri
     u64 offerID = globalOfferCountField.get ( 0 );
 
     // check the assets
-    for ( size_t i = 0; i < totalAssets; ++i ) {
+    for ( size_t i = 0; i < assetList.size (); ++i ) {
     
-        string assetIdentifier ( assetIdentifiers [ i ]);
-        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
+        string assetIdentifier = assetList.getAssetIdentifier ( i );
+        AssetODBM assetODBM ( ledger, AssetID ( assetIdentifier ));
         
         if ( assetODBM.mAssetID == AssetID::NULL_INDEX )            return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
         if ( assetODBM.mOwner.get () != sellerODBM.mAccountID )     return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), sellerODBM.mName.get ().c_str ());
@@ -430,10 +471,9 @@ LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPri
     
     // tag the assets and build the vector
     SerializableVector < AssetID::Index > assetIDVector;
-    for ( size_t i = 0; i < totalAssets; ++i ) {
+    for ( size_t i = 0; i < assetList.size (); ++i ) {
         
-        string assetIdentifier ( assetIdentifiers [ i ]);
-        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
+        AssetODBM assetODBM ( ledger, assetList.getAssetIndex ( i ));
         
         assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mOffer.set ( offerID ); // associate the asset with the offer
@@ -571,44 +611,32 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( AssetID::Index index, string
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, AccountID receiverAccountIndex, const string* assetIdentifiers, size_t totalAssets, time_t time ) {
+LedgerResult Ledger_Inventory::transferAssets ( AccountODBM& senderODBM, AccountODBM& receiverODBM, AssetListAdapter assetList, time_t time ) {
     
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
     
     AbstractLedger& ledger = this->getLedger ();
-    
-    AccountODBM senderODBM ( ledger, senderAccountIndex );
-    AccountODBM receiverODBM ( ledger, receiverAccountIndex );
 
-    if ( senderODBM.mAccountID == AccountID::NULL_INDEX )       return "Count not find sender account.";
-    if ( receiverODBM.mAccountID == AccountID::NULL_INDEX )     return "Could not find recipient account.";
-    if ( senderODBM.mAccountID == receiverODBM.mAccountID )     return "Cannot send assets to self.";
+    if ( senderODBM.mAccountID == AccountID::NULL_INDEX )           return "Count not find sender account.";
+    if ( receiverODBM.mAccountID == AccountID::NULL_INDEX )         return "Could not find recipient account.";
+    if ( senderODBM.mAccountID == receiverODBM.mAccountID )         return "Cannot send assets to self.";
 
     size_t senderAssetCount = senderODBM.mAssetCount.get ( 0 );
     size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
 
     shared_ptr < const Account > receiverAccount = receiverODBM.mBody.get ();
     Entitlements receiverEntitlements = ledger.getEntitlements < AccountEntitlements >( *receiverAccount );
-    if ( !receiverEntitlements.check ( AccountEntitlements::MAX_ASSETS, receiverAssetCount + totalAssets )) {
+    if ( !receiverEntitlements.check ( AccountEntitlements::MAX_ASSETS, receiverAssetCount + assetList.size ())) {
         double max = receiverEntitlements.resolvePathAs < NumericEntitlement >( AccountEntitlements::MAX_ASSETS )->getUpperLimit ().mLimit;
         return Format::write ( "Transaction would overflow receiving account's inventory limit of %d assets.", ( int )max );
-    }
-
-    // check all the assets
-    for ( size_t i = 0; i < totalAssets; ++i ) {
-        string assetIdentifier ( assetIdentifiers [ i ]);
-        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
-        if ( assetODBM.mAssetID == AssetID::NULL_INDEX )            return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
-        if ( assetODBM.mOffer.get () != OfferID::NULL_INDEX )       return Format::write ( "Asset %s in an open offer.", assetIdentifier.c_str ());
-        if ( assetODBM.mOwner.get () != senderODBM.mAccountID )     return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderODBM.mName.get ().c_str ());
     }
     
     InventoryLogEntry senderLogEntry ( time );
     InventoryLogEntry receiverLogEntry ( time );
 
-    for ( size_t i = 0; i < totalAssets; ++i, --senderAssetCount, ++receiverAssetCount ) {
+    for ( size_t i = 0; i < assetList.size (); ++i, --senderAssetCount, ++receiverAssetCount ) {
         
-        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifiers [ i ]));
+        AssetODBM assetODBM ( ledger, assetList.getAssetIndex ( i ));
         
         // fill the asset's original position by swapping in the tail
         size_t position = assetODBM.mPosition.get ();
@@ -623,6 +651,7 @@ LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, Ac
         
         // transfer asset ownership to the receiver
         assetODBM.mOwner.set ( receiverODBM.mAccountID );
+        assetODBM.mOffer.set ( OfferID::NULL_INDEX );
         assetODBM.mInventoryNonce.set ( receiverODBM.mInventoryNonce.get ( 0 ));
         assetODBM.mPosition.set ( receiverAssetCount );
         receiverODBM.getInventoryField ( assetODBM.mPosition.get ()).set ( assetODBM.mAssetID );
@@ -637,6 +666,30 @@ LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, Ac
     
     ledger.updateInventory ( receiverODBM.mAccountID, receiverLogEntry );
     receiverODBM.mAssetCount.set ( receiverAssetCount );
+    
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::transferAssets ( AccountID senderAccountIndex, AccountID receiverAccountIndex, AssetListAdapter assetList, time_t time ) {
+    
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+    
+    AbstractLedger& ledger = this->getLedger ();
+    
+    AccountODBM senderODBM ( ledger, senderAccountIndex );
+    AccountODBM receiverODBM ( ledger, receiverAccountIndex );
+    
+    // check all the assets
+    for ( size_t i = 0; i < assetList.size (); ++i ) {
+        string assetIdentifier = assetList.getAssetIdentifier ( i );
+        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifier ));
+        if ( assetODBM.mAssetID == AssetID::NULL_INDEX )            return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
+        if ( assetODBM.mOffer.get () != OfferID::NULL_INDEX )       return Format::write ( "Asset %s in an open offer.", assetIdentifier.c_str ());
+        if ( assetODBM.mOwner.get () != senderODBM.mAccountID )     return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), senderODBM.mName.get ().c_str ());
+    }
+    
+    this->transferAssets ( senderODBM, receiverODBM, assetList, time );
     
     return true;
 }

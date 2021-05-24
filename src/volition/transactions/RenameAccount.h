@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_RENAME_ACCOUNT_H
-#define VOLITION_TRANSACTIONS_RENAME_ACCOUNT_H
+#ifndef VOLITION_TRANSACTIONS_RENAMEACCOUNT_H
+#define VOLITION_TRANSACTIONS_RENAMEACCOUNT_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>

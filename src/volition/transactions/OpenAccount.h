@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_OPEN_ACCOUNT_H
-#define VOLITION_TRANSACTIONS_OPEN_ACCOUNT_H
+#ifndef VOLITION_TRANSACTIONS_OPENACCOUNT_H
+#define VOLITION_TRANSACTIONS_OPENACCOUNT_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -80,6 +80,8 @@ public:
         if ( !accountBequest ) return "Missing account bequest.";
 
         if ( !ledger.newAccount ( childName, this->mGrant, Ledger::MASTER_KEY_NAME, this->mKey, *keyBequest, *accountBequest )) return "Failed to create account.";;
+
+        context.mAccountODBM.subFunds ( this->mGrant );
 
         return true;
     }

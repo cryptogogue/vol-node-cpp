@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_SEND_VOL_H
-#define VOLITION_TRANSACTIONS_SEND_VOL_H
+#ifndef VOLITION_TRANSACTIONS_SENDVOL_H
+#define VOLITION_TRANSACTIONS_SENDVOL_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -53,9 +53,8 @@ public:
         if ( !receiverODBM ) return "Could not find recipient account.";
         if ( context.mAccountID == receiverODBM.mAccountID ) return "Cannot send VOL to self.";
         
-        Account receiverUpdated = *receiverODBM.mBody.get ();
-        receiverUpdated.mBalance += this->mAmount;
-        receiverODBM.mBody.set ( receiverUpdated );
+        receiverODBM.addFunds ( this->mAmount );
+        context.mAccountODBM.subFunds ( this->mAmount );
         
         return true;
     }

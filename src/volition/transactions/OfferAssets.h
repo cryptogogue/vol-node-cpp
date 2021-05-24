@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_OFFER_ASSETS_H
-#define VOLITION_TRANSACTIONS_OFFER_ASSETS_H
+#ifndef VOLITION_TRANSACTIONS_OFFERASSETS_H
+#define VOLITION_TRANSACTIONS_OFFERASSETS_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
@@ -57,8 +57,10 @@ public:
             context.mAccountID,
             this->mMinimumPrice,
             this->mExpiration,
-            this->mAssetIdentifiers.data (),
-            this->mAssetIdentifiers.size (),
+            AssetListAdapter (
+                this->mAssetIdentifiers.data (),
+                this->mAssetIdentifiers.size ()
+            ),
             context.mTime
         );
     }

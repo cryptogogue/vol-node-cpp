@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_BETA_GET_ASSETS_H
-#define VOLITION_TRANSACTIONS_BETA_GET_ASSETS_H
+#ifndef VOLITION_TRANSACTIONS_BETAGETASSETS_H
+#define VOLITION_TRANSACTIONS_BETAGETASSETS_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>

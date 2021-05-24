@@ -78,9 +78,7 @@ LedgerResult Ledger_Account::awardVOL ( AccountID accountID, u64 amount ) {
         
         if ( available < amount ) return "Insufficient funds in prize pool.";
         
-        Account updatedAccount = *account;
-        updatedAccount.mBalance += amount;
-        accountODBM.mBody.set ( updatedAccount );
+        accountODBM.addFunds ( amount );
         
         prizePoolField.set ( available - amount );
         
@@ -189,7 +187,7 @@ bool Ledger_Account::isSuffix ( string suffix ) {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Account::newAccount ( string accountName, const Account& account ) {
+LedgerResult Ledger_Account::newAccount ( string accountName, u64 balance, const Account& account ) {
 
     AbstractLedger& ledger = this->getLedger ();
 
@@ -216,6 +214,7 @@ LedgerResult Ledger_Account::newAccount ( string accountName, const Account& acc
     AccountODBM accountODBM ( ledger, accountID );
     accountODBM.mName.set ( accountName );
     accountODBM.mBody.set ( account );
+    accountODBM.mBalance.set ( balance );
     
     // store the alias
     ledger.setValue < AccountID::Index >( KEY_FOR_ACCOUNT_ALIAS, accountID );
@@ -229,12 +228,11 @@ LedgerResult Ledger_Account::newAccount ( string accountName, u64 balance, strin
     // store the account
     Account account;
     account.mPolicy     = accountPolicy;
-    account.mBalance    = balance;
     
     if ( key ) {
         account.mKeys [ keyName ] = KeyAndPolicy ( key, keyPolicy );
     }
-    return this->newAccount ( accountName, account );
+    return this->newAccount ( accountName, balance, account );
 }
 
 //----------------------------------------------------------------//

@@ -72,6 +72,11 @@ private:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_balance ( AccountID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.balance", index ); });
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_body ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d", index ); });
     }
@@ -138,6 +143,7 @@ private:
         this->mAccountID    = index;
         
         this->mAssetCount           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
+        this->mBalance              = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_balance ( this->mAccountID ),                0 );
         this->mInventoryNonce       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
         this->mTransactionNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
         this->mName                 = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
@@ -153,6 +159,7 @@ public:
     AccountID                               mAccountID;
 
     LedgerFieldODBM < u64 >                 mAssetCount;
+    LedgerFieldODBM < u64 >                 mBalance;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
     LedgerFieldODBM < u64 >                 mTransactionNonce;
     LedgerFieldODBM < string >              mName;
@@ -164,17 +171,26 @@ public:
 
     //----------------------------------------------------------------//
     operator bool () {
+    
         return this->mName.exists ();
     }
 
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < AbstractLedger > ledger, AccountID index ) {
+    
         this->initialize ( ledger, index );
     }
     
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < AbstractLedger > ledger, string accountName ) {
+    
         this->initialize ( ledger, ledger.getConst ().getAccountID ( accountName ));
+    }
+    
+    //----------------------------------------------------------------//
+    void addFunds ( u64 amount ) {
+    
+        return this->mBalance.set ( this->mBalance.get () + amount );
     }
     
     //----------------------------------------------------------------//
@@ -226,6 +242,12 @@ public:
     }
     
     //----------------------------------------------------------------//
+    bool hasFunds ( u64 amount ) {
+    
+        return amount <= this->mBalance.get ();
+    }
+    
+    //----------------------------------------------------------------//
     void incAccountTransactionNonce ( u64 nonce, string uuid ) {
         
         if ( !( *this )) return;
@@ -238,6 +260,13 @@ public:
     bool isMiner () {
     
         return this->mMinerInfo.exists ();
+    }
+    
+    //----------------------------------------------------------------//
+    void subFunds ( u64 amount ) {
+    
+        u64 balance = this->mBalance.get ();
+        return this->mBalance.set ( amount <= balance ? balance - amount : 0 );
     }
 };
 

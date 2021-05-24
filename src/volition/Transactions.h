@@ -8,6 +8,7 @@
 #include <volition/transactions/AffirmKey.h>
 #include <volition/transactions/BetaGetAssets.h>
 #include <volition/transactions/BetaGetDeck.h>
+#include <volition/transactions/BuyAssets.h>
 #include <volition/transactions/Genesis.h>
 #include <volition/transactions/LoadLedger.h>
 #include <volition/transactions/OfferAssets.h>

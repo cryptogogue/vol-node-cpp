@@ -62,7 +62,7 @@ public:
     static bool                             isAccountName                   ( string accountName );
     static bool                             isChildName                     ( string accountName );
     static bool                             isSuffix                        ( string suffix );
-    LedgerResult                            newAccount                      ( string accountName, const Account& account );
+    LedgerResult                            newAccount                      ( string accountName, u64 balance, const Account& account );
     LedgerResult                            newAccount                      ( string accountName, u64 balance, string keyName, const CryptoPublicKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
     LedgerResult                            renameAccount                   ( AccountID accountID, string revealedName );
     LedgerResult                            reserveAccountname              ( string nameHash, string nameSecret );

@@ -62,8 +62,8 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHei
         if ( !feeProfile.checkProfitShare ( maker->getGratuity (), maker->getProfitShare ())) return "Incorrect profit share.";
         if ( !feeProfile.checkTransferTax ( this->getSendVOL (), maker->getTransferTax ())) return "Incorrect transfer tax.";
         
-        u64 cost = this->getCost ();
-        if ( context.mAccount.mBalance < cost ) return "Insufficient funds.";
+        u64 transactionCost = this->getTransactionCost ();
+        if ( !context.mAccountODBM.hasFunds ( transactionCost + this->getSendVOL ())) return "Insufficient funds.";
         
         result = this->mBody->apply ( context );
         
@@ -73,12 +73,10 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHei
                 accountODBM.incAccountTransactionNonce ( this->getNonce (), this->getUUID ());
                 accountODBM.getTransactionLogEntryField ( this->getNonce ()).set ( TransactionLogEntry ( blockHeight, index ));
                 
-                if ( cost > 0 ) {
+                if ( transactionCost > 0 ) {
                 
                     // deduct the total cost from maker
-                    Account accountUpdated = context.mAccount;
-                    accountUpdated.mBalance -= cost;
-                    accountODBM.mBody.set ( accountUpdated );
+                    context.mAccountODBM.subFunds ( transactionCost );
                 }
             }
         }

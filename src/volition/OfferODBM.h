@@ -43,7 +43,7 @@ public:
     static LedgerKey keyFor_globalOfferCount () {
         return Format::write ( "offer.count" );
     }
-
+    
     //----------------------------------------------------------------//
     static LedgerKey keyFor_globalOpenOfferCount () {
         return Format::write ( "offer.openCount" );
@@ -53,7 +53,7 @@ public:
     static LedgerKey keyFor_globalOpenOfferListElement ( u64 index ) {
         return LedgerKey ([ = ]() { return Format::write ( "offer.openList.%d", index ); });
     }
-
+    
     ConstOpt < AbstractLedger >             mLedger;
     OfferID                                 mOfferID;
     LedgerFieldODBM < AccountID::Index >    mSeller;

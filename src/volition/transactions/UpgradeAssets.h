@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_UPGRADE_ASSETS_H
-#define VOLITION_TRANSACTIONS_UPGRADE_ASSETS_H
+#ifndef VOLITION_TRANSACTIONS_UPGRADEASSETS_H
+#define VOLITION_TRANSACTIONS_UPGRADEASSETS_H
 
 #include <volition/common.h>
 #include <volition/Format.h>

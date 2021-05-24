@@ -98,10 +98,7 @@ public:
                 AccountODBM accountODBM ( ledger, accountName );
                 assert ( accountODBM );
                 
-                Account account = *accountODBM.mBody.get ();
-                account.mBalance += distribution;
-                accountODBM.mBody.set ( account );
-
+                accountODBM.mBalance.set ( accountODBM.mBalance.get () + distribution );
                 totalDistributed += distribution;
             }
             ledger.setPayoutPool ( pool - totalDistributed );

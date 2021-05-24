@@ -18,11 +18,9 @@ class Account :
     public AbstractSerializable {
 public:
     
-    u64                                 mBalance;
-    Policy                              mPolicy;
-    SerializableSharedPtr < Policy >    mBequest;
-
-    SerializableMap < string, KeyAndPolicy > mKeys;
+    Policy                                      mPolicy;
+    SerializableSharedPtr < Policy >            mBequest;
+    SerializableMap < string, KeyAndPolicy >    mKeys;
 
     //----------------------------------------------------------------//
     operator const Policy& () const {
@@ -32,7 +30,6 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
         serializer.serialize ( "bequest",           this->mBequest );
@@ -41,20 +38,13 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
     
-        serializer.serialize ( "balance",           this->mBalance );
         serializer.serialize ( "keys",              this->mKeys );
         serializer.serialize ( "policy",            this->mPolicy );
         serializer.serialize ( "bequest",           this->mBequest );
     }
 
     //----------------------------------------------------------------//
-    Account () :
-        mBalance ( 0 ) {
-    }
-
-    //----------------------------------------------------------------//
-    u64 getBalance () const {
-        return this->mBalance;
+    Account () {
     }
 
     //----------------------------------------------------------------//

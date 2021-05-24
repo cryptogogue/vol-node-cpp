@@ -220,9 +220,7 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
             
             u64 minerProfit = miningReward + gratuity;
             if ( minerProfit > 0 ) {
-                Account accountUpdated = *accountODBM.mBody.get ();
-                accountUpdated.mBalance += minerProfit - profitShare;
-                accountODBM.mBody.set ( accountUpdated );
+                accountODBM.addFunds ( minerProfit - profitShare );
             }
             
             ledger.payout ( miningTax + transferTax + profitShare );

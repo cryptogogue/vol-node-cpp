@@ -15,12 +15,11 @@ TransactionResult LoadLedgerAccount::apply ( AbstractLedger& ledger ) const {
     UNUSED ( ledger );
 
     Account account;
-    account.mBalance    = this->mBalance;
     account.mPolicy     = this->mPolicy;
     account.mBequest    = this->mBequest;
     account.mKeys       = this->mKeys;
 
-    if ( !ledger.newAccount ( this->mName, account )) return "Failed to restore account.";
+    if ( !ledger.newAccount ( this->mName, this->mBalance, account )) return "Failed to restore account.";
 
     AccountID accountID = ledger.getAccountID ( this->mName );
     if ( !ledger.awardAssets ( accountID, this->mInventory, 0 )) return "Failed to restore inventory.";
@@ -86,7 +85,7 @@ void LoadLedger::init ( AbstractLedger& ledger ) {
         
         LoadLedgerAccount loadLedgerAccount;
         loadLedgerAccount.mName         = accountODBM.mName.get ( "" );
-        loadLedgerAccount.mBalance      = account->mBalance;
+        loadLedgerAccount.mBalance      = accountODBM.mBalance.get ();
         loadLedgerAccount.mPolicy       = account->mPolicy;
         loadLedgerAccount.mBequest      = account->mBequest;
         loadLedgerAccount.mKeys         = account->mKeys;

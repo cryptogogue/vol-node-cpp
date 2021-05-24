@@ -227,6 +227,7 @@
 		CD8DB7492653D0FE0073D58F /* OfferODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB7482653D0FE0073D58F /* OfferODBM.h */; };
 		CD8DB74B2653D3030073D58F /* IndexID.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB74A2653D3030073D58F /* IndexID.h */; };
 		CD8DB74D2653E02B0073D58F /* OfferDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB74C2653E02B0073D58F /* OfferDetailsHandler.h */; };
+		CD8DB74F2657DB7D0073D58F /* BuyAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB74E2657DB7D0073D58F /* BuyAssets.h */; };
 		CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */; };
 		CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD964FA223C48EAB009010C3 /* TransactionQueue.h */; };
 		CD97F7172607E53300C5C8A6 /* FixedPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = CD97F7152607E53300C5C8A6 /* FixedPoint.h */; };
@@ -1031,6 +1032,7 @@
 		CD8DB7482653D0FE0073D58F /* OfferODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfferODBM.h; path = src/volition/OfferODBM.h; sourceTree = "<group>"; };
 		CD8DB74A2653D3030073D58F /* IndexID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IndexID.h; path = src/volition/IndexID.h; sourceTree = "<group>"; };
 		CD8DB74C2653E02B0073D58F /* OfferDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfferDetailsHandler.h; path = "src/volition/web-miner-api/OfferDetailsHandler.h"; sourceTree = "<group>"; };
+		CD8DB74E2657DB7D0073D58F /* BuyAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BuyAssets.h; path = src/volition/transactions/BuyAssets.h; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionQueue.cpp; path = src/volition/TransactionQueue.cpp; sourceTree = "<group>"; };
 		CD964FA223C48EAB009010C3 /* TransactionQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueue.h; path = src/volition/TransactionQueue.h; sourceTree = "<group>"; };
@@ -1917,6 +1919,7 @@
 				CDBFD53B218B8999002AB0C3 /* AffirmKey.h */,
 				CDF4B7682325A94A0004392C /* BetaGetAssets.h */,
 				CDA7208223FF6B7400E1401D /* BetaGetDeck.h */,
+				CD8DB74E2657DB7D0073D58F /* BuyAssets.h */,
 				CD2AB81D230F3D5700805F70 /* Genesis.h */,
 				CDDA748E2552D423007AAA07 /* LoadLedger.cpp */,
 				CDDA748F2552D423007AAA07 /* LoadLedger.h */,
@@ -2183,6 +2186,7 @@
 				CD2AB81C230E7D1E00805F70 /* TransactionMaker.h in Headers */,
 				CDBFD54B218B8999002AB0C3 /* OpenAccount.h in Headers */,
 				CD20FFB1253D904A00DEB809 /* SetMinimumGratuity.h in Headers */,
+				CD8DB74F2657DB7D0073D58F /* BuyAssets.h in Headers */,
 				CD8BAE4921EBEB4100B5040E /* SerializableMap.h in Headers */,
 				CD9E7BA724FF69D00065C5FC /* BlockHeader.h in Headers */,
 				CDBFD54D218B8999002AB0C3 /* RegisterMiner.h in Headers */,

@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_PUBLISH_SCHEMA_H
-#define VOLITION_TRANSACTIONS_PUBLISH_SCHEMA_H
+#ifndef VOLITION_TRANSACTIONS_PUBLISHSCHEMA_H
+#define VOLITION_TRANSACTIONS_PUBLISHSCHEMA_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>

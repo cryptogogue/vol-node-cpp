@@ -40,6 +40,7 @@ public:
         accountJSON->set ( "inventoryNonce",    accountODBM.mInventoryNonce.get ( 0 ));
         accountJSON->set ( "nonce",             accountODBM.mTransactionNonce.get ( 0 ));
         accountJSON->set ( "height",            ledger.getHeight ());
+        accountJSON->set ( "balance",           accountODBM.mBalance.get ( 0 ));
         
         jsonOut.set ( "account", accountJSON );
         
