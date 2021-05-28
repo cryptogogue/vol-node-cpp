@@ -86,6 +86,7 @@ public:
     LedgerResult                        awardAssetsRandom           ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time );
     LedgerResult                        awardDeck                   ( AccountID accountID, string deckName, time_t time );
     LedgerResult                        buyAssets                   ( AccountID accountID, string assetIdentifier, u64 price, time_t time );
+    LedgerResult                        cancelOffer                 ( AccountID accountID, string assetIdentifier, time_t time );
     LedgerResult                        clearInventory              ( AccountID accountID, time_t time );
     void                                expireOffers                ( time_t time );
     AssetID::Index                      getAssetID                  ( string assetID ) const;

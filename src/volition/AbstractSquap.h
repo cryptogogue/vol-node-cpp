@@ -9,86 +9,11 @@
 #include <volition/AssetFieldValue.h>
 #include <volition/FNV1a.h>
 #include <volition/serialization/Serialization.h>
+#include <volition/SquapEvaluationContext.h>
 
 namespace Volition {
 
 // Schema QUAlifier oPerator
-
-//================================================================//
-// SquapEvaluationContext
-//================================================================//
-class SquapEvaluationContext {
-private:
-
-    typedef SerializableMap < string, AssetID::Index > AssetParams;
-    typedef SerializableMap < string, AssetFieldValue > ConstParams;
-
-    const Asset*                                        mAsset;
-    AssetFieldValue                                     mValue;
-    const map < string, shared_ptr < const Asset >>     mAssetParams;
-    const map < string, AssetFieldValue >               mValueParams;
-
-public:
-
-    //----------------------------------------------------------------//
-    const Asset* getAsset () const {
-        if ( this->mAsset ) {
-            return this->mAsset;
-        }
-        return NULL;
-    };
-
-    //----------------------------------------------------------------//
-    const Asset* getAsset ( string paramName ) const {
-    
-        if ( paramName.size () == 0 ) {
-            return this->getAsset ();
-        }
-        
-        map < string, shared_ptr < const Asset >>::const_iterator paramIt = this->mAssetParams.find ( paramName );
-        if ( paramIt != this->mAssetParams.cend ()) {
-            return paramIt->second.get ();
-        }
-        return NULL;
-    };
-
-    //----------------------------------------------------------------//
-    AssetFieldValue getValue () const {
-
-        return this->mValue;
-    };
-
-    //----------------------------------------------------------------//
-    AssetFieldValue getValue ( string paramName ) const {
-    
-        if ( paramName.size () == 0 ) {
-            return this->getValue ();
-        }
-        
-        map < string, AssetFieldValue >::const_iterator paramIt = this->mValueParams.find ( paramName );
-        if ( paramIt != this->mValueParams.cend ()) {
-            return paramIt->second;
-        }
-        return AssetFieldValue ();
-    };
-
-    //----------------------------------------------------------------//
-    SquapEvaluationContext ( const Asset& asset ) :
-        mAsset ( &asset ) {
-    }
-    
-    //----------------------------------------------------------------//
-    SquapEvaluationContext ( const AssetFieldValue& value ) :
-        mValue ( value ) {
-    }
-    
-    //----------------------------------------------------------------//
-    SquapEvaluationContext ( const map < string, shared_ptr < const Asset >>& assetParams, const map < string, AssetFieldValue >& valueParams ) :
-        mAsset ( NULL ),
-        mAssetParams ( assetParams ),
-        mValueParams ( valueParams ) {
-    }
-};
 
 //================================================================//
 // AbstractSquap
@@ -107,6 +32,7 @@ public:
         GREATER             = FNV1a::const_hash_64 ( "GREATER" ),
         GREATER_OR_EQUAL    = FNV1a::const_hash_64 ( "GREATER_OR_EQUAL" ),
         INDEX               = FNV1a::const_hash_64 ( "INDEX" ),
+        LENGTH              = FNV1a::const_hash_64 ( "LENGTH" ),
         LESS                = FNV1a::const_hash_64 ( "LESS" ),
         LESS_OR_EQUAL       = FNV1a::const_hash_64 ( "LESS_OR_EQUAL" ),
         MOD                 = FNV1a::const_hash_64 ( "MOD" ),
@@ -141,6 +67,7 @@ public:
             case GREATER:               return "GREATER";
             case GREATER_OR_EQUAL:      return "GREATER_OR_EQUAL";
             case INDEX:                 return "INDEX";
+            case LENGTH:                return "LENGTH";
             case LESS:                  return "LESS";
             case LESS_OR_EQUAL:         return "LESS_OR_EQUAL";
             case MOD:                   return "MOD";

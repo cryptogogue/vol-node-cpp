@@ -28,6 +28,7 @@ public:
         AssetFieldValue rval = this->mRight->evaluate ( context );
         
         switch ( this->mOpCode ) {
+        
             case AND:
                 return AssetFieldValue::booleanAnd ( lval, rval );
                 

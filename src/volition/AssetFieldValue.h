@@ -279,6 +279,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static AssetFieldValue length ( const AssetFieldValue& operand ) {
+        return ( operand.mType == TYPE_STRING ) ? ( double )operand.mString.size () : 0.0;
+    }
+    
+    //----------------------------------------------------------------//
     static AssetFieldValue less ( const AssetFieldValue& lval, const AssetFieldValue& rval ) {
     
         if ( lval.mType == rval.mType ) {

@@ -16,31 +16,35 @@ class IndexSquap :
      public AbstractSquap {
 public:
 
-    string  mArgName; // unused for now
+    string  mArgName;
     string  mIndexer;
     
     //----------------------------------------------------------------//
     AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
         const Asset* asset = context.getAsset ( this->mArgName );
-        if ( !asset ) return AssetFieldValue ( false );
-        
-        return asset->getField ( this->mIndexer );
+        if ( asset ) {
+            if ( this->mIndexer.size ()) {
+                return asset->getField ( this->mIndexer );
+            }
+            return asset->mType;
+        }
+        return context.getValue ( this->mArgName );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
     
-        serializer.serialize ( "paramID",       this->mArgName );
-        serializer.serialize ( "value",         this->mIndexer );
+        serializer.serialize ( "argName",       this->mArgName );
+        serializer.serialize ( "indexer",       this->mIndexer );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractSquap::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "paramID",       this->mArgName );
-        serializer.serialize ( "value",         this->mIndexer );
+        serializer.serialize ( "argName",       this->mArgName );
+        serializer.serialize ( "indexer",       this->mIndexer );
     }
 };
 

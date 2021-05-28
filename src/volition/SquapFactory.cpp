@@ -52,6 +52,7 @@ unique_ptr < AbstractSquap > SquapFactory::SerializablePtrFactory_make ( const A
             squap =  make_unique < IndexSquap >();
             break;
         
+        case AbstractSquap::LENGTH:
         case AbstractSquap::NOT:
             squap =  make_unique < UnarySquap >();
             break;

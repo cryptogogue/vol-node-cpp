@@ -21,10 +21,21 @@ public:
     //----------------------------------------------------------------//
     AssetFieldValue AbstractSquap_evaluate ( const SquapEvaluationContext& context ) const override {
         
-        if ( this->mOperand && ( this->mOpCode == NOT )) {
-            return AssetFieldValue::booleanNot ( !this->mOperand->evaluate ( context ));
-        }
-        return AssetFieldValue (); // undefined
+        if ( !this->mOperand ) return AssetFieldValue ();
+        
+        AssetFieldValue val = this->mOperand->evaluate ( context );
+        
+        switch ( this->mOpCode ) {
+            
+            case LENGTH:
+                return AssetFieldValue::length ( val );
+                
+            case NOT:
+                return AssetFieldValue::booleanNot ( val );
+            
+            default:
+                return AssetFieldValue ();
+        };
     }
     
     //----------------------------------------------------------------//

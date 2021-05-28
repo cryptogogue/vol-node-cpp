@@ -21,9 +21,9 @@ bool AssetMethod::checkInvocation ( const map < string, shared_ptr < const Asset
         shared_ptr < const AbstractSquap > qualifier = arg.mQualifier;
         
         map < string, shared_ptr < const Asset >>::const_iterator assetParamIt = assetParams.find ( paramName );
-        if ( assetParamIt == assetParams.end ()) return false;
-        if ( !assetParamIt->second ) return false;
-        if ( qualifier && !qualifier->evaluate ( SquapEvaluationContext ( *assetParamIt->second ))) return false;
+        if ( assetParamIt == assetParams.end () || !assetParamIt->second ) return false;
+
+        if ( qualifier && !qualifier->evaluate ( SquapEvaluationContext ( assetParamIt->second ))) return false;
     }
 
     ConstArgs::const_iterator constArgIt = this->mConstArgs.cbegin ();
@@ -35,6 +35,7 @@ bool AssetMethod::checkInvocation ( const map < string, shared_ptr < const Asset
             
         map < string, AssetFieldValue >::const_iterator constParamIt = constParams.find ( paramName );
         if ( constParamIt == constParams.end ()) return false;
+        
         if ( qualifier && !qualifier->evaluate ( SquapEvaluationContext ( constParamIt->second ))) return false;
     }
 

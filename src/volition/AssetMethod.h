@@ -73,13 +73,10 @@ public:
     typedef SerializableVector < SerializableSharedPtr < AbstractSquap, SquapFactory >> Constraints;
 
     string          mFriendlyName;
-    string          mDescription;       // friendly description for the method.
+    string          mDescription;   // friendly description for the method.
     u64             mWeight;
     u64             mMaturity;
     
-    // args are broken up into three sections for more efficient processing. this is for the benefit of wallet software, which
-    // must determine what methods are valid given arbitrary user inventories. without supporting a single-asset broad phase,
-    // every permutation of the entire inventory would need to be evaluated.
     AssetArgs       mAssetArgs;     // qualifiers for asset args.
     ConstArgs       mConstArgs;     // qualifiers for const args.
     Constraints     mConstraints;   // constraints on groups of assets.
