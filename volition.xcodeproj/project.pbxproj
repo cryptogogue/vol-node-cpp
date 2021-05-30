@@ -230,6 +230,7 @@
 		CD8DB74F2657DB7D0073D58F /* BuyAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB74E2657DB7D0073D58F /* BuyAssets.h */; };
 		CD8DB751265EBBF30073D58F /* SquapEvaluationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB750265EBBF30073D58F /* SquapEvaluationContext.h */; };
 		CD8DB75326604B770073D58F /* CancelOffer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB75226604B770073D58F /* CancelOffer.h */; };
+		CD8DB75B26642B2C0073D58F /* AssetTransferDetails.h in Headers */ = {isa = PBXBuildFile; fileRef = CD8DB75A26642B2C0073D58F /* AssetTransferDetails.h */; };
 		CD964FA323C48EAB009010C3 /* TransactionQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */; };
 		CD964FA423C48EAB009010C3 /* TransactionQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD964FA223C48EAB009010C3 /* TransactionQueue.h */; };
 		CD97F7172607E53300C5C8A6 /* FixedPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = CD97F7152607E53300C5C8A6 /* FixedPoint.h */; };
@@ -1037,6 +1038,7 @@
 		CD8DB74E2657DB7D0073D58F /* BuyAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BuyAssets.h; path = src/volition/transactions/BuyAssets.h; sourceTree = "<group>"; };
 		CD8DB750265EBBF30073D58F /* SquapEvaluationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SquapEvaluationContext.h; path = src/volition/SquapEvaluationContext.h; sourceTree = "<group>"; };
 		CD8DB75226604B770073D58F /* CancelOffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CancelOffer.h; path = src/volition/transactions/CancelOffer.h; sourceTree = "<group>"; };
+		CD8DB75A26642B2C0073D58F /* AssetTransferDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetTransferDetails.h; path = src/volition/AssetTransferDetails.h; sourceTree = "<group>"; };
 		CD9345C22093EB140077BAD4 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionQueue.cpp; path = src/volition/TransactionQueue.cpp; sourceTree = "<group>"; };
 		CD964FA223C48EAB009010C3 /* TransactionQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueue.h; path = src/volition/TransactionQueue.h; sourceTree = "<group>"; };
@@ -1681,6 +1683,7 @@
 				CDBFD539218B898D002AB0C3 /* transactions */,
 				CD4665AB20BFF3DD00A02D55 /* AbstractTransactionBody.cpp */,
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransactionBody.h */,
+				CD8DB75A26642B2C0073D58F /* AssetTransferDetails.h */,
 				CD0C3E1420C14E8A006E3B1C /* TheTransactionBodyFactory.cpp */,
 				CD0C3E1520C14E8A006E3B1C /* TheTransactionBodyFactory.h */,
 				CD2AB814230E79D400805F70 /* Transaction.cpp */,
@@ -2118,6 +2121,7 @@
 				CD77522D2532A76200A53765 /* Accessors.h in Headers */,
 				CDFA239D24601E0A00B4CECF /* LedgerResult.h in Headers */,
 				CDFA23A92460808A00B4CECF /* InventoryLogHandler.h in Headers */,
+				CD8DB75B26642B2C0073D58F /* AssetTransferDetails.h in Headers */,
 				CD20FF91253D873300DEB809 /* AbstractControlCommandBody.h in Headers */,
 				CDAC9F352621E05A00DCA201 /* DebugHTTPEchoHandler.h in Headers */,
 				CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */,

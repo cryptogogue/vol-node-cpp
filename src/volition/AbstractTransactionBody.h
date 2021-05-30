@@ -38,6 +38,8 @@ class Miner;
 class Transaction;
 class TransactionContext;
 
+typedef shared_ptr < AbstractSerializable > TransactionDetailsPtr;
+
 //================================================================//
 // AbstractTransactionBody
 //================================================================//
@@ -60,6 +62,7 @@ protected:
     virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
     virtual string                  AbstractTransactionBody_feeName         () const;
     virtual TransactionResult       AbstractTransactionBody_genesis         ( AbstractLedger& ledger ) const;
+    virtual TransactionDetailsPtr   AbstractTransactionBody_getDetails      ( const AbstractLedger& ledger ) const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
     virtual u64                     AbstractTransactionBody_sendVOL         () const;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;
@@ -87,6 +90,7 @@ public:
                                 AbstractTransactionBody                 ();
                                 ~AbstractTransactionBody                ();
     TransactionResult           apply                                   ( TransactionContext& context ) const;
+    TransactionDetailsPtr       getDetails                              ( const AbstractLedger& ledger ) const;
     const TransactionMaker*     getMaker                                () const;
     TransactionResult           genesis                                 ( AbstractLedger& ledger );
     void                        setMaker                                ( const TransactionMaker& maker );

@@ -57,6 +57,7 @@ public:
         
         jsonOut.set ( "status", "FOR_SALE" );
         
+        jsonOut.set ( "offerID",        ( u64 )offerODBM.mOfferID );
         jsonOut.set ( "seller",         sellerODBM.mName.get ());
         jsonOut.set ( "minimumPrice",   offerODBM.mMinimumPrice.get ());
         jsonOut.set ( "expiration",     offerODBM.mExpiration.get ());

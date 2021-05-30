@@ -25,6 +25,11 @@ TransactionResult AbstractTransactionBody::apply ( TransactionContext& context )
 }
 
 //----------------------------------------------------------------//
+TransactionDetailsPtr AbstractTransactionBody::getDetails ( const AbstractLedger& ledger ) const {
+    return this->AbstractTransactionBody_getDetails ( ledger );
+}
+
+//----------------------------------------------------------------//
 const TransactionMaker* AbstractTransactionBody::getMaker () const {
     return this->mMaker ? this->mMaker.get () : NULL;
 }
@@ -76,6 +81,12 @@ string AbstractTransactionBody::AbstractTransactionBody_feeName () const {
 TransactionResult AbstractTransactionBody::AbstractTransactionBody_genesis ( AbstractLedger& ledger ) const {
     UNUSED ( ledger );
     return "Missing transaction maker.";
+}
+
+//----------------------------------------------------------------//
+TransactionDetailsPtr AbstractTransactionBody::AbstractTransactionBody_getDetails ( const AbstractLedger& ledger ) const {
+    UNUSED ( ledger );
+    return NULL;
 }
 
 //----------------------------------------------------------------//

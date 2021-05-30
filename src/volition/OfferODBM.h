@@ -23,6 +23,11 @@ private:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_buyer ( OfferID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "offer.%d.buyer", index ); });
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_expiration ( OfferID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "offer.%d.expiration", index ); });
     }
@@ -57,6 +62,7 @@ public:
     ConstOpt < AbstractLedger >             mLedger;
     OfferID                                 mOfferID;
     LedgerFieldODBM < AccountID::Index >    mSeller;
+    LedgerFieldODBM < AccountID::Index >    mBuyer;
     LedgerFieldODBM < u64 >                 mMinimumPrice;
     LedgerFieldODBM < string >              mExpiration;
 
@@ -72,6 +78,7 @@ public:
         mLedger ( ledger ),
         mOfferID ( index ),
         mSeller ( ledger,               keyFor_seller ( this->mOfferID ),               OfferID::NULL_INDEX ),
+        mBuyer ( ledger,                keyFor_buyer ( this->mOfferID ),                OfferID::NULL_INDEX ),
         mMinimumPrice ( ledger,         keyFor_minimumPrice ( this->mOfferID ),         0 ),
         mExpiration ( ledger,           keyFor_expiration ( this->mOfferID ),           "" ),
         mAssetIdentifiers ( ledger,     keyFor_assetIdentifiers ( this->mOfferID )) {

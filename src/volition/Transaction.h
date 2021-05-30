@@ -59,6 +59,7 @@ public:
     TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker                  ( string accountName, string uuid ) const;
     TransactionResult           checkNonceAndSignature      ( const AbstractLedger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
+    TransactionDetailsPtr       getDetails                  ( const AbstractLedger& ledger ) const;
     void                        setBody                     ( shared_ptr < AbstractTransactionBody > body );
     void                        sign                        ( const CryptoKeyPair& keyPair );
                                 Transaction                 ();

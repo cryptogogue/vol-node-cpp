@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/AssetTransferDetails.h>
 #include <volition/AssetODBM.h>
 #include <volition/Format.h>
 #include <volition/Policy.h>
@@ -60,6 +61,35 @@ public:
             ),
             context.mTime
         );
+    }
+    
+    //----------------------------------------------------------------//
+    TransactionDetailsPtr AbstractTransactionBody_getDetails ( const AbstractLedger& ledger ) const override {
+        
+        AccountODBM senderODBM ( ledger, this->getMaker ()->getAccountName ());
+        if ( !senderODBM ) return NULL;
+        
+        AccountODBM receiverODBM ( ledger, this->mAccountName );
+        if ( !receiverODBM ) return NULL;
+        
+        shared_ptr < AssetTransferDetails > details = make_shared < AssetTransferDetails >();
+        
+        AssetListAdapter assetList ( this->mAssetIdentifiers.data (), this->mAssetIdentifiers.size ());
+        for ( size_t i = 0; i < assetList.size (); ++i ) {
+        
+            AssetODBM assetODBM ( ledger, assetList.getAssetIndex ( i ));
+            shared_ptr < const Asset > asset = assetODBM.getAsset ();
+            if ( !asset ) return NULL;
+            details->mAssets.push_back ( asset );
+        }
+        
+        details->mFrom      = senderODBM.mName.get ();
+        details->mFromID    = senderODBM.mAccountID;
+        
+        details->mTo        = receiverODBM.mName.get ();
+        details->mToID      = receiverODBM.mAccountID;
+        
+        return details;
     }
 };
 

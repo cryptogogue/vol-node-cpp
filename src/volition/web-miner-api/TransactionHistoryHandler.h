@@ -67,6 +67,11 @@ public:
                                         
                     Poco::JSON::Object::Ptr json = ToJSONSerializer::toJSON ( *transaction ).extract < Poco::JSON::Object::Ptr >();
                     json->set ( "makerIndex", ( u64 )accountID );
+                                        
+                    TransactionDetailsPtr details = transaction->getDetails ( ledger );
+                    if ( details ) {
+                        json->set ( "details", ToJSONSerializer::toJSON ( *details ));
+                    }
                     transactionsJSON->add ( *json );
                 }
             }

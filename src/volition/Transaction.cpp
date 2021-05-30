@@ -129,6 +129,12 @@ TransactionResult Transaction::checkNonceAndSignature ( const AbstractLedger& le
 }
 
 //----------------------------------------------------------------//
+TransactionDetailsPtr Transaction::getDetails ( const AbstractLedger& ledger ) const {
+
+    return this->mBody ? this->mBody->getDetails ( ledger ) : NULL;
+}
+
+//----------------------------------------------------------------//
 void Transaction::setBody ( shared_ptr < AbstractTransactionBody > body ) {
 
     this->mBody = body;
