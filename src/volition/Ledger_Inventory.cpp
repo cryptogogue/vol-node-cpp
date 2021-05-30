@@ -245,47 +245,6 @@ LedgerResult Ledger_Inventory::awardDeck ( AccountID accountID, string deckName,
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::buyAssets ( AccountID accountID, string assetIdentifier, u64 price, time_t time ) {
-
-    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
-
-    AbstractLedger& ledger = this->getLedger ();
-
-    AssetID assetID( assetIdentifier );
-    if ( assetID.mIndex == AssetID::NULL_INDEX ) return "Invalid asset identifier.";
-    
-    AssetODBM assetODBM ( ledger, assetID );
-    if ( !assetODBM ) return "Asset not found.";
-    
-    OfferID offerID = assetODBM.mOffer.get ();
-    if ( offerID.mIndex == AssetID::NULL_INDEX ) return "Asset not offered for sale.";
-
-    OfferODBM offerODBM ( ledger, assetODBM.mOffer.get ());
-    if ( !offerODBM ) return "Asset marked for sale, but no offer found.";
-    
-    AccountODBM sellerODBM ( ledger, offerODBM.mSeller.get ());
-    if ( !sellerODBM ) return "Seller not found.";
-
-    AccountODBM buyerODBM ( ledger, accountID );
-    if ( !buyerODBM ) return "Buyer not found.";
-
-    if ( accountID == sellerODBM.mAccountID ) return "Cannot buy assets from self; cancel sale instead.";
-
-    SerializableVector < AssetID::Index > assetIDs;
-    offerODBM.mAssetIdentifiers.get ( assetIDs );
-
-    this->transferAssets ( sellerODBM, buyerODBM, AssetListAdapter ( assetIDs.data (), assetIDs.size ()), time );
-
-    // TODO: change status instead
-    offerODBM.mSeller.set ( OfferID::NULL_INDEX );
-
-    buyerODBM.subFunds ( price );
-    sellerODBM.addFunds ( price );
-
-    return true;
-}
-
-//----------------------------------------------------------------//
 LedgerResult Ledger_Inventory::cancelOffer ( AccountID accountID, string assetIdentifier, time_t time ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );

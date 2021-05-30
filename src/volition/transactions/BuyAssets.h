@@ -8,6 +8,8 @@
 #include <volition/AbstractTransactionBody.h>
 #include <volition/AssetODBM.h>
 #include <volition/Format.h>
+#include <volition/IndexID.h>
+#include <volition/OfferODBM.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -48,12 +50,42 @@ public:
                 
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::BUY_ASSETS )) return "Permission denied.";
         
-        return context.mLedger.buyAssets (
-            context.mAccountID,
-            this->mIdentifier,
-            this->mPrice,
-            context.mTime
-        );
+        AbstractLedger& ledger = context.mLedger;
+        
+        AssetID assetID ( this->mIdentifier );
+        if ( assetID.mIndex == AssetID::NULL_INDEX ) return "Invalid asset identifier.";
+        
+        AssetODBM assetODBM ( ledger, assetID );
+        if ( !assetODBM ) return "Asset not found.";
+        
+        OfferID offerID = assetODBM.mOffer.get ();
+        if ( offerID.mIndex == AssetID::NULL_INDEX ) return "Asset not offered for sale.";
+
+        OfferODBM offerODBM ( ledger, assetODBM.mOffer.get ());
+        if ( !offerODBM ) return "Asset marked for sale, but no offer found.";
+        
+        AccountODBM sellerODBM ( ledger, offerODBM.mSeller.get ());
+        if ( !sellerODBM ) return "Seller not found.";
+
+        AccountODBM buyerODBM ( ledger, context.mAccountID );
+        if ( !buyerODBM ) return "Buyer not found.";
+
+        if ( context.mAccountID == sellerODBM.mAccountID ) return "Cannot buy assets from self; cancel sale instead.";
+
+        SerializableVector < AssetID::Index > assetIDs;
+        offerODBM.mAssetIdentifiers.get ( assetIDs );
+
+        ledger.transferAssets ( sellerODBM, buyerODBM, AssetListAdapter ( assetIDs.data (), assetIDs.size ()), context.mTime );
+
+        // TODO: change status instead
+        offerODBM.mSeller.set ( OfferID::NULL_INDEX );
+
+        buyerODBM.subFunds (  this->mPrice );
+        sellerODBM.addFunds (  this->mPrice );
+        
+        context.pushTransactionLogEntry ( sellerODBM.mAccountID );
+        
+        return true;
     }
     
     //----------------------------------------------------------------//

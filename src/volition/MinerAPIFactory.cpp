@@ -49,7 +49,7 @@ void MinerAPIFactory::initializeRoutes () {
     // TODO: stardardize endpoint path format
 
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountDetailsHandler >                ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHistoryHandler >            ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/history/transactions/:nonce/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHistoryHandler >            ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/history/transactions/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryHandler >                     ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryAssetsHandler >               ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/assets/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryLogHandler >                  ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/log/:nonce/?", prefix ));

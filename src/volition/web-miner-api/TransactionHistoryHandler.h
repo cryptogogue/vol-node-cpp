@@ -34,23 +34,24 @@ public:
         ledger.seek ( this->optQuery ( "at", ledger.countBlocks ()));
     
         string accountName = this->getMatchString ( "accountName" );
-        
-        SerializableVector < Transaction > transactions;
+                
+        u64 transactionLogSize = 0;
+        Poco::JSON::Array::Ptr transactionsJSON = new Poco::JSON::Array ();
         
         AccountODBM accountODBM ( ledger, accountName );
         if ( accountODBM ) {
         
-            u64 accountNonce = accountODBM.mTransactionNonce.get ();
+            transactionLogSize = accountODBM.mTransactionLogSize.get ();
+        
+            u64 base = this->optQuery ( "base", 0 );
+            u64 height = base + BATCH_SIZE;
+            height = transactionLogSize < height ? transactionLogSize : height;
             
-            u64 height = accountNonce + BATCH_SIZE;
-            height = accountNonce < height ? accountNonce : height;
-            
-            u64 nonce = this->getMatchU64 ( "nonce" );
             shared_ptr < const Block > block;
             
-            for ( ; nonce < height; ++nonce ) {
+            for ( u64 i = base; i < height; ++i ) {
         
-                shared_ptr < const TransactionLogEntry > entry = accountODBM.getTransactionLogEntryField ( nonce ).get ();
+                shared_ptr < const TransactionLogEntry > entry = accountODBM.getTransactionLogEntryField ( i ).get ();
                 if ( !entry ) break;
                 
                 if ( !block || ( block->getHeight () != entry->getBlockHeight ())) {
@@ -61,11 +62,17 @@ public:
                 
                 const Transaction* transaction = block ? block->getTransaction ( entry->getTransactionIndex ()) : NULL;
                 if ( transaction ) {
-                    transactions.push_back ( *transaction );
+                    
+                    AccountID accountID = ledger.getAccountID ( transaction->getMaker ()->getAccountName ());
+                                        
+                    Poco::JSON::Object::Ptr json = ToJSONSerializer::toJSON ( *transaction ).extract < Poco::JSON::Object::Ptr >();
+                    json->set ( "makerIndex", ( u64 )accountID );
+                    transactionsJSON->add ( *json );
                 }
             }
         }
-        jsonOut.set ( "transactions", ToJSONSerializer::toJSON ( transactions ));
+        jsonOut.set ( "transactions",       transactionsJSON );
+        jsonOut.set ( "totalTransactions",  transactionLogSize );
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

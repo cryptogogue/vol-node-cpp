@@ -73,7 +73,6 @@ private:
     LedgerResult                        awardAssets                 ( AccountODBM& accountODBM, u64 inventoryNonce, const list < AssetBase >& assets, InventoryLogEntry& logEntry );
     LedgerResult                        awardAssets                 ( AccountODBM& accountODBM, u64 inventoryNonce, string assetType, size_t quantity, InventoryLogEntry& logEntry );
     LedgerResult                        clearOffers                 ( AccountID accountID, AssetListAdapter assetList, time_t time );
-    LedgerResult                        transferAssets              ( AccountODBM& senderODBM, AccountODBM& receiverODBM, AssetListAdapter assetList, time_t time );
     void                                updateInventory             ( AccountID accountID, const InventoryLogEntry& entry );
     void                                updateInventory             ( AssetODBM& assetODBM, time_t time, InventoryLogEntry::EntryOp op );
 
@@ -85,7 +84,6 @@ public:
     LedgerResult                        awardAssetsAll              ( AccountID accountID, size_t quantity, time_t time );
     LedgerResult                        awardAssetsRandom           ( AccountID accountID, string deckName, string seed, size_t quantity, time_t time );
     LedgerResult                        awardDeck                   ( AccountID accountID, string deckName, time_t time );
-    LedgerResult                        buyAssets                   ( AccountID accountID, string assetIdentifier, u64 price, time_t time );
     LedgerResult                        cancelOffer                 ( AccountID accountID, string assetIdentifier, time_t time );
     LedgerResult                        clearInventory              ( AccountID accountID, time_t time );
     void                                expireOffers                ( time_t time );
@@ -96,6 +94,7 @@ public:
     bool                                resetAssetFieldValue        ( AssetID::Index index, string fieldName, time_t time );
     bool                                revokeAsset                 ( AssetID::Index index, time_t time  );
     LedgerResult                        setAssetFieldValue          ( AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time );
+    LedgerResult                        transferAssets              ( AccountODBM& senderODBM, AccountODBM& receiverODBM, AssetListAdapter assetList, time_t time );
     LedgerResult                        transferAssets              ( AccountID senderAccountIndex, AccountID receiverAccountIndex, AssetListAdapter assetList, time_t time );
     LedgerResult                        upgradeAssets               ( AccountID accountID, const map < string, string >& upgrades, time_t time );
 };

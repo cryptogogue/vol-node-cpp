@@ -56,6 +56,8 @@ public:
         receiverODBM.addFunds ( this->mAmount );
         context.mAccountODBM.subFunds ( this->mAmount );
         
+        context.pushTransactionLogEntry ( receiverODBM.mAccountID );
+        
         return true;
     }
     

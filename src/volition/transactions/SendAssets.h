@@ -48,9 +48,12 @@ public:
                 
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::SEND_ASSETS )) return "Permission denied.";
         
+        AccountID receiverID = context.mLedger.getAccountID ( this->mAccountName );
+        context.pushTransactionLogEntry ( receiverID );
+        
         return context.mLedger.transferAssets (
             context.mAccountID,
-            context.mLedger.getAccountID ( this->mAccountName ),
+            receiverID,
             AssetListAdapter (
                 this->mAssetIdentifiers.data (),
                 this->mAssetIdentifiers.size ()

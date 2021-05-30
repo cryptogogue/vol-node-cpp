@@ -122,8 +122,13 @@ private:
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionLogEntry ( AccountID::Index index, u64 nonce ) {
-        return Format::write ( "account.%d.transactionLookupByNonce.%d", index, nonce );
+    static LedgerKey keyFor_transactionLogEntry ( AccountID::Index index, u64 entry ) {
+        return Format::write ( "account.%d.transactionLog.%d", index, entry );
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_transactionLogSize ( AccountID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.transactionLog", index ); });
     }
     
     //----------------------------------------------------------------//
@@ -145,6 +150,7 @@ private:
         this->mAssetCount           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
         this->mBalance              = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_balance ( this->mAccountID ),                0 );
         this->mInventoryNonce       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
+        this->mTransactionLogSize   = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionLogSize ( this->mAccountID ),     0 );
         this->mTransactionNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
         this->mName                 = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
         this->mBody                 = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
@@ -161,6 +167,7 @@ public:
     LedgerFieldODBM < u64 >                 mAssetCount;
     LedgerFieldODBM < u64 >                 mBalance;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
+    LedgerFieldODBM < u64 >                 mTransactionLogSize;
     LedgerFieldODBM < u64 >                 mTransactionNonce;
     LedgerFieldODBM < string >              mName;
 
@@ -230,9 +237,9 @@ public:
     }
     
     //----------------------------------------------------------------//
-    LedgerObjectFieldODBM < TransactionLogEntry > getTransactionLogEntryField ( u64 nonce ) {
+    LedgerObjectFieldODBM < TransactionLogEntry > getTransactionLogEntryField ( u64 entryIndex ) {
     
-        return LedgerObjectFieldODBM < TransactionLogEntry >( this->mLedger, keyFor_transactionLogEntry ( this->mAccountID, nonce ));
+        return LedgerObjectFieldODBM < TransactionLogEntry >( this->mLedger, keyFor_transactionLogEntry ( this->mAccountID, entryIndex ));
     }
     
     //----------------------------------------------------------------//

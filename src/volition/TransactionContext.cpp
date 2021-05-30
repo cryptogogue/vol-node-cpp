@@ -12,6 +12,18 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+LedgerResult TransactionContext::pushTransactionLogEntry () {
+
+    return this->pushTransactionLogEntry ( this->mAccountID );
+}
+
+//----------------------------------------------------------------//
+LedgerResult TransactionContext::pushTransactionLogEntry ( AccountID accountID ) {
+
+    return this->mLedger.pushTransactionLogEntry ( accountID, TransactionLogEntry ( this->mBlockHeight, this->mIndex ));
+}
+
+//----------------------------------------------------------------//
 TransactionContext::TransactionContext ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 index, time_t time ) :
     mAccount ( *accountODBM.mBody.get ()),
     mAccountID ( accountODBM.mAccountID ),

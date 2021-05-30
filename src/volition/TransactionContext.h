@@ -37,7 +37,9 @@ public:
     time_t                  mTime;
 
     //----------------------------------------------------------------//
-    TransactionContext      ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 index, time_t time );
+    LedgerResult            pushTransactionLogEntry     ();
+    LedgerResult            pushTransactionLogEntry     ( AccountID accountID );
+                            TransactionContext          ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 index, time_t time );
 };
 
 } // namespace Volition

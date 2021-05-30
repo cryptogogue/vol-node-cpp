@@ -16,6 +16,7 @@
 namespace Volition {
 
 class InventoryLogEntry;
+class TransactionLogEntry;
 
 //================================================================//
 // AccountKey
@@ -46,7 +47,7 @@ private:
     }
 
     //----------------------------------------------------------------//
-    static bool                         isAccountNameChar               ( char c );
+    static bool                             isAccountNameChar               ( char c );
 
 public:
 
@@ -64,6 +65,7 @@ public:
     static bool                             isSuffix                        ( string suffix );
     LedgerResult                            newAccount                      ( string accountName, u64 balance, const Account& account );
     LedgerResult                            newAccount                      ( string accountName, u64 balance, string keyName, const CryptoPublicKey& key, const Policy& keyPolicy, const Policy& accountPolicy );
+    LedgerResult                            pushTransactionLogEntry         ( AccountID accountID, const TransactionLogEntry& entry );
     LedgerResult                            renameAccount                   ( AccountID accountID, string revealedName );
     LedgerResult                            reserveAccountname              ( string nameHash, string nameSecret );
 };
