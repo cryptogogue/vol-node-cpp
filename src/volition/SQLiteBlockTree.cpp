@@ -354,7 +354,6 @@ string SQLiteBlockTree::stringFromSearchStatus ( kBlockTreeSearchStatus status )
     switch ( status ) {
         case kBlockTreeSearchStatus::SEARCH_STATUS_NEW:             return "+";
         case kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL:     return "*";
-        case kBlockTreeSearchStatus::SEARCH_STATUS_SEARCHING:       return "~";
         case kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK:       return "#";
     }
     return "";
@@ -381,9 +380,9 @@ kBlockTreeSearchStatus SQLiteBlockTree::stringToSearchStatus ( string str ) {
     char c = str.size () ? str [ 0 ] : 0;
 
     switch ( c ) {
+        case '~':       // leftover from SEARCH_STATUS_SEARCHING
         case '+':       return kBlockTreeSearchStatus::SEARCH_STATUS_NEW;
         case '*':       return kBlockTreeSearchStatus::SEARCH_STATUS_PROVISIONAL;
-        case '~':       return kBlockTreeSearchStatus::SEARCH_STATUS_SEARCHING;
         case '#':       return kBlockTreeSearchStatus::SEARCH_STATUS_HAS_BLOCK;
     }
     assert ( false );
