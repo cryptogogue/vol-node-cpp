@@ -25,6 +25,8 @@ public:
     TRANSACTION_MATURITY ( 0 )
     
     string                          mStamp;
+    u64                             mVersion;
+    u64                             mPrice;
     SerializableVector < string >   mAssetIdentifiers;
     
     //----------------------------------------------------------------//
@@ -32,6 +34,8 @@ public:
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "stamp",                     this->mStamp );
+        serializer.serialize ( "version",                   this->mVersion );
+        serializer.serialize ( "price",                     this->mPrice );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
     }
     
@@ -40,12 +44,16 @@ public:
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "stamp",                     this->mStamp );
+        serializer.serialize ( "version",                   this->mVersion );
+        serializer.serialize ( "price",                     this->mPrice );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
     }
     
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
+        // TODO: check requested version and price in case stamp changed!
+        
         return context.mLedger.stampAssets (
             context.mAccountID,
             AssetID::decode ( this->mStamp ),

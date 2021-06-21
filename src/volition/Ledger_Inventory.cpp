@@ -619,12 +619,15 @@ LedgerResult Ledger_Inventory::stampAssets ( AccountID accountID, AssetID stampI
     if ( !stampODBM ) return "Could not find stamp.";
     
     u64 price = stampODBM.mPrice.get () * assetList.size ();
-    if ( accountODBM.mBalance.get () < price ) return "Insufficient funds.";
     
     AssetODBM stampAssetODBM ( ledger, stampID );
     assert ( stampAssetODBM ); // *must* exist. if not, how stamp?
     
     AccountID stampOwmerAccountID = stampAssetODBM.mOwner.get ();
+    bool ownStamp = ( stampOwmerAccountID == accountID );
+    
+    if ( !ownStamp && ( accountODBM.mBalance.get () < price )) return "Insufficient funds.";
+    
     if ( stampOwmerAccountID == AccountID::NULL_INDEX ) return "This stamp is no longer available.";
     AccountODBM stampOwnerAccountODBM ( ledger, stampOwmerAccountID );
     
@@ -657,9 +660,10 @@ LedgerResult Ledger_Inventory::stampAssets ( AccountID accountID, AssetID stampI
     
     ledger.updateInventory ( accountODBM.mAccountID, logEntry );
     
-    stampOwnerAccountODBM.addFunds ( price );
-    accountODBM.subFunds ( price );
-    
+    if ( !ownStamp ) {
+        stampOwnerAccountODBM.addFunds ( price );
+        accountODBM.subFunds ( price );
+    }
     return true;
 }
 
