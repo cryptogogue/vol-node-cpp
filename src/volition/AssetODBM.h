@@ -114,9 +114,9 @@ public:
             AssetFieldValue value = field;
             
             if ( field.mMutable  ) {
-
+                
                 LedgerKey KEY_FOR_ASSET_FIELD = keyFor_field ( this->mAssetID, fieldName );
-
+                
                 switch ( field.getType ()) {
                 
                     case AssetFieldValue::Type::TYPE_BOOL:

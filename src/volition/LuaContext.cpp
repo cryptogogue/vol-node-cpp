@@ -9,6 +9,7 @@
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
 #include <volition/MiningReward.h>
+#include <volition/StampODBM.h>
 
 namespace Volition {
 
@@ -164,19 +165,28 @@ string _to_string ( lua_State* L, int idx ) {
 //----------------------------------------------------------------//
 int LuaContext::_awardAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
+    AbstractLedger& ledger = self.mLedger;
     
     LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
     
     string accountName      = _to_string ( L, 1 );
     string assetType        = _to_string ( L, 2 );
     size_t quantity         = ( size_t )lua_tointeger ( L, 3 );
-
+    
     AccountID accountID = self.checkAccountName ( accountName );
     if ( accountID == AccountID::NULL_INDEX ) return 0;
     if ( !self.checkAssetType ( assetType )) return 0;
-
+    
+    // get this *before* awarding any assets
+    size_t globalAssetCount = ledger.getValueOrFallback < u64 >( Ledger::keyFor_globalAssetCount (), 0 );
+    
     self.setResult ( self.mLedger->awardAssets ( accountID, assetType, quantity, self.mTime ));
-    return 0;
+    
+    for ( size_t i = 0; i < quantity; ++i ) {
+        string assetID = AssetID::encode ( globalAssetCount + i );
+        lua_pushstring ( L, assetID.c_str ());
+    }
+    return ( int )quantity;
 }
 
 //----------------------------------------------------------------//
@@ -367,21 +377,6 @@ int LuaContext::_seedRandom ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
-LuaContext::Buffer LuaContext::getBuffer ( lua_State* L, int idx ) {
-
-    lua_pushvalue ( L, idx );
-    size_t len;
-    cc8* luaStr = lua_tolstring ( L, -1, &len );
-    lua_pop ( L, 1 );
-
-    Buffer buffer;
-    buffer.resize ( len );
-    memcpy ( buffer.data (), luaStr, len );
-    
-    return buffer;
-}
-
-//----------------------------------------------------------------//
 int LuaContext::_setAssetField ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     AbstractLedger& ledger = self.mLedger;
@@ -394,22 +389,7 @@ int LuaContext::_setAssetField ( lua_State* L ) {
     AssetID::Index assetindex = self.checkAssetID ( assetID );
     if ( assetindex == AssetID::NULL_INDEX ) return 0;
     
-    AssetFieldValue value;
-    
-    switch ( lua_type ( L, 3 )) {
-    
-        case LUA_TBOOLEAN:
-            value = lua_toboolean ( L, 3 ) ? true : false;
-            break;
-
-        case LUA_TNUMBER:
-            value = lua_tonumber ( L, 3 );
-            break;
-
-        case LUA_TSTRING:
-            value = lua_tostring ( L, 3 );
-            break;
-    }
+    AssetFieldValue value = LuaContext::getFieldValue ( L, 3 );
     
     if ( !value.isValid ()) {
         self.setResult ( "Invalid field value." );
@@ -417,6 +397,52 @@ int LuaContext::_setAssetField ( lua_State* L ) {
     else {
         self.setResult ( ledger.setAssetFieldValue ( assetindex, fieldName, value, self.mTime ));
     }
+    return 0;
+}
+
+//----------------------------------------------------------------//
+int LuaContext::_setStamp ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+    AbstractLedger& ledger = self.mLedger;
+    
+    string assetID          = _to_string ( L, 1 );
+    size_t price            = ( size_t )lua_tointeger ( L, 2 );
+    string qualifier        = _to_string ( L, 3 );
+    
+    AssetID::Index assetindex = self.checkAssetID ( assetID );
+    if ( assetindex == AssetID::NULL_INDEX ) return 0;
+    
+    Stamp stamp;
+    if ( qualifier.size ()) {
+        FromJSONSerializer::fromJSONString ( stamp.mQualifier, qualifier );
+    }
+    
+    lua_pushnil ( L );
+    while ( lua_next ( L, 4 ) != 0 ) {
+        
+        // 'key' at index -2; 'value' at index -1
+        
+        if ( !lua_isstring ( L, -2 )) {
+            self.setResult ( "Illegal field key type (stamp fields must be of type 'string')." );
+            return 0;
+        }
+        
+        string fieldName = _to_string ( L, -2 );
+        AssetFieldValue value = LuaContext::getFieldValue ( L, -1 );
+        
+        if ( !value.isValid ()) {
+            self.setResult ( "Invalid field value." );
+            return 0;
+        }
+        
+        stamp.mFields [ fieldName ] = value;
+        lua_pop ( L, 1 );
+    }
+
+    StampODBM stampODBM ( ledger, assetindex );
+    stampODBM.mPrice.set ( price );
+    stampODBM.mBody.set ( stamp );
+
     return 0;
 }
 
@@ -527,6 +553,46 @@ AssetFieldDefinition LuaContext::checkDefinitionField ( const AssetDefinition& d
         this->setResult ( Format::write ( "Missing or invalid field '%s'.", fieldName.c_str ()));
     }
     return field;
+}
+
+//----------------------------------------------------------------//
+LuaContext::Buffer LuaContext::getBuffer ( lua_State* L, int idx ) {
+
+    lua_pushvalue ( L, idx );
+    size_t len;
+    cc8* luaStr = lua_tolstring ( L, -1, &len );
+    lua_pop ( L, 1 );
+
+    Buffer buffer;
+    buffer.resize ( len );
+    memcpy ( buffer.data (), luaStr, len );
+    
+    return buffer;
+}
+
+//----------------------------------------------------------------//
+AssetFieldValue LuaContext::getFieldValue ( lua_State* L, int idx ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+    
+    AssetFieldValue value;
+    
+    switch ( lua_type ( L, idx )) {
+    
+        case LUA_TBOOLEAN:
+            value = lua_toboolean ( L, idx ) ? true : false;
+            break;
+
+        case LUA_TNUMBER:
+            value = lua_tonumber ( L, idx );
+            break;
+
+        case LUA_TSTRING:
+            value = lua_tostring ( L, idx );
+            break;
+    }
+    
+    return value;
 }
 
 //----------------------------------------------------------------//
@@ -685,6 +751,7 @@ LuaContext::LuaContext ( ConstOpt < AbstractLedger > ledger, time_t time ) :
     this->registerFunc ( "revokeAsset",             _revokeAsset );
     this->registerFunc ( "seedRandom",              _seedRandom );
     this->registerFunc ( "setAssetField",           _setAssetField );
+    this->registerFunc ( "setStamp",                _setStamp );
     
     // set the ledger
     lua_pushlightuserdata ( this->mLuaState, this );

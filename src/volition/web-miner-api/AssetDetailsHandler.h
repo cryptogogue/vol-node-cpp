@@ -4,9 +4,10 @@
 #ifndef VOLITION_WEBMINERAPI_ASSETDETAILSHANDLER_H
 #define VOLITION_WEBMINERAPI_ASSETDETAILSHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Asset.h>
 #include <volition/Block.h>
-#include <volition/AbstractMinerAPIRequestHandler.h>
+#include <volition/StampODBM.h>
 #include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
@@ -37,13 +38,24 @@ public:
         if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
                 
         shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ();
+        if ( !asset ) return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
         
-        if ( asset ) {
-            Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );
-            jsonOut.set ( "asset", assetJSON.extract < Poco::JSON::Object::Ptr >());
-            return Poco::Net::HTTPResponse::HTTP_OK;
+        Poco::Dynamic::Var assetJSON = ToJSONSerializer::toJSON ( *asset );
+        jsonOut.set ( "asset", assetJSON.extract < Poco::JSON::Object::Ptr >());
+        
+        StampODBM stampODBM ( ledger, index );
+        if ( stampODBM ) {
+        
+            Stamp stamp;
+            stampODBM.mBody.get ( stamp );
+            
+            Poco::JSON::Object::Ptr stampJSON = ToJSONSerializer::toJSON ( stamp ).extract < Poco::JSON::Object::Ptr >();
+            stampJSON->set ( "price", stampODBM.mPrice.get ());
+            
+            jsonOut.set ( "stamp", stampJSON );
         }
-        return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        
+        return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };
 

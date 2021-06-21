@@ -143,7 +143,7 @@ protected:
             value.serializeFrom ();
         }
     }
-
+    
     //----------------------------------------------------------------//
     void AbstractSerializerFrom_serialize ( SerializerPropertyName name, const SerializationFunc& serializeFunc ) const override {
     
@@ -171,7 +171,7 @@ protected:
             serializeFunc ( serializer );
         }
     };
-
+    
     //----------------------------------------------------------------//
     void AbstractSerializerFrom_stringFromTree ( SerializerPropertyName name, string& value ) const override {
     
@@ -195,7 +195,7 @@ protected:
             value = strStream.str ();
         }
     }
-
+    
     //----------------------------------------------------------------//
     const Poco::Dynamic::Var get ( SerializerPropertyName name ) const {
     
@@ -205,7 +205,7 @@ protected:
         assert ( this->mObject );
         return this->mObject->get ( name.getName ());
     }
-
+    
     //----------------------------------------------------------------//
     bool has ( SerializerPropertyName name ) const {
     
@@ -215,7 +215,7 @@ protected:
         assert ( this->mObject );
         return this->mObject->has ( name.getName ());
     }
-
+    
     //----------------------------------------------------------------//
     template < typename TYPE >
     TYPE optValue ( SerializerPropertyName name, const TYPE& fallback ) const {

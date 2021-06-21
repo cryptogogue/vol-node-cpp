@@ -186,6 +186,9 @@
 		CD73D8162165474000F43CC7 /* AbstractSerializerTo.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */; };
 		CD73D8282166D68700F43CC7 /* Analysis.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD73D81F2166D68700F43CC7 /* Analysis.cpp */; };
 		CD73D8292166D68700F43CC7 /* Analysis.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73D8202166D68700F43CC7 /* Analysis.h */; };
+		CD73E692267C8F90007EE67A /* Stamp.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73E690267C8F90007EE67A /* Stamp.h */; };
+		CD73E694267C9B81007EE67A /* StampODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73E693267C9B81007EE67A /* StampODBM.h */; };
+		CD73E696267C9F28007EE67A /* StampAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CD73E695267C9F28007EE67A /* StampAssets.h */; };
 		CD762ACF232825BE005AC85D /* AbstractEntitlement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ACD232825BE005AC85D /* AbstractEntitlement.cpp */; };
 		CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762ACE232825BE005AC85D /* AbstractEntitlement.h */; };
 		CD762AD4232826D7005AC85D /* BooleanEntitlement.h in Headers */ = {isa = PBXBuildFile; fileRef = CD762AD1232826D7005AC85D /* BooleanEntitlement.h */; };
@@ -990,6 +993,9 @@
 		CD73D81F2166D68700F43CC7 /* Analysis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Analysis.cpp; path = src/volition/simulation/Analysis.cpp; sourceTree = "<group>"; };
 		CD73D8202166D68700F43CC7 /* Analysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Analysis.h; path = src/volition/simulation/Analysis.h; sourceTree = "<group>"; };
 		CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestSimulation.cpp; path = src/volition/gtest/TestSimulation.cpp; sourceTree = "<group>"; };
+		CD73E690267C8F90007EE67A /* Stamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Stamp.h; path = src/volition/Stamp.h; sourceTree = "<group>"; };
+		CD73E693267C9B81007EE67A /* StampODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StampODBM.h; path = src/volition/StampODBM.h; sourceTree = "<group>"; };
+		CD73E695267C9F28007EE67A /* StampAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StampAssets.h; path = src/volition/transactions/StampAssets.h; sourceTree = "<group>"; };
 		CD762ACD232825BE005AC85D /* AbstractEntitlement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractEntitlement.cpp; path = src/volition/AbstractEntitlement.cpp; sourceTree = "<group>"; };
 		CD762ACE232825BE005AC85D /* AbstractEntitlement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractEntitlement.h; path = src/volition/AbstractEntitlement.h; sourceTree = "<group>"; };
 		CD762AD1232826D7005AC85D /* BooleanEntitlement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BooleanEntitlement.h; path = src/volition/BooleanEntitlement.h; sourceTree = "<group>"; };
@@ -1555,6 +1561,7 @@
 				CD97F7182607E5CD00C5C8A6 /* MonetaryPolicy.h */,
 				CDDA74FC2556D997007AAA07 /* PayoutPolicy.h */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
+				CD73E690267C8F90007EE67A /* Stamp.h */,
 				CDDA74D82556B180007AAA07 /* TransactionFeeSchedule.h */,
 			);
 			name = ledger;
@@ -1948,6 +1955,7 @@
 				CD97F71A2607FC1D00C5C8A6 /* SetMonetaryPolicy.h */,
 				CDDA75312556F5ED007AAA07 /* SetPayoutPolicy.h */,
 				CDDA74E22556BA3A007AAA07 /* SetTransactionFeeSchedule.h */,
+				CD73E695267C9F28007EE67A /* StampAssets.h */,
 				CD9C395E261DB36700AE8782 /* UpdateMinerInfo.h */,
 				CD7C747A23B6EC6700FBE468 /* UpgradeAssets.h */,
 			);
@@ -1995,6 +2003,7 @@
 				CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */,
 				CD775256253535FA00A53765 /* LedgerObjectFieldODBM.h */,
 				CD8DB7482653D0FE0073D58F /* OfferODBM.h */,
+				CD73E693267C9B81007EE67A /* StampODBM.h */,
 			);
 			name = odbm;
 			sourceTree = "<group>";
@@ -2155,7 +2164,9 @@
 				CDAA38ED251ACBD300FEAFB5 /* AbstractScenario.h in Headers */,
 				CD20FFAF253D904A00DEB809 /* HardReset.h in Headers */,
 				CDF234EF25F2F479009DE55E /* TestExceptions.h in Headers */,
+				CD73E692267C8F90007EE67A /* Stamp.h in Headers */,
 				CD0CF460255EDC5D008C67F0 /* RemoteMiner.h in Headers */,
+				CD73E696267C9F28007EE67A /* StampAssets.h in Headers */,
 				CD5ECAF0246B2945009146FB /* version.h in Headers */,
 				CD840B1325C420B40051703C /* ConsensusPeekHandler.h in Headers */,
 				CD5ECAEE246B2938009146FB /* version.h in Headers */,
@@ -2204,6 +2215,7 @@
 				CD4E81B6210593E5007DA585 /* AbstractStringifiable.h in Headers */,
 				CD9E7BA224FF67C30065C5FC /* InMemoryBlockTree.h in Headers */,
 				CDBFD55A218BA145002AB0C3 /* Schema.h in Headers */,
+				CD73E694267C9B81007EE67A /* StampODBM.h in Headers */,
 				CD9E7BC1250B976C0065C5FC /* HTTPMiningMessenger.h in Headers */,
 				CDAA38E7251AA13900FEAFB5 /* SimMiningNetwork.h in Headers */,
 				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,

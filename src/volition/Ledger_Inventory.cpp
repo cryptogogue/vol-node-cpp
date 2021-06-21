@@ -14,6 +14,7 @@
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
 #include <volition/OfferODBM.h>
+#include <volition/StampODBM.h>
 #include <volition/TransactionMaker.h>
 
 namespace Volition {
@@ -86,7 +87,7 @@ LedgerResult Ledger_Inventory::awardAssets ( AccountODBM& accountODBM, u64 inven
     for ( size_t i = 0; i < quantity; ++i ) {
         
         AssetODBM assetODBM ( ledger, globalAssetCount + i );
-                
+        
         assetODBM.mOwner.set ( accountODBM.mAccountID );
         assetODBM.mInventoryNonce.set ( inventoryNonce );
         assetODBM.mPosition.set ( accountAssetCount + i );
@@ -599,6 +600,66 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( AssetID::Index index, string
     if ( !result ) return result;
 
     this->updateInventory ( assetODBM, time, InventoryLogEntry::EntryOp::UPDATE_ASSET );
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::stampAssets ( AccountID accountID, AssetID stampID, AssetListAdapter assetList, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
+    if ( !assetList.size ()) return true;
+
+    AbstractLedger& ledger = this->getLedger ();
+
+    AccountODBM accountODBM ( ledger, accountID );
+    if ( !accountODBM ) return "Could not find account.";
+    
+    StampODBM stampODBM ( ledger, stampID );
+    if ( !stampODBM ) return "Could not find stamp.";
+    
+    u64 price = stampODBM.mPrice.get () * assetList.size ();
+    if ( accountODBM.mBalance.get () < price ) return "Insufficient funds.";
+    
+    AssetODBM stampAssetODBM ( ledger, stampID );
+    assert ( stampAssetODBM ); // *must* exist. if not, how stamp?
+    
+    AccountID stampOwmerAccountID = stampAssetODBM.mOwner.get ();
+    if ( stampOwmerAccountID == AccountID::NULL_INDEX ) return "This stamp is no longer available.";
+    AccountODBM stampOwnerAccountODBM ( ledger, stampOwmerAccountID );
+    
+    shared_ptr < const Stamp > stamp = stampODBM.mBody.get ();
+    assert ( stamp );
+    
+    u64 inventoryNonce = accountODBM.mInventoryNonce.get ( 0 );
+    InventoryLogEntry logEntry ( time );
+    
+    // check and stamp all the assets
+    for ( size_t i = 0; i < assetList.size (); ++i ) {
+        
+        string assetIdentifier = assetList.getAssetIdentifier ( i );
+        AssetODBM assetODBM ( ledger, AssetID::decode ( assetIdentifier ));
+        if ( assetODBM.mAssetID == AssetID::NULL_INDEX ) return Format::write ( "Count not find asset %s.", assetIdentifier.c_str ());
+        if ( assetODBM.mOwner.get () != accountODBM.mAccountID ) return Format::write ( "Asset %s is not owned by %s.", assetIdentifier.c_str (), accountODBM.mName.get ().c_str ());
+    
+        shared_ptr < const Asset > asset = assetODBM.getAsset ();
+        if ( !stamp->checkAsset ( asset )) return Format::write ( "Stamp cannot be applied to asset %s (asset failed to qualify).", assetIdentifier.c_str ());
+        
+        Stamp::Fields::const_iterator stampFieldIt = stamp->mFields.cbegin ();
+        for ( ; stampFieldIt != stamp->mFields.cend (); ++stampFieldIt ) {
+            LedgerResult result = assetODBM.setFieldValue ( stampFieldIt->first, stampFieldIt->second );
+            if ( !result ) return result;
+        }
+        
+        assetODBM.mInventoryNonce.set ( inventoryNonce );
+        logEntry.insertUpdate ( assetODBM.mAssetID );
+    }
+    
+    ledger.updateInventory ( accountODBM.mAccountID, logEntry );
+    
+    stampOwnerAccountODBM.addFunds ( price );
+    accountODBM.subFunds ( price );
+    
     return true;
 }
 

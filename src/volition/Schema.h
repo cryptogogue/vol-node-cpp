@@ -22,15 +22,15 @@ public:
 
     typedef SerializableSharedPtr < AbstractSquap, SquapFactory > Query;
 
-    typedef SerializableMap < string, u64 >                 Deck;
-    typedef SerializableMap < string, Deck >                Decks;
-    typedef SerializableMap < string, AssetDefinition >     Definitions;
-    typedef SerializableMap < string, SerializableOpaque >  Fonts;
-    typedef SerializableMap < string, SerializableOpaque >  Icons;
-    typedef SerializableMap < string, SerializableOpaque >  Layouts;
-    typedef SerializableMap < string, AssetMethod >         Methods;
-    typedef SerializableMap < string, MiningReward >        Rewards;
-    typedef SerializableMap < string, string >              Upgrades;
+    typedef SerializableMap < string, u64 >                     Deck;
+    typedef SerializableMap < string, Deck >                    Decks;
+    typedef SerializableMap < string, AssetDefinition >         Definitions;
+    typedef SerializableMap < string, SerializableOpaque >      Fonts;
+    typedef SerializableMap < string, SerializableOpaque >      Icons;
+    typedef SerializableMap < string, SerializableOpaque >      Layouts;
+    typedef SerializableMap < string, AssetMethod >             Methods;
+    typedef SerializableMap < string, MiningReward >            Rewards;
+    typedef SerializableMap < string, string >                  Upgrades;
 
 private:
 
