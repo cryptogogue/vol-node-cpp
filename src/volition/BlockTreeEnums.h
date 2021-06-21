@@ -22,14 +22,9 @@ enum kBlockTreeBranchStatus {
     BRANCH_STATUS_INVALID       = 0x08,
 };
 
-// this represents the health of the individual cursor. unless provisional,
-// may be searched. a failed search will tag the branch as 'missing.'
-// 'new' blocks added to a 'missing' branch will not be searched until all
-// previously 'searching' blocks have been found.
 enum kBlockTreeSearchStatus {
-    SEARCH_STATUS_NEW,              // --> SEARCH_STATUS_SEARCHING
-    SEARCH_STATUS_PROVISIONAL,      // --> SEARCH_STATUS_HAS_BLOCK
-    SEARCH_STATUS_SEARCHING,        // --> SEARCH_STATUS_SEARCHING, --> SEARCH_STATUS_HAS_BLOCK
+    SEARCH_STATUS_NEW,
+    SEARCH_STATUS_PROVISIONAL,
     SEARCH_STATUS_HAS_BLOCK,
 };
 

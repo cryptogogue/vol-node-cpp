@@ -99,10 +99,7 @@ bool BlockSearch::step ( BlockSearchPool& pool ) {
     BlockTreeCursor cursor = pool.mBlockTree.findCursorForHash ( this->mHash );
     
     if ( cursor.hasBlock ()) return false;
-    if ( cursor.getSearchStatus () != SEARCH_STATUS_SEARCHING ) return false;
-    
     if ( miner.mRemoteMiners.size () == 0 ) return true;
-
     if ( this->extendSearch ( pool )) return true;
     
     if ( this->mRetries < MAX_RETRIES ) {
@@ -148,9 +145,6 @@ void BlockSearchPool::affirmBranchSearch ( BlockTreeCursor cursor ) {
         // don't search for anything downstream of an invalid block.
         if ( branchStatus == BRANCH_STATUS_INVALID ) continue;
         
-        // if the branch has been flagged missing, only search for blocks that were previously flagged.
-        if (( branchStatus == BRANCH_STATUS_MISSING ) && ( searchStatus != SEARCH_STATUS_SEARCHING )) continue;
-        
         // see if a search is already in progress.
         string hash = cursor.getDigest ();
         if ( this->mBlockSearchesByHash.find ( hash ) != this->mBlockSearchesByHash.end ()) return; // already searching (this and all parents)
@@ -159,9 +153,6 @@ void BlockSearchPool::affirmBranchSearch ( BlockTreeCursor cursor ) {
         BlockSearch& search = this->mBlockSearchesByHash [ hash ];
         search.initialize ( cursor );
         this->mPendingSearches.insert ( search );
-
-        // flag the cursor as searching.
-        this->mBlockTree.setSearchStatus ( cursor, kBlockTreeSearchStatus::SEARCH_STATUS_SEARCHING );
     }
 }
 
