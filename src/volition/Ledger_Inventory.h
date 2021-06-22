@@ -94,7 +94,7 @@ public:
     bool                                resetAssetFieldValue        ( AssetID::Index index, string fieldName, time_t time );
     bool                                revokeAsset                 ( AssetID::Index index, time_t time  );
     LedgerResult                        setAssetFieldValue          ( AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time );
-    LedgerResult                        stampAssets                 ( AccountID accountID, AssetID stampID, AssetListAdapter assetList, time_t time );
+    LedgerResult                        stampAssets                 ( AccountID accountID, AssetID stampID, u64 price, u64 version, AssetListAdapter assetList, time_t time );
     LedgerResult                        transferAssets              ( AccountODBM& senderODBM, AccountODBM& receiverODBM, AssetListAdapter assetList, time_t time );
     LedgerResult                        transferAssets              ( AccountID senderAccountIndex, AccountID receiverAccountIndex, AssetListAdapter assetList, time_t time );
     LedgerResult                        upgradeAssets               ( AccountID accountID, const map < string, string >& upgrades, time_t time );

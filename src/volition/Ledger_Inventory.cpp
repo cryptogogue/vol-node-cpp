@@ -604,7 +604,7 @@ LedgerResult Ledger_Inventory::setAssetFieldValue ( AssetID::Index index, string
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Inventory::stampAssets ( AccountID accountID, AssetID stampID, AssetListAdapter assetList, time_t time ) {
+LedgerResult Ledger_Inventory::stampAssets ( AccountID accountID, AssetID stampID, u64 price, u64 version, AssetListAdapter assetList, time_t time ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
@@ -618,18 +618,21 @@ LedgerResult Ledger_Inventory::stampAssets ( AccountID accountID, AssetID stampI
     StampODBM stampODBM ( ledger, stampID );
     if ( !stampODBM ) return "Could not find stamp.";
     
-    u64 price = stampODBM.mPrice.get () * assetList.size ();
+    if ( stampODBM.mVersion.get () != version ) return "Incorrect version specified.";
     
     AssetODBM stampAssetODBM ( ledger, stampID );
     assert ( stampAssetODBM ); // *must* exist. if not, how stamp?
     
     AccountID stampOwmerAccountID = stampAssetODBM.mOwner.get ();
+    if ( stampOwmerAccountID == AccountID::NULL_INDEX ) return "This stamp is no longer available.";
+    
     bool ownStamp = ( stampOwmerAccountID == accountID );
     
-    if ( !ownStamp && ( accountODBM.mBalance.get () < price )) return "Insufficient funds.";
+    u64 expectedPrice = ownStamp ? 0 : stampODBM.mPrice.get ();
+    if ( expectedPrice != price ) return "Incorrect price specified.";
     
-    if ( stampOwmerAccountID == AccountID::NULL_INDEX ) return "This stamp is no longer available.";
-    AccountODBM stampOwnerAccountODBM ( ledger, stampOwmerAccountID );
+    u64 totalPrice = expectedPrice * assetList.size ();
+    if ( totalPrice && ( accountODBM.mBalance.get () < totalPrice )) return "Insufficient funds.";
     
     shared_ptr < const Stamp > stamp = stampODBM.mBody.get ();
     assert ( stamp );
@@ -660,9 +663,10 @@ LedgerResult Ledger_Inventory::stampAssets ( AccountID accountID, AssetID stampI
     
     ledger.updateInventory ( accountODBM.mAccountID, logEntry );
     
-    if ( !ownStamp ) {
-        stampOwnerAccountODBM.addFunds ( price );
-        accountODBM.subFunds ( price );
+    if ( totalPrice ) {
+        AccountODBM stampOwnerAccountODBM ( ledger, stampOwmerAccountID );
+        stampOwnerAccountODBM.addFunds ( totalPrice );
+        accountODBM.subFunds ( totalPrice );
     }
     return true;
 }

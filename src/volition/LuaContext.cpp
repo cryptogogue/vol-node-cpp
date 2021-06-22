@@ -440,7 +440,11 @@ int LuaContext::_setStamp ( lua_State* L ) {
     }
 
     StampODBM stampODBM ( ledger, assetindex );
+    
+    u64 version = stampODBM ? ( stampODBM.mVersion.get () + 1 ) : 0;
+    
     stampODBM.mPrice.set ( price );
+    stampODBM.mVersion.set ( version );
     stampODBM.mBody.set ( stamp );
 
     return 0;

@@ -51,6 +51,7 @@ public:
             
             Poco::JSON::Object::Ptr stampJSON = ToJSONSerializer::toJSON ( stamp ).extract < Poco::JSON::Object::Ptr >();
             stampJSON->set ( "price", stampODBM.mPrice.get ());
+            stampJSON->set ( "version", stampODBM.mVersion.get ());
             
             jsonOut.set ( "stamp", stampJSON );
         }

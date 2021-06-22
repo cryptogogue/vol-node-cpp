@@ -25,8 +25,8 @@ public:
     TRANSACTION_MATURITY ( 0 )
     
     string                          mStamp;
-    u64                             mVersion;
     u64                             mPrice;
+    u64                             mVersion;
     SerializableVector < string >   mAssetIdentifiers;
     
     //----------------------------------------------------------------//
@@ -34,8 +34,8 @@ public:
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "stamp",                     this->mStamp );
-        serializer.serialize ( "version",                   this->mVersion );
         serializer.serialize ( "price",                     this->mPrice );
+        serializer.serialize ( "version",                   this->mVersion );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
     }
     
@@ -44,8 +44,8 @@ public:
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "stamp",                     this->mStamp );
-        serializer.serialize ( "version",                   this->mVersion );
         serializer.serialize ( "price",                     this->mPrice );
+        serializer.serialize ( "version",                   this->mVersion );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
     }
     
@@ -57,6 +57,8 @@ public:
         return context.mLedger.stampAssets (
             context.mAccountID,
             AssetID::decode ( this->mStamp ),
+            this->mPrice,
+            this->mVersion,
             AssetListAdapter (
                 this->mAssetIdentifiers.data (),
                 this->mAssetIdentifiers.size ()
