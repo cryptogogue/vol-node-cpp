@@ -53,7 +53,7 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
         // TODO: check requested version and price in case stamp changed!
-        
+                
         return context.mLedger.stampAssets (
             context.mAccountID,
             AssetID::decode ( this->mStamp ),

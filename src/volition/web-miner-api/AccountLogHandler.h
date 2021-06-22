@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_WEBMINERAPI_TRANSACTIONHISTORYHANDLER_H
-#define VOLITION_WEBMINERAPI_TRANSACTIONHISTORYHANDLER_H
+#ifndef VOLITION_WEBMINERAPI_ACCOUNTLOGHANDLER_H
+#define VOLITION_WEBMINERAPI_ACCOUNTLOGHANDLER_H
 
 #include <volition/AccountODBM.h>
 #include <volition/Block.h>
@@ -15,9 +15,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// TransactionHistoryHandler
+// AccountLogHandler
 //================================================================//
-class TransactionHistoryHandler :
+class AccountLogHandler :
     public AbstractMinerAPIRequestHandler {
 public:
 
@@ -35,23 +35,23 @@ public:
     
         string accountName = this->getMatchString ( "accountName" );
                 
-        u64 transactionLogSize = 0;
-        Poco::JSON::Array::Ptr transactionsJSON = new Poco::JSON::Array ();
+        u64 logSize = 0;
+        Poco::JSON::Array::Ptr entriesJSON = new Poco::JSON::Array ();
         
         AccountODBM accountODBM ( ledger, accountName );
         if ( accountODBM ) {
         
-            transactionLogSize = accountODBM.mTransactionLogSize.get ();
+            logSize = accountODBM.mAccountLogSize.get ();
         
-            u64 base = this->optQuery ( "base", 0 );
-            u64 height = base + BATCH_SIZE;
-            height = transactionLogSize < height ? transactionLogSize : height;
+            u64 base    = this->optQuery ( "base", 0 );
+            u64 height  = base + BATCH_SIZE;
+            height      = logSize < height ? logSize : height;
             
             shared_ptr < const Block > block;
             
             for ( u64 i = base; i < height; ++i ) {
         
-                shared_ptr < const TransactionLogEntry > entry = accountODBM.getTransactionLogEntryField ( i ).get ();
+                shared_ptr < const AccountLogEntry > entry = accountODBM.getAccountLogEntryField ( i ).get ();
                 if ( !entry ) break;
                 
                 if ( !block || ( block->getHeight () != entry->getBlockHeight ())) {
@@ -67,17 +67,24 @@ public:
                                         
                     Poco::JSON::Object::Ptr json = ToJSONSerializer::toJSON ( *transaction ).extract < Poco::JSON::Object::Ptr >();
                     json->set ( "makerIndex", ( u64 )accountID );
-                                        
+                    
                     TransactionDetailsPtr details = transaction->getDetails ( ledger );
                     if ( details ) {
                         json->set ( "details", ToJSONSerializer::toJSON ( *details ));
                     }
-                    transactionsJSON->add ( *json );
+                    
+                    Poco::JSON::Object::Ptr entryJSON = new Poco::JSON::Object ();
+                    
+                    entryJSON->set ( "time", ( string )SerializableTime ( block->getTime ()));
+                    entryJSON->set ( "blockHeight", entry->getBlockHeight ());
+                    entryJSON->set ( "transaction", json );
+                    
+                    entriesJSON->add ( *entryJSON );
                 }
             }
         }
-        jsonOut.set ( "transactions",       transactionsJSON );
-        jsonOut.set ( "totalTransactions",  transactionLogSize );
+        jsonOut.set ( "entries",    entriesJSON );
+        jsonOut.set ( "logSize",    logSize );
         return Poco::Net::HTTPResponse::HTTP_OK;
     }
 };

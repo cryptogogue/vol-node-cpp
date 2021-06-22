@@ -12,15 +12,15 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-LedgerResult TransactionContext::pushTransactionLogEntry () {
+LedgerResult TransactionContext::pushAccountLogEntry () {
 
-    return this->pushTransactionLogEntry ( this->mAccountID );
+    return this->pushAccountLogEntry ( this->mAccountID );
 }
 
 //----------------------------------------------------------------//
-LedgerResult TransactionContext::pushTransactionLogEntry ( AccountID accountID ) {
+LedgerResult TransactionContext::pushAccountLogEntry ( AccountID accountID ) {
 
-    return this->mLedger.pushTransactionLogEntry ( accountID, TransactionLogEntry ( this->mBlockHeight, this->mIndex ));
+    return this->mLedger.pushAccountLogEntry ( accountID, AccountLogEntry ( this->mBlockHeight, this->mIndex ));
 }
 
 //----------------------------------------------------------------//

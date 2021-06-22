@@ -236,16 +236,16 @@ LedgerResult Ledger_Account::newAccount ( string accountName, u64 balance, strin
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Account::pushTransactionLogEntry ( AccountID accountID, const TransactionLogEntry& entry ) {
+LedgerResult Ledger_Account::pushAccountLogEntry ( AccountID accountID, const AccountLogEntry& entry ) {
 
     AbstractLedger& ledger = this->getLedger ();
     
     AccountODBM accountODBM ( ledger, accountID );
     if ( !accountODBM ) return "Account not found.";
     
-    u64 transactionLogSize = accountODBM.mTransactionLogSize.get ();
-    accountODBM.getTransactionLogEntryField ( transactionLogSize ).set ( entry );
-    accountODBM.mTransactionLogSize.set ( transactionLogSize + 1 );
+    u64 transactionLogSize = accountODBM.mAccountLogSize.get ();
+    accountODBM.getAccountLogEntryField ( transactionLogSize ).set ( entry );
+    accountODBM.mAccountLogSize.set ( transactionLogSize + 1 );
 
     return true;
 }

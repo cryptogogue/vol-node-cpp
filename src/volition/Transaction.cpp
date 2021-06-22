@@ -71,7 +71,7 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHei
             if ( !ledger.isGenesis ()) {
                 
                 accountODBM.incAccountTransactionNonce ( this->getNonce (), this->getUUID ());
-                context.pushTransactionLogEntry ();
+                context.pushAccountLogEntry ();
                 
                 if ( transactionCost > 0 ) {
                 

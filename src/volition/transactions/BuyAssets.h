@@ -81,7 +81,7 @@ public:
         buyerODBM.subFunds ( this->mPrice );
         sellerODBM.addFunds ( this->mPrice );
         
-        context.pushTransactionLogEntry ( sellerODBM.mAccountID );
+        context.pushAccountLogEntry ( sellerODBM.mAccountID );
         
         return true;
     }

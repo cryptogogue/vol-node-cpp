@@ -6,6 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/Account.h>
+#include <volition/AccountLogEntry.h>
 #include <volition/Asset.h>
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
@@ -17,54 +18,20 @@
 namespace Volition {
 
 //================================================================//
-// TransactionLogEntry
-//================================================================//
-class TransactionLogEntry :
-    public AbstractSerializable {
-private:
-
-    friend class Ledger_Account;
-
-    u64     mBlockHeight;
-    u64     mTransactionIndex;
-
-public:
-
-    GET ( u64,          BlockHeight,                mBlockHeight )
-    GET ( u64,          TransactionIndex,           mTransactionIndex )
-    
-    //----------------------------------------------------------------//
-    TransactionLogEntry () :
-        mBlockHeight ( 0 ),
-        mTransactionIndex ( 0 ) {
-    }
-    
-    //----------------------------------------------------------------//
-    TransactionLogEntry ( u64 blockHeight, u64 transactionIndex ) :
-        mBlockHeight ( blockHeight ),
-        mTransactionIndex ( transactionIndex ) {
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-    
-        serializer.serialize ( "blockHeight",           this->mBlockHeight );
-        serializer.serialize ( "transactionIndex",      this->mTransactionIndex );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-    
-        serializer.serialize ( "blockHeight",           this->mBlockHeight );
-        serializer.serialize ( "transactionIndex",      this->mTransactionIndex );
-    }
-};
-
-//================================================================//
 // AccountODBM
 //================================================================//
 class AccountODBM {
 private:
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_accountLogEntry ( AccountID::Index index, u64 entry ) {
+        return Format::write ( "account.%d.log.%d", index, entry );
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_accountLogSize ( AccountID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.logSize", index ); });
+    }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_assetCount ( AccountID::Index index ) {
@@ -122,16 +89,6 @@ private:
     }
     
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionLogEntry ( AccountID::Index index, u64 entry ) {
-        return Format::write ( "account.%d.transactionLog.%d", index, entry );
-    }
-    
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_transactionLogSize ( AccountID::Index index ) {
-        return LedgerKey ([ = ]() { return Format::write ( "account.%d.transactionLog", index ); });
-    }
-    
-    //----------------------------------------------------------------//
     static LedgerKey keyFor_transactionLookup ( AccountID::Index index, string uuid ) {
         return Format::write ( "account.%d.transactionLookupByUUID.%s", index, uuid.c_str ());
     }
@@ -147,10 +104,10 @@ private:
         this->mLedger       = ledger;
         this->mAccountID    = index;
         
+        this->mAccountLogSize       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_accountLogSize ( this->mAccountID ),         0 );
         this->mAssetCount           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
         this->mBalance              = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_balance ( this->mAccountID ),                0 );
         this->mInventoryNonce       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
-        this->mTransactionLogSize   = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionLogSize ( this->mAccountID ),     0 );
         this->mTransactionNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
         this->mName                 = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
         this->mBody                 = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
@@ -164,10 +121,10 @@ public:
     ConstOpt < AbstractLedger >             mLedger;
     AccountID                               mAccountID;
 
+    LedgerFieldODBM < u64 >                 mAccountLogSize;
     LedgerFieldODBM < u64 >                 mAssetCount;
     LedgerFieldODBM < u64 >                 mBalance;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
-    LedgerFieldODBM < u64 >                 mTransactionLogSize;
     LedgerFieldODBM < u64 >                 mTransactionNonce;
     LedgerFieldODBM < string >              mName;
 
@@ -198,6 +155,12 @@ public:
     void addFunds ( u64 amount ) {
     
         return this->mBalance.set ( this->mBalance.get () + amount );
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerObjectFieldODBM < AccountLogEntry > getAccountLogEntryField ( u64 entryIndex ) {
+    
+        return LedgerObjectFieldODBM < AccountLogEntry >( this->mLedger, keyFor_accountLogEntry ( this->mAccountID, entryIndex ));
     }
     
     //----------------------------------------------------------------//
@@ -234,12 +197,6 @@ public:
     LedgerFieldODBM < u64 > getMinerRewardCountField ( string rewardName ) {
     
         return LedgerFieldODBM < u64 >( this->mLedger, keyFor_minerRewardCount ( this->mAccountID, rewardName ), 0 );
-    }
-    
-    //----------------------------------------------------------------//
-    LedgerObjectFieldODBM < TransactionLogEntry > getTransactionLogEntryField ( u64 entryIndex ) {
-    
-        return LedgerObjectFieldODBM < TransactionLogEntry >( this->mLedger, keyFor_transactionLogEntry ( this->mAccountID, entryIndex ));
     }
     
     //----------------------------------------------------------------//

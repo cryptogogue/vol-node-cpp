@@ -37,8 +37,8 @@ public:
     time_t                  mTime;
 
     //----------------------------------------------------------------//
-    LedgerResult            pushTransactionLogEntry     ();
-    LedgerResult            pushTransactionLogEntry     ( AccountID accountID );
+    LedgerResult            pushAccountLogEntry         ();
+    LedgerResult            pushAccountLogEntry         ( AccountID accountID );
                             TransactionContext          ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 index, time_t time );
 };
 

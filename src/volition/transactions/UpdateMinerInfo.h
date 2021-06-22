@@ -42,7 +42,7 @@ public:
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
         if ( !this->mMinerInfo ) return "Missing miner info.";
-        
+                
         return context.mLedger.updateMinerInfo ( context.mAccountID, *this->mMinerInfo );
     }
 };
