@@ -140,12 +140,15 @@ DONE: wallet - preview provisioned account name when sponsoring an account
 DONE: wallet - embed genesis hash in new account requests (and check against correct genesis)
 DONE: bot - make a discord bot to provision accounts and register miners
 DONE: node - refactor miner resource multithread access
+DONE: art attachment
+DONE: find out why decks aren't being mined
+DONE: wallet - prevent unconsumed crafting assets from being hidden
+DONE: node - function to reset entire asset
 
 digital koi fish - store vol in an asset
 asset auction
-art attachment
+
 miners choose reward
-find out why decks aren't being mined
 
 node - add mutex and accessor for transaction queue
 node - implement TOS (user and miner)

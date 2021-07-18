@@ -349,6 +349,22 @@ int LuaContext::_resetAssetField ( lua_State* L ) {
 }
 
 //----------------------------------------------------------------//
+int LuaContext::_resetAssetFields ( lua_State* L ) {
+    LuaContext& self = LuaContext::getSelf ( L );
+    AbstractLedger& ledger = self.mLedger;
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LUA, INFO, __PRETTY_FUNCTION__ );
+
+    string assetID          = _to_string ( L, 1 );
+
+    AssetID::Index assetindex = self.checkAssetID ( assetID );
+    if ( assetindex == AssetID::NULL_INDEX ) return 0;
+
+    self.setResult ( ledger.resetAssetFields ( assetindex, self.mTime ));
+    return 0;
+}
+
+//----------------------------------------------------------------//
 int LuaContext::_revokeAsset ( lua_State* L ) {
     LuaContext& self = LuaContext::getSelf ( L );
     AbstractLedger& ledger = self.mLedger;
@@ -752,6 +768,7 @@ LuaContext::LuaContext ( ConstOpt < AbstractLedger > ledger, time_t time ) :
     this->registerFunc ( "randomDouble",            _randomDouble );
     this->registerFunc ( "randomInt32",             _randomInt32 );
     this->registerFunc ( "resetAssetField",         _resetAssetField );
+    this->registerFunc ( "resetAssetFields",        _resetAssetFields );
     this->registerFunc ( "revokeAsset",             _revokeAsset );
     this->registerFunc ( "seedRandom",              _seedRandom );
     this->registerFunc ( "setAssetField",           _setAssetField );

@@ -19,17 +19,20 @@ class AssetMethodParamDesc :
 public:
 
     SerializableSharedPtr < AbstractSquap, SquapFactory >   mQualifier;
+    bool                                                    mIsSubject;
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         
         serializer.serialize ( "qualifier",     this->mQualifier );
+        serializer.serialize ( "isSubject",     this->mIsSubject );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         
         serializer.serialize ( "qualifier",     this->mQualifier );
+        serializer.serialize ( "isSubject",     this->mIsSubject );
     }
 };
 

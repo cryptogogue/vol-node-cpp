@@ -498,7 +498,24 @@ LedgerResult Ledger_Inventory::offerAssets ( AccountID accountID, u64 minimumPri
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string fieldName, time_t time ) {
+LedgerResult Ledger_Inventory::resetAssetFields ( AssetID::Index index, time_t time ) {
+
+    LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
+
+    AbstractLedger& ledger = this->getLedger ();
+
+    AssetODBM assetODBM ( ledger, index );
+    if ( assetODBM.mAssetID == AssetID::NULL_INDEX ) return false;
+    
+    LedgerResult result = assetODBM.resetFields ();
+    if ( !result ) return result;
+    
+    this->updateInventory ( assetODBM, time, InventoryLogEntry::EntryOp::UPDATE_ASSET );
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string fieldName, time_t time ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 
@@ -543,7 +560,7 @@ bool Ledger_Inventory::resetAssetFieldValue ( AssetID::Index index, string field
 }
 
 //----------------------------------------------------------------//
-bool Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
+LedgerResult Ledger_Inventory::revokeAsset ( AssetID::Index index, time_t time ) {
     
     LGN_LOG_SCOPE ( VOL_FILTER_LEDGER, INFO, __PRETTY_FUNCTION__ );
 

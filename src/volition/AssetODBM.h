@@ -107,40 +107,120 @@ public:
         // copy the fields and apply any overrides
         AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
         for ( ; fieldIt != assetDefinition->mFields.cend (); ++fieldIt ) {
-            
+        
             string fieldName = fieldIt->first;
+            AssetFieldValue value = this->getFieldValue ( fieldName, *assetDefinition, sparse );
             
-            const AssetFieldDefinition& field = fieldIt->second;
-            AssetFieldValue value = field;
-            
-            if ( field.mMutable  ) {
-                
-                LedgerKey KEY_FOR_ASSET_FIELD = keyFor_field ( this->mAssetID, fieldName );
-                
-                switch ( field.getType ()) {
-                
-                    case AssetFieldValue::Type::TYPE_BOOL:
-                        value = LedgerFieldODBM < bool >( this->mLedger, KEY_FOR_ASSET_FIELD ).get ( value.strictBoolean ());
-                        break;
-                        
-                    case AssetFieldValue::Type::TYPE_NUMBER:
-                        value = LedgerFieldODBM < double >( this->mLedger, KEY_FOR_ASSET_FIELD ).get ( value.strictNumber ());
-                        break;
-                        
-                    case AssetFieldValue::Type::TYPE_STRING:
-                        value = LedgerFieldODBM < string >( this->mLedger, KEY_FOR_ASSET_FIELD ).get ( value.strictString ());
-                        break;
-                        
-                    default:
-                        break;
-                }
-            }
-            
-            if (( sparse == false ) || ( value != field )) {
+            if ( value.isValid ()) {
                 asset->mFields [ fieldName ] = value;
             }
         }
         return asset;
+    }
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue getFieldValue ( string fieldName, const AssetDefinition& assetDefinition, bool sparse = false ) {
+
+        const AssetFieldDefinition& fieldDefinition = assetDefinition.getField ( fieldName );
+        if ( !fieldDefinition.isValid ()) return AssetFieldValue ();
+        if ( !fieldDefinition.mMutable ) return fieldDefinition;
+        
+        AssetFieldValue value;
+        LedgerKey KEY_FOR_ASSET_FIELD = keyFor_field ( this->mAssetID, fieldName );
+        
+        switch ( fieldDefinition.getType ()) {
+        
+            case AssetFieldValue::Type::TYPE_BOOL:
+                value = LedgerFieldODBM < bool >( this->mLedger, KEY_FOR_ASSET_FIELD ).get ( fieldDefinition.strictBoolean ());
+                break;
+                
+            case AssetFieldValue::Type::TYPE_NUMBER:
+                value = LedgerFieldODBM < double >( this->mLedger, KEY_FOR_ASSET_FIELD ).get ( fieldDefinition.strictNumber ());
+                break;
+                
+            case AssetFieldValue::Type::TYPE_STRING:
+                value = LedgerFieldODBM < string >( this->mLedger, KEY_FOR_ASSET_FIELD ).get ( fieldDefinition.strictString ());
+                break;
+                
+            default:
+                break;
+        }
+        
+        if (( sparse == false ) || ( value != fieldDefinition )) return value;
+        return AssetFieldValue ();
+    }
+    
+    //----------------------------------------------------------------//
+    AssetFieldValue getFieldValue ( string fieldName, bool sparse = false ) {
+
+        AssetFieldValue value;
+
+        if ( !this->mOwner.exists ()) return AssetFieldValue ();
+
+        const Schema& schema = this->mLedger.getConst ().getSchema ();
+
+        const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( this->mType.get ());
+        if ( !assetDefinition ) return AssetFieldValue ();
+        
+        return this->getFieldValue ( fieldName, sparse );
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerResult resetFields () {
+
+        if ( !this->mOwner.exists ()) return false;
+
+        const Schema& schema = this->mLedger.getConst ().getSchema ();
+
+        const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( this->mType.get ());
+        if ( !assetDefinition ) return false;
+        
+        // copy the fields and apply any overrides
+        AssetDefinition::Fields::const_iterator fieldIt = assetDefinition->mFields.cbegin ();
+        for ( ; fieldIt != assetDefinition->mFields.cend (); ++fieldIt ) {
+            
+            const AssetFieldDefinition& field = fieldIt->second;
+            if ( !field.mMutable ) continue;
+            
+            this->setFieldValue ( fieldIt->first, fieldIt->second );
+        }
+        return true;
+    }
+    
+    //----------------------------------------------------------------//
+    LedgerResult setFieldValue ( string fieldName, const AssetDefinition& assetDefinition, const AssetFieldValue& fieldValue ) {
+    
+        AssetFieldDefinition fieldDefinition = assetDefinition.getField ( fieldName );
+        if ( !fieldDefinition.mMutable ) return Format::write ( "Field '%s' is not mutable.", fieldName.c_str ());
+    
+        AssetFieldValue currentValue = this->getFieldValue ( fieldName, assetDefinition );
+        if ( !currentValue.isValid ()) {
+            currentValue = fieldDefinition;
+        }
+        
+        if ( currentValue != fieldValue ) {
+    
+            LedgerKey KEY_FOR_ASSET_FIELD = this->keyFor_field ( fieldName );
+            
+            switch ( fieldValue.getType ()) {
+            
+                case AssetFieldValue::Type::TYPE_BOOL:
+                    this->mLedger->setValue < bool >( KEY_FOR_ASSET_FIELD, fieldValue.strictBoolean ());
+                    break;
+                    
+                case AssetFieldValue::Type::TYPE_NUMBER:
+                    this->mLedger->setValue < double >( KEY_FOR_ASSET_FIELD, fieldValue.strictNumber ());
+                    break;
+                    
+                case AssetFieldValue::Type::TYPE_STRING:
+                    this->mLedger->setValue < string >( KEY_FOR_ASSET_FIELD, fieldValue.strictString ());
+                    break;
+                    
+                default:
+                    return "Unknown or invalid param type.";
+            }
+        }
+        return true;
     }
     
     //----------------------------------------------------------------//
@@ -152,29 +232,7 @@ public:
         const AssetDefinition* assetDefinition = schema.getDefinitionOrNull ( assetType );
         if ( !assetDefinition ) return false;
 
-        AssetFieldDefinition fieldDefinition = assetDefinition->getField ( fieldName );
-        if ( !fieldDefinition.mMutable ) return Format::write ( "Field '%s' is not mutable.", fieldName.c_str ());
-    
-        LedgerKey KEY_FOR_ASSET_FIELD = this->keyFor_field ( fieldName );
-        
-        switch ( fieldValue.getType ()) {
-        
-            case AssetFieldValue::Type::TYPE_BOOL:
-                this->mLedger->setValue < bool >( KEY_FOR_ASSET_FIELD, fieldValue.strictBoolean ());
-                break;
-                
-            case AssetFieldValue::Type::TYPE_NUMBER:
-                this->mLedger->setValue < double >( KEY_FOR_ASSET_FIELD, fieldValue.strictNumber ());
-                break;
-                
-            case AssetFieldValue::Type::TYPE_STRING:
-                this->mLedger->setValue < string >( KEY_FOR_ASSET_FIELD, fieldValue.strictString ());
-                break;
-                
-            default:
-                return "Unknown or invalid param type.";
-        }
-        return true;
+        return this->setFieldValue ( fieldName, *assetDefinition, fieldValue );
     }
 };
 

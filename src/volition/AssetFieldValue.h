@@ -17,7 +17,7 @@ class AssetFieldValue :
     public virtual AbstractSerializable {
 public:
     
-    // PCM: I am punting on validate media URL fields for now. we'll eventually
+    // PCM: I am punting on validated media URL fields for now. we'll eventually
     // want to attach a hash to URL fields somehow that can be used to validate
     // the assets. I'm hesitant to put that here, as doing so would effectively
     // turn each field into a tuple. seems like squaps/method constraints could

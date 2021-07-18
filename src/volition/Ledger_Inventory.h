@@ -91,8 +91,9 @@ public:
     void                                getInventory                ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t base = 0, size_t count = 0, bool sparse = false );
     map < string, size_t >              getInventoryHistogram       ( AccountID accountID );
     LedgerResult                        offerAssets                 ( AccountID accountID, u64 minimumPrice, time_t expiration, AssetListAdapter assetList, time_t time );
-    bool                                resetAssetFieldValue        ( AssetID::Index index, string fieldName, time_t time );
-    bool                                revokeAsset                 ( AssetID::Index index, time_t time  );
+    LedgerResult                        resetAssetFields            ( AssetID::Index index, time_t time );
+    LedgerResult                        resetAssetFieldValue        ( AssetID::Index index, string fieldName, time_t time );
+    LedgerResult                        revokeAsset                 ( AssetID::Index index, time_t time  );
     LedgerResult                        setAssetFieldValue          ( AssetID::Index index, string fieldName, const AssetFieldValue& field, time_t time );
     LedgerResult                        stampAssets                 ( AccountID accountID, AssetID stampID, u64 price, u64 version, AssetListAdapter assetList, time_t time );
     LedgerResult                        transferAssets              ( AccountODBM& senderODBM, AccountODBM& receiverODBM, AssetListAdapter assetList, time_t time );

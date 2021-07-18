@@ -42,6 +42,7 @@ private:
     static int              _randomDouble           ( lua_State* L );
     static int              _randomInt32            ( lua_State* L );
     static int              _resetAssetField        ( lua_State* L );
+    static int              _resetAssetFields       ( lua_State* L );
     static int              _revokeAsset            ( lua_State* L );
     static int              _seedRandom             ( lua_State* L );
     static int              _setAssetField          ( lua_State* L );
