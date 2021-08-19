@@ -341,7 +341,7 @@ LedgerResult Ledger_Inventory::clearInventory ( AccountID accountID, time_t time
 //----------------------------------------------------------------//
 void Ledger_Inventory::expireOffers ( time_t time ) {
 
-    const AbstractLedger& ledger = this->getLedger ();
+    AbstractLedger& ledger = this->getLedger ();
     
     LedgerFieldODBM < u64 > globalOpenOfferCountField ( ledger, OfferODBM::keyFor_globalOpenOfferCount ());
     u64 count = globalOpenOfferCountField.get ( 0 );
