@@ -192,6 +192,7 @@ public:
     
         AssetFieldDefinition fieldDefinition = assetDefinition.getField ( fieldName );
         if ( !fieldDefinition.mMutable ) return Format::write ( "Field '%s' is not mutable.", fieldName.c_str ());
+        if ( fieldDefinition.getType () != fieldValue.getType ())  return Format::write ( "Type mismatch on field '%s'.", fieldName.c_str ());
     
         AssetFieldValue currentValue = this->getFieldValue ( fieldName, assetDefinition );
         if ( !currentValue.isValid ()) {
