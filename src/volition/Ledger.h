@@ -28,9 +28,10 @@ class AssetFieldValue;
 class AssetMethod;
 class AssetMethodInvocation;
 class Block;
-class PayoutPolicy;
+class ContractWithDigest;
 class KeyEntitlements;
 class MonetaryPolicy;
+class PayoutPolicy;
 class Policy;
 class Schema;
 class TransactionFeeSchedule;
@@ -224,6 +225,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_termsOfService () {
+        return "termsOfService";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_transactionFeeSchedule () {
         return "transactionFeeSchedule";
     }
@@ -270,6 +276,7 @@ public:
     SchemaVersion                       getSchemaVersion                () const;
     string                              getSchemaHash                   () const;
     string                              getSchemaString                 () const;
+    ContractWithDigest                  getTermsOfService               () const;
     TransactionFeeSchedule              getTransactionFeeSchedule       () const;
     UnfinishedBlockList                 getUnfinished                   ();
     bool                                hasBlock                        ( string hash ) const;
@@ -289,6 +296,7 @@ public:
     LedgerResult                        setPayoutPolicy                 ( const PayoutPolicy& distributionTable );
     void                                setPayoutPool                   ( u64 pool );
     void                                setSchema                       ( const Schema& schema );
+    void                                setTermsOfService               ( const ContractWithDigest& contract );
     void                                setTransactionFeeSchedule       ( const TransactionFeeSchedule& feeSchedule );
     void                                setUnfinished                   ( const UnfinishedBlockList& unfinished );
     bool                                verify                          ( const AssetMethodInvocation& invocation );

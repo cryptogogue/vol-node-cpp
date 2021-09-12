@@ -6,8 +6,10 @@
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
+#include <volition/ContractWithDigest.h>
 #include <volition/Munge.h>
 #include <volition/Policy.h>
+#include <volition/Signature.h>
 
 namespace Volition {
 namespace Transactions {
@@ -23,11 +25,13 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                              mSuffix;        // child name formatted <hex3>.<hex3>.<hex3>
-    CryptoPublicKey                     mKey;           // key
-    u64                                 mGrant;         // amount to fund
-    SerializableSharedPtr < Policy >    mAccountPolicy;
-    SerializableSharedPtr < Policy >    mKeyPolicy;
+    string                                  mSuffix;        // child name formatted <hex3>.<hex3>.<hex3>
+    CryptoPublicKey                         mKey;           // key
+    u64                                     mGrant;         // amount to fund
+    SerializableSharedPtr < Policy >        mAccountPolicy;
+    SerializableSharedPtr < Policy >        mKeyPolicy;
+    
+    SerializableSharedPtr < Signature >     mSignature;
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
@@ -38,6 +42,7 @@ public:
         serializer.serialize ( "grant",             this->mGrant );
         serializer.serialize ( "accountPolicy",     this->mAccountPolicy );
         serializer.serialize ( "keyPolicy",         this->mKeyPolicy );
+        serializer.serialize ( "signature",         this->mSignature );
     }
     
     //----------------------------------------------------------------//
@@ -49,6 +54,7 @@ public:
         serializer.serialize ( "grant",             this->mGrant );
         serializer.serialize ( "accountPolicy",     this->mAccountPolicy );
         serializer.serialize ( "keyPolicy",         this->mKeyPolicy );
+        serializer.serialize ( "signature",         this->mSignature );
     }
 
     //----------------------------------------------------------------//
@@ -58,6 +64,12 @@ public:
         const Account& account = context.mAccount;
         
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::OPEN_ACCOUNT )) return "Permission denied.";
+        
+        ContractWithDigest termsOfService = ledger.getTermsOfService ();
+        if ( termsOfService.mText.size ()) {
+            if ( !this->mSignature ) return "Missing Terms of Service signature.";
+            if ( !this->mKey.verify ( *this->mSignature, termsOfService.mDigest )) return "Invalid Terms of Service signature.";
+        }
         
         string sponsorName = context.mAccountODBM.mName.get ();
         string suffix = this->mSuffix;

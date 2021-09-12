@@ -40,6 +40,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::SetEntitlements >();
     this->registerTransaction < Volition::Transactions::SetMonetaryPolicy >();
     this->registerTransaction < Volition::Transactions::SetPayoutPolicy >();
+    this->registerTransaction < Volition::Transactions::SetTermsOfService >();
     this->registerTransaction < Volition::Transactions::SetTransactionFeeSchedule >();
     this->registerTransaction < Volition::Transactions::StampAssets >();
     this->registerTransaction < Volition::Transactions::UpdateMinerInfo >();

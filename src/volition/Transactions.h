@@ -27,6 +27,7 @@
 #include <volition/transactions/SetEntitlements.h>
 #include <volition/transactions/SetMonetaryPolicy.h>
 #include <volition/transactions/SetPayoutPolicy.h>
+#include <volition/transactions/SetTermsOfService.h>
 #include <volition/transactions/SetTransactionFeeSchedule.h>
 #include <volition/transactions/StampAssets.h>
 #include <volition/transactions/UpdateMinerInfo.h>

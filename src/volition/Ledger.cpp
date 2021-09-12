@@ -7,13 +7,14 @@
 #include <volition/AssetMethodInvocation.h>
 #include <volition/AssetODBM.h>
 #include <volition/BlockODBM.h>
-#include <volition/PayoutPolicy.h>
+#include <volition/ContractWithDigest.h>
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
 #include <volition/MiningReward.h>
 #include <volition/MonetaryPolicy.h>
+#include <volition/PayoutPolicy.h>
 #include <volition/Transaction.h>
 #include <volition/TransactionFeeSchedule.h>
 #include <volition/UnsecureRandom.h>
@@ -332,6 +333,13 @@ SchemaVersion AbstractLedger::getSchemaVersion () const {
 }
 
 //----------------------------------------------------------------//
+ContractWithDigest AbstractLedger::getTermsOfService () const {
+
+    shared_ptr < ContractWithDigest > contract = this->getObjectOrNull < ContractWithDigest >( keyFor_termsOfService ());
+    return contract ? *contract : ContractWithDigest ();
+}
+
+//----------------------------------------------------------------//
 TransactionFeeSchedule AbstractLedger::getTransactionFeeSchedule () const {
         
     shared_ptr < TransactionFeeSchedule > feeSchedule = this->getObjectOrNull < TransactionFeeSchedule >( keyFor_transactionFeeSchedule ());
@@ -549,6 +557,12 @@ void AbstractLedger::setSchema ( const Schema& schema ) {
     this->setValue < string >( AbstractLedger::keyFor_schemaHash (), schemaHash );
     
     this->mSchemaCache [ schemaHash ] = make_shared < Schema >( schema );
+}
+
+//----------------------------------------------------------------//
+void AbstractLedger::setTermsOfService ( const ContractWithDigest& contract ) {
+
+    this->setObject < ContractWithDigest >( keyFor_termsOfService (), contract );
 }
 
 //----------------------------------------------------------------//

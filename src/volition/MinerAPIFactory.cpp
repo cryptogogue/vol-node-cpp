@@ -26,6 +26,7 @@
 #include <volition/web-miner-api/OfferDetailsHandler.h>
 #include <volition/web-miner-api/ResetChainHandler.h>
 #include <volition/web-miner-api/SchemaHandler.h>
+#include <volition/web-miner-api/TermsOfServiceHandler.h>
 #include <volition/web-miner-api/TestExceptions.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
@@ -47,6 +48,8 @@ void MinerAPIFactory::initializeRoutes () {
     cc8* prefix = this->mWithPrefix ? "/:minerID" : "";
 
     // TODO: stardardize endpoint path format
+
+    this->mRouteTable.addEndpoint < WebMinerAPI::TermsOfServiceHandler >                ( HTTP::GET,        Format::write ( "%s/tos/?", prefix ));
 
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountDetailsHandler >                ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountLogHandler >                    ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/log/?", prefix ));

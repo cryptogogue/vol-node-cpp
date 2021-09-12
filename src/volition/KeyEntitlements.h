@@ -39,6 +39,7 @@ public:
     static constexpr const char* SET_ENTITLEMENTS               = "SET_ENTITLEMENTS";
     static constexpr const char* SET_MONETARY_POLICY            = "SET_MONETARY_POLICY";
     static constexpr const char* SET_PAYOUT_POLICY              = "SET_PAYOUT_POLICY";
+    static constexpr const char* SET_TERMS_OF_SERVICE           = "SET_TERMS_OF_SERVICE";
     static constexpr const char* SET_TRANSACTION_FEE_SCHEDULE   = "SET_TRANSACTION_FEE_SCHEDULE";
     static constexpr const char* UPGRADE_ASSETS                 = "UPGRADE_ASSETS";
 
@@ -69,9 +70,10 @@ public:
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( true ));
         entitlements->setPath ( SET_MONETARY_POLICY,            BooleanEntitlement ( true ));
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( true ));
+        entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( true ));
         entitlements->setPath ( SET_TRANSACTION_FEE_SCHEDULE,   BooleanEntitlement ( true ));
         entitlements->setPath ( UPGRADE_ASSETS,                 BooleanEntitlement ( true ));
-                
+
         return entitlements;
     }
     
@@ -102,9 +104,10 @@ public:
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( false ));
         entitlements->setPath ( SET_MONETARY_POLICY,            BooleanEntitlement ( false ));
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( false ));
+        entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( true ));
         entitlements->setPath ( SET_TRANSACTION_FEE_SCHEDULE,   BooleanEntitlement ( false ));
         entitlements->setPath ( UPGRADE_ASSETS,                 BooleanEntitlement ( false ));
-                
+
         return entitlements;
     }
 };

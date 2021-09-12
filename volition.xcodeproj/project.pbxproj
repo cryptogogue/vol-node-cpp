@@ -48,6 +48,9 @@
 		CD0CF460255EDC5D008C67F0 /* RemoteMiner.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0CF45D255EDC5D008C67F0 /* RemoteMiner.h */; };
 		CD0CF461255EDC5D008C67F0 /* RemoteMiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD0CF45F255EDC5D008C67F0 /* RemoteMiner.cpp */; };
 		CD0CF483255EFD9D008C67F0 /* SimMiningMessenger.h in Headers */ = {isa = PBXBuildFile; fileRef = CD0CF482255EFD9D008C67F0 /* SimMiningMessenger.h */; };
+		CD1613D126ED71E400262A33 /* SetTermsOfService.h in Headers */ = {isa = PBXBuildFile; fileRef = CD1613CF26ED71E400262A33 /* SetTermsOfService.h */; };
+		CD1613D326ED736500262A33 /* ContractWithDigest.h in Headers */ = {isa = PBXBuildFile; fileRef = CD1613D226ED736500262A33 /* ContractWithDigest.h */; };
+		CD1613D526ED76A900262A33 /* TermsOfServiceHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD1613D426ED76A900262A33 /* TermsOfServiceHandler.h */; };
 		CD19DF12259572B80007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
 		CD19DF13259572C30007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
 		CD19DF14259572CF0007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
@@ -903,6 +906,9 @@
 		CD0CF45D255EDC5D008C67F0 /* RemoteMiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RemoteMiner.h; path = src/volition/RemoteMiner.h; sourceTree = "<group>"; };
 		CD0CF45F255EDC5D008C67F0 /* RemoteMiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RemoteMiner.cpp; path = src/volition/RemoteMiner.cpp; sourceTree = "<group>"; };
 		CD0CF482255EFD9D008C67F0 /* SimMiningMessenger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimMiningMessenger.h; path = src/volition/simulation/SimMiningMessenger.h; sourceTree = "<group>"; };
+		CD1613CF26ED71E400262A33 /* SetTermsOfService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetTermsOfService.h; path = src/volition/transactions/SetTermsOfService.h; sourceTree = "<group>"; };
+		CD1613D226ED736500262A33 /* ContractWithDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContractWithDigest.h; path = src/volition/ContractWithDigest.h; sourceTree = "<group>"; };
+		CD1613D426ED76A900262A33 /* TermsOfServiceHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TermsOfServiceHandler.h; path = "src/volition/web-miner-api/TermsOfServiceHandler.h"; sourceTree = "<group>"; };
 		CD19DF54259B3F190007ACF0 /* InMemoryBlockTreeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InMemoryBlockTreeNode.cpp; path = src/volition/InMemoryBlockTreeNode.cpp; sourceTree = "<group>"; };
 		CD19DF55259B3F190007ACF0 /* InMemoryBlockTreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InMemoryBlockTreeNode.h; path = src/volition/InMemoryBlockTreeNode.h; sourceTree = "<group>"; };
 		CD19DF8B259C18D50007ACF0 /* leaks */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = leaks; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1541,6 +1547,7 @@
 				CDEDC20722BD57BC00C5643C /* AssetID.h */,
 				CD63A1C022AC6B4000D5C801 /* AssetDefinition.h */,
 				CDD11D8922ED6E070051F04E /* AssetFieldValue.h */,
+				CD1613D226ED736500262A33 /* ContractWithDigest.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
 				CD8DB74A2653D3030073D58F /* IndexID.h */,
 				CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */,
@@ -1855,6 +1862,7 @@
 				CD8DB74C2653E02B0073D58F /* OfferDetailsHandler.h */,
 				CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */,
 				CD09ED742207D82500B09249 /* SchemaHandler.h */,
+				CD1613D426ED76A900262A33 /* TermsOfServiceHandler.h */,
 				CDF234ED25F2F479009DE55E /* TestExceptions.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
@@ -1957,6 +1965,7 @@
 				CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */,
 				CD97F71A2607FC1D00C5C8A6 /* SetMonetaryPolicy.h */,
 				CDDA75312556F5ED007AAA07 /* SetPayoutPolicy.h */,
+				CD1613CF26ED71E400262A33 /* SetTermsOfService.h */,
 				CDDA74E22556BA3A007AAA07 /* SetTransactionFeeSchedule.h */,
 				CD73E695267C9F28007EE67A /* StampAssets.h */,
 				CD9C395E261DB36700AE8782 /* UpdateMinerInfo.h */,
@@ -2179,6 +2188,7 @@
 				CD4E8196210593BD007DA585 /* Block.h in Headers */,
 				CD63A1DB22B2244600D5C801 /* Account.h in Headers */,
 				CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */,
+				CD1613D526ED76A900262A33 /* TermsOfServiceHandler.h in Headers */,
 				CD73D814216546B400F43CC7 /* SerializerPropertyName.h in Headers */,
 				CD19E03725A079E70007ACF0 /* BlockHeaderFields.h in Headers */,
 				CDF8AD5D21F52B34000E285F /* LuaContext.h in Headers */,
@@ -2193,8 +2203,10 @@
 				CDB8B40921ACC874004EE816 /* MinerListHandler.h in Headers */,
 				CD63A1BE22AB3D2E00D5C801 /* AssetDetailsHandler.h in Headers */,
 				CD8BAE3D21EBC81900B5040E /* SerializableUniquePtr.h in Headers */,
+				CD1613D126ED71E400262A33 /* SetTermsOfService.h in Headers */,
 				CD19DF57259B3F190007ACF0 /* InMemoryBlockTreeNode.h in Headers */,
 				CDA1573423FA59EC00DFACCF /* AccountKeyLookup.h in Headers */,
+				CD1613D326ED736500262A33 /* ContractWithDigest.h in Headers */,
 				CD762AD6232826D7005AC85D /* NumericEntitlement.h in Headers */,
 				CD4E81CC2105941A007DA585 /* AbstractTransactionBody.h in Headers */,
 				CD63A1D322AF892800D5C801 /* AssetMethodInvocation.h in Headers */,
