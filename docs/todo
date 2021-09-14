@@ -144,26 +144,33 @@ DONE: art attachment
 DONE: find out why decks aren't being mined
 DONE: wallet - prevent unconsumed crafting assets from being hidden
 DONE: node - function to reset entire asset
+DONE: node - implement TOS (user and miner)
+DONE: miners choose reward
+DONE: ledger, wallet - asset sale transaction
 
-digital koi fish - store vol in an asset
-asset auction
-
-miners choose reward
-
-node - add mutex and accessor for transaction queue
-node - implement TOS (user and miner)
-
-mining - chain ToS (copyright/trademark inheritance)
-
-bot - link discord accounts to vol accounts
+schema - image box layout item - check hash
+schema - add hash to font
+wallet - render image boxes in layouts
+wallet - check resources hashes
+wallet - util for getting hashes of resources (from given URL)
+wallet - sanitize svg layout template values (prevent javascript injection) - DOMPurify
+wallet - vol param type for crafting methods
+wallet - other numeric param types for crafting methods
+node - prevent stamp scripts from overwriting fields if empty string is given
+node - send error messages from inside script
+node - scripting method to remove a stamp from an asset
 
 ----------------------------------------------------------------
 PRE-LAUNCH
 
+digital koi fish - store vol in an asset
+asset auction
+node - add mutex and accessor for transaction queue
+mining - chain ToS (copyright/trademark inheritance)
+bot - link discord accounts to vol accounts
+
 node - auctioneer transaction (and prevent resale of inventory held in trust)
 wallet - auction service (headless, integrate with wallet)
-
-ledger, wallet - asset sale transaction
 
 mining - legal ToS
 identity - identity provisioning for miners
