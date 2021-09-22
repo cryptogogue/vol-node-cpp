@@ -418,50 +418,65 @@ int LuaContext::_setAssetField ( lua_State* L ) {
 
 //----------------------------------------------------------------//
 int LuaContext::_setStamp ( lua_State* L ) {
-    LuaContext& self = LuaContext::getSelf ( L );
-    AbstractLedger& ledger = self.mLedger;
-    
-    string assetID          = _to_string ( L, 1 );
-    size_t price            = ( size_t )lua_tointeger ( L, 2 );
-    string qualifier        = _to_string ( L, 3 );
-    
-    AssetID::Index assetindex = self.checkAssetID ( assetID );
-    if ( assetindex == AssetID::NULL_INDEX ) return 0;
-    
-    Stamp stamp;
-    if ( qualifier.size ()) {
-        FromJSONSerializer::fromJSONString ( stamp.mQualifier, qualifier );
-    }
-    
-    lua_pushnil ( L );
-    while ( lua_next ( L, 4 ) != 0 ) {
-        
-        // 'key' at index -2; 'value' at index -1
-        
-        if ( !lua_isstring ( L, -2 )) {
-            self.setResult ( "Illegal field key type (stamp fields must be of type 'string')." );
-            return 0;
-        }
-        
-        string fieldName = _to_string ( L, -2 );
-        AssetFieldValue value = LuaContext::getFieldValue ( L, -1 );
-        
-        if ( !value.isValid ()) {
-            self.setResult ( "Invalid field value." );
-            return 0;
-        }
-        
-        stamp.mFields [ fieldName ] = value;
-        lua_pop ( L, 1 );
-    }
 
-    StampODBM stampODBM ( ledger, assetindex );
+    LuaContext& self        = LuaContext::getSelf ( L );
+    AbstractLedger& ledger  = self.mLedger;
     
-    u64 version = stampODBM ? ( stampODBM.mVersion.get () + 1 ) : 0;
+    string assetID = _to_string ( L, 1 );
+    AssetID::Index assetindex = self.checkAssetID ( assetID );
+    if ( assetindex == AssetID::NULL_INDEX ) {
+        self.setResult ( "Invalid asset ID" );
+        return 0;
+    }
     
-    stampODBM.mPrice.set ( price );
-    stampODBM.mVersion.set ( version );
-    stampODBM.mBody.set ( stamp );
+    if ( lua_gettop ( L ) == 1 ) {
+    
+        StampODBM stampODBM ( ledger, assetindex );
+        if ( stampODBM ) {
+            stampODBM.mAvailable.set ( false );
+        }
+    }
+    else {
+        
+        size_t price            = ( size_t )lua_tointeger ( L, 2 );
+        string qualifier        = _to_string ( L, 3 );
+        
+        Stamp stamp;
+        if ( qualifier.size ()) {
+            FromJSONSerializer::fromJSONString ( stamp.mQualifier, qualifier );
+        }
+        
+        lua_pushnil ( L );
+        while ( lua_next ( L, 4 ) != 0 ) {
+            
+            // 'key' at index -2; 'value' at index -1
+            
+            if ( !lua_isstring ( L, -2 )) {
+                self.setResult ( "Illegal field key type (stamp fields must be of type 'string')." );
+                return 0;
+            }
+            
+            string fieldName = _to_string ( L, -2 );
+            AssetFieldValue value = LuaContext::getFieldValue ( L, -1 );
+            
+            if ( !value.isValid ()) {
+                self.setResult ( "Invalid field value." );
+                return 0;
+            }
+            
+            stamp.mFields [ fieldName ] = value;
+            lua_pop ( L, 1 );
+        }
+
+        StampODBM stampODBM ( ledger, assetindex );
+        
+        u64 version = stampODBM ? ( stampODBM.mVersion.get () + 1 ) : 0;
+        
+        stampODBM.mPrice.set ( price );
+        stampODBM.mVersion.set ( version );
+        stampODBM.mBody.set ( stamp );
+        stampODBM.mAvailable.set ( true );
+    }
 
     return 0;
 }

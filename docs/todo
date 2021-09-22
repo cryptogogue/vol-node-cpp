@@ -147,21 +147,21 @@ DONE: node - function to reset entire asset
 DONE: node - implement TOS (user and miner)
 DONE: miners choose reward
 DONE: ledger, wallet - asset sale transaction
-
-schema - image box layout item - check hash
-schema - add hash to font
-wallet - render image boxes in layouts
-wallet - check resources hashes
-wallet - util for getting hashes of resources (from given URL)
-wallet - sanitize svg layout template values (prevent javascript injection) - DOMPurify
-wallet - vol param type for crafting methods
-wallet - other numeric param types for crafting methods
-node - prevent stamp scripts from overwriting fields if empty string is given
-node - send error messages from inside script
-node - scripting method to remove a stamp from an asset
+DONE: wallet - check resources hashes
+DONE: wallet - util for getting hashes of resources (from given URL)
+DONE: node - scripting method to remove a stamp from an asset
+DONE: schema - add hash to font
+DONE: wallet - sanitize svg layout template values (XSS)
+DONE: wallet - vol param type for crafting methods
+DONE: wallet - other numeric param types for crafting methods
 
 ----------------------------------------------------------------
 PRE-LAUNCH
+
+wallet - check font hash
+node - send error messages from inside script
+schema - image box layout item - check hash
+wallet - render image boxes in layouts
 
 digital koi fish - store vol in an asset
 asset auction

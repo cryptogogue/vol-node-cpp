@@ -20,6 +20,11 @@ class StampODBM {
 private:
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_available ( AssetID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "stamp.%d.available", index ); });
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_body ( AssetID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "stamp.%d.body", index ); });
     }
@@ -41,20 +46,22 @@ public:
 
     LedgerFieldODBM < u64 >                 mPrice; // track the price here in case user wants to change it (don't need to rewrite fields)
     LedgerFieldODBM < u64 >                 mVersion; // changed any time the stamp is updated
+    LedgerFieldODBM < bool >                mAvailable;
     LedgerObjectFieldODBM < Stamp >         mBody;
 
     //----------------------------------------------------------------//
     operator bool () {
-        return this->mBody.exists ();
+        return this->mBody.exists () && ( this->mAvailable.get () == true );
     }
 
     //----------------------------------------------------------------//
     StampODBM ( ConstOpt < AbstractLedger > ledger, AssetID::Index index ) :
-        mLedger ( ledger ),
-        mAssetID ( index ),
-        mPrice ( ledger,            keyFor_price ( this->mAssetID ),            0 ),
-        mVersion ( ledger,          keyFor_version ( this->mAssetID ),          0 ),
-        mBody ( ledger,             keyFor_body ( this->mAssetID )) {
+        mLedger         ( ledger ),
+        mAssetID        ( index ),
+        mPrice          ( ledger,       keyFor_price ( this->mAssetID ),            0 ),
+        mVersion        ( ledger,       keyFor_version ( this->mAssetID ),          0 ),
+        mAvailable      ( ledger,       keyFor_available ( this->mAssetID ),        true ),
+        mBody           ( ledger,       keyFor_body ( this->mAssetID )) {
     }
 };
 
