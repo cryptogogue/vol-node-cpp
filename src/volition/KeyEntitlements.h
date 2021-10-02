@@ -104,7 +104,7 @@ public:
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( false ));
         entitlements->setPath ( SET_MONETARY_POLICY,            BooleanEntitlement ( false ));
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( false ));
-        entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( true ));
+        entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( false ));
         entitlements->setPath ( SET_TRANSACTION_FEE_SCHEDULE,   BooleanEntitlement ( false ));
         entitlements->setPath ( UPGRADE_ASSETS,                 BooleanEntitlement ( false ));
 
