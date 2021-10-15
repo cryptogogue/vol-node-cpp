@@ -158,6 +158,14 @@ DONE: wallet - other numeric param types for crafting methods
 ----------------------------------------------------------------
 PRE-LAUNCH
 
+legal - write popup notice for volition project site
+legal - send contributors license and popup notice to Peter for review/rewrite
+legal - how can we give people stock?
+beta - host wallet on volwal.com
+wallet - fix nonce bug
+launch - bullet points for fireside
+launch - consolidate repositories into master volition repo
+
 wallet - check font hash
 node - send error messages from inside script
 schema - image box layout item - check hash
