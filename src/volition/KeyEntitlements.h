@@ -41,6 +41,7 @@ public:
     static constexpr const char* SET_PAYOUT_POLICY              = "SET_PAYOUT_POLICY";
     static constexpr const char* SET_TERMS_OF_SERVICE           = "SET_TERMS_OF_SERVICE";
     static constexpr const char* SET_TRANSACTION_FEE_SCHEDULE   = "SET_TRANSACTION_FEE_SCHEDULE";
+    static constexpr const char* UPDATE_MINER_INFO              = "UPDATE_MINER_INFO";
     static constexpr const char* UPGRADE_ASSETS                 = "UPGRADE_ASSETS";
 
     //----------------------------------------------------------------//
@@ -72,6 +73,7 @@ public:
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( true ));
         entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( true ));
         entitlements->setPath ( SET_TRANSACTION_FEE_SCHEDULE,   BooleanEntitlement ( true ));
+        entitlements->setPath ( UPDATE_MINER_INFO,              BooleanEntitlement ( true ));
         entitlements->setPath ( UPGRADE_ASSETS,                 BooleanEntitlement ( true ));
 
         return entitlements;
@@ -106,6 +108,7 @@ public:
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( false ));
         entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( false ));
         entitlements->setPath ( SET_TRANSACTION_FEE_SCHEDULE,   BooleanEntitlement ( false ));
+        entitlements->setPath ( UPDATE_MINER_INFO,              BooleanEntitlement ( false ));
         entitlements->setPath ( UPGRADE_ASSETS,                 BooleanEntitlement ( false ));
 
         return entitlements;
