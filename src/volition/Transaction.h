@@ -42,17 +42,16 @@ protected:
 
 public:
 
-    GET_COMPOSED ( string,                       FeeName,                   this->mBody,        "" )
+    GET_COMPOSED ( u64,                          Fees,                      this->mBody,        0 )
     GET_COMPOSED ( u64,                          Gratuity,                  this->mBody,        0 )
     GET_COMPOSED ( const TransactionMaker*,      Maker,                     this->mBody,        NULL )
     GET_COMPOSED ( u64,                          Maturity,                  this->mBody,        0 )
     GET_COMPOSED ( u64,                          Nonce,                     this->mBody,        0 )
     GET_COMPOSED ( u64,                          ProfitShare,               this->mBody,        0 )
-    GET_COMPOSED ( u64,                          SendVOL,                   this->mBody,        0 )
-    GET_COMPOSED ( u64,                          TransactionCost,           this->mBody,        0 )
     GET_COMPOSED ( u64,                          TransferTax,               this->mBody,        0 )
     GET_COMPOSED ( string,                       TypeString,                this->mBody,        "" )
     GET_COMPOSED ( string,                       UUID,                      this->mBody,        "" )
+    GET_COMPOSED ( u64,                          VOL,                       this->mBody,        0 )
     GET_COMPOSED ( u64,                          Weight,                    this->mBody,        0 )
 
     //----------------------------------------------------------------//

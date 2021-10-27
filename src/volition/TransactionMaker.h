@@ -29,6 +29,8 @@ protected:
 
 public:
 
+    GET ( u64,              Fees,               ( mGratuity + mTransferTax ))
+
     GET_SET ( string,       AccountName,        mAccountName )
     GET_SET ( u64,          Gratuity,           mGratuity )
     GET_SET ( string,       KeyName,            mKeyName )

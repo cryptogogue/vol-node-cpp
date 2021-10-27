@@ -57,13 +57,13 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHei
         
         TransactionContext context ( ledger, accountODBM, keyAndPolicy, blockHeight, index, time );
         
-        const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getFeeName ());
+        const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getTypeString ());
         
         if ( !feeProfile.checkProfitShare ( maker->getGratuity (), maker->getProfitShare ())) return "Incorrect profit share.";
-        if ( !feeProfile.checkTransferTax ( this->getSendVOL (), maker->getTransferTax ())) return "Incorrect transfer tax.";
+        if ( !feeProfile.checkTransferTax ( this->getVOL (), maker->getTransferTax ())) return "Incorrect transfer tax.";
         
-        u64 transactionCost = this->getTransactionCost ();
-        if ( !context.mAccountODBM.hasFunds ( transactionCost + this->getSendVOL ())) return "Insufficient funds.";
+        u64 fees = this->getFees ();
+        if ( !context.mAccountODBM.hasFunds ( fees + this->getVOL ())) return "Insufficient funds.";
         
         result = this->mBody->apply ( context );
         
@@ -73,10 +73,9 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHei
                 accountODBM.incAccountTransactionNonce ( this->getNonce (), this->getUUID ());
                 context.pushAccountLogEntry ();
                 
-                if ( transactionCost > 0 ) {
-                
-                    // deduct the total cost from maker
-                    context.mAccountODBM.subFunds ( transactionCost );
+                // automatically deduct the fees from maker
+                if ( fees > 0 ) {
+                    context.mAccountODBM.subFunds ( fees );
                 }
             }
         }

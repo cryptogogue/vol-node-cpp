@@ -42,9 +42,15 @@ public:
     }
 
     //----------------------------------------------------------------//
-    bool check ( u64 amount, u64 share ) const {
+    bool checkEquals ( u64 amount, u64 share ) const {
         
-        return ( share == this->computeAndRoundUp ( amount ));
+        return ( this->computeAndRoundUp ( amount ) == share );
+    }
+    
+    //----------------------------------------------------------------//
+    bool checkGreaterEquals ( u64 amount, u64 share ) const {
+        
+        return ( this->computeAndRoundUp ( amount ) <= share );
     }
     
     //----------------------------------------------------------------//

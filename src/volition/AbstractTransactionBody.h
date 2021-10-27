@@ -60,26 +60,24 @@ protected:
 
     //----------------------------------------------------------------//
     virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
-    virtual string                  AbstractTransactionBody_feeName         () const;
     virtual TransactionResult       AbstractTransactionBody_genesis         ( AbstractLedger& ledger ) const;
     virtual TransactionDetailsPtr   AbstractTransactionBody_getDetails      ( const AbstractLedger& ledger ) const;
+    virtual u64                     AbstractTransactionBody_getVOL          () const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
-    virtual u64                     AbstractTransactionBody_sendVOL         () const;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;
     virtual u64                     AbstractTransactionBody_weight          () const = 0;
 
 public:
 
+    GET_COMPOSED ( u64,         Fees,               this->mMaker,      0 )
     GET_COMPOSED ( u64,         Gratuity,           this->mMaker,      0 )
     GET_COMPOSED ( u64,         Nonce,              this->mMaker,      0 )
     GET_COMPOSED ( u64,         ProfitShare,        this->mMaker,      0 )
     GET_COMPOSED ( u64,         TransferTax,        this->mMaker,      0 )
 
-    GET ( string,               FeeName,            this->AbstractTransactionBody_feeName ())
     GET ( u64,                  Maturity,           this->AbstractTransactionBody_maturity ())
-    GET ( u64,                  SendVOL,            this->AbstractTransactionBody_sendVOL ())
-    GET ( u64,                  TransactionCost,    ( this->getGratuity () + this->getTransferTax ()))
     GET ( string,               TypeString,         this->AbstractTransactionBody_typeString ())
+    GET ( u64,                  VOL,                this->AbstractTransactionBody_getVOL ())
     GET ( u64,                  Weight,             this->AbstractTransactionBody_weight ())
     
     GET_SET ( u64,              MaxHeight,          this->mMaxHeight )

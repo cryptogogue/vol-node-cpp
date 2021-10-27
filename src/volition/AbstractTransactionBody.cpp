@@ -73,11 +73,6 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
 }
 
 //----------------------------------------------------------------//
-string AbstractTransactionBody::AbstractTransactionBody_feeName () const {
-    return "";
-}
-
-//----------------------------------------------------------------//
 TransactionResult AbstractTransactionBody::AbstractTransactionBody_genesis ( AbstractLedger& ledger ) const {
     UNUSED ( ledger );
     return "Missing transaction maker.";
@@ -90,7 +85,7 @@ TransactionDetailsPtr AbstractTransactionBody::AbstractTransactionBody_getDetail
 }
 
 //----------------------------------------------------------------//
-u64 AbstractTransactionBody::AbstractTransactionBody_sendVOL () const {
+u64 AbstractTransactionBody::AbstractTransactionBody_getVOL () const {
     return 0;
 }
 

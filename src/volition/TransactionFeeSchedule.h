@@ -39,13 +39,13 @@ public:
     //----------------------------------------------------------------//
     bool checkProfitShare ( u64 amount, u64 share ) const {
     
-        return this->mProfitShare.check ( amount, share );
+        return this->mProfitShare.checkEquals ( amount, share );
     }
     
     //----------------------------------------------------------------//
     bool checkTransferTax ( u64 amount, u64 share ) const {
     
-        return this->mTransferTax.check ( amount, share );
+        return this->mTransferTax.checkGreaterEquals ( amount, share );
     }
 };
 

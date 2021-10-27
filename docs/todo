@@ -166,6 +166,13 @@ wallet - fix nonce bug
 launch - bullet points for fireside
 launch - consolidate repositories into master volition repo
 
+wallet - accessibility (screen readers, etc.)
+wallet - tooltips
+wallet - mobile friendly
+
+wallet - add miner leaderboard
+wallet - show miner of latest block
+
 wallet - check font hash
 node - send error messages from inside script
 schema - image box layout item - check hash
