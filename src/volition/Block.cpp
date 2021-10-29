@@ -154,6 +154,8 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
     nextMaturity = this->mHeight;
     size_t height = ledger.getVersion ();
 
+    assert ( this->mHeight == height );
+
     AccountODBM accountODBM ( ledger, this->mMinerID );
     assert ( accountODBM || ledger.isGenesis ());
 
@@ -172,7 +174,7 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
             size_t transactionMaturity = this->mHeight + transaction.getMaturity ();
             if ( transactionMaturity == height ) {
             
-                TransactionResult result = transaction.apply ( ledger, height, i, this->mTime, policy );
+                TransactionResult result = transaction.apply ( ledger, height, this->getVersion (), i, this->mTime, policy );
                 if ( !result ) return Format::write ( "%s: %s", result.getUUID ().c_str (), result.getMessage ().c_str ());
                 
                 gratuity        += transaction.getGratuity ();

@@ -27,6 +27,7 @@ protected:
 
     string              mMinerID;
     u64                 mHeight;
+    u64                 mVersion;
     
     SerializableTime    mTime;
     SerializableTime    mBlockDelay;

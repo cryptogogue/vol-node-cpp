@@ -36,6 +36,7 @@ public:
     GET ( const Digest&,            Charm,                      this->getFields ().mCharm )
     GET ( const Digest&,            Digest,                     this->getFields ().mDigest )
     GET ( size_t,                   Height,                     this->getFields ().mHeight )
+    GET ( size_t,                   Version,                    this->getFields ().mVersion )
     GET ( string,                   MinerID,                    this->getFields ().mMinerID )
     GET ( const Digest&,            Pose,                       this->getFields ().mPose )
     GET ( const Digest&,            PrevDigest,                 this->getFields ().mPrevDigest )

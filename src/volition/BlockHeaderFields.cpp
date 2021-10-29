@@ -13,6 +13,7 @@ namespace Volition {
 //----------------------------------------------------------------//
 BlockHeaderFields::BlockHeaderFields () :
     mHeight ( 0 ),
+    mVersion ( 0 ),
     mTime ( 0 ),
     mBlockDelay ( 0 ),
     mRewriteWindow ( 0 ) {

@@ -99,7 +99,8 @@ public:
     }
     
     //----------------------------------------------------------------//
-    u64 AbstractTransactionBody_getVOL () const override {
+    u64 AbstractTransactionBody_getVOL ( const TransactionContext& context ) const override {
+        UNUSED ( context );
     
         return this->mGrant;
     }

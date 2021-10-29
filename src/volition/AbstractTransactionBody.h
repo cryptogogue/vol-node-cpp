@@ -62,7 +62,7 @@ protected:
     virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
     virtual TransactionResult       AbstractTransactionBody_genesis         ( AbstractLedger& ledger ) const;
     virtual TransactionDetailsPtr   AbstractTransactionBody_getDetails      ( const AbstractLedger& ledger ) const;
-    virtual u64                     AbstractTransactionBody_getVOL          () const;
+    virtual u64                     AbstractTransactionBody_getVOL          ( const TransactionContext& context ) const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;
     virtual u64                     AbstractTransactionBody_weight          () const = 0;
@@ -77,7 +77,6 @@ public:
 
     GET ( u64,                  Maturity,           this->AbstractTransactionBody_maturity ())
     GET ( string,               TypeString,         this->AbstractTransactionBody_typeString ())
-    GET ( u64,                  VOL,                this->AbstractTransactionBody_getVOL ())
     GET ( u64,                  Weight,             this->AbstractTransactionBody_weight ())
     
     GET_SET ( u64,              MaxHeight,          this->mMaxHeight )
@@ -88,9 +87,10 @@ public:
                                 AbstractTransactionBody                 ();
                                 ~AbstractTransactionBody                ();
     TransactionResult           apply                                   ( TransactionContext& context ) const;
+    TransactionResult           genesis                                 ( AbstractLedger& ledger );
     TransactionDetailsPtr       getDetails                              ( const AbstractLedger& ledger ) const;
     const TransactionMaker*     getMaker                                () const;
-    TransactionResult           genesis                                 ( AbstractLedger& ledger );
+    u64                         getVOL                                  ( const TransactionContext& context ) const;
     void                        setMaker                                ( const TransactionMaker& maker );
 };
 

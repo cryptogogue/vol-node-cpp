@@ -24,13 +24,14 @@ LedgerResult TransactionContext::pushAccountLogEntry ( AccountID accountID ) {
 }
 
 //----------------------------------------------------------------//
-TransactionContext::TransactionContext ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 index, time_t time ) :
+TransactionContext::TransactionContext ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 blockVersion, u64 index, time_t time ) :
     mAccount ( *accountODBM.mBody.get ()),
     mAccountID ( accountODBM.mAccountID ),
     mAccountODBM ( accountODBM ),
     mKeyAndPolicy ( keyAndPolicy ),
     mLedger ( ledger ),
     mBlockHeight ( blockHeight ),
+    mBlockVersion ( blockVersion ),
     mIndex ( index ),
     mTime ( time ) {
     

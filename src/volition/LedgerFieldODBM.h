@@ -21,16 +21,10 @@ template < typename TYPE >
 class LedgerFieldODBM {
 private:
 
-    enum State {
-        EMPTY,
-        FALLBACK,
-        LOADED,
-    };
-
     ConstOpt < AbstractLedger >     mLedger;
     LedgerKey                       mKey;
-    State                           mState;
-    TYPE                            mValue;
+    bool                            mHasFallback;
+    TYPE                            mFallback;
 
 public:
 
@@ -43,23 +37,15 @@ public:
     //----------------------------------------------------------------//
     TYPE get () {
         
-        if ( this->mState != LOADED ) {
-            this->mValue = ( this->mState == FALLBACK ) ?
-                this->mLedger.getConst ().template getValueOrFallback < TYPE >( this->mKey, this->mValue ) :
-                this->mLedger.getConst ().template getValue < TYPE >( this->mKey );
-            this->mState = LOADED;
-        }
-        return this->mValue;
+        return ( this->mHasFallback ) ?
+            this->mLedger.getConst ().template getValueOrFallback < TYPE >( this->mKey, this->mFallback ) :
+            this->mLedger.getConst ().template getValue < TYPE >( this->mKey );
     }
     
     //----------------------------------------------------------------//
     TYPE get ( const TYPE& fallback ) {
-        
-        if ( this->mState != LOADED ) {
-            this->mValue = this->mLedger.getConst ().template getValueOrFallback < TYPE >( this->mKey, fallback );
-            this->mState = LOADED;
-        }
-        return this->mValue;
+
+        return this->mLedger.getConst ().template getValueOrFallback < TYPE >( this->mKey, fallback );
     }
 
     //----------------------------------------------------------------//
@@ -77,31 +63,27 @@ public:
     //----------------------------------------------------------------//
     void set ( const TYPE& value ) {
         
-        if ( !(( this->mState == LOADED ) && ( this->mValue == value ))) {
-            this->mLedger.getMutable ().template setValue < TYPE >( this->mKey, value );
-            this->mValue = value;
-            this->mState = LOADED;
-        }
+        this->mLedger.getMutable ().template setValue < TYPE >( this->mKey, value );
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM () :
-        mState ( EMPTY ) {
+        mHasFallback ( false ) {
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM ( ConstOpt < AbstractLedger > ledger, const LedgerKey& ledgerKey ) :
         mLedger ( ledger ),
         mKey ( ledgerKey ),
-        mState ( EMPTY ) {
+        mHasFallback ( false ) {
     }
     
     //----------------------------------------------------------------//
     LedgerFieldODBM ( ConstOpt < AbstractLedger > ledger, const LedgerKey& ledgerKey, TYPE fallback ) :
         mLedger ( ledger ),
         mKey ( ledgerKey ),
-        mState ( FALLBACK ),
-        mValue ( fallback ) {
+        mHasFallback ( true ),
+        mFallback ( fallback ) {
     }
 };
 

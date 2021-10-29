@@ -78,8 +78,10 @@ public:
 
         offerODBM.mBuyer.set ( buyerODBM.mAccountID );
 
-        buyerODBM.subFunds ( this->mPrice );
-        sellerODBM.addFunds ( this->mPrice );
+        if ( context.mBlockVersion > 0 ) {
+            buyerODBM.subFunds ( this->mPrice );
+            sellerODBM.addFunds ( this->mPrice );
+        }
         
         context.pushAccountLogEntry ( sellerODBM.mAccountID );
         
@@ -120,7 +122,8 @@ public:
     }
     
     //----------------------------------------------------------------//
-    u64 AbstractTransactionBody_getVOL () const override {
+    u64 AbstractTransactionBody_getVOL ( const TransactionContext& context ) const override {
+        UNUSED ( context );
     
         return this->mPrice;
     }

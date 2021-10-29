@@ -66,6 +66,12 @@ public:
             context.mTime
         );
     }
+    
+    //----------------------------------------------------------------//
+    u64 AbstractTransactionBody_getVOL ( const TransactionContext& context ) const override {
+    
+        return ( context.mBlockVersion > 0 ) ? this->mPrice : 0;
+    }
 };
 
 } // namespace Transactions

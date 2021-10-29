@@ -23,7 +23,6 @@ private:
 
     ConstOpt < AbstractLedger >     mLedger;
     LedgerKey                       mKey;
-    shared_ptr < TYPE >             mObject;
 
 public:
 
@@ -36,21 +35,13 @@ public:
     //----------------------------------------------------------------//
     shared_ptr < const TYPE > get () {
         
-        if ( !this->mObject ) {
-            this->mObject = this->mLedger.getConst ().template getObjectOrNull < TYPE >( this->mKey );
-        }
-        return this->mObject;
+        return this->mLedger.getConst ().template getObjectOrNull < TYPE >( this->mKey );
     }
     
     //----------------------------------------------------------------//
     void get ( TYPE& object ) const {
         
-        if ( this->mObject ) {
-            object = *this->mObject;
-        }
-        else {
-            this->mLedger.getConst ().template getObject < TYPE >( this->mKey, object );
-        }
+        this->mLedger.getConst ().template getObject < TYPE >( this->mKey, object );
     }
 
     //----------------------------------------------------------------//
@@ -69,7 +60,6 @@ public:
     void set ( const TYPE& object ) {
         
         this->mLedger.getMutable ().template setObject < TYPE >( this->mKey, object );
-        this->mObject = make_shared < TYPE >( object );
     }
     
     //----------------------------------------------------------------//

@@ -17,12 +17,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 blockVersion, u64 index, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
         TransactionResult result = this->checkBody ( ledger, time );
         if ( result ) {
-            result = this->applyInner ( ledger, blockHeight, index, time, policy );
+            result = this->applyInner ( ledger, blockHeight, blockVersion, index, time, policy );
         }
         result.setTransactionDetails ( *this );
         return result;
@@ -36,7 +36,7 @@ TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, 
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHeight, u64 blockVersion, u64 index, time_t time, Block::VerificationPolicy policy ) const {
     
     if ( !this->mBody ) return "Missing body.";
     
@@ -55,15 +55,15 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHei
     TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey, policy );
     if ( result ) {
         
-        TransactionContext context ( ledger, accountODBM, keyAndPolicy, blockHeight, index, time );
+        TransactionContext context ( ledger, accountODBM, keyAndPolicy, blockHeight, blockVersion, index, time );
         
         const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getTypeString ());
         
         if ( !feeProfile.checkProfitShare ( maker->getGratuity (), maker->getProfitShare ())) return "Incorrect profit share.";
-        if ( !feeProfile.checkTransferTax ( this->getVOL (), maker->getTransferTax ())) return "Incorrect transfer tax.";
+        if ( !feeProfile.checkTransferTax ( this->mBody->getVOL ( context ), maker->getTransferTax ())) return "Incorrect transfer tax.";
         
         u64 fees = this->getFees ();
-        if ( !context.mAccountODBM.hasFunds ( fees + this->getVOL ())) return "Insufficient funds.";
+        if ( !context.mAccountODBM.hasFunds ( fees + this->mBody->getVOL ( context ))) return "Insufficient funds.";
         
         result = this->mBody->apply ( context );
         

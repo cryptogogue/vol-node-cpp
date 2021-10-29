@@ -176,10 +176,11 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
 
     Ledger ledger = chain;
 
-    const u64 maxBlockWeight = ledger.getMaxBlockWeight ();
-    u64 blockHeight = block.getHeight ();
-    u64 blockWeight = 0;
-    u64 transactionIndex = 0;
+    const u64 maxBlockWeight    = ledger.getMaxBlockWeight ();
+    u64 blockHeight             = block.getHeight ();
+    u64 blockVersion            = block.getVersion ();
+    u64 blockWeight             = 0;
+    u64 transactionIndex        = 0;
 
     map < string, MakerQueueInfo > infoCache;
 
@@ -244,7 +245,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             // push a version in case the transaction fails
             ledger.pushVersion ();
             
-            TransactionResult result = transaction->apply ( ledger, blockHeight, transactionIndex, block.getTime (), policy );
+            TransactionResult result = transaction->apply ( ledger, blockHeight, blockVersion, transactionIndex, block.getTime (), policy );
             
             if ( result ) {
                 // transaction succeeded!

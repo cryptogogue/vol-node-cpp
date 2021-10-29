@@ -53,6 +53,7 @@ void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerF
     u64 rewriteWindow   = ( u64 )this->mRewriteWindow;
     
     serializer.serialize ( "height",            this->mHeight );
+    serializer.serialize ( "version",           this->mVersion );
     serializer.serialize ( "time",              this->mTime );
     serializer.serialize ( "blockDelay",        blockDelay );
     serializer.serialize ( "rewriteWindow",     rewriteWindow );
@@ -79,6 +80,7 @@ void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& seria
     u64 rewriteWindow   = ( u64 )this->mRewriteWindow;
     
     serializer.serialize ( "height",            this->mHeight );
+    serializer.serialize ( "version",           this->mVersion );
     serializer.serialize ( "time",              this->mTime );
     serializer.serialize ( "blockDelay",        blockDelay );
     serializer.serialize ( "rewriteWindow",     rewriteWindow );
