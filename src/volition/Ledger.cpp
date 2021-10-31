@@ -267,6 +267,12 @@ u64 AbstractLedger::getPrizePool () const {
 }
 
 //----------------------------------------------------------------//
+u64 AbstractLedger::getRelease () const {
+
+    return this->getValueOrFallback < u64 >( keyFor_release (), 0 );
+}
+
+//----------------------------------------------------------------//
 u64 AbstractLedger::getRewardPool () const {
 
     return this->getValueOrFallback < u64 >( keyFor_rewardPool (), 0 );
@@ -545,6 +551,12 @@ LedgerResult AbstractLedger::setPayoutPolicy ( const PayoutPolicy& distributionT
 void AbstractLedger::setPayoutPool ( u64 amount ) {
 
     this->setValue < u64 >( keyFor_payoutPool (), amount );
+}
+
+//----------------------------------------------------------------//
+void AbstractLedger::setRelease ( u64 release ) {
+
+    this->setValue < u64 >( keyFor_release (), release );
 }
 
 //----------------------------------------------------------------//

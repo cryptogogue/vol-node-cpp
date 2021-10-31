@@ -4,11 +4,11 @@
 #ifndef VOLITION_WEBMINERAPI_DEFAULTHANDLER_H
 #define VOLITION_WEBMINERAPI_DEFAULTHANDLER_H
 
+#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/Block.h>
+#include <volition/Format.h>
 #include <volition/PayoutPolicy.h>
 #include <volition/TransactionFeeSchedule.h>
-#include <volition/Format.h>
-#include <volition/AbstractMinerAPIRequestHandler.h>
 #include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
 
@@ -41,6 +41,8 @@ public:
         jsonOut.set ( "schemaHash",             minerStatus.mSchemaHash );
         jsonOut.set ( "build",                  Format::write ( "%s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR ));
         jsonOut.set ( "commit",                 Format::write ( "%s", VOLITION_GIT_COMMIT_STR ));
+        jsonOut.set ( "acceptedRelease",        minerStatus.mAcceptedRelease ); // the release we're actually ready to accept
+        jsonOut.set ( "nextRelease",            VOL_NODE_RELEASE ); // always striving for the current build's release
         jsonOut.set ( "minGratuity",            minerStatus.mMinimumGratuity );
         jsonOut.set ( "reward",                 minerStatus.mReward );
         jsonOut.set ( "totalBlocks",            minerStatus.mTotalBlocks );

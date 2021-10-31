@@ -70,7 +70,7 @@ public:
     //----------------------------------------------------------------//
     u64 AbstractTransactionBody_getVOL ( const TransactionContext& context ) const override {
     
-        return ( context.mBlockVersion > 0 ) ? this->mPrice : 0;
+        return ( context.mRelease > 0 ) ? this->mPrice : 0;
     }
 };
 

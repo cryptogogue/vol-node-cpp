@@ -11,6 +11,7 @@ enum kBlockTreeAppendResult {
     ALREADY_EXISTS,
     MISSING_PARENT,
     TOO_SOON,
+    INCOMPATIBLE,
 };
 
 // this represents the health of the branch. it is updated by search and when

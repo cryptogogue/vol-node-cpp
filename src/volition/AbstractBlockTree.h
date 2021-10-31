@@ -92,7 +92,7 @@ public:
     BlockTreeCursor             affirmProvisional       ( BlockTreeTag& tag, shared_ptr < const BlockHeader > header );
                                 AbstractBlockTree       ();
     virtual                     ~AbstractBlockTree      ();
-    kBlockTreeAppendResult      checkAppend             ( const BlockHeader& header ) const;
+    kBlockTreeAppendResult      checkAppend             ( const BlockHeader& header, u64 acceptedRelease ) const;
     int                         compare                 ( const BlockTreeCursor& cursor0, const BlockTreeCursor& cursor1 ) const;
     BlockTreeCursor             findCursorForHash       ( string hash ) const;
     BlockTreeCursor             findCursorForTag        ( const BlockTreeTag& tag ) const;

@@ -10,6 +10,7 @@
 #include <volition/InMemoryBlockTree.h>
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
+#include <volition/Release.h>
 #include <volition/SQLiteBlockTree.h>
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
@@ -145,7 +146,7 @@ void Miner::composeChainInnerLoop ( BlockTreeCursor branch ) {
         LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, "Building block stack." );
         
         while ( !ledgerCursor.equals ( branch )) {
-        
+            
             if ( branch.isComplete ()) {
                 stack.push_front ( branch );
             }
@@ -322,7 +323,9 @@ Miner::Miner () :
     mNetworkSearch ( false ),
     mPersistFrequency ( 0 ),
     mRetryPersistenceCheck ( 0 ),
-    mPersistenceSleep ( 0 ) {
+    mPersistenceSleep ( 0 ),
+    mAcceptedRelease ( 0 ),
+    mProducedRelease ( 0 ) {
     
     this->mLedgerTag.setName ( "working" );
     this->mBestBranchTag.setName ( "best" );
@@ -432,20 +435,21 @@ LedgerResult Miner::persistLedgerSQLiteStringStore ( shared_ptr < const Block > 
 
 //----------------------------------------------------------------//
 shared_ptr < Block > Miner::prepareBlock ( time_t now ) {
-    
+        
     shared_ptr < const Block > prevBlock = this->mLedger->getBlock ();
     assert ( prevBlock );
     
     shared_ptr < Block > block = make_shared < Block >();
     block->initialize (
         this->mMinerID,
+        this->mProducedRelease,
         this->mVisage,
         now,
         prevBlock.get (),
         this->mKeyPair
     );
     
-    block->setBlockDelayInSeconds( this->mLedger->getBlockDelayInSeconds ());
+    block->setBlockDelayInSeconds ( this->mLedger->getBlockDelayInSeconds ());
     block->setRewriteWindow ( this->mLedger->getRewriteWindowInSeconds ());
     
     this->mTransactionQueue->fillBlock ( *this->mLedger, *block, this->mBlockVerificationPolicy, this->getMinimumGratuity ());
@@ -464,6 +468,7 @@ shared_ptr < BlockHeader > Miner::prepareProvisional ( const BlockHeader& parent
     shared_ptr < BlockHeader > provisional = make_shared < BlockHeader >();
     provisional->initialize (
         this->mMinerID,
+        this->mProducedRelease, // doesn't matter for provisional
         this->mVisage,
         now,
         &parent,
@@ -695,6 +700,7 @@ void Miner::setGenesis ( shared_ptr < const Block > block ) {
         this->mBlockTree->tag ( this->mBestBranchTag, this->mLedgerTag );
     }
     
+    this->updateRelease ();
     this->updateMinerStatus ();
 }
 
@@ -763,10 +769,11 @@ void Miner::step ( time_t now ) {
     this->updateBestBranch ( now );
     
     this->saveChain ();
-        
+    
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
     this->updateNetworkSearches ();
+    this->updateRelease ();
     this->updateMinerStatus ();
     
     try {
@@ -921,6 +928,8 @@ void Miner::updateMinerStatus () {
         this->mMinerStatus.mPayoutPool              = ledger.getPayoutPool ();
         this->mMinerStatus.mVOL                     = ledger.countVOL ();
 
+        this->mMinerStatus.mAcceptedRelease         = this->mAcceptedRelease;
+
         this->mSnapshot = *this;
     }
 
@@ -947,6 +956,58 @@ void Miner::updateNetworkSearches () {
             this->mMessenger->enqueueExtendNetworkRequest (( *miners.cbegin ())->getURL ());
             this->mNetworkSearch = true;
         }
+    }
+}
+
+//----------------------------------------------------------------//
+void Miner::updateRelease () {
+
+    // the "release" is the current build of the node. it governs what transactions are valid
+    // and how those transactions are applied. we only want to create blocks with the current release
+    // when (a) most miners *can* accept them and (b) most miners are *ready* to accept them. we don't
+    // want to create blocks with the current release until we're confident that most other miners
+    // will both accept and create them.
+
+    // if we're accepting and producing the node's release, nothing else to do.
+    if (( this->mAcceptedRelease == VOL_NODE_RELEASE ) && ( this->mProducedRelease == VOL_NODE_RELEASE )) return;
+
+    u64 ledgerRelease = this->mLedger->getRelease ();
+
+    // by definition, the 'accepted release' *must* be equal to or greater than the last block recorded.
+    if ( this->mAcceptedRelease < ledgerRelease ) {
+    
+        // also by definition, the 'produced release' *must* be equal or greater than the 'accepted release.'
+        this->mProducedRelease = ledgerRelease;
+        this->mAcceptedRelease = ledgerRelease;
+    }
+
+    u64 totalMiners = this->mOnlineMiners.size () + 1; // total miners, including self
+    if ( totalMiners < 4 ) return; // TODO: delay until network is reasonably known (i.e. new miners no longer being discovered)
+    
+    u64 totalMinersForAccepting = 1;
+    u64 totalMinersForProducing = 1;
+    
+    set < shared_ptr < RemoteMiner >>::const_iterator remoteMinerIt = this->mOnlineMiners.begin ();
+    for ( ; remoteMinerIt != this->mOnlineMiners.end (); ++remoteMinerIt ) {
+        shared_ptr < const RemoteMiner > remoteMiner = *remoteMinerIt;
+
+        if ( remoteMiner->mNextRelease >= VOL_NODE_RELEASE ) {
+            totalMinersForAccepting++;
+        }
+        
+        if ( remoteMiner->mAcceptedRelease >= VOL_NODE_RELEASE ) {
+            totalMinersForProducing++;
+        }
+    }
+    
+    // if most other miners have a NEXT release matching or exceeding this miner's NEXT release, update the ACCEPTED release.
+    if ((( double )totalMinersForAccepting / ( double )totalMiners ) >= 0.72 ) {
+        this->mAcceptedRelease = VOL_NODE_RELEASE;
+    }
+
+    // if most other miners have an ACCEPTED release matching or exceeding this miner's NEXT release, update the PRODUCED release.
+    if ((( double )totalMinersForProducing / ( double )totalMiners ) >= 0.72 ) {
+        this->mProducedRelease = VOL_NODE_RELEASE;
     }
 }
 
@@ -1027,7 +1088,7 @@ void Miner::updateRemoteMiners () {
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        remoteMiner->update ();
+        remoteMiner->update ( this->mAcceptedRelease );
         minerURLs.insert ( remoteMiner->getURL ());
     }
     
@@ -1090,7 +1151,7 @@ void Miner::AbstractMiningMessengerClient_receiveResponse ( const MiningMessenge
         }
     }
     
-    remoteMiner->receiveResponse ( response, now );
+    remoteMiner->receiveResponse ( response, now, this->mAcceptedRelease );
 }
 
 //----------------------------------------------------------------//

@@ -41,7 +41,7 @@ public:
     //----------------------------------------------------------------//
                         BlockHeader                         ();
                         ~BlockHeader                        ();
-    void                initialize                          ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKeyPair& key );
+    void                initialize                          ( string minerID, u64 release, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKeyPair& key );
 };
 
 } // namespace Volition

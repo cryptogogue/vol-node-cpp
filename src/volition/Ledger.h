@@ -193,6 +193,11 @@ public:
     }
     
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_release () {
+        return "release";
+    }
+    
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_rewardCount ( string name ) {
 
         assert ( name.size () > 0 );
@@ -270,6 +275,7 @@ public:
     PayoutPolicy                        getPayoutPolicy                 () const;
     u64                                 getPayoutPool                   () const;
     u64                                 getPrizePool                    () const;
+    u64                                 getRelease                      () const;
     u64                                 getRewardPool                   () const;
     time_t                              getRewriteWindowInSeconds       () const;
     const Schema&                       getSchema                       () const;
@@ -295,6 +301,7 @@ public:
     void                                setMonetaryPolicy               ( const MonetaryPolicy& monetaryPolicy );
     LedgerResult                        setPayoutPolicy                 ( const PayoutPolicy& distributionTable );
     void                                setPayoutPool                   ( u64 pool );
+    void                                setRelease                      ( u64 release );
     void                                setSchema                       ( const Schema& schema );
     void                                setTermsOfService               ( const ContractWithDigest& contract );
     void                                setTransactionFeeSchedule       ( const TransactionFeeSchedule& feeSchedule );

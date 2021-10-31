@@ -183,11 +183,11 @@ void BlockTreeCursor::log ( string& str, string prefix ) const {
     }
     
     string charm = this->getCharmTag ();
-    cc8* format = this->hasBlock () ? "%s%d [%s:%s:%s]" : "%s%d <%s:%s:%s>";
+    cc8* format = this->hasBlock () ? "%s%d [%s.%d:%s:%s]" : "%s%d <%s.%d:%s:%s>";
     
     const BlockHeader& header = *this->mHeader;
     size_t height = header.getHeight ();
-    Format::write ( str, format, prefix.c_str (), ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", charm.c_str (), status );
+    Format::write ( str, format, prefix.c_str (), ( int )height, ( height > 0 ) ? header.getMinerID ().c_str () : "-", ( int )header.getRelease (), charm.c_str (), status );
 }
 
 //----------------------------------------------------------------//

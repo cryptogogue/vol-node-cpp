@@ -188,7 +188,7 @@ string HTTPMiningMessenger::getRequestURL ( const MiningMessengerRequest& reques
             break;
     
         case MiningMessengerRequest::REQUEST_HEADERS:
-            Format::write ( url, "%s/consensus/headers?height=%llu", request.mMinerURL.c_str (), request.mHeight );
+            Format::write ( url, "%s/consensus/headers?accepted-release=%d&height=%llu", request.mMinerURL.c_str (), ( int )request.mAcceptedRelease, request.mHeight );
             break;
         
         case MiningMessengerRequest::REQUEST_MINER_INFO:
@@ -314,7 +314,9 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
                 if ( headersJSON ) {
                     list < shared_ptr < const BlockHeader >> responseHeaders;
                     HTTPMiningMessenger::deserailizeHeaderList ( responseHeaders, headersJSON );
-                    this->enqueueHeadersResponse ( request, responseHeaders );
+                    u64 acceptedRelease     = json->optValue < u64 >( "acceptedRelease", 0 );
+                    u64 nextRelease         = json->optValue < u64 >( "nextRelease", 0 );
+                    this->enqueueHeadersResponse ( request, responseHeaders, acceptedRelease, nextRelease );
                 }
                 break;
             }
@@ -323,9 +325,11 @@ void HTTPMiningMessenger::onTaskFinishedNotification ( Poco::TaskFinishedNotific
             
                 Poco::JSON::Object::Ptr nodeJSON = json ? json->getObject ( "node" ) : NULL;
                 if ( nodeJSON ) {
-                    string minerID      = nodeJSON->optValue < string >( "minerID", "" );
-                    string genesisHash  = nodeJSON->optValue < string >( "genesisHash", "" );
-                    this->enqueueMinerInfoResponse ( request, minerID, genesisHash );
+                    string minerID          = nodeJSON->optValue < string >( "minerID", "" );
+                    string genesisHash      = nodeJSON->optValue < string >( "genesisHash", "" );
+                    u64 acceptedRelease     = nodeJSON->optValue < u64 >( "acceptedRelease", 0 );
+                    u64 nextRelease         = nodeJSON->optValue < u64 >( "nextRelease", 0 );
+                    this->enqueueMinerInfoResponse ( request, minerID, genesisHash, acceptedRelease, nextRelease );
                 }
                 break;
             }

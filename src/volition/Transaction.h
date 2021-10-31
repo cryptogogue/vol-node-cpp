@@ -33,7 +33,7 @@ protected:
     SignaturePtr                mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
-    TransactionResult           applyInner                  ( AbstractLedger& ledger, u64 blockHeight, u64 blockVersion, u64 index, time_t time, Block::VerificationPolicy policy ) const;
+    TransactionResult           applyInner                  ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const;
     TransactionResult           checkBody                   ( AbstractLedger& ledger, time_t time ) const;
     
     //----------------------------------------------------------------//
@@ -54,7 +54,7 @@ public:
     GET_COMPOSED ( u64,                          Weight,                    this->mBody,        0 )
 
     //----------------------------------------------------------------//
-    TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 blockVersion, u64 index, time_t time, Block::VerificationPolicy policy ) const;
+    TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker                  ( string accountName, string uuid ) const;
     TransactionResult           checkNonceAndSignature      ( const AbstractLedger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
     TransactionDetailsPtr       getDetails                  ( const AbstractLedger& ledger ) const;

@@ -17,12 +17,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 blockVersion, u64 index, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
         TransactionResult result = this->checkBody ( ledger, time );
         if ( result ) {
-            result = this->applyInner ( ledger, blockHeight, blockVersion, index, time, policy );
+            result = this->applyInner ( ledger, blockHeight, release, index, time, policy );
         }
         result.setTransactionDetails ( *this );
         return result;
@@ -36,7 +36,7 @@ TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, 
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHeight, u64 blockVersion, u64 index, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const {
     
     if ( !this->mBody ) return "Missing body.";
     
@@ -55,7 +55,7 @@ TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHei
     TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey, policy );
     if ( result ) {
         
-        TransactionContext context ( ledger, accountODBM, keyAndPolicy, blockHeight, blockVersion, index, time );
+        TransactionContext context ( ledger, accountODBM, keyAndPolicy, blockHeight, release, index, time );
         
         const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getTypeString ());
         

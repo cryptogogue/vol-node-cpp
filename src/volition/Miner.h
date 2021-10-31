@@ -114,6 +114,8 @@ public:
     u64                         mPrizePool;
     u64                         mPayoutPool;
     u64                         mVOL;
+    
+    u64                         mAcceptedRelease;
 };
 
 //================================================================//
@@ -215,11 +217,15 @@ protected:
     shared_ptr < AbstractMiningMessenger >          mMessenger;
     shared_ptr < TransactionQueue >                 mTransactionQueue;
     
+    u64                                             mAcceptedRelease; // will accept blocks with this release
+    u64                                             mProducedRelease; // will produce blocks with this release
+    
     //----------------------------------------------------------------//
     void                                affirmMessenger             ();
     bool                                checkTags                   () const;
     void                                composeChain                ( BlockTreeCursor cursor );
     void                                composeChainInnerLoop       ( BlockTreeCursor branch );
+    u64                                 findRelease                 () const;
     BlockTreeCursor                     improveBranch               ( BlockTreeCursor tail, u64 consensusHeight, time_t now );
     LedgerResult                        persistLedger               ( shared_ptr < AbstractPersistenceProvider > provider, shared_ptr < const Block > genesisBlock );
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;
@@ -233,6 +239,7 @@ protected:
     void                                updateBlockSearches         ();
     void                                updateMinerStatus           ();
     void                                updateNetworkSearches       ();
+    void                                updateRelease               ();
     void                                updateRemoteMinerGroups     ();
     void                                updateRemoteMiners          ();
 

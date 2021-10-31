@@ -29,6 +29,7 @@ public:
     string                              mMinerURL;
     Digest                              mBlockDigest;
     size_t                              mHeight;
+    u64                                 mAcceptedRelease;
     
     string                              mDebug;
     
@@ -42,7 +43,8 @@ public:
     MiningMessengerRequest ( string minerURL, MiningMessengerRequest::Type requestType ) :
         mRequestType ( requestType ),
         mMinerURL ( minerURL ),
-        mHeight ( 0 ) {
+        mHeight ( 0 ),
+        mAcceptedRelease ( 0 ) {
     }
 };
 
@@ -62,6 +64,9 @@ public:
 
     string                                      mMinerID;
     string                                      mGenesisHash;
+    u64                                         mAcceptedRelease;
+    u64                                         mNextRelease;
+    
     shared_ptr < const Block >                  mBlock;
     list < shared_ptr < const BlockHeader >>    mHeaders;
     set < string >                              mMinerURLs;
@@ -117,7 +122,6 @@ protected:
 
     //----------------------------------------------------------------//
     void enqueueResponse ( const MiningMessengerResponse& response ) {
-        
         Poco::ScopedLock < Poco::Mutex > lock ( this->mResponseMutex );
         this->mResponseQueue.push_back ( response );
     }
@@ -172,27 +176,30 @@ public:
     void enqueueExtendNetworkResponse ( const MiningMessengerRequest& request, const set < string > urls ) {
     
         MiningMessengerResponse response;
-        response.mStatus        = MiningMessengerResponse::STATUS_OK;
-        response.mRequest       = request;
-        response.mMinerURLs     = urls;
+        response.mStatus            = MiningMessengerResponse::STATUS_OK;
+        response.mRequest           = request;
+        response.mMinerURLs         = urls;
         this->enqueueResponse ( response );
     }
 
     //----------------------------------------------------------------//
-    void enqueueHeadersRequest ( string minerURL, size_t height ) {
+    void enqueueHeadersRequest ( string minerURL, size_t height, u64 acceptedRelease ) {
         
         MiningMessengerRequest request ( minerURL, MiningMessengerRequest::REQUEST_HEADERS );
-        request.mHeight         = height;
+        request.mHeight             = height;
+        request.mAcceptedRelease    = acceptedRelease;
         this->enqueueRequest ( request );
     }
 
     //----------------------------------------------------------------//
-    void enqueueHeadersResponse ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers ) {
+    void enqueueHeadersResponse ( const MiningMessengerRequest& request, const list < shared_ptr < const BlockHeader >>& headers, u64 acceptedRelease, u64 nextRelease ) {
     
         MiningMessengerResponse response;
-        response.mStatus        = MiningMessengerResponse::STATUS_OK;
-        response.mRequest       = request;
-        response.mHeaders       = headers;
+        response.mStatus            = MiningMessengerResponse::STATUS_OK;
+        response.mRequest           = request;
+        response.mHeaders           = headers;
+        response.mAcceptedRelease   = acceptedRelease;
+        response.mNextRelease       = nextRelease;
         this->enqueueResponse ( response );
     }
     
@@ -204,13 +211,15 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void enqueueMinerInfoResponse ( const MiningMessengerRequest& request, string minerID, string genesisHash ) {
+    void enqueueMinerInfoResponse ( const MiningMessengerRequest& request, string minerID, string genesisHash, u64 acceptedRelease, u64 nextRelease ) {
     
         MiningMessengerResponse response;
-        response.mStatus        = MiningMessengerResponse::STATUS_OK;
-        response.mRequest       = request;
-        response.mMinerID       = minerID;
-        response.mGenesisHash   = genesisHash;
+        response.mStatus            = MiningMessengerResponse::STATUS_OK;
+        response.mRequest           = request;
+        response.mMinerID           = minerID;
+        response.mGenesisHash       = genesisHash;
+        response.mAcceptedRelease   = acceptedRelease;
+        response.mNextRelease       = nextRelease;
         this->enqueueResponse ( response );
     }
 

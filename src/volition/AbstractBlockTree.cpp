@@ -89,7 +89,9 @@ AbstractBlockTree::~AbstractBlockTree () {
 }
 
 //----------------------------------------------------------------//
-kBlockTreeAppendResult AbstractBlockTree::checkAppend ( const BlockHeader& header ) const {
+kBlockTreeAppendResult AbstractBlockTree::checkAppend ( const BlockHeader& header, u64 acceptedRelease ) const {
+
+    if ( acceptedRelease < header.getRelease ()) return INCOMPATIBLE;
 
     string hash = header.getDigest ().toHex ();
 
@@ -97,6 +99,8 @@ kBlockTreeAppendResult AbstractBlockTree::checkAppend ( const BlockHeader& heade
     if ( cursor.hasHeader ()) return ALREADY_EXISTS;
 
     BlockTreeCursor prevCursor = this->findCursorForHash ( header.getPrevDigest ());
+
+    if ( header.getRelease () < prevCursor.getRelease ()) return INCOMPATIBLE;
 
     if ( !prevCursor.hasHeader ()) return MISSING_PARENT;
     if ( header.getTime () < prevCursor.getNextTime ()) return TOO_SOON;
@@ -134,11 +138,11 @@ int AbstractBlockTree::compare ( const BlockTreeCursor& cursor0, const BlockTree
     
         const BlockTreeCursor& cusor0 = *cursorIt0;
         const BlockTreeCursor& cusor1 = *cursorIt1;
-    
+        
         assert ( cusor0.getDigest ());
         assert ( cusor1.getDigest ());
         assert ( cusor0.getDigest () != cusor1.getDigest ());
-    
+        
         tieBreaker = BlockHeader::compare ( *cursorIt0->mHeader, *cursorIt1->mHeader );
         score += tieBreaker;
         

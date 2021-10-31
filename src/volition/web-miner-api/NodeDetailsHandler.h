@@ -32,6 +32,8 @@ public:
         nodeInfoJSON->set ( "motto",            minerStatus.getMotto ());
         nodeInfoJSON->set ( "visage",           ToJSONSerializer::toJSON ( minerStatus.getVisage ()));
         nodeInfoJSON->set ( "genesisHash",      minerStatus.mGenesisHash );
+        nodeInfoJSON->set ( "acceptedRelease",  minerStatus.mAcceptedRelease ); // the release we're actually ready to accept
+        nodeInfoJSON->set ( "nextRelease",      VOL_NODE_RELEASE ); // always striving for the current build's release
         
         jsonOut.set ( "node", nodeInfoJSON );
         return Poco::Net::HTTPResponse::HTTP_OK;

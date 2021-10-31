@@ -68,6 +68,7 @@ LedgerResult Block::apply ( AbstractLedger& ledger, VerificationPolicy policy ) 
     LedgerResult verifyResult = this->verify ( ledger, policy );
     if ( !verifyResult ) return verifyResult;
 
+    ledger.setRelease ( this->getRelease ());
     ledger.expireOffers ( this->mTime );
 
     // some transactions need to be applied later.
@@ -174,7 +175,7 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
             size_t transactionMaturity = this->mHeight + transaction.getMaturity ();
             if ( transactionMaturity == height ) {
             
-                TransactionResult result = transaction.apply ( ledger, height, this->getVersion (), i, this->mTime, policy );
+                TransactionResult result = transaction.apply ( ledger, height, this->getRelease (), i, this->mTime, policy );
                 if ( !result ) return Format::write ( "%s: %s", result.getUUID ().c_str (), result.getMessage ().c_str ());
                 
                 gratuity        += transaction.getGratuity ();

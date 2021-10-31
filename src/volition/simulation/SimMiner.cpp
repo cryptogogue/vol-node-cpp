@@ -1,6 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
+#include <volition/Release.h>
 #include <volition/simulation/SimMiner.h>
 #include <volition/UnsecureRandom.h>
 
@@ -19,6 +20,7 @@ void SimMiner::extendChain ( string charmHex, time_t time ) {
     shared_ptr < Block > block = make_shared < Block >();
     block->initialize (
         this->mMinerID,
+        VOL_NODE_RELEASE,
         this->mVisage,
         time,
         prevBlock ? prevBlock.get () : NULL,
@@ -51,6 +53,7 @@ shared_ptr < Block > SimMiner::replaceBlock ( shared_ptr < const Block > oldBloc
     shared_ptr < Block > block = make_shared < Block >();
     block->initialize (
         this->mMinerID,
+        VOL_NODE_RELEASE,
         this->mVisage,
         oldBlock->getTime (),
         prevBlock.get (),

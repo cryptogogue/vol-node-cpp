@@ -3,6 +3,7 @@
 
 #include <volition/FileSys.h>
 #include <volition/MinerLocks.h>
+#include <volition/Release.h>
 #include <volition/simulation/AbstractScenario.h>
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/Simulator.h>
@@ -41,6 +42,7 @@ void Simulator::extendOptimal ( size_t height ) {
         shared_ptr < Block > child = make_shared < Block >();
         child->initialize (
             bestMiner->getMinerID (),
+            VOL_NODE_RELEASE,
             bestMiner->getVisage (),
             0,
             parent.get (),

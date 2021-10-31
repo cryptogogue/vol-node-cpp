@@ -4,6 +4,7 @@
 #include <volition/Block.h>
 #include <volition/Miner.h>
 #include <volition/MinerLocks.h>
+#include <volition/Release.h>
 #include <volition/simulation/SimMiningMessenger.h>
 #include <volition/UnsecureRandom.h>
 
@@ -137,14 +138,14 @@ void SimMiningNetwork::handleRequest ( AbstractMiningMessenger* client, const Mi
                 if ( !header ) break;
                 headers.push_back ( header );
             }
-            client->enqueueHeadersResponse ( request, headers );
+            client->enqueueHeadersResponse ( request, headers, ledger.getRelease (), VOL_NODE_RELEASE );
             break;
         }
         
         case MiningMessengerRequest::REQUEST_MINER_INFO: {
         
             const Ledger& ledger = miner->getLedger ();
-            client->enqueueMinerInfoResponse ( request, minerID, ledger.getGenesisHash ());
+            client->enqueueMinerInfoResponse ( request, minerID, ledger.getGenesisHash (), ledger.getRelease (), VOL_NODE_RELEASE );
             break;
         }
         

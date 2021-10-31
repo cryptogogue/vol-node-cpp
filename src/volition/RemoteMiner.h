@@ -29,7 +29,7 @@ private:
     string                      mMinerID;
 
     //----------------------------------------------------------------//
-    void            processHeaders          ( const MiningMessengerResponse& response, time_t now );
+    void            processHeaders          ( const MiningMessengerResponse& response, time_t now, u64 acceptedRelease );
 
 public:
 
@@ -47,6 +47,8 @@ public:
     
     size_t                      mRewind;
     size_t                      mHeight;
+    u64                         mAcceptedRelease;
+    u64                         mNextRelease;
 
     GET ( string,       MinerID,        mMinerID )
     GET ( string,       URL,            mURL )
@@ -56,14 +58,14 @@ public:
     bool            canFetchHeaders         () const;
     bool            isContributor           () const;
     bool            isOnline                () const;
-    bool            receiveResponse         ( const MiningMessengerResponse& response, time_t now );
+    bool            receiveResponse         ( const MiningMessengerResponse& response, time_t now, u64 acceptedRelease );
                     RemoteMiner             ( Miner& miner );
                     ~RemoteMiner            ();
     void            report                  ( u64 minHeight, u64 maxHeight ) const;
     void            reset                   ();
     void            setError                ();
     void            setMinerID              ( string minerID );
-    void            update                  ();
+    void            update                  ( u64 acceptedRelease );
 };
 
 } // namespace Volition

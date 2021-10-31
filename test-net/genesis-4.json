@@ -121,6 +121,20 @@
                     }
                 }
             }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "9090"
+                },
+                "type" :            "SET_TRANSACTION_FEE_SCHEDULE",
+                "feeSchedule" : {
+                    "defaultProfile" : {
+                        "profitShare" :     { "factor" : 1000, "integer" : 300 },
+                        "transferTax" :     { "factor" : 1000, "integer" : 50 }
+                    }
+                }
+            }
         }
     ]
 }

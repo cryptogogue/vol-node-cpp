@@ -51,16 +51,5 @@ public:
     }
 };
 
-////----------------------------------------------------------------//
-//HTTPStatus AbstractAPIRequestHandler_handleRequest ( HTTP::Method method, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
-//
-//    this->mWebMiner->getSnapshot ( this->mSnapshot, this->mStatus );
-//
-//    ScopedSharedMinerLedgerLock scopedLock ( this->mWebMiner );
-//    scopedLock.seek ( this->optQuery ( "at", scopedLock.countBlocks ()));
-//    
-//    return this->AbstractMinerAPIRequestHandler_handleRequest ( method, scopedLock, jsonIn, jsonOut );
-//}
-
 } // namespace Volition
 #endif

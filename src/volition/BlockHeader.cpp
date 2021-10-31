@@ -27,8 +27,9 @@ BlockHeader::~BlockHeader () {
 }
 
 //----------------------------------------------------------------//
-void BlockHeader::initialize ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKeyPair& key ) {
-        
+void BlockHeader::initialize ( string minerID, u64 release, const Digest& visage, time_t now, const BlockHeader* prevBlockHeader, const CryptoKeyPair& key ) {
+
+    this->mRelease      = release;
     this->mMinerID      = minerID;
     this->mTime         = now;
     
@@ -53,7 +54,7 @@ void BlockHeader::AbstractSerializable_serializeFrom ( const AbstractSerializerF
     u64 rewriteWindow   = ( u64 )this->mRewriteWindow;
     
     serializer.serialize ( "height",            this->mHeight );
-    serializer.serialize ( "version",           this->mVersion );
+    serializer.serialize ( "release",           this->mRelease );
     serializer.serialize ( "time",              this->mTime );
     serializer.serialize ( "blockDelay",        blockDelay );
     serializer.serialize ( "rewriteWindow",     rewriteWindow );
@@ -97,8 +98,9 @@ void BlockHeader::AbstractSerializable_serializeTo ( AbstractSerializerTo& seria
         serializer.serialize ( "signature",     this->mSignature );
     }
     
-    if ( this->mVersion > 0 ) {
-        serializer.serialize ( "version",      this->mVersion );
+    // back compat
+    if ( this->mRelease > 0 ) {
+        serializer.serialize ( "release",       this->mRelease );
     }
 }
 

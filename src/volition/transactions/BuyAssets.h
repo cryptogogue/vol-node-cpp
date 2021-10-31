@@ -78,10 +78,10 @@ public:
 
         offerODBM.mBuyer.set ( buyerODBM.mAccountID );
 
-        if ( context.mBlockVersion > 0 ) {
+        if ( context.mRelease > 0 ) {
             buyerODBM.subFunds ( this->mPrice );
-            sellerODBM.addFunds ( this->mPrice );
         }
+        sellerODBM.addFunds ( this->mPrice );
         
         context.pushAccountLogEntry ( sellerODBM.mAccountID );
         

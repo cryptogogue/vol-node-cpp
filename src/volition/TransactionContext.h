@@ -33,14 +33,14 @@ public:
     Entitlements            mKeyEntitlements;
     AbstractLedger&         mLedger;
     u64                     mBlockHeight;
-    u64                     mBlockVersion;
+    u64                     mRelease;
     u64                     mIndex;
     time_t                  mTime;
 
     //----------------------------------------------------------------//
     LedgerResult            pushAccountLogEntry         ();
     LedgerResult            pushAccountLogEntry         ( AccountID accountID );
-                            TransactionContext          ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 blockVersion, u64 index, time_t time );
+                            TransactionContext          ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 release, u64 index, time_t time );
 };
 
 } // namespace Volition

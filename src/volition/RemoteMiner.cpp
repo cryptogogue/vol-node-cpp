@@ -28,7 +28,7 @@ bool RemoteMiner::isOnline () const {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time_t now ) {
+void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time_t now, u64 acceptedRelease ) {
     
     const list < shared_ptr < const BlockHeader >>& headerList = response.mHeaders;
     
@@ -49,7 +49,7 @@ void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time
         }
         
         // try to append the new header.
-        switch ( blockTree.checkAppend ( *header )) {
+        switch ( blockTree.checkAppend ( *header, acceptedRelease )) {
             
             case kBlockTreeAppendResult::APPEND_OK:
             case kBlockTreeAppendResult::ALREADY_EXISTS:
@@ -64,6 +64,7 @@ void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time
                 this->mRewind = this->mRewind ? this->mRewind : 1;
                 return;
             
+            case kBlockTreeAppendResult::INCOMPATIBLE:
             case kBlockTreeAppendResult::TOO_SOON:
                 
                 this->mRewind = 0;
@@ -73,7 +74,7 @@ void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time
 }
 
 //----------------------------------------------------------------//
-bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, time_t now ) {
+bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, time_t now, u64 acceptedRelease ) {
 
     const MiningMessengerRequest& request   = response.mRequest;
     string url                              = response.mRequest.mMinerURL;
@@ -93,7 +94,9 @@ bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, tim
                                         
             if ( this->mState == STATE_WAITING_FOR_HEADERS ) {
                 
-                this->processHeaders ( response, now );
+                this->mAcceptedRelease      = response.mAcceptedRelease;
+                this->mNextRelease  = response.mNextRelease;
+                this->processHeaders ( response, now, acceptedRelease );
                 this->mState = STATE_ONLINE;
             }
             break;
@@ -110,6 +113,8 @@ bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, tim
                 else {
                 
                     this->setMinerID ( response.mMinerID );
+                    this->mAcceptedRelease      = response.mAcceptedRelease;
+                    this->mNextRelease  = response.mNextRelease;
                     this->mMiner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
                     
                     BlockTreeCursor cursor = *this->mTag;
@@ -133,6 +138,8 @@ bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, tim
 RemoteMiner::RemoteMiner ( Miner& miner ) :
     mMiner ( miner ),
     mState ( STATE_OFFLINE ),
+    mAcceptedRelease ( 0 ),
+    mNextRelease ( 0 ),
     mRewind ( 0 ),
     mHeight ( 0 ) {
 }
@@ -144,24 +151,35 @@ RemoteMiner::~RemoteMiner () {
 //----------------------------------------------------------------//
 void RemoteMiner::report ( u64 minHeight, u64 maxHeight ) const {
 
-    cc8* minerID = this->mMinerID.size () ? this->mMinerID.c_str () : "[??]";
+    string minerIDString;
+
+    if ( this->mMinerID.size ()) {
+        minerIDString = ( this->mAcceptedRelease == this->mNextRelease ) ?
+            Format::write ( "%s.%d", this->mMinerID.c_str (), ( int )this->mAcceptedRelease ) :
+            Format::write ( "%s.%d->%d", this->mMinerID.c_str (), ( int )this->mAcceptedRelease, ( int )this->mNextRelease );
+    }
+    else {
+        minerIDString = "[??].?";
+    }
+
+    cc8* minerIDCString = minerIDString.c_str ();
     cc8* url = this->mURL.c_str ();
 
     switch ( this->mState ) {
     
         case STATE_OFFLINE:
-            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: OFFLINE (%s)", minerID, url );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: OFFLINE (%s)", minerIDCString, url );
             break;
         
         case STATE_WAITING_FOR_INFO:
-            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: WAITING (%s)", minerID, url );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: WAITING (%s)", minerIDCString, url );
             break;
         
         case STATE_ONLINE:
         case STATE_WAITING_FOR_HEADERS:
             
             if ( this->mRewind ) {
-                LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: REWINDING (height: %d)", minerID, ( int )this->mHeight );
+                LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: REWINDING (height: %d)", minerIDCString, ( int )this->mHeight );
             }
             else {
             
@@ -169,20 +187,20 @@ void RemoteMiner::report ( u64 minHeight, u64 maxHeight ) const {
                  if ( remoteCursor.hasHeader ()) {
                     LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO,
                         "%s - %d: %s",
-                        minerID,
+                        minerIDCString,
                         ( int )remoteCursor.getHeight (),
                         remoteCursor.writeBranch ( minHeight, maxHeight ).c_str ()
                     );
                 }
                 else {
-                    LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: MISSING CURSOR", minerID );
+                    LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: MISSING CURSOR", minerIDCString );
                 }
             }
             break;
         
         case STATE_ERROR:
             // TODO: genesis block mismatch is the only error we check for right now. Handler/report more.
-            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: ERROR - Genesis block mismatch.", minerID );
+            LGN_LOG ( VOL_FILTER_MINING_REPORT, INFO, "%s: ERROR - Genesis block mismatch.", minerIDCString );
             break;
     }
 }
@@ -210,7 +228,7 @@ void RemoteMiner::setMinerID ( string minerID ) {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::update () {
+void RemoteMiner::update ( u64 acceptedRelease ) {
     
     LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
     
@@ -224,7 +242,7 @@ void RemoteMiner::update () {
             break;
         
         case STATE_ONLINE:
-        
+            
             if ( this->mRewind ) {
                 if ( this->mRewind < this->mHeight ) {
                     this->mHeight -= this->mRewind;
@@ -235,7 +253,7 @@ void RemoteMiner::update () {
                 }
             }
             
-            messenger.enqueueHeadersRequest ( this->mURL, this->mHeight );
+            messenger.enqueueHeadersRequest ( this->mURL, this->mHeight, acceptedRelease );
             this->mState = STATE_WAITING_FOR_HEADERS;
             break;
         
