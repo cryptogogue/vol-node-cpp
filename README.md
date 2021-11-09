@@ -6,7 +6,11 @@ This is an implementation of a Volition blockchain mining node in C++.
 
 As of this writing, this project is still in the very early stages, even after several years of development. It is working, but still has a long way to go to even be close to production-ready.
 
-This codebase is also the idiosyncratic work of a single developer. Clearly, we need contributors. If you're interested in crypto and handy with C++, please get in touch via our Discord.
+This codebase is also the idiosyncratic work of a single developer. Clearly, we need contributors. If you're interested in crypto and handy with C++, please get in touch via our [community](https://discord.gg/DWFNsdT) on Discord.
+
+### Volition in Use
+
+We're currently using Volition to publish a print-and-play collectible card game project called [Volition CCG](https://github.com/cryptogogue/volition-ccg). Volition CCG is an example of cryptoasset tracking using a Volition blockchain deployment. It went into open beta in late October 2021. We're using it to drive development of the protocol.
 
 ### Proof of Personhood
 
