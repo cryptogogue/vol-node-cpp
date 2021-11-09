@@ -4,10 +4,9 @@ This is an implementation of a Volition blockchain mining node in C++.
 
 ### Project Status
 
-As of this writing (February 2021), this project is still in the very early stages, even after several years of development. It is working (minimally), but still has a long way to go to even be close to production-ready.
+As of this writing, this project is still in the very early stages, even after several years of development. It is working, but still has a long way to go to even be close to production-ready.
 
 This codebase is also the idiosyncratic work of a single developer. Clearly, we need contributors. If you're interested in crypto and handy with C++, please get in touch via our Discord.
-
 
 ### Proof of Personhood
 
