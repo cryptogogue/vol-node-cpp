@@ -10,7 +10,7 @@ This suggests an idea: digital signatures can play a role in ordering the chain.
 
 Consider a naive implementation in which the Nth block of a chain is chosen from the result of a contest: each participant uses their private key to sign the integer N and the signatures are converted to hexadecimal. The lowest alphabetical signature wins.
 
-Of course, each participant's public key must be known in advance, and their private must key tied to something they value, such as their right to participate or their ability to redeem rewards.
+Of course, each participant's public key must be known in advance, and their private key must tied to something they value, such as their right to participate or their ability to redeem rewards.
 
 Already we can make some observations:
 
