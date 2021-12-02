@@ -134,6 +134,8 @@ protected:
         // general config
         string blockTreePersistMode         = configuration.getString       ( "blocktree-persist-mode", "sqlite" );
         int blockSearchMax                  = configuration.getInt          ( "block-search-max", 256 );
+        int blockTreeCacheSize              = configuration.getInt          ( "block-tree-cache-size", Miner::DEFAULT_BLOCK_TREE_CACHE_SIZE );
+        int consensusLookaheadHeight        = configuration.getInt          ( "consensus-lookahead-height", Miner::DEFAULT_CONSENSUS_LOOKAHEAD_HEIGHT );
         string controlKeyfile               = configuration.getString       ( "control-key", "" );
         string controlLevel                 = configuration.getString       ( "control-level", "" );
         string dump                         = configuration.getString       ( "dump", "" );
@@ -322,6 +324,8 @@ protected:
         this->mMinerActivity->setReportMode ( Miner::REPORT_ALL_BRANCHES );
         this->mMinerActivity->setFixedUpdateDelayInMillis (( u32 )sleepFixed );
         this->mMinerActivity->setVariableUpdateDelayInMillis (( u32 )sleepVariable );
+        this->mMinerActivity->setBlockTreeCacheSize (( size_t )blockTreeCacheSize );
+        this->mMinerActivity->setConsensusLookaheadHeight (( size_t )consensusLookaheadHeight );
         this->mMinerActivity->setMaxBlockSearches (( size_t )blockSearchMax );
         
         LGN_LOG ( VOL_FILTER_APP, INFO, "MINER ID: %s", this->mMinerActivity->getMinerID ().c_str ());

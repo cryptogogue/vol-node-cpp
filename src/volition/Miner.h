@@ -144,7 +144,9 @@ public:
         MINER_MUTE                  = 0x08,
     };
 
-    static const int DEFAULT_FLAGS = 0;
+    static const int DEFAULT_FLAGS                          = 0;
+    static const int DEFAULT_BLOCK_TREE_CACHE_SIZE          = 5000;
+    static const int DEFAULT_CONSENSUS_LOOKAHEAD_HEIGHT     = 500;
 
 protected:
 
@@ -176,6 +178,7 @@ protected:
     set < shared_ptr < RemoteMiner >>               mRemoteMiners;
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByID;
     map < string, shared_ptr < RemoteMiner >>       mRemoteMinersByURL;
+    size_t                                          mConsensusLookaheadHeight;
     
     set < shared_ptr < RemoteMiner >>               mOnlineMiners;
     set < shared_ptr < RemoteMiner >>               mContributors;
@@ -299,6 +302,8 @@ public:
     void                            report                              ( ReportMode reportMode ) const;
     void                            reset                               ();
     void                            setBlockTree                        ( shared_ptr < AbstractBlockTree > blockTree = NULL );
+    void                            setBlockTreeCacheSize               ( size_t cacheSize );
+    void                            setConsensusLookaheadHeight         ( size_t height );
     void                            setGenesis                          ( shared_ptr < const Block > block );
     void                            setMaxBlockSearches                 ( size_t max );
     void                            setMinimumGratuity                  ( u64 minimumGratuity );

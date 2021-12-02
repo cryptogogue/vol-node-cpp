@@ -65,7 +65,7 @@ public:
     void            reset                   ();
     void            setError                ();
     void            setMinerID              ( string minerID );
-    void            update                  ( u64 acceptedRelease );
+    void            update                  ( u64 acceptedRelease, u64 heightLimit );
 };
 
 } // namespace Volition

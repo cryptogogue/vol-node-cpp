@@ -320,6 +320,7 @@ Miner::Miner () :
     mReportMode ( REPORT_NONE ),
     mBlockVerificationPolicy ( Block::VerificationPolicy::ALL ),
     mControlLevel ( CONTROL_NONE ),
+    mConsensusLookaheadHeight ( DEFAULT_CONSENSUS_LOOKAHEAD_HEIGHT ),
     mNetworkSearch ( false ),
     mPersistFrequency ( 0 ),
     mRetryPersistenceCheck ( 0 ),
@@ -350,6 +351,7 @@ LedgerResult Miner::persistBlockTreeSQLite ( SQLiteConfig config ) {
     try {
         this->mBlockTree            = make_shared < SQLiteBlockTree >( this->mBlocksFilename, config );
         this->mBlockSearchPool      = make_shared < BlockSearchPool >( *this, *this->mBlockTree );
+        this->mBlockTree->setCacheSize ( DEFAULT_BLOCK_TREE_CACHE_SIZE );
     }
     catch ( SQLiteBlockTreeUnsupportedVersionException ) {
     
@@ -682,6 +684,18 @@ void Miner::setBlockTree ( shared_ptr < AbstractBlockTree > blockTree ) {
 }
 
 //----------------------------------------------------------------//
+void Miner::setBlockTreeCacheSize ( size_t cacheSize ) {
+
+    this->mBlockTree->setCacheSize ( cacheSize );
+}
+
+//----------------------------------------------------------------//
+void Miner::setConsensusLookaheadHeight ( size_t height ) {
+
+    this->mConsensusLookaheadHeight = height;
+}
+
+//----------------------------------------------------------------//
 void Miner::setGenesis ( shared_ptr < const Block > block ) {
 
     assert ( block );
@@ -765,14 +779,13 @@ void Miner::step ( time_t now ) {
     this->affirmMessenger ();
     this->mMessenger->receiveResponses ( *this, now );
     this->updateRemoteMinerGroups ();
-  
-    this->updateBestBranch ( now );
-    
-    this->saveChain ();
-    
     this->updateRemoteMiners ();
     this->updateBlockSearches ();
     this->updateNetworkSearches ();
+  
+    this->updateBestBranch ( now );
+    this->saveChain ();
+    
     this->updateRelease ();
     this->updateMinerStatus ();
     
@@ -1084,11 +1097,13 @@ void Miner::updateRemoteMiners () {
     
     LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "updating remote miner state" );
     
+    size_t lookahead = this->mLedger->getHeight () + this->mConsensusLookaheadHeight;
+    
     // update miner state
     set < shared_ptr < RemoteMiner >>::iterator remoteMinerIt = this->mRemoteMiners.begin ();
     for ( ; remoteMinerIt != this->mRemoteMiners.end (); ++remoteMinerIt ) {
         shared_ptr < RemoteMiner > remoteMiner = *remoteMinerIt;
-        remoteMiner->update ( this->mAcceptedRelease );
+        remoteMiner->update ( this->mAcceptedRelease, lookahead );
         minerURLs.insert ( remoteMiner->getURL ());
     }
     

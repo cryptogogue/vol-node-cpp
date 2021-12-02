@@ -155,6 +155,11 @@ void InMemoryBlockTree::AbstractBlockTree_setBranchStatus ( const BlockTreeCurso
 }
 
 //----------------------------------------------------------------//
+void InMemoryBlockTree::AbstractBlockTree_setCacheSize ( size_t size ) {
+    UNUSED ( size );
+}
+
+//----------------------------------------------------------------//
 void InMemoryBlockTree::AbstractBlockTree_setSearchStatus ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) {
 
     InMemoryBlockTreeNode* node = this->findNodeForHash ( cursor.getHash ());

@@ -298,6 +298,12 @@ void AbstractBlockTree::setBranchStatus ( const BlockTreeCursor& cursor, kBlockT
 }
 
 //----------------------------------------------------------------//
+void AbstractBlockTree::setCacheSize ( size_t size ) {
+
+    this->AbstractBlockTree_setCacheSize ( size );
+}
+
+//----------------------------------------------------------------//
 void AbstractBlockTree::setSearchStatus ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) {
 
     this->AbstractBlockTree_setSearchStatus ( cursor, status );

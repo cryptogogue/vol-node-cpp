@@ -52,18 +52,22 @@ public:
 class BlockCursorCache {
 private:
 
-    static const size_t CACHE_SIZE      = 50000;
-
     set < BlockCursorCacheKey >         mExpirationSet;
-    map < int, BlockCursorCacheKey >    mCacheKeysByHash;
+    map < int, BlockCursorCacheKey >    mCacheKeysByNodeID;
     map < int, BlockTreeCursor >        mCache;
+    map < string, int >                 mNodeIDByHash;
+    size_t                              mMaxSize;
 
 public:
 
     //----------------------------------------------------------------//
+                                        BlockCursorCache                ();
+                                        ~BlockCursorCache               ();
     void                                cacheCursor                     ( int nodeID, const BlockTreeCursor& cursor );
     const BlockTreeCursor*              getCursor                       ( int nodeID ) const;
+    int                                 getNodeIDFromHash               ( string hash ) const;
     void                                invalidate                      ( int nodeID );
+    void                                setMaxSize                      ( size_t size );
 };
 
 //================================================================//
@@ -115,6 +119,7 @@ private:
     BlockTreeCursor                     AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
     shared_ptr < const Block >          AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
     void                                AbstractBlockTree_setBranchStatus           ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status ) override;
+    void                                AbstractBlockTree_setCacheSize              ( size_t size ) override;
     void                                AbstractBlockTree_setSearchStatus           ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) override;
     BlockTreeCursor                     AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
     BlockTreeCursor                     AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;

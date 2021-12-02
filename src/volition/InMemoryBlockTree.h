@@ -39,6 +39,7 @@ private:
     BlockTreeCursor                 AbstractBlockTree_findCursorForTagName      ( string tagName ) const override;
     shared_ptr < const Block >      AbstractBlockTree_getBlock                  ( const BlockTreeCursor& cursor ) const override;
     void                            AbstractBlockTree_setBranchStatus           ( const BlockTreeCursor& cursor, kBlockTreeBranchStatus status ) override;
+    void                            AbstractBlockTree_setCacheSize              ( size_t size ) override;
     void                            AbstractBlockTree_setSearchStatus           ( const BlockTreeCursor& cursor, kBlockTreeSearchStatus status ) override;
     BlockTreeCursor                 AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeCursor& cursor ) override;
     BlockTreeCursor                 AbstractBlockTree_tag                       ( BlockTreeTag& tag, const BlockTreeTag& otherTag ) override;

@@ -53,7 +53,7 @@ void RemoteMiner::processHeaders ( const MiningMessengerResponse& response, time
             
             case kBlockTreeAppendResult::APPEND_OK:
             case kBlockTreeAppendResult::ALREADY_EXISTS:
-            
+                
                 blockTree.affirmHeader ( this->mTag, header );
                 this->mHeight = header->getHeight ();
                 this->mRewind = 0;
@@ -113,7 +113,7 @@ bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, tim
                 else {
                 
                     this->setMinerID ( response.mMinerID );
-                    this->mAcceptedRelease      = response.mAcceptedRelease;
+                    this->mAcceptedRelease = response.mAcceptedRelease;
                     this->mNextRelease  = response.mNextRelease;
                     this->mMiner.mRemoteMinersByID [ this->getMinerID ()] = this->shared_from_this ();
                     
@@ -228,10 +228,10 @@ void RemoteMiner::setMinerID ( string minerID ) {
 }
 
 //----------------------------------------------------------------//
-void RemoteMiner::update ( u64 acceptedRelease ) {
+void RemoteMiner::update ( u64 acceptedRelease, u64 heightLimit ) {
     
     LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
-    
+        
     AbstractMiningMessenger& messenger = *this->mMiner.getMessenger ();
     
     switch ( this->mState ) {
@@ -253,8 +253,10 @@ void RemoteMiner::update ( u64 acceptedRelease ) {
                 }
             }
             
-            messenger.enqueueHeadersRequest ( this->mURL, this->mHeight, acceptedRelease );
-            this->mState = STATE_WAITING_FOR_HEADERS;
+            if ( this->mHeight < heightLimit ) {
+                messenger.enqueueHeadersRequest ( this->mURL, this->mHeight, acceptedRelease );
+                this->mState = STATE_WAITING_FOR_HEADERS;
+            }
             break;
         
         default:

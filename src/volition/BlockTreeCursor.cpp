@@ -106,6 +106,8 @@ bool BlockTreeCursor::hasParent () const {
 //----------------------------------------------------------------//
 bool BlockTreeCursor::isAncestorOf ( BlockTreeCursor tail ) const {
 
+    LGN_LOG_SCOPE ( VOL_FILTER_CONSENSUS, INFO, __PRETTY_FUNCTION__ );
+
     assert ( this->mHeader );
     assert ( tail.mHeader );
     

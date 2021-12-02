@@ -193,6 +193,23 @@ ledger, wallet - art crafting and asset residuals
 
 node - vol sales matchmaking
 
+node - enforce unique media URL constraint
+node - add media log script command (for trackin user created media)
+node - verify hash implementation
+node - document scripting methods
+node - log rotation
+
+wallet - fix inventory reset bug
+wallet - tags download/upload
+wallet - double confirm on tag deletion
+wallet - clear selected transactions
+wallet - send multiple transactions
+wallet - change messaging on 'blocked' transactions (all error'd)
+
+node - configure block tree cache size
+node - configure consensus lookahead (miner height vs local height)
+node - optimize isAncestor (fast branch lookup)
+
 ----------------------------------------------------------------
 LAUNCH
 

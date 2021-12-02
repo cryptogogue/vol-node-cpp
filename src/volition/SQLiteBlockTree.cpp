@@ -13,38 +13,50 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+BlockCursorCache::BlockCursorCache () :
+    mMaxSize ( 0 ) {
+}
+
+//----------------------------------------------------------------//
+BlockCursorCache::~BlockCursorCache () {
+}
+
+//----------------------------------------------------------------//
 void BlockCursorCache::cacheCursor ( int nodeID, const BlockTreeCursor& cursor ) {
+
+    if ( !this->mMaxSize ) return;
 
     // if block is already in the cache, update it
     if ( this->mCache.find ( nodeID ) != this->mCache.cend ()) {
 
         // erase the original key
-        assert ( this->mCacheKeysByHash.find ( nodeID ) != this->mCacheKeysByHash.cend ());
-        BlockCursorCacheKey lastKey = this->mCacheKeysByHash [ nodeID ];
+        assert ( this->mCacheKeysByNodeID.find ( nodeID ) != this->mCacheKeysByNodeID.cend ());
+        BlockCursorCacheKey lastKey = this->mCacheKeysByNodeID [ nodeID ];
         this->mExpirationSet.erase ( lastKey );
-        this->mCacheKeysByHash.erase ( nodeID );
+        this->mCacheKeysByNodeID.erase ( nodeID );
     }
     else {
     
         // make room
-        while ( this->mCache.size () > ( CACHE_SIZE - 1 )) {
+        while ( this->mCache.size () > ( this->mMaxSize - 1 )) {
         
             set < BlockCursorCacheKey >::reverse_iterator expiryIt = this->mExpirationSet.rbegin ();
             
             map < int, BlockTreeCursor >::iterator cacheIt = this->mCache.find ( expiryIt->mNodeID );
-            if ( cacheIt != this->mCache.end ()) {
-                this->mCache.erase ( cacheIt );
-            }
+            assert ( cacheIt != this->mCache.end ());
+            
             this->mExpirationSet.erase ( *expiryIt );
-            this->mCacheKeysByHash.erase ( expiryIt->mNodeID );
+            this->mCacheKeysByNodeID.erase ( expiryIt->mNodeID );
+            this->mNodeIDByHash.erase ( cacheIt->second.getHash ());
+            this->mCache.erase ( cacheIt );
         }
     }
     
-    this->mCache [ nodeID ] = cursor;
-    
     BlockCursorCacheKey key = BlockCursorCacheKey ( nodeID );
-    this->mCacheKeysByHash [ nodeID ] = key;
+    this->mCacheKeysByNodeID [ nodeID ] = key;
     this->mExpirationSet.insert ( key );
+    this->mNodeIDByHash [ cursor.getHash ()] = nodeID;
+    this->mCache [ nodeID ] = cursor;
 }
 
 //----------------------------------------------------------------//
@@ -58,17 +70,35 @@ const BlockTreeCursor* BlockCursorCache::getCursor ( int nodeID ) const {
 }
 
 //----------------------------------------------------------------//
+int BlockCursorCache::getNodeIDFromHash ( string hash ) const {
+
+    map < string, int >::const_iterator cursorIt = this->mNodeIDByHash.find ( hash );
+    if ( cursorIt != this->mNodeIDByHash.cend ()) {
+        return cursorIt->second;
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------//
 void BlockCursorCache::invalidate ( int nodeID ) {
 
-    if ( this->mCache.find ( nodeID ) != this->mCache.cend ()) {
+    map < int, BlockTreeCursor >::iterator cursorIt = this->mCache.find ( nodeID );
+    if ( cursorIt != this->mCache.cend ()) {
 
         // erase the original key
-        assert ( this->mCacheKeysByHash.find ( nodeID ) != this->mCacheKeysByHash.cend ());
-        BlockCursorCacheKey lastKey = this->mCacheKeysByHash [ nodeID ];
+        assert ( this->mCacheKeysByNodeID.find ( nodeID ) != this->mCacheKeysByNodeID.cend ());
+        BlockCursorCacheKey lastKey = this->mCacheKeysByNodeID [ nodeID ];
         this->mExpirationSet.erase ( lastKey );
-        this->mCacheKeysByHash.erase ( nodeID );
+        this->mCacheKeysByNodeID.erase ( nodeID );
+        this->mNodeIDByHash.erase ( cursorIt->second.getHash ());
         this->mCache.erase ( nodeID );
     }
+}
+
+//----------------------------------------------------------------//
+void BlockCursorCache::setMaxSize ( size_t size ) {
+
+    this->mMaxSize = size;
 }
 
 //================================================================//
@@ -78,7 +108,8 @@ void BlockCursorCache::invalidate ( int nodeID ) {
 //----------------------------------------------------------------//
 int SQLiteBlockTree::getNodeIDFromHash ( string hash ) const {
 
-    int nodeID = 0;
+    int nodeID = this->mCache.getNodeIDFromHash ( hash );
+    if ( nodeID ) return nodeID;
     
     SQLiteResult result = this->mDB.exec (
         
@@ -616,6 +647,11 @@ void SQLiteBlockTree::AbstractBlockTree_setBranchStatus ( const BlockTreeCursor&
 
     int nodeID = this->getNodeIDFromHash ( cursor.getDigest ().toHex ());
     this->setBranchStatus ( nodeID, cursor.getPrevDigest (), status );
+}
+
+//----------------------------------------------------------------//
+void SQLiteBlockTree::AbstractBlockTree_setCacheSize ( size_t size ) {
+    this->mCache.setMaxSize ( size );
 }
 
 //----------------------------------------------------------------//
