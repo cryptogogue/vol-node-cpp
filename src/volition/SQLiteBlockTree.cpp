@@ -39,16 +39,21 @@ void BlockCursorCache::cacheCursor ( int nodeID, const BlockTreeCursor& cursor )
     
         // make room
         while ( this->mCache.size () > ( this->mMaxSize - 1 )) {
-        
+            
             set < BlockCursorCacheKey >::reverse_iterator expiryIt = this->mExpirationSet.rbegin ();
             
             map < int, BlockTreeCursor >::iterator cacheIt = this->mCache.find ( expiryIt->mNodeID );
             assert ( cacheIt != this->mCache.end ());
             
-            this->mExpirationSet.erase ( *expiryIt );
-            this->mCacheKeysByNodeID.erase ( expiryIt->mNodeID );
-            this->mNodeIDByHash.erase ( cacheIt->second.getHash ());
-            this->mCache.erase ( cacheIt );
+            this->mCacheKeysByNodeID.erase ( cacheIt->first ); // do this first
+            this->mNodeIDByHash.erase ( cacheIt->second.getHash ()); // do this first
+            
+            this->mExpirationSet.erase ( *expiryIt ); // now it's safe - will invalidate iterator
+            this->mCache.erase ( cacheIt ); // now it's safe - will invalidate iterator
+            
+            assert ( this->mCacheKeysByNodeID.size () == this->mCache.size ());
+            assert ( this->mExpirationSet.size () == this->mCache.size ());
+            assert ( this->mNodeIDByHash.size () == this->mCache.size ());
         }
     }
     
@@ -234,7 +239,7 @@ void SQLiteBlockTree::setBranchStatus ( int nodeID, const Digest& parentDigest, 
     queue.insert ( nodeID );
     
     if ( queue.size ()) {
-    
+        
         this->mDB.beginTransaction ();
     
         while ( queue.size ()) {
@@ -691,9 +696,11 @@ void SQLiteBlockTree::AbstractBlockTree_update ( shared_ptr < const Block > bloc
     
     this->mCache.invalidate ( nodeID );
     
+    SQLiteResult result;
+        
     this->mDB.beginTransaction ();
     
-    SQLiteResult result = this->mDB.exec (
+    result = this->mDB.exec (
     
         "UPDATE nodes SET block = ?1, searchStatus = '#' WHERE nodeID IS ?2",
         

@@ -154,6 +154,12 @@ DONE: schema - add hash to font
 DONE: wallet - sanitize svg layout template values (XSS)
 DONE: wallet - vol param type for crafting methods
 DONE: wallet - other numeric param types for crafting methods
+DONE: node - configure block tree cache size
+DONE: node - configure consensus lookahead (miner height vs local height)
+DONE: wallet - tags download/upload
+DONE: wallet - double confirm on tag deletion
+DONE: wallet - send multiple transactions
+DONE: wallet - change messaging on 'blocked' transactions (all error'd)
 
 ----------------------------------------------------------------
 PRE-LAUNCH
@@ -200,14 +206,8 @@ node - document scripting methods
 node - log rotation
 
 wallet - fix inventory reset bug
-wallet - tags download/upload
-wallet - double confirm on tag deletion
 wallet - clear selected transactions
-wallet - send multiple transactions
-wallet - change messaging on 'blocked' transactions (all error'd)
 
-node - configure block tree cache size
-node - configure consensus lookahead (miner height vs local height)
 node - optimize isAncestor (fast branch lookup)
 
 ----------------------------------------------------------------

@@ -147,6 +147,13 @@ void Miner::composeChainInnerLoop ( BlockTreeCursor branch ) {
         
         while ( !ledgerCursor.equals ( branch )) {
             
+            // TODO: this is gross. it's a cleanup for broken branch status. need to make sure branch status can't break.
+            // TODO: find how how the branch could get into the broken state (i.e. parent is complete, but child is not.
+            if (( branch.getHeight () == ( ledgerCursor.getHeight () + 1 )) && ( branch.hasBlock () && !branch.isComplete ())) {
+                this->mBlockTree->setBranchStatus ( branch, BRANCH_STATUS_COMPLETE );
+                return;
+            }
+            
             if ( branch.isComplete ()) {
                 stack.push_front ( branch );
             }
