@@ -139,9 +139,9 @@ RemoteMiner::RemoteMiner ( Miner& miner ) :
     mMiner ( miner ),
     mState ( STATE_OFFLINE ),
     mAcceptedRelease ( 0 ),
-    mNextRelease ( 0 ),
     mRewind ( 0 ),
-    mHeight ( 0 ) {
+    mHeight ( 0 ),
+    mNextRelease ( 0 ) {
 }
 
 //----------------------------------------------------------------//
