@@ -27,8 +27,8 @@ set ( VOLITION_INCLUDES
     3rd-party/padamose/src/
     3rd-party/padamose/3rd-party/lognosis/src
     3rd-party/padamose/3rd-party/lognosis/3rd-party
-    3rd-party/padamose/3rd-party/reproc/reproc/include/
-    3rd-party/padamose/3rd-party/reproc/reproc++/include/
+#    3rd-party/padamose/3rd-party/reproc/reproc/include/
+#    3rd-party/padamose/3rd-party/reproc/reproc++/include/
     3rd-party/padamose/3rd-party/sqlite-3.34.0/
     3rd-party/simple-cpp-router/src/
     /usr/local/opt/openssl/include/
@@ -113,8 +113,8 @@ add_dependencies ( volition
     lognosis
     lua
     padamose
-    reproc
-    reproc++
+#    reproc
+#    reproc++
     routing
     sqlite
     volition-lib
@@ -135,8 +135,8 @@ target_link_libraries ( volition
     padamose
     hiredis
     lognosis
-    reproc
-    reproc++
+#    reproc
+#    reproc++
     routing
     sqlite
     PocoCrypto
