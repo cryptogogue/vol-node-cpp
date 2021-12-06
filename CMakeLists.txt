@@ -1,6 +1,9 @@
 cmake_minimum_required ( VERSION 3.10.2 )
 project ( volition )
 
+set ( THREADS_PREFER_PTHREAD_FLAG ON )
+find_package ( Threads REQUIRED )
+
 set ( CMAKE_CXX_STANDARD 17 )
 #set ( CMAKE_CXX_STANDARD_REQUIRED ON )
 #set ( CMAKE_BUILD_TYPE "Debug" )
@@ -135,6 +138,7 @@ target_link_libraries ( volition
     padamose
     hiredis
     lognosis
+    Threads::Threads
 #    reproc
 #    reproc++
     routing

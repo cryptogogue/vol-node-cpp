@@ -61,7 +61,6 @@
 		CD19DF76259C18D50007ACF0 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
 		CD19DF77259C18D50007ACF0 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBFD470218B77E5002AB0C3 /* liblua.a */; };
 		CD19DF78259C18D50007ACF0 /* libpadamose.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD36CD6215DA35E004FC222 /* libpadamose.a */; };
-		CD19DF79259C18D50007ACF0 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CD19DF7A259C18D50007ACF0 /* libsimplecpprouter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED582D20BA1FCE003A2969 /* libsimplecpprouter.a */; };
 		CD19DF7B259C18D50007ACF0 /* libsqlite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD19DEDE25930C3F0007ACF0 /* libsqlite.a */; };
 		CD19DF7C259C18D50007ACF0 /* libvolition.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4E818F21059316007DA585 /* libvolition.a */; };
@@ -262,13 +261,9 @@
 		CD9E7BC0250B976C0065C5FC /* HTTPMiningMessenger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BBE250B976C0065C5FC /* HTTPMiningMessenger.cpp */; };
 		CD9E7BC1250B976C0065C5FC /* HTTPMiningMessenger.h in Headers */ = {isa = PBXBuildFile; fileRef = CD9E7BBF250B976C0065C5FC /* HTTPMiningMessenger.h */; };
 		CD9FE6AD22699CCF009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
-		CD9FE6AE22699CCF009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CD9FE6B322699D51009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
-		CD9FE6B422699D51009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CD9FE6B922699D69009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
-		CD9FE6BA22699D69009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CD9FE6BF22699D82009B4144 /* libhiredis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AA22699CC0009B4144 /* libhiredis.a */; };
-		CD9FE6C022699D82009B4144 /* libreproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9FE6AC22699CC0009B4144 /* libreproc.a */; };
 		CDA1573423FA59EC00DFACCF /* AccountKeyLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573323FA59EC00DFACCF /* AccountKeyLookup.h */; };
 		CDA1573723FA59FE00DFACCF /* KeyAndPolicy.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573623FA59FE00DFACCF /* KeyAndPolicy.h */; };
 		CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573823FA7B8800DFACCF /* TransactionContext.h */; };
@@ -541,13 +536,6 @@
 			remoteGlobalIDString = CD4E817521059316007DA585;
 			remoteInfo = "lib-padamose";
 		};
-		CD19DF6A259C18D50007ACF0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CD9FE62222669323009B4144;
-			remoteInfo = "lib-reproc";
-		};
 		CD19DF6C259C18D50007ACF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CD9345BA2093EB140077BAD4 /* Project object */;
@@ -646,13 +634,6 @@
 			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
 			remoteInfo = "lib-hiredis";
 		};
-		CD9FE6A422699CC0009B4144 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CD9FE62222669323009B4144;
-			remoteInfo = "lib-reproc";
-		};
 		CD9FE6A922699CC0009B4144 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
@@ -674,13 +655,6 @@
 			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
 			remoteInfo = "lib-hiredis";
 		};
-		CD9FE6B122699D3B009B4144 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CD9FE62222669323009B4144;
-			remoteInfo = "lib-reproc";
-		};
 		CD9FE6B522699D64009B4144 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
@@ -688,26 +662,12 @@
 			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
 			remoteInfo = "lib-hiredis";
 		};
-		CD9FE6B722699D64009B4144 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CD9FE62222669323009B4144;
-			remoteInfo = "lib-reproc";
-		};
 		CD9FE6BB22699D7C009B4144 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = CD9FE5DE226673FD009B4144;
 			remoteInfo = "lib-hiredis";
-		};
-		CD9FE6BD22699D7C009B4144 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CDD36CCA215DA35E004FC222 /* padamose.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CD9FE62222669323009B4144;
-			remoteInfo = "lib-reproc";
 		};
 		CDBFD529218B78EC002AB0C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1281,7 +1241,6 @@
 				CD6C9ADE21C48756009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52E218B790E002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE9215DA454004FC222 /* libpadamose.a in Frameworks */,
-				CD9FE6BA22699D69009B4144 /* libreproc.a in Frameworks */,
 				CD0C3E5720C86D88006E3B1C /* libsimplecpprouter.a in Frameworks */,
 				CD19DF14259572CF0007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */,
@@ -1306,7 +1265,6 @@
 				CD19DF76259C18D50007ACF0 /* liblognosis.a in Frameworks */,
 				CD19DF77259C18D50007ACF0 /* liblua.a in Frameworks */,
 				CD19DF78259C18D50007ACF0 /* libpadamose.a in Frameworks */,
-				CD19DF79259C18D50007ACF0 /* libreproc.a in Frameworks */,
 				CD19DF7A259C18D50007ACF0 /* libsimplecpprouter.a in Frameworks */,
 				CD19DF7B259C18D50007ACF0 /* libsqlite.a in Frameworks */,
 				CD19DF7C259C18D50007ACF0 /* libvolition.a in Frameworks */,
@@ -1332,7 +1290,6 @@
 				CD6C9AE121C48762009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52B218B78F4002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE4215DA429004FC222 /* libpadamose.a in Frameworks */,
-				CD9FE6C022699D82009B4144 /* libreproc.a in Frameworks */,
 				CD4E817221057E91007DA585 /* libsimplecpprouter.a in Frameworks */,
 				CD19DF15259572DE0007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81D421059435007DA585 /* libvolition.a in Frameworks */,
@@ -1364,7 +1321,6 @@
 				CD6C9ADB21C48749009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD531218B7921002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE8215DA44C004FC222 /* libpadamose.a in Frameworks */,
-				CD9FE6B422699D51009B4144 /* libreproc.a in Frameworks */,
 				CDED584120BA2008003A2969 /* libsimplecpprouter.a in Frameworks */,
 				CD19DF13259572C30007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */,
@@ -1403,7 +1359,6 @@
 				CD6C9AD821C4873A009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD534218B7935002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE7215DA444004FC222 /* libpadamose.a in Frameworks */,
-				CD9FE6AE22699CCF009B4144 /* libreproc.a in Frameworks */,
 				CDED588220BD1C5F003A2969 /* libsimplecpprouter.a in Frameworks */,
 				CD19DF12259572B80007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81D721059447007DA585 /* libvolition.a in Frameworks */,
@@ -2395,7 +2350,6 @@
 				CD6C9ADD21C4874F009A3801 /* PBXTargetDependency */,
 				CDBFD52D218B7904002AB0C3 /* PBXTargetDependency */,
 				CDD36CE2215DA417004FC222 /* PBXTargetDependency */,
-				CD9FE6B822699D64009B4144 /* PBXTargetDependency */,
 				CD0C3E4020C86D88006E3B1C /* PBXTargetDependency */,
 				CD19DF0D259572640007ACF0 /* PBXTargetDependency */,
 				CD4E81DC21059463007DA585 /* PBXTargetDependency */,
@@ -2421,7 +2375,6 @@
 				CD19DF63259C18D50007ACF0 /* PBXTargetDependency */,
 				CD19DF65259C18D50007ACF0 /* PBXTargetDependency */,
 				CD19DF67259C18D50007ACF0 /* PBXTargetDependency */,
-				CD19DF69259C18D50007ACF0 /* PBXTargetDependency */,
 				CD19DF6B259C18D50007ACF0 /* PBXTargetDependency */,
 				CD19DF6D259C18D50007ACF0 /* PBXTargetDependency */,
 				CD19DF6F259C18D50007ACF0 /* PBXTargetDependency */,
@@ -2448,7 +2401,6 @@
 				CD6C9AE021C4875D009A3801 /* PBXTargetDependency */,
 				CDBFD52A218B78EC002AB0C3 /* PBXTargetDependency */,
 				CDD36CDC215DA3FD004FC222 /* PBXTargetDependency */,
-				CD9FE6BE22699D7C009B4144 /* PBXTargetDependency */,
 				CD4E8132210579C8007DA585 /* PBXTargetDependency */,
 				CD19DF09259572530007ACF0 /* PBXTargetDependency */,
 				CD4E81D32105942B007DA585 /* PBXTargetDependency */,
@@ -2492,7 +2444,6 @@
 				CD6C9ADA21C48743009A3801 /* PBXTargetDependency */,
 				CDBFD530218B7919002AB0C3 /* PBXTargetDependency */,
 				CDD36CE0215DA410004FC222 /* PBXTargetDependency */,
-				CD9FE6B222699D3B009B4144 /* PBXTargetDependency */,
 				CDED583F20BA2001003A2969 /* PBXTargetDependency */,
 				CD19DF0F2595726F0007ACF0 /* PBXTargetDependency */,
 				CD4E81D921059450007DA585 /* PBXTargetDependency */,
@@ -2552,7 +2503,6 @@
 				CD6C9AD721C48731009A3801 /* PBXTargetDependency */,
 				CDBFD533218B792E002AB0C3 /* PBXTargetDependency */,
 				CDD36CDE215DA409004FC222 /* PBXTargetDependency */,
-				CD9FE6A522699CC0009B4144 /* PBXTargetDependency */,
 				CDED587520BD1C5F003A2969 /* PBXTargetDependency */,
 				CD19DF11259572790007ACF0 /* PBXTargetDependency */,
 				CD4E81D62105943F007DA585 /* PBXTargetDependency */,
@@ -3078,11 +3028,6 @@
 			name = "lib-padamose";
 			targetProxy = CD19DF68259C18D50007ACF0 /* PBXContainerItemProxy */;
 		};
-		CD19DF69259C18D50007ACF0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lib-reproc";
-			targetProxy = CD19DF6A259C18D50007ACF0 /* PBXContainerItemProxy */;
-		};
 		CD19DF6B259C18D50007ACF0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CDED582C20BA1FCE003A2969 /* lib-simple-cpp-router */;
@@ -3148,40 +3093,20 @@
 			name = "lib-hiredis";
 			targetProxy = CD9FE6A222699CC0009B4144 /* PBXContainerItemProxy */;
 		};
-		CD9FE6A522699CC0009B4144 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lib-reproc";
-			targetProxy = CD9FE6A422699CC0009B4144 /* PBXContainerItemProxy */;
-		};
 		CD9FE6B022699D3B009B4144 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "lib-hiredis";
 			targetProxy = CD9FE6AF22699D3B009B4144 /* PBXContainerItemProxy */;
-		};
-		CD9FE6B222699D3B009B4144 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lib-reproc";
-			targetProxy = CD9FE6B122699D3B009B4144 /* PBXContainerItemProxy */;
 		};
 		CD9FE6B622699D64009B4144 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "lib-hiredis";
 			targetProxy = CD9FE6B522699D64009B4144 /* PBXContainerItemProxy */;
 		};
-		CD9FE6B822699D64009B4144 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lib-reproc";
-			targetProxy = CD9FE6B722699D64009B4144 /* PBXContainerItemProxy */;
-		};
 		CD9FE6BC22699D7C009B4144 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "lib-hiredis";
 			targetProxy = CD9FE6BB22699D7C009B4144 /* PBXContainerItemProxy */;
-		};
-		CD9FE6BE22699D7C009B4144 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lib-reproc";
-			targetProxy = CD9FE6BD22699D7C009B4144 /* PBXContainerItemProxy */;
 		};
 		CDBFD52A218B78EC002AB0C3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
