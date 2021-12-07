@@ -19,6 +19,8 @@
 #include <volition/serialization/AbstractSerializable.h>
 #include <volition/Singleton.h>
 #include <volition/TransactionStatus.h>
+#include <rocksdb/options.h>
+#include <rocksdb/utilities/transaction_db.h>
 
 namespace Volition {
 
@@ -297,6 +299,7 @@ public:
     LedgerResult                    persistLedgerSQLite                 ( shared_ptr < const Block > genesisBlock, SQLiteConfig config );
     LedgerResult                    persistLedgerSQLiteStringStore      ( shared_ptr < const Block > genesisBlock, SQLiteConfig config );
     LedgerResult                    persistLedgerDebugStringStore       ( shared_ptr < const Block > genesisBlock );
+    LedgerResult                    persistLedgerRocksDbStringStore       ( shared_ptr < const Block > genesisBlock ,rocksdb::Options options,rocksdb::TransactionDBOptions txnDbOptions);
     shared_ptr < Block >            prepareBlock                        ( time_t now );
     void                            report                              () const;
     void                            report                              ( ReportMode reportMode ) const;

@@ -232,6 +232,9 @@ protected:
             return Application::EXIT_CONFIG;
         }
         
+		rocksdb::Options rocksDbOptions;
+		rocksdb::TransactionDBOptions tnxRocksDbOptions;
+		
         bool inMemoryBlockTree = false;
         bool inMemoryLedger = false;
         
@@ -263,7 +266,7 @@ protected:
         
         {
             LedgerResult result = true;
-        
+			
             switch ( FNV1a::hash_64 ( ledgerPersistMode.c_str ())) {
                 case FNV1a::const_hash_64 ( "none" ): {
                     this->mMinerActivity->setGenesis ( genesisBlock );
@@ -276,6 +279,10 @@ protected:
                 }
                 case FNV1a::const_hash_64 ( "sqlite-stringstore" ): {
                     result = this->mMinerActivity->persistLedgerSQLiteStringStore ( genesisBlock, sqliteConfig );
+                    break;
+                }
+				case FNV1a::const_hash_64 ( "rocksdb-stringstore" ): {
+                    result = this->mMinerActivity->persistLedgerRocksDbStringStore ( genesisBlock, rocksDbOptions,tnxRocksDbOptions);
                     break;
                 }
                 case FNV1a::const_hash_64 ( "debug-stringstore" ): {
