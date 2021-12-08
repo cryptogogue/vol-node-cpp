@@ -33,6 +33,7 @@ set ( VOLITION_INCLUDES
 #    3rd-party/padamose/3rd-party/reproc/reproc/include/
 #    3rd-party/padamose/3rd-party/reproc/reproc++/include/
     3rd-party/padamose/3rd-party/sqlite-3.34.0/
+    3rd-party/padamose/3rd-party/rocksdb/include/
     3rd-party/simple-cpp-router/src/
     /usr/local/opt/openssl/include/
 )
@@ -143,6 +144,7 @@ target_link_libraries ( volition
 #    reproc++
     routing
     sqlite
+    rocksdb
     PocoCrypto
     PocoEncodings
     PocoNet
@@ -156,5 +158,5 @@ target_link_libraries ( volition
     ${CMAKE_DL_LIBS}
 )
 
-install ( TARGETS hiredis )
+#install ( TARGETS hiredis )
 install ( TARGETS volition DESTINATION bin )

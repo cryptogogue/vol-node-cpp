@@ -157,7 +157,7 @@ protected:
 //        int sqliteSleepFrequency            = configuration.getInt          ( "sqlite-sleep-frequency", 0 ); // TODO
 //        int sqliteSleepMillis               = configuration.getInt          ( "sqlite-sleep-millis", 100 ); // TODO
         string sslCertFile                  = configuration.getString       ( "openSSL.server.certificateFile", "" );
-        
+        string rocksDbConfigPath            = configuration.getString       ( "rocksdb-config-path", "" );
         if ( logpath.size () > 0 ) {
             
             time_t t;
@@ -231,7 +231,7 @@ protected:
             LGN_LOG ( VOL_FILTER_APP, ERROR, "UNRECOGNIZED SQLITE JOURNAL MODE %s", sqliteJournalMode.c_str ());
             return Application::EXIT_CONFIG;
         }
-        
+		
         bool inMemoryBlockTree = false;
         bool inMemoryLedger = false;
         
@@ -263,7 +263,7 @@ protected:
         
         {
             LedgerResult result = true;
-        
+			
             switch ( FNV1a::hash_64 ( ledgerPersistMode.c_str ())) {
                 case FNV1a::const_hash_64 ( "none" ): {
                     this->mMinerActivity->setGenesis ( genesisBlock );
@@ -276,6 +276,10 @@ protected:
                 }
                 case FNV1a::const_hash_64 ( "sqlite-stringstore" ): {
                     result = this->mMinerActivity->persistLedgerSQLiteStringStore ( genesisBlock, sqliteConfig );
+                    break;
+                }
+				case FNV1a::const_hash_64 ( "rocksdb-stringstore" ): {
+                    result = this->mMinerActivity->persistLedgerRocksDbStringStore ( genesisBlock, rocksDbConfigPath);
                     break;
                 }
                 case FNV1a::const_hash_64 ( "debug-stringstore" ): {

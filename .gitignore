@@ -19,3 +19,5 @@ genesis.json
 sim-miner-keys.json
 /volition
 Pods/
+.idea
+cmake-build-debug
