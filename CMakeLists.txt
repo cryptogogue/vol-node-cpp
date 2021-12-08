@@ -11,12 +11,6 @@ set ( CMAKE_CXX_STANDARD 17 )
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -Wall -Wextra" )
 set ( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic" )
 
-# TODO: doesn't work in docker container
-#add_custom_target (
-#    make-version-header
-#    COMMAND ops/make-version-header.sh
-#)
-
 get_filename_component ( VOLITION_ROOT "./" ABSOLUTE )
 
 add_subdirectory ( 3rd-party/padamose EXCLUDE_FROM_ALL )
@@ -30,17 +24,12 @@ set ( VOLITION_INCLUDES
     3rd-party/padamose/src/
     3rd-party/padamose/3rd-party/lognosis/src
     3rd-party/padamose/3rd-party/lognosis/3rd-party
-#    3rd-party/padamose/3rd-party/reproc/reproc/include/
-#    3rd-party/padamose/3rd-party/reproc/reproc++/include/
     3rd-party/padamose/3rd-party/sqlite-3.34.0/
-    3rd-party/padamose/3rd-party/rocksdb/include/
     3rd-party/simple-cpp-router/src/
     /usr/local/opt/openssl/include/
 )
 
 add_library ( volition-lib "" )
-
-#add_dependencies ( volition-lib make-version-header )
 
 target_include_directories ( volition-lib PRIVATE ${VOLITION_INCLUDES} )
 
@@ -107,9 +96,6 @@ target_sources ( volition-lib
         src/volition/transactions/LoadLedger.cpp
 )
 
-#install ( TARGETS volition-lib EXPORT libvolition ARCHIVE DESTINATION lib)
-#install ( DIRECTORY src/volition/ DESTINATION include/volition FILES_MATCHING PATTERN "*.h" )
-
 add_executable ( volition "" )
 
 add_dependencies ( volition
@@ -117,8 +103,6 @@ add_dependencies ( volition
     lognosis
     lua
     padamose
-#    reproc
-#    reproc++
     routing
     sqlite
     volition-lib
@@ -140,11 +124,9 @@ target_link_libraries ( volition
     hiredis
     lognosis
     Threads::Threads
-#    reproc
-#    reproc++
+    rocksdb
     routing
     sqlite
-    rocksdb
     PocoCrypto
     PocoEncodings
     PocoNet
@@ -158,5 +140,4 @@ target_link_libraries ( volition
     ${CMAKE_DL_LIBS}
 )
 
-#install ( TARGETS hiredis )
 install ( TARGETS volition DESTINATION bin )
