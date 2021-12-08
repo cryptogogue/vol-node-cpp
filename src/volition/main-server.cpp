@@ -151,15 +151,15 @@ protected:
         string persistPath                  = configuration.getString       ( "persist", "persist-chain" );
         persistPath                         = configuration.getString       ( "persist-path", persistPath );
         int port                            = configuration.getInt          ( "port", 9090 );
+        string rocksDbConfigPath            = configuration.getString       ( "rocksdb-config-path", "" );
         int sleepFixed                      = configuration.getInt          ( "sleep-fixed", MinerActivity::DEFAULT_FIXED_UPDATE_MILLIS );
         int sleepVariable                   = configuration.getInt          ( "sleep-variable", MinerActivity::DEFAULT_VARIABLE_UPDATE_MILLIS );
         string sqliteJournalMode            = configuration.getString       ( "sqlite-journal-mode", "wal" );
 //        int sqliteSleepFrequency            = configuration.getInt          ( "sqlite-sleep-frequency", 0 ); // TODO
 //        int sqliteSleepMillis               = configuration.getInt          ( "sqlite-sleep-millis", 100 ); // TODO
         string sslCertFile                  = configuration.getString       ( "openSSL.server.certificateFile", "" );
-        string rocksDbConfigPath            = configuration.getString       ( "rocksdb-config-path", "" );
+        
         if ( logpath.size () > 0 ) {
-            
             time_t t;
             time ( &t );
             string timeStr = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), "%Y-%m-%d-%H%M%S" );

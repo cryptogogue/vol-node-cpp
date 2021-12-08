@@ -400,6 +400,11 @@
 		CDDB4BB123319E5E00EEAA60 /* CryptoKeyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */; };
 		CDDB4BBA23336F6800EEAA60 /* ResetChainHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */; };
 		CDDB4BBC233374B100EEAA60 /* HTTP.h in Headers */ = {isa = PBXBuildFile; fileRef = CDDB4BBB233374B100EEAA60 /* HTTP.h */; };
+		CDDD757A276100E400325205 /* librocksdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDDD7577276100E400325205 /* librocksdb.a */; };
+		CDDD757B276100E400325205 /* librocksdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDDD7577276100E400325205 /* librocksdb.a */; };
+		CDDD757C276100E400325205 /* librocksdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDDD7577276100E400325205 /* librocksdb.a */; };
+		CDDD757D276100E400325205 /* librocksdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDDD7577276100E400325205 /* librocksdb.a */; };
+		CDDD757E276100E400325205 /* librocksdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDDD7577276100E400325205 /* librocksdb.a */; };
 		CDED583120BA1FD6003A2969 /* Exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581520BA1F38003A2969 /* Exceptions.h */; };
 		CDED583220BA1FD6003A2969 /* PathMatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDED581620BA1F38003A2969 /* PathMatch.cpp */; };
 		CDED583320BA1FD6003A2969 /* PathMatch.h in Headers */ = {isa = PBXBuildFile; fileRef = CDED581720BA1F38003A2969 /* PathMatch.h */; };
@@ -1171,6 +1176,7 @@
 		CDDB4BAF23319E5E00EEAA60 /* CryptoKeyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptoKeyInfo.h; path = src/volition/CryptoKeyInfo.h; sourceTree = "<group>"; };
 		CDDB4BB923336F6800EEAA60 /* ResetChainHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResetChainHandler.h; path = "src/volition/web-miner-api/ResetChainHandler.h"; sourceTree = "<group>"; };
 		CDDB4BBB233374B100EEAA60 /* HTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTP.h; path = src/volition/HTTP.h; sourceTree = "<group>"; };
+		CDDD7577276100E400325205 /* librocksdb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librocksdb.a; path = ../../../../../../usr/local/Cellar/rocksdb/6.26.1/lib/librocksdb.a; sourceTree = "<group>"; };
 		CDED581520BA1F38003A2969 /* Exceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exceptions.h; path = "3rd-party/simple-cpp-router/src/Routing/Exceptions.h"; sourceTree = "<group>"; };
 		CDED581620BA1F38003A2969 /* PathMatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathMatch.cpp; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.cpp"; sourceTree = "<group>"; };
 		CDED581720BA1F38003A2969 /* PathMatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathMatch.h; path = "3rd-party/simple-cpp-router/src/Routing/PathMatch.h"; sourceTree = "<group>"; };
@@ -1254,6 +1260,7 @@
 				CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */,
 				CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */,
 				534E4B7D035AC51F8531461D /* libPods-util.a in Frameworks */,
+				CDDD757D276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1278,6 +1285,7 @@
 				CD19DF84259C18D50007ACF0 /* libPocoXML.a in Frameworks */,
 				CD19DF85259C18D50007ACF0 /* libPocoCrypto.a in Frameworks */,
 				CD19DF86259C18D50007ACF0 /* libPods-simulator.a in Frameworks */,
+				CDDD757A276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1303,6 +1311,7 @@
 				CD4E815A210579C8007DA585 /* libPocoXML.a in Frameworks */,
 				CD4E815C210579C8007DA585 /* libPocoCrypto.a in Frameworks */,
 				0BD7F2C4679C51E8A3AD50FB /* libPods-volition-gtest.a in Frameworks */,
+				CDDD757E276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1334,6 +1343,7 @@
 				CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */,
 				CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */,
 				876E3261FDBAAFDCFA33CE77 /* libPods-simulator.a in Frameworks */,
+				CDDD757C276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1372,6 +1382,7 @@
 				CDED588A20BD1C5F003A2969 /* libPocoXML.a in Frameworks */,
 				CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */,
 				90FF2D66544C7374029F78C9 /* libPods-server.a in Frameworks */,
+				CDDD757B276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1606,6 +1617,7 @@
 				CDED586020BA3981003A2969 /* libPocoUtil.a */,
 				CDED586120BA3981003A2969 /* libPocoXML.a */,
 				CDED586220BA3981003A2969 /* libPocoZip.a */,
+				CDDD7577276100E400325205 /* librocksdb.a */,
 			);
 			name = lib;
 			sourceTree = "<group>";
@@ -3207,6 +3219,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3218,6 +3234,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3229,6 +3249,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3240,6 +3264,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3251,6 +3279,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3262,6 +3294,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3380,10 +3416,12 @@
 					"3rd-party/padamose/3rd-party/lognosis/src",
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
+					/usr/local/opt/rocksdb/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
 					/usr/local/opt/openssl/lib,
+					/usr/local/opt/rocksdb/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -3466,10 +3504,12 @@
 					"3rd-party/padamose/3rd-party/lognosis/src",
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
+					/usr/local/opt/rocksdb/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
 					/usr/local/opt/openssl/lib,
+					/usr/local/opt/rocksdb/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -3487,6 +3527,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3498,6 +3542,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3599,6 +3647,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3610,6 +3662,10 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/rocksdb/6.26.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
