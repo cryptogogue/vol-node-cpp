@@ -123,7 +123,6 @@ target_link_libraries ( volition
     padamose
     hiredis
     lognosis
-    Threads::Threads
     rocksdb
     routing
     sqlite
@@ -136,8 +135,10 @@ target_link_libraries ( volition
     PocoXML
     PocoZip
     PocoFoundation
+    Threads::Threads
     ${OPENSSL_LIBRARIES}
     ${CMAKE_DL_LIBS}
 )
 
+install ( TARGETS hiredis )
 install ( TARGETS volition DESTINATION bin )

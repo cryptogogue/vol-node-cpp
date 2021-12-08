@@ -279,7 +279,7 @@ protected:
                     break;
                 }
 				case FNV1a::const_hash_64 ( "rocksdb-stringstore" ): {
-                    result = this->mMinerActivity->persistLedgerRocksDbStringStore ( genesisBlock, rocksDbConfigPath);
+                    result = this->mMinerActivity->persistLedgerRocksDbStringStore ( genesisBlock, rocksDbConfigPath );
                     break;
                 }
                 case FNV1a::const_hash_64 ( "debug-stringstore" ): {
