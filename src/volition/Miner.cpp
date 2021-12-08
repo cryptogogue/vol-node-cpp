@@ -443,13 +443,13 @@ LedgerResult Miner::persistLedgerSQLiteStringStore ( shared_ptr < const Block > 
     return this->persistLedger ( SQLiteStringStore::make ( this->mLedgerFilename, config ), genesisBlock );
 }
 
-LedgerResult Miner::persistLedgerRocksDbStringStore( shared_ptr < const Block > genesisBlock , rocksdb::Options options,rocksdb::TransactionDBOptions txnDbOptions) {
+LedgerResult Miner::persistLedgerRocksDbStringStore( shared_ptr < const Block > genesisBlock, const string &configPath) {
     
-    if ( this->mPrefixFilename.size () == 0 ) return "Missing persistence path.";
+    if ( this->mPrefixFilename.empty() ) return "Missing persistence path.";
     
     this->mLedgerFilename = Format::write ( "%s-rocksdb-stringstore.db", this->mPrefixFilename.c_str ());
-    
-    return this->persistLedger ( RocksDbStringStore::make ( this->mLedgerFilename, options, txnDbOptions ), genesisBlock );
+
+    return this->persistLedger ( RocksDbStringStore::make(this->mLedgerFilename, configPath), genesisBlock );
 }
 
 

@@ -33,7 +33,6 @@ RUN apt-get install -y zlib1g-dev
 RUN apt-get install -y libbz2-dev
 RUN apt-get install -y liblz4-dev
 RUN apt-get install -y libzstd-dev
-RUN apt-get install -y librocksdb-dev
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 7 \
     &&  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 7 \
@@ -88,8 +87,8 @@ RUN apt-get -y --no-install-recommends install \
 
 RUN git clone https://github.com/facebook/rocksdb.git \
     && cd rocksdb           \
-    && make static_lib \
-    && make install-static \
+    && make shared_lib \
+    && make install-shared \
     && cd ..                \
     && rm -r rocksdb
 
