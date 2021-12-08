@@ -15,7 +15,6 @@
 #include <volition/Transaction.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
-#include <padamose/RocksDbStringStore.h>
 
 namespace Volition {
 
@@ -449,7 +448,7 @@ LedgerResult Miner::persistLedgerRocksDbStringStore( shared_ptr < const Block > 
     
     this->mLedgerFilename = Format::write ( "%s-rocksdb-stringstore.db", this->mPrefixFilename.c_str ());
 
-    return this->persistLedger ( RocksDbStringStore::make(this->mLedgerFilename, configPath), genesisBlock );
+    return this->persistLedger ( RocksDbStringStore::make ( this->mLedgerFilename, configPath ), genesisBlock );
 }
 
 

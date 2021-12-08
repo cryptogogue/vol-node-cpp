@@ -297,7 +297,7 @@ public:
     LedgerResult                    persistLedgerSQLite                 ( shared_ptr < const Block > genesisBlock, SQLiteConfig config );
     LedgerResult                    persistLedgerSQLiteStringStore      ( shared_ptr < const Block > genesisBlock, SQLiteConfig config );
     LedgerResult                    persistLedgerDebugStringStore       ( shared_ptr < const Block > genesisBlock );
-    LedgerResult                    persistLedgerRocksDbStringStore       ( shared_ptr < const Block > genesisBlock, const string &configPath);
+    LedgerResult                    persistLedgerRocksDbStringStore     ( shared_ptr < const Block > genesisBlock, const string &configPath);
     shared_ptr < Block >            prepareBlock                        ( time_t now );
     void                            report                              () const;
     void                            report                              ( ReportMode reportMode ) const;
