@@ -16,7 +16,7 @@ Already we can make some observations:
 
 - The signature algorithm needs to be deterministic.
 - The choice of input must also be deterministic lest participants influence the outcome.
-- Without knowing the private keys, in it unfeasible to predict the outcome.
+- Without knowing the private keys, it is unfeasible to predict the outcome.
 - For any block and any group of participants, participant scores may be sorted from most to least favored.
 - Given any two branches, one will eventually have a better score.
 
