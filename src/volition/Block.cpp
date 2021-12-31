@@ -69,7 +69,14 @@ LedgerResult Block::apply ( AbstractLedger& ledger, VerificationPolicy policy ) 
     if ( !verifyResult ) return verifyResult;
 
     ledger.setRelease ( this->getRelease ());
-    ledger.expireOffers ( this->mTime );
+    
+    // TODO: this is a hack
+    if ( this->getRelease () > 1 ) {
+        ledger.expireOffers2 ( this->mTime );
+    }
+    else {
+        ledger.expireOffers ( this->mTime );
+    }
 
     // some transactions need to be applied later.
     // we need to evaluate if they are legal now.

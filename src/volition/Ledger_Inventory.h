@@ -87,6 +87,7 @@ public:
     LedgerResult                        cancelOffer                 ( AccountID accountID, string assetIdentifier, time_t time );
     LedgerResult                        clearInventory              ( AccountID accountID, time_t time );
     void                                expireOffers                ( time_t time );
+    void                                expireOffers2               ( time_t time ); // TODO: this is a hack
     AssetID::Index                      getAssetID                  ( string assetID ) const;
     void                                getInventory                ( AccountID accountID, SerializableList < SerializableSharedConstPtr < Asset >>& assetList, size_t base = 0, size_t count = 0, bool sparse = false );
     map < string, size_t >              getInventoryHistogram       ( AccountID accountID );

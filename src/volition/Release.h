@@ -4,6 +4,6 @@
 #ifndef VOLITION_RELEASE_H
 #define VOLITION_RELEASE_H
 
-#define VOL_NODE_RELEASE        1
+#define VOL_NODE_RELEASE        2
 
 #endif
