@@ -36,7 +36,7 @@ public:
         u64 index = isdigit ( assetIndexOrID [ 0 ]) ? stoull ( assetIndexOrID ) : AssetID::decode ( assetIndexOrID );
         
         if ( index == AssetID::NULL_INDEX ) return Poco::Net::HTTPResponse::HTTP_BAD_REQUEST;
-                
+        
         shared_ptr < const Asset > asset = AssetODBM ( ledger, index ).getAsset ();
         if ( !asset ) return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
         

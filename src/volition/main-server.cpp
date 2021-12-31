@@ -151,6 +151,7 @@ protected:
         string persistPath                  = configuration.getString       ( "persist", "persist-chain" );
         persistPath                         = configuration.getString       ( "persist-path", persistPath );
         int port                            = configuration.getInt          ( "port", 9090 );
+        string rocksDbConfigPath            = configuration.getString       ( "rocksdb-config-path", "" );
         int sleepFixed                      = configuration.getInt          ( "sleep-fixed", MinerActivity::DEFAULT_FIXED_UPDATE_MILLIS );
         int sleepVariable                   = configuration.getInt          ( "sleep-variable", MinerActivity::DEFAULT_VARIABLE_UPDATE_MILLIS );
         string sqliteJournalMode            = configuration.getString       ( "sqlite-journal-mode", "wal" );
@@ -159,7 +160,6 @@ protected:
         string sslCertFile                  = configuration.getString       ( "openSSL.server.certificateFile", "" );
         
         if ( logpath.size () > 0 ) {
-            
             time_t t;
             time ( &t );
             string timeStr = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), "%Y-%m-%d-%H%M%S" );
@@ -231,7 +231,7 @@ protected:
             LGN_LOG ( VOL_FILTER_APP, ERROR, "UNRECOGNIZED SQLITE JOURNAL MODE %s", sqliteJournalMode.c_str ());
             return Application::EXIT_CONFIG;
         }
-        
+		
         bool inMemoryBlockTree = false;
         bool inMemoryLedger = false;
         
@@ -263,7 +263,7 @@ protected:
         
         {
             LedgerResult result = true;
-        
+			
             switch ( FNV1a::hash_64 ( ledgerPersistMode.c_str ())) {
                 case FNV1a::const_hash_64 ( "none" ): {
                     this->mMinerActivity->setGenesis ( genesisBlock );
@@ -276,6 +276,10 @@ protected:
                 }
                 case FNV1a::const_hash_64 ( "sqlite-stringstore" ): {
                     result = this->mMinerActivity->persistLedgerSQLiteStringStore ( genesisBlock, sqliteConfig );
+                    break;
+                }
+				case FNV1a::const_hash_64 ( "rocksdb-stringstore" ): {
+                    result = this->mMinerActivity->persistLedgerRocksDbStringStore ( genesisBlock, rocksDbConfigPath );
                     break;
                 }
                 case FNV1a::const_hash_64 ( "debug-stringstore" ): {

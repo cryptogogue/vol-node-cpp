@@ -373,6 +373,45 @@ void Ledger_Inventory::expireOffers ( time_t time ) {
 }
 
 //----------------------------------------------------------------//
+void Ledger_Inventory::expireOffers2 ( time_t time ) {
+
+    AbstractLedger& ledger = this->getLedger ();
+    
+    LedgerFieldODBM < u64 > globalOfferCountField ( ledger, OfferODBM::keyFor_globalOfferCount ());
+    u64 count = globalOfferCountField.get ( 0 );
+    
+    u64 keepCount = 0;
+    for ( u64 i = 0; i < count; ++i ) {
+        
+        OfferID offerID = i;
+        OfferODBM offerODBM ( ledger, offerID );
+        
+        const AccountID buyerIndex = offerODBM.mBuyer.get ();
+        if ( buyerIndex != AccountID::NULL_INDEX ) continue;
+    
+        const AccountID sellerIndex = offerODBM.mSeller.get ();
+        if ( sellerIndex == AccountID::NULL_INDEX ) continue;
+        
+        time_t expiration = Format::fromISO8601 ( offerODBM.mExpiration.get ());
+        
+        if ( expiration <= time ) {
+            SerializableVector < AssetID::Index > assetIDs;
+            offerODBM.mAssetIdentifiers.get ( assetIDs );
+            this->clearOffers ( offerODBM.mSeller.get (), AssetListAdapter ( assetIDs.data (), assetIDs.size ()), time );
+            
+            offerODBM.mSeller.set ( AccountID::NULL_INDEX );
+        }
+        else {
+            LedgerFieldODBM < u64 > globalOpenOfferListElementField ( ledger, OfferODBM::keyFor_globalOpenOfferListElement ( keepCount ));
+            globalOpenOfferListElementField.set ( offerID );
+            keepCount++;
+        }
+    }
+    LedgerFieldODBM < u64 > globalOpenOfferCountField ( ledger, OfferODBM::keyFor_globalOpenOfferCount ());
+    globalOpenOfferCountField.set ( keepCount );
+}
+
+//----------------------------------------------------------------//
 AssetID::Index Ledger_Inventory::getAssetID ( string assetID ) const {
 
     const AbstractLedger& ledger = this->getLedger ();
