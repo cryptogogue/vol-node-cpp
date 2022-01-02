@@ -123,7 +123,7 @@ target_link_libraries ( volition
     padamose
     hiredis
     lognosis
-    rocksdb
+    #rocksdb
     routing
     sqlite
     PocoCrypto
