@@ -68,6 +68,6 @@ This approach is suitable for multi-player games of chance, as well as single-pl
 
 Blockchain protocols try to avoid [Sybil attacks](https://en.wikipedia.org/wiki/Sybil_attack) by making them expensive, either in terms of hash power or in "stake."
 
-Volition's "[Proof of Personhood](https://en.wikipedia.org/wiki/Proof_of_personhood)" model makes Sybil attacks expensive by requiring participants to procure strong digital identities from third-party KYC/AML vendors. Mounting an effective Sybil attack against Volition would entail identity theft at a large enough scale.
+Volition's "Proof of Identity" model makes Sybil attacks expensive by requiring participants to procure strong digital identities from third-party KYC vendors. Mounting an effective Sybil attack against Volition would entail identity theft at a large enough scale.
 
 Volition's consensus model is still compatible with permissionless scenarios, even as we eschew this approach. Instead of a digital identity, miners may be required to submit a proof-of-work solution or a proof-of-stake accounting that meets a certain threshold for their blocks to be eligible.
