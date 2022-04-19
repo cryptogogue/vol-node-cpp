@@ -52,7 +52,7 @@ Because branches are clipped to the shortest common length, it may happen that a
 DEFEAT_COUNT = FLOOR (( TIME ( N + 100 ) - TIME ( N + 1 )) / LOOKBACK ) + 1
 ```
 
-DEFEAT_COUNT has nothing to do with the length of the branch; it based only on the time difference between top and base of the branch.
+DEFEAT_COUNT has nothing to do with the length of the branch; it is based only on the time difference between top and base of the branch.
 
 In order to be considered against a longer branch, the shorter branch must be at least DEFEAT_COUNT long, the idea being that DEFEAT_COUNT is the shortest chain that could have been produced had the winning participants submitted their blocks at the latest time possible (i.e. the end of the LOOKBACK).
 
