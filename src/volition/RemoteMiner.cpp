@@ -138,9 +138,9 @@ bool RemoteMiner::receiveResponse ( const MiningMessengerResponse& response, tim
 RemoteMiner::RemoteMiner ( Miner& miner ) :
     mMiner ( miner ),
     mState ( STATE_OFFLINE ),
-    mAcceptedRelease ( 0 ),
     mRewind ( 0 ),
     mHeight ( 0 ),
+    mAcceptedRelease ( 0 ),
     mNextRelease ( 0 ) {
 }
 
