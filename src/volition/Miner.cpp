@@ -59,7 +59,7 @@ void Miner::affirmMessenger () {
 //----------------------------------------------------------------//
 void Miner::affirmRemoteMiner ( string url ) {
 
-    // TODO: properly check and formal URLs
+    // TODO: properly check and format URLs
     while ( url.size () && ( url [ url.size () - 1 ] == '/' )) {
         url.pop_back ();
     }
@@ -402,12 +402,17 @@ LedgerResult Miner::persistLedger ( shared_ptr < AbstractPersistenceProvider > p
     
     if ( FileSys::exists ( this->mMinersFilename )) {
     
-        SerializableSet < string > minerURLs;
-        FromJSONSerializer::fromJSONFile ( minerURLs, this->mMinersFilename );
-        
-        SerializableSet < string >::const_iterator urlIt = minerURLs.cbegin ();
-        for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
-            this->affirmRemoteMiner ( *urlIt );
+        try {
+            SerializableSet < string > minerURLs;
+            FromJSONSerializer::fromJSONFile ( minerURLs, this->mMinersFilename );
+            
+            SerializableSet < string >::const_iterator urlIt = minerURLs.cbegin ();
+            for ( ; urlIt != minerURLs.cend (); ++urlIt ) {
+                this->affirmRemoteMiner ( *urlIt );
+            }
+        }
+        catch ( ... ) {
+            LGN_LOG ( VOL_FILTER_APP, ERROR, "Bad miners.json" );
         }
     }
     
@@ -418,6 +423,22 @@ LedgerResult Miner::persistLedger ( shared_ptr < AbstractPersistenceProvider > p
 LedgerResult Miner::persistLedgerDebugStringStore ( shared_ptr < const Block > genesisBlock ) {
     
     return this->persistLedger ( make_shared < DebugStringStore >(), genesisBlock );
+}
+
+//----------------------------------------------------------------//
+LedgerResult Miner::persistLedgerRocksDbStringStore ( shared_ptr < const Block > genesisBlock, const string &configPath ) {
+    
+    #ifdef PARADMOSE_WITH_ROCKSDB
+        if ( this->mPrefixFilename.empty() ) return "Missing persistence path.";
+        
+        this->mLedgerFilename = Format::write ( "%s-rocksdb-stringstore.db", this->mPrefixFilename.c_str ());
+
+        return this->persistLedger ( RocksDbStringStore::make ( this->mLedgerFilename, configPath ), genesisBlock );
+    #else
+        UNUSED ( genesisBlock );
+        UNUSED ( configPath );
+        return "RocksDB not unsupported in this build.";
+    #endif
 }
 
 //----------------------------------------------------------------//
@@ -441,22 +462,6 @@ LedgerResult Miner::persistLedgerSQLiteStringStore ( shared_ptr < const Block > 
     
     return this->persistLedger ( SQLiteStringStore::make ( this->mLedgerFilename, config ), genesisBlock );
 }
-
-LedgerResult Miner::persistLedgerRocksDbStringStore ( shared_ptr < const Block > genesisBlock, const string &configPath ) {
-    
-    #ifdef PARADMOSE_WITH_ROCKSDB
-        if ( this->mPrefixFilename.empty() ) return "Missing persistence path.";
-        
-        this->mLedgerFilename = Format::write ( "%s-rocksdb-stringstore.db", this->mPrefixFilename.c_str ());
-
-        return this->persistLedger ( RocksDbStringStore::make ( this->mLedgerFilename, configPath ), genesisBlock );
-    #else
-        UNUSED ( genesisBlock );
-        UNUSED ( configPath );
-        return "RocksDB not unsupported in this build.";
-    #endif
-}
-
 
 //----------------------------------------------------------------//
 shared_ptr < Block > Miner::prepareBlock ( time_t now ) {

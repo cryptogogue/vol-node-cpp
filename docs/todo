@@ -161,6 +161,18 @@ DONE: wallet - double confirm on tag deletion
 DONE: wallet - send multiple transactions
 DONE: wallet - change messaging on 'blocked' transactions (all error'd)
 
+TODO: node - rotate logs
+TODO: node - require identity cert for provisioning mining accounts
+TODO: node - allow users to create verified accounts
+TODO: node - unique images via hash?
+TODO: node - prevent URL & image hash re-use
+TODO: node - whitelist/blacklist accounts
+TODO: node - asset migration?
+
+TODO: node - demurage?
+TODO: node - UBI?
+TODO: node - dead accounts?
+
 ----------------------------------------------------------------
 PRE-LAUNCH
 

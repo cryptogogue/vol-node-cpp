@@ -296,7 +296,13 @@ public:
 
         fstream inStream;
         inStream.open ( filename, ios_base::in );
-        FromJSONSerializer::fromJSON ( serializable, inStream );
+        try {
+            FromJSONSerializer::fromJSON ( serializable, inStream );
+        }
+        catch ( ... ) {
+            inStream.close ();
+            throw;
+        }
         inStream.close ();
     }
 
