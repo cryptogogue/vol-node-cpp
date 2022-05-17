@@ -27,10 +27,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		0BD7F2C4679C51E8A3AD50FB /* libPods-volition-gtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DB134108D40E366A8B7EA99 /* libPods-volition-gtest.a */; };
-		534E4B7D035AC51F8531461D /* libPods-util.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7DC74F79C8943E538901AB0 /* libPods-util.a */; };
-		876E3261FDBAAFDCFA33CE77 /* libPods-simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F16AC04619F5F5A7A17758B1 /* libPods-simulator.a */; };
-		90FF2D66544C7374029F78C9 /* libPods-server.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF26DB15A06182876F2F802A /* libPods-server.a */; };
 		CD039C6F23F49F060012CE4F /* TransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* TransactionHandler.h */; };
 		CD039C7123F7D7A90012CE4F /* LedgerFieldODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */; };
 		CD059BE324CAB1150049C97E /* InventoryLogEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */; };
@@ -117,6 +113,16 @@
 		CD2AB81E230F3D5700805F70 /* Genesis.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB81D230F3D5700805F70 /* Genesis.h */; };
 		CD2AB8232311214E00805F70 /* TestSignatureHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB8222311214E00805F70 /* TestSignatureHandler.h */; };
 		CD2AB8302314E35500805F70 /* RenameAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB82F2314E35500805F70 /* RenameAccount.h */; };
+		CD3D7241283402200083835B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D723E283402200083835B /* libcrypto.a */; };
+		CD3D7242283402200083835B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D723E283402200083835B /* libcrypto.a */; };
+		CD3D7243283402200083835B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D723E283402200083835B /* libcrypto.a */; };
+		CD3D7244283402200083835B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D723E283402200083835B /* libcrypto.a */; };
+		CD3D7245283402200083835B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D723E283402200083835B /* libcrypto.a */; };
+		CD3D7247283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
+		CD3D7248283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
+		CD3D7249283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
+		CD3D724A283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
+		CD3D724B283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
 		CD3E75A1272F26CB00F1E691 /* Release.h in Headers */ = {isa = PBXBuildFile; fileRef = CD3E75A0272F26CB00F1E691 /* Release.h */; };
 		CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4B5F0123FD6274005EB2CC /* KeyAccountDetailsHandler.h */; };
 		CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
@@ -845,16 +851,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1DA29CA94A1088A369FF4C53 /* Pods-volition-gtest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-volition-gtest.debug.xcconfig"; path = "Target Support Files/Pods-volition-gtest/Pods-volition-gtest.debug.xcconfig"; sourceTree = "<group>"; };
-		1DB134108D40E366A8B7EA99 /* libPods-volition-gtest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-volition-gtest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3277BB3449AFF25ECFB7CF48 /* Pods-simulator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-simulator.debug.xcconfig"; path = "Target Support Files/Pods-simulator/Pods-simulator.debug.xcconfig"; sourceTree = "<group>"; };
-		3597D59A1F49FE75CA78CEFD /* Pods-server.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-server.debug.xcconfig"; path = "Target Support Files/Pods-server/Pods-server.debug.xcconfig"; sourceTree = "<group>"; };
-		78C7F1AD9B344058FC31F693 /* Pods-util.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-util.release.xcconfig"; path = "Target Support Files/Pods-util/Pods-util.release.xcconfig"; sourceTree = "<group>"; };
-		801E98D8AE7FDC77A9553A5A /* Pods-util.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-util.debug.xcconfig"; path = "Target Support Files/Pods-util/Pods-util.debug.xcconfig"; sourceTree = "<group>"; };
-		B716AEF12B73C96DAED9DC8B /* Pods-simulator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-simulator.release.xcconfig"; path = "Target Support Files/Pods-simulator/Pods-simulator.release.xcconfig"; sourceTree = "<group>"; };
-		BF26DB15A06182876F2F802A /* libPods-server.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-server.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7DC74F79C8943E538901AB0 /* libPods-util.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-util.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CA9D810E378775C28CC39500 /* Pods-server.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-server.release.xcconfig"; path = "Target Support Files/Pods-server/Pods-server.release.xcconfig"; sourceTree = "<group>"; };
 		CD039C6E23F49F060012CE4F /* TransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHandler.h; path = "src/volition/web-miner-api/TransactionHandler.h"; sourceTree = "<group>"; };
 		CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerFieldODBM.h; path = src/volition/LedgerFieldODBM.h; sourceTree = "<group>"; };
 		CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InventoryLogEntry.cpp; path = src/volition/InventoryLogEntry.cpp; sourceTree = "<group>"; };
@@ -927,6 +923,8 @@
 		CD36664B20F730AA000E0B43 /* FromJSONSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FromJSONSerializer.h; path = src/volition/serialization/FromJSONSerializer.h; sourceTree = "<group>"; };
 		CD36664C20F730AA000E0B43 /* ToJSONSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ToJSONSerializer.h; path = src/volition/serialization/ToJSONSerializer.h; sourceTree = "<group>"; };
 		CD36664D20F73261000E0B43 /* Serialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Serialization.h; path = src/volition/serialization/Serialization.h; sourceTree = "<group>"; };
+		CD3D723E283402200083835B /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../../../../../usr/local/Cellar/openssl@1.1/1.1.1k/lib/libcrypto.a"; sourceTree = "<group>"; };
+		CD3D7246283402670083835B /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../../../../../usr/local/Cellar/openssl@1.1/1.1.1k/lib/libssl.a"; sourceTree = "<group>"; };
 		CD3E75A0272F26CB00F1E691 /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Release.h; path = src/volition/Release.h; sourceTree = "<group>"; };
 		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/volition/Block.cpp; sourceTree = "<group>"; };
 		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/volition/Block.h; sourceTree = "<group>"; };
@@ -1235,8 +1233,6 @@
 		CDFA23A3246051CD00B4CECF /* Ledger_Miner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ledger_Miner.h; path = src/volition/Ledger_Miner.h; sourceTree = "<group>"; };
 		CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryLogEntry.h; path = src/volition/InventoryLogEntry.h; sourceTree = "<group>"; };
 		CDFA23A82460808A00B4CECF /* InventoryLogHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InventoryLogHandler.h; path = "src/volition/web-miner-api/InventoryLogHandler.h"; sourceTree = "<group>"; };
-		E2D2082A886C2618F6C679E8 /* Pods-volition-gtest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-volition-gtest.release.xcconfig"; path = "Target Support Files/Pods-volition-gtest/Pods-volition-gtest.release.xcconfig"; sourceTree = "<group>"; };
-		F16AC04619F5F5A7A17758B1 /* libPods-simulator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-simulator.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1244,6 +1240,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD3D724A283402670083835B /* libssl.a in Frameworks */,
 				CD9FE6B922699D69009B4144 /* libhiredis.a in Frameworks */,
 				CD6C9ADE21C48756009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52E218B790E002AB0C3 /* liblua.a in Frameworks */,
@@ -1255,12 +1252,12 @@
 				CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */,
 				CD0C3E5A20C86D88006E3B1C /* libPocoFoundation.a in Frameworks */,
 				CD0C3E5B20C86D88006E3B1C /* libPocoNetSSL.a in Frameworks */,
+				CD3D7244283402200083835B /* libcrypto.a in Frameworks */,
 				CD0C3E5D20C86D88006E3B1C /* libPocoEncodings.a in Frameworks */,
 				CD0C3E5E20C86D88006E3B1C /* libPocoNet.a in Frameworks */,
 				CD0C3E5F20C86D88006E3B1C /* libPocoZip.a in Frameworks */,
 				CD0C3E6020C86D88006E3B1C /* libPocoXML.a in Frameworks */,
 				CD0C3E6220C86D88006E3B1C /* libPocoCrypto.a in Frameworks */,
-				534E4B7D035AC51F8531461D /* libPods-util.a in Frameworks */,
 				CDDD757D276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1277,6 +1274,7 @@
 				CD19DF7B259C18D50007ACF0 /* libsqlite.a in Frameworks */,
 				CD19DF7C259C18D50007ACF0 /* libvolition.a in Frameworks */,
 				CD19DF7D259C18D50007ACF0 /* libPocoUtil.a in Frameworks */,
+				CD3D7241283402200083835B /* libcrypto.a in Frameworks */,
 				CD19DF7E259C18D50007ACF0 /* libPocoJSON.a in Frameworks */,
 				CD19DF7F259C18D50007ACF0 /* libPocoFoundation.a in Frameworks */,
 				CD19DF80259C18D50007ACF0 /* libPocoNetSSL.a in Frameworks */,
@@ -1285,6 +1283,7 @@
 				CD19DF83259C18D50007ACF0 /* libPocoZip.a in Frameworks */,
 				CD19DF84259C18D50007ACF0 /* libPocoXML.a in Frameworks */,
 				CD19DF85259C18D50007ACF0 /* libPocoCrypto.a in Frameworks */,
+				CD3D7247283402670083835B /* libssl.a in Frameworks */,
 				CDDD757A276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1295,10 +1294,12 @@
 			files = (
 				CD9FE6BF22699D82009B4144 /* libhiredis.a in Frameworks */,
 				CDD36CE3215DA428004FC222 /* libgtest.a in Frameworks */,
+				CD3D724B283402670083835B /* libssl.a in Frameworks */,
 				CD6C9AE121C48762009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD52B218B78F4002AB0C3 /* liblua.a in Frameworks */,
 				CDD36CE4215DA429004FC222 /* libpadamose.a in Frameworks */,
 				CD4E817221057E91007DA585 /* libsimplecpprouter.a in Frameworks */,
+				CD3D7245283402200083835B /* libcrypto.a in Frameworks */,
 				CD19DF15259572DE0007ACF0 /* libsqlite.a in Frameworks */,
 				CD4E81D421059435007DA585 /* libvolition.a in Frameworks */,
 				CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */,
@@ -1310,7 +1311,6 @@
 				CD4E8159210579C8007DA585 /* libPocoZip.a in Frameworks */,
 				CD4E815A210579C8007DA585 /* libPocoXML.a in Frameworks */,
 				CD4E815C210579C8007DA585 /* libPocoCrypto.a in Frameworks */,
-				0BD7F2C4679C51E8A3AD50FB /* libPods-volition-gtest.a in Frameworks */,
 				CDDD757E276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1326,6 +1326,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD3D7249283402670083835B /* libssl.a in Frameworks */,
 				CD9FE6B322699D51009B4144 /* libhiredis.a in Frameworks */,
 				CD6C9ADB21C48749009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD531218B7921002AB0C3 /* liblua.a in Frameworks */,
@@ -1337,12 +1338,12 @@
 				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED586820BA3981003A2969 /* libPocoNetSSL.a in Frameworks */,
+				CD3D7243283402200083835B /* libcrypto.a in Frameworks */,
 				CDED586420BA3981003A2969 /* libPocoEncodings.a in Frameworks */,
 				CDED586720BA3981003A2969 /* libPocoNet.a in Frameworks */,
 				CDED586C20BA3981003A2969 /* libPocoZip.a in Frameworks */,
 				CDED586B20BA3981003A2969 /* libPocoXML.a in Frameworks */,
 				CDED586320BA3981003A2969 /* libPocoCrypto.a in Frameworks */,
-				876E3261FDBAAFDCFA33CE77 /* libPods-simulator.a in Frameworks */,
 				CDDD757C276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1365,6 +1366,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD3D7248283402670083835B /* libssl.a in Frameworks */,
 				CD9FE6AD22699CCF009B4144 /* libhiredis.a in Frameworks */,
 				CD6C9AD821C4873A009A3801 /* liblognosis.a in Frameworks */,
 				CDBFD534218B7935002AB0C3 /* liblua.a in Frameworks */,
@@ -1376,12 +1378,12 @@
 				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
 				CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */,
+				CD3D7242283402200083835B /* libcrypto.a in Frameworks */,
 				CDED588720BD1C5F003A2969 /* libPocoEncodings.a in Frameworks */,
 				CDED588820BD1C5F003A2969 /* libPocoNet.a in Frameworks */,
 				CDED588920BD1C5F003A2969 /* libPocoZip.a in Frameworks */,
 				CDED588A20BD1C5F003A2969 /* libPocoXML.a in Frameworks */,
 				CDED588B20BD1C5F003A2969 /* libPocoCrypto.a in Frameworks */,
-				90FF2D66544C7374029F78C9 /* libPods-server.a in Frameworks */,
 				CDDD757B276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1618,6 +1620,8 @@
 				CDED586120BA3981003A2969 /* libPocoXML.a */,
 				CDED586220BA3981003A2969 /* libPocoZip.a */,
 				CDDD7577276100E400325205 /* librocksdb.a */,
+				CD3D723E283402200083835B /* libcrypto.a */,
+				CD3D7246283402670083835B /* libssl.a */,
 			);
 			name = lib;
 			sourceTree = "<group>";
@@ -1741,8 +1745,6 @@
 				CD5C62F320B4F7A70038EE98 /* src */,
 				CD5C62F220B4F7930038EE98 /* lib */,
 				CD9345C32093EB140077BAD4 /* Products */,
-				CDED584020BA2008003A2969 /* Frameworks */,
-				F1B2961D03AD7166C7F2C388 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2030,17 +2032,6 @@
 			name = Details;
 			sourceTree = "<group>";
 		};
-		CDED584020BA2008003A2969 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				BF26DB15A06182876F2F802A /* libPods-server.a */,
-				F16AC04619F5F5A7A17758B1 /* libPods-simulator.a */,
-				C7DC74F79C8943E538901AB0 /* libPods-util.a */,
-				1DB134108D40E366A8B7EA99 /* libPods-volition-gtest.a */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		CDED587020BCDBD7003A2969 /* router */ = {
 			isa = PBXGroup;
 			children = (
@@ -2063,21 +2054,6 @@
 				CD0C3E6820C86FBA006E3B1C /* main-util.cpp */,
 			);
 			name = main;
-			sourceTree = "<group>";
-		};
-		F1B2961D03AD7166C7F2C388 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				3597D59A1F49FE75CA78CEFD /* Pods-server.debug.xcconfig */,
-				CA9D810E378775C28CC39500 /* Pods-server.release.xcconfig */,
-				801E98D8AE7FDC77A9553A5A /* Pods-util.debug.xcconfig */,
-				78C7F1AD9B344058FC31F693 /* Pods-util.release.xcconfig */,
-				1DA29CA94A1088A369FF4C53 /* Pods-volition-gtest.debug.xcconfig */,
-				E2D2082A886C2618F6C679E8 /* Pods-volition-gtest.release.xcconfig */,
-				3277BB3449AFF25ECFB7CF48 /* Pods-simulator.debug.xcconfig */,
-				B716AEF12B73C96DAED9DC8B /* Pods-simulator.release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2352,7 +2328,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD0C3E6420C86D88006E3B1C /* Build configuration list for PBXNativeTarget "util" */;
 			buildPhases = (
-				179030660C4E1F46E72354B6 /* [CP] Check Pods Manifest.lock */,
 				CD0C3E4220C86D88006E3B1C /* Sources */,
 				CD0C3E5520C86D88006E3B1C /* Frameworks */,
 				CDC2B34020D0A23B00300A96 /* Copy Binaries */,
@@ -2401,7 +2376,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD4E815E210579C8007DA585 /* Build configuration list for PBXNativeTarget "volition-gtest" */;
 			buildPhases = (
-				CD03ECBF9568080ED006A7E7 /* [CP] Check Pods Manifest.lock */,
 				CD4E8134210579C8007DA585 /* Sources */,
 				CD4E814F210579C8007DA585 /* Frameworks */,
 				CD4E815D210579C8007DA585 /* Copy Binaries */,
@@ -2445,7 +2419,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD9345C92093EB140077BAD4 /* Build configuration list for PBXNativeTarget "simulator" */;
 			buildPhases = (
-				9DE07624149B69E7E921BC77 /* [CP] Check Pods Manifest.lock */,
 				CD9345BE2093EB140077BAD4 /* Sources */,
 				CD9345BF2093EB140077BAD4 /* Frameworks */,
 				CD9345C02093EB140077BAD4 /* CopyFiles */,
@@ -2504,7 +2477,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CDED588D20BD1C5F003A2969 /* Build configuration list for PBXNativeTarget "server" */;
 			buildPhases = (
-				3C1D54D4C0DFBFB18BC4077D /* [CP] Check Pods Manifest.lock */,
 				CDED587720BD1C5F003A2969 /* Sources */,
 				CDED588020BD1C5F003A2969 /* Frameworks */,
 				CD0C3E2720C26097006E3B1C /* Copy Binaries */,
@@ -2655,94 +2627,6 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		179030660C4E1F46E72354B6 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-util-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3C1D54D4C0DFBFB18BC4077D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-server-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9DE07624149B69E7E921BC77 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-simulator-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CD03ECBF9568080ED006A7E7 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-volition-gtest-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		CD0C3E2720C26097006E3B1C /* Copy Binaries */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3194,13 +3078,13 @@
 /* Begin XCBuildConfiguration section */
 		CD0C3E6520C86D88006E3B1C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 801E98D8AE7FDC77A9553A5A /* Pods-util.debug.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3209,13 +3093,13 @@
 		};
 		CD0C3E6620C86D88006E3B1C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 78C7F1AD9B344058FC31F693 /* Pods-util.release.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3230,6 +3114,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3244,6 +3129,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3252,13 +3138,13 @@
 		};
 		CD4E815F210579C8007DA585 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1DA29CA94A1088A369FF4C53 /* Pods-volition-gtest.debug.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3267,13 +3153,13 @@
 		};
 		CD4E8160210579C8007DA585 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E2D2082A886C2618F6C679E8 /* Pods-volition-gtest.release.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3394,7 +3280,6 @@
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
 					/usr/local/opt/rocksdb/include,
-					Pods/libsodium/src/libsodium/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
@@ -3482,7 +3367,6 @@
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
 					/usr/local/opt/rocksdb/include,
-					Pods/libsodium/src/libsodium/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
@@ -3500,13 +3384,13 @@
 		};
 		CD9345CA2093EB140077BAD4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3277BB3449AFF25ECFB7CF48 /* Pods-simulator.debug.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3515,13 +3399,13 @@
 		};
 		CD9345CB2093EB140077BAD4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B716AEF12B73C96DAED9DC8B /* Pods-simulator.release.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3620,13 +3504,13 @@
 		};
 		CDED588E20BD1C5F003A2969 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3597D59A1F49FE75CA78CEFD /* Pods-server.debug.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3635,13 +3519,13 @@
 		};
 		CDED588F20BD1C5F003A2969 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CA9D810E378775C28CC39500 /* Pods-server.release.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/rocksdb/6.26.1/lib,
+					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

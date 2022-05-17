@@ -53,7 +53,7 @@ private:
     static void         dumpRSAHex              ( const Poco::Crypto::KeyPair* keyPair );
     static Format       getFormatFromString     ( string format );
     static string       getStringFromFormat     ( Format format );
-    void                initAsPEM               ( const Poco::Crypto::KeyPair* keyPair);
+    void                initAsPEM               ( const Poco::Crypto::KeyPair* keyPair );
     void                initFromEC              ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs );
     void                initFromRSA             ( const Poco::Crypto::KeyPair* keyPair, EncodeAs encodeAs );
     KeyPairPtr          makeKeyPairEC           () const;
