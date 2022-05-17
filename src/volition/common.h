@@ -86,6 +86,8 @@
 
 #include <lognosis/Logger.h>
 
+#include <sodium.h>
+
 #if __clang__
     #pragma clang diagnostic pop
 #endif

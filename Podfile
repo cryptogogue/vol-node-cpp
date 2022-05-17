@@ -2,6 +2,7 @@ platform :osx, '10.15'
 inhibit_all_warnings!
 
 def shared_pods
+  pod 'libsodium', '~> 1.0'
 	pod 'OpenSSL-Universal', '~> 1.0'
 end
 

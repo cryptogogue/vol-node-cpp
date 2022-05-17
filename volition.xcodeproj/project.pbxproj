@@ -73,7 +73,6 @@
 		CD19DF83259C18D50007ACF0 /* libPocoZip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586220BA3981003A2969 /* libPocoZip.a */; };
 		CD19DF84259C18D50007ACF0 /* libPocoXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586120BA3981003A2969 /* libPocoXML.a */; };
 		CD19DF85259C18D50007ACF0 /* libPocoCrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585920BA3981003A2969 /* libPocoCrypto.a */; };
-		CD19DF86259C18D50007ACF0 /* libPods-simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F16AC04619F5F5A7A17758B1 /* libPods-simulator.a */; };
 		CD19DF9F259C19600007ACF0 /* main-leaks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19DF9E259C19600007ACF0 /* main-leaks.cpp */; };
 		CD19DFB2259C19760007ACF0 /* main-simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9E7BB32500D71E0065C5FC /* main-simulator.cpp */; };
 		CD19E004259E20A60007ACF0 /* BlockTreeTag.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E002259E20A60007ACF0 /* BlockTreeTag.h */; };
@@ -846,13 +845,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		17BF70C7842C5B8FC27B5A50 /* Pods-simulator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-simulator.release.xcconfig"; path = "Target Support Files/Pods-simulator/Pods-simulator.release.xcconfig"; sourceTree = "<group>"; };
 		1DA29CA94A1088A369FF4C53 /* Pods-volition-gtest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-volition-gtest.debug.xcconfig"; path = "Target Support Files/Pods-volition-gtest/Pods-volition-gtest.debug.xcconfig"; sourceTree = "<group>"; };
 		1DB134108D40E366A8B7EA99 /* libPods-volition-gtest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-volition-gtest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3277BB3449AFF25ECFB7CF48 /* Pods-simulator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-simulator.debug.xcconfig"; path = "Target Support Files/Pods-simulator/Pods-simulator.debug.xcconfig"; sourceTree = "<group>"; };
 		3597D59A1F49FE75CA78CEFD /* Pods-server.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-server.debug.xcconfig"; path = "Target Support Files/Pods-server/Pods-server.debug.xcconfig"; sourceTree = "<group>"; };
 		78C7F1AD9B344058FC31F693 /* Pods-util.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-util.release.xcconfig"; path = "Target Support Files/Pods-util/Pods-util.release.xcconfig"; sourceTree = "<group>"; };
 		801E98D8AE7FDC77A9553A5A /* Pods-util.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-util.debug.xcconfig"; path = "Target Support Files/Pods-util/Pods-util.debug.xcconfig"; sourceTree = "<group>"; };
-		AE0EF6D88A7B8572FD595407 /* Pods-simulator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-simulator.debug.xcconfig"; path = "Target Support Files/Pods-simulator/Pods-simulator.debug.xcconfig"; sourceTree = "<group>"; };
+		B716AEF12B73C96DAED9DC8B /* Pods-simulator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-simulator.release.xcconfig"; path = "Target Support Files/Pods-simulator/Pods-simulator.release.xcconfig"; sourceTree = "<group>"; };
 		BF26DB15A06182876F2F802A /* libPods-server.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-server.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7DC74F79C8943E538901AB0 /* libPods-util.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-util.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA9D810E378775C28CC39500 /* Pods-server.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-server.release.xcconfig"; path = "Target Support Files/Pods-server/Pods-server.release.xcconfig"; sourceTree = "<group>"; };
@@ -1286,7 +1285,6 @@
 				CD19DF83259C18D50007ACF0 /* libPocoZip.a in Frameworks */,
 				CD19DF84259C18D50007ACF0 /* libPocoXML.a in Frameworks */,
 				CD19DF85259C18D50007ACF0 /* libPocoCrypto.a in Frameworks */,
-				CD19DF86259C18D50007ACF0 /* libPods-simulator.a in Frameworks */,
 				CDDD757A276100E400325205 /* librocksdb.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2072,12 +2070,12 @@
 			children = (
 				3597D59A1F49FE75CA78CEFD /* Pods-server.debug.xcconfig */,
 				CA9D810E378775C28CC39500 /* Pods-server.release.xcconfig */,
-				AE0EF6D88A7B8572FD595407 /* Pods-simulator.debug.xcconfig */,
-				17BF70C7842C5B8FC27B5A50 /* Pods-simulator.release.xcconfig */,
 				801E98D8AE7FDC77A9553A5A /* Pods-util.debug.xcconfig */,
 				78C7F1AD9B344058FC31F693 /* Pods-util.release.xcconfig */,
 				1DA29CA94A1088A369FF4C53 /* Pods-volition-gtest.debug.xcconfig */,
 				E2D2082A886C2618F6C679E8 /* Pods-volition-gtest.release.xcconfig */,
+				3277BB3449AFF25ECFB7CF48 /* Pods-simulator.debug.xcconfig */,
+				B716AEF12B73C96DAED9DC8B /* Pods-simulator.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -2379,7 +2377,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CD19DF88259C18D50007ACF0 /* Build configuration list for PBXNativeTarget "leaks" */;
 			buildPhases = (
-				CD19DF71259C18D50007ACF0 /* [CP] Check Pods Manifest.lock */,
 				CD19DF72259C18D50007ACF0 /* Sources */,
 				CD19DF74259C18D50007ACF0 /* Frameworks */,
 				CD19DF87259C18D50007ACF0 /* CopyFiles */,
@@ -2534,7 +2531,7 @@
 		CD9345BA2093EB140077BAD4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1340;
 				ORGANIZATIONNAME = "Patrick Meehan";
 				TargetAttributes = {
 					CD0C3E3F20C86D88006E3B1C = {
@@ -2759,28 +2756,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "OSX_BIN=bin\nmkdir -p $OSX_BIN\ncp -a \"${TARGET_BUILD_DIR}/${TARGET_NAME}\" $OSX_BIN\n";
-		};
-		CD19DF71259C18D50007ACF0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-simulator-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		CD4E815D210579C8007DA585 /* Copy Binaries */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3249,7 +3224,6 @@
 		};
 		CD19DF89259C18D50007ACF0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AE0EF6D88A7B8572FD595407 /* Pods-simulator.debug.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -3264,7 +3238,6 @@
 		};
 		CD19DF8A259C18D50007ACF0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 17BF70C7842C5B8FC27B5A50 /* Pods-simulator.release.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -3421,13 +3394,13 @@
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
 					/usr/local/opt/rocksdb/include,
+					Pods/libsodium/src/libsodium/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
 					/usr/local/opt/openssl/lib,
 					/usr/local/opt/rocksdb/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -3509,13 +3482,13 @@
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
 					/usr/local/opt/openssl/include,
 					/usr/local/opt/rocksdb/include,
+					Pods/libsodium/src/libsodium/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
 					/usr/local/opt/openssl/lib,
 					/usr/local/opt/rocksdb/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -3527,7 +3500,7 @@
 		};
 		CD9345CA2093EB140077BAD4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AE0EF6D88A7B8572FD595407 /* Pods-simulator.debug.xcconfig */;
+			baseConfigurationReference = 3277BB3449AFF25ECFB7CF48 /* Pods-simulator.debug.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -3542,7 +3515,7 @@
 		};
 		CD9345CB2093EB140077BAD4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 17BF70C7842C5B8FC27B5A50 /* Pods-simulator.release.xcconfig */;
+			baseConfigurationReference = B716AEF12B73C96DAED9DC8B /* Pods-simulator.release.xcconfig */;
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
