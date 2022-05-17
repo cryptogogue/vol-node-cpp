@@ -164,6 +164,7 @@ protected:
         LGN_LOG ( VOL_FILTER_APP, INFO, "Hello from VOLITION main.cpp!" );
         LGN_LOG ( VOL_FILTER_APP, INFO, "commit: %s", VOLITION_GIT_COMMIT_STR );
         LGN_LOG ( VOL_FILTER_APP, INFO, "build: %s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "openssl: %s", OPENSSL_VERSION_TEXT );
         
         time_t t;
         time ( &t );
