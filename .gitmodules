@@ -7,4 +7,4 @@ url=https://github.com/cryptogogue/poco.git
 url=https://github.com/cryptogogue/simple-cpp-router.git
 [submodule "3rd-party/padamose"]
 	path = 3rd-party/padamose
-	url = https://github.com/cryptogogue/padamose.git
+url=git@github.com:cryptogogue/padamose.git

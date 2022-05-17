@@ -159,20 +159,16 @@ protected:
 //        int sqliteSleepMillis               = configuration.getInt          ( "sqlite-sleep-millis", 100 ); // TODO
         string sslCertFile                  = configuration.getString       ( "openSSL.server.certificateFile", "" );
         
-        if ( logpath.size () > 0 ) {
-            time_t t;
-            time ( &t );
-            string timeStr = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), "%Y-%m-%d-%H%M%S" );
-            string logname = Format::write ( "%s/%s-%s.log", logpath.c_str (), minerID.c_str (), timeStr.c_str ());
-            string lognameErr = Format::write ( "%s/%s-%s-error.log", logpath.c_str (), minerID.c_str (), timeStr.c_str ());
-            
-            loguru::add_file ( logname.c_str (), loguru::Append, loguru::Verbosity_MAX );
-            loguru::add_file ( lognameErr.c_str (), loguru::Append, loguru::Verbosity_WARNING );
-        }
+        Lognosis::initLogFiles ( logpath.c_str (), Format::write ( "volition-%s", minerID.c_str ()).c_str (), 3, 1024 * 1024 );
         
         LGN_LOG ( VOL_FILTER_APP, INFO, "Hello from VOLITION main.cpp!" );
         LGN_LOG ( VOL_FILTER_APP, INFO, "commit: %s", VOLITION_GIT_COMMIT_STR );
         LGN_LOG ( VOL_FILTER_APP, INFO, "build: %s %s", VOLITION_BUILD_DATE_STR, VOLITION_GIT_TAG_STR );
+        
+        time_t t;
+        time ( &t );
+        string timeStr = Poco::DateTimeFormatter ().format ( Poco::Timestamp ().fromEpochTime ( t ), "%Y-%m-%d-%H:%M:%S" );
+        LGN_LOG ( VOL_FILTER_APP, INFO, "start time: %s", timeStr.c_str ());
         
         this->mMinerActivity = make_shared < MinerActivity >();
         this->mMinerActivity->setMinerID ( minerID );

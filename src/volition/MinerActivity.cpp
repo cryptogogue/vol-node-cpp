@@ -14,11 +14,24 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
+MinerActivity::MinerActivity () :
+    Poco::Activity < MinerActivity >( this, &MinerActivity::runActivity ),
+    mFixedUpdateDelayInMillis ( DEFAULT_FIXED_UPDATE_MILLIS ),
+    mVariableUpdateDelayInMillis ( DEFAULT_VARIABLE_UPDATE_MILLIS ) {
+}
+
+//----------------------------------------------------------------//
+MinerActivity::~MinerActivity () {
+}
+
+//----------------------------------------------------------------//
 void MinerActivity::runActivity () {
 
     this->mSnapshot = *this;
 
     while ( !this->isStopped ()) {
+        
+        Lognosis::rotateLogFiles ();
         
         Poco::Timestamp timestamp;
         
@@ -55,17 +68,6 @@ void MinerActivity::runActivity () {
 void MinerActivity::waitForShutdown () {
 
     this->mShutdownEvent.wait ();
-}
-
-//----------------------------------------------------------------//
-MinerActivity::MinerActivity () :
-    Poco::Activity < MinerActivity >( this, &MinerActivity::runActivity ),
-    mFixedUpdateDelayInMillis ( DEFAULT_FIXED_UPDATE_MILLIS ),
-    mVariableUpdateDelayInMillis ( DEFAULT_VARIABLE_UPDATE_MILLIS ) {
-}
-
-//----------------------------------------------------------------//
-MinerActivity::~MinerActivity () {
 }
 
 //================================================================//
