@@ -54,32 +54,32 @@ CryptoPublicKey CryptoKeyPair::getPublicKey () const {
 
 //----------------------------------------------------------------//
 void CryptoKeyPair::load ( string filename ) {
-
-    fstream inStream;
-    std::istream* dummy = NULL;
     
     // try JSON
     try {
+        fstream inStream;
         inStream.open ( filename, ios_base::in );
         FromJSONSerializer::fromJSONFile ( *this, filename );
         return;
     }
     catch ( ... ) {
-        inStream.close ();
     }
 
     // try EC
     try {
+        fstream inStream;
+        std::istream* dummy = NULL;
         inStream.open ( filename, ios_base::in );
         this->mKeyPair = make_shared < Poco::Crypto::ECKey >( dummy, &inStream );
         return;
     }
     catch ( ... ) {
-        inStream.close ();
     }
 
     // try RSA
     try {
+        fstream inStream;
+        std::istream* dummy = NULL;
         inStream.open ( filename, ios_base::in );
         this->mKeyPair = make_shared < Poco::Crypto::RSAKey >( dummy, &inStream );
         return;
@@ -87,7 +87,6 @@ void CryptoKeyPair::load ( string filename ) {
     catch ( ... ) {
     }
     
-    inStream.close ();
     this->mKeyPair = NULL;
 }
 

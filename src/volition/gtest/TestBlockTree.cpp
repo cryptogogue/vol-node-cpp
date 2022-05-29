@@ -8,6 +8,7 @@
 #include <volition/FileSys.h>
 #include <volition/InMemoryBlockTree.h>
 #include <volition/Miner.h>
+#include <volition/Release.h>
 #include <volition/SQLiteBlockTree.h>
 
 using namespace Volition;
@@ -22,7 +23,7 @@ void                    standardTest        ( AbstractBlockTree& tree );
 shared_ptr < Block > makeBlock ( string minerID, const Digest& visage, time_t now, const BlockHeader* prevBlock, const CryptoKeyPair& key ) {
 
     shared_ptr < Block > block = make_shared < Block >();
-    block->initialize ( minerID, visage, now, prevBlock, key );
+    block->initialize ( minerID, VOL_NODE_RELEASE, visage, now, prevBlock, key );
     block->sign ( key );
     return block;
 }
@@ -80,7 +81,7 @@ TEST ( BlockTree, sqlite ) {
     }
     ASSERT_EQ ( FileSys::exists ( SQLITE_FILE ), false );
 
-    SQLiteBlockTree tree ( SQLITE_FILE );
+    SQLiteBlockTree tree ( SQLITE_FILE, SQLiteConfig ());
     standardTest ( tree );
     
 //    ASSERT_EQ ( remove ( SQLITE_FILE ), 0 );

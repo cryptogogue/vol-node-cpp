@@ -20,7 +20,7 @@ class CryptoPublicKey :
     public AbstractCryptoKey {
 protected:
     
-    shared_ptr < Poco::Crypto::KeyPair >      mKeyPair;
+    shared_ptr < Poco::Crypto::KeyPair >        mKeyPair;
     
     //----------------------------------------------------------------//
     KeyPairPtr          AbstractCryptoKey_getKeyPair            () const override;

@@ -84,7 +84,6 @@
 		CD19E03E25A07E510007ACF0 /* SQLiteBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */; };
 		CD19E03F25A07E510007ACF0 /* SQLiteBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */; };
 		CD19E04125A2AB4A0007ACF0 /* TestBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E04025A2AB4A0007ACF0 /* TestBlockTree.cpp */; };
-		CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDFA2382245188DF00B4CECF /* TestCrafting.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
 		CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000442548CC9200DEB809 /* UnsecureRandom.h */; };
@@ -1610,6 +1609,7 @@
 		CD5C62F220B4F7930038EE98 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				CD3D723E283402200083835B /* libcrypto.a */,
 				CDED585920BA3981003A2969 /* libPocoCrypto.a */,
 				CDED585A20BA3981003A2969 /* libPocoEncodings.a */,
 				CDED585B20BA3981003A2969 /* libPocoFoundation.a */,
@@ -2716,7 +2716,6 @@
 				CDDA7552255A0B07007AAA07 /* TestCryptoKey.cpp in Sources */,
 				CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */,
 				CDDA75072556E724007AAA07 /* TestFeeDistributionTable.cpp in Sources */,
-				CD2000072545462E00DEB809 /* TestCrafting.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

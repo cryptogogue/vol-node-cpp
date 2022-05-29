@@ -285,7 +285,7 @@ CryptoKeyInfo::KeyPairPtr CryptoKeyInfo::makeKeyPairEC () const {
             string ecPrivKeyHexStr = this->mPrivateKey;
             
             if ( ecPrivKeyHexStr.size ()) {
-               
+                
                 BIGNUM* ecPrivKey = NULL;
                 BN_hex2bn ( &ecPrivKey, ecPrivKeyHexStr.c_str ());
                 assert ( ecPrivKey );
@@ -379,7 +379,7 @@ void CryptoKeyInfo::AbstractSerializable_serializeFrom ( const AbstractSerialize
 void CryptoKeyInfo::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     if ( this->mFormat == UNKNOWN ) return;
-        
+    
     serializer.serialize < string >( "type", CryptoKeyInfo::getStringFromFormat ( this->mFormat ));
     serializer.serialize < string >( "publicKey", this->mPublicKey );
     

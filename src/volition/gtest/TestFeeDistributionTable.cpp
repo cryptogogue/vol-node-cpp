@@ -40,21 +40,21 @@ TEST ( PayoutPolicy, simple_distribution ) {
 TEST ( FeePercent, fixedPoint ) {
     
     {
-        FeePercent percent ( 10, 5 );
+        FixedPoint percent ( 10, 5 );
         ASSERT_TRUE ( percent.computeAndRoundDown ( 1000 ) == 500 );
         ASSERT_TRUE ( percent.computeAndRoundDown ( 1001 ) == 500 );
         ASSERT_TRUE ( percent.computeAndRoundUp ( 1001 ) == 501 );
     }
     
     {
-        FeePercent percent ( 2, 1 );
+        FixedPoint percent ( 2, 1 );
         ASSERT_TRUE ( percent.computeAndRoundDown ( 1000 ) == 500 );
         ASSERT_TRUE ( percent.computeAndRoundDown ( 1001 ) == 500 );
         ASSERT_TRUE ( percent.computeAndRoundUp ( 1001 ) == 501 );
     }
     
     {
-        FeePercent percent ( 9, 3 );
+        FixedPoint percent ( 9, 3 );
         ASSERT_TRUE ( percent.computeAndRoundDown ( 100 ) == 33 );
         ASSERT_TRUE ( percent.computeAndRoundUp ( 100 ) == 34 );
     }

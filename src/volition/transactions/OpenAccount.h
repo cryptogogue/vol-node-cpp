@@ -25,9 +25,9 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                                  mSuffix;        // child name formatted <hex3>.<hex3>.<hex3>
-    CryptoPublicKey                         mKey;           // key
-    u64                                     mGrant;         // amount to fund
+    string                                  mSuffix;            // child name formatted <hex3>.<hex3>.<hex3>
+    CryptoPublicKey                         mKey;               // key
+    u64                                     mGrant;             // amount to fund
     SerializableSharedPtr < Policy >        mAccountPolicy;
     SerializableSharedPtr < Policy >        mKeyPolicy;
     
