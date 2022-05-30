@@ -84,6 +84,7 @@
 		CD19E03E25A07E510007ACF0 /* SQLiteBlockTree.h in Headers */ = {isa = PBXBuildFile; fileRef = CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */; };
 		CD19E03F25A07E510007ACF0 /* SQLiteBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */; };
 		CD19E04125A2AB4A0007ACF0 /* TestBlockTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD19E04025A2AB4A0007ACF0 /* TestBlockTree.cpp */; };
+		CD1BEA0D2844948800F68E2D /* TestSodium.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD1BEA0C2844948800F68E2D /* TestSodium.cpp */; };
 		CD20001825454E8500DEB809 /* TestFormatUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD85B1CB228D3C7D000C2A54 /* TestFormatUtils.cpp */; };
 		CD20002125454EF600DEB809 /* TestEntitlements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD762ADB23284438005AC85D /* TestEntitlements.cpp */; };
 		CD2000462548CC9200DEB809 /* UnsecureRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2000442548CC9200DEB809 /* UnsecureRandom.h */; };
@@ -185,6 +186,11 @@
 		CD63A1D122AF750000D5C801 /* IndexSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1D022AF750000D5C801 /* IndexSquap.h */; };
 		CD63A1D322AF892800D5C801 /* AssetMethodInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */; };
 		CD63A1DB22B2244600D5C801 /* Account.h in Headers */ = {isa = PBXBuildFile; fileRef = CD63A1DA22B2244600D5C801 /* Account.h */; };
+		CD67A407284492B9009A324D /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD67A404284492B9009A324D /* libsodium.a */; };
+		CD67A408284492B9009A324D /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD67A404284492B9009A324D /* libsodium.a */; };
+		CD67A409284492B9009A324D /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD67A404284492B9009A324D /* libsodium.a */; };
+		CD67A40A284492B9009A324D /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD67A404284492B9009A324D /* libsodium.a */; };
+		CD67A40B284492B9009A324D /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD67A404284492B9009A324D /* libsodium.a */; };
 		CD6C9AD821C4873A009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
 		CD6C9ADB21C48749009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
 		CD6C9ADE21C48756009A3801 /* liblognosis.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6C9AD521C48725009A3801 /* liblognosis.a */; };
@@ -888,6 +894,7 @@
 		CD19E03C25A07E510007ACF0 /* SQLiteBlockTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLiteBlockTree.h; path = src/volition/SQLiteBlockTree.h; sourceTree = "<group>"; };
 		CD19E03D25A07E510007ACF0 /* SQLiteBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLiteBlockTree.cpp; path = src/volition/SQLiteBlockTree.cpp; sourceTree = "<group>"; };
 		CD19E04025A2AB4A0007ACF0 /* TestBlockTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestBlockTree.cpp; path = src/volition/gtest/TestBlockTree.cpp; sourceTree = "<group>"; };
+		CD1BEA0C2844948800F68E2D /* TestSodium.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestSodium.cpp; path = src/volition/gtest/TestSodium.cpp; sourceTree = "<group>"; };
 		CD2000442548CC9200DEB809 /* UnsecureRandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnsecureRandom.h; path = src/volition/UnsecureRandom.h; sourceTree = "<group>"; };
 		CD2000572548DAF100DEB809 /* SimTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimTransaction.h; path = src/volition/simulation/SimTransaction.h; sourceTree = "<group>"; };
 		CD200073254A42E900DEB809 /* MiningReward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiningReward.h; path = src/volition/MiningReward.h; sourceTree = "<group>"; };
@@ -958,6 +965,7 @@
 		CD63A1D022AF750000D5C801 /* IndexSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IndexSquap.h; path = src/volition/IndexSquap.h; sourceTree = "<group>"; };
 		CD63A1D222AF892800D5C801 /* AssetMethodInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetMethodInvocation.h; path = src/volition/AssetMethodInvocation.h; sourceTree = "<group>"; };
 		CD63A1DA22B2244600D5C801 /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Account.h; path = src/volition/Account.h; sourceTree = "<group>"; };
+		CD67A404284492B9009A324D /* libsodium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsodium.a; path = ../../../../../../usr/local/Cellar/libsodium/1.0.18_1/lib/libsodium.a; sourceTree = "<group>"; };
 		CD6C9AD021C48725009A3801 /* lognosis.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = lognosis.xcodeproj; path = "3rd-party/padamose/3rd-party/lognosis/lognosis.xcodeproj"; sourceTree = "<group>"; };
 		CD73D813216546B400F43CC7 /* SerializerPropertyName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializerPropertyName.h; path = src/volition/serialization/SerializerPropertyName.h; sourceTree = "<group>"; };
 		CD73D8152165474000F43CC7 /* AbstractSerializerTo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractSerializerTo.h; path = src/volition/serialization/AbstractSerializerTo.h; sourceTree = "<group>"; };
@@ -1249,6 +1257,7 @@
 				CD4E81DD2105946A007DA585 /* libvolition.a in Frameworks */,
 				CD0C3E5620C86D88006E3B1C /* libPocoUtil.a in Frameworks */,
 				CD0C3E5920C86D88006E3B1C /* libPocoJSON.a in Frameworks */,
+				CD67A40A284492B9009A324D /* libsodium.a in Frameworks */,
 				CD0C3E5A20C86D88006E3B1C /* libPocoFoundation.a in Frameworks */,
 				CD0C3E5B20C86D88006E3B1C /* libPocoNetSSL.a in Frameworks */,
 				CD3D7244283402200083835B /* libcrypto.a in Frameworks */,
@@ -1275,6 +1284,7 @@
 				CD19DF7D259C18D50007ACF0 /* libPocoUtil.a in Frameworks */,
 				CD3D7241283402200083835B /* libcrypto.a in Frameworks */,
 				CD19DF7E259C18D50007ACF0 /* libPocoJSON.a in Frameworks */,
+				CD67A407284492B9009A324D /* libsodium.a in Frameworks */,
 				CD19DF7F259C18D50007ACF0 /* libPocoFoundation.a in Frameworks */,
 				CD19DF80259C18D50007ACF0 /* libPocoNetSSL.a in Frameworks */,
 				CD19DF81259C18D50007ACF0 /* libPocoEncodings.a in Frameworks */,
@@ -1309,6 +1319,7 @@
 				CD4E8158210579C8007DA585 /* libPocoNet.a in Frameworks */,
 				CD4E8159210579C8007DA585 /* libPocoZip.a in Frameworks */,
 				CD4E815A210579C8007DA585 /* libPocoXML.a in Frameworks */,
+				CD67A40B284492B9009A324D /* libsodium.a in Frameworks */,
 				CD4E815C210579C8007DA585 /* libPocoCrypto.a in Frameworks */,
 				CDDD757E276100E400325205 /* librocksdb.a in Frameworks */,
 			);
@@ -1335,6 +1346,7 @@
 				CD4E81DA2105945A007DA585 /* libvolition.a in Frameworks */,
 				CDED586A20BA3981003A2969 /* libPocoUtil.a in Frameworks */,
 				CDED586620BA3981003A2969 /* libPocoJSON.a in Frameworks */,
+				CD67A409284492B9009A324D /* libsodium.a in Frameworks */,
 				CDED586520BA3981003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED586820BA3981003A2969 /* libPocoNetSSL.a in Frameworks */,
 				CD3D7243283402200083835B /* libcrypto.a in Frameworks */,
@@ -1375,6 +1387,7 @@
 				CD4E81D721059447007DA585 /* libvolition.a in Frameworks */,
 				CDED588120BD1C5F003A2969 /* libPocoUtil.a in Frameworks */,
 				CDED588320BD1C5F003A2969 /* libPocoJSON.a in Frameworks */,
+				CD67A408284492B9009A324D /* libsodium.a in Frameworks */,
 				CDED588420BD1C5F003A2969 /* libPocoFoundation.a in Frameworks */,
 				CDED588520BD1C5F003A2969 /* libPocoNetSSL.a in Frameworks */,
 				CD3D7242283402200083835B /* libcrypto.a in Frameworks */,
@@ -1601,6 +1614,7 @@
 				CDC1388F212FCFDF004FA594 /* TestMiner.cpp */,
 				CD762ADB23284438005AC85D /* TestEntitlements.cpp */,
 				CD73D8312166E5CE00F43CC7 /* TestSimulation.cpp */,
+				CD1BEA0C2844948800F68E2D /* TestSodium.cpp */,
 				CDB8B3CB21AC9CEC004EE816 /* TestWebMiner.cpp */,
 			);
 			name = gtest;
@@ -1609,7 +1623,6 @@
 		CD5C62F220B4F7930038EE98 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				CD3D723E283402200083835B /* libcrypto.a */,
 				CDED585920BA3981003A2969 /* libPocoCrypto.a */,
 				CDED585A20BA3981003A2969 /* libPocoEncodings.a */,
 				CDED585B20BA3981003A2969 /* libPocoFoundation.a */,
@@ -1621,6 +1634,7 @@
 				CDED586220BA3981003A2969 /* libPocoZip.a */,
 				CDDD7577276100E400325205 /* librocksdb.a */,
 				CD3D723E283402200083835B /* libcrypto.a */,
+				CD67A404284492B9009A324D /* libsodium.a */,
 				CD3D7246283402670083835B /* libssl.a */,
 			);
 			name = lib;
@@ -2709,6 +2723,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD1BEA0D2844948800F68E2D /* TestSodium.cpp in Sources */,
 				CD4E81732105802E007DA585 /* main-gtest.cpp in Sources */,
 				CD20FFFE254545FA00DEB809 /* TestAssetID.cpp in Sources */,
 				CD19E04125A2AB4A0007ACF0 /* TestBlockTree.cpp in Sources */,
@@ -3080,11 +3095,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3095,11 +3105,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3110,11 +3115,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3125,11 +3125,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3140,11 +3135,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3155,11 +3145,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3277,11 +3262,13 @@
 					"3rd-party/padamose/3rd-party/googletest/googletest/include",
 					"3rd-party/padamose/3rd-party/lognosis/src",
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
+					/usr/local/opt/libsodium/include,
 					/usr/local/opt/openssl/include,
 					/usr/local/opt/rocksdb/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
+					/usr/local/opt/libsodium/lib,
 					/usr/local/opt/openssl/lib,
 					/usr/local/opt/rocksdb/lib,
 				);
@@ -3364,11 +3351,13 @@
 					"3rd-party/padamose/3rd-party/googletest/googletest/include",
 					"3rd-party/padamose/3rd-party/lognosis/src",
 					"3rd-party/padamose/3rd-party/lognosis/3rd-party",
+					/usr/local/opt/libsodium/include,
 					/usr/local/opt/openssl/include,
 					/usr/local/opt/rocksdb/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					poco/lib,
+					/usr/local/opt/libsodium/lib,
 					/usr/local/opt/openssl/lib,
 					/usr/local/opt/rocksdb/lib,
 				);
@@ -3386,11 +3375,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3401,11 +3385,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3506,11 +3485,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -3521,11 +3495,6 @@
 			buildSettings = {
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/rocksdb/6.26.1/lib,
-					"/usr/local/Cellar/openssl@1.1/1.1.1k/lib",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};

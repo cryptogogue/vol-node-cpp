@@ -80,11 +80,10 @@
 #include <Routing/Exceptions.h>
 #include <Routing/Router.h>
 
-#include <padamose/padamose.h>
-
 #include <lua.hpp>
-
 #include <lognosis/Logger.h>
+#include <padamose/padamose.h>
+#include <sodium.h>
 
 #if __clang__
     #pragma clang diagnostic pop
