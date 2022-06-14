@@ -90,7 +90,7 @@ public:
         
         const Policy* accountBequest = ledger.resolveBequest < AccountEntitlements >( account.mPolicy, account.getBequest (), this->mAccountPolicy.get ());
         if ( !accountBequest ) return "Missing account bequest.";
-
+        
         if ( !ledger.newAccount ( childName, this->mGrant, Ledger::MASTER_KEY_NAME, this->mKey, *keyBequest, *accountBequest )) return "Failed to create account.";;
 
         context.mAccountODBM.subFunds ( this->mGrant );

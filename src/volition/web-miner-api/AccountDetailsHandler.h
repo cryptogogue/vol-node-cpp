@@ -37,6 +37,8 @@ public:
         accountJSON->set ( "name",              accountName );
         accountJSON->set ( "index",             ( u64 )accountODBM.mAccountID );
         accountJSON->set ( "assetCount",        accountODBM.mAssetCount.get ( 0 ));
+        accountJSON->set ( "fingerprint",       accountODBM.mFingerprint.get ( "" ));
+        accountJSON->set ( "identityKeyName",   accountODBM.mIdentityKeyName.get ( "" ));
         accountJSON->set ( "inventoryNonce",    accountODBM.mInventoryNonce.get ( 0 ));
         accountJSON->set ( "nonce",             accountODBM.mTransactionNonce.get ( 0 ));
         accountJSON->set ( "height",            ledger.getHeight ());

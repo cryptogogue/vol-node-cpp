@@ -6,6 +6,8 @@
 #include <volition/web-miner-api/AccountDetailsHandler.h>
 #include <volition/web-miner-api/AccountKeyListHandler.h>
 #include <volition/web-miner-api/AccountLogHandler.h>
+#include <volition/web-miner-api/AccountTransactionHandler.h>
+#include <volition/web-miner-api/AccountTransactionQueueHandler.h>
 #include <volition/web-miner-api/AssetDetailsHandler.h>
 #include <volition/web-miner-api/BlockDetailsHandler.h>
 #include <volition/web-miner-api/BlockListHandler.h>
@@ -31,8 +33,6 @@
 #include <volition/web-miner-api/TestExceptions.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
-#include <volition/web-miner-api/TransactionHandler.h>
-#include <volition/web-miner-api/TransactionQueueHandler.h>
 #include <volition/web-miner-api/VisageHandler.h>
 
 #include <volition/MinerAPIFactory.h>
@@ -58,8 +58,8 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryAssetsHandler >               ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/assets/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryLogHandler >                  ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/log/:nonce/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >                ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/keys/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >                   ( HTTP::GET_PUT,    Format::write ( "%s/accounts/:accountName/transactions/:uuid/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionQueueHandler >              ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/transactions/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionHandler >            ( HTTP::GET_PUT,    Format::write ( "%s/accounts/:accountName/transactions/:uuid/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionQueueHandler >       ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/transactions/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/assets/:assetIndexOrID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/blocks/:blockID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >                     ( HTTP::GET,        Format::write ( "%s/blocks/?", prefix ));

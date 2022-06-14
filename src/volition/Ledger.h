@@ -163,6 +163,13 @@ public:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_identityKey ( string keyName ) {
+
+        assert ( keyName.size () > 0 );
+        return Format::write ( "identityKey.%s", keyName.c_str ());
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_maxBlockWeight () {
         return "maxBlockWeight";
     }
@@ -170,6 +177,12 @@ public:
     //----------------------------------------------------------------//
     static LedgerKey keyFor_miners () {
         return "miners";
+    }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_minerFingerprint ( string fingerprint ) {
+    
+        return Format::write ( "minerFingerprint.%s", fingerprint.c_str ());
     }
     
     //----------------------------------------------------------------//
@@ -270,6 +283,7 @@ public:
     shared_ptr < const BlockHeader >    getHeader                       ( u64 height ) const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
+    string                              getIdentityKey                  ( string keyName ) const;
     u64                                 getMaxBlockWeight               () const;
     MonetaryPolicy                      getMonetaryPolicy               () const;
     PayoutPolicy                        getPayoutPolicy                 () const;
@@ -298,6 +312,7 @@ public:
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
     bool                                setIdentity                     ( string identity );
+    LedgerResult                        setIdentityKey                  ( string keyName, string ed25519Hex );
     void                                setMonetaryPolicy               ( const MonetaryPolicy& monetaryPolicy );
     LedgerResult                        setPayoutPolicy                 ( const PayoutPolicy& distributionTable );
     void                                setPayoutPool                   ( u64 pool );

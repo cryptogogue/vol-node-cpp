@@ -1,55 +1,57 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_REGISTERMINER_H
-#define VOLITION_TRANSACTIONS_REGISTERMINER_H
+#ifndef VOLITION_TRANSACTIONS_SETIDENTITYKEY_H
+#define VOLITION_TRANSACTIONS_SETIDENTITYKEY_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
-#include <volition/MinerInfo.h>
+#include <volition/ContractWithDigest.h>
+#include <volition/Munge.h>
+#include <volition/Policy.h>
+#include <volition/Signature.h>
 
 namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// RegisterMiner
+// SetIdentityKey
 //================================================================//
-class RegisterMiner :
+class SetIdentityKey :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "REGISTER_MINER" )
+    TRANSACTION_TYPE ( "SET_IDENTITY_KEY" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string                                      mAccountName;
-    SerializableSharedConstPtr < MinerInfo >    mMinerInfo;
-
+    string          mKeyName;
+    string          mEd25519PublicHex;
+    
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "accountName",   this->mAccountName );
-        serializer.serialize ( "minerInfo",     this->mMinerInfo );
+        serializer.serialize ( "keyName",           this->mKeyName );
+        serializer.serialize ( "ed25519PublicHex",  this->mEd25519PublicHex );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "accountName",   this->mAccountName );
-        serializer.serialize ( "minerInfo",     this->mMinerInfo );
+        serializer.serialize ( "keyName",           this->mKeyName );
+        serializer.serialize ( "ed25519PublicHex",  this->mEd25519PublicHex );
     }
 
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
-    
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
-        if ( !this->mMinerInfo ) return "Missing miner info.";
-        if ( !this->mMinerInfo->getPublicKey ()) return "Missing miner public key.";
-        if ( !this->mMinerInfo->getVisage ()) return "Missing miner visage.";
         
-        return context.mLedger.registerMiner ( context.mLedger.getAccountID ( this->mAccountName ), *this->mMinerInfo, false );
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_IDENTITY_KEY )) return "Permission denied.";
+
+        context.mLedger.setIdentityKey ( this->mKeyName, this->mEd25519PublicHex );
+
+        return true;
     }
 };
 

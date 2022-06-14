@@ -44,7 +44,10 @@ public:
         if ( !context.mKeyEntitlements.check ( KeyEntitlements::UPDATE_MINER_INFO )) return "Permission denied.";
         if ( !this->mMinerInfo ) return "Missing miner info.";
         
-        return context.mLedger.updateMinerInfo ( context.mAccountID, *this->mMinerInfo );
+        if ( context.mAccountODBM.isMiner ()) {
+            return context.mLedger.updateMinerInfo ( context.mAccountID, *this->mMinerInfo );
+        }
+        return context.mLedger.registerMiner ( context.mAccountID, *this->mMinerInfo, true );
     }
 };
 

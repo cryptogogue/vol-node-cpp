@@ -27,7 +27,8 @@ TransactionResult LoadLedgerAccount::apply ( AbstractLedger& ledger ) const {
     if ( this->mMinerInfo ) {
         if ( !ledger.registerMiner (
             ledger.getAccountID ( this->mName ),
-            *this->mMinerInfo
+            *this->mMinerInfo,
+            false
         )) return false;
     }
 

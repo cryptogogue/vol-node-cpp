@@ -12,7 +12,8 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractTransactionBody::AbstractTransactionBody () {
+AbstractTransactionBody::AbstractTransactionBody () :
+    mMaxHeight ( 0 ) {
 }
 
 //----------------------------------------------------------------//

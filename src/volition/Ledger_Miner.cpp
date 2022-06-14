@@ -38,7 +38,7 @@ set < string > Ledger_Miner::getMiners () const {
 }
 
 //----------------------------------------------------------------//
-LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo& minerInfo ) {
+LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo& minerInfo, bool requireFingerprint ) {
 
     if ( !minerInfo.isValid ()) return "Invalid miner info.";
 
@@ -46,6 +46,18 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
     
     AccountODBM accountODBM ( ledger, accountID );
     if ( !accountODBM ) return "Miner account not found.";
+    if ( accountODBM.isMiner ()) return "Account is already a miner.";
+    
+    string fingerprint = accountODBM.mFingerprint.get ( "" );
+    
+    if ( fingerprint.size () > 0 ) {
+        LedgerFieldODBM < AccountID::Index > minerFingerprintField ( ledger, Ledger::keyFor_minerFingerprint ( fingerprint ), AccountID::NULL_INDEX );
+        if ( minerFingerprintField.exists ()) return "Identity fingerprint already in use.";
+        minerFingerprintField.set ( accountID );
+    }
+    else if ( requireFingerprint ) {
+        return "Missing fingerprint.";
+    }
     
     accountODBM.mMinerInfo.set ( minerInfo );
     accountODBM.mMinerHeight.set ( ledger.countBlocks ());

@@ -23,6 +23,7 @@ public:
     static constexpr const char* BETA_GET_DECK                  = "BETA_GET_DECK";
     static constexpr const char* BUY_ASSETS                     = "BUY_ASSETS";
     static constexpr const char* HARD_RESET                     = "HARD_RESET";
+    static constexpr const char* IDENTIFY_ACCOUNT               = "IDENTIFY_ACCOUNT";
     static constexpr const char* OFFER_ASSETS                   = "OFFER_ASSETS";
     static constexpr const char* OPEN_ACCOUNT                   = "OPEN_ACCOUNT";
     static constexpr const char* PUBLISH_SCHEMA                 = "PUBLISH_SCHEMA";
@@ -37,6 +38,7 @@ public:
     static constexpr const char* SEND_ASSETS                    = "SEND_ASSETS";
     static constexpr const char* SEND_VOL                       = "SEND_VOL";
     static constexpr const char* SET_ENTITLEMENTS               = "SET_ENTITLEMENTS";
+    static constexpr const char* SET_IDENTITY_KEY               = "SET_IDENTITY_KEY";
     static constexpr const char* SET_MONETARY_POLICY            = "SET_MONETARY_POLICY";
     static constexpr const char* SET_PAYOUT_POLICY              = "SET_PAYOUT_POLICY";
     static constexpr const char* SET_TERMS_OF_SERVICE           = "SET_TERMS_OF_SERVICE";
@@ -55,6 +57,7 @@ public:
         entitlements->setPath ( BETA_GET_DECK,                  BooleanEntitlement ( true ));
         entitlements->setPath ( BUY_ASSETS,                     BooleanEntitlement ( true ));
         entitlements->setPath ( HARD_RESET,                     BooleanEntitlement ( true ));
+        entitlements->setPath ( IDENTIFY_ACCOUNT,               BooleanEntitlement ( true ));
         entitlements->setPath ( OFFER_ASSETS,                   BooleanEntitlement ( true ));
         entitlements->setPath ( OPEN_ACCOUNT,                   BooleanEntitlement ( true ));
         entitlements->setPath ( PUBLISH_SCHEMA,                 BooleanEntitlement ( true ));
@@ -69,6 +72,7 @@ public:
         entitlements->setPath ( SEND_ASSETS,                    BooleanEntitlement ( true ));
         entitlements->setPath ( SEND_VOL,                       BooleanEntitlement ( true ));
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( true ));
+        entitlements->setPath ( SET_IDENTITY_KEY,               BooleanEntitlement ( true ));
         entitlements->setPath ( SET_MONETARY_POLICY,            BooleanEntitlement ( true ));
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( true ));
         entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( true ));
@@ -90,6 +94,7 @@ public:
         entitlements->setPath ( BETA_GET_DECK,                  BooleanEntitlement ( false ));
         entitlements->setPath ( BUY_ASSETS,                     BooleanEntitlement ( false ));
         entitlements->setPath ( HARD_RESET,                     BooleanEntitlement ( false ));
+        entitlements->setPath ( IDENTIFY_ACCOUNT,               BooleanEntitlement ( false ));
         entitlements->setPath ( OFFER_ASSETS,                   BooleanEntitlement ( false ));
         entitlements->setPath ( OPEN_ACCOUNT,                   BooleanEntitlement ( false ));
         entitlements->setPath ( PUBLISH_SCHEMA,                 BooleanEntitlement ( false ));
@@ -104,6 +109,7 @@ public:
         entitlements->setPath ( SEND_ASSETS,                    BooleanEntitlement ( true ));
         entitlements->setPath ( SEND_VOL,                       BooleanEntitlement ( true ));
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( false ));
+        entitlements->setPath ( SET_IDENTITY_KEY,               BooleanEntitlement ( false ));
         entitlements->setPath ( SET_MONETARY_POLICY,            BooleanEntitlement ( false ));
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( false ));
         entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( false ));

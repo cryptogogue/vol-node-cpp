@@ -19,7 +19,7 @@ protected:
     u64                     mGratuity;
     u64                     mProfitShare;
     u64                     mTransferTax;
-    string                  mAccountName;   // account of signer; account being modified; sender account
+    string                  mAccountName;   // account of signer
     string                  mKeyName;
     u64                     mNonce;
 

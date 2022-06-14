@@ -235,6 +235,12 @@ string AbstractLedger::getIdentity () const {
 }
 
 //----------------------------------------------------------------//
+string AbstractLedger::getIdentityKey ( string keyName ) const {
+
+    return this->getValueOrFallback < string >( keyFor_identityKey ( keyName ), "" );
+}
+
+//----------------------------------------------------------------//
 u64 AbstractLedger::getMaxBlockWeight () const {
 
     return this->getValue < u64 >( keyFor_maxBlockWeight ());
@@ -528,6 +534,13 @@ bool AbstractLedger::setIdentity ( string identity ) {
     LedgerKey KEY_FOR_IDENTITY = keyFor_identity ();
     if ( this->hasValue ( KEY_FOR_IDENTITY )) return false;
     this->setValue < string >( KEY_FOR_IDENTITY, identity );
+    return true;
+}
+
+//----------------------------------------------------------------//
+LedgerResult AbstractLedger::setIdentityKey ( string keyName, string ed25519Hex ) {
+
+    this->setValue < string >( keyFor_identityKey ( keyName ), ed25519Hex );
     return true;
 }
 

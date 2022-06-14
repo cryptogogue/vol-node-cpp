@@ -54,6 +54,16 @@ private:
     }
 
     //----------------------------------------------------------------//
+    static LedgerKey keyFor_fingerprint ( AccountID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.fingerprint", index ); });
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_identityKeyName ( AccountID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.identityKeyName", index ); });
+    }
+
+    //----------------------------------------------------------------//
     static LedgerKey keyFor_inventoryLogEntry ( AccountID::Index index, u64 inventoryNonce ) {
         return Format::write ( "account.%d.inventoryLog.%d", index, inventoryNonce );
     }
@@ -107,6 +117,8 @@ private:
         this->mAccountLogSize       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_accountLogSize ( this->mAccountID ),         0 );
         this->mAssetCount           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
         this->mBalance              = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_balance ( this->mAccountID ),                0 );
+        this->mFingerprint          = LedgerFieldODBM < string >( this->mLedger,                keyFor_fingerprint ( this->mAccountID ),            "" );
+        this->mIdentityKeyName      = LedgerFieldODBM < string >( this->mLedger,                keyFor_identityKeyName ( this->mAccountID ),        "" );
         this->mInventoryNonce       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
         this->mTransactionNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
         this->mName                 = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
@@ -124,6 +136,8 @@ public:
     LedgerFieldODBM < u64 >                 mAccountLogSize;
     LedgerFieldODBM < u64 >                 mAssetCount;
     LedgerFieldODBM < u64 >                 mBalance;
+    LedgerFieldODBM < string >              mFingerprint;
+    LedgerFieldODBM < string >              mIdentityKeyName;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
     LedgerFieldODBM < u64 >                 mTransactionNonce;
     LedgerFieldODBM < string >              mName;
@@ -224,6 +238,13 @@ public:
     bool isMiner () {
     
         return this->mMinerInfo.exists ();
+    }
+    
+    //----------------------------------------------------------------//
+    void setIdentity ( string fingerprint, string identityKeyName ) {
+    
+        this->mFingerprint.set ( fingerprint );
+        this->mIdentityKeyName.set ( identityKeyName );
     }
     
     //----------------------------------------------------------------//

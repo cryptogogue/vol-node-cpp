@@ -26,7 +26,7 @@ public:
 
     //----------------------------------------------------------------//
     set < string >                      getMiners                       () const;
-    LedgerResult                        registerMiner                   ( AccountID accountID, const MinerInfo& minerInfo );
+    LedgerResult                        registerMiner                   ( AccountID accountID, const MinerInfo& minerInfo, bool requireFingerprint );
     LedgerResult                        updateMinerInfo                 ( AccountID accountID, const MinerInfo& minerInfo );
 };
 

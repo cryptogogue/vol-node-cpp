@@ -14,9 +14,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// TransactionQueueHandler
+// AccountTransactionQueueHandler
 //================================================================//
-class TransactionQueueHandler :
+class AccountTransactionQueueHandler :
     public AbstractMinerAPIRequestHandler {
 public:
 

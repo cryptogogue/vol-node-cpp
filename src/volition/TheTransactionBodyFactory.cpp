@@ -24,6 +24,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::BuyAssets >();
     this->registerTransaction < Volition::Transactions::CancelOffer >();
     this->registerTransaction < Volition::Transactions::Genesis >();
+    this->registerTransaction < Volition::Transactions::IdentifyAccount >();
     this->registerTransaction < Volition::Transactions::LoadLedger >();
     this->registerTransaction < Volition::Transactions::OfferAssets >();
     this->registerTransaction < Volition::Transactions::OpenAccount >();
@@ -38,6 +39,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
     this->registerTransaction < Volition::Transactions::SendAssets >();
     this->registerTransaction < Volition::Transactions::SendVOL >();
     this->registerTransaction < Volition::Transactions::SetEntitlements >();
+    this->registerTransaction < Volition::Transactions::SetIdentityKey >();
     this->registerTransaction < Volition::Transactions::SetMonetaryPolicy >();
     this->registerTransaction < Volition::Transactions::SetPayoutPolicy >();
     this->registerTransaction < Volition::Transactions::SetTermsOfService >();

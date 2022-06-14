@@ -177,7 +177,8 @@ public:
             if ( account.mMinerInfo ) {
                 if ( !ledger.registerMiner (
                     ledger.getAccountID ( account.mName ),
-                    *account.mMinerInfo
+                    *account.mMinerInfo,
+                    false
                 )) return false;
             }
             accountVOL += account.mGrant;
