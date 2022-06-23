@@ -66,7 +66,7 @@ public:
     //----------------------------------------------------------------//
     TransactionDetailsPtr AbstractTransactionBody_getDetails ( const AbstractLedger& ledger ) const override {
         
-        AccountODBM senderODBM ( ledger, this->getMaker ()->getAccountName ());
+        AccountODBM senderODBM ( ledger, this->getMakerAccountName ());
         if ( !senderODBM ) return NULL;
         
         AccountODBM receiverODBM ( ledger, this->mAccountName );

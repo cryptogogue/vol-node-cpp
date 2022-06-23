@@ -33,7 +33,7 @@ void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > tran
 
     LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
     
-    this->mDatabase [ transaction->getMakerName ()].pushTransaction ( transaction );
+    this->mDatabase [ transaction->getMakerAccountName ()].pushTransaction ( transaction );
 }
 
 //----------------------------------------------------------------//

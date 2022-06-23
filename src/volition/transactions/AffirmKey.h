@@ -51,7 +51,7 @@ public:
     
         return context.mLedger.affirmKey (
             context.mAccountID,
-            this->mMaker->getKeyName (),
+            this->mMaker.getKeyName (),
             this->mKeyName,
             this->mKey,
             this->mPolicy.get ()

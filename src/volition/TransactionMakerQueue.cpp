@@ -82,10 +82,10 @@ void TransactionMakerQueue::pushTransaction ( shared_ptr < const Transaction > t
     LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
 
     if ( this->mCount == 0 ) {
-        this->mAccountName = transaction->getMakerName ();
+        this->mAccountName = transaction->getMakerAccountName ();
     }
     else {
-        assert ( this->mAccountName == transaction->getMakerName ());
+        assert ( this->mAccountName == transaction->getMakerAccountName ());
     }
 
     u64 nonce = this->isMakerless () ? this->mCount : transaction->getNonce ();

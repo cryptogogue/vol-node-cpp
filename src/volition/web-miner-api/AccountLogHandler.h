@@ -63,7 +63,7 @@ public:
                 const Transaction* transaction = block ? block->getTransaction ( entry->getTransactionIndex ()) : NULL;
                 if ( transaction ) {
                     
-                    AccountID accountID = ledger.getAccountID ( transaction->getMaker ()->getAccountName ());
+                    AccountID accountID = ledger.getAccountID ( transaction->getMakerAccountName ());
                                         
                     Poco::JSON::Object::Ptr json = ToJSONSerializer::toJSON ( *transaction ).extract < Poco::JSON::Object::Ptr >();
                     json->set ( "makerIndex", ( u64 )accountID );

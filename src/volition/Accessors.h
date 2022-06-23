@@ -8,9 +8,6 @@
 
 namespace Volition {
 
-#define GET_COMPOSED(type,name,member,fallback) \
-	inline type get##name () const { return member ? member->get##name () : fallback; }
-
 #define GET(type,name,member) \
 	inline type get##name () const { return member; }
 

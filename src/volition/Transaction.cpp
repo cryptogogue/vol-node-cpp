@@ -20,10 +20,9 @@ namespace Volition {
 TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
-        const TransactionMaker* maker = this->getMaker ();
-        if ( !maker ) return "Missing transaction maker.";
+        const TransactionMaker& maker = this->getMaker ();
     
-        TransactionContext context ( ledger, *maker, blockHeight, release, index, time );
+        TransactionContext context ( ledger, maker, blockHeight, release, index, time );
         TransactionResult result = this->checkSignature ( context, policy );
         if ( result ) {
             result = this->mBody->apply ( context );
@@ -44,7 +43,7 @@ bool Transaction::checkMaker ( string accountName, string uuid ) const {
 
     if ( !this->mBody ) return false;
     if ( this->getUUID ().size () == 0 ) return false;
-    return (( this->getMakerName () == accountName ) && ( this->getUUID () == uuid ));
+    return (( this->getMakerAccountName () == accountName ) && ( this->getUUID () == uuid ));
 }
 
 //----------------------------------------------------------------//
@@ -65,13 +64,6 @@ TransactionResult Transaction::checkSignature ( const TransactionContext& contex
 TransactionDetailsPtr Transaction::getDetails ( const AbstractLedger& ledger ) const {
 
     return this->mBody ? this->mBody->getDetails ( ledger ) : NULL;
-}
-
-//----------------------------------------------------------------//
-string Transaction::getMakerName () const {
-
-    const TransactionMaker* maker = this->getMaker ();
-    return maker ? maker->getAccountName () : "";
 }
 
 //----------------------------------------------------------------//

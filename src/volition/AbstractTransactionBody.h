@@ -49,10 +49,10 @@ protected:
 
     friend class Transaction;
 
-    SerializableUniquePtr < TransactionMaker >      mMaker;
-    u64                                             mMaxHeight; // expiration block
-    SerializableTime                                mRecordBy; // expiration date/time
-    string                                          mUUID;
+   TransactionMaker             mMaker;
+    u64                         mMaxHeight; // expiration block
+    SerializableTime            mRecordBy; // expiration date/time
+    string                      mUUID;
 
     //----------------------------------------------------------------//
     void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -71,29 +71,30 @@ protected:
 
 public:
 
-    GET_COMPOSED ( u64,         Fees,               this->mMaker,      0 )
-    GET_COMPOSED ( u64,         Gratuity,           this->mMaker,      0 )
-    GET_COMPOSED ( u64,         Nonce,              this->mMaker,      0 )
-    GET_COMPOSED ( u64,         ProfitShare,        this->mMaker,      0 )
-    GET_COMPOSED ( u64,         TransferTax,        this->mMaker,      0 )
+    GET ( u64,                      Fees,               this->mMaker.getFees ())
+    GET ( u64,                      Gratuity,           this->mMaker.getGratuity ())
+    GET ( const TransactionMaker&,  Maker,              this->mMaker )
+    GET ( string,                   MakerAccountName,   this->mMaker.getAccountName ())
+    GET ( u64,                      Nonce,              this->mMaker.getNonce ())
+    GET ( u64,                      ProfitShare,        this->mMaker.getProfitShare ())
+    GET ( u64,                      TransferTax,        this->mMaker.getTransferTax ())
 
-    GET ( u64,                  Maturity,           this->AbstractTransactionBody_maturity ())
-    GET ( string,               TypeString,         this->AbstractTransactionBody_typeString ())
-    GET ( u64,                  Weight,             this->AbstractTransactionBody_weight ())
+    GET ( u64,                      Maturity,           this->AbstractTransactionBody_maturity ())
+    GET ( string,                   TypeString,         this->AbstractTransactionBody_typeString ())
+    GET ( u64,                      Weight,             this->AbstractTransactionBody_weight ())
     
-    GET_SET ( u64,              MaxHeight,          this->mMaxHeight )
-    GET_SET ( time_t,           RecordBy,           this->mRecordBy )
-    GET_SET ( string,           UUID,               this->mUUID )
+    GET_SET ( u64,                  MaxHeight,          this->mMaxHeight )
+    GET_SET ( time_t,               RecordBy,           this->mRecordBy )
+    GET_SET ( string,               UUID,               this->mUUID )
 
     //----------------------------------------------------------------//
-                                AbstractTransactionBody                 ();
-                                ~AbstractTransactionBody                ();
-    TransactionResult           apply                                   ( TransactionContext& context ) const;
-    TransactionDetailsPtr       getDetails                              ( const AbstractLedger& ledger ) const;
-    const TransactionMaker*     getMaker                                () const;
-    u64                         getVOL                                  ( const TransactionContext& context ) const;
-    void                        setMaker                                ( const TransactionMaker& maker );
-    bool                        wasApplied                              ( const AbstractLedger& ledger ) const;
+                                    AbstractTransactionBody             ();
+                                    ~AbstractTransactionBody            ();
+    TransactionResult               apply                               ( TransactionContext& context ) const;
+    TransactionDetailsPtr           getDetails                          ( const AbstractLedger& ledger ) const;
+    u64                             getVOL                              ( const TransactionContext& context ) const;
+    void                            setMaker                            ( const TransactionMaker& maker );
+    bool                            wasApplied                          ( const AbstractLedger& ledger ) const;
 };
 
 } // namespace Volition

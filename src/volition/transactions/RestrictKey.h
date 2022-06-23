@@ -68,7 +68,7 @@ public:
         }
         
         Account accountUpdated = context.mAccount;
-        accountUpdated.mKeys [ this->mMaker->getKeyName ()] = keyUpdated;        
+        accountUpdated.mKeys [ this->mMaker.getKeyName ()] = keyUpdated;        
         context.mAccountODBM.mBody.set ( accountUpdated );
         
         return true;

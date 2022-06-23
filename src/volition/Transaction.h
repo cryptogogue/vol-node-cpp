@@ -41,22 +41,22 @@ protected:
 
 public:
 
-    GET_COMPOSED ( u64,                         Fees,                       this->mBody,        0 )
-    GET_COMPOSED ( u64,                         Gratuity,                   this->mBody,        0 )
-    GET_COMPOSED ( const TransactionMaker*,     Maker,                      this->mBody,        NULL )
-    GET_COMPOSED ( u64,                         Maturity,                   this->mBody,        0 )
-    GET_COMPOSED ( u64,                         Nonce,                      this->mBody,        0 )
-    GET_COMPOSED ( u64,                         ProfitShare,                this->mBody,        0 )
-    GET_COMPOSED ( u64,                         TransferTax,                this->mBody,        0 )
-    GET_COMPOSED ( string,                      TypeString,                 this->mBody,        "" )
-    GET_COMPOSED ( string,                      UUID,                       this->mBody,        "" )
-    GET_COMPOSED ( u64,                         Weight,                     this->mBody,        0 )
+    GET ( u64,                          Fees,                       this->mBody->getFees ())
+    GET ( u64,                          Gratuity,                   this->mBody->getGratuity ())
+    GET ( const TransactionMaker&,      Maker,                      this->mBody->getMaker ())
+    GET ( string,                       MakerAccountName,           this->mBody->getMakerAccountName ())
+    GET ( u64,                          Maturity,                   this->mBody->getMaturity ())
+    GET ( u64,                          Nonce,                      this->mBody->getNonce ())
+    GET ( u64,                          ProfitShare,                this->mBody->getProfitShare ())
+    GET ( u64,                          TransferTax,                this->mBody->getTransferTax ())
+    GET ( string,                       TypeString,                 this->mBody->getTypeString ())
+    GET ( string,                       UUID,                       this->mBody->getUUID ())
+    GET ( u64,                          Weight,                     this->mBody->getWeight ())
     
     //----------------------------------------------------------------//
     TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker                  ( string accountName, string uuid ) const;
     TransactionDetailsPtr       getDetails                  ( const AbstractLedger& ledger ) const;
-    string                      getMakerName                () const;
     void                        setBody                     ( shared_ptr < AbstractTransactionBody > body );
     void                        sign                        ( const CryptoKeyPair& keyPair );
                                 Transaction                 ();

@@ -39,18 +39,13 @@ TransactionDetailsPtr AbstractTransactionBody::getDetails ( const AbstractLedger
 }
 
 //----------------------------------------------------------------//
-const TransactionMaker* AbstractTransactionBody::getMaker () const {
-    return this->mMaker ? this->mMaker.get () : NULL;
-}
-
-//----------------------------------------------------------------//
 u64 AbstractTransactionBody::getVOL ( const TransactionContext& context ) const {
     return AbstractTransactionBody_getVOL ( context );
 }
 
 //----------------------------------------------------------------//
 void AbstractTransactionBody::setMaker ( const TransactionMaker& maker ) {
-    this->mMaker = make_unique < TransactionMaker >( maker );
+    this->mMaker = maker;
 }
 
 //----------------------------------------------------------------//
