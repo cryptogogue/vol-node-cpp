@@ -9,6 +9,7 @@
 #include <volition/BlockODBM.h>
 #include <volition/ContractWithDigest.h>
 #include <volition/Format.h>
+#include <volition/IdentityProvider.h>
 #include <volition/Ledger.h>
 #include <volition/LedgerFieldODBM.h>
 #include <volition/LuaContext.h>
@@ -235,9 +236,10 @@ string AbstractLedger::getIdentity () const {
 }
 
 //----------------------------------------------------------------//
-string AbstractLedger::getIdentityKey ( string keyName ) const {
-
-    return this->getValueOrFallback < string >( keyFor_identityKey ( keyName ), "" );
+IdentityProvider AbstractLedger::getIdentityProvider ( string name ) const {
+        
+    shared_ptr < IdentityProvider > provider = this->getObjectOrNull < IdentityProvider >( keyFor_identityProvider ( name ));
+    return provider ? *provider : IdentityProvider ();
 }
 
 //----------------------------------------------------------------//
@@ -368,7 +370,19 @@ UnfinishedBlockList AbstractLedger::getUnfinished () {
 //----------------------------------------------------------------//
 bool AbstractLedger::hasBlock ( string hash ) const {
 
-    return this->hasKey ( keyFor_blockHeightByHash ( hash ) );
+    return this->hasKey ( keyFor_blockHeightByHash ( hash ));
+}
+
+//----------------------------------------------------------------//
+bool AbstractLedger::hasEntitlements ( string name ) const {
+
+    return this->hasKey ( keyFor_entitlements ( name  ));
+}
+
+//----------------------------------------------------------------//
+bool AbstractLedger::hasEntitlements ( const Policy& policy ) const {
+
+    return this->hasEntitlements ( policy.getBase ());
 }
 
 //----------------------------------------------------------------//
@@ -517,9 +531,8 @@ void AbstractLedger::serializeEntitlements ( const Account& account, AbstractSer
 
 //----------------------------------------------------------------//
 void AbstractLedger::setEntitlements ( string name, const Entitlements& entitlements ) {
-
-    LedgerKey KEY_FOR_ENTITLEMENTS = keyFor_entitlements ( name );
-    this->setObject < Entitlements >( KEY_FOR_ENTITLEMENTS, entitlements );
+    
+    this->setObject < Entitlements >( keyFor_entitlements ( name ), entitlements );
 }
 
 //----------------------------------------------------------------//
@@ -538,9 +551,9 @@ bool AbstractLedger::setIdentity ( string identity ) {
 }
 
 //----------------------------------------------------------------//
-LedgerResult AbstractLedger::setIdentityKey ( string keyName, string ed25519Hex ) {
+LedgerResult AbstractLedger::setIdentityProvider ( string name, const IdentityProvider& identityProvider ) {
 
-    this->setValue < string >( keyFor_identityKey ( keyName ), ed25519Hex );
+    this->setObject < IdentityProvider >( keyFor_identityProvider ( name ), identityProvider );
     return true;
 }
 

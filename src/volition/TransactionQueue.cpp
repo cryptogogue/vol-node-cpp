@@ -14,7 +14,7 @@ namespace Volition {
 class MakerQueueInfo {
 public:
 
-    AccountID  mAccountIndex;
+    AccountID       mAccountIndex;
     u64             mNonce;
 
     //----------------------------------------------------------------//
@@ -25,136 +25,6 @@ public:
 };
 
 //================================================================//
-// MakerQueue
-//================================================================//
-
-//----------------------------------------------------------------//
-TransactionResult MakerQueue::checkForPendingTransactions ( u64 nonce ) const {
-
-    TransactionQueueConstIt transactionIt = this->mQueue.cbegin ();
-    for ( ; transactionIt != this->mQueue.cend (); ++transactionIt ) {
-    
-        shared_ptr < const Transaction > transaction = transactionIt->second;
-        u64 transactionNonce = transaction->getNonce ();
-    
-        if ( transactionNonce > nonce ) {
-            TransactionResult result = Format::write ( "Transactions submitted out of order. Nonce is %d, but next transaction in queue is %d.", ( int )nonce, ( int )transactionNonce );
-            result.setTransactionDetails ( *transaction );
-            return result;
-        }
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
-shared_ptr < const Transaction > MakerQueue::getTransaction ( string uuid ) const {
-
-    TransactionLookupConstIt transactionIt = this->mLookup.find ( uuid );
-    return transactionIt != this->mLookup.cend () ? transactionIt->second : NULL;
-}
-
-//----------------------------------------------------------------//
-bool MakerQueue::hasTransaction ( u64 nonce ) const {
-
-    return ( this->mQueue.find ( nonce ) != this->mQueue.end ());
-}
-
-//----------------------------------------------------------------//
-bool MakerQueue::hasTransactions () const {
-
-    return ( this->mQueue.size () > 0 );
-}
-
-//----------------------------------------------------------------//
-void MakerQueue::ignoreTransaction ( string message, string uuid ) {
-
-    this->mQueueStatus = BLOCKED_ON_IGNORE;
-    this->mTransactionStatus = TransactionStatus ( TransactionStatus::IGNORED, message, uuid );
-}
-
-//----------------------------------------------------------------//
-bool MakerQueue::isBlocked () const {
-
-    return ( this->mQueueStatus != STATUS_OK );
-}
-
-//----------------------------------------------------------------//
-MakerQueue::MakerQueue () {
-    
-    this->setTransactionResult ( true );
-}
-
-//----------------------------------------------------------------//
-shared_ptr < const Transaction > MakerQueue::nextTransaction ( u64 nonce ) const {
-
-    TransactionQueueConstIt transactionIt = this->mQueue.find ( nonce );
-    return transactionIt != this->mQueue.cend () ? transactionIt->second : NULL;
-}
-
-//----------------------------------------------------------------//
-void MakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
-
-    LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
-
-    u64 nonce = transaction->getNonce ();
-
-    this->mQueue [ nonce ] = transaction;
-    this->mLookup [ transaction->getUUID ()] = transaction;
-
-    // transactions *must* be submitted in order; erase any later transactions submitted before current nonce
-    TransactionQueueIt transactionItCursor = this->mQueue.find ( nonce )++;
-    
-    while ( transactionItCursor != this->mQueue.end ()) {
-
-        TransactionQueueIt transactionIt = transactionItCursor++;
-
-        if ( transactionIt->first > nonce ) {
-            this->mLookup.erase ( transactionIt->second->getUUID ());
-            this->mQueue.erase ( transactionIt );
-        }
-    }
-
-    this->setTransactionResult ( true );
-}
-
-//----------------------------------------------------------------//
-void MakerQueue::prune ( u64 nonce ) {
-
-    LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
-
-    TransactionQueueIt transactionItCursor = this->mQueue.begin ();
-    while ( transactionItCursor != this->mQueue.end ()) {
-
-        TransactionQueueIt transactionIt = transactionItCursor++;
-
-        LGN_LOG ( VOL_FILTER_TRANSACTION_QUEUE, INFO, "nonce (account): %d nonce (transaction): %d", ( int )nonce, ( int )transactionIt->first );
-
-        if ( transactionIt->first < nonce ) {
-            this->mLookup.erase ( transactionIt->second->getUUID ());
-            this->mQueue.erase ( transactionIt );
-        }
-    }
-}
-
-//----------------------------------------------------------------//
-void MakerQueue::setTransactionResult ( TransactionResult result ) {
-
-    if ( result ) {
-        this->mQueueStatus = STATUS_OK;
-        this->mTransactionStatus = TransactionStatus ();
-    }
-    else {
-        this->mQueueStatus = BLOCKED_ON_ERROR;
-        this->mTransactionStatus = TransactionStatus (
-            TransactionStatus::REJECTED,
-            result.getMessage (),
-            result.getUUID ()
-        );
-        this->mQueue.clear ();
-    }
-}
-
-//================================================================//
 // TransactionQueue
 //================================================================//
 
@@ -162,11 +32,8 @@ void MakerQueue::setTransactionResult ( TransactionResult result ) {
 void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > transaction ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
-
-    const TransactionMaker* maker = transaction->getMaker ();
-    assert ( maker );
     
-    this->mDatabase [ maker->getAccountName ()].pushTransaction ( transaction );
+    this->mDatabase [ transaction->getMakerName ()].pushTransaction ( transaction );
 }
 
 //----------------------------------------------------------------//
@@ -175,6 +42,8 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
     LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
 
     Ledger ledger = chain;
+
+    this->pruneTransactions ( ledger );
 
     const u64 maxBlockWeight    = ledger.getMaxBlockWeight ();
     u64 blockHeight             = block.getHeight ();
@@ -193,9 +62,10 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
         while ( makerQueueItCursor != this->mDatabase.end ()) {
             MakerQueueIt makerQueueIt = makerQueueItCursor++;
             
-            string accountName = makerQueueIt->first;
-            MakerQueue& makerQueue = makerQueueIt->second;
-          
+            string accountName      = makerQueueIt->first;
+            MakerQueue& makerQueue  = makerQueueIt->second;
+            bool byPosition         = accountName == "";
+            
             // skip if there's a cached error or if there aren't any transactions
             if ( makerQueue.isBlocked ()) continue;
             if ( !makerQueue.hasTransactions ()) continue;
@@ -203,7 +73,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             MakerQueueInfo info = infoCache [ accountName ];
           
             // make sure the account exists
-            if ( info.mAccountIndex == AccountID::NULL_INDEX ) {
+            if (( info.mAccountIndex == AccountID::NULL_INDEX ) && !byPosition ) {
                 info.mAccountIndex = ledger.getAccountID ( accountName );
                 if ( info.mAccountIndex == AccountID::NULL_INDEX ) {
                     this->mDatabase.erase ( makerQueueIt );
@@ -213,18 +83,22 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
                 infoCache [ accountName ] = info;
             }
             
-            // get the next transaction
-            shared_ptr < const Transaction > transaction = makerQueue.nextTransaction ( info.mNonce );
-            if ( !transaction ) {
-            
-                // get the next transaction
-                TransactionResult result = makerQueue.checkForPendingTransactions ( info.mNonce );
+            // make sure transactions are ordered correctly
+            if ( !byPosition ) {
+                TransactionResult result = makerQueue.checkTransactionOrder ( info.mNonce );
                 if ( !result ) {
                     makerQueue.setTransactionResult ( result );
+                    continue;
                 }
-                continue; // skip if no transaction
             }
             
+            // get the next transaction
+            shared_ptr < const Transaction > transaction = makerQueue.getTransaction ( info.mNonce );
+            if ( !transaction ) {
+                continue;
+            }
+            
+            // check the gratuity
             u64 gratuity = transaction->getGratuity ();
             u64 expectedGratuity = transaction->getWeight () * minimumGratuity;
             if ( gratuity < expectedGratuity ) {
@@ -232,6 +106,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
                 continue;
             }
             
+            // check the weight
             u64 transactionWeight = transaction->getWeight ();
             if ( maxBlockWeight < transactionWeight ) {
                 TransactionResult result ( Format::write ( "Transaction weight of %d exceeds maximum block size of %d.", transactionWeight, maxBlockWeight ));
@@ -240,6 +115,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
                 continue;
             }
             
+            // skip if block weight exceeded
             if (( blockWeight + transactionWeight ) > maxBlockWeight ) continue;
             
             // push a version in case the transaction fails
@@ -248,14 +124,16 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             TransactionResult result = transaction->apply ( ledger, blockHeight, release, transactionIndex, block.getTime (), policy );
             
             if ( result ) {
+                
                 // transaction succeeded!
                 block.pushTransaction ( transaction );
-                transactionIndex++;
-                blockWeight += transactionWeight;
-                info.mNonce = transaction->getNonce () + 1;
-                infoCache [ accountName ] = info;
                 
-                more = ( more || makerQueue.hasTransaction ( info.mNonce ));
+                info.mNonce++;
+                infoCache [ accountName ] = info;
+                blockWeight += transactionWeight;
+                transactionIndex++;
+                
+                more = ( more || ( bool )makerQueue.getTransaction ( info.mNonce ));
             }
             else {
                 makerQueue.setTransactionResult ( result );
@@ -276,7 +154,7 @@ TransactionStatus TransactionQueue::getLastStatus ( string accountName ) const {
 }
 
 //----------------------------------------------------------------//
-const MakerQueue* TransactionQueue::getMakerQueueOrNull ( string accountName ) const {
+const TransactionMakerQueue* TransactionQueue::getMakerQueueOrNull ( string accountName ) const {
 
     MakerQueueConstIt makerQueueIt = this->mDatabase.find ( accountName );
     if ( makerQueueIt != this->mDatabase.end ()) {
@@ -322,15 +200,17 @@ void TransactionQueue::pruneTransactions ( const AbstractLedger& chain ) {
         MakerQueue& makerQueue = makerQueueIt->second;
     
         AccountID accountID = ledger.getAccountID ( accountName );
-        if ( accountID != AccountID::NULL_INDEX ) {
-            
-            LGN_LOG ( VOL_FILTER_TRANSACTION_QUEUE, INFO, "pruning account queue: %s", accountName.c_str ());
-            
-            makerQueue.prune ( AccountODBM ( ledger, accountID ).mTransactionNonce.get ());
-            
-            if ( makerQueue.isBlocked ()) continue;
-            if ( makerQueue.hasTransactions ()) continue;
+        if ( accountID == AccountID::NULL_INDEX ) {
+            LGN_LOG ( VOL_FILTER_TRANSACTION_QUEUE, INFO, "pruning makerless queue" );
+            makerQueue.prune ( ledger );
         }
+        else {
+            LGN_LOG ( VOL_FILTER_TRANSACTION_QUEUE, INFO, "pruning account queue: %s", accountName.c_str ());
+            makerQueue.prune ( AccountODBM ( ledger, accountID ).mTransactionNonce.get ());
+        }
+        
+        if ( makerQueue.isBlocked ()) continue;
+        if ( makerQueue.hasTransactions ()) continue;
         
         LGN_LOG ( VOL_FILTER_TRANSACTION_QUEUE, INFO, "erasing empty account queue: %s", accountName.c_str ());
         this->mDatabase.erase ( makerQueueIt );

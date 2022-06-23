@@ -21,6 +21,8 @@
 
 namespace Volition {
 
+class AbstractLedger;
+
 //================================================================//
 // Policy
 //================================================================//
@@ -31,59 +33,21 @@ private:
     string                                          mBase; // If empty string, will load the base (i.e. most permissive) policy.
     SerializableSharedConstPtr < Entitlements >     mRestrictions;
 
+    //----------------------------------------------------------------//
+    void        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+
 public:
 
     //----------------------------------------------------------------//
-    shared_ptr < Entitlements > applyRestrictions ( const Entitlements& entitlements ) const {
-    
-        return this->mRestrictions ? this->mRestrictions->apply ( entitlements ) : make_shared < Entitlements >( entitlements );
-    }
-    
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        
-        serializer.serialize ( "base",          this->mBase );
-        serializer.serialize ( "restrictions",  this->mRestrictions );
-    }
-
-    //----------------------------------------------------------------//
-    void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        
-        serializer.serialize ( "base",          this->mBase );
-        serializer.serialize ( "restrictions",  this->mRestrictions );
-    }
-    
-    //----------------------------------------------------------------//
-    string getBase () const {
-    
-        return this->mBase;
-    }
-    
-    //----------------------------------------------------------------//
-    const Entitlements* getRestrictions () const {
-    
-        return this->mRestrictions.get ();
-    }
-    
-    //----------------------------------------------------------------//
-    bool isMatchOrSubsetOf ( const Entitlements& entitlements ) const {
-    
-        return this->mRestrictions ? this->mRestrictions->isMatchOrSubsetOf ( &entitlements ) : true;
-    }
-    
-    //----------------------------------------------------------------//
-    Policy () {
-    }
-    
-    //----------------------------------------------------------------//
-    ~Policy () {
-    }
-    
-    //----------------------------------------------------------------//
-    void setRestrictions ( shared_ptr < const Entitlements > restrictions ) {
-    
-        this->mRestrictions = restrictions;
-    }
+    shared_ptr < Entitlements >     applyRestrictions       ( const Entitlements& entitlements ) const;
+    string                          getBase                 () const;
+    const Entitlements*             getRestrictions         () const;
+    bool                            isMatchOrSubsetOf       ( const Entitlements& entitlements ) const;
+    bool                            isValid                 ( const AbstractLedger& ledger ) const;
+                                    Policy                  ();
+                                    ~Policy                 ();
+    void                            setRestrictions         ( shared_ptr < const Entitlements > restrictions );
 };
 
 } // namespace Volition

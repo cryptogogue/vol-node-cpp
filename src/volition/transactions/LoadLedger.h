@@ -53,10 +53,9 @@ public:
     SerializableList < LoadLedgerAccount >      mAccounts;
 
     //----------------------------------------------------------------//
-    void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
-    TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const override;
-    TransactionResult       AbstractTransactionBody_genesis         ( AbstractLedger& ledger ) const override;
+    void                    AbstractSerializable_serializeFrom          ( const AbstractSerializerFrom& serializer ) override;
+    void                    AbstractSerializable_serializeTo            ( AbstractSerializerTo& serializer ) const override;
+    TransactionResult       AbstractTransactionBody_apply               ( TransactionContext& context ) const override;
     
     //----------------------------------------------------------------//
     void                    init                    ( AbstractLedger& ledger );

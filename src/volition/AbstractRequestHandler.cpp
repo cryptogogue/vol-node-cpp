@@ -21,7 +21,7 @@ AbstractRequestHandler::~AbstractRequestHandler () {
 string AbstractRequestHandler::getMatchString ( string key ) const {
 
     if ( this->mMatch ) {
-        return ( *this->mMatch )[ key ];
+        return this->mMatch->getVar ( key, "" );
     }
     throw Routing::NoSuchElementException ( "" );
 }

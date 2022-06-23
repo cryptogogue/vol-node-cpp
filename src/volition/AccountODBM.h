@@ -47,6 +47,11 @@ private:
     static LedgerKey keyFor_body ( AccountID::Index index ) {
         return LedgerKey ([ = ]() { return Format::write ( "account.%d", index ); });
     }
+    
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_fingerprint ( AccountID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.fingerprint", index ); });
+    }
 
     //----------------------------------------------------------------//
     static LedgerKey keyFor_inventoryField ( AccountID::Index index, size_t position ) {
@@ -54,13 +59,8 @@ private:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_fingerprint ( AccountID::Index index ) {
-        return LedgerKey ([ = ]() { return Format::write ( "account.%d.fingerprint", index ); });
-    }
-
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_identityKeyName ( AccountID::Index index ) {
-        return LedgerKey ([ = ]() { return Format::write ( "account.%d.identityKeyName", index ); });
+    static LedgerKey keyFor_identityProviderName ( AccountID::Index index ) {
+        return LedgerKey ([ = ]() { return Format::write ( "account.%d.identityProviderName", index ); });
     }
 
     //----------------------------------------------------------------//
@@ -118,7 +118,7 @@ private:
         this->mAssetCount           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
         this->mBalance              = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_balance ( this->mAccountID ),                0 );
         this->mFingerprint          = LedgerFieldODBM < string >( this->mLedger,                keyFor_fingerprint ( this->mAccountID ),            "" );
-        this->mIdentityKeyName      = LedgerFieldODBM < string >( this->mLedger,                keyFor_identityKeyName ( this->mAccountID ),        "" );
+        this->mIdentityProviderName   = LedgerFieldODBM < string >( this->mLedger,                keyFor_identityProviderName ( this->mAccountID ),     "" );
         this->mInventoryNonce       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
         this->mTransactionNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
         this->mName                 = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
@@ -137,7 +137,7 @@ public:
     LedgerFieldODBM < u64 >                 mAssetCount;
     LedgerFieldODBM < u64 >                 mBalance;
     LedgerFieldODBM < string >              mFingerprint;
-    LedgerFieldODBM < string >              mIdentityKeyName;
+    LedgerFieldODBM < string >              mIdentityProviderName;
     LedgerFieldODBM < u64 >                 mInventoryNonce;
     LedgerFieldODBM < u64 >                 mTransactionNonce;
     LedgerFieldODBM < string >              mName;
@@ -154,21 +154,25 @@ public:
     }
 
     //----------------------------------------------------------------//
-    AccountODBM ( ConstOpt < AbstractLedger > ledger, AccountID index ) {
+    AccountODBM ( ConstOpt < AbstractLedger > ledger, AccountID accountID ) {
     
-        this->initialize ( ledger, index );
+        if ( accountID != AccountID::NULL_INDEX ) {
+            this->initialize ( ledger, accountID );
+        }
     }
     
     //----------------------------------------------------------------//
     AccountODBM ( ConstOpt < AbstractLedger > ledger, string accountName ) {
-    
+        
         this->initialize ( ledger, ledger.getConst ().getAccountID ( accountName ));
     }
     
     //----------------------------------------------------------------//
     void addFunds ( u64 amount ) {
     
-        return this->mBalance.set ( this->mBalance.get () + amount );
+        if ( amount > 0 ) {
+            this->mBalance.set ( this->mBalance.get () + amount );
+        }
     }
     
     //----------------------------------------------------------------//
@@ -241,17 +245,19 @@ public:
     }
     
     //----------------------------------------------------------------//
-    void setIdentity ( string fingerprint, string identityKeyName ) {
+    void setIdentity ( string fingerprint, string identityProviderName ) {
     
         this->mFingerprint.set ( fingerprint );
-        this->mIdentityKeyName.set ( identityKeyName );
+        this->mIdentityProviderName.set ( identityProviderName );
     }
     
     //----------------------------------------------------------------//
     void subFunds ( u64 amount ) {
     
-        u64 balance = this->mBalance.get ();
-        return this->mBalance.set ( amount <= balance ? balance - amount : 0 );
+        if ( amount > 0 ) {
+            u64 balance = this->mBalance.get ();
+            this->mBalance.set ( amount <= balance ? balance - amount : 0 );
+        }
     }
 };
 

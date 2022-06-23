@@ -27,7 +27,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */; };
+		CD039C6F23F49F060012CE4F /* TransactionHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C6E23F49F060012CE4F /* TransactionHandler.h */; };
 		CD039C7123F7D7A90012CE4F /* LedgerFieldODBM.h in Headers */ = {isa = PBXBuildFile; fileRef = CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */; };
 		CD059BE324CAB1150049C97E /* InventoryLogEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */; };
 		CD09ED752207D82500B09249 /* SchemaHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD09ED742207D82500B09249 /* SchemaHandler.h */; };
@@ -106,6 +106,11 @@
 		CD20FFD12542327500DEB809 /* SetMotto.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FFCF2542327500DEB809 /* SetMotto.h */; };
 		CD20FFDB2542327C00DEB809 /* ExtendNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = CD20FFDA2542327C00DEB809 /* ExtendNetwork.h */; };
 		CD20FFFE254545FA00DEB809 /* TestAssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */; };
+		CD28A46A2860F675009BB049 /* TransactionMakerQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD28A4662860F674009BB049 /* TransactionMakerQueue.cpp */; };
+		CD28A46B2860F675009BB049 /* TransactionMakerQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = CD28A4692860F675009BB049 /* TransactionMakerQueue.h */; };
+		CD28A46D286182DD009BB049 /* IdentityProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = CD28A46C286182DD009BB049 /* IdentityProvider.h */; };
+		CD28A46F28618F60009BB049 /* Policy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD28A46E28618F60009BB049 /* Policy.cpp */; };
+		CD28A47128628366009BB049 /* IdentityProviderDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD28A47028628366009BB049 /* IdentityProviderDetailsHandler.h */; };
 		CD2AB816230E79D400805F70 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB814230E79D400805F70 /* Transaction.cpp */; };
 		CD2AB817230E79D400805F70 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = CD2AB815230E79D400805F70 /* Transaction.h */; };
 		CD2AB81B230E7D1E00805F70 /* TransactionMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */; };
@@ -289,7 +294,7 @@
 		CDAA38EB251AA72400FEAFB5 /* SimulatorActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAA38E9251AA72400FEAFB5 /* SimulatorActivity.h */; };
 		CDAA38ED251ACBD300FEAFB5 /* AbstractScenario.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAA38EC251ACBD300FEAFB5 /* AbstractScenario.h */; };
 		CDAB334F2479293500901558 /* AssetMethod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAB334E2479293500901558 /* AssetMethod.cpp */; };
-		CDAC9F2C262148BD00DCA201 /* AccountTransactionQueueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F2A262148BD00DCA201 /* AccountTransactionQueueHandler.h */; };
+		CDAC9F2C262148BD00DCA201 /* TransactionQueueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F2A262148BD00DCA201 /* TransactionQueueHandler.h */; };
 		CDAC9F352621E05A00DCA201 /* DebugHTTPEchoHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */; };
 		CDAC9F3B2622E74000DCA201 /* AccountLogHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F392622E74000DCA201 /* AccountLogHandler.h */; };
 		CDAC9F76262A35B400DCA201 /* Psuedorandom.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAC9F74262A35B400DCA201 /* Psuedorandom.h */; };
@@ -453,7 +458,9 @@
 		CDEDC20822BD57BC00C5643C /* AssetID.h in Headers */ = {isa = PBXBuildFile; fileRef = CDEDC20722BD57BC00C5643C /* AssetID.h */; };
 		CDEDC20B22BD5AD800C5643C /* AssetID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDEDC20A22BD5AD800C5643C /* AssetID.cpp */; };
 		CDF0C3D9284EDE300088DE9F /* IdentifyAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF0C3D6284EDE300088DE9F /* IdentifyAccount.h */; };
-		CDF0C3DF284EE3000088DE9F /* SetIdentityKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF0C3DE284EE3000088DE9F /* SetIdentityKey.h */; };
+		CDF0C3DF284EE3000088DE9F /* SetIdentityProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF0C3DE284EE3000088DE9F /* SetIdentityProvider.h */; };
+		CDF0C3E5286006000088DE9F /* NewAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF0C3E4286006000088DE9F /* NewAccount.h */; };
+		CDF0C3E72860066C0088DE9F /* Gamercert.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF0C3E62860066C0088DE9F /* Gamercert.h */; };
 		CDF234EF25F2F479009DE55E /* TestExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF234ED25F2F479009DE55E /* TestExceptions.h */; };
 		CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF4B7682325A94A0004392C /* BetaGetAssets.h */; };
 		CDF7981F21EC3010002C4D80 /* FuncSquap.h in Headers */ = {isa = PBXBuildFile; fileRef = CDF7981E21EC3010002C4D80 /* FuncSquap.h */; };
@@ -858,7 +865,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountTransactionHandler.h; path = "src/volition/web-miner-api/AccountTransactionHandler.h"; sourceTree = "<group>"; };
+		CD039C6E23F49F060012CE4F /* TransactionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionHandler.h; path = "src/volition/web-miner-api/TransactionHandler.h"; sourceTree = "<group>"; };
 		CD039C7023F7D7A90012CE4F /* LedgerFieldODBM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LedgerFieldODBM.h; path = src/volition/LedgerFieldODBM.h; sourceTree = "<group>"; };
 		CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InventoryLogEntry.cpp; path = src/volition/InventoryLogEntry.cpp; sourceTree = "<group>"; };
 		CD09ED742207D82500B09249 /* SchemaHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SchemaHandler.h; path = "src/volition/web-miner-api/SchemaHandler.h"; sourceTree = "<group>"; };
@@ -915,6 +922,11 @@
 		CD20FFC2253D978600DEB809 /* ControlCommandHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlCommandHandler.h; path = "src/volition/web-miner-api/ControlCommandHandler.h"; sourceTree = "<group>"; };
 		CD20FFCF2542327500DEB809 /* SetMotto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetMotto.h; path = "src/volition/control-commands/SetMotto.h"; sourceTree = "<group>"; };
 		CD20FFDA2542327C00DEB809 /* ExtendNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtendNetwork.h; path = "src/volition/control-commands/ExtendNetwork.h"; sourceTree = "<group>"; };
+		CD28A4662860F674009BB049 /* TransactionMakerQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMakerQueue.cpp; path = src/volition/TransactionMakerQueue.cpp; sourceTree = "<group>"; };
+		CD28A4692860F675009BB049 /* TransactionMakerQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionMakerQueue.h; path = src/volition/TransactionMakerQueue.h; sourceTree = "<group>"; };
+		CD28A46C286182DD009BB049 /* IdentityProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IdentityProvider.h; path = src/volition/IdentityProvider.h; sourceTree = "<group>"; };
+		CD28A46E28618F60009BB049 /* Policy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Policy.cpp; path = src/volition/Policy.cpp; sourceTree = "<group>"; };
+		CD28A47028628366009BB049 /* IdentityProviderDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IdentityProviderDetailsHandler.h; path = "src/volition/web-miner-api/IdentityProviderDetailsHandler.h"; sourceTree = "<group>"; };
 		CD2AB814230E79D400805F70 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = src/volition/Transaction.cpp; sourceTree = "<group>"; };
 		CD2AB815230E79D400805F70 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Transaction.h; path = src/volition/Transaction.h; sourceTree = "<group>"; };
 		CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransactionMaker.cpp; path = src/volition/TransactionMaker.cpp; sourceTree = "<group>"; };
@@ -1066,7 +1078,7 @@
 		CDAA38E9251AA72400FEAFB5 /* SimulatorActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SimulatorActivity.h; path = src/volition/simulation/SimulatorActivity.h; sourceTree = "<group>"; };
 		CDAA38EC251ACBD300FEAFB5 /* AbstractScenario.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractScenario.h; path = src/volition/simulation/AbstractScenario.h; sourceTree = "<group>"; };
 		CDAB334E2479293500901558 /* AssetMethod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetMethod.cpp; path = src/volition/AssetMethod.cpp; sourceTree = "<group>"; };
-		CDAC9F2A262148BD00DCA201 /* AccountTransactionQueueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountTransactionQueueHandler.h; path = "src/volition/web-miner-api/AccountTransactionQueueHandler.h"; sourceTree = "<group>"; };
+		CDAC9F2A262148BD00DCA201 /* TransactionQueueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransactionQueueHandler.h; path = "src/volition/web-miner-api/TransactionQueueHandler.h"; sourceTree = "<group>"; };
 		CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugHTTPEchoHandler.h; path = "src/volition/web-miner-api/DebugHTTPEchoHandler.h"; sourceTree = "<group>"; };
 		CDAC9F392622E74000DCA201 /* AccountLogHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccountLogHandler.h; path = "src/volition/web-miner-api/AccountLogHandler.h"; sourceTree = "<group>"; };
 		CDAC9F74262A35B400DCA201 /* Psuedorandom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Psuedorandom.h; path = src/volition/Psuedorandom.h; sourceTree = "<group>"; };
@@ -1214,7 +1226,9 @@
 		CDEDC20A22BD5AD800C5643C /* AssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetID.cpp; path = src/volition/AssetID.cpp; sourceTree = "<group>"; };
 		CDEDC20C22BD645B00C5643C /* TestAssetID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestAssetID.cpp; path = src/volition/gtest/TestAssetID.cpp; sourceTree = "<group>"; };
 		CDF0C3D6284EDE300088DE9F /* IdentifyAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IdentifyAccount.h; path = src/volition/transactions/IdentifyAccount.h; sourceTree = "<group>"; };
-		CDF0C3DE284EE3000088DE9F /* SetIdentityKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetIdentityKey.h; path = src/volition/transactions/SetIdentityKey.h; sourceTree = "<group>"; };
+		CDF0C3DE284EE3000088DE9F /* SetIdentityProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetIdentityProvider.h; path = src/volition/transactions/SetIdentityProvider.h; sourceTree = "<group>"; };
+		CDF0C3E4286006000088DE9F /* NewAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NewAccount.h; path = src/volition/transactions/NewAccount.h; sourceTree = "<group>"; };
+		CDF0C3E62860066C0088DE9F /* Gamercert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gamercert.h; path = src/volition/Gamercert.h; sourceTree = "<group>"; };
 		CDF234ED25F2F479009DE55E /* TestExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestExceptions.h; path = "src/volition/web-miner-api/TestExceptions.h"; sourceTree = "<group>"; };
 		CDF4B7682325A94A0004392C /* BetaGetAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BetaGetAssets.h; path = src/volition/transactions/BetaGetAssets.h; sourceTree = "<group>"; };
 		CDF7981E21EC3010002C4D80 /* FuncSquap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuncSquap.h; path = src/volition/FuncSquap.h; sourceTree = "<group>"; };
@@ -1535,6 +1549,7 @@
 				CDD11D8922ED6E070051F04E /* AssetFieldValue.h */,
 				CD1613D226ED736500262A33 /* ContractWithDigest.h */,
 				CDF8AD5721F39969000E285F /* Entropy.h */,
+				CD28A46C286182DD009BB049 /* IdentityProvider.h */,
 				CD8DB74A2653D3030073D58F /* IndexID.h */,
 				CD059BE224CAB1150049C97E /* InventoryLogEntry.cpp */,
 				CDFA23A6246065AF00B4CECF /* InventoryLogEntry.h */,
@@ -1555,6 +1570,7 @@
 				CD0C3E1920C25A00006E3B1C /* MinerInfo.h */,
 				CD97F7182607E5CD00C5C8A6 /* MonetaryPolicy.h */,
 				CDDA74FC2556D997007AAA07 /* PayoutPolicy.h */,
+				CD28A46E28618F60009BB049 /* Policy.cpp */,
 				CD59F3BC20E8950100705AEB /* Policy.h */,
 				CD73E690267C8F90007EE67A /* Stamp.h */,
 				CDDA74D82556B180007AAA07 /* TransactionFeeSchedule.h */,
@@ -1691,6 +1707,7 @@
 				CD4665AB20BFF3DD00A02D55 /* AbstractTransactionBody.cpp */,
 				CD4665AC20BFF3DD00A02D55 /* AbstractTransactionBody.h */,
 				CD8DB75A26642B2C0073D58F /* AssetTransferDetails.h */,
+				CDF0C3E62860066C0088DE9F /* Gamercert.h */,
 				CD0C3E1420C14E8A006E3B1C /* TheTransactionBodyFactory.cpp */,
 				CD0C3E1520C14E8A006E3B1C /* TheTransactionBodyFactory.h */,
 				CD2AB814230E79D400805F70 /* Transaction.cpp */,
@@ -1699,6 +1716,8 @@
 				CDA1573823FA7B8800DFACCF /* TransactionContext.h */,
 				CD2AB819230E7D1E00805F70 /* TransactionMaker.cpp */,
 				CD2AB81A230E7D1E00805F70 /* TransactionMaker.h */,
+				CD28A4662860F674009BB049 /* TransactionMakerQueue.cpp */,
+				CD28A4692860F675009BB049 /* TransactionMakerQueue.h */,
 				CD964FA123C48EAB009010C3 /* TransactionQueue.cpp */,
 				CD964FA223C48EAB009010C3 /* TransactionQueue.h */,
 				CDFA239A24601DA100B4CECF /* TransactionResult.cpp */,
@@ -1832,8 +1851,6 @@
 				CDB8B3F721ACC874004EE816 /* AccountDetailsHandler.h */,
 				CDB8B3F821ACC874004EE816 /* AccountKeyListHandler.h */,
 				CDAC9F392622E74000DCA201 /* AccountLogHandler.h */,
-				CD039C6E23F49F060012CE4F /* AccountTransactionHandler.h */,
-				CDAC9F2A262148BD00DCA201 /* AccountTransactionQueueHandler.h */,
 				CD63A1BD22AB3D2E00D5C801 /* AssetDetailsHandler.h */,
 				CDB8B3F921ACC874004EE816 /* BlockDetailsHandler.h */,
 				CDB8B3FA21ACC874004EE816 /* BlockListHandler.h */,
@@ -1844,6 +1861,7 @@
 				CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */,
 				CDDA755B255B490C007AAA07 /* DebugKeyGenHandler.h */,
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
+				CD28A47028628366009BB049 /* IdentityProviderDetailsHandler.h */,
 				CD51E51D24A60A3E00A0033B /* InventoryAssetsHandler.h */,
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
 				CDFA23A82460808A00B4CECF /* InventoryLogHandler.h */,
@@ -1859,6 +1877,8 @@
 				CDF234ED25F2F479009DE55E /* TestExceptions.h */,
 				CDFA235521C24AF300987232 /* TestKeyIDHandler.h */,
 				CD2AB8222311214E00805F70 /* TestSignatureHandler.h */,
+				CD039C6E23F49F060012CE4F /* TransactionHandler.h */,
+				CDAC9F2A262148BD00DCA201 /* TransactionQueueHandler.h */,
 				CD9C395B261D876B00AE8782 /* VisageHandler.h */,
 			);
 			name = api;
@@ -1942,6 +1962,7 @@
 				CDF0C3D6284EDE300088DE9F /* IdentifyAccount.h */,
 				CDDA748E2552D423007AAA07 /* LoadLedger.cpp */,
 				CDDA748F2552D423007AAA07 /* LoadLedger.h */,
+				CDF0C3E4286006000088DE9F /* NewAccount.h */,
 				CD8DB7452653CEC80073D58F /* OfferAssets.h */,
 				CDBFD53F218B8999002AB0C3 /* OpenAccount.h */,
 				CDBFD540218B8999002AB0C3 /* PublishSchema.h */,
@@ -1955,7 +1976,7 @@
 				CDBFD543218B8999002AB0C3 /* SendAssets.h */,
 				CDBFD544218B8999002AB0C3 /* SendVOL.h */,
 				CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */,
-				CDF0C3DE284EE3000088DE9F /* SetIdentityKey.h */,
+				CDF0C3DE284EE3000088DE9F /* SetIdentityProvider.h */,
 				CD97F71A2607FC1D00C5C8A6 /* SetMonetaryPolicy.h */,
 				CDDA75312556F5ED007AAA07 /* SetPayoutPolicy.h */,
 				CD1613CF26ED71E400262A33 /* SetTermsOfService.h */,
@@ -2106,7 +2127,7 @@
 				CD762AD0232825BE005AC85D /* AbstractEntitlement.h in Headers */,
 				CD97F7172607E53300C5C8A6 /* FixedPoint.h in Headers */,
 				CDA1573723FA59FE00DFACCF /* KeyAndPolicy.h in Headers */,
-				CD039C6F23F49F060012CE4F /* AccountTransactionHandler.h in Headers */,
+				CD039C6F23F49F060012CE4F /* TransactionHandler.h in Headers */,
 				CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */,
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CD77522D2532A76200A53765 /* Accessors.h in Headers */,
@@ -2139,6 +2160,7 @@
 				CDA1573923FA7B8800DFACCF /* TransactionContext.h in Headers */,
 				CD9941F725F7E60100524DB6 /* ScopedProfile.h in Headers */,
 				CDA1574123FAA92300DFACCF /* Munge.h in Headers */,
+				CDF0C3E5286006000088DE9F /* NewAccount.h in Headers */,
 				CD9C395D261D876B00AE8782 /* VisageHandler.h in Headers */,
 				CDAC9F76262A35B400DCA201 /* Psuedorandom.h in Headers */,
 				CD7751E6252FE41C00A53765 /* ConsensusBlockDetailsHandler.h in Headers */,
@@ -2165,6 +2187,7 @@
 				CDB8B40421ACC874004EE816 /* BlockListHandler.h in Headers */,
 				CDB8B3C721AC7DB8004EE816 /* Asset.h in Headers */,
 				CD85B1D3228F47DA000C2A54 /* FileSys.h in Headers */,
+				CDF0C3E72860066C0088DE9F /* Gamercert.h in Headers */,
 				CDAD9437247138B0003FD2CC /* ReserveAccountName.h in Headers */,
 				CD2AB817230E79D400805F70 /* Transaction.h in Headers */,
 				CD19E03225A0658E0007ACF0 /* BlockTreeEnums.h in Headers */,
@@ -2204,6 +2227,7 @@
 				CD73E694267C9B81007EE67A /* StampODBM.h in Headers */,
 				CD9E7BC1250B976C0065C5FC /* HTTPMiningMessenger.h in Headers */,
 				CDAA38E7251AA13900FEAFB5 /* SimMiningNetwork.h in Headers */,
+				CD28A46D286182DD009BB049 /* IdentityProvider.h in Headers */,
 				CD8BAE4B21EBEEEF00B5040E /* SerializerKeys.h in Headers */,
 				CD99420825F9303900524DB6 /* AbstractMinerAPIRequestHandler.h in Headers */,
 				CDBFD550218B8999002AB0C3 /* SendVOL.h in Headers */,
@@ -2225,6 +2249,7 @@
 				CD7752B62536966100A53765 /* CryptoPublicKey.h in Headers */,
 				CD20FFD12542327500DEB809 /* SetMotto.h in Headers */,
 				CDF8AD5821F39969000E285F /* Entropy.h in Headers */,
+				CD28A47128628366009BB049 /* IdentityProviderDetailsHandler.h in Headers */,
 				CDFA23A5246051CD00B4CECF /* Ledger_Miner.h in Headers */,
 				CD7C747923B052BF00FBE468 /* SerializableOpaque.h in Headers */,
 				CD4E81B4210593E5007DA585 /* AbstractSerializable.h in Headers */,
@@ -2282,13 +2307,14 @@
 				CD20FFDB2542327C00DEB809 /* ExtendNetwork.h in Headers */,
 				CD4E81BD210593E5007DA585 /* Serialization.h in Headers */,
 				CDF4B7692325A94A0004392C /* BetaGetAssets.h in Headers */,
+				CD28A46B2860F675009BB049 /* TransactionMakerQueue.h in Headers */,
 				CD8BAE4721EBD46C00B5040E /* UnarySquap.h in Headers */,
 				CD4E81A2210593BD007DA585 /* Policy.h in Headers */,
-				CDAC9F2C262148BD00DCA201 /* AccountTransactionQueueHandler.h in Headers */,
+				CDAC9F2C262148BD00DCA201 /* TransactionQueueHandler.h in Headers */,
 				CD775257253535FA00A53765 /* LedgerObjectFieldODBM.h in Headers */,
 				CDDA74FD2556D997007AAA07 /* PayoutPolicy.h in Headers */,
 				CDDA755C255B490C007AAA07 /* DebugKeyGenHandler.h in Headers */,
-				CDF0C3DF284EE3000088DE9F /* SetIdentityKey.h in Headers */,
+				CDF0C3DF284EE3000088DE9F /* SetIdentityProvider.h in Headers */,
 				CD4E8191210593A4007DA585 /* AbstractCryptoKey.h in Headers */,
 				CD762AE12328D109005AC85D /* Entitlements.h in Headers */,
 				CDB8B40521ACC874004EE816 /* DefaultHandler.h in Headers */,
@@ -2794,7 +2820,9 @@
 				CD19DF56259B3F190007ACF0 /* InMemoryBlockTreeNode.cpp in Sources */,
 				CD9E7BAF2500999C0065C5FC /* MinerAPIFactory.cpp in Sources */,
 				CD4E81CD2105941A007DA585 /* TheTransactionBodyFactory.cpp in Sources */,
+				CD28A46F28618F60009BB049 /* Policy.cpp in Sources */,
 				CD9E7BA624FF69D00065C5FC /* BlockHeader.cpp in Sources */,
+				CD28A46A2860F675009BB049 /* TransactionMakerQueue.cpp in Sources */,
 				CD85B1D2228F47DA000C2A54 /* FileSys.cpp in Sources */,
 				CD4E81AE210593DD007DA585 /* AbstractAPIRequestHandler.cpp in Sources */,
 				CD762AD9232827B3005AC85D /* EntitlementFactory.cpp in Sources */,

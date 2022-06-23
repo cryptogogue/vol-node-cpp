@@ -161,12 +161,8 @@ public:
     
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
-        UNUSED ( context );
-        return false;
-    }
-    
-    //----------------------------------------------------------------//
-    TransactionResult AbstractTransactionBody_genesis ( AbstractLedger& ledger ) const override {
+        
+        AbstractLedger& ledger = context.mLedger;
         
         u64 accountVOL = 0;
         

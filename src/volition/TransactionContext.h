@@ -20,27 +20,32 @@ class Ledger;
 
 //================================================================//
 // TransactionContext
-//================================================================//
 class TransactionContext {
+//================================================================//
 public:
 
-    const Account           mAccount;
-    AccountID               mAccountID;
-    Entitlements            mAccountEntitlements;
-    AccountODBM&            mAccountODBM;
     TransactionFeeSchedule  mFeeSchedule;
-    const KeyAndPolicy&     mKeyAndPolicy;
-    Entitlements            mKeyEntitlements;
     AbstractLedger&         mLedger;
     u64                     mBlockHeight;
     u64                     mRelease;
     u64                     mIndex;
     time_t                  mTime;
+    
+    AccountID               mAccountID;
+    AccountODBM             mAccountODBM;
+    Account                 mAccount;
+    Entitlements            mAccountEntitlements;
+    Entitlements            mKeyEntitlements;
+    KeyAndPolicy            mKeyAndPolicy;
+    TransactionMaker        mMaker;
+
+    IS ( Genesis,           mLedger.isGenesis (),       true )
+    IS ( Provisional,       mAccountID,                 AccountID::NULL_INDEX )
 
     //----------------------------------------------------------------//
     LedgerResult            pushAccountLogEntry         ();
     LedgerResult            pushAccountLogEntry         ( AccountID accountID );
-                            TransactionContext          ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 release, u64 index, time_t time );
+                            TransactionContext          ( AbstractLedger& ledger, const TransactionMaker& maker, u64 blockHeight, u64 release, u64 index, time_t time );
 };
 
 } // namespace Volition

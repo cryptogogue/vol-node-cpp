@@ -883,8 +883,6 @@ void Miner::updateBestBranch ( time_t now ) {
         )
     ) {
 
-        this->mTransactionQueue->pruneTransactions ( *this->mLedger );
-
         // prepare block may return an empty block if there's no mining network visible and there are no transactions.
         shared_ptr < Block > block = this->prepareBlock ( now );
         if ( block ) {

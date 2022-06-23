@@ -55,16 +55,18 @@ protected:
     string                                          mUUID;
 
     //----------------------------------------------------------------//
-    void                    AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                    AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
     //----------------------------------------------------------------//
-    virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const = 0;
-    virtual TransactionResult       AbstractTransactionBody_genesis         ( AbstractLedger& ledger ) const;
+    virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const;
     virtual TransactionDetailsPtr   AbstractTransactionBody_getDetails      ( const AbstractLedger& ledger ) const;
     virtual u64                     AbstractTransactionBody_getVOL          ( const TransactionContext& context ) const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
+    virtual TransactionResult       AbstractTransactionBody_postApply       ( TransactionContext& context ) const;
+    virtual TransactionResult       AbstractTransactionBody_preApply        ( TransactionContext& context ) const;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;
+    virtual bool                    AbstractTransactionBody_wasApplied      ( const AbstractLedger& ledger ) const;
     virtual u64                     AbstractTransactionBody_weight          () const = 0;
 
 public:
@@ -87,11 +89,11 @@ public:
                                 AbstractTransactionBody                 ();
                                 ~AbstractTransactionBody                ();
     TransactionResult           apply                                   ( TransactionContext& context ) const;
-    TransactionResult           genesis                                 ( AbstractLedger& ledger );
     TransactionDetailsPtr       getDetails                              ( const AbstractLedger& ledger ) const;
     const TransactionMaker*     getMaker                                () const;
     u64                         getVOL                                  ( const TransactionContext& context ) const;
     void                        setMaker                                ( const TransactionMaker& maker );
+    bool                        wasApplied                              ( const AbstractLedger& ledger ) const;
 };
 
 } // namespace Volition

@@ -128,14 +128,8 @@ void LoadLedger::AbstractSerializable_serializeTo ( AbstractSerializerTo& serial
 
 //----------------------------------------------------------------//
 TransactionResult LoadLedger::AbstractTransactionBody_apply ( TransactionContext& context ) const {
-    UNUSED ( context );
-    return false;
-}
 
-//----------------------------------------------------------------//
-TransactionResult LoadLedger::AbstractTransactionBody_genesis ( AbstractLedger& ledger ) const {
-    UNUSED ( ledger );
-
+    AbstractLedger& ledger = context.mLedger;
     ledger.setSchema ( this->mSchema );
 
     SerializableList < LoadLedgerAccount >::const_iterator accountIt = this->mAccounts.cbegin ();

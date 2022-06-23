@@ -105,8 +105,8 @@ bool Ledger_Account::deleteKey ( AccountID accountID, string keyName ) {
 //----------------------------------------------------------------//
 AccountID Ledger_Account::getAccountID ( string accountName ) const {
 
-    const AbstractLedger& ledger = this->getLedger ();
     if ( accountName.size () == 0 ) return AccountID::NULL_INDEX;
+    const AbstractLedger& ledger = this->getLedger ();
 
     string lowerName = Format::tolower ( accountName );
     LedgerKey KEY_FOR_ACCOUNT_ALIAS = Ledger::keyFor_accountAlias ( lowerName );
@@ -227,7 +227,7 @@ LedgerResult Ledger_Account::newAccount ( string accountName, u64 balance, strin
 
     // store the account
     Account account;
-    account.mPolicy     = accountPolicy;
+    account.mPolicy = accountPolicy;
     
     if ( key ) {
         account.mKeys [ keyName ] = KeyAndPolicy ( key, keyPolicy );

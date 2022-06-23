@@ -76,6 +76,7 @@ target_sources ( volition-lib
         src/volition/MinerLaunchTests.cpp
         src/volition/Munge.cpp
         src/volition/PathEntitlement.cpp
+        src/volition/Policy.cpp
         src/volition/RemoteMiner.cpp
         src/volition/Schema.cpp
         src/volition/Signature.cpp
@@ -86,6 +87,7 @@ target_sources ( volition-lib
         src/volition/Transaction.cpp
         src/volition/TransactionContext.cpp
         src/volition/TransactionMaker.cpp
+        src/volition/TransactionMakerQueue.cpp
         src/volition/TransactionQueue.cpp
         src/volition/TransactionResult.cpp
         src/volition/simulation/Analysis.cpp

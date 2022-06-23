@@ -34,15 +34,15 @@ public:
         Poco::JSON::Object::Ptr accountJSON = ToJSONSerializer::toJSON ( *account ).extract < Poco::JSON::Object::Ptr >();
         
         // decorate with virtual fields
-        accountJSON->set ( "name",              accountName );
-        accountJSON->set ( "index",             ( u64 )accountODBM.mAccountID );
-        accountJSON->set ( "assetCount",        accountODBM.mAssetCount.get ( 0 ));
-        accountJSON->set ( "fingerprint",       accountODBM.mFingerprint.get ( "" ));
-        accountJSON->set ( "identityKeyName",   accountODBM.mIdentityKeyName.get ( "" ));
-        accountJSON->set ( "inventoryNonce",    accountODBM.mInventoryNonce.get ( 0 ));
-        accountJSON->set ( "nonce",             accountODBM.mTransactionNonce.get ( 0 ));
-        accountJSON->set ( "height",            ledger.getHeight ());
-        accountJSON->set ( "balance",           accountODBM.mBalance.get ( 0 ));
+        accountJSON->set ( "name",                  accountName );
+        accountJSON->set ( "index",                 ( u64 )accountODBM.mAccountID );
+        accountJSON->set ( "assetCount",            accountODBM.mAssetCount.get ( 0 ));
+        accountJSON->set ( "fingerprint",           accountODBM.mFingerprint.get ( "" ));
+        accountJSON->set ( "identityProviderName",    accountODBM.mIdentityProviderName.get ( "" ));
+        accountJSON->set ( "inventoryNonce",        accountODBM.mInventoryNonce.get ( 0 ));
+        accountJSON->set ( "nonce",                 accountODBM.mTransactionNonce.get ( 0 ));
+        accountJSON->set ( "height",                ledger.getHeight ());
+        accountJSON->set ( "balance",               accountODBM.mBalance.get ( 0 ));
         
         jsonOut.set ( "account", accountJSON );
         
@@ -50,8 +50,7 @@ public:
         ledger.serializeEntitlements ( *account, entitlements );
         jsonOut.set ( "entitlements", entitlements );
         
-        TransactionFeeSchedule feeSchedule = ledger.getTransactionFeeSchedule ();
-        jsonOut.set ( "feeSchedule", ToJSONSerializer::toJSON ( feeSchedule ));
+        jsonOut.set ( "feeSchedule", ToJSONSerializer::toJSON ( ledger.getTransactionFeeSchedule ()));
         
         shared_ptr < const MinerInfo > minerInfo = accountODBM.mMinerInfo.get ();
         if ( minerInfo ) {

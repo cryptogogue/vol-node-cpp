@@ -24,24 +24,30 @@ LedgerResult TransactionContext::pushAccountLogEntry ( AccountID accountID ) {
 }
 
 //----------------------------------------------------------------//
-TransactionContext::TransactionContext ( AbstractLedger& ledger, AccountODBM& accountODBM, const KeyAndPolicy& keyAndPolicy, u64 blockHeight, u64 release, u64 index, time_t time ) :
-    mAccount ( *accountODBM.mBody.get ()),
-    mAccountID ( accountODBM.mAccountID ),
-    mAccountODBM ( accountODBM ),
-    mKeyAndPolicy ( keyAndPolicy ),
+TransactionContext::TransactionContext ( AbstractLedger& ledger, const TransactionMaker& maker, u64 blockHeight, u64 release, u64 index, time_t time ) :
     mLedger ( ledger ),
     mBlockHeight ( blockHeight ),
     mRelease ( release ),
     mIndex ( index ),
-    mTime ( time ) {
+    mTime ( time ),
+    mAccountODBM ( ledger, maker.getAccountName ()),
+    mAccountID ( AccountID::NULL_INDEX ),
+    mMaker ( maker ) {
     
-    if ( ledger.isGenesis ()) {
-        this->mAccountEntitlements = *AccountEntitlements::getMasterEntitlements ();
-        this->mKeyEntitlements = *KeyEntitlements::getMasterEntitlements ();
-    }
-    else {
-        this->mAccountEntitlements = ledger.getEntitlements < AccountEntitlements >( *accountODBM.mBody.get ());
-        this->mKeyEntitlements = ledger.getEntitlements < KeyEntitlements >( keyAndPolicy );
+    if ( this->mAccountODBM ) {
+        
+        this->mAccountID        = this->mAccountODBM.mAccountID;
+        this->mAccount          = *this->mAccountODBM.mBody.get ();
+        this->mKeyAndPolicy     = this->mAccountODBM.getKeyAndPolicyOrNull ( maker.getKeyName ());
+    
+        if ( ledger.isGenesis ()) {
+            this->mAccountEntitlements  = *AccountEntitlements::getMasterEntitlements ();
+            this->mKeyEntitlements      = *KeyEntitlements::getMasterEntitlements ();
+        }
+        else {
+            this->mAccountEntitlements  = ledger.getEntitlements < AccountEntitlements >( *this->mAccountODBM.mBody.get ());
+            this->mKeyEntitlements      = ledger.getEntitlements < KeyEntitlements >( this->mKeyAndPolicy );
+        }
     }
     
     this->mFeeSchedule = ledger.getTransactionFeeSchedule ();

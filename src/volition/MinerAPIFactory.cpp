@@ -6,8 +6,6 @@
 #include <volition/web-miner-api/AccountDetailsHandler.h>
 #include <volition/web-miner-api/AccountKeyListHandler.h>
 #include <volition/web-miner-api/AccountLogHandler.h>
-#include <volition/web-miner-api/AccountTransactionHandler.h>
-#include <volition/web-miner-api/AccountTransactionQueueHandler.h>
 #include <volition/web-miner-api/AssetDetailsHandler.h>
 #include <volition/web-miner-api/BlockDetailsHandler.h>
 #include <volition/web-miner-api/BlockListHandler.h>
@@ -18,6 +16,7 @@
 #include <volition/web-miner-api/DebugHTTPEchoHandler.h>
 #include <volition/web-miner-api/DebugKeyGenHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
+#include <volition/web-miner-api/IdentityProviderDetailsHandler.h>
 #include <volition/web-miner-api/InventoryAssetsHandler.h>
 #include <volition/web-miner-api/InventoryHandler.h>
 #include <volition/web-miner-api/InventoryLogHandler.h>
@@ -33,6 +32,8 @@
 #include <volition/web-miner-api/TestExceptions.h>
 #include <volition/web-miner-api/TestKeyIDHandler.h>
 #include <volition/web-miner-api/TestSignatureHandler.h>
+#include <volition/web-miner-api/TransactionHandler.h>
+#include <volition/web-miner-api/TransactionQueueHandler.h>
 #include <volition/web-miner-api/VisageHandler.h>
 
 #include <volition/MinerAPIFactory.h>
@@ -58,26 +59,27 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryAssetsHandler >               ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/assets/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::InventoryLogHandler >                  ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/inventory/log/:nonce/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AccountKeyListHandler >                ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/keys/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionHandler >            ( HTTP::GET_PUT,    Format::write ( "%s/accounts/:accountName/transactions/:uuid/?", prefix ));
-    this->mRouteTable.addEndpoint < WebMinerAPI::AccountTransactionQueueHandler >       ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/transactions/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >                   ( HTTP::GET_PUT,    Format::write ( "%s/accounts/:accountName/transactions/:uuid/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionQueueHandler >              ( HTTP::GET,        Format::write ( "%s/accounts/:accountName/transactions/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::AssetDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/assets/:assetIndexOrID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/blocks/:blockID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::BlockListHandler >                     ( HTTP::GET,        Format::write ( "%s/blocks/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::OfferDetailsHandler >                  ( HTTP::GET,        Format::write ( "%s/offers/:assetID/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::OfferListHandler >                     ( HTTP::GET,        Format::write ( "%s/offers/?", prefix ));
 
+    this->mRouteTable.addEndpoint < WebMinerAPI::TransactionHandler >                   ( HTTP::GET_PUT,    Format::write ( "%s/transactions/:uuid/?", prefix ));
+
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockDetailsHandler >         ( HTTP::GET,        Format::write ( "%s/consensus/blocks/:hash/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusBlockHeaderListHandler >      ( HTTP::GET,        Format::write ( "%s/consensus/headers/?", prefix )); // TODO: better regex for query params
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusPeekHandler >                 ( HTTP::GET,        Format::write ( "%s/consensus/peek/?", prefix ));
     
     this->mRouteTable.addEndpoint < WebMinerAPI::ControlCommandHandler >                ( HTTP::POST,       Format::write ( "%s/control/?", prefix ));
-    
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyAccountDetailsHandler >             ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/account/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >                    ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >                     ( HTTP::GET,        Format::write ( "%s/miners/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::NodeDetailsHandler >                   ( HTTP::GET,        Format::write ( "%s/node/?", prefix ));
+    this->mRouteTable.addEndpoint < WebMinerAPI::IdentityProviderDetailsHandler >       ( HTTP::GET,        Format::write ( "%s/providers/:provider/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::SchemaHandler >                        ( HTTP::GET,        Format::write ( "%s/schema/?", prefix ));
-
     this->mRouteTable.addEndpoint < WebMinerAPI::VisageHandler >                        ( HTTP::GET,        Format::write ( "%s/visage/?", prefix ));
 
     this->mRouteTable.addEndpoint < WebMinerAPI::TestExceptions >                       ( HTTP::GET,        Format::write ( "%s/test/exceptions/?", prefix ));

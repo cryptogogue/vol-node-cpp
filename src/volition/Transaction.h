@@ -33,8 +33,7 @@ protected:
     SignaturePtr                mSignature;     // signatures for *body*
     
     //----------------------------------------------------------------//
-    TransactionResult           applyInner                  ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const;
-    TransactionResult           checkBody                   ( AbstractLedger& ledger, time_t time ) const;
+    TransactionResult           checkSignature              ( const TransactionContext& context, Block::VerificationPolicy policy ) const;
     
     //----------------------------------------------------------------//
     void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -42,26 +41,27 @@ protected:
 
 public:
 
-    GET_COMPOSED ( u64,                          Fees,                      this->mBody,        0 )
-    GET_COMPOSED ( u64,                          Gratuity,                  this->mBody,        0 )
-    GET_COMPOSED ( const TransactionMaker*,      Maker,                     this->mBody,        NULL )
-    GET_COMPOSED ( u64,                          Maturity,                  this->mBody,        0 )
-    GET_COMPOSED ( u64,                          Nonce,                     this->mBody,        0 )
-    GET_COMPOSED ( u64,                          ProfitShare,               this->mBody,        0 )
-    GET_COMPOSED ( u64,                          TransferTax,               this->mBody,        0 )
-    GET_COMPOSED ( string,                       TypeString,                this->mBody,        "" )
-    GET_COMPOSED ( string,                       UUID,                      this->mBody,        "" )
-    GET_COMPOSED ( u64,                          Weight,                    this->mBody,        0 )
-
+    GET_COMPOSED ( u64,                         Fees,                       this->mBody,        0 )
+    GET_COMPOSED ( u64,                         Gratuity,                   this->mBody,        0 )
+    GET_COMPOSED ( const TransactionMaker*,     Maker,                      this->mBody,        NULL )
+    GET_COMPOSED ( u64,                         Maturity,                   this->mBody,        0 )
+    GET_COMPOSED ( u64,                         Nonce,                      this->mBody,        0 )
+    GET_COMPOSED ( u64,                         ProfitShare,                this->mBody,        0 )
+    GET_COMPOSED ( u64,                         TransferTax,                this->mBody,        0 )
+    GET_COMPOSED ( string,                      TypeString,                 this->mBody,        "" )
+    GET_COMPOSED ( string,                      UUID,                       this->mBody,        "" )
+    GET_COMPOSED ( u64,                         Weight,                     this->mBody,        0 )
+    
     //----------------------------------------------------------------//
     TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker                  ( string accountName, string uuid ) const;
-    TransactionResult           checkNonceAndSignature      ( const AbstractLedger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const;
     TransactionDetailsPtr       getDetails                  ( const AbstractLedger& ledger ) const;
+    string                      getMakerName                () const;
     void                        setBody                     ( shared_ptr < AbstractTransactionBody > body );
     void                        sign                        ( const CryptoKeyPair& keyPair );
                                 Transaction                 ();
                                 ~Transaction                ();
+    bool                        wasApplied                  ( const AbstractLedger& ledger ) const;
 };
 
 } // namespace Volition

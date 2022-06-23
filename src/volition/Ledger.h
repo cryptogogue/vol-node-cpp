@@ -29,6 +29,7 @@ class AssetMethod;
 class AssetMethodInvocation;
 class Block;
 class ContractWithDigest;
+class IdentityProvider;
 class KeyEntitlements;
 class MonetaryPolicy;
 class PayoutPolicy;
@@ -163,10 +164,30 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_identityKey ( string keyName ) {
+    static LedgerKey keyFor_identityFingerprint ( string name, string fingerprint ) {
+    
+        return Format::write ( "identityProvider.%s.fingerprint.%s", name.c_str (), fingerprint.c_str ());
+    }
 
-        assert ( keyName.size () > 0 );
-        return Format::write ( "identityKey.%s", keyName.c_str ());
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_identityFingerprintMinerID ( string name, string fingerprint ) {
+    
+        return Format::write ( "identityProvider.%s.fingerprint.%s.miner", name.c_str (), fingerprint.c_str ());
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_identityProvider ( string name ) {
+
+        assert ( name.size () > 0 );
+        return Format::write ( "identityProvider.%s", name.c_str ());
+    }
+
+    //----------------------------------------------------------------//
+    static LedgerKey keyFor_makerlessTransactionID ( string type, string identifier ) {
+
+        assert ( type.size () > 0 );
+        assert ( identifier.size () > 0 );
+        return Format::write ( "makerless.%s.%s", type.c_str (), identifier.c_str ());
     }
 
     //----------------------------------------------------------------//
@@ -177,12 +198,6 @@ public:
     //----------------------------------------------------------------//
     static LedgerKey keyFor_miners () {
         return "miners";
-    }
-    
-    //----------------------------------------------------------------//
-    static LedgerKey keyFor_minerFingerprint ( string fingerprint ) {
-    
-        return Format::write ( "minerFingerprint.%s", fingerprint.c_str ());
     }
     
     //----------------------------------------------------------------//
@@ -283,7 +298,7 @@ public:
     shared_ptr < const BlockHeader >    getHeader                       ( u64 height ) const;
     u64                                 getHeight                       () const;
     string                              getIdentity                     () const;
-    string                              getIdentityKey                  ( string keyName ) const;
+    IdentityProvider                    getIdentityProvider             ( string name ) const;
     u64                                 getMaxBlockWeight               () const;
     MonetaryPolicy                      getMonetaryPolicy               () const;
     PayoutPolicy                        getPayoutPolicy                 () const;
@@ -300,6 +315,8 @@ public:
     TransactionFeeSchedule              getTransactionFeeSchedule       () const;
     UnfinishedBlockList                 getUnfinished                   ();
     bool                                hasBlock                        ( string hash ) const;
+    bool                                hasEntitlements                 ( string name ) const;
+    bool                                hasEntitlements                 ( const Policy& policy ) const;
     bool                                hasTransaction                  ( string accountName, string uuid ) const;
     void                                init                            ();
     LedgerResult                        invoke                          ( string accountName, const AssetMethodInvocation& invocation, time_t time );
@@ -312,7 +329,7 @@ public:
     void                                setEntitlements                 ( string name, const Entitlements& entitlements );
     void                                setEntropyString                ( string entropy );
     bool                                setIdentity                     ( string identity );
-    LedgerResult                        setIdentityKey                  ( string keyName, string ed25519Hex );
+    LedgerResult                        setIdentityProvider             ( string name, const IdentityProvider& identityProvider );
     void                                setMonetaryPolicy               ( const MonetaryPolicy& monetaryPolicy );
     LedgerResult                        setPayoutPolicy                 ( const PayoutPolicy& distributionTable );
     void                                setPayoutPool                   ( u64 pool );
@@ -330,8 +347,7 @@ public:
         if ( name.size () == 0 ) {
             return *ENTITLEMENTS_FAMILY::getMasterEntitlements ();
         }
-        LedgerKey KEY_FOR_ENTITLEMENTS = keyFor_entitlements ( name );
-        shared_ptr < Entitlements > entitlements = this->getObjectOrNull < Entitlements >( KEY_FOR_ENTITLEMENTS );
+        shared_ptr < Entitlements > entitlements = this->getObjectOrNull < Entitlements >( keyFor_entitlements ( name ));
         return entitlements ? *entitlements : Entitlements ();
     }
 

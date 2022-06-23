@@ -38,7 +38,7 @@ public:
     static constexpr const char* SEND_ASSETS                    = "SEND_ASSETS";
     static constexpr const char* SEND_VOL                       = "SEND_VOL";
     static constexpr const char* SET_ENTITLEMENTS               = "SET_ENTITLEMENTS";
-    static constexpr const char* SET_IDENTITY_KEY               = "SET_IDENTITY_KEY";
+    static constexpr const char* SET_IDENTITY_PROVIDER          = "SET_IDENTITY_PROVIDER";
     static constexpr const char* SET_MONETARY_POLICY            = "SET_MONETARY_POLICY";
     static constexpr const char* SET_PAYOUT_POLICY              = "SET_PAYOUT_POLICY";
     static constexpr const char* SET_TERMS_OF_SERVICE           = "SET_TERMS_OF_SERVICE";
@@ -72,7 +72,7 @@ public:
         entitlements->setPath ( SEND_ASSETS,                    BooleanEntitlement ( true ));
         entitlements->setPath ( SEND_VOL,                       BooleanEntitlement ( true ));
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( true ));
-        entitlements->setPath ( SET_IDENTITY_KEY,               BooleanEntitlement ( true ));
+        entitlements->setPath ( SET_IDENTITY_PROVIDER,          BooleanEntitlement ( true ));
         entitlements->setPath ( SET_MONETARY_POLICY,            BooleanEntitlement ( true ));
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( true ));
         entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( true ));
@@ -109,7 +109,7 @@ public:
         entitlements->setPath ( SEND_ASSETS,                    BooleanEntitlement ( true ));
         entitlements->setPath ( SEND_VOL,                       BooleanEntitlement ( true ));
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( false ));
-        entitlements->setPath ( SET_IDENTITY_KEY,               BooleanEntitlement ( false ));
+        entitlements->setPath ( SET_IDENTITY_PROVIDER,          BooleanEntitlement ( false ));
         entitlements->setPath ( SET_MONETARY_POLICY,            BooleanEntitlement ( false ));
         entitlements->setPath ( SET_PAYOUT_POLICY,              BooleanEntitlement ( false ));
         entitlements->setPath ( SET_TERMS_OF_SERVICE,           BooleanEntitlement ( false ));

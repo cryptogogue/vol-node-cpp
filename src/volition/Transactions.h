@@ -13,6 +13,7 @@
 #include <volition/transactions/Genesis.h>
 #include <volition/transactions/IdentifyAccount.h>
 #include <volition/transactions/LoadLedger.h>
+#include <volition/transactions/NewAccount.h>
 #include <volition/transactions/OfferAssets.h>
 #include <volition/transactions/OpenAccount.h>
 #include <volition/transactions/PublishSchema.h>
@@ -26,7 +27,7 @@
 #include <volition/transactions/SendAssets.h>
 #include <volition/transactions/SendVOL.h>
 #include <volition/transactions/SetEntitlements.h>
-#include <volition/transactions/SetIdentityKey.h>
+#include <volition/transactions/SetIdentityProvider.h>
 #include <volition/transactions/SetMonetaryPolicy.h>
 #include <volition/transactions/SetPayoutPolicy.h>
 #include <volition/transactions/SetTermsOfService.h>

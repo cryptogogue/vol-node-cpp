@@ -1,12 +1,13 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTIONS_SETIDENTITYKEY_H
-#define VOLITION_TRANSACTIONS_SETIDENTITYKEY_H
+#ifndef VOLITION_TRANSACTIONS_SETIDENTITYPROVIDER_H
+#define VOLITION_TRANSACTIONS_SETIDENTITYPROVIDER_H
 
 #include <volition/common.h>
 #include <volition/AbstractTransactionBody.h>
 #include <volition/ContractWithDigest.h>
+#include <volition/IdentityProvider.h>
 #include <volition/Munge.h>
 #include <volition/Policy.h>
 #include <volition/Signature.h>
@@ -15,41 +16,44 @@ namespace Volition {
 namespace Transactions {
 
 //================================================================//
-// SetIdentityKey
+// SetIdentityProvider
 //================================================================//
-class SetIdentityKey :
+class SetIdentityProvider :
     public AbstractTransactionBody {
 public:
 
-    TRANSACTION_TYPE ( "SET_IDENTITY_KEY" )
+    TRANSACTION_TYPE ( "SET_IDENTITY_PROVIDER" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
-    string          mKeyName;
-    string          mEd25519PublicHex;
+    string              mName;
+    IdentityProvider    mIdentityProvider;
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "keyName",           this->mKeyName );
-        serializer.serialize ( "ed25519PublicHex",  this->mEd25519PublicHex );
+        serializer.serialize ( "name",              this->mName );
+        serializer.serialize ( "identityProvider",    this->mIdentityProvider );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "keyName",           this->mKeyName );
-        serializer.serialize ( "ed25519PublicHex",  this->mEd25519PublicHex );
+        serializer.serialize ( "name",              this->mName );
+        serializer.serialize ( "identityProvider",    this->mIdentityProvider );
     }
 
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_IDENTITY_KEY )) return "Permission denied.";
+        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_IDENTITY_PROVIDER )) return "Permission denied.";
 
-        context.mLedger.setIdentityKey ( this->mKeyName, this->mEd25519PublicHex );
+        if ( !this->mIdentityProvider.mKeyPolicy.isValid ( context.mLedger ))         return "Invalid key policy.";
+        if ( !this->mIdentityProvider.mAccountPolicy.isValid ( context.mLedger ))     return "Invalid account policy.";
+
+        context.mLedger.setIdentityProvider ( this->mName, this->mIdentityProvider );
 
         return true;
     }

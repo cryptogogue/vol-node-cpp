@@ -20,9 +20,13 @@ namespace Volition {
 TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
-        TransactionResult result = this->checkBody ( ledger, time );
+        const TransactionMaker* maker = this->getMaker ();
+        if ( !maker ) return "Missing transaction maker.";
+    
+        TransactionContext context ( ledger, *maker, blockHeight, release, index, time );
+        TransactionResult result = this->checkSignature ( context, policy );
         if ( result ) {
-            result = this->applyInner ( ledger, blockHeight, release, index, time, policy );
+            result = this->mBody->apply ( context );
         }
         result.setTransactionDetails ( *this );
         return result;
@@ -36,94 +40,24 @@ TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, 
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::applyInner ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const {
-    
-    if ( !this->mBody ) return "Missing body.";
-    
-    TransactionMaker* maker = this->mBody->mMaker.get ();
-    if ( !maker ) {
-        return this->mBody->genesis ( ledger );
-    }
-    
-    AccountODBM accountODBM ( ledger, maker->getAccountName ());
-        
-    if ( !accountODBM ) return "Transaction maker account not found.";
-    
-    KeyAndPolicy keyAndPolicy = accountODBM.getKeyAndPolicyOrNull ( maker->getKeyName ());
-    if ( !keyAndPolicy ) return "Transaction maker key not found.";
-    
-    TransactionResult result = this->checkNonceAndSignature ( ledger, accountODBM.mAccountID, keyAndPolicy.mKey, policy );
-    if ( result ) {
-        
-        TransactionContext context ( ledger, accountODBM, keyAndPolicy, blockHeight, release, index, time );
-        
-        const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getTypeString ());
-        
-        if ( !feeProfile.checkProfitShare ( maker->getGratuity (), maker->getProfitShare ())) return "Incorrect profit share.";
-        if ( !feeProfile.checkTransferTax ( this->mBody->getVOL ( context ), maker->getTransferTax ())) return "Incorrect transfer tax.";
-        
-        u64 fees = this->getFees ();
-        if ( !context.mAccountODBM.hasFunds ( fees + this->mBody->getVOL ( context ))) return "Insufficient funds.";
-        
-        result = this->mBody->apply ( context );
-        
-        if ( result ) {
-            if ( !ledger.isGenesis ()) {
-                
-                accountODBM.incAccountTransactionNonce ( this->getNonce (), this->getUUID ());
-                context.pushAccountLogEntry ();
-                
-                // automatically deduct the fees from maker
-                if ( fees > 0 ) {
-                    context.mAccountODBM.subFunds ( fees );
-                }
-            }
-        }
-    }
-    return result;
-}
-
-//----------------------------------------------------------------//
-TransactionResult Transaction::checkBody ( AbstractLedger& ledger, time_t time ) const {
-
-    if ( !this->mBody ) return "Missing transaction body.";
-
-    if ( this->mBody->mUUID.size () > MAX_UUID_LENGTH ) return Format::write ( "Transaction UUID exceeds %d-character limit.", MAX_UUID_LENGTH );
-    
-    if ( this->mBody->mMaxHeight > 0 ) {
-        u64 height = ledger.getHeight ();
-        if ( height > this->mBody->mMaxHeight ) return Format::write ( "Transaction expired at chain height of %d.", this->mBody->mMaxHeight );
-    }
-    
-    if ( this->mBody->mRecordBy > 0 ) {
-        if ( time > this->mBody->mRecordBy ) return Format::write ( "Transaction expired at %s.", (( string )this->mBody->mRecordBy ).c_str ());
-    }
-    return true;
-}
-
-//----------------------------------------------------------------//
 bool Transaction::checkMaker ( string accountName, string uuid ) const {
 
     if ( !this->mBody ) return false;
     if ( this->getUUID ().size () == 0 ) return false;
-    TransactionMaker* maker = this->mBody->mMaker.get ();
-    return ( maker && ( maker->getAccountName () == accountName ) && ( this->getUUID () == uuid ));
+    return (( this->getMakerName () == accountName ) && ( this->getUUID () == uuid ));
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkNonceAndSignature ( const AbstractLedger& ledger, AccountID accountID, const CryptoPublicKey& key, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::checkSignature ( const TransactionContext& context, Block::VerificationPolicy policy ) const {
 
-    if ( ledger.isGenesis ()) return true;
-    if ( this->getUUID ().size () == 0 ) return false;
+    if ( !( policy & Block::VERIFY_TRANSACTION_SIG )) return true;
 
-    u64 nonce = AccountODBM ( ledger, accountID ).mTransactionNonce.get ();
-    if ( nonce != this->getNonce ()) return false;
-
-    if ( policy & Block::VERIFY_TRANSACTION_SIG ) {
+    if ( context.isGenesis ()) return true;
+    if ( context.isProvisional ()) return true;
     
-        Signature* signature = this->mSignature.get ();
-        return signature ? key.verify ( *signature, this->mBodyString ) : false;
-    }
+    Signature* signature = this->mSignature.get ();
+    if ( !context.mKeyAndPolicy.mKey.verify ( *signature, this->mBodyString )) return "Invalid transaction signature.";
+    
     return true;
 }
 
@@ -131,6 +65,13 @@ TransactionResult Transaction::checkNonceAndSignature ( const AbstractLedger& le
 TransactionDetailsPtr Transaction::getDetails ( const AbstractLedger& ledger ) const {
 
     return this->mBody ? this->mBody->getDetails ( ledger ) : NULL;
+}
+
+//----------------------------------------------------------------//
+string Transaction::getMakerName () const {
+
+    const TransactionMaker* maker = this->getMaker ();
+    return maker ? maker->getAccountName () : "";
 }
 
 //----------------------------------------------------------------//
@@ -153,6 +94,12 @@ Transaction::Transaction () {
 
 //----------------------------------------------------------------//
 Transaction::~Transaction () {
+}
+
+//----------------------------------------------------------------//
+bool Transaction::wasApplied ( const AbstractLedger& ledger ) const {
+
+    return this->mBody ? this->mBody->wasApplied ( ledger ) : false;
 }
 
 //================================================================//

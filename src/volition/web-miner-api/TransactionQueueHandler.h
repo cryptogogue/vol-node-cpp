@@ -14,9 +14,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// AccountTransactionQueueHandler
+// TransactionQueueHandler
 //================================================================//
-class AccountTransactionQueueHandler :
+class TransactionQueueHandler :
     public AbstractMinerAPIRequestHandler {
 public:
 
@@ -34,12 +34,12 @@ public:
         SerializableVector < string > summary;
     
         TransactionQueue& transactionQueue = miner->getTransactionQueue ();
-        const MakerQueue* makerQueue = transactionQueue.getMakerQueueOrNull ( accountName );
+        const TransactionMakerQueue* makerQueue = transactionQueue.getMakerQueueOrNull ( accountName );
         
         if ( makerQueue ) {
         
-            const MakerQueue::Queue& queue = makerQueue->getQueue ();
-            MakerQueue::TransactionQueueConstIt queueIt = queue.cbegin ();
+            const TransactionMakerQueue::Queue& queue = makerQueue->getQueue ();
+            TransactionMakerQueue::TransactionQueueConstIt queueIt = queue.cbegin ();
             for ( ; queueIt != queue.cend (); ++queueIt ) {
                 shared_ptr < const Transaction > transaction = queueIt->second;
                 summary.push_back ( transaction->getUUID ());

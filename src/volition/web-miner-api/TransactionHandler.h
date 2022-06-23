@@ -14,9 +14,9 @@ namespace Volition {
 namespace WebMinerAPI {
 
 //================================================================//
-// AccountTransactionHandler
+// TransactionHandler
 //================================================================//
-class AccountTransactionHandler :
+class TransactionHandler :
     public AbstractMinerAPIRequestHandler {
 public:
 
@@ -24,7 +24,7 @@ public:
 
     //----------------------------------------------------------------//
     HTTPStatus AbstractMinerAPIRequestHandler_handleRequest ( HTTP::Method method, shared_ptr < Miner > miner, const Poco::JSON::Object& jsonIn, Poco::JSON::Object& jsonOut ) const override {
-    
+        
         ScopedExclusiveMinerLock minerLock ( miner );
         AbstractLedger& ledger = miner->getLedger ();
     

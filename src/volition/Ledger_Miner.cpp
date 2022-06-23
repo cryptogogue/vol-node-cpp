@@ -49,9 +49,10 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
     if ( accountODBM.isMiner ()) return "Account is already a miner.";
     
     string fingerprint = accountODBM.mFingerprint.get ( "" );
+    string identityProviderName = accountODBM.mIdentityProviderName.get ( "" );
     
-    if ( fingerprint.size () > 0 ) {
-        LedgerFieldODBM < AccountID::Index > minerFingerprintField ( ledger, Ledger::keyFor_minerFingerprint ( fingerprint ), AccountID::NULL_INDEX );
+    if (( fingerprint.size () > 0 ) && ( identityProviderName.size () > 0 )) {
+        LedgerFieldODBM < AccountID::Index > minerFingerprintField ( ledger, Ledger::keyFor_identityFingerprintMinerID ( identityProviderName, fingerprint ), AccountID::NULL_INDEX );
         if ( minerFingerprintField.exists ()) return "Identity fingerprint already in use.";
         minerFingerprintField.set ( accountID );
     }
