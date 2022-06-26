@@ -44,7 +44,10 @@ public:
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
                 
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::SET_ENTITLEMENTS )) return "Permission denied.";
+        if ( !(
+            context.mKeyEntitlements.check ( KeyEntitlements::SET_ENTITLEMENTS ) ||
+            context.mKeyEntitlements.check ( KeyEntitlements::PUBLISH_SCHEMA ) // TODO: remove later
+        )) return "Permission denied.";
         context.mLedger.setEntitlements ( this->mName, this->mEntitlements );
         return true;
     }
