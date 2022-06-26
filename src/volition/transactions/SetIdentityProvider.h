@@ -25,6 +25,7 @@ public:
     TRANSACTION_TYPE ( "SET_IDENTITY_PROVIDER" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
+    TRANSACTION_MIN_RELEASE ( 3 )
 
     string              mName;
     IdentityProvider    mIdentityProvider;

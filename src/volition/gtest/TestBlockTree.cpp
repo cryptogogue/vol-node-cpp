@@ -8,7 +8,6 @@
 #include <volition/FileSys.h>
 #include <volition/InMemoryBlockTree.h>
 #include <volition/Miner.h>
-#include <volition/Release.h>
 #include <volition/SQLiteBlockTree.h>
 
 using namespace Volition;

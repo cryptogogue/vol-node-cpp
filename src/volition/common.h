@@ -131,4 +131,6 @@ typedef __int128                s128;
     #define SET_BITS(flags,mask,value) ( value ? ( flags | mask ) : ( flags & ~mask ))
 #endif
 
+#define VOL_NODE_RELEASE        3
+
 #endif

@@ -3,7 +3,6 @@
 
 #include <volition/FileSys.h>
 #include <volition/MinerLocks.h>
-#include <volition/Release.h>
 #include <volition/simulation/AbstractScenario.h>
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/Simulator.h>

@@ -125,6 +125,7 @@ public:
     TRANSACTION_WEIGHT ( 0 )
     TRANSACTION_MATURITY ( 0 )
 
+    u64                                     mRelease;
     u64                                     mTotalVOL;
     u64                                     mPrizePool;
     
@@ -144,6 +145,7 @@ public:
         this->mTotalVOL     = 100000000000;
         this->mPrizePool    = 0;
         
+        serializer.serialize ( "release",                   this->mRelease );
         serializer.serialize ( "totalVOL",                  this->mTotalVOL );
         serializer.serialize ( "prizePool",                 this->mPrizePool );
         serializer.serialize ( "accounts",                  this->mAccounts );
@@ -154,6 +156,7 @@ public:
         ConsensusSettings::AbstractSerializable_serializeTo ( serializer );
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
+        serializer.serialize ( "release",                   this->mRelease );
         serializer.serialize ( "totalVOL",                  this->mTotalVOL );
         serializer.serialize ( "prizePool",                 this->mPrizePool );
         serializer.serialize ( "accounts",                  this->mAccounts );
@@ -162,7 +165,10 @@ public:
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         
+        if ( this->mRelease > VOL_NODE_RELEASE ) return "Unsupported release.";
+        
         AbstractLedger& ledger = context.mLedger;
+        ledger.setRelease ( this->mRelease );
         
         u64 accountVOL = 0;
         

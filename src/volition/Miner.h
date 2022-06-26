@@ -228,7 +228,6 @@ protected:
     bool                                checkTags                   () const;
     void                                composeChain                ( BlockTreeCursor cursor );
     void                                composeChainInnerLoop       ( BlockTreeCursor branch );
-    u64                                 findRelease                 () const;
     BlockTreeCursor                     improveBranch               ( BlockTreeCursor tail, u64 consensusHeight, time_t now );
     LedgerResult                        persistLedger               ( shared_ptr < AbstractPersistenceProvider > provider, shared_ptr < const Block > genesisBlock );
     shared_ptr < BlockHeader >          prepareProvisional          ( const BlockHeader& parent, time_t now ) const;

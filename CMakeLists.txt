@@ -127,6 +127,7 @@ target_link_libraries ( volition
     lognosis
     #rocksdb
     routing
+    sodium
     sqlite
     PocoCrypto
     PocoEncodings

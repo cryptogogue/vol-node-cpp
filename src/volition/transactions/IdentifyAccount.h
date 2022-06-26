@@ -25,6 +25,7 @@ public:
     TRANSACTION_TYPE ( "IDENTIFY_ACCOUNT" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
+    TRANSACTION_MIN_RELEASE ( 3 )
 
     Gamercert       mGamercert;
     

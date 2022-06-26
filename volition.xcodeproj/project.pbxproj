@@ -128,7 +128,6 @@
 		CD3D7249283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
 		CD3D724A283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
 		CD3D724B283402670083835B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3D7246283402670083835B /* libssl.a */; };
-		CD3E75A1272F26CB00F1E691 /* Release.h in Headers */ = {isa = PBXBuildFile; fileRef = CD3E75A0272F26CB00F1E691 /* Release.h */; };
 		CD4B5F0223FD6274005EB2CC /* KeyAccountDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CD4B5F0123FD6274005EB2CC /* KeyAccountDetailsHandler.h */; };
 		CD4E8150210579C8007DA585 /* libPocoUtil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED586020BA3981003A2969 /* libPocoUtil.a */; };
 		CD4E8153210579C8007DA585 /* libPocoJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDED585C20BA3981003A2969 /* libPocoJSON.a */; };
@@ -945,7 +944,6 @@
 		CD36664D20F73261000E0B43 /* Serialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Serialization.h; path = src/volition/serialization/Serialization.h; sourceTree = "<group>"; };
 		CD3D723E283402200083835B /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "../../../../../../usr/local/Cellar/openssl@1.1/1.1.1k/lib/libcrypto.a"; sourceTree = "<group>"; };
 		CD3D7246283402670083835B /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../../../../../usr/local/Cellar/openssl@1.1/1.1.1k/lib/libssl.a"; sourceTree = "<group>"; };
-		CD3E75A0272F26CB00F1E691 /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Release.h; path = src/volition/Release.h; sourceTree = "<group>"; };
 		CD46659C20BE908300A02D55 /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = src/volition/Block.cpp; sourceTree = "<group>"; };
 		CD46659D20BE908300A02D55 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = src/volition/Block.h; sourceTree = "<group>"; };
 		CD4665A620BEABE100A02D55 /* AbstractRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AbstractRequestHandler.cpp; path = src/volition/AbstractRequestHandler.cpp; sourceTree = "<group>"; };
@@ -1452,7 +1450,6 @@
 				CD9E7BB62505A8550065C5FC /* MinerLaunchTests.h */,
 				CD5ECAD92464CB26009146FB /* MinerLaunchTests.json.h */,
 				CDAC9F79262B4F9400DCA201 /* MinerLocks.h */,
-				CD3E75A0272F26CB00F1E691 /* Release.h */,
 				CD0CF45F255EDC5D008C67F0 /* RemoteMiner.cpp */,
 				CD0CF45D255EDC5D008C67F0 /* RemoteMiner.h */,
 			);
@@ -2197,7 +2194,6 @@
 				CD8BAE3D21EBC81900B5040E /* SerializableUniquePtr.h in Headers */,
 				CD1613D126ED71E400262A33 /* SetTermsOfService.h in Headers */,
 				CD19DF57259B3F190007ACF0 /* InMemoryBlockTreeNode.h in Headers */,
-				CD3E75A1272F26CB00F1E691 /* Release.h in Headers */,
 				CDA1573423FA59EC00DFACCF /* AccountKeyLookup.h in Headers */,
 				CD1613D326ED736500262A33 /* ContractWithDigest.h in Headers */,
 				CD762AD6232826D7005AC85D /* NumericEntitlement.h in Headers */,

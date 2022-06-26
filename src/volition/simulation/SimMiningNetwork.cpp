@@ -4,7 +4,6 @@
 #include <volition/Block.h>
 #include <volition/Miner.h>
 #include <volition/MinerLocks.h>
-#include <volition/Release.h>
 #include <volition/simulation/SimMiningMessenger.h>
 #include <volition/UnsecureRandom.h>
 

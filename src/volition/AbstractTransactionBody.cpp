@@ -100,6 +100,11 @@ u64 AbstractTransactionBody::AbstractTransactionBody_getVOL ( const TransactionC
 }
 
 //----------------------------------------------------------------//
+u64 AbstractTransactionBody::AbstractTransactionBody_minRelease () const {
+    return 0;
+}
+
+//----------------------------------------------------------------//
 TransactionResult AbstractTransactionBody::AbstractTransactionBody_postApply ( TransactionContext& context ) const {
     
     if ( !( context.isGenesis () || context.isProvisional ())) {
@@ -121,6 +126,8 @@ TransactionResult AbstractTransactionBody::AbstractTransactionBody_preApply ( Tr
     }
 
     AbstractLedger& ledger = context.mLedger;
+
+    if ( context.mRelease < this->AbstractTransactionBody_minRelease ()) return "Unsupported transaction type for currently accepted release.";
 
     if ( this->mMaxHeight > 0 ) {
         u64 height = ledger.getHeight ();

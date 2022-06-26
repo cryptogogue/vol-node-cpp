@@ -34,6 +34,12 @@ namespace Volition {
         return MATURITY;                                            \
     }
 
+#define TRANSACTION_MIN_RELEASE(release)                            \
+    static constexpr u64 MIN_RELEASE = release;                     \
+    u64 AbstractTransactionBody_minRelease () const override {      \
+        return MIN_RELEASE;                                         \
+    }
+
 class Miner;
 class Transaction;
 class TransactionContext;
@@ -63,6 +69,7 @@ protected:
     virtual TransactionDetailsPtr   AbstractTransactionBody_getDetails      ( const AbstractLedger& ledger ) const;
     virtual u64                     AbstractTransactionBody_getVOL          ( const TransactionContext& context ) const;
     virtual u64                     AbstractTransactionBody_maturity        () const = 0;
+    virtual u64                     AbstractTransactionBody_minRelease      () const;
     virtual TransactionResult       AbstractTransactionBody_postApply       ( TransactionContext& context ) const;
     virtual TransactionResult       AbstractTransactionBody_preApply        ( TransactionContext& context ) const;
     virtual string                  AbstractTransactionBody_typeString      () const = 0;

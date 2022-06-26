@@ -30,8 +30,8 @@ TransactionContext::TransactionContext ( AbstractLedger& ledger, const Transacti
     mRelease ( release ),
     mIndex ( index ),
     mTime ( time ),
-    mAccountODBM ( ledger, maker.getAccountName ()),
     mAccountID ( AccountID::NULL_INDEX ),
+    mAccountODBM ( ledger, maker.getAccountName ()),
     mMaker ( maker ) {
     
     if ( this->mAccountODBM ) {
