@@ -35,6 +35,7 @@ public:
     static constexpr const char* RESTRICT_KEY                   = "RESTRICT_KEY";
     static constexpr const char* RUN_SCRIPT                     = "RUN_SCRIPT";
     static constexpr const char* SELECT_REWARD                  = "SELECT_REWARD";
+    static constexpr const char* SELF_REGISTER_MINER            = "SELF_REGISTER_MINER";
     static constexpr const char* SEND_ASSETS                    = "SEND_ASSETS";
     static constexpr const char* SEND_VOL                       = "SEND_VOL";
     static constexpr const char* SET_ENTITLEMENTS               = "SET_ENTITLEMENTS";
@@ -69,6 +70,7 @@ public:
         entitlements->setPath ( RESTRICT_KEY,                   BooleanEntitlement ( true ));
         entitlements->setPath ( RUN_SCRIPT,                     BooleanEntitlement ( true ));
         entitlements->setPath ( SELECT_REWARD,                  BooleanEntitlement ( true ));
+        entitlements->setPath ( SELF_REGISTER_MINER,            BooleanEntitlement ( true ));
         entitlements->setPath ( SEND_ASSETS,                    BooleanEntitlement ( true ));
         entitlements->setPath ( SEND_VOL,                       BooleanEntitlement ( true ));
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( true ));
@@ -106,6 +108,7 @@ public:
         entitlements->setPath ( RESTRICT_KEY,                   BooleanEntitlement ( false ));
         entitlements->setPath ( RUN_SCRIPT,                     BooleanEntitlement ( false ));
         entitlements->setPath ( SELECT_REWARD,                  BooleanEntitlement ( false ));
+        entitlements->setPath ( SELF_REGISTER_MINER,            BooleanEntitlement ( false ));
         entitlements->setPath ( SEND_ASSETS,                    BooleanEntitlement ( true ));
         entitlements->setPath ( SEND_VOL,                       BooleanEntitlement ( true ));
         entitlements->setPath ( SET_ENTITLEMENTS,               BooleanEntitlement ( false ));

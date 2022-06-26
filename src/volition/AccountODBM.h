@@ -114,18 +114,18 @@ private:
         this->mLedger       = ledger;
         this->mAccountID    = index;
         
-        this->mAccountLogSize       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_accountLogSize ( this->mAccountID ),         0 );
-        this->mAssetCount           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
-        this->mBalance              = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_balance ( this->mAccountID ),                0 );
-        this->mFingerprint          = LedgerFieldODBM < string >( this->mLedger,                keyFor_fingerprint ( this->mAccountID ),            "" );
-        this->mIdentityProviderName   = LedgerFieldODBM < string >( this->mLedger,                keyFor_identityProviderName ( this->mAccountID ),     "" );
-        this->mInventoryNonce       = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
-        this->mTransactionNonce     = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
-        this->mName                 = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
-        this->mBody                 = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
-        this->mMinerHeight          = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerHeight ( this->mAccountID ),            0 );
-        this->mMinerInfo            = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mAccountID ));
-        this->mMinerBlockCount      = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerBlockCount ( this->mAccountID ),        0 );
+        this->mAccountLogSize           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_accountLogSize ( this->mAccountID ),         0 );
+        this->mAssetCount               = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_assetCount ( this->mAccountID ),             0 );
+        this->mBalance                  = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_balance ( this->mAccountID ),                0 );
+        this->mFingerprint              = LedgerFieldODBM < string >( this->mLedger,                keyFor_fingerprint ( this->mAccountID ),            "" );
+        this->mIdentityProviderName     = LedgerFieldODBM < string >( this->mLedger,                keyFor_identityProviderName ( this->mAccountID ),     "" );
+        this->mInventoryNonce           = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_inventoryNonce ( this->mAccountID ),         0 );
+        this->mTransactionNonce         = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_transactionNonce ( this->mAccountID ),       0 );
+        this->mName                     = LedgerFieldODBM < string >( this->mLedger,                keyFor_name ( this->mAccountID ),                   "" );
+        this->mBody                     = LedgerObjectFieldODBM < Account >( this->mLedger,         keyFor_body ( this->mAccountID ));
+        this->mMinerHeight              = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerHeight ( this->mAccountID ),            0 );
+        this->mMinerInfo                = LedgerObjectFieldODBM < MinerInfo >( this->mLedger,       keyFor_minerInfo ( this->mAccountID ));
+        this->mMinerBlockCount          = LedgerFieldODBM < u64 >( this->mLedger,                   keyFor_minerBlockCount ( this->mAccountID ),        0 );
     }
 
 public:
@@ -227,6 +227,12 @@ public:
     bool hasFunds ( u64 amount ) {
     
         return amount <= this->mBalance.get ();
+    }
+    
+    //----------------------------------------------------------------//
+    bool hasIdentity () {
+    
+        return (( this->mFingerprint.get ().size ()) > 0 && ( this->mIdentityProviderName.get ().size () > 0 ));
     }
     
     //----------------------------------------------------------------//

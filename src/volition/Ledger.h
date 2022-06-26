@@ -164,15 +164,13 @@ public:
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_identityFingerprint ( string name, string fingerprint ) {
-    
-        return Format::write ( "identityProvider.%s.fingerprint.%s", name.c_str (), fingerprint.c_str ());
+    static LedgerKey keyFor_identityFingerprint ( string providerName, string fingerprint ) {
+        return Format::write ( "identityProvider.%s.fingerprint.%s", providerName.c_str (), fingerprint.c_str ());
     }
 
     //----------------------------------------------------------------//
-    static LedgerKey keyFor_identityFingerprintMinerID ( string name, string fingerprint ) {
-    
-        return Format::write ( "identityProvider.%s.fingerprint.%s.miner", name.c_str (), fingerprint.c_str ());
+    static LedgerKey keyFor_identityFingerprintMinerID ( string providerName, string fingerprint ) {
+        return Format::write ( "identityProvider.%s.fingerprint.%s.miner", providerName.c_str (), fingerprint.c_str ());
     }
 
     //----------------------------------------------------------------//

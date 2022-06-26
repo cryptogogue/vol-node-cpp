@@ -33,18 +33,18 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
-        serializer.serialize ( "name",              this->mName );
-        serializer.serialize ( "identityProvider",    this->mIdentityProvider );
+        serializer.serialize ( "name",                  this->mName );
+        serializer.serialize ( "identityProvider",      this->mIdentityProvider );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
-        serializer.serialize ( "name",              this->mName );
-        serializer.serialize ( "identityProvider",    this->mIdentityProvider );
+        serializer.serialize ( "name",                  this->mName );
+        serializer.serialize ( "identityProvider",      this->mIdentityProvider );
     }
-
+    
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
         

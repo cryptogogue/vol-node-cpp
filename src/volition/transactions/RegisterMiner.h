@@ -44,12 +44,18 @@ public:
     //----------------------------------------------------------------//
     TransactionResult AbstractTransactionBody_apply ( TransactionContext& context ) const override {
     
-        if ( !context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER )) return "Permission denied.";
+        AccountID accountID = context.mLedger.getAccountID ( this->mAccountName );
+        if ( accountID == AccountID::NULL_INDEX ) return "Account not found.";
+    
+        bool selfRegister = ( accountID == context.mAccountID );
+        
+        if ( !( selfRegister || context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER ))) return "Permission denied.";
+        if ( selfRegister && !context.mKeyEntitlements.check ( KeyEntitlements::SELF_REGISTER_MINER )) return "Permission denied.";
         if ( !this->mMinerInfo ) return "Missing miner info.";
         if ( !this->mMinerInfo->getPublicKey ()) return "Missing miner public key.";
         if ( !this->mMinerInfo->getVisage ()) return "Missing miner visage.";
         
-        return context.mLedger.registerMiner ( context.mLedger.getAccountID ( this->mAccountName ), *this->mMinerInfo, false );
+        return context.mLedger.registerMiner ( accountID, *this->mMinerInfo, selfRegister );
     }
 };
 

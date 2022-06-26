@@ -76,6 +76,20 @@
                     }
                 }
             }
+        },
+        {
+            "bodyIn" : {
+                "maker" : {
+                    "accountName" : "9090"
+                },
+                "type" :            "SET_IDENTITY_PROVIDER",
+                "name" :            "gamercert",
+                "identityProvider" : {
+                    "providerKeyName" :     "3a6d9cdb-8793-4c31-9cb5-ee4a5a3d5a86",
+                    "ed25519PublicHex" :    "a3ccf7b6f1a59aa4a33868f013d7e9f6729efb5b012cc102697fbeb2cc8b64aa",
+                    "grant" :               100000
+                }
+            }
         }
     ]
 }

@@ -25,6 +25,7 @@ public:
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
 
+    string              mAccountName;
     string              mProvider;
     string              mGenesis;
     CryptoPublicKey     mKey;
@@ -34,6 +35,7 @@ public:
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
         
+        serializer.serialize ( "accountName",       this->mAccountName );
         serializer.serialize ( "provider",          this->mProvider );
         serializer.serialize ( "genesis",           this->mGenesis );
         serializer.serialize ( "key",               this->mKey );
@@ -44,6 +46,7 @@ public:
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
         
+        serializer.serialize ( "accountName",       this->mAccountName );
         serializer.serialize ( "provider",          this->mProvider );
         serializer.serialize ( "genesis",           this->mGenesis );
         serializer.serialize ( "key",               this->mKey );
@@ -56,6 +59,10 @@ public:
         if ( this->wasApplied ( context.mLedger )) return "Key already used to create an account.";
         
         AbstractLedger& ledger = context.mLedger;
+        
+        if ( this->mAccountName.size () > 0 ) {
+             if ( ledger.getAccountID ( this->mAccountName ) != AccountID::NULL_INDEX ) return "An account with that name already exists.";
+        }
         
         if ( this->mGenesis != ledger.getGenesisHash ()) return "Mismatched genesis block hash.";
         
@@ -81,7 +88,7 @@ public:
         
         if ( grant < fees ) return "Identity grant insufficient to cover transaction fees.";
         
-        string accountName = Format::write ( ".%llu.%llu", context.mBlockHeight, context.mIndex );
+        string accountName = ( this->mAccountName.size () > 0 ) ? this->mAccountName : Format::write ( ".%llu.%llu", context.mBlockHeight, context.mIndex );
         if ( !ledger.newAccount (
             accountName,
             0,

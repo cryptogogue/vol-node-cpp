@@ -57,7 +57,7 @@ LedgerResult Ledger_Miner::registerMiner ( AccountID accountID, const MinerInfo&
         minerFingerprintField.set ( accountID );
     }
     else if ( requireFingerprint ) {
-        return "Missing fingerprint.";
+        return "Missing identity fingerprint.";
     }
     
     accountODBM.mMinerInfo.set ( minerInfo );
