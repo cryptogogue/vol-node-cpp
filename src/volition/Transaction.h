@@ -54,7 +54,7 @@ public:
     GET ( u64,                          Weight,                     this->mBody->getWeight ())
     
     //----------------------------------------------------------------//
-    TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const;
+    TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker                  ( string accountName, string uuid ) const;
     TransactionDetailsPtr       getDetails                  ( const AbstractLedger& ledger ) const;
     void                        setBody                     ( shared_ptr < AbstractTransactionBody > body );

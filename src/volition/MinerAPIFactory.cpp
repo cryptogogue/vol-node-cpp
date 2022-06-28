@@ -16,6 +16,7 @@
 #include <volition/web-miner-api/DebugHTTPEchoHandler.h>
 #include <volition/web-miner-api/DebugKeyGenHandler.h>
 #include <volition/web-miner-api/DefaultHandler.h>
+#include <volition/web-miner-api/EntitlementsDetailsHandler.h>
 #include <volition/web-miner-api/IdentityProviderDetailsHandler.h>
 #include <volition/web-miner-api/InventoryAssetsHandler.h>
 #include <volition/web-miner-api/InventoryHandler.h>
@@ -74,6 +75,9 @@ void MinerAPIFactory::initializeRoutes () {
     this->mRouteTable.addEndpoint < WebMinerAPI::ConsensusPeekHandler >                 ( HTTP::GET,        Format::write ( "%s/consensus/peek/?", prefix ));
     
     this->mRouteTable.addEndpoint < WebMinerAPI::ControlCommandHandler >                ( HTTP::POST,       Format::write ( "%s/control/?", prefix ));
+    
+    this->mRouteTable.addEndpoint < WebMinerAPI::EntitlementsDetailsHandler >           ( HTTP::GET,        Format::write ( "%s/entitlements/:name/?", prefix ));
+    
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyAccountDetailsHandler >             ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/account/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::KeyDetailsHandler >                    ( HTTP::GET,        Format::write ( "%s/keys/:keyHash/?", prefix ));
     this->mRouteTable.addEndpoint < WebMinerAPI::MinerListHandler >                     ( HTTP::GET,        Format::write ( "%s/miners/?", prefix ));

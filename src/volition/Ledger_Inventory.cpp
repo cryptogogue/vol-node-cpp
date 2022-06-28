@@ -742,7 +742,7 @@ LedgerResult Ledger_Inventory::transferAssets ( AccountODBM& senderODBM, Account
     size_t receiverAssetCount = receiverODBM.mAssetCount.get ( 0 );
 
     shared_ptr < const Account > receiverAccount = receiverODBM.mBody.get ();
-    Entitlements receiverEntitlements = ledger.getEntitlements < AccountEntitlements >( *receiverAccount );
+    Entitlements receiverEntitlements = ledger.getEntitlementsWithFamily < AccountEntitlements >( *receiverAccount );
     if ( !receiverEntitlements.check ( AccountEntitlements::MAX_ASSETS, receiverAssetCount + assetList.size ())) {
         double max = receiverEntitlements.resolvePathAs < NumericEntitlement >( AccountEntitlements::MAX_ASSETS )->getUpperLimit ().mLimit;
         return Format::write ( "Transaction would overflow receiving account's inventory limit of %d assets.", ( int )max );

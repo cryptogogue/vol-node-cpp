@@ -198,6 +198,13 @@ time_t AbstractLedger::getBlockDelayInSeconds () const {
 }
 
 //----------------------------------------------------------------//
+Entitlements AbstractLedger::getEntitlements ( string name ) const {
+
+    shared_ptr < Entitlements > entitlements = ( name.size () > 0 ) ? this->getObjectOrNull < Entitlements >( keyFor_entitlements ( name )) : NULL;
+    return entitlements ? *entitlements : Entitlements ();
+}
+
+//----------------------------------------------------------------//
 Entropy AbstractLedger::getEntropy () const {
 
     return Entropy ( this->getEntropyString ());
@@ -502,10 +509,10 @@ void AbstractLedger::serializeEntitlements ( const Account& account, AbstractSer
 
     serializer.context ( "account", [ & ]( AbstractSerializerTo& serializer ) {
 
-        serializer.serialize ( "policy", this->getEntitlements < AccountEntitlements >( account.mPolicy ));
+        serializer.serialize ( "policy", this->getEntitlementsWithFamily < AccountEntitlements >( account.mPolicy ));
         
         if ( account.mBequest ) {
-            serializer.serialize ( "bequest", this->getEntitlements < AccountEntitlements >( *account.mBequest ));
+            serializer.serialize ( "bequest", this->getEntitlementsWithFamily < AccountEntitlements >( *account.mBequest ));
         }
     });
     
@@ -519,10 +526,10 @@ void AbstractLedger::serializeEntitlements ( const Account& account, AbstractSer
 
             serializer.context ( keysIt->first, [ & ]( AbstractSerializerTo& serializer ) {
 
-                serializer.serialize ( "policy", this->getEntitlements < KeyEntitlements >( keyAndPolicy.mPolicy ));
+                serializer.serialize ( "policy", this->getEntitlementsWithFamily < KeyEntitlements >( keyAndPolicy.mPolicy ));
                 
                 if ( account.mBequest ) {
-                    serializer.serialize ( "bequest", this->getEntitlements < KeyEntitlements >( *keyAndPolicy.mBequest ));
+                    serializer.serialize ( "bequest", this->getEntitlementsWithFamily < KeyEntitlements >( *keyAndPolicy.mBequest ));
                 }
             });
         }

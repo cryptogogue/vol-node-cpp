@@ -290,6 +290,7 @@ public:
     shared_ptr < const Block >          getBlock                        ( u64 height ) const;
     shared_ptr < const Block >          getBlock                        ( string hash ) const;
     time_t                              getBlockDelayInSeconds          () const;
+    Entitlements                        getEntitlements                 ( string name ) const;
     Entropy                             getEntropy                      () const;
     string                              getEntropyString                () const;
     string                              getGenesisHash                  () const;
@@ -340,20 +341,19 @@ public:
 
     //----------------------------------------------------------------//
     template < typename ENTITLEMENTS_FAMILY >
-    Entitlements getEntitlements ( string name ) const {
+    Entitlements getEntitlementsWithFamily ( string name ) const {
         
         if ( name.size () == 0 ) {
             return *ENTITLEMENTS_FAMILY::getMasterEntitlements ();
         }
-        shared_ptr < Entitlements > entitlements = this->getObjectOrNull < Entitlements >( keyFor_entitlements ( name ));
-        return entitlements ? *entitlements : Entitlements ();
+        return this->getEntitlements ( name );
     }
 
     //----------------------------------------------------------------//
     template < typename ENTITLEMENTS_FAMILY >
-    Entitlements getEntitlements ( const Policy& policy ) const {
+    Entitlements getEntitlementsWithFamily ( const Policy& policy ) const {
         
-        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy.getBase ());
+        Entitlements entitlements = this->getEntitlementsWithFamily < ENTITLEMENTS_FAMILY >( policy.getBase ());
         return *policy.applyRestrictions ( entitlements );
     }
 
@@ -398,8 +398,8 @@ public:
     template < typename ENTITLEMENTS_FAMILY >
     bool isMoreRestrictivePolicy ( const Policy& policy, const Policy& restriction ) const {
 
-        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy );
-        Entitlements restrictionEntitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( restriction );
+        Entitlements entitlements = this->getEntitlementsWithFamily < ENTITLEMENTS_FAMILY >( policy );
+        Entitlements restrictionEntitlements = this->getEntitlementsWithFamily < ENTITLEMENTS_FAMILY >( restriction );
         
         return entitlements.isMatchOrSubsetOf ( &restrictionEntitlements );
     }
@@ -408,7 +408,7 @@ public:
     template < typename ENTITLEMENTS_FAMILY >
     bool isValidPolicy ( const Policy& policy ) const {
 
-        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy.getBase ());
+        Entitlements entitlements = this->getEntitlementsWithFamily < ENTITLEMENTS_FAMILY >( policy.getBase ());
         return policy.isMatchOrSubsetOf ( entitlements );
     }
     
@@ -416,11 +416,11 @@ public:
     template < typename ENTITLEMENTS_FAMILY >
     bool isValidPolicy ( const Policy& policy, const Policy& restriction ) const {
 
-        Entitlements entitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( policy.getBase ());
+        Entitlements entitlements = this->getEntitlementsWithFamily < ENTITLEMENTS_FAMILY >( policy.getBase ());
         if ( !policy.isMatchOrSubsetOf ( entitlements )) return false;
         entitlements = *policy.applyRestrictions ( entitlements );
         
-        Entitlements restrictionEntitlements = this->getEntitlements < ENTITLEMENTS_FAMILY >( restriction );
+        Entitlements restrictionEntitlements = this->getEntitlementsWithFamily < ENTITLEMENTS_FAMILY >( restriction );
         return entitlements.isMatchOrSubsetOf ( &restrictionEntitlements );
     }
     

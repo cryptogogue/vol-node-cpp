@@ -182,7 +182,7 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
             size_t transactionMaturity = this->mHeight + transaction.getMaturity ();
             if ( transactionMaturity == height ) {
             
-                TransactionResult result = transaction.apply ( ledger, height, this->getRelease (), i, this->mTime, policy );
+                TransactionResult result = transaction.apply ( ledger, height, i, this->mTime, policy );
                 if ( !result ) return Format::write ( "%s: %s", result.getUUID ().c_str (), result.getMessage ().c_str ());
                 
                 gratuity        += transaction.getGratuity ();

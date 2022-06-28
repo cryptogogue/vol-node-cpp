@@ -45,7 +45,7 @@ public:
     //----------------------------------------------------------------//
     LedgerResult            pushAccountLogEntry         ();
     LedgerResult            pushAccountLogEntry         ( AccountID accountID );
-                            TransactionContext          ( AbstractLedger& ledger, const TransactionMaker& maker, u64 blockHeight, u64 release, u64 index, time_t time );
+                            TransactionContext          ( AbstractLedger& ledger, const TransactionMaker& maker, u64 blockHeight, u64 index, time_t time );
 };
 
 } // namespace Volition

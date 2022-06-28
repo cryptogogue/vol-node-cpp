@@ -24,10 +24,10 @@ LedgerResult TransactionContext::pushAccountLogEntry ( AccountID accountID ) {
 }
 
 //----------------------------------------------------------------//
-TransactionContext::TransactionContext ( AbstractLedger& ledger, const TransactionMaker& maker, u64 blockHeight, u64 release, u64 index, time_t time ) :
+TransactionContext::TransactionContext ( AbstractLedger& ledger, const TransactionMaker& maker, u64 blockHeight, u64 index, time_t time ) :
     mLedger ( ledger ),
     mBlockHeight ( blockHeight ),
-    mRelease ( release ),
+    mRelease ( ledger.getRelease ()),
     mIndex ( index ),
     mTime ( time ),
     mAccountID ( AccountID::NULL_INDEX ),
@@ -45,8 +45,8 @@ TransactionContext::TransactionContext ( AbstractLedger& ledger, const Transacti
             this->mKeyEntitlements      = *KeyEntitlements::getMasterEntitlements ();
         }
         else {
-            this->mAccountEntitlements  = ledger.getEntitlements < AccountEntitlements >( *this->mAccountODBM.mBody.get ());
-            this->mKeyEntitlements      = ledger.getEntitlements < KeyEntitlements >( this->mKeyAndPolicy );
+            this->mAccountEntitlements  = ledger.getEntitlementsWithFamily < AccountEntitlements >( *this->mAccountODBM.mBody.get ());
+            this->mKeyEntitlements      = ledger.getEntitlementsWithFamily < KeyEntitlements >( this->mKeyAndPolicy );
         }
     }
     

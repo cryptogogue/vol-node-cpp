@@ -17,12 +17,12 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 release, u64 index, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
         const TransactionMaker& maker = this->getMaker ();
     
-        TransactionContext context ( ledger, maker, blockHeight, release, index, time );
+        TransactionContext context ( ledger, maker, blockHeight, index, time );
         TransactionResult result = this->checkSignature ( context, policy );
         if ( result ) {
             result = this->mBody->apply ( context );

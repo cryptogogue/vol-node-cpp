@@ -284,6 +284,7 @@
 		CDA1573D23FA96EE00DFACCF /* SetEntitlements.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */; };
 		CDA1574023FAA92300DFACCF /* Munge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDA1573E23FAA92300DFACCF /* Munge.cpp */; };
 		CDA1574123FAA92300DFACCF /* Munge.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA1573F23FAA92300DFACCF /* Munge.h */; };
+		CDA320B9286A964300F10330 /* EntitlementsDetailsHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA320B6286A964300F10330 /* EntitlementsDetailsHandler.h */; };
 		CDA7208323FF6B7400E1401D /* BetaGetDeck.h in Headers */ = {isa = PBXBuildFile; fileRef = CDA7208223FF6B7400E1401D /* BetaGetDeck.h */; };
 		CDAA38E2251AA09200FEAFB5 /* Simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CDAA38E0251AA09200FEAFB5 /* Simulator.cpp */; };
 		CDAA38E3251AA09200FEAFB5 /* Simulator.h in Headers */ = {isa = PBXBuildFile; fileRef = CDAA38E1251AA09200FEAFB5 /* Simulator.h */; };
@@ -1067,6 +1068,7 @@
 		CDA1573C23FA96EE00DFACCF /* SetEntitlements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetEntitlements.h; path = src/volition/transactions/SetEntitlements.h; sourceTree = "<group>"; };
 		CDA1573E23FAA92300DFACCF /* Munge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Munge.cpp; path = src/volition/Munge.cpp; sourceTree = "<group>"; };
 		CDA1573F23FAA92300DFACCF /* Munge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Munge.h; path = src/volition/Munge.h; sourceTree = "<group>"; };
+		CDA320B6286A964300F10330 /* EntitlementsDetailsHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntitlementsDetailsHandler.h; path = "src/volition/web-miner-api/EntitlementsDetailsHandler.h"; sourceTree = "<group>"; };
 		CDA7208223FF6B7400E1401D /* BetaGetDeck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BetaGetDeck.h; path = src/volition/transactions/BetaGetDeck.h; sourceTree = "<group>"; };
 		CDAA38E0251AA09200FEAFB5 /* Simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Simulator.cpp; path = src/volition/simulation/Simulator.cpp; sourceTree = "<group>"; };
 		CDAA38E1251AA09200FEAFB5 /* Simulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Simulator.h; path = src/volition/simulation/Simulator.h; sourceTree = "<group>"; };
@@ -1858,6 +1860,7 @@
 				CDAC9F332621E05A00DCA201 /* DebugHTTPEchoHandler.h */,
 				CDDA755B255B490C007AAA07 /* DebugKeyGenHandler.h */,
 				CDB8B3FB21ACC874004EE816 /* DefaultHandler.h */,
+				CDA320B6286A964300F10330 /* EntitlementsDetailsHandler.h */,
 				CD28A47028628366009BB049 /* IdentityProviderDetailsHandler.h */,
 				CD51E51D24A60A3E00A0033B /* InventoryAssetsHandler.h */,
 				CDB8B3FE21ACC874004EE816 /* InventoryHandler.h */,
@@ -2129,6 +2132,7 @@
 				CD4E81BE210593E5007DA585 /* SortedDigestSerializer.h in Headers */,
 				CD77522D2532A76200A53765 /* Accessors.h in Headers */,
 				CDFA239D24601E0A00B4CECF /* LedgerResult.h in Headers */,
+				CDA320B9286A964300F10330 /* EntitlementsDetailsHandler.h in Headers */,
 				CDFA23A92460808A00B4CECF /* InventoryLogHandler.h in Headers */,
 				CD8DB75B26642B2C0073D58F /* AssetTransferDetails.h in Headers */,
 				CD20FF91253D873300DEB809 /* AbstractControlCommandBody.h in Headers */,
