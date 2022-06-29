@@ -24,10 +24,11 @@ public:
     TRANSACTION_TYPE ( "NEW_ACCOUNT" )
     TRANSACTION_WEIGHT ( 1 )
     TRANSACTION_MATURITY ( 0 )
-    TRANSACTION_MIN_RELEASE ( 3 )
+    TRANSACTION_MIN_RELEASE ( 4 )
 
     string              mAccountName;
     string              mProvider;
+    u64                 mGrant;
     string              mGenesis;
     CryptoPublicKey     mKey;
     Gamercert           mGamercert;
@@ -38,6 +39,7 @@ public:
         
         serializer.serialize ( "accountName",       this->mAccountName );
         serializer.serialize ( "provider",          this->mProvider );
+        serializer.serialize ( "grant",             this->mGrant );
         serializer.serialize ( "genesis",           this->mGenesis );
         serializer.serialize ( "key",               this->mKey );
         serializer.serialize ( "identity",          this->mGamercert );
@@ -49,6 +51,7 @@ public:
         
         serializer.serialize ( "accountName",       this->mAccountName );
         serializer.serialize ( "provider",          this->mProvider );
+        serializer.serialize ( "grant",             this->mGrant );
         serializer.serialize ( "genesis",           this->mGenesis );
         serializer.serialize ( "key",               this->mKey );
         serializer.serialize ( "identity",          this->mGamercert );
@@ -87,6 +90,7 @@ public:
         u64 fees = this->getFees ();
         u64 grant = firstFingerprint ? identityProvider.mGrant : 0;
         
+        if ( this->mGrant != grant ) return "Expected grant not matched.";
         if ( grant < fees ) return "Identity grant insufficient to cover transaction fees.";
         
         string accountName = ( this->mAccountName.size () > 0 ) ? this->mAccountName : Format::write ( ".%llu.%llu", context.mBlockHeight, context.mIndex );
@@ -112,7 +116,18 @@ public:
         if ( firstFingerprint ) {
             identityFingerprintField.set ( true );
         }
+        
+        if ( grant > 0 ) {
+            ledger.createVOL ( 0, 0, grant );
+        }
         return true;
+    }
+    
+    //----------------------------------------------------------------//
+    u64 AbstractTransactionBody_getVOL ( const TransactionContext& context ) const override {
+        UNUSED ( context );
+    
+        return this->mGrant;
     }
     
     //----------------------------------------------------------------//

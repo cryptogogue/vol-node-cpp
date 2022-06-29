@@ -147,7 +147,7 @@ u64 AbstractLedger::countVOL () const {
 }
 
 //----------------------------------------------------------------//
-u64 AbstractLedger::createVOL ( u64 rewards, u64 prizes ) {
+u64 AbstractLedger::createVOL ( u64 rewards, u64 prizes, u64 accounts ) {
 
     LedgerFieldODBM < u64 > rewardPoolField ( *this, AbstractLedger::keyFor_rewardPool ());
     rewardPoolField.set ( rewardPoolField.get ( 0 ) + rewards );
@@ -155,7 +155,7 @@ u64 AbstractLedger::createVOL ( u64 rewards, u64 prizes ) {
     LedgerFieldODBM < u64 > prizePoolField ( *this, AbstractLedger::keyFor_prizePool ());
     rewardPoolField.set ( prizePoolField.get ( 0 ) + rewards );
 
-    u64 total = rewards + prizes;
+    u64 total = rewards + prizes + accounts;
 
     LedgerFieldODBM < u64 > totalVOLField ( *this, AbstractLedger::keyFor_totalVOL ());
     totalVOLField.set ( totalVOLField.get ( 0 ) + total );
@@ -244,8 +244,8 @@ string AbstractLedger::getIdentity () const {
 
 //----------------------------------------------------------------//
 IdentityProvider AbstractLedger::getIdentityProvider ( string name ) const {
-        
-    shared_ptr < IdentityProvider > provider = this->getObjectOrNull < IdentityProvider >( keyFor_identityProvider ( name ));
+    
+    shared_ptr < IdentityProvider > provider = name.size () > 0 ? this->getObjectOrNull < IdentityProvider >( keyFor_identityProvider ( name )) : NULL;
     return provider ? *provider : IdentityProvider ();
 }
 

@@ -137,7 +137,7 @@ TransactionResult AbstractTransactionBody::AbstractTransactionBody_preApply ( Tr
     if ( ledger.isGenesis ()) return true;
     
     const TransactionFeeProfile& feeProfile = context.mFeeSchedule.getFeeProfile ( this->getTypeString ());
-        
+    
     if ( !feeProfile.checkProfitShare ( context.mMaker.getGratuity (), context.mMaker.getProfitShare ())) return "Incorrect profit share.";
     if ( !feeProfile.checkTransferTax ( this->getVOL ( context ), context.mMaker.getTransferTax ())) return "Incorrect transfer tax.";
     

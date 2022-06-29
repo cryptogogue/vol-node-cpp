@@ -285,7 +285,7 @@ public:
     void                                clearSchemaCache                ();
     u64                                 countBlocks                     () const;
     u64                                 countVOL                        () const;
-    u64                                 createVOL                       ( u64 rewards, u64 prizes );
+    u64                                 createVOL                       ( u64 rewards, u64 prizes, u64 accounts = 0 );
     shared_ptr < const Block >          getBlock                        () const;
     shared_ptr < const Block >          getBlock                        ( u64 height ) const;
     shared_ptr < const Block >          getBlock                        ( string hash ) const;
