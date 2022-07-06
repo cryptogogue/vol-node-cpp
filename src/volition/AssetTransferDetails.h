@@ -43,7 +43,7 @@ public:
         serializer.serialize ( "toID",              this->mToID );
         serializer.serialize ( "assets",            this->mAssets );
     }
-
+    
     //----------------------------------------------------------------//
     AssetTransferDetails () {
     }

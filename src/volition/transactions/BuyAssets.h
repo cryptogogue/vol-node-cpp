@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_BUYASSETS_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AssetTransferDetails.h>
 #include <volition/AssetODBM.h>
 #include <volition/Format.h>
@@ -20,7 +20,7 @@ namespace Transactions {
 // BuyAssets
 //================================================================//
 class BuyAssets :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "BUY_ASSETS" )
@@ -32,7 +32,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "offerID",           this->mOfferID );
         serializer.serialize ( "price",             this->mPrice );
@@ -40,7 +40,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "offerID",           this->mOfferID );
         serializer.serialize ( "price",             this->mPrice );

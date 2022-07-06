@@ -11,7 +11,7 @@
 #include <volition/Miner.h>
 #include <volition/MinerLaunchTests.h>
 #include <volition/SQLiteBlockTree.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
 

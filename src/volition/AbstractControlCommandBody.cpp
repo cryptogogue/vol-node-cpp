@@ -3,7 +3,7 @@
 
 #include <volition/AbstractControlCommandBody.h>
 #include <volition/Miner.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 
 namespace Volition {
 

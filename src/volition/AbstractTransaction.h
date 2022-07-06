@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_ABSTRACTTRANSACTIONBODY_H
-#define VOLITION_ABSTRACTTRANSACTIONBODY_H
+#ifndef VOLITION_ABSTRACTTRANSACTION_H
+#define VOLITION_ABSTRACTTRANSACTION_H
 
 #include <volition/common.h>
 #include <volition/CryptoKey.h>
@@ -41,19 +41,19 @@ namespace Volition {
     }
 
 class Miner;
-class Transaction;
+class TransactionEnvelope;
 class TransactionContext;
 
 typedef shared_ptr < AbstractSerializable > TransactionDetailsPtr;
 
 //================================================================//
-// AbstractTransactionBody
+// AbstractTransaction
 //================================================================//
-class AbstractTransactionBody :
+class AbstractTransaction :
     public virtual AbstractSerializable {
 protected:
 
-    friend class Transaction;
+    friend class TransactionEnvelope;
 
    TransactionMaker             mMaker;
     u64                         mMaxHeight; // expiration block
@@ -61,8 +61,8 @@ protected:
     string                      mUUID;
 
     //----------------------------------------------------------------//
-    void                        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
-    void                        AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
+    void                            AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
+    void                            AbstractSerializable_serializeTo        ( AbstractSerializerTo& serializer ) const override;
 
     //----------------------------------------------------------------//
     virtual TransactionResult       AbstractTransactionBody_apply           ( TransactionContext& context ) const;
@@ -95,8 +95,8 @@ public:
     GET_SET ( string,               UUID,               this->mUUID )
 
     //----------------------------------------------------------------//
-                                    AbstractTransactionBody             ();
-                                    ~AbstractTransactionBody            ();
+                                    AbstractTransaction                 ();
+                                    ~AbstractTransaction                ();
     TransactionResult               apply                               ( TransactionContext& context ) const;
     TransactionDetailsPtr           getDetails                          ( const AbstractLedger& ledger ) const;
     u64                             getVOL                              ( const TransactionContext& context ) const;

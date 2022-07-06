@@ -1,9 +1,9 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/Miner.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 
 namespace Volition {
 
@@ -14,15 +14,15 @@ static const size_t MAX_UUID_LENGTH = 36;
 //================================================================//
 
 //----------------------------------------------------------------//
-AbstractTransactionBody::AbstractTransactionBody () {
+AbstractTransaction::AbstractTransaction () {
 }
 
 //----------------------------------------------------------------//
-AbstractTransactionBody::~AbstractTransactionBody () {
+AbstractTransaction::~AbstractTransaction () {
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::apply ( TransactionContext& context ) const {
+TransactionResult AbstractTransaction::apply ( TransactionContext& context ) const {
     
     TransactionResult result = this->AbstractTransactionBody_preApply ( context );
     if ( !result ) return result;
@@ -34,22 +34,22 @@ TransactionResult AbstractTransactionBody::apply ( TransactionContext& context )
 }
 
 //----------------------------------------------------------------//
-TransactionDetailsPtr AbstractTransactionBody::getDetails ( const AbstractLedger& ledger ) const {
+TransactionDetailsPtr AbstractTransaction::getDetails ( const AbstractLedger& ledger ) const {
     return this->AbstractTransactionBody_getDetails ( ledger );
 }
 
 //----------------------------------------------------------------//
-u64 AbstractTransactionBody::getVOL ( const TransactionContext& context ) const {
+u64 AbstractTransaction::getVOL ( const TransactionContext& context ) const {
     return AbstractTransactionBody_getVOL ( context );
 }
 
 //----------------------------------------------------------------//
-void AbstractTransactionBody::setMaker ( const TransactionMaker& maker ) {
+void AbstractTransaction::setMaker ( const TransactionMaker& maker ) {
     this->mMaker = maker;
 }
 
 //----------------------------------------------------------------//
-bool AbstractTransactionBody::wasApplied ( const AbstractLedger& ledger ) const {
+bool AbstractTransaction::wasApplied ( const AbstractLedger& ledger ) const {
     return AbstractTransactionBody_wasApplied ( ledger );
 }
 
@@ -58,7 +58,7 @@ bool AbstractTransactionBody::wasApplied ( const AbstractLedger& ledger ) const 
 //================================================================//
 
 //----------------------------------------------------------------//
-void AbstractTransactionBody::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+void AbstractTransaction::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
     string type;
     
@@ -72,7 +72,7 @@ void AbstractTransactionBody::AbstractSerializable_serializeFrom ( const Abstrac
 }
 
 //----------------------------------------------------------------//
-void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+void AbstractTransaction::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "type",      this->getTypeString ());
     serializer.serialize ( "maker",     this->mMaker );
@@ -82,30 +82,30 @@ void AbstractTransactionBody::AbstractSerializable_serializeTo ( AbstractSeriali
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::AbstractTransactionBody_apply ( TransactionContext& context ) const {
+TransactionResult AbstractTransaction::AbstractTransactionBody_apply ( TransactionContext& context ) const {
     UNUSED ( context );
     return true;
 }
 
 //----------------------------------------------------------------//
-TransactionDetailsPtr AbstractTransactionBody::AbstractTransactionBody_getDetails ( const AbstractLedger& ledger ) const {
+TransactionDetailsPtr AbstractTransaction::AbstractTransactionBody_getDetails ( const AbstractLedger& ledger ) const {
     UNUSED ( ledger );
     return NULL;
 }
 
 //----------------------------------------------------------------//
-u64 AbstractTransactionBody::AbstractTransactionBody_getVOL ( const TransactionContext& context ) const {
+u64 AbstractTransaction::AbstractTransactionBody_getVOL ( const TransactionContext& context ) const {
     UNUSED ( context );
     return 0;
 }
 
 //----------------------------------------------------------------//
-u64 AbstractTransactionBody::AbstractTransactionBody_minRelease () const {
+u64 AbstractTransaction::AbstractTransactionBody_minRelease () const {
     return 0;
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::AbstractTransactionBody_postApply ( TransactionContext& context ) const {
+TransactionResult AbstractTransaction::AbstractTransactionBody_postApply ( TransactionContext& context ) const {
     
     if ( !( context.isGenesis () || context.isProvisional ())) {
         
@@ -117,7 +117,7 @@ TransactionResult AbstractTransactionBody::AbstractTransactionBody_postApply ( T
 }
 
 //----------------------------------------------------------------//
-TransactionResult AbstractTransactionBody::AbstractTransactionBody_preApply ( TransactionContext& context ) const {
+TransactionResult AbstractTransaction::AbstractTransactionBody_preApply ( TransactionContext& context ) const {
 
     if ( this->mUUID.size () > MAX_UUID_LENGTH ) return Format::write ( "Transaction UUID exceeds %d-character limit.", MAX_UUID_LENGTH );
 
@@ -156,7 +156,7 @@ TransactionResult AbstractTransactionBody::AbstractTransactionBody_preApply ( Tr
 }
 
 //----------------------------------------------------------------//
-bool AbstractTransactionBody::AbstractTransactionBody_wasApplied ( const AbstractLedger& ledger ) const {
+bool AbstractTransaction::AbstractTransactionBody_wasApplied ( const AbstractLedger& ledger ) const {
     UNUSED ( ledger );
     return true;
 }

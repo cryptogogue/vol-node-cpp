@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_AFFIRMKEY_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // AffirmKey
 //================================================================//
 class AffirmKey :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "AFFIRM_KEY" )
@@ -28,7 +28,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );
@@ -37,7 +37,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "key",           this->mKey );
         serializer.serialize ( "keyName",       this->mKeyName );

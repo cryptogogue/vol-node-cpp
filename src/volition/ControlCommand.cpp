@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AccountODBM.h>
 #include <volition/ControlCommand.h>
 #include <volition/Ledger.h>

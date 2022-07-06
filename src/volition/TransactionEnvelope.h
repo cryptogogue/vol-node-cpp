@@ -1,15 +1,15 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_TRANSACTION_H
-#define VOLITION_TRANSACTION_H
+#ifndef VOLITION_TRANSACTIONENVELOPE_H
+#define VOLITION_TRANSACTIONENVELOPE_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/Block.h>
 #include <volition/serialization/Serialization.h>
 #include <volition/Signature.h>
-#include <volition/TheTransactionBodyFactory.h>
+#include <volition/TheTransactionFactory.h>
 
 namespace Volition {
 
@@ -17,15 +17,15 @@ class Ledger;
 class Miner;
 
 //================================================================//
-// Transaction
+// TransactionEnvelope
 //================================================================//
-class Transaction :
+class TransactionEnvelope :
     public AbstractSerializable {
 protected:
 
     static const size_t MAX_UUID_LENGTH = 36;
 
-    typedef SerializableSharedPtr < AbstractTransactionBody, TransactionBodyFactory > TransactionBodyPtr;
+    typedef SerializableSharedPtr < AbstractTransaction, TransactionFactory > TransactionBodyPtr;
     typedef SerializableSharedPtr < Signature > SignaturePtr;
 
     TransactionBodyPtr          mBody;          // serialized from/to *body*
@@ -57,10 +57,10 @@ public:
     TransactionResult           apply                       ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const;
     bool                        checkMaker                  ( string accountName, string uuid ) const;
     TransactionDetailsPtr       getDetails                  ( const AbstractLedger& ledger ) const;
-    void                        setBody                     ( shared_ptr < AbstractTransactionBody > body );
+    void                        setBody                     ( shared_ptr < AbstractTransaction > body );
     void                        sign                        ( const CryptoKeyPair& keyPair );
-                                Transaction                 ();
-                                ~Transaction                ();
+                                TransactionEnvelope         ();
+                                ~TransactionEnvelope        ();
     bool                        wasApplied                  ( const AbstractLedger& ledger ) const;
 };
 

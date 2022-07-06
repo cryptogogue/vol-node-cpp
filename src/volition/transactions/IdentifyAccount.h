@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_IDENTIFYACCOUNT_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/ContractWithDigest.h>
 #include <volition/Gamercert.h>
 #include <volition/IdentityProvider.h>
@@ -19,7 +19,7 @@ namespace Transactions {
 // IdentifyAccount
 //================================================================//
 class IdentifyAccount :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "IDENTIFY_ACCOUNT" )
@@ -33,7 +33,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "provider",          this->mProvider );
         serializer.serialize ( "grant",             this->mGrant );
@@ -42,7 +42,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "provider",          this->mProvider );
         serializer.serialize ( "grant",             this->mGrant );

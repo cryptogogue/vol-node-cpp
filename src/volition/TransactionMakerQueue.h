@@ -18,7 +18,7 @@ class AbstractChainRecorder;
 class AbstractHashable;
 class Block;
 class Miner;
-class Transaction;
+class TransactionEnvelope;
 
 //================================================================//
 // TransactionMakerQueue
@@ -32,13 +32,13 @@ public:
         BLOCKED_ON_IGNORE,
     };
 
-    typedef map < u64, shared_ptr < const Transaction >>::iterator              TransactionQueueIt;
-    typedef map < u64, shared_ptr < const Transaction >>::const_iterator        TransactionQueueConstIt;
+    typedef map < u64, shared_ptr < const TransactionEnvelope >>::iterator              TransactionQueueIt;
+    typedef map < u64, shared_ptr < const TransactionEnvelope >>::const_iterator        TransactionQueueConstIt;
 
-    typedef map < u64, shared_ptr < const Transaction >>                        Queue;
+    typedef map < u64, shared_ptr < const TransactionEnvelope >>                        Queue;
 
-    typedef map < string, shared_ptr < const Transaction >>::const_iterator     TransactionLookupConstIt;
-    typedef map < string, shared_ptr < const Transaction >>                     Lookup;
+    typedef map < string, shared_ptr < const TransactionEnvelope >>::const_iterator     TransactionLookupConstIt;
+    typedef map < string, shared_ptr < const TransactionEnvelope >>                     Lookup;
 
 protected:
 
@@ -60,13 +60,13 @@ public:
 
     //----------------------------------------------------------------//
     TransactionResult                   checkTransactionOrder           ( u64 nonce ) const;
-    shared_ptr < const Transaction >    getTransaction                  ( u64 positionOrNonce ) const;
-    shared_ptr < const Transaction >    getTransaction                  ( string uuid ) const;
+    shared_ptr < const TransactionEnvelope >    getTransaction                  ( u64 positionOrNonce ) const;
+    shared_ptr < const TransactionEnvelope >    getTransaction                  ( string uuid ) const;
     bool                                hasTransactions                 () const;
     void                                ignoreTransaction               ( string message, string uuid );
     bool                                isBlocked                       () const;
                                         TransactionMakerQueue           ();
-    void                                pushTransaction                 ( shared_ptr < const Transaction > transaction );
+    void                                pushTransaction                 ( shared_ptr < const TransactionEnvelope > transaction );
     void                                prune                           ( u64 nonce );
     void                                prune                           ( const AbstractLedger& chain );
     void                                setTransactionResult            ( TransactionResult result );

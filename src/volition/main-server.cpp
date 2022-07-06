@@ -6,7 +6,6 @@
 #include <volition/FileSys.h>
 #include <volition/RouteTable.h>
 #include <volition/Singleton.h>
-#include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
 #include <volition/MinerActivity.h>
 #include <volition/MinerAPIFactory.h>

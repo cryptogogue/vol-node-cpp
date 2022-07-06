@@ -4,7 +4,7 @@
 #ifndef VOLITION_TRANSACTIONS_H
 #define VOLITION_TRANSACTIONS_H
 
-#include <volition/TheTransactionBodyFactory.h>
+#include <volition/TheTransactionFactory.h>
 #include <volition/transactions/AffirmKey.h>
 #include <volition/transactions/BetaGetAssets.h>
 #include <volition/transactions/BetaGetDeck.h>

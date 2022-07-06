@@ -8,7 +8,6 @@
 #include <volition/AssetODBM.h>
 #include <volition/Block.h>
 #include <volition/AbstractMinerAPIRequestHandler.h>
-#include <volition/TheTransactionBodyFactory.h>
 
 namespace Volition {
 namespace WebMinerAPI {

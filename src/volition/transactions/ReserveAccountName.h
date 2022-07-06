@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_RESEREACCOUNTNAME_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AccountODBM.h>
 #include <volition/Policy.h>
 
@@ -16,7 +16,7 @@ namespace Transactions {
 // ReserveAccountName
 //================================================================//
 class ReserveAccountName :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "RESERVE_ACCOUNT_NAME" )
@@ -28,7 +28,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "nameHash",      this->mNameHash );
         serializer.serialize ( "nameSecret",    this->mNameSecret );
@@ -36,7 +36,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "nameHash",      this->mNameHash );
         serializer.serialize ( "nameSecret",    this->mNameSecret );

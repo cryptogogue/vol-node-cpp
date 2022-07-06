@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_RENAMEACCOUNT_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AccountODBM.h>
 #include <volition/Policy.h>
 
@@ -16,7 +16,7 @@ namespace Transactions {
 // RenameAccount
 //================================================================//
 class RenameAccount :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "RENAME_ACCOUNT" )
@@ -27,14 +27,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "revealedName",  this->mRevealedName );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "revealedName",  this->mRevealedName );
     }

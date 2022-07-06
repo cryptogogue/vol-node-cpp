@@ -6,8 +6,7 @@
 
 #include <volition/Block.h>
 #include <volition/AbstractMinerAPIRequestHandler.h>
-#include <volition/TheTransactionBodyFactory.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionStatus.h>
 
 namespace Volition {
@@ -41,7 +40,7 @@ public:
             const TransactionMakerQueue::Queue& queue = makerQueue->getQueue ();
             TransactionMakerQueue::TransactionQueueConstIt queueIt = queue.cbegin ();
             for ( ; queueIt != queue.cend (); ++queueIt ) {
-                shared_ptr < const Transaction > transaction = queueIt->second;
+                shared_ptr < const TransactionEnvelope > transaction = queueIt->second;
                 summary.push_back ( transaction->getUUID ());
             }
         }

@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_SETMONETARYPOLICY_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/MonetaryPolicy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // SetMonetaryPolicy
 //================================================================//
 class SetMonetaryPolicy :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "SET_MONETARY_POLICY" )
@@ -26,14 +26,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "monetaryPolicy",    this->mMonetaryPolicy  );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "monetaryPolicy",    this->mMonetaryPolicy  );
     }

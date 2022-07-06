@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_SENDASSETS_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AssetTransferDetails.h>
 #include <volition/AssetODBM.h>
 #include <volition/Format.h>
@@ -18,7 +18,7 @@ namespace Transactions {
 // SendAssets
 //================================================================//
 class SendAssets :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "SEND_ASSETS" )
@@ -30,7 +30,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",               this->mAccountName );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );
@@ -38,7 +38,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",               this->mAccountName );
         serializer.serialize ( "assetIdentifiers",          this->mAssetIdentifiers );

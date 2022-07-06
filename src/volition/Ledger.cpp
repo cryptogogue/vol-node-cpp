@@ -16,7 +16,7 @@
 #include <volition/MiningReward.h>
 #include <volition/MonetaryPolicy.h>
 #include <volition/PayoutPolicy.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionFeeSchedule.h>
 #include <volition/UnsecureRandom.h>
 

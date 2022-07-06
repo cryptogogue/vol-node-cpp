@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_SETPAYOUTPOLICY_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/PayoutPolicy.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // SetPayoutPolicy
 //================================================================//
 class SetPayoutPolicy :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "SET_PAYOUT_POLICY" )
@@ -26,14 +26,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "payoutPolicy",      this->mPayoutPolicy );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "payoutPolicy",      this->mPayoutPolicy );
     }

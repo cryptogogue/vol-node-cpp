@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_LOADLEDGER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/MinerInfo.h>
 #include <volition/Policy.h>
 #include <volition/transactions/Genesis.h>
@@ -42,7 +42,7 @@ public:
 //================================================================//
 class LoadLedger :
     public ConsensusSettings,
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "LOAD_LEDGER" )

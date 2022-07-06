@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_OFFERASSETS_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AssetODBM.h>
 #include <volition/Format.h>
 #include <volition/Policy.h>
@@ -17,7 +17,7 @@ namespace Transactions {
 // OfferAssets
 //================================================================//
 class OfferAssets :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "OFFER_ASSETS" )
@@ -32,7 +32,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "minimumPrice",              this->mMinimumPrice );
         serializer.serialize ( "expiration",                this->mExpiration );
@@ -41,7 +41,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "minimumPrice",              this->mMinimumPrice );
         serializer.serialize ( "expiration",                this->mExpiration );

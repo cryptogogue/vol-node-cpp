@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_BETAGETASSETS_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AccountODBM.h>
 #include <volition/InventoryLogEntry.h>
 #include <volition/Schema.h>
@@ -17,7 +17,7 @@ namespace Transactions {
 // BetaGetAssets
 //================================================================//
 class BetaGetAssets :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "BETA_GET_ASSETS" )
@@ -28,14 +28,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "numAssets",     this->mNumAssets );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "numAssets",     this->mNumAssets );
     }

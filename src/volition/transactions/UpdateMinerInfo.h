@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_UPDATEMINERINFO_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/MinerInfo.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // UpdateMinerInfo
 //================================================================//
 class UpdateMinerInfo :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "UPDATE_MINER_INFO" )
@@ -26,14 +26,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "minerInfo",     this->mMinerInfo );
     }

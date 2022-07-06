@@ -10,13 +10,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-unique_ptr < AbstractTransactionBody > TheTransactionBodyFactory::create ( string typeString ) const {
-
-    return this->Factory::create ( typeString );
-}
-
-//----------------------------------------------------------------//
-TheTransactionBodyFactory::TheTransactionBodyFactory () {
+TheTransactionFactory::TheTransactionFactory () {
 
     this->registerTransaction < Volition::Transactions::AffirmKey >();
     this->registerTransaction < Volition::Transactions::BetaGetAssets >();
@@ -51,7 +45,7 @@ TheTransactionBodyFactory::TheTransactionBodyFactory () {
 }
 
 //----------------------------------------------------------------//
-TheTransactionBodyFactory::~TheTransactionBodyFactory () {
+TheTransactionFactory::~TheTransactionFactory () {
 }
 
 //================================================================//

@@ -11,7 +11,7 @@
 #include <volition/simulation/Analysis.h>
 #include <volition/simulation/SimMiningMessenger.h>
 #include <volition/simulation/Simulator.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 
 namespace Volition {
 namespace Simulation {

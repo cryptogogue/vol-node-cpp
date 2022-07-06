@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_REGISTERMINER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/MinerInfo.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // RegisterMiner
 //================================================================//
 class RegisterMiner :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "REGISTER_MINER" )
@@ -27,7 +27,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "minerInfo",     this->mMinerInfo );
@@ -35,7 +35,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",   this->mAccountName );
         serializer.serialize ( "minerInfo",     this->mMinerInfo );

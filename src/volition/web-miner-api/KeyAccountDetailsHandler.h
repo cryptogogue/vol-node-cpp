@@ -6,7 +6,6 @@
 
 #include <volition/Block.h>
 #include <volition/AbstractMinerAPIRequestHandler.h>
-#include <volition/TheTransactionBodyFactory.h>
 #include <volition/web-miner-api/AccountDetailsHandler.h>
 
 namespace Volition {

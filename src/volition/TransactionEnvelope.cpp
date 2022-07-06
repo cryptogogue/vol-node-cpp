@@ -1,11 +1,11 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AccountODBM.h>
 #include <volition/Ledger.h>
 #include <volition/Miner.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionContext.h>
 #include <volition/TransactionMaker.h>
 #include <volition/transactions/Genesis.h>
@@ -17,7 +17,7 @@ namespace Volition {
 //================================================================//
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const {
+TransactionResult TransactionEnvelope::apply ( AbstractLedger& ledger, u64 blockHeight, u64 index, time_t time, Block::VerificationPolicy policy ) const {
 
     try {
         const TransactionMaker& maker = this->getMaker ();
@@ -39,7 +39,7 @@ TransactionResult Transaction::apply ( AbstractLedger& ledger, u64 blockHeight, 
 }
 
 //----------------------------------------------------------------//
-bool Transaction::checkMaker ( string accountName, string uuid ) const {
+bool TransactionEnvelope::checkMaker ( string accountName, string uuid ) const {
 
     if ( !this->mBody ) return false;
     if ( this->getUUID ().size () == 0 ) return false;
@@ -47,7 +47,7 @@ bool Transaction::checkMaker ( string accountName, string uuid ) const {
 }
 
 //----------------------------------------------------------------//
-TransactionResult Transaction::checkSignature ( const TransactionContext& context, Block::VerificationPolicy policy ) const {
+TransactionResult TransactionEnvelope::checkSignature ( const TransactionContext& context, Block::VerificationPolicy policy ) const {
 
     if ( !( policy & Block::VERIFY_TRANSACTION_SIG )) return true;
 
@@ -61,35 +61,35 @@ TransactionResult Transaction::checkSignature ( const TransactionContext& contex
 }
 
 //----------------------------------------------------------------//
-TransactionDetailsPtr Transaction::getDetails ( const AbstractLedger& ledger ) const {
+TransactionDetailsPtr TransactionEnvelope::getDetails ( const AbstractLedger& ledger ) const {
 
     return this->mBody ? this->mBody->getDetails ( ledger ) : NULL;
 }
 
 //----------------------------------------------------------------//
-void Transaction::setBody ( shared_ptr < AbstractTransactionBody > body ) {
+void TransactionEnvelope::setBody ( shared_ptr < AbstractTransaction > body ) {
 
     this->mBody = body;
     this->mBodyString = body ? ToJSONSerializer::toJSONString ( *body ) : "";
 }
 
 //----------------------------------------------------------------//
-void Transaction::sign ( const CryptoKeyPair& keyPair ) {
+void TransactionEnvelope::sign ( const CryptoKeyPair& keyPair ) {
 
     this->mSignature = make_shared < Signature >();
     *this->mSignature = keyPair.sign ( this->mBodyString );
 }
 
 //----------------------------------------------------------------//
-Transaction::Transaction () {
+TransactionEnvelope::TransactionEnvelope () {
 }
 
 //----------------------------------------------------------------//
-Transaction::~Transaction () {
+TransactionEnvelope::~TransactionEnvelope () {
 }
 
 //----------------------------------------------------------------//
-bool Transaction::wasApplied ( const AbstractLedger& ledger ) const {
+bool TransactionEnvelope::wasApplied ( const AbstractLedger& ledger ) const {
 
     return this->mBody ? this->mBody->wasApplied ( ledger ) : false;
 }
@@ -99,7 +99,7 @@ bool Transaction::wasApplied ( const AbstractLedger& ledger ) const {
 //================================================================//
 
 //----------------------------------------------------------------//
-void Transaction::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
+void TransactionEnvelope::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
 
     serializer.serialize ( "signature", this->mSignature );
     
@@ -118,7 +118,7 @@ void Transaction::AbstractSerializable_serializeFrom ( const AbstractSerializerF
 }
 
 //----------------------------------------------------------------//
-void Transaction::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
+void TransactionEnvelope::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
 
     serializer.serialize ( "signature",     this->mSignature );
     serializer.serialize ( "body",          this->mBodyString );

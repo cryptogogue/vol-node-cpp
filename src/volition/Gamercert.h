@@ -5,7 +5,7 @@
 #define VOLITION_GAMERCERT_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/ContractWithDigest.h>
 #include <volition/Munge.h>
 #include <volition/Policy.h>

@@ -7,8 +7,7 @@
 #include <volition/Format.h>
 #include <volition/Ledger.h>
 #include <volition/MonetaryPolicy.h>
-#include <volition/TheTransactionBodyFactory.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 
 namespace Volition {
 
@@ -177,7 +176,7 @@ LedgerResult Block::applyTransactions ( AbstractLedger& ledger, VerificationPoli
         
         // apply block transactions.
         for ( size_t i = 0; i < this->mBody->mTransactions.size (); ++i ) {
-            const Transaction& transaction = *this->mBody->mTransactions [ i ];
+            const TransactionEnvelope& transaction = *this->mBody->mTransactions [ i ];
             
             size_t transactionMaturity = this->mHeight + transaction.getMaturity ();
             if ( transactionMaturity == height ) {
@@ -267,7 +266,7 @@ size_t Block::countTransactions () const {
 }
 
 //----------------------------------------------------------------//
-const Transaction* Block::getTransaction ( u64 index ) const {
+const TransactionEnvelope* Block::getTransaction ( u64 index ) const {
 
     return ( this->mBody && ( index < this->mBody->mTransactions.size () )) ? this->mBody->mTransactions [ index ].get () : NULL;
 }
@@ -285,7 +284,7 @@ size_t Block::getWeight () const {
 }
 
 //----------------------------------------------------------------//
-void Block::pushTransaction ( shared_ptr < const Transaction > transaction ) {
+void Block::pushTransaction ( shared_ptr < const TransactionEnvelope > transaction ) {
 
     this->affirmBody ();
     this->mBody->mTransactions.push_back ( transaction );

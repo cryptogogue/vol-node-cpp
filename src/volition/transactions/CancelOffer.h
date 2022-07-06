@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_CANCELOFFER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AssetODBM.h>
 #include <volition/Format.h>
 #include <volition/Policy.h>
@@ -17,7 +17,7 @@ namespace Transactions {
 // CancelOffer
 //================================================================//
 class CancelOffer :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "CANCEL_OFFER" )
@@ -28,14 +28,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "identifier",        this->mIdentifier );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "identifier",        this->mIdentifier );
     }

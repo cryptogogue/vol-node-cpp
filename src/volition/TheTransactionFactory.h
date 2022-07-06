@@ -1,28 +1,27 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#ifndef VOLITION_THETRANSACTIONBODYFACTORY_H
-#define VOLITION_THETRANSACTIONBODYFACTORY_H
+#ifndef VOLITION_THETRANSACTIONFACTORY_H
+#define VOLITION_THETRANSACTIONFACTORY_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/Factory.h>
 #include <volition/Singleton.h>
 
 namespace Volition {
 
 //================================================================//
-// TheTransactionBodyFactory
+// TheTransactionFactory
 //================================================================//
-class TheTransactionBodyFactory :
-    public Singleton < TheTransactionBodyFactory >,
-    public Factory < AbstractTransactionBody > {
+class TheTransactionFactory :
+    public Singleton < TheTransactionFactory >,
+    public Factory < AbstractTransaction > {
 public:
 
     //----------------------------------------------------------------//
-    unique_ptr < AbstractTransactionBody >      create                          ( string typeString ) const;
-                                                TheTransactionBodyFactory       ();
-                                                ~TheTransactionBodyFactory      ();
+                    TheTransactionFactory           ();
+                    ~TheTransactionFactory          ();
     
     //----------------------------------------------------------------//
     template < typename TYPE >
@@ -32,16 +31,16 @@ public:
 };
 
 //================================================================//
-// TransactionBodyFactory
+// TransactionFactory
 //================================================================//
-class TransactionBodyFactory :
-    public AbstractSerializablePtrFactory < AbstractTransactionBody > {
+class TransactionFactory :
+    public AbstractSerializablePtrFactory < AbstractTransaction > {
 public:
 
     //----------------------------------------------------------------//
-    unique_ptr < AbstractTransactionBody > SerializablePtrFactory_make ( const AbstractSerializerFrom& serializer ) override {
+    unique_ptr < AbstractTransaction > SerializablePtrFactory_make ( const AbstractSerializerFrom& serializer ) override {
         string type = serializer.serializeIn < string >( "type", "" );
-        return TheTransactionBodyFactory::get ().create ( type );
+        return TheTransactionFactory::get ().create ( type );
     }
 };
 

@@ -10,7 +10,7 @@
 
 namespace Volition {
 
-class Transaction;
+class TransactionEnvelope;
 
 //================================================================//
 // TransactionResult
@@ -25,7 +25,7 @@ public:
 
     //----------------------------------------------------------------//
     string      getUUID                     () const;
-    void        setTransactionDetails       ( const Transaction& transaction );
+    void        setTransactionDetails       ( const TransactionEnvelope& transaction );
                 TransactionResult           ( bool status );
                 TransactionResult           ( const char* message );
                 TransactionResult           ( string message );

@@ -11,7 +11,7 @@
 namespace Volition {
 
 class AbstractLedger;
-class Transaction;
+class TransactionEnvelope;
 
 //================================================================//
 // BlockBody
@@ -27,7 +27,7 @@ private:
     string              mReward;
 
     // TODO: store these in a map indexed by maturity (so we don't have to traverse all transactions when handling deferred transactions)
-    SerializableVector < SerializableSharedConstPtr < Transaction >> mTransactions;
+    SerializableVector < SerializableSharedConstPtr < TransactionEnvelope >> mTransactions;
     
     //----------------------------------------------------------------//
     void        AbstractSerializable_serializeFrom      ( const AbstractSerializerFrom& serializer ) override;
@@ -84,8 +84,8 @@ public:
                             Block                               ( string bodyString );
                             ~Block                              ();
     size_t                  countTransactions                   () const;
-    const Transaction*      getTransaction                      ( u64 index ) const;
-    void                    pushTransaction                     ( shared_ptr < const Transaction > transaction );
+    const TransactionEnvelope*      getTransaction                      ( u64 index ) const;
+    void                    pushTransaction                     ( shared_ptr < const TransactionEnvelope > transaction );
     const Digest&           sign                                ( const CryptoKeyPair& key, string hashAlgorithm = Digest::DEFAULT_HASH_ALGORITHM );
     void                    setReward                           ( string reward );
     LedgerResult            verify                              ( const AbstractLedger& ledger, VerificationPolicy policy ) const;

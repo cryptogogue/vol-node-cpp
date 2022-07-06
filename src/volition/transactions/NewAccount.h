@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_NEWACCOUNT_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/ContractWithDigest.h>
 #include <volition/Gamercert.h>
 #include <volition/IdentityProvider.h>
@@ -18,7 +18,7 @@ namespace Transactions {
 // NewAccount
 //================================================================//
 class NewAccount :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "NEW_ACCOUNT" )
@@ -35,7 +35,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "accountName",       this->mAccountName );
         serializer.serialize ( "provider",          this->mProvider );
@@ -47,7 +47,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "accountName",       this->mAccountName );
         serializer.serialize ( "provider",          this->mProvider );

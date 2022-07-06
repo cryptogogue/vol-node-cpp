@@ -111,7 +111,7 @@ void LoadLedger::init ( AbstractLedger& ledger ) {
 //----------------------------------------------------------------//
 void LoadLedger::AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) {
     ConsensusSettings::AbstractSerializable_serializeFrom ( serializer );
-    AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+    AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
     
     serializer.serialize ( "schema",        this->mSchema );
     serializer.serialize ( "accounts",      this->mAccounts );
@@ -120,7 +120,7 @@ void LoadLedger::AbstractSerializable_serializeFrom ( const AbstractSerializerFr
 //----------------------------------------------------------------//
 void LoadLedger::AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const {
     ConsensusSettings::AbstractSerializable_serializeTo ( serializer );
-    AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+    AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
     
     serializer.serialize ( "schema",        this->mSchema );
     serializer.serialize ( "accounts",      this->mAccounts );

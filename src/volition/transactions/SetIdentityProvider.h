@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_SETIDENTITYPROVIDER_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/ContractWithDigest.h>
 #include <volition/IdentityProvider.h>
 #include <volition/Munge.h>
@@ -19,7 +19,7 @@ namespace Transactions {
 // SetIdentityProvider
 //================================================================//
 class SetIdentityProvider :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "SET_IDENTITY_PROVIDER" )
@@ -32,7 +32,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "name",                  this->mName );
         serializer.serialize ( "identityProvider",      this->mIdentityProvider );
@@ -40,7 +40,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "name",                  this->mName );
         serializer.serialize ( "identityProvider",      this->mIdentityProvider );

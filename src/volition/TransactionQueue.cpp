@@ -3,7 +3,7 @@
 
 #include <volition/AccountODBM.h>
 #include <volition/Block.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionQueue.h>
 
 namespace Volition {
@@ -29,7 +29,7 @@ public:
 //================================================================//
 
 //----------------------------------------------------------------//
-void TransactionQueue::acceptTransaction ( shared_ptr < const Transaction > transaction ) {
+void TransactionQueue::acceptTransaction ( shared_ptr < const TransactionEnvelope > transaction ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
     
@@ -94,7 +94,7 @@ void TransactionQueue::fillBlock ( Ledger& chain, Block& block, Block::Verificat
             }
             
             // get the next transaction
-            shared_ptr < const Transaction > transaction = makerQueue.getTransaction ( info.mNonce );
+            shared_ptr < const TransactionEnvelope > transaction = makerQueue.getTransaction ( info.mNonce );
             if ( !transaction ) {
                 continue;
             }
@@ -169,7 +169,7 @@ bool TransactionQueue::hasTransaction ( string accountName, string uuid ) const 
 
     const MakerQueue* makerQueue = this->getMakerQueueOrNull ( accountName );
     if ( makerQueue ) {
-        shared_ptr < const Transaction > transaction = makerQueue->getTransaction ( uuid );
+        shared_ptr < const TransactionEnvelope > transaction = makerQueue->getTransaction ( uuid );
         if ( transaction ) return true;
     }
     return false;
@@ -219,7 +219,7 @@ void TransactionQueue::pruneTransactions ( const AbstractLedger& chain ) {
 }
 
 //----------------------------------------------------------------//
-void TransactionQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
+void TransactionQueue::pushTransaction ( shared_ptr < const TransactionEnvelope > transaction ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
 

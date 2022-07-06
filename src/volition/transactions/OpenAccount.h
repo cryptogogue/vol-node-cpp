@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_OPENACCOUNT_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/ContractWithDigest.h>
 #include <volition/Munge.h>
 #include <volition/Policy.h>
@@ -18,7 +18,7 @@ namespace Transactions {
 // OpenAccount
 //================================================================//
 class OpenAccount :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "OPEN_ACCOUNT" )
@@ -35,7 +35,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "suffix",            this->mSuffix );
         serializer.serialize ( "key",               this->mKey );
@@ -47,7 +47,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "suffix",            this->mSuffix );
         serializer.serialize ( "key",               this->mKey );

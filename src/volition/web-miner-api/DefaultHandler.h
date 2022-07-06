@@ -9,7 +9,6 @@
 #include <volition/Format.h>
 #include <volition/PayoutPolicy.h>
 #include <volition/TransactionFeeSchedule.h>
-#include <volition/TheTransactionBodyFactory.h>
 #include <volition/version.h>
 
 namespace Volition {

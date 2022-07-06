@@ -5,7 +5,6 @@
 #define VOLITION_WEBMINERAPI_CONSENSUSPEEKHANDLER_H
 
 #include <volition/Block.h>
-#include <volition/TheTransactionBodyFactory.h>
 #include <volition/AbstractMinerAPIRequestHandler.h>
 
 namespace Volition {

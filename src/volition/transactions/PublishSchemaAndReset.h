@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_PUBLISHSCHEMAANDRESET_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/Digest.h>
 #include <volition/Miner.h>
 #include <volition/Schema.h>
@@ -17,7 +17,7 @@ namespace Transactions {
 // PublishSchemaAndReset
 //================================================================//
 class PublishSchemaAndReset :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "PUBLISH_SCHEMA_AND_RESET" )
@@ -29,7 +29,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "schema",        this->mSchema );
         serializer.serialize ( "deckName",      this->mDeckName );
@@ -37,7 +37,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "schema",        this->mSchema );
         serializer.serialize ( "deckName",      this->mDeckName );

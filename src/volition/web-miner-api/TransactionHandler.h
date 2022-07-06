@@ -6,8 +6,7 @@
 
 #include <volition/Block.h>
 #include <volition/AbstractMinerAPIRequestHandler.h>
-#include <volition/TheTransactionBodyFactory.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionStatus.h>
 
 namespace Volition {
@@ -47,7 +46,7 @@ public:
             
             case HTTP::PUT: {
 
-                SerializableUniquePtr < Transaction > transaction;
+                SerializableUniquePtr < TransactionEnvelope > transaction;
                 FromJSONSerializer::fromJSON ( transaction, jsonIn );
 
                 if ( transaction && transaction->checkMaker ( accountName, uuid )) {

@@ -4,7 +4,7 @@
 #include <volition/Block.h>
 #include <volition/CryptoKey.h>
 #include <volition/Miner.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/Transactions.h>
 
 using namespace Volition;
@@ -225,7 +225,7 @@ public:
         shared_ptr < Transactions::LoadLedger > loadLedger = make_shared < Transactions::LoadLedger >();
         FromJSONSerializer::fromJSONFile ( *loadLedger, infile );
         
-        shared_ptr < Transaction > transaction = make_shared < Transaction >();
+        shared_ptr < TransactionEnvelope > transaction = make_shared < TransactionEnvelope >();
         transaction->setBody ( loadLedger );
         
         shared_ptr < Block > block = make_shared < Block >();

@@ -7,8 +7,7 @@
 #include <volition/AccountODBM.h>
 #include <volition/Block.h>
 #include <volition/AbstractMinerAPIRequestHandler.h>
-#include <volition/TheTransactionBodyFactory.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionStatus.h>
 
 namespace Volition {
@@ -60,7 +59,7 @@ public:
                 
                 if ( !block ) break;
                 
-                const Transaction* transaction = block ? block->getTransaction ( entry->getTransactionIndex ()) : NULL;
+                const TransactionEnvelope* transaction = block ? block->getTransaction ( entry->getTransactionIndex ()) : NULL;
                 if ( transaction ) {
                     
                     AccountID accountID = ledger.getAccountID ( transaction->getMakerAccountName ());

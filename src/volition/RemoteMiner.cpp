@@ -5,7 +5,7 @@
 #include <volition/Digest.h>
 #include <volition/HTTPMiningMessenger.h>
 #include <volition/RemoteMiner.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/Transactions.h>
 #include <volition/UnsecureRandom.h>
 

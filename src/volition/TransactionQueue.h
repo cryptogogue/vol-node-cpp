@@ -19,7 +19,7 @@ class AbstractChainRecorder;
 class AbstractHashable;
 class Block;
 class Miner;
-class Transaction;
+class TransactionEnvelope;
 
 //================================================================//
 // TransactionQueue
@@ -34,7 +34,7 @@ protected:
     map < string, TransactionMakerQueue > mDatabase;
     
     //----------------------------------------------------------------//
-    void                    acceptTransaction       ( shared_ptr < const Transaction > transaction );
+    void                    acceptTransaction       ( shared_ptr < const TransactionEnvelope > transaction );
     
 public:
 
@@ -46,7 +46,7 @@ public:
     bool                    hasTransaction          ( string accountName, string uuid ) const;
     bool                    isBlocked               ( string accountName ) const;
     void                    pruneTransactions       ( const AbstractLedger& chain );
-    void                    pushTransaction         ( shared_ptr < const Transaction > transaction );
+    void                    pushTransaction         ( shared_ptr < const TransactionEnvelope > transaction );
     void                    reset                   ();
                             TransactionQueue        ();
     virtual                 ~TransactionQueue       ();

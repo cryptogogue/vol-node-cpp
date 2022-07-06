@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Cryptogogue, Inc. All Rights Reserved.
 // http://cryptogogue.com
 
-#include <volition/AbstractTransactionBody.h>
-#include <volition/Transaction.h>
+#include <volition/AbstractTransaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionResult.h>
 
 namespace Volition {
@@ -17,7 +17,7 @@ string TransactionResult::getUUID () const {
 }
 
 //----------------------------------------------------------------//
-void TransactionResult::setTransactionDetails ( const Transaction& transaction ) {
+void TransactionResult::setTransactionDetails ( const TransactionEnvelope& transaction ) {
     this->mUUID = transaction.getUUID ();
 }
 

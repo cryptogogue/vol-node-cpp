@@ -9,7 +9,7 @@
 
 namespace Volition {
 
-class Transaction;
+class TransactionEnvelope;
 
 //================================================================//
 // TransactionStatus

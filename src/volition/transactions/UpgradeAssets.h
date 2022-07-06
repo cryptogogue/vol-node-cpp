@@ -6,7 +6,7 @@
 
 #include <volition/common.h>
 #include <volition/Format.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/Policy.h>
 
 namespace Volition {
@@ -16,7 +16,7 @@ namespace Transactions {
 // UpgradeAssets
 //================================================================//
 class UpgradeAssets :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "UPGRADE_ASSETS" )
@@ -27,14 +27,14 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "upgrades",          this->mUpgrades );
     }
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "upgrades",          this->mUpgrades );
     }

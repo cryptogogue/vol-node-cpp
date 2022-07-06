@@ -3,7 +3,7 @@
 
 #include <volition/AccountODBM.h>
 #include <volition/Block.h>
-#include <volition/Transaction.h>
+#include <volition/TransactionEnvelope.h>
 #include <volition/TransactionMakerQueue.h>
 
 namespace Volition {
@@ -18,7 +18,7 @@ TransactionResult TransactionMakerQueue::checkTransactionOrder ( u64 nonce ) con
     TransactionQueueConstIt transactionIt = this->mQueue.cbegin ();
     for ( ; transactionIt != this->mQueue.cend (); ++transactionIt ) {
     
-        shared_ptr < const Transaction > transaction = transactionIt->second;
+        shared_ptr < const TransactionEnvelope > transaction = transactionIt->second;
         u64 transactionNonce = transaction->getNonce ();
     
         if ( transactionNonce > nonce ) {
@@ -31,14 +31,14 @@ TransactionResult TransactionMakerQueue::checkTransactionOrder ( u64 nonce ) con
 }
 
 //----------------------------------------------------------------//
-shared_ptr < const Transaction > TransactionMakerQueue::getTransaction ( u64 positionOrNonce ) const {
+shared_ptr < const TransactionEnvelope > TransactionMakerQueue::getTransaction ( u64 positionOrNonce ) const {
 
     TransactionQueueConstIt transactionIt = this->isMakerless () ? std::next ( this->mQueue.begin (), ( int )positionOrNonce ) : this->mQueue.find ( positionOrNonce );
     return transactionIt != this->mQueue.cend () ? transactionIt->second : NULL;
 }
 
 //----------------------------------------------------------------//
-shared_ptr < const Transaction > TransactionMakerQueue::getTransaction ( string uuid ) const {
+shared_ptr < const TransactionEnvelope > TransactionMakerQueue::getTransaction ( string uuid ) const {
 
     TransactionLookupConstIt transactionIt = this->mLookup.find ( uuid );
     return transactionIt != this->mLookup.cend () ? transactionIt->second : NULL;
@@ -77,7 +77,7 @@ TransactionMakerQueue::TransactionMakerQueue () :
 }
 
 //----------------------------------------------------------------//
-void TransactionMakerQueue::pushTransaction ( shared_ptr < const Transaction > transaction ) {
+void TransactionMakerQueue::pushTransaction ( shared_ptr < const TransactionEnvelope > transaction ) {
 
     LGN_LOG_SCOPE ( VOL_FILTER_TRANSACTION_QUEUE, INFO, __PRETTY_FUNCTION__ );
 
@@ -138,7 +138,7 @@ void TransactionMakerQueue::prune ( const AbstractLedger& ledger ) {
     while ( transactionItCursor != this->mQueue.end ()) {
 
         TransactionQueueIt transactionIt = transactionItCursor++;
-        shared_ptr < const Transaction > transaction = transactionIt->second;
+        shared_ptr < const TransactionEnvelope > transaction = transactionIt->second;
 
         if ( transaction->wasApplied ( ledger )) {
             this->mLookup.erase ( transactionIt->second->getUUID ());

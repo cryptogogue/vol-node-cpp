@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_RUNSCRIPT_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/AssetMethodInvocation.h>
 
 namespace Volition {
@@ -15,7 +15,7 @@ namespace Transactions {
 // RunScript
 //================================================================//
 class RunScript :
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "RUN_SCRIPT" )
@@ -32,7 +32,7 @@ public:
 
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         serializer.serialize ( "weight",            this->mWeight );
         serializer.serialize ( "maturity",          this->mMaturity );
@@ -41,7 +41,7 @@ public:
     
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "weight",            this->mWeight );
         serializer.serialize ( "maturity",          this->mMaturity );

@@ -140,7 +140,7 @@ void Simulator::initializeGenesis ( time_t blockDelayInSeconds, time_t rewriteWi
     
     LGN_LOG ( VOL_FILTER_CONSENSUS, INFO, "%s", ToJSONSerializer::toJSONString ( keyDump, 4 ).c_str ());
     
-    shared_ptr < Transaction > transaction = make_shared < Transaction >();
+    shared_ptr < TransactionEnvelope > transaction = make_shared < TransactionEnvelope >();
     transaction->setBody ( move ( genesisMinerTransactionBody ));
     
     shared_ptr < Block > genesisBlock = make_shared < Block >();

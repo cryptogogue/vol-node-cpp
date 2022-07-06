@@ -5,7 +5,7 @@
 #define VOLITION_TRANSACTIONS_GENESIS_H
 
 #include <volition/common.h>
-#include <volition/AbstractTransactionBody.h>
+#include <volition/AbstractTransaction.h>
 #include <volition/Accessors.h>
 #include <volition/MinerInfo.h>
 #include <volition/Policy.h>
@@ -118,7 +118,7 @@ public:
 //================================================================//
 class Genesis :
     public ConsensusSettings,
-    public AbstractTransactionBody {
+    public AbstractTransaction {
 public:
 
     TRANSACTION_TYPE ( "GENESIS" )
@@ -140,7 +140,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeFrom ( const AbstractSerializerFrom& serializer ) override {
         ConsensusSettings::AbstractSerializable_serializeFrom ( serializer );
-        AbstractTransactionBody::AbstractSerializable_serializeFrom ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeFrom ( serializer );
         
         this->mTotalVOL     = 100000000000;
         this->mPrizePool    = 0;
@@ -154,7 +154,7 @@ public:
     //----------------------------------------------------------------//
     void AbstractSerializable_serializeTo ( AbstractSerializerTo& serializer ) const override {
         ConsensusSettings::AbstractSerializable_serializeTo ( serializer );
-        AbstractTransactionBody::AbstractSerializable_serializeTo ( serializer );
+        AbstractTransaction::AbstractSerializable_serializeTo ( serializer );
         
         serializer.serialize ( "release",                   this->mRelease );
         serializer.serialize ( "totalVOL",                  this->mTotalVOL );
