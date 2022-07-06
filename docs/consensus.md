@@ -58,7 +58,7 @@ In order to be considered against a longer branch, the shorter branch must be at
 
 ### Games of Chance
 
-Games of chance can be based the unpredictable-yet-verifiable ordering of the chain. Because the ordering is derived from secret information held by each participant, no third party (such as an oracle) is required.
+Games of chance can be based on the unpredictable-yet-verifiable ordering of the chain. Because the ordering is derived from secret information held by each participant, no third party (such as an oracle) is required.
 
 To determine the outcome of a game of chance, participants record their bets at block N along with an offset, M, which is the number of blocks to wait before determining the outcome. The outcome is then determined at block N+M.
 
