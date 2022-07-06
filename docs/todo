@@ -161,28 +161,30 @@ DONE: wallet - double confirm on tag deletion
 DONE: wallet - send multiple transactions
 DONE: wallet - change messaging on 'blocked' transactions (all error'd)
 DONE: node - rotate logs
+DONE: node - require identity cert for provisioning mining accounts
+DONE: node - allow users to create verified accounts
 
-TODO: node - require identity cert for provisioning mining accounts
-TODO: node - allow users to create verified accounts
 TODO: node - unique images via hash?
 TODO: node - prevent URL & image hash re-use
 TODO: node - whitelist/blacklist accounts
 TODO: node - asset migration?
+TODO: node - remove non-responsive miners from the pool (after N missed blocks)
+TODO: node - limit mining pool size
 
 TODO: node - demurage?
 TODO: node - UBI?
 TODO: node - dead accounts?
+
+TODO: node - switch IDE to VS Code
+TODO: node - refactor for extensibility
+TODO: node - switch to libsodium/Ed25519 signatures
+TODO: node/wallet - lua scripted transactions
 
 ----------------------------------------------------------------
 PRE-LAUNCH
 
 legal - write popup notice for volition project site
 legal - send contributors license and popup notice to Peter for review/rewrite
-legal - how can we give people stock?
-beta - host wallet on volwal.com
-wallet - fix nonce bug
-launch - bullet points for fireside
-launch - consolidate repositories into master volition repo
 
 wallet - accessibility (screen readers, etc.)
 wallet - tooltips
@@ -228,12 +230,6 @@ LAUNCH
 node - capture transactions when rewinding chain
 node - implement pluggable transaction database (mysql and in-memory drivers)
 
-wallet - RSA key support
-wallet - mining account request (RSA key, motto, visage)
-wallet - multi-node scan, consensus and transaction dispatch
-
-mining - onboard new miners (check certs)
-
 node - publish default media url prefix (from schema, with miner override)
 
 schema - asset visualization descriptor (i.e. 2D/3D, front/back, language, etc.)
@@ -269,12 +265,3 @@ node - record asset exchange metadata (inventory nonce, sender, note)
 
 node - VOLOPT (transaction fees)
 node - exercise option transaction (claim mining reward)
-
-----------------------------------------------------------------
-MINING NETWORK
-
-- remove non-responsive miners from the pool (after N missed blocks)
-- uniquely identify mining pool forks
-	- changes to mining pool
-	- history of pool changes (to tell if a fork is an ancestor of another)
-	- wallet can identify multiple forks (and reject smaller forks?)

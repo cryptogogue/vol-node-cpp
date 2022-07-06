@@ -51,6 +51,7 @@ public:
         
         if ( !( selfRegister || context.mKeyEntitlements.check ( KeyEntitlements::REGISTER_MINER ))) return "Permission denied.";
         if ( selfRegister && !context.mKeyEntitlements.check ( KeyEntitlements::SELF_REGISTER_MINER )) return "Permission denied.";
+        
         if ( !this->mMinerInfo ) return "Missing miner info.";
         if ( !this->mMinerInfo->getPublicKey ()) return "Missing miner public key.";
         if ( !this->mMinerInfo->getVisage ()) return "Missing miner visage.";
